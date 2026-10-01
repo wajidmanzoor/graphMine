@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Domain-aware GPU graph mining on your private network">
+  <title>GraphMine</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="GraphMine home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>Graph<span>Mine</span></span>
+    </a>
+    <div class="top-actions">
+      <span id="server-status" class="status status-waiting">Connecting</span>
+      <button id="settings-button" class="icon-button" title="Connection settings" aria-label="Connection settings">⚙</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="domain-view" class="domain-view">
+      <div class="hero">
+        <p class="eyebrow">Intelligent GPU graph mining</p>
+        <h1>What kind of network are you exploring?</h1>
+        <p>Choose a domain first. It gives the analyst the right vocabulary and visual context; GraphMine’s formal algorithm definitions still control every computation.</p>
+      </div>
+      <div id="domain-grid" class="domain-grid" aria-live="polite">
+        <div class="loading-card">Loading domains…</div>
+      </div>
+      <label class="session-title">
+        <span>Optional research session name</span>
+        <input id="session-title" maxlength="200" placeholder="e.g. September transaction-ring study">
+      </label>
+    </section>
+
+    <section id="workspace-view" class="workspace hidden">
+      <aside class="sidebar">
+        <div>
+          <p class="eyebrow">Active domain</p>
+          <h2 id="active-domain">General graph analysis</h2>
+          <p id="active-domain-description" class="muted"></p>
+          <button id="new-session" class="text-button">Change domain / new session</button>
+        </div>
+
+        <div class="upload-panel">
+          <p class="eyebrow">Research files</p>
+          <label id="drop-zone" class="drop-zone">
+            <input id="file-input" type="file" accept=".json,.txt,.csv" multiple>
+            <span class="upload-icon">↑</span>
+            <strong>Drop or choose files</strong>
+            <small>Canonical JSON or edge list</small>
+          </label>
+          <div class="upload-options">
+            <label>Role
+              <select id="file-role">
+                <option value="graph">Main graph</option>
+                <option value="query_graph">Query graph</option>
+                <option value="motif">Motif graph</option>
+                <option value="updates">Dynamic updates</option>
+                <option value="left_partition">Left partition</option>
+              </select>
+            </label>
+            <label class="check"><input id="directed" type="checkbox"> Directed</label>
+          </div>
+          <div id="file-list" class="file-list"></div>
+        </div>
+
+        <div class="system-panel">
+          <p class="eyebrow">Compute</p>
+          <div class="system-row"><span>GraphMine</span><strong id="graphmine-state">Checking</strong></div>
+          <div class="system-row"><span>Language model</span><strong id="llm-state">Checking</strong></div>
+          <div class="system-row"><span>Algorithms</span><strong>13 operations</strong></div>
+        </div>
+      </aside>
+
+      <section class="conversation-column">
+        <div class="session-heading">
+          <div>
+            <p class="eyebrow">Research workspace</p>
+            <h1 id="workspace-title">New analysis</h1>
+          </div>
+          <span id="job-state" class="job-state hidden"></span>
+        </div>
+        <div id="messages" class="messages" aria-live="polite">
+          <article class="message assistant">
+            <div class="avatar">G</div>
+            <div class="bubble">
+              <p>Upload a graph, then describe what you want to discover in domain language. I’ll map it to a validated graph problem, show the plan, run it on the dedicated GPU, and interpret the result.</p>
+            </div>
+          </article>
+        </div>
+        <form id="chat-form" class="composer">
+          <textarea id="chat-input" rows="2" maxlength="20000" placeholder="Ask GraphMine to analyze your graph…" required></textarea>
+          <div class="composer-row">
+            <label class="check"><input id="execute-toggle" type="checkbox" checked> Run validated plan automatically</label>
+            <button id="send-button" class="primary-button" type="submit">Send <span>→</span></button>
+          </div>
+        </form>
+      </section>
+
+      <section id="insight-column" class="insight-column empty">
+        <div id="empty-insights" class="empty-state">
+          <div class="empty-graphic"><span></span><span></span><span></span></div>
+          <h2>Results will come alive here</h2>
+          <p>The analyst chooses a suitable interactive view after the GPU computation completes.</p>
+        </div>
+        <div id="result-content" class="hidden">
+          <div class="result-heading">
+            <div>
+              <p class="eyebrow">Analysis</p>
+              <h2 id="result-title">GPU result</h2>
+            </div>
+            <button id="raw-toggle" class="secondary-button">Raw JSON</button>
+          </div>
+          <div id="interpretation" class="interpretation"></div>
+          <div id="visualizations" class="visualizations"></div>
+          <pre id="raw-result" class="raw-result hidden"></pre>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="settings-dialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-heading"><h2>Connection settings</h2><button value="cancel" class="icon-button">×</button></div>
+      <label>API base URL<input id="api-base" placeholder="Same host by default"></label>
+      <label>API token<input id="api-token" type="password" autocomplete="off" placeholder="Only if the server requires one"></label>
+      <p class="muted">Values stay in this browser. The GPU server and model remain on your LAN.</p>
+      <button id="save-settings" value="default" class="primary-button">Save and reconnect</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

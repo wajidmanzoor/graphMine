@@ -1,0 +1,446 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-01T06:45:47.812041+00:00",
+  "cases_sha256": "f45f8d4dbe3d7aaf6a4a8c664f158042351a2352b128f26f18a39b0d95dc9e04",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "routing_configuration": {
+    "reasoning_effort": "none",
+    "max_completion_tokens": 768,
+    "temperature": 0.0,
+    "seed": 0
+  },
+  "split": "held_out_evaluation",
+  "passed": 13,
+  "total": 13,
+  "accuracy": 1.0,
+  "by_domain": {
+    "fraud_detection": {
+      "passed": 3,
+      "total": 3
+    },
+    "social_networks": {
+      "passed": 3,
+      "total": 3
+    },
+    "bioinformatics": {
+      "passed": 1,
+      "total": 1
+    },
+    "recommendation_ecommerce": {
+      "passed": 1,
+      "total": 1
+    },
+    "general": {
+      "passed": 1,
+      "total": 1
+    },
+    "cybersecurity": {
+      "passed": 1,
+      "total": 1
+    },
+    "knowledge_graphs": {
+      "passed": 1,
+      "total": 1
+    },
+    "communications_infrastructure": {
+      "passed": 1,
+      "total": 1
+    },
+    "transportation_mobility": {
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "cases": [
+    {
+      "id": "eval-fraud-maximal-cliques",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to list every account ring that cannot be expanded by adding another mutually connected account directly matches the formal definition of maximal clique enumeration. It seeks all inclusion-maximal complete vertex sets, not just the single largest clique."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to list every account ring that cannot be expanded by adding another mutually connected account directly matches the formal definition of maximal clique enumeration. It seeks all inclusion-maximal complete vertex sets, not just the single largest clique."
+      },
+      "latency_seconds": 8.102,
+      "error": null
+    },
+    {
+      "id": "eval-fraud-maximum-clique",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for the single largest fully connected group, which maps directly to the maximum clique problem rather than maximal clique enumeration. The operation is validated and available in the fraud detection domain."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for the single largest fully connected group, which maps directly to the maximum clique problem rather than maximal clique enumeration. The operation is validated and available in the fraud detection domain."
+      },
+      "latency_seconds": 5.001,
+      "error": null
+    },
+    {
+      "id": "eval-social-k-cliques",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for the count of fully connected groups of exactly five people, which maps directly to counting 5-cliques. This is a fixed-k clique counting query, distinct from maximal or maximum clique problems."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for the count of fully connected groups of exactly five people, which maps directly to counting 5-cliques. This is a fixed-k clique counting query, distinct from maximal or maximum clique problems."
+      },
+      "latency_seconds": 5.409,
+      "error": null
+    },
+    {
+      "id": "eval-social-quasi-cliques",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for dense but not necessarily complete circles with a density threshold of 0.75 and minimum size 6 directly matches the definition of quasi-clique mining, which identifies vertex subsets satisfying a minimum internal-degree fraction."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for dense but not necessarily complete circles with a density threshold of 0.75 and minimum size 6 directly matches the definition of quasi-clique mining, which identifies vertex subsets satisfying a minimum internal-degree fraction."
+      },
+      "latency_seconds": 5.504,
+      "error": null
+    },
+    {
+      "id": "eval-bio-k-core",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for each protein's core number and the network's degeneracy. This maps directly to k-Core Decomposition, which assigns core numbers to vertices and derives degeneracy as the maximum core number. The operation is validated and available in the bioinformatics domain."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for each protein's core number and the network's degeneracy. This maps directly to k-Core Decomposition, which assigns core numbers to vertices and derives degeneracy as the maximum core number. The operation is validated and available in the bioinformatics domain."
+      },
+      "latency_seconds": 5.721,
+      "error": null
+    },
+    {
+      "id": "eval-ecommerce-bicliques",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request seeks maximal groups where every customer bought every product, which maps to maximal biclique enumeration in a bipartite customer-product graph. The attached customer partition confirms the bipartite structure. This operation is validated and available in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request seeks maximal groups where every customer bought every product, which maps to maximal biclique enumeration in a bipartite customer-product graph. The attached customer partition confirms the bipartite structure. This operation is validated and available in GraphMine."
+      },
+      "latency_seconds": 5.883,
+      "error": null
+    },
+    {
+      "id": "eval-social-triangles",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to count all friendship triangles directly matches the formal definition of triangle counting. The social networks domain explicitly lists measuring triangle closure as a common question, and the operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to count all friendship triangles directly matches the formal definition of triangle counting. The social networks domain explicitly lists measuring triangle closure as a common question, and the operation is validated and available."
+      },
+      "latency_seconds": 5.337,
+      "error": null
+    },
+    {
+      "id": "eval-general-dynamic-triangles",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the net change in triangle count after applying insertion and deletion updates. This maps directly to the dynamic-triangle-counting operation under the triangle_counting_listing problem, which is validated and available in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the net change in triangle count after applying insertion and deletion updates. This maps directly to the dynamic-triangle-counting operation under the triangle_counting_listing problem, which is validated and available in GraphMine."
+      },
+      "latency_seconds": 5.561,
+      "error": null
+    },
+    {
+      "id": "eval-cyber-motifs",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count non-induced communication motifs, which directly matches the formal definition and intent signals for Graph Motif Counting. The operation is validated and available in the cybersecurity domain."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count non-induced communication motifs, which directly matches the formal definition and intent signals for Graph Motif Counting. The operation is validated and available in the cybersecurity domain."
+      },
+      "latency_seconds": 5.264,
+      "error": null
+    },
+    {
+      "id": "eval-knowledge-subgraph",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to find every embedding of a query pattern in an entity graph while respecting labels directly matches the formal definition of subgraph isomorphism. This problem is domain-relevant to knowledge graphs and has a validated backend available in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to find every embedding of a query pattern in an entity graph while respecting labels directly matches the formal definition of subgraph isomorphism. This problem is domain-relevant to knowledge graphs and has a validated backend available in GraphMine."
+      },
+      "latency_seconds": 5.67,
+      "error": null
+    },
+    {
+      "id": "eval-fraud-temporal",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered transfer patterns (A-to-B, B-to-C, A-to-C) within a specific 3600-second window. This maps directly to the formal definition of Temporal Motif Mining, which counts ordered edge-event patterns within bounded time windows. The domain context (fraud detection) and intent signals (temporal motifs within a duration window) strongly support this classification."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered transfer patterns (A-to-B, B-to-C, A-to-C) within a specific 3600-second window. This maps directly to the formal definition of Temporal Motif Mining, which counts ordered edge-event patterns within bounded time windows. The domain context (fraud detection) and intent signals (temporal motifs within a duration window) strongly support this classification."
+      },
+      "latency_seconds": 7.226,
+      "error": null
+    },
+    {
+      "id": "eval-infrastructure-community",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to detect modularity communities in an unweighted undirected graph. This maps directly to the disjoint community detection problem, which partitions vertices to maximize a quality function like modularity. The 'community-detection' operation is validated and available in the communications infrastructure domain."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to detect modularity communities in an unweighted undirected graph. This maps directly to the disjoint community detection problem, which partitions vertices to maximize a quality function like modularity. The 'community-detection' operation is validated and available in the communications infrastructure domain."
+      },
+      "latency_seconds": 5.878,
+      "error": null
+    },
+    {
+      "id": "eval-transport-centrality",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute and rank betweenness scores to identify stations on the most shortest routes. This maps directly to the validated betweenness-centrality operation under centrality mining."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute and rank betweenness scores to identify stations on the most shortest routes. This maps directly to the validated betweenness-centrality operation under centrality mining."
+      },
+      "latency_seconds": 5.493,
+      "error": null
+    }
+  ]
+}

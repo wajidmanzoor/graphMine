@@ -1,0 +1,205 @@
+{
+  "$defs": {
+    "ExecutionPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_directed_projection": {
+          "default": false,
+          "title": "Allow Directed Projection",
+          "type": "boolean"
+        },
+        "auxiliary_inputs": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": "Exact program_instruction.auxiliary_inputs keys mapped to matching available file IDs.",
+          "title": "Auxiliary Inputs",
+          "type": "object"
+        },
+        "backend_id": {
+          "default": "auto",
+          "description": "Exact backend ID from the selected operation, or auto.",
+          "title": "Backend Id",
+          "type": "string"
+        },
+        "collect_statistics": {
+          "default": true,
+          "title": "Collect Statistics",
+          "type": "boolean"
+        },
+        "graph_id": {
+          "title": "Graph Id",
+          "type": "string"
+        },
+        "missing_inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Inputs",
+          "type": "array"
+        },
+        "operation_id": {
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "optional_outputs": {
+          "description": "Exact requested keys from program_instruction.optional_outputs; do not put output behaviors in parameters.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Optional Outputs",
+          "type": "array"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": "Only exact keys from program_instruction.parameters; null means the optional CLI flag is omitted.",
+          "title": "Parameters",
+          "type": "object"
+        },
+        "problem_id": {
+          "title": "Problem Id",
+          "type": "string"
+        },
+        "rationale": {
+          "default": "",
+          "maxLength": 1200,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "session_id": {
+          "title": "Session Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "graph_id",
+        "problem_id",
+        "operation_id"
+      ],
+      "title": "ExecutionPlan",
+      "type": "object"
+    },
+    "RouteDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "ambiguity": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Ambiguity",
+          "type": "array"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "explanation": {
+          "maxLength": 800,
+          "minLength": 1,
+          "title": "Explanation",
+          "type": "string"
+        },
+        "missing_information": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Information",
+          "type": "array"
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation Id"
+        },
+        "problem_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Problem Id"
+        },
+        "supported": {
+          "description": "True only when the selected problem has library_support.status equal to 'validated' and exposes the selected operation.",
+          "title": "Supported",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "supported",
+        "confidence",
+        "explanation"
+      ],
+      "title": "RouteDecision",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "decision": {
+      "$ref": "#/$defs/RouteDecision"
+    },
+    "message": {
+      "title": "Message",
+      "type": "string"
+    },
+    "plan": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExecutionPlan"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "message",
+    "decision"
+  ],
+  "title": "PlanningOutcome",
+  "type": "object"
+}

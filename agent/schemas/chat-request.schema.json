@@ -1,0 +1,55 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "execute": {
+      "default": true,
+      "title": "Execute",
+      "type": "boolean"
+    },
+    "graph_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Graph Id"
+    },
+    "message": {
+      "maxLength": 20000,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "mode": {
+      "default": "auto",
+      "enum": [
+        "auto",
+        "planner",
+        "analyst"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "result_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Result Id"
+    }
+  },
+  "required": [
+    "message"
+  ],
+  "title": "ChatRequest",
+  "type": "object"
+}

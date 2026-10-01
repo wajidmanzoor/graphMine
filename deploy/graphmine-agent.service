@@ -1,0 +1,19 @@
+[Unit]
+Description=GraphMine intelligent graph-mining API
+After=network-online.target graphmine-vllm.service
+Wants=network-online.target graphmine-vllm.service
+
+[Service]
+Type=simple
+User=graphmine
+Group=graphmine
+WorkingDirectory=/opt/graphmine
+EnvironmentFile=/etc/graphmine/graphmine.env
+ExecStart=/opt/graphmine/deploy/start-agent.sh
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

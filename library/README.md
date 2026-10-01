@@ -103,6 +103,15 @@ cmake --build library/build -j
 ctest --test-dir library/build --output-on-failure
 ```
 
+On a server where the LLM occupies another GPU, pin this test command to the
+GraphMine card just like the agent does in production:
+
+```bash
+CUDA_DEVICE_ORDER=PCI_BUS_ID \
+CUDA_VISIBLE_DEVICES=GPU-<GRAPH_UUID> \
+ctest --test-dir library/build --output-on-failure
+```
+
 The parallel Louvain/Leiden family additionally needs a CUDA-enabled Kokkos
 and KokkosKernels installation. Point CMake at its prefix when it is not in a
 standard location:

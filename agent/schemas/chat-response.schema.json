@@ -1,0 +1,382 @@
+{
+  "$defs": {
+    "EvidenceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "claim": {
+          "title": "Claim",
+          "type": "string"
+        },
+        "data_ref": {
+          "title": "Data Ref",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "claim",
+        "data_ref"
+      ],
+      "title": "EvidenceItem",
+      "type": "object"
+    },
+    "ExecutionPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_directed_projection": {
+          "default": false,
+          "title": "Allow Directed Projection",
+          "type": "boolean"
+        },
+        "auxiliary_inputs": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": "Exact program_instruction.auxiliary_inputs keys mapped to matching available file IDs.",
+          "title": "Auxiliary Inputs",
+          "type": "object"
+        },
+        "backend_id": {
+          "default": "auto",
+          "description": "Exact backend ID from the selected operation, or auto.",
+          "title": "Backend Id",
+          "type": "string"
+        },
+        "collect_statistics": {
+          "default": true,
+          "title": "Collect Statistics",
+          "type": "boolean"
+        },
+        "graph_id": {
+          "title": "Graph Id",
+          "type": "string"
+        },
+        "missing_inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Inputs",
+          "type": "array"
+        },
+        "operation_id": {
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "optional_outputs": {
+          "description": "Exact requested keys from program_instruction.optional_outputs; do not put output behaviors in parameters.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Optional Outputs",
+          "type": "array"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": "Only exact keys from program_instruction.parameters; null means the optional CLI flag is omitted.",
+          "title": "Parameters",
+          "type": "object"
+        },
+        "problem_id": {
+          "title": "Problem Id",
+          "type": "string"
+        },
+        "rationale": {
+          "default": "",
+          "maxLength": 1200,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "session_id": {
+          "title": "Session Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "graph_id",
+        "problem_id",
+        "operation_id"
+      ],
+      "title": "ExecutionPlan",
+      "type": "object"
+    },
+    "Interpretation": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceItem"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "findings": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Findings",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "proposed_request": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proposed Request"
+        },
+        "requires_new_execution": {
+          "default": false,
+          "title": "Requires New Execution",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "suggested_followups": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Suggested Followups",
+          "type": "array"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "visualizations": {
+          "items": {
+            "$ref": "#/$defs/VisualizationSpec"
+          },
+          "title": "Visualizations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "summary",
+        "findings",
+        "evidence",
+        "suggested_followups"
+      ],
+      "title": "Interpretation",
+      "type": "object"
+    },
+    "LLMMode": {
+      "enum": [
+        "planner",
+        "analyst"
+      ],
+      "title": "LLMMode",
+      "type": "string"
+    },
+    "VisualizationKind": {
+      "enum": [
+        "network",
+        "bar",
+        "histogram",
+        "line",
+        "timeline",
+        "heatmap",
+        "table",
+        "metric_cards"
+      ],
+      "title": "VisualizationKind",
+      "type": "string"
+    },
+    "VisualizationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "data_ref": {
+          "title": "Data Ref",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "encodings": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Encodings",
+          "type": "object"
+        },
+        "filters": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Filters",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "interactions": {
+          "items": {
+            "enum": [
+              "zoom",
+              "pan",
+              "select_node",
+              "select_edge",
+              "select_row",
+              "filter",
+              "brush",
+              "time_range"
+            ],
+            "type": "string"
+          },
+          "title": "Interactions",
+          "type": "array"
+        },
+        "limit": {
+          "anyOf": [
+            {
+              "maximum": 100000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Limit"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/VisualizationKind"
+        }
+      },
+      "required": [
+        "type",
+        "title",
+        "data_ref"
+      ],
+      "title": "VisualizationSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "interpretation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Interpretation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "job_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Job Id"
+    },
+    "message": {
+      "title": "Message",
+      "type": "string"
+    },
+    "mode": {
+      "$ref": "#/$defs/LLMMode"
+    },
+    "plan": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExecutionPlan"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "result_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Result Id"
+    }
+  },
+  "required": [
+    "mode",
+    "message"
+  ],
+  "title": "ChatResponse",
+  "type": "object"
+}

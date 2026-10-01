@@ -26,6 +26,8 @@ JSON command-line runner.
 - [`validation/gpu_correctness/results/results.json`](validation/gpu_correctness/results/results.json)
   records the validation classifications and checks used by the catalog.
 - [`docs/`](docs/) is the static documentation website.
+- [`agent/`](agent/) contains the domain-aware planner/analyst service,
+  private-LAN API, durable GPU job queue, and interactive web application.
 
 ## Build once, run many queries
 
@@ -46,6 +48,18 @@ library/build/graphmine run triangle-counting \
 Compilation happens once. Later queries reuse the same executable and select
 the operation and backend at runtime. See the [library guide](library/README.md)
 for component-level C++ usage, optional dependencies, and tests.
+
+## Intelligent LAN system
+
+The [agent service](agent/README.md) adds a domain-first conversational layer
+without moving correctness decisions into the language model. One local Qwen
+instance produces schema-constrained plans and result interpretations; a
+deterministic orchestrator validates every request against the problem catalog
+and invokes the precompiled CLI on a separate GPU. The bundled browser UI
+supports file uploads, streamed job progress, follow-up questions, and
+analyst-selected interactive visualizations.
+The [system architecture page](docs/system/) documents the full two-machine
+flow, GPU isolation, planner/analyst boundary, and deployment sequence.
 
 ## Problem-first catalog
 

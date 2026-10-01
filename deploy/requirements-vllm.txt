@@ -1,0 +1,2 @@
+# Pinned because parser and structured-output flags can change between releases.
+vllm==0.30.0

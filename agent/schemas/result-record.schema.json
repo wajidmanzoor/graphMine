@@ -1,0 +1,259 @@
+{
+  "$defs": {
+    "EvidenceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "claim": {
+          "title": "Claim",
+          "type": "string"
+        },
+        "data_ref": {
+          "title": "Data Ref",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "claim",
+        "data_ref"
+      ],
+      "title": "EvidenceItem",
+      "type": "object"
+    },
+    "Interpretation": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceItem"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "findings": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Findings",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "proposed_request": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proposed Request"
+        },
+        "requires_new_execution": {
+          "default": false,
+          "title": "Requires New Execution",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "suggested_followups": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Suggested Followups",
+          "type": "array"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "visualizations": {
+          "items": {
+            "$ref": "#/$defs/VisualizationSpec"
+          },
+          "title": "Visualizations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "summary",
+        "findings",
+        "evidence",
+        "suggested_followups"
+      ],
+      "title": "Interpretation",
+      "type": "object"
+    },
+    "VisualizationKind": {
+      "enum": [
+        "network",
+        "bar",
+        "histogram",
+        "line",
+        "timeline",
+        "heatmap",
+        "table",
+        "metric_cards"
+      ],
+      "title": "VisualizationKind",
+      "type": "string"
+    },
+    "VisualizationSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "data_ref": {
+          "title": "Data Ref",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "encodings": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Encodings",
+          "type": "object"
+        },
+        "filters": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Filters",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "interactions": {
+          "items": {
+            "enum": [
+              "zoom",
+              "pan",
+              "select_node",
+              "select_edge",
+              "select_row",
+              "filter",
+              "brush",
+              "time_range"
+            ],
+            "type": "string"
+          },
+          "title": "Interactions",
+          "type": "array"
+        },
+        "limit": {
+          "anyOf": [
+            {
+              "maximum": 100000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Limit"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/VisualizationKind"
+        }
+      },
+      "required": [
+        "type",
+        "title",
+        "data_ref"
+      ],
+      "title": "VisualizationSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "interpretation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Interpretation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "job_id": {
+      "title": "Job Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "session_id": {
+      "title": "Session Id",
+      "type": "string"
+    },
+    "summary": {
+      "additionalProperties": true,
+      "title": "Summary",
+      "type": "object"
+    }
+  },
+  "required": [
+    "job_id",
+    "session_id",
+    "operation_id",
+    "payload",
+    "summary"
+  ],
+  "title": "ResultRecord",
+  "type": "object"
+}

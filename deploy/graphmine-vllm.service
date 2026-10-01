@@ -1,0 +1,18 @@
+[Unit]
+Description=GraphMine local Qwen vLLM server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=graphmine
+Group=graphmine
+WorkingDirectory=/opt/graphmine
+EnvironmentFile=/etc/graphmine/graphmine.env
+ExecStart=/opt/graphmine/deploy/start-vllm.sh
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,78 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "allow_directed_projection": {
+      "default": false,
+      "title": "Allow Directed Projection",
+      "type": "boolean"
+    },
+    "auxiliary_inputs": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Auxiliary Inputs",
+      "type": "object"
+    },
+    "backend_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Backend Id"
+    },
+    "graph_id": {
+      "title": "Graph Id",
+      "type": "string"
+    },
+    "message": {
+      "maxLength": 20000,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "optional_outputs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Optional Outputs",
+      "type": "array"
+    },
+    "parameters": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Parameters",
+      "type": "object"
+    }
+  },
+  "required": [
+    "message",
+    "graph_id"
+  ],
+  "title": "PlanRequest",
+  "type": "object"
+}

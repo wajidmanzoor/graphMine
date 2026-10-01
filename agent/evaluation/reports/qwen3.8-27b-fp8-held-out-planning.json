@@ -1,0 +1,833 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-01T06:48:55.922171+00:00",
+  "cases_sha256": "f45f8d4dbe3d7aaf6a4a8c664f158042351a2352b128f26f18a39b0d95dc9e04",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "planning_configuration": {
+    "reasoning_effort": "medium",
+    "max_completion_tokens": 3072,
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "seed": 0,
+    "concurrency": 2
+  },
+  "split": "held_out_evaluation",
+  "passed": 13,
+  "total": 13,
+  "accuracy": 1.0,
+  "by_domain": {
+    "fraud_detection": {
+      "passed": 3,
+      "total": 3
+    },
+    "social_networks": {
+      "passed": 3,
+      "total": 3
+    },
+    "bioinformatics": {
+      "passed": 1,
+      "total": 1
+    },
+    "recommendation_ecommerce": {
+      "passed": 1,
+      "total": 1
+    },
+    "general": {
+      "passed": 1,
+      "total": 1
+    },
+    "cybersecurity": {
+      "passed": 1,
+      "total": 1
+    },
+    "knowledge_graphs": {
+      "passed": 1,
+      "total": 1
+    },
+    "communications_infrastructure": {
+      "passed": 1,
+      "total": 1
+    },
+    "transportation_mobility": {
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "cases": [
+    {
+      "id": "eval-fraud-maximal-cliques",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "backend_id": "rdmce",
+        "parameters": {
+          "minimum_clique_size": 1
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user asks for every account ring that cannot be expanded by adding another mutually connected account, which is the exact definition of an inclusion-maximal clique. The selected operation maximal-cliques enumerates all such cliques exhaustively. No minimum size was specified, so the default of 1 is used. No result limit is applied since the user requests every ring. The default backend rdmce is selected. No optional outputs (e.g. total_count) were requested beyond the mandatory clique list, returned_count, and completeness flag."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "backend_id": "rdmce",
+        "parameters": {
+          "minimum_clique_size": 1
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user asks for every account ring that cannot be expanded by adding another mutually connected account, which is the exact definition of an inclusion-maximal clique. The selected operation maximal-cliques enumerates all such cliques exhaustively. No minimum size was specified, so the default of 1 is used. No result limit is applied since the user requests every ring. The default backend rdmce is selected. No optional outputs (e.g. total_count) were requested beyond the mandatory clique list, returned_count, and completeness flag."
+      },
+      "latency_seconds": 74.137,
+      "error": null
+    },
+    {
+      "id": "eval-fraud-maximum-clique",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "backend_id": "cuda-ms",
+        "parameters": {
+          "return_all_ties": false
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user asks for the largest fully connected group of accounts, which is the maximum clique (a single largest complete subgraph), not an enumeration of all maximal cliques. The supplied graph is undirected, unweighted, and loop-free, satisfying the input contract. No user-supplied parameters or optional outputs were requested, so defaults apply. The default backend cuda-ms is selected; it is validated and supports the required outputs (maximum_size, cliques, optimal). No auxiliary inputs are needed."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "backend_id": "cuda-ms",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user asks for the largest fully connected group of accounts, which is the maximum clique (a single largest complete subgraph), not an enumeration of all maximal cliques. The supplied graph is undirected, unweighted, and loop-free, satisfying the input contract. No user-supplied parameters or optional outputs were requested, so defaults apply. The default backend cuda-ms is selected; it is validated and supports the required outputs (maximum_size, cliques, optimal). No auxiliary inputs are needed."
+      },
+      "latency_seconds": 40.204,
+      "error": null
+    },
+    {
+      "id": "eval-social-k-cliques",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "parameters": {
+          "k": 5
+        },
+        "optional_outputs": [],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "backend_id": "graphset",
+        "parameters": {
+          "k": 5
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user asks how many fully connected groups of exactly five people exist, which maps to counting 5-cliques. k is set to 5 per the explicit size constraint. No enumeration or per-vertex counts are requested, so only the required count and completeness outputs are produced. The default backend graphset supports k up to 6, covering k=5."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "backend_id": "graphset",
+        "parameters": {
+          "k": 5
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user asks how many fully connected groups of exactly five people exist, which maps to counting 5-cliques. k is set to 5 per the explicit size constraint. No enumeration or per-vertex counts are requested, so only the required count and completeness outputs are produced. The default backend graphset supports k up to 6, covering k=5."
+      },
+      "latency_seconds": 37.344,
+      "error": null
+    },
+    {
+      "id": "eval-social-quasi-cliques",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "parameters": {
+          "minimum_size": 6,
+          "minimum_degree_ratio": 0.75
+        },
+        "optional_outputs": [],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "backend_id": "cuqc",
+        "parameters": {
+          "minimum_degree_ratio": 0.75,
+          "minimum_size": 6,
+          "scheduling": "dynamic"
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user asks for dense, non-complete collaboration groups of at least 6 members with density threshold 0.75. This maps directly to quasi-clique mining: minimum_degree_ratio 0.75 (within [0.5, 1.0]) enforces the density condition, and minimum_size 6 enforces the member-count bound. The cuQC backend enumerates maximal gamma quasi-cliques on the undirected evaluation graph. No optional outputs, auxiliary inputs, or result limits were requested."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "backend_id": "cuqc",
+        "parameters": {
+          "minimum_degree_ratio": 0.75,
+          "minimum_size": 6
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user asks for dense, non-complete collaboration groups of at least 6 members with density threshold 0.75. This maps directly to quasi-clique mining: minimum_degree_ratio 0.75 (within [0.5, 1.0]) enforces the density condition, and minimum_size 6 enforces the member-count bound. The cuQC backend enumerates maximal gamma quasi-cliques on the undirected evaluation graph. No optional outputs, auxiliary inputs, or result limits were requested."
+      },
+      "latency_seconds": 37.936,
+      "error": null
+    },
+    {
+      "id": "eval-bio-k-core",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "backend_id": "kcore-gpu",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user requests every vertex's core number and the graph degeneracy, which are exactly the required outputs (core_number_by_vertex, degeneracy) of k-core decomposition. No specific k value is needed because the full peeling yields all core numbers and the maximum (degeneracy) without a --requested-k filter. The sole validated backend kcore-gpu is selected. No optional subgraph or peeling-order outputs were requested."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "backend_id": "kcore-gpu",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user requests every vertex's core number and the graph degeneracy, which are exactly the required outputs (core_number_by_vertex, degeneracy) of k-core decomposition. No specific k value is needed because the full peeling yields all core numbers and the maximum (degeneracy) without a --requested-k filter. The sole validated backend kcore-gpu is selected. No optional subgraph or peeling-order outputs were requested."
+      },
+      "latency_seconds": 39.124,
+      "error": null
+    },
+    {
+      "id": "eval-ecommerce-bicliques",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_roles": [
+          "left_partition"
+        ]
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "backend_id": "cumbe",
+        "parameters": {
+          "minimum_left_size": 1,
+          "minimum_right_size": 1
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {
+          "left_partition": [
+            "file_left_partition_1"
+          ]
+        },
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests all maximal bicliques (complete bipartite subgraphs that cannot be extended) in a customer-product graph. The operation maximal-bicliques with the cuMBE backend performs exact inclusion-maximal biclique enumeration. The attached customer partition (file_left_partition_1) supplies the left side; all remaining vertices form the right side per the partition rule. No size filters or result limit were specified, so defaults of 1 apply. No optional outputs were requested."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "backend_id": "cumbe",
+        "parameters": {
+          "minimum_left_size": 1,
+          "minimum_right_size": 1
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {
+          "left_partition": [
+            "file_left_partition_1"
+          ]
+        },
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests all maximal bicliques (complete bipartite subgraphs that cannot be extended) in a customer-product graph. The operation maximal-bicliques with the cuMBE backend performs exact inclusion-maximal biclique enumeration. The attached customer partition (file_left_partition_1) supplies the left side; all remaining vertices form the right side per the partition rule. No size filters or result limit were specified, so defaults of 1 apply. No optional outputs were requested."
+      },
+      "latency_seconds": 35.937,
+      "error": null
+    },
+    {
+      "id": "eval-social-triangles",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "backend_id": "tot",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests a global triangle count to measure triadic closure in the friendship graph. The default ToT backend is used since no backend was specified. No optional outputs (listing, per-vertex, per-edge counts) were requested, and no performance parameters were supplied, so the plan carries an empty parameter set. The undirected evaluation-graph (100 vertices, 300 edges) satisfies the input contract directly."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "backend_id": "tot",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests a global triangle count to measure triadic closure in the friendship graph. The default ToT backend is used since no backend was specified. No optional outputs (listing, per-vertex, per-edge counts) were requested, and no performance parameters were supplied, so the plan carries an empty parameter set. The undirected evaluation-graph (100 vertices, 300 edges) satisfies the input contract directly."
+      },
+      "latency_seconds": 36.301,
+      "error": null
+    },
+    {
+      "id": "eval-general-dynamic-triangles",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_roles": [
+          "updates"
+        ]
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "backend_id": "edtc",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {
+          "updates": [
+            "file_updates_1"
+          ]
+        },
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user requests the net change in triangle count after applying an insertion/deletion update file. This maps directly to the required output net_triangle_change of the dynamic-triangle-counting operation. The updates file file_updates_1 (role: updates) is supplied as the mandatory auxiliary input. No optional outputs (global counts, triangle listings) or parameters (result_limit) were requested, so none are included. The EDTC backend is selected as the sole validated backend for this operation."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "backend_id": "edtc",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {
+          "updates": [
+            "file_updates_1"
+          ]
+        },
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user requests the net change in triangle count after applying an insertion/deletion update file. This maps directly to the required output net_triangle_change of the dynamic-triangle-counting operation. The updates file file_updates_1 (role: updates) is supplied as the mandatory auxiliary input. No optional outputs (global counts, triangle listings) or parameters (result_limit) were requested, so none are included. The EDTC backend is selected as the sole validated backend for this operation."
+      },
+      "latency_seconds": 30.225,
+      "error": null
+    },
+    {
+      "id": "eval-cyber-motifs",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "parameters": {
+          "induced": false
+        },
+        "optional_outputs": [],
+        "auxiliary_roles": [
+          "motif"
+        ]
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "backend_id": "graphset",
+        "parameters": {
+          "induced": false,
+          "occurrence_identity": "unique-vertex-set-and-mapping-class"
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {
+          "motifs": [
+            "file_motif_1"
+          ]
+        },
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests counting non-induced motifs on the undirected host graph. The only validated backend supporting non-induced motifs (induced=false) is GraphSet. The single available motif file (file_motif_1, 'attached-motif-1.json') matches the user's 'attached non-induced communication motifs' phrasing. occurrence_identity uses its default (unique-vertex-set-and-mapping-class) since the user did not specify otherwise. No optional outputs (instances, per-vertex participation) were requested; the goal is a count only. The graph is undirected with no self-loops or parallel edges, satisfying GraphSet's undirected size-3-or-4 constraint."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "backend_id": "graphset",
+        "parameters": {
+          "induced": false
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {
+          "motifs": [
+            "file_motif_1"
+          ]
+        },
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests counting non-induced motifs on the undirected host graph. The only validated backend supporting non-induced motifs (induced=false) is GraphSet. The single available motif file (file_motif_1, 'attached-motif-1.json') matches the user's 'attached non-induced communication motifs' phrasing. occurrence_identity uses its default (unique-vertex-set-and-mapping-class) since the user did not specify otherwise. No optional outputs (instances, per-vertex participation) were requested; the goal is a count only. The graph is undirected with no self-loops or parallel edges, satisfying GraphSet's undirected size-3-or-4 constraint."
+      },
+      "latency_seconds": 39.541,
+      "error": null
+    },
+    {
+      "id": "eval-knowledge-subgraph",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "parameters": {},
+        "optional_outputs": [
+          "embeddings"
+        ],
+        "auxiliary_roles": [
+          "query_graph"
+        ]
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "backend_id": "gmatch",
+        "parameters": {
+          "ignore_vertex_labels": false,
+          "initial_match_capacity": 1000000
+        },
+        "optional_outputs": [
+          "embeddings"
+        ],
+        "auxiliary_inputs": {
+          "query_graph": [
+            "file_query_graph_1"
+          ]
+        },
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests exhaustive embedding enumeration of the attached query pattern in the entity graph while respecting labels. The validated gMatch backend handles labeled, non-induced subgraph isomorphism on a single GPU. The auxiliary query graph maps to file_query_graph_1. The embeddings optional output is included to satisfy 'find every embedding.' Label respect is enforced via ignore_vertex_labels=false (the default). No result limit is set because the user requests all embeddings without a cap."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "backend_id": "gmatch",
+        "parameters": {
+          "ignore_vertex_labels": false
+        },
+        "optional_outputs": [
+          "embeddings"
+        ],
+        "auxiliary_inputs": {
+          "query_graph": [
+            "file_query_graph_1"
+          ]
+        },
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests exhaustive embedding enumeration of the attached query pattern in the entity graph while respecting labels. The validated gMatch backend handles labeled, non-induced subgraph isomorphism on a single GPU. The auxiliary query graph maps to file_query_graph_1. The embeddings optional output is included to satisfy 'find every embedding.' Label respect is enforced via ignore_vertex_labels=false (the default). No result limit is set because the user requests all embeddings without a cap."
+      },
+      "latency_seconds": 63.07,
+      "error": null
+    },
+    {
+      "id": "eval-fraud-temporal",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "parameters": {
+          "max_time_span": 3600
+        },
+        "optional_outputs": [],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "backend_id": "everest",
+        "parameters": {
+          "max_time_span": 3600
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests a count of time-ordered A\u2192B, B\u2192C, A\u2192C transfer patterns within 3600 seconds. This matches the validated feed-forward temporal-triangle profile of the temporal_motif_mining problem. max_time_span is set to 3600 per the user's stated window. No instance listing is requested, so optional_outputs is empty and result_limit is omitted. The default backend everest is selected since none was specified. The graph has timestamps and is directed, satisfying the input contract."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "backend_id": "everest",
+        "parameters": {
+          "max_time_span": 3600
+        },
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user requests a count of time-ordered A\u2192B, B\u2192C, A\u2192C transfer patterns within 3600 seconds. This matches the validated feed-forward temporal-triangle profile of the temporal_motif_mining problem. max_time_span is set to 3600 per the user's stated window. No instance listing is requested, so optional_outputs is empty and result_limit is omitted. The default backend everest is selected since none was specified. The graph has timestamps and is directed, satisfying the input contract."
+      },
+      "latency_seconds": 38.569,
+      "error": null
+    },
+    {
+      "id": "eval-infrastructure-community",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "backend_id": "gleiden",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user requests modularity community detection on an unweighted undirected router topology. The selected operation community-detection with the default gleiden backend is validated for exactly this profile (unweighted, undirected, modularity, single GPU). No user-supplied parameters or optional outputs are present, so the plan uses only the required outputs (assignment_by_vertex, community_count, modularity) and the default backend. The graph metadata (100 vertices, 300 edges, no weights, undirected, no self-loops) is fully compatible with the validated adapter."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "backend_id": "gleiden",
+        "parameters": {},
+        "optional_outputs": [],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": true,
+        "missing_inputs": [],
+        "rationale": "The user requests modularity community detection on an unweighted undirected router topology. The selected operation community-detection with the default gleiden backend is validated for exactly this profile (unweighted, undirected, modularity, single GPU). No user-supplied parameters or optional outputs are present, so the plan uses only the required outputs (assignment_by_vertex, community_count, modularity) and the default backend. The graph metadata (100 vertices, 300 edges, no weights, undirected, no self-loops) is fully compatible with the validated adapter."
+      },
+      "latency_seconds": 19.555,
+      "error": null
+    },
+    {
+      "id": "eval-transport-centrality",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "parameters": {},
+        "optional_outputs": [
+          "ranking"
+        ],
+        "auxiliary_roles": []
+      },
+      "checks": {
+        "parameters": true,
+        "optional_outputs": true,
+        "auxiliary_roles": true,
+        "no_missing_inputs": true,
+        "backend_allowed": true
+      },
+      "unexpected_parameters": {},
+      "observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "backend_id": "turbo-bc",
+        "parameters": {},
+        "optional_outputs": [
+          "ranking"
+        ],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user asks which stations sit on the most shortest routes and requests a ranking of their betweenness scores. This maps directly to the betweenness-centrality operation (turbo-bc backend), which computes exact unweighted undirected betweenness for every vertex. The graph is unweighted and undirected, matching turbo-bc's validated capabilities. The required output score_by_vertex provides the raw scores; the optional ranking output satisfies the explicit request to rank stations by their betweenness scores. No parameters are needed per the operation contract, and no auxiliary inputs are required."
+      },
+      "raw_observed": {
+        "schema_version": "1.0.0",
+        "session_id": "session_evaluation",
+        "graph_id": "file_graph",
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "backend_id": "turbo-bc",
+        "parameters": {},
+        "optional_outputs": [
+          "ranking"
+        ],
+        "auxiliary_inputs": {},
+        "allow_directed_projection": false,
+        "collect_statistics": false,
+        "missing_inputs": [],
+        "rationale": "The user asks which stations sit on the most shortest routes and requests a ranking of their betweenness scores. This maps directly to the betweenness-centrality operation (turbo-bc backend), which computes exact unweighted undirected betweenness for every vertex. The graph is unweighted and undirected, matching turbo-bc's validated capabilities. The required output score_by_vertex provides the raw scores; the optional ranking output satisfies the explicit request to rank stations by their betweenness scores. No parameters are needed per the operation contract, and no auxiliary inputs are required."
+      },
+      "latency_seconds": 22.855,
+      "error": null
+    }
+  ]
+}

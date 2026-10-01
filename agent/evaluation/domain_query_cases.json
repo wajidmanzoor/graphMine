@@ -1,0 +1,189 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Domain-stratified routing seeds and held-out cases for GraphMine planner evaluation. Never train on held_out_evaluation cases.",
+  "cases": [
+    {
+      "id": "dev-social-maximal-cliques",
+      "split": "future_training_seed",
+      "domain_id": "social_networks",
+      "user_query": "Enumerate every inclusion-maximal collaboration group; a smaller group should not be returned if another member can still be added.",
+      "expected": {"problem_id": "maximal_clique_enumeration", "operation_id": "maximal-cliques", "supported": true}
+    },
+    {
+      "id": "dev-bio-maximum-clique",
+      "split": "future_training_seed",
+      "domain_id": "bioinformatics",
+      "user_query": "Find the single largest set of proteins where every pair interacts. Return a maximum clique, not all maximal complexes.",
+      "expected": {"problem_id": "maximum_clique", "operation_id": "maximum-clique", "supported": true}
+    },
+    {
+      "id": "dev-general-k-cliques",
+      "split": "future_training_seed",
+      "domain_id": "general",
+      "user_query": "Count all cliques of exactly size 4 and include the individual 4-cliques.",
+      "expected": {"problem_id": "k_clique_counting_enumeration", "operation_id": "k-cliques", "supported": true, "parameters": {"k": 4}, "optional_outputs": ["cliques"]}
+    },
+    {
+      "id": "dev-fraud-quasi-cliques",
+      "split": "future_training_seed",
+      "domain_id": "fraud_detection",
+      "user_query": "Look for near-complete fraud rings of at least 5 accounts where each account connects to at least 80 percent of the others.",
+      "expected": {"problem_id": "quasi_clique_mining", "operation_id": "quasi-cliques", "supported": true, "parameters": {"minimum_size": 5, "minimum_degree_ratio": 0.8}}
+    },
+    {
+      "id": "dev-infrastructure-k-core",
+      "split": "future_training_seed",
+      "domain_id": "communications_infrastructure",
+      "user_query": "Compute the full core decomposition of the router network and show which routers remain in the 6-core.",
+      "expected": {"problem_id": "k_core_decomposition", "operation_id": "k-core", "supported": true, "parameters": {"requested_k": 6}, "optional_outputs": ["requested_core_vertices"]}
+    },
+    {
+      "id": "dev-ecommerce-bicliques",
+      "split": "future_training_seed",
+      "domain_id": "recommendation_ecommerce",
+      "user_query": "Using the uploaded customer left partition, enumerate maximal customer-product bicliques with at least 3 customers and 4 products.",
+      "expected": {"problem_id": "maximal_biclique_enumeration", "operation_id": "maximal-bicliques", "supported": true, "parameters": {"minimum_left_size": 3, "minimum_right_size": 4}, "auxiliary_roles": ["left_partition"]}
+    },
+    {
+      "id": "dev-cyber-triangles",
+      "split": "future_training_seed",
+      "domain_id": "cybersecurity",
+      "user_query": "Count closed triples among communicating hosts and include the triangle count for each host.",
+      "expected": {"problem_id": "triangle_counting_listing", "operation_id": "triangle-counting", "supported": true, "optional_outputs": ["per_vertex_count"]}
+    },
+    {
+      "id": "dev-general-dynamic-triangles",
+      "split": "future_training_seed",
+      "domain_id": "general",
+      "user_query": "Apply the uploaded edge-update batch and report how many triangles were inserted and deleted.",
+      "expected": {"problem_id": "triangle_counting_listing", "operation_id": "dynamic-triangle-counting", "supported": true, "auxiliary_roles": ["updates"]}
+    },
+    {
+      "id": "dev-bio-motifs",
+      "split": "future_training_seed",
+      "domain_id": "bioinformatics",
+      "user_query": "Count induced occurrences of each uploaded regulatory motif and include per-gene participation.",
+      "expected": {"problem_id": "graph_motif_counting", "operation_id": "graph-motifs", "supported": true, "parameters": {"induced": true}, "optional_outputs": ["per_vertex_participation"], "auxiliary_roles": ["motif"]}
+    },
+    {
+      "id": "dev-knowledge-subgraph",
+      "split": "future_training_seed",
+      "domain_id": "knowledge_graphs",
+      "user_query": "Match the uploaded entity-relation query graph and count all label-respecting embeddings.",
+      "expected": {"problem_id": "subgraph_isomorphism", "operation_id": "subgraph-isomorphism", "supported": true, "auxiliary_roles": ["query_graph"]}
+    },
+    {
+      "id": "dev-transport-temporal",
+      "split": "future_training_seed",
+      "domain_id": "transportation_mobility",
+      "user_query": "Find feed-forward movement motifs whose three time-ordered trips complete within 20 minutes.",
+      "expected": {"problem_id": "temporal_motif_mining", "operation_id": "temporal-motif-mining", "supported": true, "parameters": {"max_time_span": 1200}}
+    },
+    {
+      "id": "dev-social-community",
+      "split": "future_training_seed",
+      "domain_id": "social_networks",
+      "user_query": "Partition the friendship graph into communities by modularity and return the members of each community.",
+      "expected": {"problem_id": "community_detection", "operation_id": "community-detection", "supported": true, "optional_outputs": ["communities"]}
+    },
+    {
+      "id": "dev-cyber-centrality",
+      "split": "future_training_seed",
+      "domain_id": "cybersecurity",
+      "user_query": "Rank hosts by betweenness centrality to identify bridge systems on communication paths.",
+      "expected": {"problem_id": "centrality_influential_node_mining", "operation_id": "betweenness-centrality", "supported": true, "optional_outputs": ["ranking"]}
+    },
+
+    {
+      "id": "eval-fraud-maximal-cliques",
+      "split": "held_out_evaluation",
+      "domain_id": "fraud_detection",
+      "user_query": "List every account ring that cannot be expanded by adding another mutually connected account.",
+      "expected": {"problem_id": "maximal_clique_enumeration", "operation_id": "maximal-cliques", "supported": true}
+    },
+    {
+      "id": "eval-fraud-maximum-clique",
+      "split": "held_out_evaluation",
+      "domain_id": "fraud_detection",
+      "user_query": "What is the largest fully connected group of accounts in this transfer network?",
+      "expected": {"problem_id": "maximum_clique", "operation_id": "maximum-clique", "supported": true}
+    },
+    {
+      "id": "eval-social-k-cliques",
+      "split": "held_out_evaluation",
+      "domain_id": "social_networks",
+      "user_query": "How many fully connected friend groups contain exactly five people?",
+      "expected": {"problem_id": "k_clique_counting_enumeration", "operation_id": "k-cliques", "supported": true, "parameters": {"k": 5}}
+    },
+    {
+      "id": "eval-social-quasi-cliques",
+      "split": "held_out_evaluation",
+      "domain_id": "social_networks",
+      "user_query": "Find dense but not necessarily complete collaboration circles with at least 6 members and density threshold 0.75.",
+      "expected": {"problem_id": "quasi_clique_mining", "operation_id": "quasi-cliques", "supported": true, "parameters": {"minimum_size": 6, "minimum_degree_ratio": 0.75}}
+    },
+    {
+      "id": "eval-bio-k-core",
+      "split": "held_out_evaluation",
+      "domain_id": "bioinformatics",
+      "user_query": "Calculate each protein's core number and the degeneracy of the interaction network.",
+      "expected": {"problem_id": "k_core_decomposition", "operation_id": "k-core", "supported": true}
+    },
+    {
+      "id": "eval-ecommerce-bicliques",
+      "split": "held_out_evaluation",
+      "domain_id": "recommendation_ecommerce",
+      "user_query": "Find maximal groups where every selected customer bought every selected product; the customer partition is attached.",
+      "expected": {"problem_id": "maximal_biclique_enumeration", "operation_id": "maximal-bicliques", "supported": true, "auxiliary_roles": ["left_partition"]}
+    },
+    {
+      "id": "eval-social-triangles",
+      "split": "held_out_evaluation",
+      "domain_id": "social_networks",
+      "user_query": "Measure triadic closure by counting all friendship triangles.",
+      "expected": {"problem_id": "triangle_counting_listing", "operation_id": "triangle-counting", "supported": true}
+    },
+    {
+      "id": "eval-general-dynamic-triangles",
+      "split": "held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "After applying my insertion and deletion file, compute the net change in triangle count.",
+      "expected": {"problem_id": "triangle_counting_listing", "operation_id": "dynamic-triangle-counting", "supported": true, "auxiliary_roles": ["updates"]}
+    },
+    {
+      "id": "eval-cyber-motifs",
+      "split": "held_out_evaluation",
+      "domain_id": "cybersecurity",
+      "user_query": "Count the attached non-induced communication motifs across the host graph.",
+      "expected": {"problem_id": "graph_motif_counting", "operation_id": "graph-motifs", "supported": true, "parameters": {"induced": false}, "auxiliary_roles": ["motif"]}
+    },
+    {
+      "id": "eval-knowledge-subgraph",
+      "split": "held_out_evaluation",
+      "domain_id": "knowledge_graphs",
+      "user_query": "Find every embedding of the attached query pattern in the entity graph while respecting labels.",
+      "expected": {"problem_id": "subgraph_isomorphism", "operation_id": "subgraph-isomorphism", "supported": true, "optional_outputs": ["embeddings"], "auxiliary_roles": ["query_graph"]}
+    },
+    {
+      "id": "eval-fraud-temporal",
+      "split": "held_out_evaluation",
+      "domain_id": "fraud_detection",
+      "user_query": "Count time-ordered A-to-B, B-to-C, A-to-C transfer patterns completed within 3600 seconds.",
+      "expected": {"problem_id": "temporal_motif_mining", "operation_id": "temporal-motif-mining", "supported": true, "parameters": {"max_time_span": 3600}}
+    },
+    {
+      "id": "eval-infrastructure-community",
+      "split": "held_out_evaluation",
+      "domain_id": "communications_infrastructure",
+      "user_query": "Detect modularity communities in the unweighted undirected router topology.",
+      "expected": {"problem_id": "community_detection", "operation_id": "community-detection", "supported": true}
+    },
+    {
+      "id": "eval-transport-centrality",
+      "split": "held_out_evaluation",
+      "domain_id": "transportation_mobility",
+      "user_query": "Which stations sit on the most shortest routes? Compute and rank their betweenness scores.",
+      "expected": {"problem_id": "centrality_influential_node_mining", "operation_id": "betweenness-centrality", "supported": true, "optional_outputs": ["ranking"]}
+    }
+  ]
+}
