@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['data_0',['data',['../d3/dc7/structgraphmine_1_1anonymous__namespace_02subgraph__isomorphism_8cpp_03_1_1EncodedLabels.html#a9d807a82d63e5c7e3cb1cdac6ffda91d',1,'graphmine::anonymous_namespace{subgraph_isomorphism.cpp}::EncodedLabels::data'],['../d7/d03/structgraphmine_1_1anonymous__namespace_02subgraph__isomorphism_8cpp_03_1_1EmbeddingCollector.html#afb0de1d6d3d4f78da367ae8e5fe74e62',1,'graphmine::anonymous_namespace{subgraph_isomorphism.cpp}::EmbeddingCollector::data'],['../d2/df5/structgraphmine_1_1anonymous__namespace_02graph__motifs_8cpp_03_1_1MatchState.html#aafc99f59f817831a00100f5856d583c5',1,'graphmine::anonymous_namespace{graph_motifs.cpp}::MatchState::data']]],
+  ['data_5f_1',['data_',['../d5/d1a/classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer.html#ac303173d8805a20fd784cf9524082484',1,'graphmine::detail::temporal_cuda::DeviceBuffer']]],
+  ['data_5flabels_2',['data_labels',['../d7/d03/structgraphmine_1_1anonymous__namespace_02subgraph__isomorphism_8cpp_03_1_1EmbeddingCollector.html#ae43f44d8134eebf77283cdc1fdcc307c',1,'graphmine::anonymous_namespace{subgraph_isomorphism.cpp}::EmbeddingCollector']]],
+  ['data_5fvertex_3',['data_vertex',['../d1/d1f/structgraphmine_1_1MotifVertexMapping.html#a9898b094d18ddbfd3e7f6700f1e2bd15',1,'graphmine::MotifVertexMapping::data_vertex'],['../d9/d1c/structgraphmine_1_1VertexMapping.html#aeaf17cd0e53c43425ae23e597a695223',1,'graphmine::VertexMapping::data_vertex']]],
+  ['degeneracy_4',['degeneracy',['../df/d3e/structgraphmine_1_1KCoreOutput.html#a8d3682adc53d617f347bbfb8a0795f85',1,'graphmine::KCoreOutput']]],
+  ['deleted_5fcount_5',['deleted_count',['../d8/d87/structgraphmine_1_1detail_1_1DynamicTriangleBackendResult.html#a0d849adb458dc0aa68ecd20045639acf',1,'graphmine::detail::DynamicTriangleBackendResult']]],
+  ['deleted_5ftriangle_5fcount_6',['deleted_triangle_count',['../dc/dee/structgraphmine_1_1DynamicTriangleOutput.html#a4aecaeba45a92c4be3e8e432a56ab537',1,'graphmine::DynamicTriangleOutput']]],
+  ['deleted_5ftriangles_7',['deleted_triangles',['../dc/dee/structgraphmine_1_1DynamicTriangleOutput.html#a0d8676e6abbccf46336b186e2f8d085b',1,'graphmine::DynamicTriangleOutput']]],
+  ['delta_8',['delta',['../d7/d19/structgraphmine_1_1detail_1_1temporal__cuda_1_1Invocation.html#a1ec83d86b907993b3373747d9cebfde5',1,'graphmine::detail::temporal_cuda::Invocation']]],
+  ['dense_5fids_5f_9',['dense_ids_',['../d5/d9f/classgraphmine_1_1Graph.html#aa139fdfbd092b43623bc02b4079dfd83',1,'graphmine::Graph']]],
+  ['device_5fid_10',['device_id',['../da/dc2/structgraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03_1_1KokkosRuntime.html#a57b3d5ec24076b0d7df98d61f6222f56',1,'graphmine::detail::anonymous_namespace{pggc.cpp}::KokkosRuntime']]],
+  ['device_5fids_11',['device_ids',['../d9/dbe/structgraphmine_1_1ExecutionOptions.html#a6dc4942b303105b41bbe80e0de3176f6',1,'graphmine::ExecutionOptions']]],
+  ['directed_12',['directed',['../d0/db4/structgraphmine_1_1GraphDescriptor.html#a1a74d5b5e773fc9acf8b6391d11039da',1,'graphmine::GraphDescriptor']]],
+  ['directed_5fprojection_5fapplied_13',['directed_projection_applied',['../dd/dd7/structgraphmine_1_1NormalizationSummary.html#a9aff280397101f4f0918c4e8397b87c6',1,'graphmine::NormalizationSummary']]],
+  ['dispatch_5fblocks_14',['dispatch_blocks',['../d7/d19/structgraphmine_1_1detail_1_1temporal__cuda_1_1Invocation.html#a3cd7711b02e0a4d0afd8465db3a1c557',1,'graphmine::detail::temporal_cuda::Invocation']]],
+  ['display_5fname_15',['display_name',['../da/d08/structgraphmine_1_1BackendInfo.html#a7fe71026234e219e2805aca3c6f50b85',1,'graphmine::BackendInfo']]],
+  ['dumato_5fmotif_5fmutex_16',['dumato_motif_mutex',['../d3/d80/namespacegraphmine_1_1detail_1_1anonymous__namespace_02dumato__motif_8cu_03.html#ab11bbb13aa167635dac8cd21b8ef3eb8',1,'graphmine::detail::anonymous_namespace{dumato_motif.cu}']]]
+];

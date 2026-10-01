@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['mark_0',['mark',['../d8/d1f/classgraph_1_1GraphQueue.html#acf7b75069a3f7299bfce3b9ecf2d4304',1,'graph::GraphQueue::mark'],['../d9/d4c/structgraph_1_1GraphQueue__d.html#a893b8b3b9c3d0a22703a820b1199bd67',1,'graph::GraphQueue_d::mark']]],
+  ['maskblock_1',['maskBlock',['../dd/dd1/structmcp_1_1LOCAL__HANDLE.html#a11c6ace082e05dd17f65cb87ca8f3f50',1,'mcp::LOCAL_HANDLE']]],
+  ['maskindex_2',['maskIndex',['../dd/dd1/structmcp_1_1LOCAL__HANDLE.html#ab0ab979c3fe6c7354023f41a1021dfd8',1,'mcp::LOCAL_HANDLE']]],
+  ['max_5fblocks_5fper_5fsm_3',['max_blocks_per_sm',['../d8/d41/structCUDAContext.html#a1f3f70d7cc01942e826a0e3c19b51f6e',1,'CUDAContext']]],
+  ['max_5fclique_5fsem_4',['max_clique_sem',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a2e5fa1cfc591be386335ab2942a596ea',1,'graph::MultiGPU_MCP::max_clique_sem'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#ae264f0e89be06bb14e7d5dd395034326',1,'mcp::GLOBAL_HANDLE::max_clique_sem']]],
+  ['max_5fcore_5',['max_core',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#aaa88683af4e36fe1db3dd78234f0e122',1,'graph::MultiGPU_MCP']]],
+  ['max_5fcore_5fl1_6',['max_core_l1',['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#ab69fe2a39f6c0431aba2c8cbd62a7050',1,'mcp::SHARED_HANDLE']]],
+  ['max_5fdegree_7',['max_degree',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#acce8187a39b44b6f3a3ce208cc8c8ec8',1,'graph::MultiGPU_MCP']]],
+  ['max_5fgrid_5fsize_8',['max_grid_size',['../d8/d41/structCUDAContext.html#a313ad1792b9469dd895ef17accfb7c19',1,'CUDAContext']]],
+  ['max_5fsubgraph_5fdensity_9',['max_subgraph_density',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a327447b8526f8beec9860c05e022cefc',1,'graph::MultiGPU_MCP::max_subgraph_density'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a899ec7015a68afbc81edee9c43bc5122',1,'mcp::GLOBAL_HANDLE::max_subgraph_density']]],
+  ['max_5fsubgraph_5fwidth_10',['max_subgraph_width',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a087900947dc52a6009fab81df9809a56',1,'graph::MultiGPU_MCP::max_subgraph_width'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#ab2f062883be9ec47aedfdc980e31555b',1,'mcp::GLOBAL_HANDLE::max_subgraph_width']]],
+  ['max_5fthreads_5fper_5fsm_11',['max_threads_per_SM',['../d8/d41/structCUDAContext.html#ac087d719b0efffdb51b041bf4b74c06a',1,'CUDAContext']]],
+  ['max_5fundirected_5fdegree_12',['max_undirected_degree',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a95ee3cba795f994b5fc05a90e6ae0347',1,'graph::MultiGPU_MCP']]],
+  ['maxdeg_13',['MAXDEG',['../d2/d30/parameter_8cuh.html#a8444945a58d1cd0f9c98aa8e5d259fec',1,'parameter.cuh']]],
+  ['maxlevel_14',['MAXLEVEL',['../d2/d30/parameter_8cuh.html#ad911f591450f52fed46431a9aeca1a98',1,'parameter.cuh']]],
+  ['maxundeg_15',['MAXUNDEG',['../d2/d30/parameter_8cuh.html#a14536a55629947f528108a7cd3c861cc',1,'parameter.cuh']]],
+  ['msgcnt_16',['MSGCNT',['../d2/d30/parameter_8cuh.html#a04e3865a8bf57161f790b9979acca63c',1,'parameter.cuh']]],
+  ['mt_17',['mt',['../df/d87/structConfig.html#a0c54ed98436f611aa24c83fc41951cae',1,'Config']]]
+];

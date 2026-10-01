@@ -1,0 +1,25 @@
+var classMemManager =
+[
+    [ "MemManager", "d5/d6b/classMemManager.html#aba708b378e0c9e8c580534bba1444348", null ],
+    [ "add_new_props", "d5/d6b/classMemManager.html#a48ef3a010b4bc6f5d8a46e7ab4c75175", null ],
+    [ "add_new_props", "d5/d6b/classMemManager.html#ae3f7bcbe35652e60e08b2c3cccc29d2b", null ],
+    [ "d_get_partial_cnt", "d5/d6b/classMemManager.html#a380e6f73ef285ed363f399b3e33a91bd", null ],
+    [ "deallocate", "d5/d6b/classMemManager.html#ad6d799cc7942915a59e296f71c1b2ee9", null ],
+    [ "dump", "d5/d6b/classMemManager.html#a2318efc004bc2226ae5778106f63b894", null ],
+    [ "get_partial", "d5/d6b/classMemManager.html#a96f744c2cfd72eee3d467cfa0d58794b", null ],
+    [ "get_partial_cnt", "d5/d6b/classMemManager.html#ac2904d4c83cbec800bc77dfc71e4ca99", null ],
+    [ "get_partial_props", "d5/d6b/classMemManager.html#afc7da04bf113c40c009eb12a568af1a4", null ],
+    [ "init", "d5/d6b/classMemManager.html#a16f38db0a4de355edb88157b22059ab2", null ],
+    [ "init_prev_head", "d5/d6b/classMemManager.html#acb89dba755451e906b2d98c4140b6b29", null ],
+    [ "mempool_to_read", "d5/d6b/classMemManager.html#a038c1b16ec0e4700d7b5784a2c6fa44d", null ],
+    [ "mempool_to_write", "d5/d6b/classMemManager.html#add92b5549b2b50df42fdf7c922dd9212", null ],
+    [ "swap_mem_pool", "d5/d6b/classMemManager.html#a721874bd2b43ba12c7eea9d5b45ff940", null ],
+    [ "_mem_pool", "d5/d6b/classMemManager.html#a0d82273afad8de74c14ca272d08b5543", null ],
+    [ "_props_array", "d5/d6b/classMemManager.html#a928acac11f66fa8fb18aa85e761bac85", null ],
+    [ "_props_array_len", "d5/d6b/classMemManager.html#ad4f290d7601be26b13f11e96201d4354", null ],
+    [ "blk_write_cnt", "d5/d6b/classMemManager.html#a01cfb02f288ec84c81c5babf5997bd50", null ],
+    [ "cnt_prefix_sum", "d5/d6b/classMemManager.html#a1d8d06a888a15e3efc25e8ac3e78f4b9", null ],
+    [ "current_props_array_id", "d5/d6b/classMemManager.html#a5de55d1e59a27285e3c57dc57b7b5c9f", null ],
+    [ "prev_head", "d5/d6b/classMemManager.html#a365944db162f9b82a684cb4b6951787f", null ],
+    [ "tot_partial_cnt", "d5/d6b/classMemManager.html#a00c851dab4e0fbc834be8ac981e4f4f9", null ]
+];

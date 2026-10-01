@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['calculatemean_0',['calculateMean',['../d4/da1/helper_8h.html#a5a5c6993407fe798703eb77a957ddceb',1,'helper.h']]],
+  ['calculateoccupancy_1',['calculateOccupancy',['../d4/da1/helper_8h.html#a7e9f987a5dc7954a4d397ac426c34db3',1,'helper.h']]],
+  ['calculatevariance_2',['calculateVariance',['../d4/da1/helper_8h.html#a3cc90c6fad759f4d60cb083f129ff4e7',1,'helper.h']]],
+  ['cand_3',['cand',['../d4/d27/classcandidate__graph.html#ab3f4983587d78272b1ea193109da97aa',1,'candidate_graph::cand'],['../d5/da6/structstk__elem.html#ae37979ae8df41d0594380ae31e93c75e',1,'stk_elem::cand']]],
+  ['cand_5fidx_4',['cand_idx',['../d4/d27/classcandidate__graph.html#a3fda632a71594a168ed33522d3103357',1,'candidate_graph']]],
+  ['cand_5flen_5',['cand_len',['../d5/df0/structstk__elem__cand.html#ab20a0d08fea1b519843528985a4fd571',1,'stk_elem_cand']]],
+  ['cand_5fset_6',['cand_set',['../d5/df0/structstk__elem__cand.html#afec6b5e22813f08d65e5f4d5d8e5b02c',1,'stk_elem_cand']]],
+  ['cand_5fset_5fmax_5flen_7',['cand_set_max_len',['../d4/d27/classcandidate__graph.html#ac63e98c8cd9244f0fea2fa46c6826dff',1,'candidate_graph']]],
+  ['candidate_2ecu_8',['candidate.cu',['../d2/dff/candidate_8cu.html',1,'']]],
+  ['candidate_2eh_9',['candidate.h',['../d2/d59/candidate_8h.html',1,'']]],
+  ['candidate_5fgraph_10',['candidate_graph',['../d4/d27/classcandidate__graph.html#aed61924d167f17daba189290f34e509e',1,'candidate_graph::candidate_graph()'],['../d4/d27/classcandidate__graph.html',1,'candidate_graph']]],
+  ['candidate_5fgraph_5fgpu_11',['candidate_graph_gpu',['../de/dd0/classcandidate__graph__GPU.html#a587831251699d5b4979437de81019820',1,'candidate_graph_GPU::candidate_graph_GPU()'],['../de/dd0/classcandidate__graph__GPU.html',1,'candidate_graph_GPU']]],
+  ['candlen_5ft_12',['CandLen_t',['../da/d33/params_8h.html#a6010776aa69d4e4c0003ab31addcbaae',1,'params.h']]],
+  ['check_5fcmd_5foption_5fexists_13',['check_cmd_option_exists',['../de/d16/classInputParser.html#a7bdef4f7e48f8c842c3f3813f407af63',1,'InputParser']]],
+  ['check_5fgpu_5fmemory_14',['check_gpu_memory',['../d4/da1/helper_8h.html#a101c9f7bca97ff2fbf716e9ebe36e118',1,'helper.h']]],
+  ['check_5fgpu_5fprops_15',['check_gpu_props',['../d4/da1/helper_8h.html#adcc2000693d0d4cba19232c0d8429f6a',1,'helper.h']]],
+  ['cnt_5fprefix_5fsum_16',['cnt_prefix_sum',['../d5/d6b/classMemManager.html#a1d8d06a888a15e3efc25e8ac3e78f4b9',1,'MemManager']]],
+  ['const_5fedge_5foffset_17',['const_edge_offset',['../d2/dff/candidate_8cu.html#acd79e1aae25b68a2e50e5466d9447a02',1,'const_edge_offset:&#160;candidate.cu'],['../d2/d59/candidate_8h.html#acd79e1aae25b68a2e50e5466d9447a02',1,'const_edge_offset:&#160;candidate.cu']]],
+  ['copy_5fpartial_5fcnt_18',['copy_partial_cnt',['../d7/d76/mem__manager_8h.html#ad4cc45b008b6e63cb9db87512e8f630f',1,'mem_manager.h']]],
+  ['cudacheck_19',['cudaCheck',['../d4/da1/helper_8h.html#a4f177677489f7adc10dd36fe7dfa8f95',1,'helper.h']]],
+  ['current_5fprops_5farray_5fid_20',['current_props_array_id',['../d5/d6b/classMemManager.html#a5de55d1e59a27285e3c57dc57b7b5c9f',1,'MemManager']]]
+];

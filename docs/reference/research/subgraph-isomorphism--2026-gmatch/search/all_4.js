@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['d_5fbknbrs_5f_0',['d_bknbrs_',['../d0/ddd/classGraph__GPU.html#ad7e60f81d8b3133ded3d3cfbb7ab6bdb',1,'Graph_GPU']]],
+  ['d_5fcand_5flen_5f32_1',['d_cand_len_32',['../de/dd0/classcandidate__graph__GPU.html#af598f1336f13603e1521a5a66b65ac49',1,'candidate_graph_GPU']]],
+  ['d_5fcand_5foffset_2',['d_cand_offset',['../de/dd0/classcandidate__graph__GPU.html#a740b726c943ed9da03f2c6eda1c4d0eb',1,'candidate_graph_GPU']]],
+  ['d_5fcand_5fset_3',['d_cand_set',['../de/dd0/classcandidate__graph__GPU.html#a34d36e2b4cb66db26b2faff2b8d012fd',1,'candidate_graph_GPU']]],
+  ['d_5fcg_5farray_4',['d_cg_array',['../de/dd0/classcandidate__graph__GPU.html#ab0d181cf4847d513587db023e2e63f36',1,'candidate_graph_GPU']]],
+  ['d_5fcg_5foffset_5',['d_cg_offset',['../de/dd0/classcandidate__graph__GPU.html#ae74ea2c7a0ecea79449b5f63457cceea',1,'candidate_graph_GPU']]],
+  ['d_5fcheck_5fexistence_6',['d_check_existence',['../de/dd0/classcandidate__graph__GPU.html#a1eafe8f70f8cfea42afcdb4c00a1671d',1,'candidate_graph_GPU']]],
+  ['d_5fget_5fcandidates_7',['d_get_candidates',['../de/dd0/classcandidate__graph__GPU.html#a4d03f7353507fbeeb25d97528bbce7e6',1,'candidate_graph_GPU']]],
+  ['d_5fget_5fcandidates_5foffset_8',['d_get_candidates_offset',['../de/dd0/classcandidate__graph__GPU.html#af680990776ee6cf9eca0c819ac79b6ed',1,'candidate_graph_GPU']]],
+  ['d_5fget_5fmapped_5fv_9',['d_get_mapped_v',['../de/dd0/classcandidate__graph__GPU.html#a7837e92582f1e7e6b4f69161347ea176',1,'candidate_graph_GPU']]],
+  ['d_5fget_5fpartial_5fcnt_10',['d_get_partial_cnt',['../d5/d6b/classMemManager.html#a380e6f73ef285ed363f399b3e33a91bd',1,'MemManager']]],
+  ['data_11',['data',['../d4/dd6/classidle__queue.html#a19647716cae6d8105a8018172b9155dd',1,'idle_queue']]],
+  ['data_5fvertex_5fcnt_12',['data_vertex_cnt',['../d4/d27/classcandidate__graph.html#a8d72bebbfebf127c51adc6b13d88d962',1,'candidate_graph::data_vertex_cnt'],['../de/dd0/classcandidate__graph__GPU.html#a752896c4b09df62f787401a8b8373e84',1,'candidate_graph_GPU::data_vertex_cnt']]],
+  ['deallocate_13',['deallocate',['../de/dd0/classcandidate__graph__GPU.html#aabdadbcd014bb429340fff731430e71e',1,'candidate_graph_GPU::deallocate()'],['../d0/ddd/classGraph__GPU.html#a7c75b7845e519fabd3698a106da58e70',1,'Graph_GPU::deallocate()'],['../d4/dd6/classidle__queue.html#aec983a0edeb7e3e0a53997591ac1c667',1,'idle_queue::deallocate()'],['../d5/d6b/classMemManager.html#ad6d799cc7942915a59e296f71c1b2ee9',1,'MemManager::deallocate()'],['../d6/d07/classMemPool.html#afaa70de7e9081d25e892a97e8e99daf3',1,'MemPool::deallocate()']]],
+  ['deg_5f_14',['deg_',['../d2/d62/classGraph.html#a2efe71c89474d3ab74821ddc08db94c8',1,'Graph']]],
+  ['degree_15',['degree',['../d2/d62/classGraph.html#af354053173740042f543e065eec53b61',1,'Graph']]],
+  ['dequeue_16',['dequeue',['../d4/dd6/classidle__queue.html#a12b95b984b438b1cd14a90db41aa965e',1,'idle_queue']]],
+  ['dfs_5fkernel_17',['dfs_kernel',['../d1/d7c/join__bfs__dfs_8cu.html#a0931ac99c2cc6fa00fbbfb6bd9578a83',1,'join_bfs_dfs.cu']]],
+  ['dfs_5fkernel_5fsym_18',['dfs_kernel_sym',['../d1/d7c/join__bfs__dfs_8cu.html#af012fc51adced43a8c64ea1f78b8b97b',1,'join_bfs_dfs.cu']]],
+  ['dfs_5fstk_2eh_19',['dfs_stk.h',['../d3/d7c/dfs__stk_8h.html',1,'']]],
+  ['documented_20source_20scope_20',['Documented source scope',['../index.html#autotoc_md2',1,'']]],
+  ['dump_21',['dump',['../d5/d6b/classMemManager.html#a2318efc004bc2226ae5778106f63b894',1,'MemManager']]]
+];

@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['d_5fincident_0',['d_incident',['../d8/d55/structcuda__clique__data.html#a16e98646b8bb39817548e8ae9ee6b7e5',1,'cuda_clique_data']]],
+  ['d_5finstances_1',['d_instances',['../d8/d55/structcuda__clique__data.html#ad888a4e37d8aaa85647ed1e19a31bf77',1,'cuda_clique_data']]],
+  ['d_5fmap_2',['d_map',['../d8/d55/structcuda__clique__data.html#a44f9b1b0f779aff269b11f367b164149',1,'cuda_clique_data']]],
+  ['d_5fmat_3',['d_mat',['../d8/d55/structcuda__clique__data.html#a5233ad2c6a0acd758a0b73453c8aa5e7',1,'cuda_clique_data']]],
+  ['d_5fnew_5fmap_4',['d_new_map',['../d8/d55/structcuda__clique__data.html#a7571b108f48a8e9afa99e9d9c8464e30',1,'cuda_clique_data']]],
+  ['d_5fnew_5frevmap_5',['d_new_revmap',['../d8/d55/structcuda__clique__data.html#ad439ba44997265394e33f1f896e2cd5e',1,'cuda_clique_data']]],
+  ['d_5fone_5frevmap_6',['d_one_revmap',['../d8/d55/structcuda__clique__data.html#a631a0b56c667d18361965dea26c0990c',1,'cuda_clique_data']]],
+  ['d_5fones_7',['d_ones',['../d8/d55/structcuda__clique__data.html#abc54812b4aadf3889c06e02ae99eb374',1,'cuda_clique_data']]],
+  ['d_5frandstates_8',['d_randstates',['../d2/d82/motzkin__cuda_8cu.html#a7aba0c23aa77d1f94d00d9fcaf72cd06',1,'motzkin_cuda.cu']]],
+  ['d_5fraw_9',['d_raw',['../d8/d55/structcuda__clique__data.html#ae93f2ee677397c1b99fdcf3e8b1a16ee',1,'cuda_clique_data']]],
+  ['d_5fstart_5fmat_10',['d_start_mat',['../d8/d55/structcuda__clique__data.html#aaa8029bcf40c796e6bc9c22a638f4ea9',1,'cuda_clique_data']]],
+  ['d_5ftmp_11',['d_tmp',['../d8/d55/structcuda__clique__data.html#a821c251739e9de8143ec3c0d5d8b114b',1,'cuda_clique_data']]],
+  ['d_5fx_12',['d_x',['../d6/ded/structcuda__clique__instance.html#a7d017f07be43aaffee6e3a74a76470b9',1,'cuda_clique_instance']]],
+  ['d_5fx_5fstatus_13',['d_x_status',['../d6/ded/structcuda__clique__instance.html#ad2e4c0a654ce3c4778fa573b05e2e65c',1,'cuda_clique_instance']]],
+  ['dev_5fread_5fwait_5flock_14',['dev_read_wait_lock',['../d2/d82/motzkin__cuda_8cu.html#af68f4dc174c432bc255a78a9662cbf17',1,'motzkin_cuda.cu']]],
+  ['dev_5freadcount_15',['dev_readcount',['../d2/d82/motzkin__cuda_8cu.html#a6e883a1ea7e42305191788ad0929318f',1,'motzkin_cuda.cu']]],
+  ['doc_16',['doc',['../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5',1,'find_cliques.c']]]
+];

@@ -22,12 +22,14 @@ enum class KCoreOptionalOutput : std::uint32_t {
   peeling_order = 1U << 2U,
 };
 
+/// Combines two optional-output flags.
 constexpr KCoreOptionalOutput operator|(KCoreOptionalOutput lhs,
                                         KCoreOptionalOutput rhs) {
   return static_cast<KCoreOptionalOutput>(static_cast<std::uint32_t>(lhs) |
                                           static_cast<std::uint32_t>(rhs));
 }
 
+/// Tests whether an optional-output flag is present.
 constexpr bool has_output(KCoreOptionalOutput outputs,
                           KCoreOptionalOutput output) {
   return (static_cast<std::uint32_t>(outputs) &
@@ -55,20 +57,27 @@ struct KCoreOutput {
   std::optional<std::vector<ExternalId>> peeling_order;
 };
 
+/// Computes vertex core numbers and graph degeneracy with KCoreGPU.
 class KCore {
  public:
+  /// Stores backend, requested-core, output, and execution options.
   explicit KCore(KCoreOptions options = {});
 
+  /// Checks requested k, graph shape, and backend support without execution.
   [[nodiscard]] SupportReport supports(const Graph& graph) const;
+  /// Computes the core decomposition and requested optional structures.
   [[nodiscard]] ExecutionResult<KCoreOutput> run(const Graph& graph) const;
+  /// Returns the immutable options captured at construction.
   [[nodiscard]] const KCoreOptions& options() const noexcept { return options_; }
 
+  /// Lists registered k-core backends and their availability.
   [[nodiscard]] static std::vector<BackendInfo> backends();
 
  private:
   KCoreOptions options_;
 };
 
+/// Returns the stable manifest/CLI identifier for a backend value.
 [[nodiscard]] const char* to_string(KCoreBackend backend) noexcept;
 
 }  // namespace graphmine

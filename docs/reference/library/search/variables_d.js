@@ -1,0 +1,17 @@
+var searchData=
+[
+  ['parallel_5fedges_5fcollapsed_0',['parallel_edges_collapsed',['../dd/dd7/structgraphmine_1_1NormalizationSummary.html#ab9c280d08d1115bf8364a8629e8dc824',1,'graphmine::NormalizationSummary']]],
+  ['participation_1',['participation',['../db/d44/structgraphmine_1_1anonymous__namespace_02graph__motifs_8cpp_03_1_1MaterializedMotif.html#a23605af3f1004f1f2ae1b54d07e86070',1,'graphmine::anonymous_namespace{graph_motifs.cpp}::MaterializedMotif']]],
+  ['partition_2',['partition',['../d0/d96/structgraphmine_1_1anonymous__namespace_02maximal__bicliques_8cpp_03_1_1CollectionState.html#add992c7ae631b05b404ae63b97ba452d',1,'graphmine::anonymous_namespace{maximal_bicliques.cpp}::CollectionState']]],
+  ['pattern_3',['pattern',['../dd/d7d/structgraphmine_1_1TemporalMotifOptions.html#a3ee865e77a2e3391c8bde4ae4e678d64',1,'graphmine::TemporalMotifOptions']]],
+  ['peak_5fgpu_5fbytes_4',['peak_gpu_bytes',['../d3/d65/structgraphmine_1_1ExecutionStatistics.html#a6ee221679933e167c0639d49b6ed6762',1,'graphmine::ExecutionStatistics']]],
+  ['peeling_5forder_5',['peeling_order',['../df/d3e/structgraphmine_1_1KCoreOutput.html#ad77cd302391fff8120ee0d82a9d62c04',1,'graphmine::KCoreOutput']]],
+  ['per_5fedge_5fcount_6',['per_edge_count',['../da/d11/structgraphmine_1_1TriangleOutput.html#ae21c9429cb256a34ea0e2906259b04d9',1,'graphmine::TriangleOutput']]],
+  ['per_5fvertex_7',['per_vertex',['../dc/d7b/structgraphmine_1_1anonymous__namespace_02k__cliques_8cpp_03_1_1KCliqueMaterialization.html#a21ca4e6090cfb4f951ec33ba4a5ecaad',1,'graphmine::anonymous_namespace{k_cliques.cpp}::KCliqueMaterialization']]],
+  ['per_5fvertex_5fcount_8',['per_vertex_count',['../d5/d51/structgraphmine_1_1KCliqueOutput.html#a4228ab0ab70b038463297a80384ad04c',1,'graphmine::KCliqueOutput::per_vertex_count'],['../da/d11/structgraphmine_1_1TriangleOutput.html#a50f3134d3affddb27de1652cd3ee0d96',1,'graphmine::TriangleOutput::per_vertex_count']]],
+  ['per_5fvertex_5fparticipation_9',['per_vertex_participation',['../dc/d25/structgraphmine_1_1GraphMotifResult.html#a1407e7ef4d5beffc6b82cdd781315380',1,'graphmine::GraphMotifResult']]],
+  ['pggc_5fmutex_10',['pggc_mutex',['../d8/d72/namespacegraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03.html#a0d92b845e9eb14fcddc45885e35b2f1f',1,'graphmine::detail::anonymous_namespace{pggc.cpp}']]],
+  ['pretty_11',['pretty',['../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html#acb6b681af7057b3e2fed485aa178727b',1,'anonymous_namespace{graphmine.cpp}::CommonOptions']]],
+  ['problem_12',['problem',['../da/d08/structgraphmine_1_1BackendInfo.html#a8ff3fed00a564461a2b973db664fffde',1,'graphmine::BackendInfo::problem'],['../d2/dba/structgraphmine_1_1Provenance.html#af7063a5b1b2ceccf99ec7077c3540e37',1,'graphmine::Provenance::problem']]],
+  ['provenance_5f_13',['provenance_',['../d6/dca/classgraphmine_1_1ExecutionResult.html#a6cb88b6693d87b3bee0f6fe1d647ba7a',1,'graphmine::ExecutionResult']]]
+];

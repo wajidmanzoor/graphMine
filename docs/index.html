@@ -60,6 +60,7 @@
           <a href="#operations">Algorithms</a>
           <a href="#graph-format">Graph format</a>
           <a href="#cpp-api">C++ API</a>
+          <a href="#code-reference">Source docs</a>
           <a
             class="nav-github"
             href="https://github.com/wajidmanzoor/graphMine"
@@ -494,6 +495,61 @@ graphmine::MaximalCliques algorithm(options);
         </div>
       </section>
 
+      <section id="code-reference" class="content-section code-reference-section">
+        <div class="section-shell">
+          <div class="section-heading">
+            <p class="section-kicker">Low-level code reference</p>
+            <h2>Go from public method to CUDA kernel.</h2>
+            <p>
+              The high-level guide stays here. The generated source reference
+              adds every GraphMine class and function, backend adapters, and an
+              isolated function-by-function view of each validated research
+              artifact.
+            </p>
+          </div>
+
+          <div class="code-reference-grid">
+            <article class="code-reference-card">
+              <div class="code-reference-meta">
+                <span>GraphMine-owned</span>
+                <strong>C++ · CUDA</strong>
+              </div>
+              <h3>Library and adapters</h3>
+              <p>
+                Inspect canonical graph conversion, typed problem facades,
+                <code>supports()</code>, <code>run()</code>, result types,
+                backend dispatch, CLI serialization, and CUDA adapters.
+              </p>
+              <ul>
+                <li>Authored public-method descriptions</li>
+                <li>Function, class, namespace, and file indexes</li>
+                <li>Call references and line-numbered source</li>
+              </ul>
+              <a href="reference/library/">Open library code reference <span aria-hidden="true">→</span></a>
+            </article>
+
+            <article class="code-reference-card code-reference-card-research">
+              <div class="code-reference-meta">
+                <span>24 source artifacts</span>
+                <strong>C · C++ · CUDA</strong>
+              </div>
+              <h3>Research implementations</h3>
+              <p>
+                Choose a problem and paper, then search its original host
+                functions, device functions, kernels, structures, files, and
+                preserved upstream comments without symbol collisions.
+              </p>
+              <ul>
+                <li>One isolated reference per validated artifact</li>
+                <li>Paper, commit, source, and license provenance</li>
+                <li>Exact annotated implementation source</li>
+              </ul>
+              <a href="reference/research/">Browse research code <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section class="content-section final-cta section-shell reveal">
         <div>
           <p class="section-kicker">Ready to mine</p>
@@ -535,6 +591,7 @@ graphmine::MaximalCliques algorithm(options);
         <div class="footer-links">
           <a href="#operations">Algorithms</a>
           <a href="#graph-format">Input format</a>
+          <a href="reference/">Code reference</a>
           <a href="https://github.com/wajidmanzoor/graphMine">Repository</a>
         </div>
         <small>© <span id="current-year"></span> GraphMine research project.</small>

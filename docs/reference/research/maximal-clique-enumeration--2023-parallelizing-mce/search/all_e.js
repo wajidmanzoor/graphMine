@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['p_0',['p',['../d0/d3c/classgraph_1_1MultiGPU__MCE.html#affbe61c3ae7941e8a1efe056799aafc4',1,'graph::MultiGPU_MCE::P'],['../d4/dd9/structGLOBAL__HANDLE.html#a54e7a678b810e8739b725738d421dbd8',1,'GLOBAL_HANDLE::P']]],
+  ['paper_20and_20source_20provenance_1',['Paper and source provenance',['../index.html#autotoc_md3',1,'']]],
+  ['parallelizing_20maximal_20clique_20enumeration_20on_20gpus_2',['Parallelizing Maximal Clique Enumeration on GPUs',['../index.html',1,'']]],
+  ['parameter_2ecuh_3',['parameter.cuh',['../d2/d30/parameter_8cuh.html',1,'']]],
+  ['parlevel_4',['PARLEVEL',['../d5/d64/defs_8h.html#a7c05505e7deada219fcc8b6981ff8eda',1,'defs.h']]],
+  ['parlevel_5funknown_5',['PARLEVEL_UNKNOWN',['../d5/d64/defs_8h.html#a7c05505e7deada219fcc8b6981ff8edaa817c60f33a2370cf2abf7b7d18e7f88d',1,'defs.h']]],
+  ['parseargs_6',['parseArgs',['../db/d16/config_8h.html#a7538d38aa2f625ea303a1b74e2a70968',1,'config.h']]],
+  ['parsedevice_7',['parseDevice',['../db/d16/config_8h.html#a07d378b917b079f90de2db17c9b81d6f',1,'config.h']]],
+  ['parseinduced_8',['parseInduced',['../db/d16/config_8h.html#ad74c986ab80a59cfcd1a00e104a169bd',1,'config.h']]],
+  ['parselevel_9',['parseLevel',['../db/d16/config_8h.html#adb6c503422b27329486bc111ac86484b',1,'config.h']]],
+  ['parsemaintask_10',['parseMainTask',['../db/d16/config_8h.html#acccce3f025b42603395acb1e23f5cdd0',1,'config.h']]],
+  ['parseworkerlist_11',['parseWorkerList',['../db/d16/config_8h.html#a3e71981a368111bbd4eb339a9195483e',1,'config.h']]],
+  ['partmask_12',['partMask',['../d7/d19/structLOCAL__HANDLE.html#a06825464afa49ecebcea616f1f56383f',1,'LOCAL_HANDLE']]],
+  ['partsize_13',['PARTSIZE',['../d2/d30/parameter_8cuh.html#a2c483883831ea2d118faf9592ed2e9ce',1,'parameter.cuh']]],
+  ['path_5feliminated_14',['path_eliminated',['../d0/ddb/structSHARED__HANDLE.html#ace893e74390f275a53f483bcc36752ed',1,'SHARED_HANDLE']]],
+  ['path_5fmore_5fexplore_15',['path_more_explore',['../d0/ddb/structSHARED__HANDLE.html#ae89e15883d31994741744735ac7dad7a',1,'SHARED_HANDLE']]],
+  ['peeltype_16',['PeelType',['../d5/d64/defs_8h.html#abdf0c15b2d2ce564f390bde37b754741',1,'defs.h']]],
+  ['percentage_5fdeleted_5fk_17',['percentage_deleted_k',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a2db81eb567f03f2a0570e8ba399c8326',1,'graph::SingleGPU_Kcore']]],
+  ['pivot_18',['PIVOT',['../d1/d0e/mce__kernel__wl__bd_8cuh.html#ae276e3a0c3150274b6f17e763d79f1f0a1ff723d473adaabbb55f722e3be93f89',1,'mce_kernel_wl_bd.cuh']]],
+  ['pl_19',['pl',['../d0/ddb/structSHARED__HANDLE.html#a900d143066c2ceb4f406cfe75f6f89d3',1,'SHARED_HANDLE']]],
+  ['populate_5fxl_5fand_5fcl_20',['populate_xl_and_cl',['../d9/d6a/mce__utils_8cuh.html#a0009804b4b6765b3516c4386eb6e0f10',1,'mce_utils.cuh']]],
+  ['prepare_5ffork_21',['prepare_fork',['../d9/d6a/mce__utils_8cuh.html#a228afa4966cedbf643d81496e7449d82',1,'mce_utils.cuh']]],
+  ['printconfig_22',['printConfig',['../db/d16/config_8h.html#ac59da8a0518c3c173ad9ed9cdfa360f2',1,'config.h']]],
+  ['process_5fdegree_23',['process_degree',['../d9/d00/kcore_8cuh.html#acb0e919fad20876f783e312e8af57585',1,'kcore.cuh']]],
+  ['provenance_24',['Paper and source provenance',['../index.html#autotoc_md3',1,'']]]
+];

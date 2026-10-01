@@ -34,6 +34,7 @@ struct Provenance {
 template <typename T>
 class ExecutionResult {
  public:
+  /// Constructs a successful result containing output and execution metadata.
   static ExecutionResult success(T output, Provenance provenance = {},
                                  ExecutionStatistics statistics = {},
                                  std::vector<std::string> warnings = {}) {
@@ -45,6 +46,7 @@ class ExecutionResult {
     return result;
   }
 
+  /// Constructs a failed result with no output value.
   static ExecutionResult failure(Status status,
                                  Provenance provenance = {},
                                  std::vector<std::string> warnings = {}) {
@@ -55,12 +57,15 @@ class ExecutionResult {
     return result;
   }
 
+  /// Returns true when execution succeeded and an output value is present.
   [[nodiscard]] bool ok() const noexcept {
     return status_.ok() && output_.has_value();
   }
 
+  /// Returns the success or failure status.
   [[nodiscard]] const Status& status() const noexcept { return status_; }
 
+  /// Returns the immutable output or throws std::logic_error on failure.
   [[nodiscard]] const T& value() const {
     if (!ok()) {
       throw std::logic_error("ExecutionResult has no value: " +
@@ -69,6 +74,7 @@ class ExecutionResult {
     return *output_;
   }
 
+  /// Returns the mutable output or throws std::logic_error on failure.
   [[nodiscard]] T& value() {
     if (!ok()) {
       throw std::logic_error("ExecutionResult has no value: " +
@@ -77,14 +83,17 @@ class ExecutionResult {
     return *output_;
   }
 
+  /// Returns the selected backend and preserved source provenance.
   [[nodiscard]] const Provenance& provenance() const noexcept {
     return provenance_;
   }
 
+  /// Returns timing and optional GPU-memory statistics.
   [[nodiscard]] const ExecutionStatistics& statistics() const noexcept {
     return statistics_;
   }
 
+  /// Returns nonfatal normalization and execution warnings.
   [[nodiscard]] const std::vector<std::string>& warnings() const noexcept {
     return warnings_;
   }

@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['p_0',['p',['../d8/d49/structNode.html#acdee68e3e62311a0827cb4a0d9fbbae8',1,'Node']]],
+  ['paper_20and_20source_20provenance_1',['Paper and source provenance',['../index.html#autotoc_md3',1,'']]],
+  ['parallel_20k_20clique_20counting_20on_20gpus_2',['Parallel K-Clique Counting on GPUs',['../index.html',1,'']]],
+  ['parseallocation_3',['parseAllocation',['../d5/de3/Config_8h.html#ad5c832b35dc265fdb963bf1928bd1e91',1,'Config.h']]],
+  ['parseargs_4',['parseArgs',['../d5/de3/Config_8h.html#a7538d38aa2f625ea303a1b74e2a70968',1,'Config.h']]],
+  ['parseelement_5',['parseElement',['../d5/de3/Config_8h.html#add003fd78c8835a740bd21bcd49e20ab',1,'Config.h']]],
+  ['parsekcconfig_6',['parseKcConfig',['../d5/de3/Config_8h.html#a427ae9dea0238c4e55b12f5f56240ed1',1,'Config.h']]],
+  ['parsemaintask_7',['parseMainTask',['../d5/de3/Config_8h.html#a409d2bc68b4cfb9b1a14e71929eb17d4',1,'Config.h']]],
+  ['parseorient_8',['parseOrient',['../d5/de3/Config_8h.html#a285631f66187e9d0f980a75dfe9717f1',1,'Config.h']]],
+  ['parseprocessby_9',['parseProcessBy',['../d5/de3/Config_8h.html#aa61ab1554a5b015a09dbe3d2e8acd703',1,'Config.h']]],
+  ['partsize_10',['partsize',['../d2/d41/structKcliqueConfig.html#af0816793b5ca7057298d6462e8e2341b',1,'KcliqueConfig::PartSize'],['../da/d51/common_8cuh.html#a2c483883831ea2d118faf9592ed2e9ce',1,'PARTSIZE:&#160;common.cuh']]],
+  ['patgraph_11',['patGraph',['../df/d87/structConfig.html#a88cb940a7b51bba945d7ce0883a7ee5d',1,'Config']]],
+  ['path_5f_12',['path_',['../d1/d50/classgraph_1_1EdgeListFile.html#af1629251c72f156f063445c4032f4804',1,'graph::EdgeListFile']]],
+  ['pattern_13',['pattern',['../d7/d23/structgraph_1_1MatrixFileProp.html#a0fab9fc8e5e685bbe38af7bbd288d71d',1,'graph::MatrixFileProp']]],
+  ['peeltype_14',['PeelType',['../d8/d4b/defs_8cuh.html#a19df177ad509dde9e127ef8a5126bbec',1,'defs.cuh']]],
+  ['percentage_5fdeleted_5fk_15',['percentage_deleted_k',['../d8/d88/classgraph_1_1SingleGPU__Kclique__NoOutQueue.html#ad18d52a5f7c7b195451ac007bac617d6',1,'graph::SingleGPU_Kclique_NoOutQueue::percentage_deleted_k'],['../d9/dfb/classgraph_1_1SingleGPU__Kclique.html#a46ff9d0fc4c32dbe9f9dfa6e54c74d0c',1,'graph::SingleGPU_Kclique::percentage_deleted_k']]],
+  ['pivoting_16',['Pivoting',['../d8/d4b/defs_8cuh.html#ac291537992bfe5ecb481e6d9ce72be9fabcc9266dd518908451caf7a5fb6597ba',1,'defs.cuh']]],
+  ['print_5ferror_17',['PRINT_ERROR',['../de/de6/utils_8cuh.html#aa0004d1735f5c5a47cd385525c5bdbc0',1,'utils.cuh']]],
+  ['printconfig_18',['printConfig',['../d5/de3/Config_8h.html#ac59da8a0518c3c173ad9ed9cdfa360f2',1,'Config.h']]],
+  ['printmtarixstruct_19',['PrintMtarixStruct',['../de/de6/utils_8cuh.html#a9588b640397a0c11597f422e33d586b2',1,'utils.cuh']]],
+  ['printstats_20',['printStats',['../df/d87/structConfig.html#a85276a620d9f6ecca2d20a18887a8a25',1,'Config']]],
+  ['processby_21',['processby',['../df/d87/structConfig.html#a90cd0d0bcf3f627fd77ee6a7a441e8fb',1,'Config::processBy'],['../d8/d4b/defs_8cuh.html#a86e45ce20462da92bc1b504ea0e7c858',1,'ProcessBy:&#160;defs.cuh']]],
+  ['processelement_22',['processElement',['../df/d87/structConfig.html#ab27f9008c52c2c20e65e5ac0ee5e93ab',1,'Config']]],
+  ['processingelementenum_23',['ProcessingElementEnum',['../d8/d4b/defs_8cuh.html#acabdfc70eebb5a25a045bd2444b93e63',1,'defs.cuh']]],
+  ['provenance_24',['Paper and source provenance',['../index.html#autotoc_md3',1,'']]]
+];

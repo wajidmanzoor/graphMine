@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['value_5ft_0',['value_t',['../df/d96/core__types_8h.html#aa4cf34254b88255b609553fc5cfece8e',1,'core_types.h']]],
+  ['value_5ftype_1',['value_type',['../da/d21/structjet__community_1_1ordering_1_1SumMyArray.html#a9cd365038867b525aacd9dd8fd0886b7',1,'jet_community::ordering::SumMyArray::value_type'],['../de/df4/structjet__community_1_1ordering_1_1ScanMyArray.html#a75cd220d7231e1a189885c54a5dc56bb',1,'jet_community::ordering::ScanMyArray::value_type']]],
+  ['vtx_5fpin_5fst_2',['vtx_pin_st',['../db/d82/structmemory__store.html#a0dc006915627e9f32d8e60979f527ce1',1,'memory_store::vtx_pin_st'],['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#ab0b87dc91c8bbbada5f62f4d71794f25',1,'jet_community::local_move_heuristic::vtx_pin_st']]],
+  ['vtx_5fview_5ft_3',['vtx_view_t',['../d8/d74/namespacejet__community_1_1contracter.html#aa78002401324a9b41fa0c4cbffdb4ab2',1,'jet_community::contracter']]],
+  ['vtx_5fvt_4',['vtx_vt',['../db/d82/structmemory__store.html#a03ec992eef5966aeffdec285001d9902',1,'memory_store::vtx_vt'],['../d0/d24/namespacejet__community_1_1clustering__methods.html#ae02df3916fccbde6e550da03d3018740',1,'jet_community::clustering_methods::vtx_vt'],['../d1/de4/namespacejet__community_1_1leidenR.html#a1483c981178436f057a0f4876e62a91f',1,'jet_community::leidenR::vtx_vt'],['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#a334d4fd533422d4ccb16de9363817495',1,'jet_community::local_move_heuristic::vtx_vt'],['../de/d00/namespacejet__community_1_1ordering.html#a1c72ebf396a62ec47ba0f909e494a90a',1,'jet_community::ordering::vtx_vt']]]
+];

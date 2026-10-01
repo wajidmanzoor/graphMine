@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['read_5fadj_5ffile_0',['read_adj_file',['../d5/d71/classPattern.html#a51c196166e2267d5510d855468055def',1,'Pattern']]],
+  ['read_5fcycle_1',['read_cycle',['../d5/dd0/timer_8h.html#ab4989e536134c089027130b5ad6c6ddc',1,'timer.h']]],
+  ['read_5fdimacs_2',['read_dimacs',['../d6/da3/classbliss_1_1Graph.html#a5de422b79e8dc6e7072f948dc927fe9c',1,'bliss::Graph']]],
+  ['read_5ffile_3',['read_file',['../d3/d4d/custom__alloc_8h.html#af60cf2ec5826461662a4891953177aeb',1,'custom_alloc.h']]],
+  ['reduce_4',['reduce',['../d6/d4e/classAccumulator.html#ad11adace0e0b4f79f5f298170966623e',1,'Accumulator']]],
+  ['refine_5faccording_5fto_5finvariant_5',['refine_according_to_invariant',['../d6/da3/classbliss_1_1Graph.html#a1a51f708691b90d7b2033041a73ac7f7',1,'bliss::Graph']]],
+  ['refine_5fto_5fequitable_6',['refine_to_equitable',['../df/d8c/classbliss_1_1AbstractGraph.html#a05ca119e929c8d3fe4c737d6bbb20384',1,'bliss::AbstractGraph::refine_to_equitable()'],['../df/d8c/classbliss_1_1AbstractGraph.html#acc0912238d4f6cda617620a325667a94',1,'bliss::AbstractGraph::refine_to_equitable(Partition::Cell *const unit_cell)'],['../df/d8c/classbliss_1_1AbstractGraph.html#abb11241c0be8c2c5cb9af0fbdc3ba4af',1,'bliss::AbstractGraph::refine_to_equitable(Partition::Cell *const unit_cell1, Partition::Cell *const unit_cell2)']]],
+  ['reg_5fallocation_5funit_7',['reg_allocation_unit',['../d2/dd9/namespace____cuda__launch__config__detail.html#a9b5fa1983c28636139b6214404e4c476',1,'__cuda_launch_config_detail']]],
+  ['release_5fbuffers_8',['release_buffers',['../d3/d90/classVertexSet.html#a43c13b3d98dc1b503e358d7bd23daf3b',1,'VertexSet']]],
+  ['remove_9',['remove',['../d6/d32/classbliss_1_1Heap.html#ae087cbeaf6235bd95e328b2701b2cc60',1,'bliss::Heap']]],
+  ['remove_5fduplicate_5fedges_10',['remove_duplicate_edges',['../d6/da3/classbliss_1_1Graph.html#a18899d6e8a295d660f70910c25333192',1,'bliss::Graph::remove_duplicate_edges()'],['../d9/d6e/classbliss_1_1Graph_1_1Vertex.html#a017bbb7379a776d415bbd1b7e8d48486',1,'bliss::Graph::Vertex::remove_duplicate_edges()'],['../df/d8c/classbliss_1_1AbstractGraph.html#af8264203df716bd35e4b20e668498a05',1,'bliss::AbstractGraph::remove_duplicate_edges()']]],
+  ['remove_5fedge_11',['remove_edge',['../d5/d71/classPattern.html#a03038e271cf567c710cf81bccb93def1',1,'Pattern']]],
+  ['remove_5ftail_12',['remove_tail',['../d8/d38/classEmbeddingList.html#a2ba747730d2efa211074230593730d32',1,'EmbeddingList::remove_tail(unsigned idx)'],['../d8/d38/classEmbeddingList.html#a2ba747730d2efa211074230593730d32',1,'EmbeddingList::remove_tail(unsigned idx)']]],
+  ['report_5faut_13',['report_aut',['../de/d0a/classCanonicalGraph.html#a7815d7846ebc7ebbb227ceb9dc0f5887',1,'CanonicalGraph']]],
+  ['reset_14',['reset',['../dd/d26/classbliss_1_1Stats.html#a2a2d5d8b2dc5981d24f2c8fb9fdb1434',1,'bliss::Stats::reset()'],['../db/d9c/classbliss_1_1UintSeqHash.html#ab3cddd0db08d72fd45a6eb76e1a56ec5',1,'bliss::UintSeqHash::reset()'],['../d8/d80/classBitsets.html#abfcd43a133426ce80ca9f6b5a02068ee',1,'Bitsets::reset()'],['../db/db4/classbliss_1_1Orbit.html#a0735e04ebd76a62ac556b3ad6437888b',1,'bliss::Orbit::reset()'],['../d9/d1f/classMultiBitsets.html#a6f75cb01d0bf6a787c538bfe439b325d',1,'MultiBitsets::reset()']]],
+  ['reset_5flevel_15',['reset_level',['../d8/d38/classEmbeddingList.html#a030530fb32f183b1adc244bdd717f1f2',1,'EmbeddingList::reset_level()'],['../d8/d38/classEmbeddingList.html#a030530fb32f183b1adc244bdd717f1f2',1,'EmbeddingList::reset_level()']]],
+  ['reset_5fpermutation_16',['reset_permutation',['../df/d8c/classbliss_1_1AbstractGraph.html#a3b7c9d8b427be90b85e4be974936b98a',1,'bliss::AbstractGraph']]],
+  ['resize_17',['resize',['../d2/dc3/classDomainSupport.html#aac5cbedc16c6b6015339f9a360309ad5',1,'DomainSupport::resize()'],['../d1/dfd/classEmbedding.html#aeadab56374ea380620719ac65d6f4d86',1,'Embedding::resize()'],['../d6/d4e/classAccumulator.html#ac2089ec648f2b5288993a12045716a7e',1,'Accumulator::resize()']]],
+  ['resize_5flast_5flevel_18',['resize_last_level',['../d8/d38/classEmbeddingList.html#ad448ece5787ab302e6dfcc75056ebfe9',1,'EmbeddingList']]],
+  ['resize_5flevel_19',['resize_level',['../d8/d38/classEmbeddingList.html#ae73a3917b93d5ad0b7ea77978a1ab93d',1,'EmbeddingList']]],
+  ['resume_5fccodes_20',['resume_ccodes',['../db/dc2/cmap__formula_8h.html#aa04b86981a57e53e48a2b7240f0cabfd',1,'resume_ccodes(unsigned level, Graph &amp;g, const vidType u, std::vector&lt; uint8_t &gt; &amp;ccodes):&#160;cmap_formula.h'],['../db/dc2/cmap__formula_8h.html#a3e312010cdffcb155e7592deb8e2ad14',1,'resume_ccodes(unsigned level, Graph &amp;g, const vidType u, std::vector&lt; uint8_t &gt; &amp;ccodes, const vidType up):&#160;cmap_formula.h']]],
+  ['round_5fi_21',['round_i',['../de/d0f/namespace____cuda__launch__config__detail_1_1util.html#a318ca8cb7860f69820064503ff2c3166',1,'__cuda_launch_config_detail::util']]],
+  ['round_5frobin_22',['round_robin',['../d6/df8/classScheduler.html#a2e959246786749f28ca13cbfa1dbd23e',1,'Scheduler']]],
+  ['round_5fz_23',['round_z',['../de/d0f/namespace____cuda__launch__config__detail_1_1util.html#a0dd5ca5631fa74cf6967cfb6042c358a',1,'__cuda_launch_config_detail::util']]]
+];

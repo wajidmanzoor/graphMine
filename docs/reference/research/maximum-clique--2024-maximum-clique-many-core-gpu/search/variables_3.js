@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['c_0',['c',['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a3c564898c0eb632ebe09b6155989066c',1,'mcp::GLOBAL_HANDLE::C'],['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#aa48c44cecad0882711c613cb0d2f171e',1,'mcp::SHARED_HANDLE::c'],['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a8b7e604540bd4abce30fc5c63788a67c',1,'graph::MultiGPU_MCP::C']]],
+  ['capacity_1',['capacity',['../da/da5/structgraph_1_1COOCSRGraph.html#a5da11bf9983af4cc21fcbfbd3e1cb923',1,'graph::COOCSRGraph::capacity'],['../d8/df4/structgraph_1_1COOCSRGraph__d.html#af19d3950df5b3efdb7ec61dbe8e026cb',1,'graph::COOCSRGraph_d::capacity'],['../d8/d1f/classgraph_1_1GraphQueue.html#acbb9f1fd2a95b73da36430742c8f38a7',1,'graph::GraphQueue::capacity']]],
+  ['cb_2',['CB',['../d2/d30/parameter_8cuh.html#ae450bc39d446a621bfbb7809fe8fc01b',1,'parameter.cuh']]],
+  ['cbpsm_3',['CBPSM',['../d2/d30/parameter_8cuh.html#a8b2d6adaededc8e4f58187092fb8bc88',1,'parameter.cuh']]],
+  ['cmax_4',['cmax',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#ae3f96767dae8200bc7201a72ad021480',1,'graph::MultiGPU_MCP::Cmax'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a550b13da188e8e099d3f6c07fae925de',1,'mcp::GLOBAL_HANDLE::Cmax']]],
+  ['cmax_5fsize_5',['cmax_size',['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#aa8047d7d6cd110140b3b2e2157e906c6',1,'mcp::GLOBAL_HANDLE::Cmax_size'],['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a227b67522d1bce586c91b5d34bf171c0',1,'graph::MultiGPU_MCP::Cmax_size']]],
+  ['colind_6',['colind',['../d8/df4/structgraph_1_1COOCSRGraph__d.html#a52720cb2d4310991c076b9f2ea9160d4',1,'graph::COOCSRGraph_d::colInd'],['../da/da5/structgraph_1_1COOCSRGraph.html#a36378817880e4ef98fad0e00bc5a7687',1,'graph::COOCSRGraph::colInd']]],
+  ['colind_5f_7',['colInd_',['../dc/dbb/classgraph_1_1CSRCOO.html#a9b59b9f4ea08d4af7a77417c96cfeb91',1,'graph::CSRCOO']]],
+  ['colmaskblock_8',['colMaskBlock',['../dd/dd1/structmcp_1_1LOCAL__HANDLE.html#a84dc506926902769673f20b5ee97b01d',1,'mcp::LOCAL_HANDLE']]],
+  ['colmaskindex_9',['colMaskIndex',['../dd/dd1/structmcp_1_1LOCAL__HANDLE.html#a39ab05bcf69ac010149434d93f7a3359',1,'mcp::LOCAL_HANDLE']]],
+  ['colnewindex_10',['colNewIndex',['../dd/dd1/structmcp_1_1LOCAL__HANDLE.html#a98e4fa56f1ddba0366d12da0871e0671',1,'mcp::LOCAL_HANDLE']]],
+  ['coloralg_11',['colorAlg',['../df/d87/structConfig.html#ac8b60503adc637dd7f55ea9456a26377',1,'Config']]],
+  ['colored_12',['colored',['../df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a887bc1ece323bb90c65cfd76dfeea2f7',1,'mcp::WARP_SHARED_HANDLE::colored'],['../d3/d70/classgraph_1_1MultiGPU__MCP.html#ae5ab79bbaff463a17fdadbf4f0957ddf',1,'graph::MultiGPU_MCP::colored'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a8a427bd1e40fa04d85a2ad1304133f6e',1,'mcp::GLOBAL_HANDLE::colored'],['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a8a8d887aaf2411fee3c1095fd076101b',1,'mcp::SHARED_HANDLE::colored']]],
+  ['core_13',['core',['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a8c93f3e9947dbdefede7feb8e9328bea',1,'mcp::GLOBAL_HANDLE']]],
+  ['corenumber_14',['coreNumber',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a71d1eef801bc28dbbc654b5491631411',1,'graph::SingleGPU_Kcore']]],
+  ['cores_15',['cores',['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#ad955b9bf83dbae80f14a9bde615034f1',1,'mcp::SHARED_HANDLE']]],
+  ['count_16',['count',['../d8/d1f/classgraph_1_1GraphQueue.html#ac872cde2f9afb7d7d62803d79ddb7f07',1,'graph::GraphQueue::count'],['../d9/d4c/structgraph_1_1GraphQueue__d.html#a2cd6e38e848a3922eac92b04e9173edb',1,'graph::GraphQueue_d::count']]],
+  ['cpu_5fdata_17',['cpu_data',['../d7/d49/classgraph_1_1GPUArray.html#afdc31f212627e940587e619f27c4d062',1,'graph::GPUArray']]],
+  ['current_18',['current',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a1c2212ab6ac304c0bbfa28fd53b0f20f',1,'graph::MultiGPU_MCP::current'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a9d7e68a7a2736b23d28a8144b78be5e4',1,'mcp::GLOBAL_HANDLE::current']]],
+  ['current_5fbucket_19',['current_bucket',['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#ac915454806b2f738eabc77941cdf8d5d',1,'mcp::SHARED_HANDLE']]],
+  ['current_5fbucket_5fsz_20',['current_bucket_sz',['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a4bb2cbaec8259c59b247456d87ece85a',1,'mcp::SHARED_HANDLE']]],
+  ['cut_5fby_5fcolor_21',['cut_by_color',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a3bb387c21a70c79278ac6d2df86f4295',1,'graph::MultiGPU_MCP::cut_by_color'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#abef6521f32ef21182c004d3896d65c5b',1,'mcp::GLOBAL_HANDLE::cut_by_color']]],
+  ['cut_5fby_5fcolor_5fl1_22',['cut_by_color_l1',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a3190cbf652027f095801a2da12f31e71',1,'graph::MultiGPU_MCP::cut_by_color_l1'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#ad15eecd7a4a6390b4827323c9559e0f3',1,'mcp::GLOBAL_HANDLE::cut_by_color_l1']]],
+  ['cut_5fby_5fkcore_5fl1_23',['cut_by_kcore_l1',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a98f8b181e1cc086ea4dcb944d5729c08',1,'graph::MultiGPU_MCP::cut_by_kcore_l1'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#abe918b4a19719907458b1a02dd62fee1',1,'mcp::GLOBAL_HANDLE::cut_by_kcore_l1']]],
+  ['cut_5fby_5frenumber_5fl1_24',['cut_by_renumber_l1',['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a83715c9a93f2715a029fb815e7a9c3c7',1,'mcp::GLOBAL_HANDLE']]]
+];

@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['sameblockmask_0',['sameBlockMask',['../d7/d19/structLOCAL__HANDLE.html#adfa966ccb9d8dffbe0ef29f7fa78cea2',1,'LOCAL_HANDLE']]],
+  ['scounter_1',['scounter',['../d0/ddb/structSHARED__HANDLE.html#a81a90e99d9ede99abf65bee337fecd32',1,'SHARED_HANDLE']]],
+  ['shared_5fmem_5fsize_5fper_5fblock_2',['shared_mem_size_per_block',['../d8/d41/structCUDAContext.html#af42c6ced00814c497880fa4f7ff25302',1,'CUDAContext']]],
+  ['shared_5fmem_5fsize_5fper_5fsm_3',['shared_mem_size_per_sm',['../d8/d41/structCUDAContext.html#a351bf6e3fd606c58638a192ec643028b',1,'CUDAContext']]],
+  ['shared_5fother_5fsm_5fblock_5fid_4',['shared_other_sm_block_id',['../d0/ddb/structSHARED__HANDLE.html#a79fb8c035ad1289808759e9f98beb8b8',1,'SHARED_HANDLE']]],
+  ['sm_5fblock_5fid_5',['sm_block_id',['../d0/ddb/structSHARED__HANDLE.html#af36b7f754b82223a37c829e0b6c789b3',1,'SHARED_HANDLE']]],
+  ['splitptr_6',['splitPtr',['../d8/df4/structgraph_1_1COOCSRGraph__d.html#ac793e2f37d288bfc9b0ea2c4aaf4ff19',1,'graph::COOCSRGraph_d']]],
+  ['src_7',['src',['../d0/ddb/structSHARED__HANDLE.html#a9db35f6f558eb122799af95f4db38cb1',1,'SHARED_HANDLE']]],
+  ['src2_8',['src2',['../d0/ddb/structSHARED__HANDLE.html#a322ad12d53159b10c624faef6f13a58b',1,'SHARED_HANDLE']]],
+  ['src2len_9',['src2Len',['../d0/ddb/structSHARED__HANDLE.html#a7adb1958f4c98d4b63f1e4810434b75e',1,'SHARED_HANDLE']]],
+  ['src2start_10',['src2Start',['../d0/ddb/structSHARED__HANDLE.html#a60ce574bbe4e50316fe6238691ef5825',1,'SHARED_HANDLE']]],
+  ['srcgraph_11',['srcGraph',['../df/d87/structConfig.html#a8fd840ba8dc527264f9ace10e5c6aa9e',1,'Config']]],
+  ['srclen_12',['srcLen',['../d0/ddb/structSHARED__HANDLE.html#ad342f26fd985ea42046c8d9c5131a4e7',1,'SHARED_HANDLE']]],
+  ['srcstart_13',['srcStart',['../d0/ddb/structSHARED__HANDLE.html#afa89fd018ba262187444fc1c7d45bf97',1,'SHARED_HANDLE']]],
+  ['state_14',['state',['../d0/ddb/structSHARED__HANDLE.html#a9ff20c67eaa9eeaf0114753edef8bb75',1,'SHARED_HANDLE']]],
+  ['stream_5f_15',['stream_',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a05d4e02f7a60dd50a8629c51d934b665',1,'graph::SingleGPU_Kcore::stream_'],['../d0/d3c/classgraph_1_1MultiGPU__MCE.html#ab550d9839c6e66ff1fa74278263432cd',1,'graph::MultiGPU_MCE::stream_']]],
+  ['stride_16',['stride',['../d4/dd9/structGLOBAL__HANDLE.html#a26a90476fcb9449c7aa96ff69a549167',1,'GLOBAL_HANDLE']]]
+];

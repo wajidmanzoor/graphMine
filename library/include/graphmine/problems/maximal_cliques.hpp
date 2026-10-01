@@ -23,12 +23,14 @@ enum class MaximalCliqueOptionalOutput : std::uint32_t {
   total_count = 1U << 0U,
 };
 
+/// Combines two optional-output flags.
 constexpr MaximalCliqueOptionalOutput operator|(
     MaximalCliqueOptionalOutput lhs, MaximalCliqueOptionalOutput rhs) {
   return static_cast<MaximalCliqueOptionalOutput>(
       static_cast<std::uint32_t>(lhs) | static_cast<std::uint32_t>(rhs));
 }
 
+/// Tests whether an optional-output flag is present.
 constexpr bool has_output(MaximalCliqueOptionalOutput outputs,
                           MaximalCliqueOptionalOutput output) {
   return (static_cast<std::uint32_t>(outputs) &
@@ -52,23 +54,30 @@ struct MaximalCliqueOutput {
   std::optional<std::uint64_t> total_count;
 };
 
+/// Enumerates inclusion-maximal cliques through a selected validated backend.
 class MaximalCliques {
  public:
+  /// Stores the backend, filtering, materialization, and execution options.
   explicit MaximalCliques(MaximalCliqueOptions options = {});
 
+  /// Checks the graph and selected backend without running enumeration.
   [[nodiscard]] SupportReport supports(const Graph& graph) const;
+  /// Executes enumeration and returns cliques with optional total count.
   [[nodiscard]] ExecutionResult<MaximalCliqueOutput> run(
       const Graph& graph) const;
+  /// Returns the immutable options captured at construction.
   [[nodiscard]] const MaximalCliqueOptions& options() const noexcept {
     return options_;
   }
 
+  /// Lists all registered maximal-clique backends and their availability.
   [[nodiscard]] static std::vector<BackendInfo> backends();
 
  private:
   MaximalCliqueOptions options_;
 };
 
+/// Returns the stable manifest/CLI identifier for a backend value.
 [[nodiscard]] const char* to_string(MaximalCliqueBackend backend) noexcept;
 
 }  // namespace graphmine

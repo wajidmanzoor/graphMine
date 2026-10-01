@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['calculate_5fminimum_5fdegrees_0',['calculate_minimum_degrees',['../d7/d6f/main_8cu.html#a20463c3968eb12b08e3d99cf54705c1b',1,'main.cu']]],
+  ['candidate_5findegs_1',['candidate_indegs',['../dd/d88/structCPU__Data.html#a0efb69b82acaf6a98e7e770d6c939b4f',1,'CPU_Data::candidate_indegs'],['../d0/d57/structGPU__Data.html#a9477f90f9d10555348c1ae5249ce4596',1,'GPU_Data::candidate_indegs']]],
+  ['chkerr_2',['chkerr',['../d7/d6f/main_8cu.html#ab69ab5b1f8214584ab6fc9a0837a2c09',1,'main.cu']]],
+  ['clique_20mining_3',['GPU-Accelerated Maximal Quasi-Clique Mining',['../index.html',1,'']]],
+  ['cliques_5fcount_4',['cliques_count',['../d6/d6b/structCPU__Cliques.html#a8c087ffd51cc3235eb1d876e6e573ae1',1,'CPU_Cliques::cliques_count'],['../d0/d57/structGPU__Data.html#ae07ef13369a597197f801d8acf0c8f26',1,'GPU_Data::cliques_count']]],
+  ['cliques_5fdump_5',['CLIQUES_DUMP',['../d7/d6f/main_8cu.html#a804cc1541f4791d741dbbd46ac417210',1,'main.cu']]],
+  ['cliques_5foffset_6',['cliques_offset',['../d6/d6b/structCPU__Cliques.html#a6ce07032423a985748cf96facdbe8f2f',1,'CPU_Cliques::cliques_offset'],['../d0/d57/structGPU__Data.html#a6fd9de946f97808f6fca60ebdfaf0501',1,'GPU_Data::cliques_offset']]],
+  ['cliques_5foffset_5fsize_7',['CLIQUES_OFFSET_SIZE',['../d7/d6f/main_8cu.html#a64a2939100e55dc007a3625e6a5eea22',1,'main.cu']]],
+  ['cliques_5foffset_5fstart_8',['cliques_offset_start',['../d0/d57/structGPU__Data.html#ac5be858820cb624f44bff5cadbf6d3fe',1,'GPU_Data']]],
+  ['cliques_5fpercent_9',['CLIQUES_PERCENT',['../d7/d6f/main_8cu.html#a7b813e88096c0731c91a183ed2bad93e',1,'main.cu']]],
+  ['cliques_5fsize_10',['CLIQUES_SIZE',['../d7/d6f/main_8cu.html#a90c2c0d0a603ef0af513f2b107e9a705',1,'main.cu']]],
+  ['cliques_5fstart_11',['cliques_start',['../d0/d57/structGPU__Data.html#a6f8fc8aa8693c4ad774ab26306f3f0a1',1,'GPU_Data']]],
+  ['cliques_5fvertex_12',['cliques_vertex',['../d0/d57/structGPU__Data.html#abbfb42cc95dbd9b5370eccf83a0e0fbe',1,'GPU_Data::cliques_vertex'],['../d6/d6b/structCPU__Cliques.html#add8f22054314c32f2d2c61f4262a32e9',1,'CPU_Cliques::cliques_vertex']]],
+  ['comp_5fint_13',['comp_int',['../d7/d6f/main_8cu.html#a412c0c6cd4949d6305f2030980b284d5',1,'main.cu']]],
+  ['count_14',['count',['../df/def/structWarp__Data.html#ad716f71f7c3cf976a8ae04b05f22ceae',1,'Warp_Data']]],
+  ['cpu_5fcliques_15',['CPU_Cliques',['../d6/d6b/structCPU__Cliques.html',1,'']]],
+  ['cpu_5fdata_16',['CPU_Data',['../dd/d88/structCPU__Data.html',1,'']]],
+  ['cpu_5fexpand_5fthreshold_17',['CPU_EXPAND_THRESHOLD',['../d7/d6f/main_8cu.html#a4051de30636fa970f088bc36d2b2c5c4',1,'main.cu']]],
+  ['cpu_5fgraph_18',['cpu_graph',['../d5/dc0/classCPU__Graph.html#a73623663850cc528804299e7ebc38ea3',1,'CPU_Graph::CPU_Graph()'],['../d5/dc0/classCPU__Graph.html',1,'CPU_Graph']]],
+  ['cpu_5flevels_19',['CPU_LEVELS',['../d7/d6f/main_8cu.html#ace27c26f9747f30b5b3f32dc7c37f554',1,'main.cu']]],
+  ['cpu_5fmode_20',['CPU_MODE',['../d7/d6f/main_8cu.html#a8848d6052bf4c876cfd37c550d7a3371',1,'main.cu']]],
+  ['current_5flevel_21',['current_level',['../d0/d57/structGPU__Data.html#a153098c9c75be6e3a7d4a4b5a08f0c61',1,'GPU_Data::current_level'],['../dd/d88/structCPU__Data.html#a5eadc84fc529eb520783916d5f2b2cf5',1,'CPU_Data::current_level']]],
+  ['current_5ftask_22',['current_task',['../d0/d57/structGPU__Data.html#acc06df0761c0365d4620e3ab946bee46',1,'GPU_Data']]]
+];

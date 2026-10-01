@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Function-by-function C++, CUDA, and research implementation reference for GraphMine."
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <title>GraphMine · Code reference</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b6b3a'/%3E%3Cpath d='M18 20 32 13l15 9-3 18-16 10-14-11z' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='18' cy='20' r='5' fill='%23ff8a24'/%3E%3Ccircle cx='47' cy='22' r='5' fill='%23ff8a24'/%3E%3Ccircle cx='28' cy='50' r='5' fill='%23fff'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="reference-header">
+      <div class="shell header-inner">
+        <a class="brand" href="../">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M12 14 25 8l12 8-3 17-13 8-12-10Z" />
+            <path d="m12 14 12 12m13-10L24 26m-3 15 3-15" />
+            <circle cx="12" cy="14" r="4" />
+            <circle cx="37" cy="16" r="4" />
+            <circle cx="21" cy="41" r="4" />
+            <circle cx="24" cy="26" r="4" />
+          </svg>
+          <span>Graph<span>Mine</span></span>
+        </a>
+        <nav aria-label="Reference navigation">
+          <a href="../">High-level guide</a>
+          <a href="https://github.com/wajidmanzoor/graphMine">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="reference-hero shell">
+        <p class="eyebrow"><i></i> Source-level documentation</p>
+        <h1>Follow GraphMine <span>function by function.</span></h1>
+        <p class="lede">
+          Search every public method, internal C++ helper, CUDA adapter,
+          kernel, data structure, macro, and preserved research implementation.
+          Each symbol links back to exact annotated GraphMine or preserved
+          research source.
+        </p>
+        <div class="scope-pills" aria-label="Reference coverage">
+          <span>C++17 APIs</span>
+          <span>CUDA adapters and kernels</span>
+          <span>Original research sources</span>
+          <span>Line-numbered source</span>
+        </div>
+      </section>
+
+      <section class="reference-grid shell" aria-label="Reference sets">
+        <article class="reference-card library-card">
+          <div class="card-topline">
+            <span class="card-tag">Start here</span>
+            <span>GraphMine-owned code</span>
+          </div>
+          <h2>Library and adapter reference</h2>
+          <p>
+            Canonical graph input, statuses, typed results, all problem
+            classes, backend dispatch, conversion layers, CLI serialization,
+            CUDA adapters, examples, and tests.
+          </p>
+          <ul>
+            <li>Class and method index</li>
+            <li>Free-function and kernel index</li>
+            <li>Reference and referenced-by relationships</li>
+            <li>Annotated headers, C++, CUDA, and CUDA-header source</li>
+          </ul>
+          <a class="card-action" href="library/">
+            Open library reference <span aria-hidden="true">→</span>
+          </a>
+        </article>
+
+        <article class="reference-card research-card">
+          <div class="card-topline">
+            <span class="card-tag">Deep internals</span>
+            <span>Validated artifacts</span>
+          </div>
+          <h2>Research implementation reference</h2>
+          <p>
+            The preserved C, C++, and CUDA implementations behind the 26
+            validated backend choices, organized by problem and paper artifact.
+          </p>
+          <ul>
+            <li>Original host functions and GPU kernels</li>
+            <li>Artifact graph structures and schedulers</li>
+            <li>Include and file relationships</li>
+            <li>Exact source with upstream comments intact</li>
+          </ul>
+          <a class="card-action" href="research/">
+            Open research reference <span aria-hidden="true">→</span>
+          </a>
+        </article>
+      </section>
+
+      <section class="reading-guide shell">
+        <div>
+          <p class="section-label">How to trace an operation</p>
+          <h2>Move from stable API to original kernel.</h2>
+        </div>
+        <ol>
+          <li>
+            <strong>Public problem class</strong>
+            <span>Find the class and inspect its constructor, <code>supports()</code>, and <code>run()</code>.</span>
+          </li>
+          <li>
+            <strong>Problem facade</strong>
+            <span>Follow references from <code>run()</code> into normalization and backend dispatch.</span>
+          </li>
+          <li>
+            <strong>Backend adapter</strong>
+            <span>Open the selected `.cpp` or `.cu` adapter to see format conversion and launch setup.</span>
+          </li>
+          <li>
+            <strong>Research source</strong>
+            <span>Continue into the matching problem/paper tree to inspect the exact host and device functions.</span>
+          </li>
+        </ol>
+      </section>
+
+      <section class="reference-note shell">
+        <strong>About generated documentation</strong>
+        <p>
+          The indexes are generated directly from the committed source with
+          Doxygen. Preserved upstream code is documented as written: existing
+          comments are shown, and otherwise the signature, declaration,
+          definition, references, and full source remain available. Licensing
+          and pinned source provenance are recorded in
+          <a href="https://github.com/wajidmanzoor/graphMine/blob/main/THIRD_PARTY.md">THIRD_PARTY.md</a>.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell">
+        <span>GraphMine code reference</span>
+        <a href="../">Return to the high-level documentation</a>
+      </div>
+    </footer>
+  </body>
+</html>

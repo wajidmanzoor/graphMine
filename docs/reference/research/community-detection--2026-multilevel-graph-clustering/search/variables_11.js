@@ -1,0 +1,12 @@
+var searchData=
+[
+  ['v_5ftotal_0',['v_total',['../d8/d89/structconstant__potts.html#a964119311d190d1af49f04ae81d4f570',1,'constant_potts']]],
+  ['vals_1',['vals',['../d1/dd9/structmemory__store_1_1persistent.html#a02e2b0fa06e3b6a211dfc3c62a3fbd8f',1,'memory_store::persistent']]],
+  ['value_2',['value',['../d7/d10/structjet__community_1_1ordering_1_1wrapper.html#a41e95caeb8b71987712361eec158fc22',1,'jet_community::ordering::wrapper::value'],['../da/d21/structjet__community_1_1ordering_1_1SumMyArray.html#ac72472d5c7a6dda85360e9ff43941ff0',1,'jet_community::ordering::SumMyArray::value']]],
+  ['vcmap_3',['vcmap',['../d6/d8a/structjet__community_1_1contracter_1_1countingFunctor.html#a7803fef816ec23b725b7ad8f4e1bcf2b',1,'jet_community::contracter::countingFunctor::vcmap'],['../d0/d6f/structjet__community_1_1contracter_1_1combineAndDedupe.html#ae0ffa48352bab3f6440412147d8c8200',1,'jet_community::contracter::combineAndDedupe::vcmap']]],
+  ['vtx_4',['vtx',['../d0/d6f/structjet__community_1_1contracter_1_1combineAndDedupe.html#accf99e2c1465cc38212b8264eca269ae',1,'jet_community::contracter::combineAndDedupe']]],
+  ['vtx1_5',['vtx1',['../dd/dfb/structmemory__store_1_1scratch.html#afc3b2957bcc905703a8826cc42ba6e6f',1,'memory_store::scratch']]],
+  ['vtx2_6',['vtx2',['../dd/dfb/structmemory__store_1_1scratch.html#aab72a2aa1c0893a6386fd42dc0965372',1,'memory_store::scratch']]],
+  ['vtx_5flist_7',['vtx_list',['../d1/d2e/structjet__community_1_1local__move__heuristic_1_1afterburner__kernel.html#ac486af17523d729dfbd4363b08d384d3',1,'jet_community::local_move_heuristic::afterburner_kernel::vtx_list'],['../dd/d7f/structjet__community_1_1local__move__heuristic_1_1select__destinations.html#a0981f5fad101e2869ab0767f866785b8',1,'jet_community::local_move_heuristic::select_destinations::vtx_list'],['../df/dc6/structjet__community_1_1local__move__heuristic_1_1update__cdata.html#ab0db57e6961c927ee2a32717b82c0d81',1,'jet_community::local_move_heuristic::update_cdata::vtx_list']]],
+  ['vtx_5fw_8',['vtx_w',['../d9/dac/structjet__community_1_1weighted__graph.html#aca7da43afdbcfb00eea484e247e1acd4',1,'jet_community::weighted_graph::vtx_w'],['../d1/d2e/structjet__community_1_1local__move__heuristic_1_1afterburner__kernel.html#a1f740e0d46ed0f42e1d21db0322e8a38',1,'jet_community::local_move_heuristic::afterburner_kernel::vtx_w'],['../dd/d7f/structjet__community_1_1local__move__heuristic_1_1select__destinations.html#ae2e2c845cc5792b39d7ab45e41a0b57e',1,'jet_community::local_move_heuristic::select_destinations::vtx_w']]]
+];

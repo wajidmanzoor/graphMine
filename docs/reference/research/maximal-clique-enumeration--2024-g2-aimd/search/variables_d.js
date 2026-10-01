@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['n_0',['n',['../d2/d35/classbliss_1_1Partition.html#a7eb3c9e9c3c6bd5b0e5e1e1a4d942335',1,'bliss::Partition::N'],['../d6/d32/classbliss_1_1Heap.html#aed1493861b65581366c0f0356374899f',1,'bliss::Heap::n'],['../d6/d32/classbliss_1_1Heap.html#acbb481d5129ecc572042b4510a291c9b',1,'bliss::Heap::N']]],
+  ['needs_5flong_5fprune_1',['needs_long_prune',['../d8/dd4/classbliss_1_1TreeNode.html#aa7f697345c05682ce5711deb0bea3b3a',1,'bliss::TreeNode']]],
+  ['neighbour_5fheap_2',['neighbour_heap',['../df/d8c/classbliss_1_1AbstractGraph.html#ae1b2e2f2e7d7bf869e5847a08a5cebb7',1,'bliss::AbstractGraph']]],
+  ['next_3',['next',['../d2/df2/classbliss_1_1Orbit_1_1OrbitEntry.html#ad37ee8c4125c7d140732eaf0dd4c327c',1,'bliss::Orbit::OrbitEntry::next'],['../da/d44/classbliss_1_1Partition_1_1Cell.html#a5a87da420a33f1405096b906874ba48d',1,'bliss::Partition::Cell::next'],['../dd/de1/classbliss_1_1Partition_1_1CRCell.html#a8976017a5bda65cf22a4e23f8729d456',1,'bliss::Partition::CRCell::next']]],
+  ['next_5fcep_5findex_4',['next_cep_index',['../d3/da2/classbliss_1_1AbstractGraph_1_1CR__CEP.html#a1ace05a9ec2920bb5aa2b10d62776d33',1,'bliss::AbstractGraph::CR_CEP']]],
+  ['next_5fcr_5flevel_5',['next_cr_level',['../d3/da2/classbliss_1_1AbstractGraph_1_1CR__CEP.html#a9ea827326c3943584977cb644754601d',1,'bliss::AbstractGraph::CR_CEP']]],
+  ['next_5fnonsingleton_6',['next_nonsingleton',['../da/d44/classbliss_1_1Partition_1_1Cell.html#a1a0c4e81c630f5b0321093de33a19391',1,'bliss::Partition::Cell']]],
+  ['next_5fnonsingleton_5ffirst_7',['next_nonsingleton_first',['../d1/d63/classbliss_1_1Partition_1_1RefInfo.html#a6efe6a66dd6dacc768b00f5238fadc80',1,'bliss::Partition::RefInfo']]],
+  ['no_8',['NO',['../d8/dd4/classbliss_1_1TreeNode.html#aa0aea2348b5e7a68b505ae302c02997f',1,'bliss::TreeNode']]],
+  ['nof_5fbad_5fnodes_9',['nof_bad_nodes',['../d4/dbf/structbliss__stats__struct.html#a3950267eb9af65bedf6ff04a8a7acd21',1,'bliss_stats_struct::nof_bad_nodes'],['../dd/d26/classbliss_1_1Stats.html#a727d3eecaa3190c15f126a526be741e1',1,'bliss::Stats::nof_bad_nodes']]],
+  ['nof_5fcanupdates_10',['nof_canupdates',['../d4/dbf/structbliss__stats__struct.html#a46248381aa9805b637b04f20a1743bb8',1,'bliss_stats_struct::nof_canupdates'],['../dd/d26/classbliss_1_1Stats.html#acc641627d568bcd57f6b49dc9e8669f2',1,'bliss::Stats::nof_canupdates']]],
+  ['nof_5felements_11',['nof_elements',['../db/db4/classbliss_1_1Orbit.html#ad4720ab56467d06b21a13b2efbab346e',1,'bliss::Orbit']]],
+  ['nof_5fgenerators_12',['nof_generators',['../d4/dbf/structbliss__stats__struct.html#a82d3f9fbd7b6754f8a48ebed636c5a32',1,'bliss_stats_struct::nof_generators'],['../dd/d26/classbliss_1_1Stats.html#aaf3c1cf22a8abca822a17c53ac98c9ff',1,'bliss::Stats::nof_generators']]],
+  ['nof_5fleaf_5fnodes_13',['nof_leaf_nodes',['../d4/dbf/structbliss__stats__struct.html#a875922344a1d0e7e898baede51fbe15f',1,'bliss_stats_struct::nof_leaf_nodes'],['../dd/d26/classbliss_1_1Stats.html#aad89ae7418bef7fd081ec03d88f9cfc8',1,'bliss::Stats::nof_leaf_nodes']]],
+  ['nof_5fnodes_14',['nof_nodes',['../d4/dbf/structbliss__stats__struct.html#ac97ecc86b86550c5b0cdc2ba94f34283',1,'bliss_stats_struct::nof_nodes'],['../dd/d26/classbliss_1_1Stats.html#ab4706c7207698a466864b5ea21dd24e3',1,'bliss::Stats::nof_nodes']]],
+  ['numtickspersec_15',['numTicksPerSec',['../da/def/namespacebliss.html#aba29de91874cf9577f9c1ea5bf484391',1,'bliss']]]
+];

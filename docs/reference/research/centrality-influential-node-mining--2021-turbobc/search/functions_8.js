@@ -1,0 +1,16 @@
+var searchData=
+[
+  ['s_5fcheck_0',['s_check',['../d8/dfb/utils__bc_8h.html#a7684a3b96a97cab240096ee4a332dbed',1,'S_check(int *S, int *S_hgpu, int n):&#160;utils_bc.c'],['../da/d59/utils__bc_8c.html#a7684a3b96a97cab240096ee4a332dbed',1,'S_check(int *S, int *S_hgpu, int n):&#160;utils_bc.c']]],
+  ['s_5fv_1',['s_v',['../d6/d99/bcug_8h.html#a24b24fe9d2caef243b9df6f5822afe9d',1,'S_v(int *S, int *f, int n, int d):&#160;bcug_seq_utils.c'],['../d5/d12/bcug__seq__utils_8c.html#a24b24fe9d2caef243b9df6f5822afe9d',1,'S_v(int *S, int *f, int n, int d):&#160;bcug_seq_utils.c']]],
+  ['spmv_5fdelta_5fut_2',['spmv_delta_ut',['../dd/db8/spmv__seq_8c.html#aa80f675ebe828f5ae1b9a423115e48d4',1,'spmv_delta_ut(float *delta_u, int *IC, int *CP, float *delta_ut, int n):&#160;spmv_seq.c'],['../dd/d30/spmv__seq_8h.html#a380d26f4349dfc0ec91ba9f9b502868f',1,'spmv_delta_ut(float *delta_u, int *I, int *CP, float *delta_ut, int n):&#160;spmv_seq.c']]],
+  ['spmv_5fseq_5fug_5fcsc_3',['spmv_seq_ug_csc',['../dd/db8/spmv__seq_8c.html#abc54ad73bdb783e16618836e9b3d592a',1,'spmv_seq_ug_csc(int *f, int *IC, int *CP, int *f_t, int n):&#160;spmv_seq.c'],['../dd/d30/spmv__seq_8h.html#a9d73757c9525917bf125aa5a3e64dcd9',1,'spmv_seq_ug_csc(int *f, int *I, int *CP, int *f_t, int n):&#160;spmv_seq.c']]],
+  ['spmvbcoocsckernel_4',['spMVBCoocScKernel',['../d4/d24/bcgpugcooc__sc_8cu.html#ac468bcb52d7151acd8502190da5e26ae',1,'bcgpugcooc_sc.cu']]],
+  ['spmvbcsckernel_5',['spMVBCscKernel',['../dc/d4d/bcgpugcsc__sc_8cu.html#a266a3c8b3c07bad7b424f8cb8d748462',1,'bcgpugcsc_sc.cu']]],
+  ['spmvbcwakernel_6',['spMVBCwaKernel',['../d2/d09/bcgpugcsc__wa_8cu.html#a9a2cf7caaaa2ca398d2f779626b55bda',1,'bcgpugcsc_wa.cu']]],
+  ['spmvbfscoocsckernel_7',['spMVBFSCoocScKernel',['../d4/d24/bcgpugcooc__sc_8cu.html#ac44052bb2f073751e7417493859c2ddd',1,'bcgpugcooc_sc.cu']]],
+  ['spmvbfssckernel_8',['spMVBFSscKernel',['../dc/d4d/bcgpugcsc__sc_8cu.html#a6f82e6b485cd59bbf313bc42db0d58cb',1,'bcgpugcsc_sc.cu']]],
+  ['spmvbfswakernel_9',['spMVBFSwaKernel',['../d2/d09/bcgpugcsc__wa_8cu.html#ad87dec10983f7a5c1d6dce54abf07cc1',1,'bcgpugcsc_wa.cu']]],
+  ['ssccooc_5fuw_10',['ssccooc_uw',['../d8/de2/sparseformatransf_8c.html#a32e7427370f4c349bb3ffa85fadaf64c',1,'SSCCOOC_uw(int *ICLT, int *CPLT, int *RPLT, int *RP, int *CP, int *ICOOC, int *JCOOC, int N):&#160;sparseformatransf.c'],['../d8/d84/sparseformatransf_8h.html#aeb9679a489d58deb6a7676dea1b57571',1,'SSCCOOC_uw(int *ICLT, int *CPLT, int *RPLT, int *RP, int *CP, int *ICOOC, int *JCOOC, int n):&#160;sparseformatransf.c']]],
+  ['ssccsc_5fuw_11',['ssccsc_uw',['../d8/de2/sparseformatransf_8c.html#ada2b2a092a9492f2638eb48ceaddaaaa',1,'SSCCSC_uw(int *ICLT, int *CPLT, int *RPLT, int *RP, int *CP, int *IC, int n):&#160;sparseformatransf.c'],['../d8/d84/sparseformatransf_8h.html#ada2b2a092a9492f2638eb48ceaddaaaa',1,'SSCCSC_uw(int *ICLT, int *CPLT, int *RPLT, int *RP, int *CP, int *IC, int n):&#160;sparseformatransf.c']]],
+  ['sum_5fvs_12',['sum_vs',['../d6/d99/bcug_8h.html#aef0c87b7c557811daae2abc5ea4db745',1,'sum_vs(float *sigma, int *f, int n):&#160;bcug_seq_utils.c'],['../d5/d12/bcug__seq__utils_8c.html#aef0c87b7c557811daae2abc5ea4db745',1,'sum_vs(float *sigma, int *f, int n):&#160;bcug_seq_utils.c']]]
+];

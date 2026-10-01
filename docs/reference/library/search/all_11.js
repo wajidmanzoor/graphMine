@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['qualifying_5fcount_0',['qualifying_count',['../d0/d96/structgraphmine_1_1anonymous__namespace_02maximal__bicliques_8cpp_03_1_1CollectionState.html#ad0c962bf5ad6179251fd925ca0a08fcf',1,'graphmine::anonymous_namespace{maximal_bicliques.cpp}::CollectionState::qualifying_count'],['../d7/dc4/structgraphmine_1_1anonymous__namespace_02maximal__cliques_8cpp_03_1_1CollectionState.html#ada9537f93c78f14f948e7c761341d25c',1,'graphmine::anonymous_namespace{maximal_cliques.cpp}::CollectionState::qualifying_count']]],
+  ['quasi_5fclique_5fbackend_2ehpp_1',['quasi_clique_backend.hpp',['../d9/d9b/quasi__clique__backend_8hpp.html',1,'']]],
+  ['quasi_5fclique_5foutput_2',['quasi_clique_output',['../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a82fccd3d81f9af44a4612a127eabf75d',1,'anonymous_namespace{graphmine.cpp}']]],
+  ['quasi_5fcliques_3',['quasi_cliques',['../d9/d70/structgraphmine_1_1QuasiCliqueOutput.html#ae1cce9cf3623e296395bf19372394fd1',1,'graphmine::QuasiCliqueOutput::quasi_cliques'],['../da/de0/structgraphmine_1_1detail_1_1QuasiCliqueBackendResult.html#a97aceccaff188b3865e1ebc98810bb6c',1,'graphmine::detail::QuasiCliqueBackendResult::quasi_cliques']]],
+  ['quasi_5fcliques_2ecpp_4',['quasi_cliques.cpp',['../db/d2d/quasi__cliques_8cpp.html',1,'']]],
+  ['quasi_5fcliques_2ehpp_5',['quasi_cliques.hpp',['../d4/d0b/quasi__cliques_8hpp.html',1,'']]],
+  ['quasi_5fcliques_5ftest_2ecpp_6',['quasi_cliques_test.cpp',['../d3/d68/quasi__cliques__test_8cpp.html',1,'']]],
+  ['quasicliquebackend_7',['QuasiCliqueBackend',['../d8/d4c/namespacegraphmine.html#a37bde09ab14bf26c736f934a8ec091d9',1,'graphmine']]],
+  ['quasicliquebackendresult_8',['QuasiCliqueBackendResult',['../da/de0/structgraphmine_1_1detail_1_1QuasiCliqueBackendResult.html',1,'graphmine::detail']]],
+  ['quasicliqueoptionaloutput_9',['QuasiCliqueOptionalOutput',['../d8/d4c/namespacegraphmine.html#a4a58e3e904127ef16ecee46fe256759c',1,'graphmine']]],
+  ['quasicliqueoptions_10',['QuasiCliqueOptions',['../d5/d98/structgraphmine_1_1QuasiCliqueOptions.html',1,'graphmine']]],
+  ['quasicliqueoutput_11',['QuasiCliqueOutput',['../d9/d70/structgraphmine_1_1QuasiCliqueOutput.html',1,'graphmine']]],
+  ['quasicliques_12',['quasicliques',['../da/d3d/classgraphmine_1_1QuasiCliques.html#a8dafceff8a1e7fa6a676dbddcaa5c12c',1,'graphmine::QuasiCliques::QuasiCliques()'],['../da/d3d/classgraphmine_1_1QuasiCliques.html',1,'graphmine::QuasiCliques']]],
+  ['query_13',['query',['../d3/dc7/structgraphmine_1_1anonymous__namespace_02subgraph__isomorphism_8cpp_03_1_1EncodedLabels.html#a2e55ab71803a6e24b0ad5980490ce9bf',1,'graphmine::anonymous_namespace{subgraph_isomorphism.cpp}::EncodedLabels::query'],['../d7/d03/structgraphmine_1_1anonymous__namespace_02subgraph__isomorphism_8cpp_03_1_1EmbeddingCollector.html#a9b58c674bbea732c951cf7adfc128a0d',1,'graphmine::anonymous_namespace{subgraph_isomorphism.cpp}::EmbeddingCollector::query']]],
+  ['query_5flabels_14',['query_labels',['../d7/d03/structgraphmine_1_1anonymous__namespace_02subgraph__isomorphism_8cpp_03_1_1EmbeddingCollector.html#a2e96913341acc54a65c9e2d0c763d266',1,'graphmine::anonymous_namespace{subgraph_isomorphism.cpp}::EmbeddingCollector']]],
+  ['query_5fvertex_15',['query_vertex',['../d9/d1c/structgraphmine_1_1VertexMapping.html#a71de9fd880694fcb11c6036e2d37d46a',1,'graphmine::VertexMapping']]],
+  ['quickmapping_16',['QuickMapping',['../d4/d4d/dumato__motif_8cu.html#aa1d32c835cce7d13bd02ed85f2b9f3c2',1,'dumato_motif.cu']]]
+];

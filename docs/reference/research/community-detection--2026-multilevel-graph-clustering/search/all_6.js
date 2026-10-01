@@ -1,0 +1,12 @@
+var searchData=
+[
+  ['g_0',['g',['../d6/d8a/structjet__community_1_1contracter_1_1countingFunctor.html#a695ebd91a0b8e2747c9b5510488ae6f6',1,'jet_community::contracter::countingFunctor::g'],['../d0/d6f/structjet__community_1_1contracter_1_1combineAndDedupe.html#aa11b7d9ff20a0b16ad83b629e3507c1c',1,'jet_community::contracter::combineAndDedupe::g'],['../d1/d2e/structjet__community_1_1local__move__heuristic_1_1afterburner__kernel.html#a4cffacf5a4ffae79eeb2a19ee0cb247d',1,'jet_community::local_move_heuristic::afterburner_kernel::g'],['../df/dc6/structjet__community_1_1local__move__heuristic_1_1update__cdata.html#a6eee63577aa800503b1defb1157ab447',1,'jet_community::local_move_heuristic::update_cdata::g'],['../de/df4/structjet__community_1_1ordering_1_1ScanMyArray.html#abecaca2a6959d77e382db4854574ddd3',1,'jet_community::ordering::ScanMyArray::g']]],
+  ['g_5fdeg_1',['g_deg',['../d5/dfd/structnormalized__lcc.html#ab0306d7edf545eaf1ef5f71c4e2643cc',1,'normalized_lcc']]],
+  ['generate_5forderings_2',['generate_orderings',['../de/d00/namespacejet__community_1_1ordering.html#ad37ac899a0a41d24613cf528c4ad9f56',1,'jet_community::ordering']]],
+  ['get_5fobjective_3',['get_objective',['../d8/d2c/structcluster__data.html#a18c39c5b3fc01ad985fa1d9a36f25abe',1,'cluster_data::get_objective()'],['../dc/d13/structmodularity.html#a7051f5570d72796a50562179976254b5',1,'modularity::get_objective()'],['../d8/d89/structconstant__potts.html#a91ead4f3b5ceaf5ed04aa36a3ecb1b5d',1,'constant_potts::get_objective()'],['../d5/dfd/structnormalized__lcc.html#a2d5a96d0f698597377880a671de8fbd9',1,'normalized_lcc::get_objective()']]],
+  ['get_5fpenalty_5fmodifier_4',['get_penalty_modifier',['../d8/d2c/structcluster__data.html#a94256f7756eb65184363dd05ed669882',1,'cluster_data']]],
+  ['getmeasurement_5',['getMeasurement',['../d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a7189e158a862a16892772dea58a37549',1,'jet_community::ExperimentLoggerUtil']]],
+  ['gpu_20accelerated_20multilevel_20graph_20clustering_3a_20a_20parallel_20perspective_20on_20louvain_20and_20leiden_6',['GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden',['../index.html',1,'']]],
+  ['graph_20clustering_3a_20a_20parallel_20perspective_20on_20louvain_20and_20leiden_7',['GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden',['../index.html',1,'']]],
+  ['graph_5ftype_8',['graph_type',['../d8/d74/namespacejet__community_1_1contracter.html#a9ded54c6701ebd3ea55ad503020760cf',1,'jet_community::contracter']]]
+];

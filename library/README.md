@@ -152,3 +152,16 @@ target_link_libraries(my_program PRIVATE GraphMine::maximal_cliques)
 
 See `MIGRATION_STATUS.md` for the preserved artifact boundary and verification
 status.
+
+## Function-level source reference
+
+The generated [library code reference](../docs/reference/library/) documents
+every public class and method, internal C++ helper, backend adapter, CUDA
+translation unit, example, and test with symbol and annotated-source indexes.
+The adjacent [research artifact portal](../docs/reference/research/) provides
+separate low-level references for the original implementations, so symbols
+reused by different papers do not collide. Rebuild both with:
+
+```bash
+node tools/build_code_docs.mjs
+```

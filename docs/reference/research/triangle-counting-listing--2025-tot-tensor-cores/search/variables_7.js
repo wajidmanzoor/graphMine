@@ -1,0 +1,11 @@
+var searchData=
+[
+  ['n_5f_0',['N_',['../d1/df3/structtot_1_1is__N.html#ab3529777f3ec827b97bf9b063f574a6e',1,'tot::is_N']]],
+  ['ncols_1',['ncols',['../df/da4/structtot_1_1COOIndices.html#a26c9640d8575e9b6343cb008b7be7f4c',1,'tot::COOIndices::ncols'],['../d2/de4/structtot_1_1LocateTile256.html#a1395b0d328ceae28e8b964b2d7e04176',1,'tot::LocateTile256::ncols']]],
+  ['num_5fbmp64_2',['NUM_BMP64',['../df/d48/namespacetot.html#aff0d52dc8a37665504752aa975d3b7d3',1,'tot']]],
+  ['num_5fcols_3',['num_cols',['../dc/d74/classtot_1_1BitmapCSR.html#ac068819c57d2346e9c324b36a539af97',1,'tot::BitmapCSR::num_cols'],['../d0/d1b/classtot_1_1CooMatrix.html#a6f4cf7e9d1f0adbde203110664920a98',1,'tot::CooMatrix::num_cols'],['../de/d2c/classtot_1_1CsrMatrix.html#ae792c1307894076eb6bfb36f6011a853',1,'tot::CsrMatrix::num_cols'],['../df/dab/classtot_1_1BitmapCOO.html#a72e6bffff55cdadd1b959cf26c0114f2',1,'tot::BitmapCOO::num_cols']]],
+  ['num_5felements_4',['num_elements',['../d3/d2a/structtot_1_1binary__search__index.html#a8eee7edabc1fa07412fa57f28b823f89',1,'tot::binary_search_index']]],
+  ['num_5fentries_5',['num_entries',['../df/dab/classtot_1_1BitmapCOO.html#afc3661c260674b15eef7db914d823d0d',1,'tot::BitmapCOO::num_entries'],['../dc/d74/classtot_1_1BitmapCSR.html#ad058045da40f88bbcaef6c9844cc0ee9',1,'tot::BitmapCSR::num_entries'],['../d0/d1b/classtot_1_1CooMatrix.html#a63d1ee368982f5aaa112fddc1c3454bb',1,'tot::CooMatrix::num_entries'],['../de/d2c/classtot_1_1CsrMatrix.html#ac3fd1f7782f44634985b3e7b77b875da',1,'tot::CsrMatrix::num_entries']]],
+  ['num_5frows_6',['num_rows',['../df/dab/classtot_1_1BitmapCOO.html#a468de745a6bd7bea6ebb1bf5bc8b88f6',1,'tot::BitmapCOO::num_rows'],['../dc/d74/classtot_1_1BitmapCSR.html#a228f095c6a77bf1a6adb22dd971c2b46',1,'tot::BitmapCSR::num_rows'],['../d0/d1b/classtot_1_1CooMatrix.html#adf7fa89266cbe0aeac1c15881ba55bf9',1,'tot::CooMatrix::num_rows'],['../de/d2c/classtot_1_1CsrMatrix.html#a2f1d49efea2499cb171c3727641df41c',1,'tot::CsrMatrix::num_rows']]],
+  ['num_5ftiles_7',['num_tiles',['../df/dab/classtot_1_1BitmapCOO.html#a47db44768504d03de38bd4e53fad6c9f',1,'tot::BitmapCOO::num_tiles'],['../dc/d74/classtot_1_1BitmapCSR.html#a833cbde6d783995a8c8bd8087cf1ddeb',1,'tot::BitmapCSR::num_tiles']]]
+];

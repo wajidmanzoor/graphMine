@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['fast_5fload_0',['fast_load',['../d4/d85/classDataLoader.html#a9e240dad0aa6a70c0e2f2ca4f02db682',1,'DataLoader']]],
+  ['father_1',['father',['../d0/dae/classDisjointSetUnion.html#a152de653b265524888831b80633692e5',1,'DisjointSetUnion']]],
+  ['father_5fprefix_5fid_2',['father_prefix_id',['../df/d61/classSchedule.html#ad6cc5406d81fa0ed44dee37293732d25',1,'Schedule::father_prefix_id'],['../d5/d05/classSchedule__IEP.html#a36bfc4a3590f9aa21cd4689af15abadb',1,'Schedule_IEP::father_prefix_id'],['../d3/dc7/classGPUSchedule.html#a902db635456d7a3ebb9d83936d890781',1,'GPUSchedule::father_prefix_id']]],
+  ['fileguard_3',['fileguard',['../d7/dae/structFileGuard.html',1,'FileGuard'],['../d7/dae/structFileGuard.html#a4ecce28d770287f9dac5640fe07bfcbc',1,'FileGuard::FileGuard()']]],
+  ['find_5ffather_5fprefix_4',['find_father_prefix',['../df/d61/classSchedule.html#a3a886175c24a30577f999d72ee5788e8',1,'Schedule::find_father_prefix()'],['../d5/d05/classSchedule__IEP.html#aa4c9024722bb23df390853c87848830c',1,'Schedule_IEP::find_father_prefix()']]],
+  ['finished_5fnumber_5',['finished_number',['../d1/d1a/gpu__new__str_8cu.html#a9f9b3d74a989cf68736b23570a7a4972',1,'finished_number:&#160;gpu_new_str.cu'],['../d8/de0/gpu__graph__unimem_8cu.html#a9f9b3d74a989cf68736b23570a7a4972',1,'finished_number:&#160;gpu_graph_unimem.cu'],['../db/db1/gpu__graph__mpi_8cu.html#a9f9b3d74a989cf68736b23570a7a4972',1,'finished_number:&#160;gpu_graph_mpi.cu']]],
+  ['flag_6',['flag',['../d3/dce/structSpinLock.html#aa4dc5e9a1ff1102a73f4b01a57d0426f',1,'SpinLock']]],
+  ['flip_5fbit_7',['flip_bit',['../d3/d7e/structBitmap.html#a7a3523983fc9a153e13c01e83febba4c',1,'Bitmap']]],
+  ['foralldevice_8',['foralldevice',['../d1/d1a/gpu__new__str_8cu.html#a4e1225926198960dc13a08e27998e05d',1,'ForallDevice:&#160;gpu_new_str.cu'],['../d8/de0/gpu__graph__unimem_8cu.html#a4e1225926198960dc13a08e27998e05d',1,'ForallDevice:&#160;gpu_graph_unimem.cu'],['../d0/da2/gpu__graph__static__task_8cu.html#a4e1225926198960dc13a08e27998e05d',1,'ForallDevice:&#160;gpu_graph_static_task.cu'],['../db/db1/gpu__graph__mpi_8cu.html#a4e1225926198960dc13a08e27998e05d',1,'ForallDevice:&#160;gpu_graph_mpi.cu'],['../de/d6d/gpu__fsm__omp_8cu.html#abce3529183c660d0447ca349ee5837c3',1,'ForallDevice:&#160;gpu_fsm_omp.cu']]],
+  ['fp_9',['fp',['../d7/dae/structFileGuard.html#a7acc3b1ba710ee0eb80b3fcbee490335',1,'FileGuard']]],
+  ['friendster_10',['Friendster',['../d5/d96/dataloader_8h.html#ad8ed01ff3ff33333d8e19db4d2818bb6ad853d28aa8a6f8f16f5a07bf2c1566db',1,'dataloader.h']]],
+  ['friendster_5ftri_5fcnt_11',['Friendster_tri_cnt',['../d5/d96/dataloader_8h.html#afa7c3e64fe4819c58890f4e25cce29eb',1,'dataloader.h']]],
+  ['fsm_12',['fsm',['../d9/dd1/classLabeledGraph.html#a17bf44106b8cc668e42164de98164735',1,'LabeledGraph']]],
+  ['fsm_5fcnt_13',['fsm_cnt',['../d9/dd1/classLabeledGraph.html#a8f7a97b1e08db11edf27714d837182a0',1,'LabeledGraph::fsm_cnt'],['../de/d6d/gpu__fsm__omp_8cu.html#a22f9444f8c2abb322983487586a11562',1,'fsm_cnt:&#160;gpu_fsm_omp.cu']]],
+  ['fsm_5fdevice_14',['fsm_device',['../de/d05/structFSM__Device.html',1,'FSM_Device'],['../de/d05/structFSM__Device.html#aff834a9a4bd9108f70d99f3a6c5c1cae',1,'FSM_Device::FSM_Device()']]],
+  ['fsm_5finit_15',['fsm_init',['../d5/d18/fsm__mixed_8cu.html#a6766a3206688480702a08e34944200c6',1,'fsm_init(const LabeledGraph *g, int max_edge, int min_support):&#160;fsm_mixed.cu'],['../d5/d15/gpu__fsm_8cu.html#a6766a3206688480702a08e34944200c6',1,'fsm_init(const LabeledGraph *g, int max_edge, int min_support):&#160;gpu_fsm.cu'],['../de/d6d/gpu__fsm__omp_8cu.html#a6766a3206688480702a08e34944200c6',1,'fsm_init(const LabeledGraph *g, int max_edge, int min_support):&#160;gpu_fsm_omp.cu'],['../d5/d54/gpu__new__fsm_8cu.html#a6766a3206688480702a08e34944200c6',1,'fsm_init(const LabeledGraph *g, int max_edge, int min_support):&#160;gpu_new_fsm.cu']]],
+  ['fsm_5fmixed_2ecu_16',['fsm_mixed.cu',['../d5/d18/fsm__mixed_8cu.html',1,'']]],
+  ['fsm_5fpattern_5fmatching_17',['fsm_pattern_matching',['../d9/dd1/classLabeledGraph.html#a2f101caf2a67eebc43e2b462b4129e2b',1,'LabeledGraph']]],
+  ['fsm_5fpattern_5fmatching_5fvertex_18',['fsm_pattern_matching_vertex',['../d9/dd1/classLabeledGraph.html#abe08648a80e7607ee138c83e981ba0e7',1,'LabeledGraph']]],
+  ['fsm_5ftest_2ecpp_19',['fsm_test.cpp',['../da/dd4/fsm__test_8cpp.html',1,'']]],
+  ['fsm_5fvertex_20',['fsm_vertex',['../d9/dd1/classLabeledGraph.html#ab1a234e642e00c2433786766a099e9c6',1,'LabeledGraph']]],
+  ['fsm_5fvertex_5ftest_2ecpp_21',['fsm_vertex_test.cpp',['../da/ddd/fsm__vertex__test_8cpp.html',1,'']]]
+];

@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['policy_5ft_0',['policy_t',['../d8/d2c/structcluster__data.html#a0e39f72d1a0d9e1f76b8d015ca2103d1',1,'cluster_data::policy_t'],['../d0/d24/namespacejet__community_1_1clustering__methods.html#a8c1ce0370fe36ac227d0b045cc3d0c3b',1,'jet_community::clustering_methods::policy_t'],['../d8/d74/namespacejet__community_1_1contracter.html#a711d10f099a7b94e48a83144f7861af4',1,'jet_community::contracter::policy_t'],['../d1/de4/namespacejet__community_1_1leidenR.html#a8dedfe5bde0bc0b17ec08b595b2ea2dc',1,'jet_community::leidenR::policy_t'],['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#a4247f0b25572f1dd975d57cbceef877d',1,'jet_community::local_move_heuristic::policy_t'],['../de/d00/namespacejet__community_1_1ordering.html#ac7eb323869c3305583b4f3ffee81afce',1,'jet_community::ordering::policy_t']]]
+];

@@ -1,0 +1,16 @@
+var searchData=
+[
+  ['g2_5faimd_5fmutex_0',['g2_aimd_mutex',['../db/d7e/namespacegraphmine_1_1detail_1_1anonymous__namespace_02g2__aimd__backend_8cu_03.html#a275bf330381fc813ba1e08dee7a3ced0',1,'graphmine::detail::anonymous_namespace{g2_aimd_backend.cu}']]],
+  ['gamma_5fmutex_1',['gamma_mutex',['../d9/df0/namespacegraphmine_1_1detail_1_1anonymous__namespace_02gamma__kclique_8cu_03.html#a27c2a2a8debe1b4c8481090363701675',1,'graphmine::detail::anonymous_namespace{gamma_kclique.cu}']]],
+  ['gleiden_5fmutex_2',['gleiden_mutex',['../db/d4f/namespacegraphmine_1_1detail_1_1anonymous__namespace_02gleiden_8cu_03.html#a53c54deb49c3350109513cfc6ddceb54',1,'graphmine::detail::anonymous_namespace{gleiden.cu}']]],
+  ['global_5ftriangle_5fcount_3',['global_triangle_count',['../da/d11/structgraphmine_1_1TriangleOutput.html#af51c4b45eb4d9ea9ee5940601a7d1fe1',1,'graphmine::TriangleOutput']]],
+  ['gmatch_5fmutex_4',['gmatch_mutex',['../db/d03/namespacegraphmine_1_1detail_1_1anonymous__namespace_02gmatch_8cu_03.html#ab50011d0cec1ab68f7e7d4a43b36e488',1,'graphmine::detail::anonymous_namespace{gmatch.cu}']]],
+  ['gpu_5fmaximum_5fclique_5fmutex_5',['gpu_maximum_clique_mutex',['../d0/da9/namespacegraphmine_1_1detail_1_1anonymous__namespace_02gpu__maximum__clique__backend_8cu_03.html#a068c03fd27ed0dbd15df0bc57c241dea',1,'graphmine::detail::anonymous_namespace{gpu_maximum_clique_backend.cu}']]],
+  ['graph_6',['graph',['../d4/d19/structgraphmine_1_1CanonicalGraphInput.html#a5596990f7a52fcc48d2bb9b2c714ddf3',1,'graphmine::CanonicalGraphInput']]],
+  ['graph_5f_7',['graph_',['../dd/d8b/classgraphmine_1_1detail_1_1anonymous__namespace_02kcore__gpu_8cu_03_1_1BackendGraph.html#a96cfc1c492b9f77f0c8e6178d78a7d2f',1,'graphmine::detail::anonymous_namespace{kcore_gpu.cu}::BackendGraph']]],
+  ['graph_5fpath_8',['graph_path',['../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html#aac9a5958ed2260019f29113a875700aa',1,'anonymous_namespace{graphmine.cpp}::CommonOptions']]],
+  ['graphmine_5fgleiden_5foriginal_5fto_5fcurrent_9',['graphmine_gleiden_original_to_current',['../d5/d1a/gleiden_8cu.html#ac27cb4db80c6153e6d2266dd3da5a1e8',1,'gleiden.cu']]],
+  ['graphminer_5fmutex_10',['graphminer_mutex',['../de/d29/namespacegraphmine_1_1detail_1_1anonymous__namespace_02g2miner__motif_8cu_03.html#a83e1e964ef816f1070e83cf460bb897a',1,'graphmine::detail::anonymous_namespace{g2miner_motif.cu}']]],
+  ['graphset_5fkclique_5fmutex_11',['graphset_kclique_mutex',['../d8/d59/namespacegraphmine_1_1detail_1_1anonymous__namespace_02graphset__kclique_8cu_03.html#a438ed30766d6746c27986f3557ee0fc4',1,'graphmine::detail::anonymous_namespace{graphset_kclique.cu}']]],
+  ['graphset_5fmotif_5fmutex_12',['graphset_motif_mutex',['../dc/d75/namespacegraphmine_1_1detail_1_1anonymous__namespace_02graphset__motif_8cu_03.html#af5dbbbd2cde69b692720e98cbfbdea90',1,'graphmine::detail::anonymous_namespace{graphset_motif.cu}']]]
+];

@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['s_0',['s',['../df/d45/classClock.html#a1f2849e0d8c90cc0ae4e51c2e3779305',1,'Clock']]],
+  ['satellite_1',['satellite',['../d3/d09/classqueryGraph.html#a8df1f6d213e4586dbd741c76e46e8c6b',1,'queryGraph']]],
+  ['scope_2',['Documented source scope',['../index.html#autotoc_md2',1,'']]],
+  ['second_3',['SECOND',['../d5/d60/utils_8h.html#ad86cda5a2f5e8b062147413c47d26540',1,'utils.h']]],
+  ['set_5faccess_5fmode_4',['set_access_mode',['../dd/d34/accessMode_8cuh.html#a5893491e54a3c0fdfce962016aa0a351',1,'accessMode.cuh']]],
+  ['set_5fedge_5finfo_5',['set_edge_info',['../d8/d38/classEmbeddingList.html#a6eb86d0977d44c84f0042ebee01c6556',1,'EmbeddingList']]],
+  ['set_5ffreq_5fedge_5fpattern_6',['set_freq_edge_pattern',['../da/d6c/aggregrate_8cuh.html#abf39a3f7b0caaeeb5bd4e73e2093703e',1,'aggregrate.cuh']]],
+  ['set_5fidx_7',['set_idx',['../d8/d38/classEmbeddingList.html#a98a905126696baccab9dcb0615ed2336',1,'EmbeddingList']]],
+  ['set_5fvalidation_8',['set_validation',['../de/dc1/kcl_8cu.html#a04b149beffbe2b3650ea8daa8f013097',1,'set_validation(OffsetT *row_start, uint8_t *valid_candi, uint32_t nnodes, uint32_t min_deg):&#160;kcl.cu'],['../de/d61/sm_8cu.html#af88e4704429d25ee0e69d8db82ffd988',1,'set_validation(CSRGraph g, uint8_t *valid_candi, uint32_t nnodes, uint8_t lab, uint32_t min_deg):&#160;sm.cu']]],
+  ['set_5fvertex_5fpage_5fborder_9',['set_vertex_page_border',['../d2/def/classaccess__mode__controller.html#a2562617c1075ddfb06edb8fb3d2e25eb',1,'access_mode_controller']]],
+  ['set_5fvid_10',['set_vid',['../d8/d38/classEmbeddingList.html#ad79a32b210e547c6c10aaae5156b236d',1,'EmbeddingList']]],
+  ['settype_11',['SetType',['../d5/d60/utils_8h.html#a8b6c2262cad9a771e78004a87e00e4e0',1,'utils.h']]],
+  ['simpleembedding_12',['SimpleEmbedding',['../da/d6d/structSimpleEmbedding.html',1,'']]],
+  ['size_13',['size',['../d8/d38/classEmbeddingList.html#a1a1bb53adb13b483ca1d948e527739b6',1,'EmbeddingList::size(unsigned level) const'],['../d8/d38/classEmbeddingList.html#ad0bdb8844e4d17581614a08224eba025',1,'EmbeddingList::size() const']]],
+  ['size_5fadjustment_14',['size_adjustment',['../d8/d38/classEmbeddingList.html#a7c5f376700de189ed7d6832f90c73cf5',1,'EmbeddingList']]],
+  ['sizes_15',['sizes',['../d8/d38/classEmbeddingList.html#a4491d86db97f2d6725b264e1cbb232cd',1,'EmbeddingList']]],
+  ['sm_2ecu_16',['sm.cu',['../de/d61/sm_8cu.html',1,'']]],
+  ['source_20provenance_17',['Paper and source provenance',['../index.html#autotoc_md3',1,'']]],
+  ['source_20scope_18',['Documented source scope',['../index.html#autotoc_md2',1,'']]],
+  ['src_19',['src',['../d2/d4f/structEdge.html#a127ada690d7724921680ad1022cc0725',1,'Edge']]],
+  ['start_20',['start',['../df/d45/classClock.html#af8f3d425a3477e0fb0aea00f87a105e1',1,'Clock']]],
+  ['start_5ftime_21',['start_time',['../df/d45/classClock.html#a1ea80a238fa14fe36aa070c3503f0ff1',1,'Clock']]],
+  ['str_22',['str',['../df/d45/classClock.html#a994ab5fa0c11f9d4abd246b618fcd452',1,'Clock']]],
+  ['swap_23',['swap',['../d5/d60/utils_8h.html#aed1bb54711c663abdb709bfb2e5bf46c',1,'utils.h']]]
+];

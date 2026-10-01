@@ -1,0 +1,26 @@
+var structmcp_1_1WARP__SHARED__HANDLE =
+[
+    [ "al", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ab19f67b6e861b303e287ce7301c82b3f", null ],
+    [ "base_l", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a5eab6a4f071b8d0f3041b5fa880899e2", null ],
+    [ "bl", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ade8be8273f9ff3a3de14f174c94b4790", null ],
+    [ "colored", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a887bc1ece323bb90c65cfd76dfeea2f7", null ],
+    [ "encode", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a100e77a3b904785a0dc31c9248216968", null ],
+    [ "fork", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#aa5a38b191cd956b0e38693cdebe76ab8", null ],
+    [ "i", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a2b0557f04b3bd013e0df1c1eca9fc155", null ],
+    [ "l", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#abef6455500c50771633e802682a70353", null ],
+    [ "lastMask_i", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ac84c2f03330b504284045685cd1dfb50", null ],
+    [ "lastMask_ii", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a07db1266f585966f7b9b432afabc9f75", null ],
+    [ "level_pointer_index", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#acf0515e27272c7addc946bd9b3d337cb", null ],
+    [ "num_divs_local", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ac76420f9f799d05ebab849fce9eb47be", null ],
+    [ "pl", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a159b575c2df28d5cd3022c9f877d8089", null ],
+    [ "root_sm_block_id", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a00ef8f89e79500fe0081765ef69708de", null ],
+    [ "root_sm_warp_id", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a40d8e9bb7906913371475ae4ec85737d", null ],
+    [ "shared_other_sm_warp_id", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a6d80553326e2deb2b1ce1ec376889610", null ],
+    [ "sm_warp_id", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a61f45d2c9f00b66178811ad076adcffc", null ],
+    [ "state", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ab4fafd204eb1f77f971c6a36bcea88b0", null ],
+    [ "to_col", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ac1ade77901bed86d3434a8dd6d46b890", null ],
+    [ "usrcLen", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ad1ad81f60bb1096ecd0c8626b85f93e4", null ],
+    [ "worker_pos", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#aef322363839127d3be26bdf6df9f0a08", null ],
+    [ "Xx_aux_shared", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#aee6fa3cb05f62b31125ed6f9bd08c353", null ],
+    [ "Xx_aux_sz", "df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#af0c6cfe799a282f53b8a1b8bca2332fe", null ]
+];

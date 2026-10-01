@@ -1,0 +1,60 @@
+/**
+\mainpage GraphMine library implementation
+
+This reference documents the complete GraphMine-owned C++17/CUDA layer: the
+canonical graph model, result and status types, public problem classes,
+runtime backend interfaces, CUDA adapters, CLI, examples, and tests.
+
+<div class="gm-reference-links">
+  <a href="../">Code reference portal</a>
+  <a href="../../">High-level guide</a>
+  <a href="../research/">Research internals</a>
+  <a href="https://github.com/wajidmanzoor/graphMine/tree/main/library">Source on GitHub</a>
+</div>
+
+\section gm_start Where to start
+
+- <a href="namespaces.html">Namespaces</a> shows the public `graphmine`
+  namespace and adapter-private namespaces.
+- <a href="annotated.html">Classes and data structures</a> covers graph input,
+  options, outputs, status, provenance, and algorithm objects.
+- <a href="functions_func.html">Class methods</a> is the method-by-method index.
+- <a href="globals_func.html">Free functions</a> includes host helpers and CUDA
+  kernels discovered in implementation units.
+- <a href="files.html">Files</a> follows the repository layout and opens an
+  annotated source view for every header, `.cpp`, `.cu`, and `.cuh` file.
+
+\section gm_flow Execution flow
+
+Every supported operation follows the same boundary:
+
+1. `graphmine::Graph` validates and preserves the canonical external graph.
+2. A problem options object chooses a validated backend and optional outputs.
+3. The problem class `supports()` checks graph/profile compatibility.
+4. `run()` normalizes the graph and dispatches through an internal backend
+   interface.
+5. A backend adapter invokes the preserved research implementation, checks and
+   materializes requested results, restores external IDs, and returns an
+   `ExecutionResult<T>` with provenance and timings.
+
+The public problem classes are in `library/include/graphmine/problems/`.
+Backend boundaries and CUDA translation units are in
+`library/src/backends/`. Use each function page's definition link,
+"References", and "Referenced by" sections to follow a call path.
+
+\section gm_cuda CUDA entries
+
+Doxygen indexes `.cu` and `.cuh` as C++. CUDA qualifiers are removed only for
+declaration parsing; the linked source view always shows the exact
+`__global__`, `__device__`, `__host__`, launch configuration, synchronization,
+and memory-space declarations compiled by GraphMine.
+
+\section gm_scope Scope and provenance
+
+This site separates GraphMine-owned integration code from the preserved
+research code. Continue to the
+<a href="../research/">research implementation reference</a> for the original
+algorithm internals. Backend/version/commit provenance and validation evidence
+remain in the
+<a href="https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json">problem-first catalog</a>.
+*/

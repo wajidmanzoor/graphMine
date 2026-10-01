@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['main_0',['main',['../d7/d6f/main_8cu.html#a3c04138a5bfe5d72780bb7e82a18e627',1,'main.cu']]],
+  ['main_2ecu_1',['main.cu',['../d7/d6f/main_8cu.html',1,'']]],
+  ['main_5fsupport_2ecuh_2',['main_support.cuh',['../df/d27/main__support_8cuh.html',1,'']]],
+  ['maintask_3',['MAINTASK',['../d8/d4b/defs_8cuh.html#af90e0826c797a98344f473ff8ac1f309',1,'defs.cuh']]],
+  ['mark_4',['mark',['../d9/d4c/structgraph_1_1GraphQueue__d.html#a893b8b3b9c3d0a22703a820b1199bd67',1,'graph::GraphQueue_d::mark'],['../d8/d1f/classgraph_1_1GraphQueue.html#acf7b75069a3f7299bfce3b9ecf2d4304',1,'graph::GraphQueue::mark']]],
+  ['market_5ffile_5',['market_file',['../d1/d50/classgraph_1_1EdgeListFile.html#a99b92484f2d4bd8fb601b0d66414371b',1,'graph::EdgeListFile']]],
+  ['matrixfileprop_6',['MatrixFileProp',['../d7/d23/structgraph_1_1MatrixFileProp.html',1,'graph']]],
+  ['matrixstats_7',['MatrixStats',['../de/de6/utils_8cuh.html#a83c89e4384142122b9206ea5630ecd9b',1,'utils.cuh']]],
+  ['max_5fthreads_5fper_5fsm_8',['max_threads_per_SM',['../d8/d41/structCUDAContext.html#ac087d719b0efffdb51b041bf4b74c06a',1,'CUDAContext']]],
+  ['maxdeg_9',['MAXDEG',['../da/d51/common_8cuh.html#a8444945a58d1cd0f9c98aa8e5d259fec',1,'common.cuh']]],
+  ['maximal_5fclique_10',['MAXIMAL_CLIQUE',['../d8/d4b/defs_8cuh.html#af90e0826c797a98344f473ff8ac1f309a38998f185bca3e700fc58c6496289b06',1,'defs.cuh']]],
+  ['maxlevel_11',['MAXLEVEL',['../da/d51/common_8cuh.html#ad911f591450f52fed46431a9aeca1a98',1,'common.cuh']]],
+  ['mfp_12',['mfp',['../d1/d50/classgraph_1_1EdgeListFile.html#a7a7f365cb384171edb88e86ee43db59e',1,'graph::EdgeListFile']]],
+  ['mt_13',['mt',['../df/d87/structConfig.html#a0c54ed98436f611aa24c83fc41951cae',1,'Config']]],
+  ['mtb_5fwriter_14',['MtB_Writer',['../d9/d0b/classgraph_1_1MtB__Writer.html',1,'graph']]],
+  ['mtx_15',['MTX',['../d1/d50/classgraph_1_1EdgeListFile.html#a9eb5eb9dbe4a720aac442a0cc070e141aebdf81df509fc7df9c28940e5c25b4b3',1,'graph::EdgeListFile']]]
+];

@@ -27,12 +27,14 @@ enum class TemporalMotifOptionalOutput : std::uint32_t {
   instances = 1U << 0U,
 };
 
+/// Combines two optional-output flags.
 constexpr TemporalMotifOptionalOutput operator|(
     TemporalMotifOptionalOutput lhs, TemporalMotifOptionalOutput rhs) {
   return static_cast<TemporalMotifOptionalOutput>(
       static_cast<std::uint32_t>(lhs) | static_cast<std::uint32_t>(rhs));
 }
 
+/// Tests whether an optional-output flag is present.
 constexpr bool has_output(TemporalMotifOptionalOutput outputs,
                           TemporalMotifOptionalOutput output) {
   return (static_cast<std::uint32_t>(outputs) &
@@ -64,24 +66,32 @@ struct TemporalMotifOutput {
   bool instances_complete = true;
 };
 
+/// Mines the validated ordered feed-forward temporal motif on event graphs.
 class TemporalMotifMining {
  public:
+  /// Stores backend, window, output, limit, and execution options.
   explicit TemporalMotifMining(TemporalMotifOptions options = {});
 
+  /// Checks timestamps, directed events, and backend support without mining.
   [[nodiscard]] SupportReport supports(const Graph& graph) const;
+  /// Counts temporal motifs and optionally restores matching vertices/edges.
   [[nodiscard]] ExecutionResult<TemporalMotifOutput> run(
       const Graph& graph) const;
+  /// Returns the immutable options captured at construction.
   [[nodiscard]] const TemporalMotifOptions& options() const noexcept {
     return options_;
   }
 
+  /// Lists registered temporal-motif backends and their availability.
   [[nodiscard]] static std::vector<BackendInfo> backends();
 
  private:
   TemporalMotifOptions options_;
 };
 
+/// Returns the stable manifest/CLI identifier for a backend value.
 [[nodiscard]] const char* to_string(TemporalMotifBackend backend) noexcept;
+/// Returns the stable JSON/CLI spelling for a temporal motif pattern.
 [[nodiscard]] const char* to_string(TemporalMotifPattern pattern) noexcept;
 
 }  // namespace graphmine

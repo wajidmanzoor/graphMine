@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['check_5fcuda_0',['CHECK_CUDA',['../de/d3c/macros_8h.html#a51204a79b758abb43c371167a2adc91b',1,'macros.h']]],
+  ['cols_1',['cols',['../d3/d2a/structtot_1_1binary__search__index.html#aa93305b60b96d28d8f7d4bb7659635ab',1,'tot::binary_search_index']]],
+  ['column_5findices_2',['column_indices',['../de/d2c/classtot_1_1CsrMatrix.html#a7874d0d237bb3889278c9b21bcef66bb',1,'tot::CsrMatrix::column_indices'],['../d0/d1b/classtot_1_1CooMatrix.html#acffd9984128d44c2e12fbdd79bdb3449',1,'tot::CooMatrix::column_indices'],['../dc/d74/classtot_1_1BitmapCSR.html#a8a57cd89556ef95d4fedb2ed0a0ec5ba',1,'tot::BitmapCSR::column_indices'],['../df/dab/classtot_1_1BitmapCOO.html#ab830a3dfa629aa166b146d88d44d6d2b',1,'tot::BitmapCOO::column_indices']]],
+  ['combinetobmp256_3',['combinetobmp256',['../dd/d70/structtot_1_1CombineToBMP256.html',1,'tot::CombineToBMP256&lt; BitmapType &gt;'],['../dd/d70/structtot_1_1CombineToBMP256.html#a9c7c02db9b2cc940c024c633768cb034',1,'tot::CombineToBMP256::CombineToBMP256()']]],
+  ['config_4',['Config',['../d5/da2/structtot_1_1Config.html',1,'tot']]],
+  ['constants_2eh_5',['constants.h',['../d2/d6f/constants_8h.html',1,'']]],
+  ['convert_2eh_6',['convert.h',['../d3/d82/convert_8h.html',1,'']]],
+  ['convert_5fcoo2bmp_7',['convert_coo2bmp',['../df/d48/namespacetot.html#aabd7f08670f1f15e7728011e63de60f3',1,'tot']]],
+  ['convert_5fcoo_5fto_5fcsr_8',['convert_coo_to_csr',['../df/d48/namespacetot.html#ae62df3595a1209d808a68a73d0e1e88c',1,'tot']]],
+  ['convert_5fcsr_5fto_5fcoo_9',['convert_csr_to_coo',['../df/d48/namespacetot.html#a0e51d9a22619e0b871ca60e36f33cc45',1,'tot']]],
+  ['convert_5fundirected_10',['convert_undirected',['../df/d48/namespacetot.html#af314c8b6efdf60ba2f8be5a7686c191e',1,'tot']]],
+  ['coo_2eh_11',['coo.h',['../d6/d2d/coo_8h.html',1,'']]],
+  ['cooindices_12',['cooindices',['../df/da4/structtot_1_1COOIndices.html',1,'tot::COOIndices&lt; IndexType, BitmapType &gt;'],['../df/da4/structtot_1_1COOIndices.html#af6982b2349ade114f6166919c2dc0f0c',1,'tot::COOIndices::COOIndices()']]],
+  ['coomatrix_13',['coomatrix',['../d0/d1b/classtot_1_1CooMatrix.html#aa84a9747b09b6da218229206d38a7fd5',1,'tot::CooMatrix::CooMatrix(IndexType nrow, IndexType ncol, IndexType nnz, ValueType)'],['../d0/d1b/classtot_1_1CooMatrix.html#a3a3ab80a522e6cd4e5e76ad80fe4fc3c',1,'tot::CooMatrix::CooMatrix()=default'],['../d0/d1b/classtot_1_1CooMatrix.html',1,'tot::CooMatrix&lt; IndexType, ValueType, MemorySpace &gt;']]],
+  ['cores_14',['Triangle Counting on Tensor Cores',['../index.html',1,'']]],
+  ['count_5ftriangles_5fon_5ftensors_15',['count_triangles_on_tensors',['../df/d48/namespacetot.html#a681f2b4f6c49acb2615de719f844a7e7',1,'tot']]],
+  ['counting_20on_20tensor_20cores_16',['Triangle Counting on Tensor Cores',['../index.html',1,'']]],
+  ['cputimer_17',['CPUTimer',['../d3/d7b/classtot_1_1CPUTimer.html',1,'tot']]],
+  ['csr_2eh_18',['csr.h',['../d8/dad/csr_8h.html',1,'']]],
+  ['csr_5fhelpers_2eh_19',['csr_helpers.h',['../df/d89/csr__helpers_8h.html',1,'']]],
+  ['csrmatrix_20',['csrmatrix',['../de/d2c/classtot_1_1CsrMatrix.html#a0152d2ea3502057a9e4c12d6bdb0ec06',1,'tot::CsrMatrix::CsrMatrix()=default'],['../de/d2c/classtot_1_1CsrMatrix.html#a112a8a1817b421e0f75bb4d2b1485a8d',1,'tot::CsrMatrix::CsrMatrix(IndexType nrow, IndexType ncol, IndexType nnz, ValueType default_value=ValueType())'],['../de/d2c/classtot_1_1CsrMatrix.html',1,'tot::CsrMatrix&lt; IndexType, ValueType, MemorySpace &gt;']]],
+  ['cudatimer_21',['cudatimer',['../de/d37/classtot_1_1CUDATimer.html#accfa8a328fbcad821074ea6b794e630c',1,'tot::CUDATimer::CUDATimer()'],['../de/d37/classtot_1_1CUDATimer.html',1,'tot::CUDATimer']]]
+];

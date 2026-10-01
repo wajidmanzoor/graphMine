@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['rdbuff_0',['rdBuff',['../dd/dbb/classSubgraphContainer.html#a843a9b2f3ec60c35c2511e7ad3416668',1,'SubgraphContainer']]],
+  ['recover_1',['recover',['../dd/dbb/classSubgraphContainer.html#a5282c1c1808552aa7f7d7dfebc62f15d',1,'SubgraphContainer']]],
+  ['refine_5fbest_5fpath_5fsubcertificate_5fend_2',['refine_best_path_subcertificate_end',['../df/d8c/classbliss_1_1AbstractGraph.html#a7ed1322746e2b94b4b2181149ea2491b',1,'bliss::AbstractGraph']]],
+  ['refine_5fcmp_5fto_5fbest_3',['refine_cmp_to_best',['../df/d8c/classbliss_1_1AbstractGraph.html#a2244a052aea6fb3027a0132cf54c9607',1,'bliss::AbstractGraph']]],
+  ['refine_5fcompare_5fcertificate_4',['refine_compare_certificate',['../df/d8c/classbliss_1_1AbstractGraph.html#a0aca90e842e85964a05bc9fb1d110b5b',1,'bliss::AbstractGraph']]],
+  ['refine_5fcurrent_5fpath_5fcertificate_5findex_5',['refine_current_path_certificate_index',['../df/d8c/classbliss_1_1AbstractGraph.html#a698738a5d2732f968e5260c2361e48f0',1,'bliss::AbstractGraph']]],
+  ['refine_5fequal_5fto_5ffirst_6',['refine_equal_to_first',['../df/d8c/classbliss_1_1AbstractGraph.html#ac0eba39a24d628424bdfbda71c424129',1,'bliss::AbstractGraph']]],
+  ['refine_5ffirst_5fpath_5fsubcertificate_5fend_7',['refine_first_path_subcertificate_end',['../df/d8c/classbliss_1_1AbstractGraph.html#ac097018874f83a7cffcaee3998864376',1,'bliss::AbstractGraph']]],
+  ['refinement_5fstack_8',['refinement_stack',['../d2/d35/classbliss_1_1Partition.html#a156b65df1f15ad51fc687d577222897a',1,'bliss::Partition']]],
+  ['refinement_5fstack_5fsize_9',['refinement_stack_size',['../d0/d21/classbliss_1_1Partition_1_1BacktrackInfo.html#ae42575ab1a8009c2c9edc5b83760c411',1,'bliss::Partition::BacktrackInfo']]],
+  ['report_5fhook_10',['report_hook',['../df/d8c/classbliss_1_1AbstractGraph.html#a62c834ba50d72ef2d3efa52e0d550f93',1,'bliss::AbstractGraph']]],
+  ['report_5fuser_5fparam_11',['report_user_param',['../df/d8c/classbliss_1_1AbstractGraph.html#a33724b7c001597146eed0f28f9edf9ea',1,'bliss::AbstractGraph']]],
+  ['reverse_5fseq_5f_12',['reverse_seq_',['../d9/d9b/classPlan.html#a92d8819df70805b6ec2ecb38c0754efe',1,'Plan']]],
+  ['root_5f_13',['root_',['../d9/d9b/classPlan.html#a92d7886b83824d3ce3f8cb10a6b7d383',1,'Plan']]],
+  ['root_5fdegree_5f_14',['root_degree_',['../d9/d9b/classPlan.html#a0cca3346ba2b301390261ecd44b8a929',1,'Plan']]],
+  ['row_5fptrs_15',['row_ptrs',['../dd/dbd/structWorkContext.html#a71c503dd60160ea8d1283a26683408f2',1,'WorkContext']]],
+  ['row_5fptrs_5f_16',['row_ptrs_',['../d2/d62/classGraph.html#a7593baf20b27c577ecb90fbf7dc886ec',1,'Graph::row_ptrs_'],['../dd/d22/classViewBinHolder.html#aeb54071c8485f701e268aab2dce680a0',1,'ViewBinHolder::row_ptrs_']]],
+  ['rtab_17',['rtab',['../da/def/namespacebliss.html#ae44afddbe0f9884ab8544b0d3ba2ba5e',1,'bliss']]]
+];

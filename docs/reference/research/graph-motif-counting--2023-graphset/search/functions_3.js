@@ -1,0 +1,14 @@
+var searchData=
+[
+  ['dec_0',['dec',['../d3/d7e/structBitmap.html#a98c8ba2e58910d21b3c39473df5af654',1,'Bitmap']]],
+  ['degeneracy_5forientation_5finit_1',['degeneracy_orientation_init',['../d7/d75/graph_8cpp.html#a67a9dc4151069407bcfe3857454147c2',1,'degeneracy_orientation_init(Graph *original_g, Graph *&amp;g):&#160;graph.cpp'],['../d6/df3/graph_8h.html#a67a9dc4151069407bcfe3857454147c2',1,'degeneracy_orientation_init(Graph *original_g, Graph *&amp;g):&#160;graph.cpp']]],
+  ['degree_5forientation_5finit_2',['degree_orientation_init',['../d7/d75/graph_8cpp.html#a01e598cfb3fa84bf52341d6dd1ba6771',1,'degree_orientation_init(Graph *original_g, Graph *&amp;g):&#160;graph.cpp'],['../d6/df3/graph_8h.html#a01e598cfb3fa84bf52341d6dd1ba6771',1,'degree_orientation_init(Graph *original_g, Graph *&amp;g):&#160;graph.cpp']]],
+  ['del_5fedge_3',['del_edge',['../d5/d71/classPattern.html#a25323d44a0d8085e3078a600ae3b9aaf',1,'Pattern']]],
+  ['destroy_4',['destroy',['../da/dfd/structTaskItem.html#abcfed2b2a7061533d572f0045985093c',1,'TaskItem::destroy()'],['../d4/db8/classGPUBitVector.html#ad114eea13c50af7f5bb7ac09aef4619e',1,'GPUBitVector::destroy()'],['../d4/db8/classGPUBitVector.html#ad114eea13c50af7f5bb7ac09aef4619e',1,'GPUBitVector::destroy()'],['../db/d04/structPatternMatchingDeviceContext.html#a9442964a84007d1cbaee80073a58b6ed',1,'PatternMatchingDeviceContext::destroy()'],['../d4/db8/classGPUBitVector.html#ad114eea13c50af7f5bb7ac09aef4619e',1,'GPUBitVector::destroy()']]],
+  ['dev_5falloc_5fand_5fcopy_5',['dev_alloc_and_copy',['../de/de6/utils_8cuh.html#ad83e23be14b93682869a4342d4e47121',1,'utils.cuh']]],
+  ['disjointsetunion_6',['DisjointSetUnion',['../d0/dae/classDisjointSetUnion.html#a561b934e0c6a937fd73739d580732dce',1,'DisjointSetUnion']]],
+  ['do_5fchecksum_7',['do_checksum',['../d7/d4b/dataloader_8cpp.html#af76a3f52e4094df69b00fa8d2d837a06',1,'dataloader.cpp']]],
+  ['do_5fintersection_8',['do_intersection',['../d4/dc2/gpu__vertex__set_8cuh.html#a97d1daf13ed55b24a5c3dd211ecfeacd',1,'do_intersection(uint32_t *out, const uint32_t *a, const uint32_t *b, uint32_t na, uint32_t nb):&#160;gpu_vertex_set.cuh'],['../d9/d8c/gpu__clique_8cu.html#a97d1daf13ed55b24a5c3dd211ecfeacd',1,'do_intersection(uint32_t *out, const uint32_t *a, const uint32_t *b, uint32_t na, uint32_t nb):&#160;gpu_clique.cu'],['../d5/d15/gpu__fsm_8cu.html#a97d1daf13ed55b24a5c3dd211ecfeacd',1,'do_intersection(uint32_t *out, const uint32_t *a, const uint32_t *b, uint32_t na, uint32_t nb):&#160;gpu_fsm.cu'],['../de/d6d/gpu__fsm__omp_8cu.html#a97d1daf13ed55b24a5c3dd211ecfeacd',1,'do_intersection(uint32_t *out, const uint32_t *a, const uint32_t *b, uint32_t na, uint32_t nb):&#160;gpu_fsm_omp.cu']]],
+  ['dump_5fgraph_9',['dump_graph',['../d7/d4b/dataloader_8cpp.html#a8b4c5a888168c28c97b08d2fbdfb6c31',1,'dataloader.cpp']]],
+  ['dvertex_10',['DVertex',['../df/d46/structDVertex.html#a5f2233060e99aab1aed5fb14dac35413',1,'DVertex']]]
+];

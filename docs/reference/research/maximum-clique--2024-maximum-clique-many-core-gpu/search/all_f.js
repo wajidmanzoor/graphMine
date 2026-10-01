@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['p_0',['p',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a980403aa7ed54e1e15d0d04a3982153f',1,'graph::MultiGPU_MCP::P'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a089476d6d61c3c6c900e96c496aca084',1,'mcp::GLOBAL_HANDLE::P']]],
+  ['p_5fmaximality_1',['p_maximality',['../d9/d3b/namespacemcp.html#a2514d3238fe7a156e6ae557e5b518113',1,'mcp']]],
+  ['p_5fmaximality_5feval_2',['p_maximality_eval',['../d9/d3b/namespacemcp.html#a1ff5e78dd91b589642ac00c454a4ba2c',1,'mcp']]],
+  ['p_5fwarp_5fmaximality_5f_3',['p_warp_maximality_',['../d9/d3b/namespacemcp.html#a32c555d75e495827cd4bfb0b6e008c6b',1,'mcp']]],
+  ['paper_20and_20source_20provenance_4',['Paper and source provenance',['../index.html#autotoc_md3',1,'']]],
+  ['parameter_2ecuh_5',['parameter.cuh',['../d2/d30/parameter_8cuh.html',1,'']]],
+  ['parseargs_6',['parseArgs',['../db/d16/config_8h.html#a7538d38aa2f625ea303a1b74e2a70968',1,'config.h']]],
+  ['parsecoloralg_7',['parseColorAlg',['../db/d16/config_8h.html#ae29258b9fd22442600dea47e895a7875',1,'config.h']]],
+  ['parsedevice_8',['parseDevice',['../db/d16/config_8h.html#a07d378b917b079f90de2db17c9b81d6f',1,'config.h']]],
+  ['parsemaintask_9',['parseMainTask',['../db/d16/config_8h.html#acccce3f025b42603395acb1e23f5cdd0',1,'config.h']]],
+  ['parseuint_10',['parseUInt',['../db/d16/config_8h.html#af833c2d825260899dfc956326f7ce32f',1,'config.h']]],
+  ['partmask_11',['partMask',['../dd/dd1/structmcp_1_1LOCAL__HANDLE.html#ac99d4eebc1b7b72c96861d359d5ba6b1',1,'mcp::LOCAL_HANDLE']]],
+  ['partsize_12',['PARTSIZE',['../d2/d30/parameter_8cuh.html#a2c483883831ea2d118faf9592ed2e9ce',1,'parameter.cuh']]],
+  ['peeltype_13',['PeelType',['../d5/d64/defs_8h.html#abdf0c15b2d2ce564f390bde37b754741',1,'defs.h']]],
+  ['percentage_5fdeleted_5fk_14',['percentage_deleted_k',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a2db81eb567f03f2a0570e8ba399c8326',1,'graph::SingleGPU_Kcore']]],
+  ['pl_15',['pl',['../df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a159b575c2df28d5cd3022c9f877d8089',1,'mcp::WARP_SHARED_HANDLE::pl'],['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a9f4d28ce39275548bffc6b759ea2085c',1,'mcp::SHARED_HANDLE::pl']]],
+  ['popc_16',['popc',['../d9/d3b/namespacemcp.html#a5b298808e80679659465ab97bb53ff4c',1,'mcp']]],
+  ['prepare_5ffork_17',['prepare_fork',['../d9/d3b/namespacemcp.html#a5fee14dda3c161f7c798a9ad4e37d7b5',1,'mcp']]],
+  ['prepare_5fwarp_5ffork_5f_18',['prepare_warp_fork_',['../d9/d3b/namespacemcp.html#ae6c42d4bd68a70d4c8fbaa38fe057ee9',1,'mcp']]],
+  ['printconfig_19',['printConfig',['../db/d16/config_8h.html#ac59da8a0518c3c173ad9ed9cdfa360f2',1,'config.h']]],
+  ['process_5fdegree_20',['process_degree',['../d9/d00/kcore_8cuh.html#ada8ed8df92bd2bf082ec14abe3dfb18e',1,'kcore.cuh']]],
+  ['processing_20units_21',['Efficiently Computing Maximum Clique of Sparse Graphs with Many-Core Graphical Processing Units',['../index.html',1,'']]],
+  ['provenance_22',['Paper and source provenance',['../index.html#autotoc_md3',1,'']]],
+  ['psanse_23',['PSANSE',['../d5/d64/defs_8h.html#a47f04c8f367b1b6a6c74eb42570b88a2a09623b6ed8a1b804c4f81e33c9aa770e',1,'defs.h']]]
+];

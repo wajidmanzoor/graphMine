@@ -1,0 +1,7 @@
+var searchData=
+[
+  ['selectdevicewithmaxfreememory_0',['selectDeviceWithMaxFreeMemory',['../d4/da1/helper_8h.html#a0dada0a0bfd232be530f59a260210d3d',1,'helper.h']]],
+  ['set_5fbeginning_5fpartial_5fmatchings_1',['set_beginning_partial_matchings',['../d9/d61/join_8h.html#a2824acc0cb2a0ba10986279918d2309c',1,'set_beginning_partial_matchings(const Graph &amp;Q, const Graph &amp;G, const candidate_graph &amp;cg, int &amp;cnt):&#160;join_bfs.cu'],['../d0/dcb/join__bfs_8cu.html#a2824acc0cb2a0ba10986279918d2309c',1,'set_beginning_partial_matchings(const Graph &amp;Q, const Graph &amp;G, const candidate_graph &amp;cg, int &amp;cnt):&#160;join_bfs.cu']]],
+  ['set_5fbeginning_5fpartial_5fmatchings_5fsym_2',['set_beginning_partial_matchings_sym',['../d9/d61/join_8h.html#a5e8c1f2eb8435aee95398de3306faec6',1,'set_beginning_partial_matchings_sym(const Graph &amp;Q, const Graph &amp;G, const candidate_graph &amp;cg, int &amp;cnt, const std::vector&lt; uint32_t &gt; &amp;partial_order):&#160;join_bfs.cu'],['../d0/dcb/join__bfs_8cu.html#a5e8c1f2eb8435aee95398de3306faec6',1,'set_beginning_partial_matchings_sym(const Graph &amp;Q, const Graph &amp;G, const candidate_graph &amp;cg, int &amp;cnt, const std::vector&lt; uint32_t &gt; &amp;partial_order):&#160;join_bfs.cu']]],
+  ['swap_5fmem_5fpool_3',['swap_mem_pool',['../d5/d6b/classMemManager.html#a721874bd2b43ba12c7eea9d5b45ff940',1,'MemManager']]]
+];

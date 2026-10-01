@@ -5,6 +5,8 @@
 
 namespace graphmine {
 
+/// Describes one selectable implementation and the capabilities compiled into
+/// the current GraphMine binary.
 struct BackendInfo {
   std::string id;
   std::string display_name;
@@ -15,6 +17,7 @@ struct BackendInfo {
   std::vector<std::string> capabilities;
 };
 
+/// Result of checking an input against an algorithm and backend contract.
 struct SupportReport {
   bool supported = false;
   std::string reason;

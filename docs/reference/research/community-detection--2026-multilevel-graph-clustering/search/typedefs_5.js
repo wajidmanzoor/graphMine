@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['matrix_5ft_0',['matrix_t',['../df/d96/core__types_8h.html#ab852e768ab737b12a6a8726966a8e562',1,'core_types.h']]],
+  ['mem_5fspace_1',['mem_space',['../d8/d74/namespacejet__community_1_1contracter.html#a284724d4c6736ed44dfef9a976a528ed',1,'jet_community::contracter::mem_space'],['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#aab5f06e99e6eb9eba30ea4b7518b82b2',1,'jet_community::local_move_heuristic::mem_space']]],
+  ['mem_5ft_2',['mem_t',['../d0/d24/namespacejet__community_1_1clustering__methods.html#a2a486f0f28bed4b12f591b876a47584b',1,'jet_community::clustering_methods::mem_t'],['../d8/d74/namespacejet__community_1_1contracter.html#ac6791b19f18acd5660182bc4fddd3861',1,'jet_community::contracter::mem_t'],['../d1/de4/namespacejet__community_1_1leidenR.html#ab9eeda71b4420d49af2b86ed0b1303ca',1,'jet_community::leidenR::mem_t'],['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#aa3c3485707386ee3f59bf78ffcc30193',1,'jet_community::local_move_heuristic::mem_t'],['../de/d00/namespacejet__community_1_1ordering.html#afc7d2ce4666855da7a0bd7f7acf79288',1,'jet_community::ordering::mem_t']]],
+  ['member_3',['member',['../d8/d74/namespacejet__community_1_1contracter.html#a51f084c342cfa664932decb1c27bd6cd',1,'jet_community::contracter::member'],['../d1/de4/namespacejet__community_1_1leidenR.html#acf1230438ec583d8e1d67121b2008604',1,'jet_community::leidenR::member'],['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#aaac679155a2e435af82bad60bd21fc90',1,'jet_community::local_move_heuristic::member']]],
+  ['min_5freducer_5ft_4',['min_reducer_t',['../d1/de4/namespacejet__community_1_1leidenR.html#a4b03926212701dc4b9a81e8cd971da4a',1,'jet_community::leidenR']]]
+];

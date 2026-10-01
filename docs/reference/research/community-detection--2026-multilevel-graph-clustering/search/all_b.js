@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['massive_5fcutoff_0',['MASSIVE_CUTOFF',['../de/d00/namespacejet__community_1_1ordering.html#a00d12079b3a2da3d3489fbf562bff067',1,'jet_community::ordering']]],
+  ['matrix_5ft_1',['matrix_t',['../df/d96/core__types_8h.html#ab852e768ab737b12a6a8726966a8e562',1,'core_types.h']]],
+  ['max_5fsize_2',['max_size',['../df/dc6/structjet__community_1_1local__move__heuristic_1_1update__cdata.html#a11cb54cfd654f7edf77d7dae98503081',1,'jet_community::local_move_heuristic::update_cdata']]],
+  ['measurement_3',['Measurement',['../d5/d37/namespacejet__community.html#a455a71c87418338c047c64f3c1a9c0a5',1,'jet_community']]],
+  ['measurementnames_4',['measurementNames',['../d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#afae9cf0acb907ca2b0604b68ae5edc1a',1,'jet_community::ExperimentLoggerUtil']]],
+  ['measurements_5',['measurements',['../d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a9578690b475ae6b43d5cdf8a559d79e2',1,'jet_community::ExperimentLoggerUtil']]],
+  ['mem_5fspace_6',['mem_space',['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#aab5f06e99e6eb9eba30ea4b7518b82b2',1,'jet_community::local_move_heuristic::mem_space'],['../d8/d74/namespacejet__community_1_1contracter.html#a284724d4c6736ed44dfef9a976a528ed',1,'jet_community::contracter::mem_space']]],
+  ['mem_5ft_7',['mem_t',['../de/d00/namespacejet__community_1_1ordering.html#afc7d2ce4666855da7a0bd7f7acf79288',1,'jet_community::ordering::mem_t'],['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#aa3c3485707386ee3f59bf78ffcc30193',1,'jet_community::local_move_heuristic::mem_t'],['../d1/de4/namespacejet__community_1_1leidenR.html#ab9eeda71b4420d49af2b86ed0b1303ca',1,'jet_community::leidenR::mem_t'],['../d8/d74/namespacejet__community_1_1contracter.html#ac6791b19f18acd5660182bc4fddd3861',1,'jet_community::contracter::mem_t'],['../d0/d24/namespacejet__community_1_1clustering__methods.html#a2a486f0f28bed4b12f591b876a47584b',1,'jet_community::clustering_methods::mem_t']]],
+  ['member_8',['member',['../d1/de4/namespacejet__community_1_1leidenR.html#acf1230438ec583d8e1d67121b2008604',1,'jet_community::leidenR::member'],['../d8/d74/namespacejet__community_1_1contracter.html#a51f084c342cfa664932decb1c27bd6cd',1,'jet_community::contracter::member'],['../d8/da1/namespacejet__community_1_1local__move__heuristic.html#aaac679155a2e435af82bad60bd21fc90',1,'jet_community::local_move_heuristic::member']]],
+  ['memory_5fstore_9',['memory_store',['../db/d82/structmemory__store.html#ae22fcd8d129babb9cdfe4409acab357d',1,'memory_store::memory_store(const memory_store &amp;)=delete'],['../db/d82/structmemory__store.html#a97ea576f808b79c5d139e36c5d6c62cc',1,'memory_store::memory_store(const matrix_t largest, cluster_data &amp;clone_target)'],['../db/d82/structmemory__store.html',1,'memory_store']]],
+  ['memory_5fstore_2ehpp_10',['memory_store.hpp',['../db/ddc/memory__store_8hpp.html',1,'']]],
+  ['mid_5fcutoff_11',['MID_CUTOFF',['../de/d00/namespacejet__community_1_1ordering.html#ab02790f2241f2e0e27aa856387d12edc',1,'jet_community::ordering']]],
+  ['min_5freducer_5ft_12',['min_reducer_t',['../d1/de4/namespacejet__community_1_1leidenR.html#a4b03926212701dc4b9a81e8cd971da4a',1,'jet_community::leidenR']]],
+  ['modularity_13',['modularity',['../dc/d13/structmodularity.html',1,'modularity'],['../dc/d13/structmodularity.html#a8b60d5b467f33f4b48e436fef82b548d',1,'modularity::modularity()'],['../d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a8c9292736723f771210e3f935b3153b8',1,'jet_community::ExperimentLoggerUtil::modularity']]],
+  ['mtx_14',['mtx',['../d9/dac/structjet__community_1_1weighted__graph.html#a6382f07b29464043977f0648e1b2e026',1,'jet_community::weighted_graph']]],
+  ['multilevel_20graph_20clustering_3a_20a_20parallel_20perspective_20on_20louvain_20and_20leiden_15',['GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden',['../index.html',1,'']]]
+];

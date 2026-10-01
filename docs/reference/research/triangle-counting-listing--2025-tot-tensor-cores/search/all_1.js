@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['b_5ffrag_5foffsets_0',['B_frag_offsets',['../df/d48/namespacetot.html#a6928baa56f92e917adda7e6764aa14f0',1,'tot']]],
+  ['ballot_5fmask_1',['BALLOT_MASK',['../df/d48/namespacetot.html#a27722c64aac79f545ca5f11b7df2e8f1',1,'tot']]],
+  ['bf16_2',['bf16',['../df/d48/namespacetot.html#a5065cf68f811c09d612921e4ad32df63',1,'tot']]],
+  ['bf16x2_3',['bf16x2',['../df/d48/namespacetot.html#a2f26bb45c7fe574b1ae4b1879ba7a16d',1,'tot']]],
+  ['bfs_5ftc_4',['bfs_tc',['../df/d48/namespacetot.html#ac8243e5ec1b07456e6dd945671f1c03f',1,'tot']]],
+  ['binary_5fsearch_5findex_5',['binary_search_index',['../d3/d2a/structtot_1_1binary__search__index.html#ac815b4db3c1e7d6b21aab7f0e8e1d5e2',1,'tot::binary_search_index::binary_search_index()'],['../d3/d2a/structtot_1_1binary__search__index.html',1,'tot::binary_search_index&lt; IndexType &gt;']]],
+  ['bitcoo_2eh_6',['bitcoo.h',['../d7/de6/bitcoo_8h.html',1,'']]],
+  ['bitcsr_2eh_7',['bitcsr.h',['../d9/d40/bitcsr_8h.html',1,'']]],
+  ['bitmap256_5fu_8',['Bitmap256_U',['../db/d42/uniontot_1_1Bitmap256__U.html',1,'tot']]],
+  ['bitmap_5ftype_9',['bitmap_type',['../dc/d74/classtot_1_1BitmapCSR.html#acc9ee320d9785bf8dedc4719001d2bef',1,'tot::BitmapCSR::bitmap_type'],['../df/dab/classtot_1_1BitmapCOO.html#a5bb6a74c80c82214330447105c3ce6f1',1,'tot::BitmapCOO::bitmap_type']]],
+  ['bitmapcoo_10',['bitmapcoo',['../df/dab/classtot_1_1BitmapCOO.html#ad80f2e46d0fefcbb26eb00a3b0477b7e',1,'tot::BitmapCOO::BitmapCOO()=default'],['../df/dab/classtot_1_1BitmapCOO.html#a08558568a7e17279b9275fa340de3819',1,'tot::BitmapCOO::BitmapCOO(IndexType nrow, IndexType ncol, IndexType nnz, IndexType ntile)'],['../df/dab/classtot_1_1BitmapCOO.html',1,'tot::BitmapCOO&lt; IndexType, ValueType, BitmapType, Bmp64PerTile, MemorySpace &gt;']]],
+  ['bitmapcsr_11',['bitmapcsr',['../dc/d74/classtot_1_1BitmapCSR.html#a806dbfaac89537b69443e4fe31a810f1',1,'tot::BitmapCSR::BitmapCSR()=default'],['../dc/d74/classtot_1_1BitmapCSR.html#a90a71754dc3eb5ba01c88176f6afe68f',1,'tot::BitmapCSR::BitmapCSR(IndexType nrow, IndexType ncol, IndexType nnz, IndexType ntile)'],['../dc/d74/classtot_1_1BitmapCSR.html',1,'tot::BitmapCSR&lt; IndexType, ValueType, BitmapType, Bmp64PerTile, MemorySpace &gt;']]],
+  ['bitmaps_12',['bitmaps',['../df/dab/classtot_1_1BitmapCOO.html#a19fd95731bbd485ddd0c9e025b35e4ea',1,'tot::BitmapCOO::bitmaps'],['../dc/d74/classtot_1_1BitmapCSR.html#aee46c38ec17689389a03ea337d335ce1',1,'tot::BitmapCSR::bitmaps'],['../dd/d70/structtot_1_1CombineToBMP256.html#a226474c649352495dc40847e95e34579',1,'tot::CombineToBMP256::bitmaps']]],
+  ['bitmapvector_13',['bitmapvector',['../dc/d74/classtot_1_1BitmapCSR.html#a71fb4b7d69fdf7a84625bba829134216',1,'tot::BitmapCSR::BitmapVector'],['../df/dab/classtot_1_1BitmapCOO.html#a5abe78dd6d8b2072392ec790be5c4370',1,'tot::BitmapCOO::BitmapVector']]],
+  ['bmp256_14',['bmp256',['../df/d48/namespacetot.html#a005112b6849179c410d04ec219fd2130',1,'tot::BMP256'],['../df/d48/namespacetot.html#a8e7fca9b7c8b61daf833bfb94cf96808af307ef41098d626bb39166e1baac601e',1,'tot::BMP256']]],
+  ['bmp32_15',['bmp32',['../db/d42/uniontot_1_1Bitmap256__U.html#aa6fc5b613e37beeabfd1bd2a4a21f012',1,'tot::Bitmap256_U']]],
+  ['bmp64_16',['bmp64',['../db/d42/uniontot_1_1Bitmap256__U.html#aa45cdde899bc85b8daad59bcd00dfd31',1,'tot::Bitmap256_U::bmp64'],['../df/d48/namespacetot.html#a8e7fca9b7c8b61daf833bfb94cf96808ac6b7bad90456329fcad4327fc5ab0029',1,'tot::BMP64']]],
+  ['bmp64_5fcount_17',['bmp64_count',['../dc/d74/classtot_1_1BitmapCSR.html#ab90c798cad9f7063575ba28675ec879d',1,'tot::BitmapCSR::bmp64_count'],['../df/dab/classtot_1_1BitmapCOO.html#a29da343d64c1ab7f3636d69142bb6c94',1,'tot::BitmapCOO::bmp64_count']]],
+  ['bmp64_5ft_18',['bmp64_t',['../df/d48/namespacetot.html#aef76189d2b9c80f3b92e17a124ececa0',1,'tot']]],
+  ['bmp_5fdim_19',['bmp_dim',['../dc/d20/structtot_1_1try__mxm__huge.html#a3e011ff189906ee68cde478e3e56763a',1,'tot::try_mxm_huge']]],
+  ['bmp_5fsize_20',['bmp_size',['../df/dab/classtot_1_1BitmapCOO.html#a27ff494aecfc4635943f9a0c8e924fa1',1,'tot::BitmapCOO::bmp_size'],['../dc/d74/classtot_1_1BitmapCSR.html#ad7db454711356eea5eb39eaac880786c',1,'tot::BitmapCSR::bmp_size'],['../df/d48/namespacetot.html#a8e7fca9b7c8b61daf833bfb94cf96808',1,'tot::BMP_SIZE']]],
+  ['bmppopcount_21',['BmpPopcount',['../db/d1e/structtot_1_1BmpPopcount.html',1,'tot']]]
+];

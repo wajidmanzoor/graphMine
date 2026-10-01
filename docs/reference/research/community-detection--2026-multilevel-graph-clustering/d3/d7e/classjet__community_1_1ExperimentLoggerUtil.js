@@ -1,0 +1,26 @@
+var classjet__community_1_1ExperimentLoggerUtil =
+[
+    [ "CoarseLevel", "d0/dd5/classjet__community_1_1ExperimentLoggerUtil_1_1CoarseLevel.html", "d0/dd5/classjet__community_1_1ExperimentLoggerUtil_1_1CoarseLevel" ],
+    [ "ExperimentLoggerUtil", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a94a810fbfe82d08c4d0caa30fc9bf8f8", null ],
+    [ "add_iter_obj", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a71b4595a2434289303259ec44c273555", null ],
+    [ "add_iter_time", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a0577c1e0d4510da7b65eec1d737e6f45", null ],
+    [ "addCoarseLevel", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a9e0e98456f9596272bc723e7eed8fdb9", null ],
+    [ "addMeasurement", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a664b60e53250bef96af40988d61a1da4", null ],
+    [ "getMeasurement", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a7189e158a862a16892772dea58a37549", null ],
+    [ "log", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a6bf7d9ef10be7ed29349807466365665", null ],
+    [ "refinementReport", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#af5752490b0999f363a7e9f2f77b91af5", null ],
+    [ "setEdgeCut", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a7f9e478daa7718e37b727c74b558f29c", null ],
+    [ "setLevelCount", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#ad421b03b39a65161466a4b6911bd0802", null ],
+    [ "setModularity", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#ac2395eea561aff651cb7b9b85b4e700f", null ],
+    [ "setTotalNnz", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a4c959a1553eab3273018e41d60cf9d72", null ],
+    [ "coarseLevels", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a18a2d8005718c9ca210462b51857b3ce", null ],
+    [ "edge_cut", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#ad183decb309b96d6967b88c556d4213c", null ],
+    [ "iter_obj", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a37db12ca9c09d5b2f0216f4b1eb7dc98", null ],
+    [ "iter_times", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#ac70e45d7b44bc1b808b05db1939ea22d", null ],
+    [ "level_count", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#abace6f68003dcee248631df7cdf92d4a", null ],
+    [ "measurementNames", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#afae9cf0acb907ca2b0604b68ae5edc1a", null ],
+    [ "measurements", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a9578690b475ae6b43d5cdf8a559d79e2", null ],
+    [ "modularity", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a8c9292736723f771210e3f935b3153b8", null ],
+    [ "numCoarseLevels", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#a8a7c4545cd56a02b0da531aff7954ca0", null ],
+    [ "t_nnz", "d3/d7e/classjet__community_1_1ExperimentLoggerUtil.html#ab27e43de5c908e3e85f577b67d8f9c88", null ]
+];

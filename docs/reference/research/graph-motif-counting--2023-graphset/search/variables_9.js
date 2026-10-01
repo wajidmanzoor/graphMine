@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['id_0',['id',['../d4/d85/classDataLoader.html#af69d53447b3f5ddaa8730000c8cf8077',1,'DataLoader']]],
+  ['idleq_1',['idleq',['../d9/d6d/classGraphmpi.html#a7b1e67b371df3ac41aa8a109cb76de32',1,'Graphmpi']]],
+  ['idlethreadcnt_2',['idlethreadcnt',['../d9/d6d/classGraphmpi.html#a3218b346c0e8b16b85621053f57167d8',1,'Graphmpi']]],
+  ['in_5fdeg_3',['in_deg',['../df/d46/structDVertex.html#abeed05344cfd211cd6ac99864c152f60',1,'DVertex']]],
+  ['in_5fexclusion_5foptimize_5fans_5fpos_4',['in_exclusion_optimize_ans_pos',['../d5/d05/classSchedule__IEP.html#a7710691395c6a2c07caa46a491d76224',1,'Schedule_IEP::in_exclusion_optimize_ans_pos'],['../d3/dc7/classGPUSchedule.html#abbea01233985a4e98a16ac0c30a0ccf8',1,'GPUSchedule::in_exclusion_optimize_ans_pos']]],
+  ['in_5fexclusion_5foptimize_5farray_5fsize_5',['in_exclusion_optimize_array_size',['../d3/dc7/classGPUSchedule.html#a88c23b01234ae2ea9a77dc4e071cef56',1,'GPUSchedule']]],
+  ['in_5fexclusion_5foptimize_5fcoef_6',['in_exclusion_optimize_coef',['../d5/d05/classSchedule__IEP.html#a36c46a905219a6f86940731713466ca6',1,'Schedule_IEP::in_exclusion_optimize_coef'],['../d3/dc7/classGPUSchedule.html#a9dee2a263672217f8ba2d6277755bf93',1,'GPUSchedule::in_exclusion_optimize_coef']]],
+  ['in_5fexclusion_5foptimize_5fflag_7',['in_exclusion_optimize_flag',['../d3/dc7/classGPUSchedule.html#a80b171fec91ba76d76a30d9211dd8c78',1,'GPUSchedule::in_exclusion_optimize_flag'],['../d5/d05/classSchedule__IEP.html#adb851d202b1b7c89c4ede7502dafcb50',1,'Schedule_IEP::in_exclusion_optimize_flag']]],
+  ['in_5fexclusion_5foptimize_5fgroup_8',['in_exclusion_optimize_group',['../df/d61/classSchedule.html#a095aa6245e64c296c5f48c22606a0d3f',1,'Schedule::in_exclusion_optimize_group'],['../d5/d05/classSchedule__IEP.html#a37e6ec80e87416bd89c7b71526de318e',1,'Schedule_IEP::in_exclusion_optimize_group']]],
+  ['in_5fexclusion_5foptimize_5fnum_9',['in_exclusion_optimize_num',['../df/d61/classSchedule.html#a304c8182ff0fde3cd6dccec4fd298210',1,'Schedule::in_exclusion_optimize_num'],['../d5/d05/classSchedule__IEP.html#ab3f6d817296f33ee59f4e61fd8d04fe2',1,'Schedule_IEP::in_exclusion_optimize_num'],['../d3/dc7/classGPUSchedule.html#ad1afcd5b9113ab89a0ea242082a7fcf2',1,'GPUSchedule::in_exclusion_optimize_num']]],
+  ['in_5fexclusion_5foptimize_5fredundancy_10',['in_exclusion_optimize_redundancy',['../df/d61/classSchedule.html#ab92e5169e299469f4f1149bb68288fc3',1,'Schedule::in_exclusion_optimize_redundancy'],['../d5/d05/classSchedule__IEP.html#a659b0d95abf57e54e44c67cd4ca26900',1,'Schedule_IEP::in_exclusion_optimize_redundancy']]],
+  ['in_5fexclusion_5foptimize_5fval_11',['in_exclusion_optimize_val',['../d5/d05/classSchedule__IEP.html#a56681cf1a1205d47d0bc4e8e44c1ca00',1,'Schedule_IEP::in_exclusion_optimize_val'],['../df/d61/classSchedule.html#a3a4e2685839803bce6fc175e4004de76',1,'Schedule::in_exclusion_optimize_val']]],
+  ['in_5fexclusion_5foptimize_5fvertex_5fcoef_12',['in_exclusion_optimize_vertex_coef',['../d5/d05/classSchedule__IEP.html#a95e27e6091fedee0003963078663a8cc',1,'Schedule_IEP::in_exclusion_optimize_vertex_coef'],['../d3/dc7/classGPUSchedule.html#a8a8b4d71346112b36a3850381004388d',1,'GPUSchedule::in_exclusion_optimize_vertex_coef']]],
+  ['in_5fexclusion_5foptimize_5fvertex_5fflag_13',['in_exclusion_optimize_vertex_flag',['../d5/d05/classSchedule__IEP.html#a9959552cea6cbf17b425af2252b71259',1,'Schedule_IEP::in_exclusion_optimize_vertex_flag'],['../d3/dc7/classGPUSchedule.html#a96cd200b76ce9b3581cbf5e9232ad880',1,'GPUSchedule::in_exclusion_optimize_vertex_flag']]],
+  ['in_5fexclusion_5foptimize_5fvertex_5fid_14',['in_exclusion_optimize_vertex_id',['../d5/d05/classSchedule__IEP.html#a4b12e15a53fd067da639844ca65afae5',1,'Schedule_IEP::in_exclusion_optimize_vertex_id'],['../d3/dc7/classGPUSchedule.html#a3b42c0e217128a2d81b5115daa79c0eb',1,'GPUSchedule::in_exclusion_optimize_vertex_id']]],
+  ['in_5fexclusion_5foptimize_5fvertex_5fid_5fsize_15',['in_exclusion_optimize_vertex_id_size',['../d3/dc7/classGPUSchedule.html#a1444b1e62d738900b1bcd82c9adf9834',1,'GPUSchedule']]],
+  ['in_5fstart_16',['in_start',['../df/d46/structDVertex.html#ab0ca00e34e17b49806749614d8c05cbf',1,'DVertex']]],
+  ['info_17',['info',['../de/d05/structFSM__Device.html#ae5d1f834f0fef406933a005fe02cb065',1,'FSM_Device']]],
+  ['info_5fsize_18',['info_size',['../de/d6d/gpu__fsm__omp_8cu.html#a022246532fb989a98ae8339f3a594a7f',1,'gpu_fsm_omp.cu']]],
+  ['inner_5fgranularuty_19',['INNER_GRANULARUTY',['../d8/de0/gpu__graph__unimem_8cu.html#a1a1d6807c672087c21cf0f56bf571c9f',1,'gpu_graph_unimem.cu']]],
+  ['inter_5fcnt_20',['inter_cnt',['../dc/d52/set__operation_8hpp.html#a6d231831f79487f068467103ee504a49',1,'inter_cnt:&#160;set_operation.cpp'],['../dc/dad/set__operation_8cpp.html#a6d231831f79487f068467103ee504a49',1,'inter_cnt:&#160;set_operation.cpp']]],
+  ['is_5ffinished_21',['is_finished',['../d8/de0/gpu__graph__unimem_8cu.html#a95fb17120c92e5801765ceb1f610722e',1,'gpu_graph_unimem.cu']]],
+  ['is_5ffrequent_22',['is_frequent',['../de/d6d/gpu__fsm__omp_8cu.html#a6b7c73ea614c4f285cb7ad449cfd38a7',1,'gpu_fsm_omp.cu']]],
+  ['is_5fvertex_5finduced_23',['is_vertex_induced',['../d5/d05/classSchedule__IEP.html#ab7c1cd51b3b5a28d3bfda062f483fae7',1,'Schedule_IEP::is_vertex_induced'],['../d3/dc7/classGPUSchedule.html#a45b644b97575613d3f59ab62e1b38e9d',1,'GPUSchedule::is_vertex_induced']]],
+  ['is_5fworking_24',['is_working',['../db/db1/gpu__graph__mpi_8cu.html#a7d9b8aeac19c930a54be7d23df521687',1,'is_working:&#160;gpu_graph_mpi.cu'],['../d1/d1a/gpu__new__str_8cu.html#a7d9b8aeac19c930a54be7d23df521687',1,'is_working:&#160;gpu_new_str.cu']]]
+];

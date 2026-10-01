@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['l_0',['L',['../d9/db8/log_8cpp.html#a4b6bb2cdbcb8c783619e595db7aad454',1,'log.cpp']]],
+  ['lab_1',['lab',['../df/d6e/structpatternID.html#afd689d9a464544131e3d446c0c007cee',1,'patternID']]],
+  ['label_2',['label',['../df/d3b/structexpand__constraint.html#ae663b9a96eb8f907ed510fb38adf5910',1,'expand_constraint']]],
+  ['label_5ftype_3',['label_type',['../d5/d60/utils_8h.html#a08dd86fe4086c4922391f2f2e3c707db',1,'utils.h']]],
+  ['large_20graphs_20on_20gpu_4',['A Graph Pattern Mining Framework for Large Graphs on GPU',['../index.html',1,'']]],
+  ['last_5flevel_5',['last_level',['../d8/d38/classEmbeddingList.html#a62819ce983f16bb70a1150748e80a62b',1,'EmbeddingList']]],
+  ['level_6',['level',['../d8/d38/classEmbeddingList.html#ac1138313a2e190009510cc4f5d38a558',1,'EmbeddingList::level()'],['../d9/db8/log_8cpp.html#acf4d33ee4cff36f69b924471174dcb11',1,'level:&#160;log.cpp']]],
+  ['level_5fnames_7',['level_names',['../d9/db8/log_8cpp.html#a6ee99f12766d97f932da55d2232f5cf5',1,'log.cpp']]],
+  ['lock_8',['lock',['../d9/db8/log_8cpp.html#a9863926e23e26ddb194b82b7fc50756a',1,'log.cpp']]],
+  ['log_2ecpp_9',['log.cpp',['../d9/db8/log_8cpp.html',1,'']]],
+  ['log_2eh_10',['log.h',['../d7/d7f/log_8h.html',1,'']]],
+  ['log_5fdebug_11',['log_debug',['../d7/d7f/log_8h.html#adf764cbdea00d65edcd07bb9953ad2b7ab9f002c6ffbfd511da8090213227454e',1,'LOG_DEBUG:&#160;log.h'],['../d7/d7f/log_8h.html#aa77e596ef13d2f0f75d0ac9540ed358d',1,'log_debug:&#160;log.h']]],
+  ['log_5ferror_12',['log_error',['../d7/d7f/log_8h.html#a6ae72553ea9805dd87a463d6f710364d',1,'log_error:&#160;log.h'],['../d7/d7f/log_8h.html#adf764cbdea00d65edcd07bb9953ad2b7a230506cce5c68c3bac5a821c42ed3473',1,'LOG_ERROR:&#160;log.h']]],
+  ['log_5ffatal_13',['log_fatal',['../d7/d7f/log_8h.html#adf764cbdea00d65edcd07bb9953ad2b7ac630750884d91cb9767ef2200bbb048b',1,'LOG_FATAL:&#160;log.h'],['../d7/d7f/log_8h.html#a704a43b1e2ff3bb554aff101efdbeecf',1,'log_fatal:&#160;log.h']]],
+  ['log_5finfo_14',['log_info',['../d7/d7f/log_8h.html#adf764cbdea00d65edcd07bb9953ad2b7a6e98ff471e3ce6c4ef2d75c37ee51837',1,'LOG_INFO:&#160;log.h'],['../d7/d7f/log_8h.html#aa1cfe5444875c8eca0ea6f6993977d6d',1,'log_info:&#160;log.h']]],
+  ['log_5flockfn_15',['log_LockFn',['../d7/d7f/log_8h.html#aa8f9dc0532ecacdb6dd9fb0de5e0450e',1,'log.h']]],
+  ['log_5flog_16',['log_log',['../d9/db8/log_8cpp.html#ac008ecbde449b2dd1bc4f8671d9a0e07',1,'log_log(int level, const char *file, int line, const char *fmt,...):&#160;log.cpp'],['../d7/d7f/log_8h.html#ac008ecbde449b2dd1bc4f8671d9a0e07',1,'log_log(int level, const char *file, int line, const char *fmt,...):&#160;log.cpp']]],
+  ['log_5fset_5ffp_17',['log_set_fp',['../d9/db8/log_8cpp.html#af0f33363d4098787cac5b47f0a6ad443',1,'log_set_fp(FILE *fp):&#160;log.cpp'],['../d7/d7f/log_8h.html#af0f33363d4098787cac5b47f0a6ad443',1,'log_set_fp(FILE *fp):&#160;log.cpp']]],
+  ['log_5fset_5flevel_18',['log_set_level',['../d9/db8/log_8cpp.html#af2493e94f152a28b2ba4e3a2e2bba65d',1,'log_set_level(int level):&#160;log.cpp'],['../d7/d7f/log_8h.html#af2493e94f152a28b2ba4e3a2e2bba65d',1,'log_set_level(int level):&#160;log.cpp']]],
+  ['log_5fset_5flock_19',['log_set_lock',['../d9/db8/log_8cpp.html#a93d6674a530b372c85e6bdf275e6e6b4',1,'log_set_lock(log_LockFn fn):&#160;log.cpp'],['../d7/d7f/log_8h.html#a93d6674a530b372c85e6bdf275e6e6b4',1,'log_set_lock(log_LockFn fn):&#160;log.cpp']]],
+  ['log_5fset_5fquiet_20',['log_set_quiet',['../d9/db8/log_8cpp.html#a15fc2e61d925edc83d6eaa748a7fb40c',1,'log_set_quiet(int enable):&#160;log.cpp'],['../d7/d7f/log_8h.html#a15fc2e61d925edc83d6eaa748a7fb40c',1,'log_set_quiet(int enable):&#160;log.cpp']]],
+  ['log_5fset_5fudata_21',['log_set_udata',['../d9/db8/log_8cpp.html#a670c547ace6683148e5f480c4fc4c0f0',1,'log_set_udata(void *udata):&#160;log.cpp'],['../d7/d7f/log_8h.html#a670c547ace6683148e5f480c4fc4c0f0',1,'log_set_udata(void *udata):&#160;log.cpp']]],
+  ['log_5ftrace_22',['log_trace',['../d7/d7f/log_8h.html#adf764cbdea00d65edcd07bb9953ad2b7a5b76dd51db62558b1952158ba38b723f',1,'LOG_TRACE:&#160;log.h'],['../d7/d7f/log_8h.html#af89cb876e6e1d43cfeacdd58a7c9b78c',1,'log_trace:&#160;log.h']]],
+  ['log_5fwarn_23',['log_warn',['../d7/d7f/log_8h.html#adf764cbdea00d65edcd07bb9953ad2b7ac8041ffa22bc823d4726701cdb13fc13',1,'LOG_WARN:&#160;log.h'],['../d7/d7f/log_8h.html#a04af09851c431d178f16b24fa1aac1e9',1,'log_warn:&#160;log.h']]]
+];

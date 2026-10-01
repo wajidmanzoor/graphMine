@@ -46,22 +46,29 @@ struct TriangleOutput {
   std::optional<std::vector<EdgeTriangleCount>> per_edge_count;
 };
 
+/// Counts triangles and optionally materializes instance/local-count outputs.
 class TriangleCounting {
  public:
+  /// Stores backend, materialization, normalization, and execution options.
   explicit TriangleCounting(TriangleOptions options = {});
 
+  /// Checks the graph and selected backend without counting triangles.
   [[nodiscard]] SupportReport supports(const Graph& graph) const;
+  /// Executes triangle counting and returns all requested optional outputs.
   [[nodiscard]] ExecutionResult<TriangleOutput> run(const Graph& graph) const;
+  /// Returns the immutable options captured at construction.
   [[nodiscard]] const TriangleOptions& options() const noexcept {
     return options_;
   }
 
+  /// Lists registered triangle-counting backends and their availability.
   [[nodiscard]] static std::vector<BackendInfo> backends();
 
  private:
   TriangleOptions options_;
 };
 
+/// Returns the stable manifest/CLI identifier for a backend value.
 [[nodiscard]] const char* to_string(TriangleBackend backend) noexcept;
 
 }  // namespace graphmine

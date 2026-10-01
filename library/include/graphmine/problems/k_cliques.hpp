@@ -39,22 +39,29 @@ struct KCliqueOutput {
   std::optional<std::vector<VertexKCliqueCount>> per_vertex_count;
 };
 
+/// Counts or enumerates fixed-size cliques through a validated GPU backend.
 class KCliques {
  public:
+  /// Stores k, backend, optional materialization, and execution options.
   explicit KCliques(KCliqueOptions options = {});
 
+  /// Checks k, the graph, and selected backend without running the algorithm.
   [[nodiscard]] SupportReport supports(const Graph& graph) const;
+  /// Counts k-cliques and materializes requested optional results.
   [[nodiscard]] ExecutionResult<KCliqueOutput> run(const Graph& graph) const;
+  /// Returns the immutable options captured at construction.
   [[nodiscard]] const KCliqueOptions& options() const noexcept {
     return options_;
   }
 
+  /// Lists all registered k-clique backends and their availability.
   [[nodiscard]] static std::vector<BackendInfo> backends();
 
  private:
   KCliqueOptions options_;
 };
 
+/// Returns the stable manifest/CLI identifier for a backend value.
 [[nodiscard]] const char* to_string(KCliqueBackend backend) noexcept;
 
 }  // namespace graphmine

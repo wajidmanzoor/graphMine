@@ -26,12 +26,14 @@ enum class QuasiCliqueOptionalOutput : std::uint32_t {
   total_count = 1U << 0U,
 };
 
+/// Combines two optional-output flags.
 constexpr QuasiCliqueOptionalOutput operator|(QuasiCliqueOptionalOutput lhs,
                                                QuasiCliqueOptionalOutput rhs) {
   return static_cast<QuasiCliqueOptionalOutput>(
       static_cast<std::uint32_t>(lhs) | static_cast<std::uint32_t>(rhs));
 }
 
+/// Tests whether an optional-output flag is present.
 constexpr bool has_output(QuasiCliqueOptionalOutput outputs,
                           QuasiCliqueOptionalOutput output) {
   return (static_cast<std::uint32_t>(outputs) &
@@ -57,23 +59,30 @@ struct QuasiCliqueOutput {
   std::optional<std::uint64_t> total_count;
 };
 
+/// Mines maximal quasi-cliques through the validated cuQC path.
 class QuasiCliques {
  public:
+  /// Stores density, size, scheduling, output, and execution options.
   explicit QuasiCliques(QuasiCliqueOptions options = {});
 
+  /// Checks thresholds, graph shape, and backend support without mining.
   [[nodiscard]] SupportReport supports(const Graph& graph) const;
+  /// Executes quasi-clique mining and returns requested result materialization.
   [[nodiscard]] ExecutionResult<QuasiCliqueOutput> run(
       const Graph& graph) const;
+  /// Returns the immutable options captured at construction.
   [[nodiscard]] const QuasiCliqueOptions& options() const noexcept {
     return options_;
   }
 
+  /// Lists registered quasi-clique backends and their availability.
   [[nodiscard]] static std::vector<BackendInfo> backends();
 
  private:
   QuasiCliqueOptions options_;
 };
 
+/// Returns the stable manifest/CLI identifier for a backend value.
 [[nodiscard]] const char* to_string(QuasiCliqueBackend backend) noexcept;
 
 }  // namespace graphmine

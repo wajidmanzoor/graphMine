@@ -24,6 +24,7 @@ enum class CommunityDetectionOptionalOutput : std::uint32_t {
   edge_cut = 1U << 1U,
 };
 
+/// Combines two optional-output flags.
 constexpr CommunityDetectionOptionalOutput operator|(
     CommunityDetectionOptionalOutput lhs,
     CommunityDetectionOptionalOutput rhs) {
@@ -31,6 +32,7 @@ constexpr CommunityDetectionOptionalOutput operator|(
       static_cast<std::uint32_t>(lhs) | static_cast<std::uint32_t>(rhs));
 }
 
+/// Tests whether an optional-output flag is present.
 constexpr bool has_output(CommunityDetectionOptionalOutput outputs,
                           CommunityDetectionOptionalOutput output) {
   return (static_cast<std::uint32_t>(outputs) &
@@ -63,23 +65,30 @@ struct CommunityDetectionOutput {
   std::optional<std::uint64_t> edge_cut;
 };
 
+/// Partitions vertices into disjoint communities with a validated backend.
 class CommunityDetection {
  public:
+  /// Stores backend, output, projection, and execution options.
   explicit CommunityDetection(CommunityDetectionOptions options = {});
 
+  /// Checks the graph and selected backend without clustering it.
   [[nodiscard]] SupportReport supports(const Graph& graph) const;
+  /// Runs clustering and returns assignments, modularity, and requested detail.
   [[nodiscard]] ExecutionResult<CommunityDetectionOutput> run(
       const Graph& graph) const;
+  /// Returns the immutable options captured at construction.
   [[nodiscard]] const CommunityDetectionOptions& options() const noexcept {
     return options_;
   }
 
+  /// Lists registered community-detection backends and their availability.
   [[nodiscard]] static std::vector<BackendInfo> backends();
 
  private:
   CommunityDetectionOptions options_;
 };
 
+/// Returns the stable manifest/CLI identifier for a backend value.
 [[nodiscard]] const char* to_string(
     CommunityDetectionBackend backend) noexcept;
 

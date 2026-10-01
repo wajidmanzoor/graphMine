@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['b_0',['b',['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a6f4fdaca753f463b71601bf2092d1e0d',1,'mcp::GLOBAL_HANDLE::B'],['../d3/d70/classgraph_1_1MultiGPU__MCP.html#aea3349de764e10d0ccfd57e3e9c3b41f',1,'graph::MultiGPU_MCP::B']]],
+  ['b_5fmaximality_1',['b_maximality',['../d9/d3b/namespacemcp.html#acf496cea144beba63c42ac2c7d626612',1,'mcp']]],
+  ['b_5fwarp_5fmaximality_5f_2',['b_warp_maximality_',['../d9/d3b/namespacemcp.html#a2f2f81b158f209abef79271889560e1a',1,'mcp']]],
+  ['base_5fl_3',['base_l',['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#afa93ab5628a7ba8b56310753d601b7a1',1,'mcp::SHARED_HANDLE::base_l'],['../df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#a5eab6a4f071b8d0f3041b5fa880899e2',1,'mcp::WARP_SHARED_HANDLE::base_l']]],
+  ['bctype_4',['BCTYPE',['../d5/d64/defs_8h.html#a0823058aee959cef89ad0c10996d6d2e',1,'defs.h']]],
+  ['beg_5f_5',['beg_',['../dc/dea/classTimer.html#a7c8f5e6cbb5b92faba2cedc5df6b3b54',1,'Timer']]],
+  ['binary_5fsearch_6',['binary_search',['../d3/d6a/namespacemcp_1_1graph.html#a043183abd5a78019419ce16cf44e27b9',1,'mcp::graph']]],
+  ['bitset_5fscan_7',['bitset_scan',['../d9/d3b/namespacemcp.html#ab334930f8a970c293502b1f512112cc5',1,'mcp']]],
+  ['bitset_5fscan_5freverse_8',['bitset_scan_reverse',['../d9/d3b/namespacemcp.html#af5a27d4a127a2480b878a5f5544c48b3',1,'mcp']]],
+  ['bl_9',['bl',['../df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ade8be8273f9ff3a3de14f174c94b4790',1,'mcp::WARP_SHARED_HANDLE::bl'],['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a11d9578ef2a55ed1402bcf2862e98af7',1,'mcp::SHARED_HANDLE::bl']]],
+  ['block_5fsize_10',['block_size',['../df/d87/structConfig.html#ab86f919dd2cfc6d5f50971e35dde3a1f',1,'Config']]],
+  ['branches_11',['branches',['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#acc512d104716ff4277099c4ae8ccf399',1,'mcp::GLOBAL_HANDLE::branches'],['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a875e5ba251a8d4d1c6bda4f8ee3b2d62',1,'graph::MultiGPU_MCP::branches']]],
+  ['bucket_5fscan_12',['bucket_scan',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#ab031664cff4def7a0d621e04441f76c7',1,'graph::SingleGPU_Kcore']]],
+  ['buildreducedbylb_5fkernel_13',['buildReducedByLB_kernel',['../d9/d00/kcore_8cuh.html#a62053a9666833e90a8ac602f15250953',1,'kcore.cuh']]],
+  ['buildreducedbylbb_5fkernel_14',['buildReducedByLBB_kernel',['../d9/d00/kcore_8cuh.html#ab9748ce650fd10a064785323b2868788',1,'kcore.cuh']]],
+  ['buildreducedbylbbw_5fkernel_15',['buildReducedByLBBW_kernel',['../d9/d00/kcore_8cuh.html#a66e64f668fa2515568c08af8bf8dbb57',1,'kcore.cuh']]]
+];

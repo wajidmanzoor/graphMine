@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['mapping_5fstart_5fidx_0',['mapping_start_idx',['../de/d6d/gpu__fsm__omp_8cu.html#a03af7595acc8497c4d0d9fd125bca47c',1,'gpu_fsm_omp.cu']]],
+  ['mapping_5fstart_5fidx_5fpos_1',['mapping_start_idx_pos',['../de/d6d/gpu__fsm__omp_8cu.html#a6db955fb9d994d51761f7cae55fbbb7c',1,'gpu_fsm_omp.cu']]],
+  ['mappings_2',['mappings',['../de/d6d/gpu__fsm__omp_8cu.html#afba9f45119bdc161422fcd4fedb3c273',1,'gpu_fsm_omp.cu']]],
+  ['match_5fshuffle_5fdict_3',['match_shuffle_dict',['../dc/dad/set__operation_8cpp.html#a14a58f8238d6b1c9f3a1213e83cd1067',1,'set_operation.cpp']]],
+  ['max_5fdepth_4',['max_depth',['../d5/d54/gpu__new__fsm_8cu.html#aa19aa99fa196cd695f48f0f31402f064',1,'MAX_DEPTH:&#160;gpu_new_fsm.cu'],['../d6/dff/gpu__kclique_8cu.html#aa19aa99fa196cd695f48f0f31402f064',1,'MAX_DEPTH:&#160;gpu_kclique.cu'],['../de/d6d/gpu__fsm__omp_8cu.html#aa19aa99fa196cd695f48f0f31402f064',1,'MAX_DEPTH:&#160;gpu_fsm_omp.cu'],['../d5/d15/gpu__fsm_8cu.html#aa19aa99fa196cd695f48f0f31402f064',1,'MAX_DEPTH:&#160;gpu_fsm.cu'],['../d9/d8c/gpu__clique_8cu.html#aa19aa99fa196cd695f48f0f31402f064',1,'MAX_DEPTH:&#160;gpu_clique.cu'],['../d8/dff/pattern__matching_8cuh.html#aa19aa99fa196cd695f48f0f31402f064',1,'MAX_DEPTH:&#160;pattern_matching.cuh'],['../d5/d18/fsm__mixed_8cu.html#aa19aa99fa196cd695f48f0f31402f064',1,'MAX_DEPTH:&#160;fsm_mixed.cu']]],
+  ['max_5fedge_5',['max_edge',['../de/d05/structFSM__Device.html#aa5a8e734c176454391a1b27d93a3f036',1,'FSM_Device::max_edge'],['../d3/dc7/classGPUSchedule.html#a0f5dc634322d331c90c80b1717095851',1,'GPUSchedule::max_edge']]],
+  ['max_5fintersection_5fsize_6',['max_intersection_size',['../da/d0e/structGraphHeader.html#a2163072a1114764e690964e1cbd702ae',1,'GraphHeader::max_intersection_size'],['../d3/d90/classVertexSet.html#a715466bfc2d6accc6e40ff6775c9eaac',1,'VertexSet::max_intersection_size']]],
+  ['max_5flabeled_5fpatterns_7',['max_labeled_patterns',['../de/d6d/gpu__fsm__omp_8cu.html#a2b88c52e2f6f48f42811ba960886a25f',1,'gpu_fsm_omp.cu']]],
+  ['max_5frunning_5ftime_8',['max_running_time',['../d9/dd1/classLabeledGraph.html#a435e2a316f646adf216e373b5af85d9a',1,'LabeledGraph::max_running_time'],['../d2/d62/classGraph.html#a59da64dd3d961e42a265f70a8b0e1f7d',1,'Graph::max_running_time']]],
+  ['max_5fthread_5fblock_9',['MAX_THREAD_BLOCK',['../d6/dff/gpu__kclique_8cu.html#abcc1e006ea28ffb8841c235a41bd9a4c',1,'gpu_kclique.cu']]],
+  ['maxn_10',['MAXN',['../d9/d6d/classGraphmpi.html#aa205a75c8a87b0e9d99b213e0039ae95',1,'Graphmpi']]],
+  ['maxthread_11',['MAXTHREAD',['../d9/d6d/classGraphmpi.html#ae0b4874aa99fdf849e534159d389ba24',1,'Graphmpi']]],
+  ['mico_5ftri_5fcnt_12',['MiCo_tri_cnt',['../d5/d96/dataloader_8h.html#a053c248c2999eb252a8295fd1bddf6ab',1,'dataloader.h']]],
+  ['min_5fsupport_13',['min_support',['../de/d05/structFSM__Device.html#a914081f2d3f475d4a3f7fae59ca29b0d',1,'FSM_Device']]],
+  ['msg_5fbuf_5flen_14',['msg_buf_len',['../d1/d1a/gpu__new__str_8cu.html#acc9d7620e6b7354d0d7e5cdd013404b7',1,'MSG_BUF_LEN:&#160;gpu_new_str.cu'],['../db/db1/gpu__graph__mpi_8cu.html#acc9d7620e6b7354d0d7e5cdd013404b7',1,'MSG_BUF_LEN:&#160;gpu_graph_mpi.cu'],['../d8/de0/gpu__graph__unimem_8cu.html#acc9d7620e6b7354d0d7e5cdd013404b7',1,'MSG_BUF_LEN:&#160;gpu_graph_unimem.cu']]],
+  ['multimatch_5fcnt_15',['multimatch_cnt',['../dc/dad/set__operation_8cpp.html#a899a1c591ba69303849b968afc6a182e',1,'multimatch_cnt:&#160;set_operation.cpp'],['../dc/d52/set__operation_8hpp.html#a899a1c591ba69303849b968afc6a182e',1,'multimatch_cnt:&#160;set_operation.hpp']]],
+  ['my_5frank_16',['my_rank',['../d9/d6d/classGraphmpi.html#a3bf1709721f4ed7300a661b828acecfe',1,'Graphmpi']]],
+  ['mynodel_17',['mynodel',['../d9/d6d/classGraphmpi.html#a2ceddddb1fd2079b5d6fd61f859bac97',1,'Graphmpi']]],
+  ['mynoder_18',['mynoder',['../d9/d6d/classGraphmpi.html#a0ad4f21d67c876ba4f7a23746c0b3809',1,'Graphmpi']]]
+];

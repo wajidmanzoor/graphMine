@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['capacity_5fbytes_0',['capacity_bytes',['../dc/dbb/classgraph_1_1CSRCOO.html#a45728aa88fc3168ab9dc213159886879',1,'graph::CSRCOO']]],
+  ['cdata_1',['cdata',['../d7/d49/classgraph_1_1GPUArray.html#a4525611cecaa305f9a773ec9d41d503c',1,'graph::GPUArray']]],
+  ['clean_5flevel_5fl1_5fip_2',['clean_level_L1_IP',['../d9/d6a/mce__utils_8cuh.html#a3152ee49760b859ead3775f39289b6f4',1,'mce_utils.cuh']]],
+  ['clean_5flevel_5fl1_5fipx_3',['clean_level_L1_IPX',['../d9/d6a/mce__utils_8cuh.html#a15f23d00e97fb8fe8dbe1e4d01f70ff9',1,'mce_utils.cuh']]],
+  ['clean_5flevel_5fl2_5fip_4',['clean_level_L2_IP',['../d9/d6a/mce__utils_8cuh.html#a6cedc2f19c94c549eafb68272d18ec82',1,'mce_utils.cuh']]],
+  ['clean_5flevel_5fl2_5fipx_5',['clean_level_L2_IPX',['../d9/d6a/mce__utils_8cuh.html#a18acb72454a94e1093646c30f755070a',1,'mce_utils.cuh']]],
+  ['col_5find_6',['col_ind',['../dc/dbb/classgraph_1_1CSRCOO.html#a9479415b90f9f228f867df9ea1145dac',1,'graph::CSRCOO']]],
+  ['convert_5fto_5fbel_7',['convert_to_bel',['../df/dce/namespacegraph.html#a7fd5e77b3afc6af918d37c0d80d9f344',1,'graph']]],
+  ['copytocpu_8',['copytocpu',['../d7/d49/classgraph_1_1GPUArray.html#af39266e31c151336f4a999ac9174e3dc',1,'graph::GPUArray']]],
+  ['count_9',['count',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#ab04b01351f7972bd2d65eb90b14041b5',1,'graph::SingleGPU_Kcore']]],
+  ['create_10',['Create',['../d8/d1f/classgraph_1_1GraphQueue.html#a6ae07da429fbfa53f572d3863ee14751',1,'graph::GraphQueue']]],
+  ['createqueuestruct_11',['CreateQueueStruct',['../d8/d1f/classgraph_1_1GraphQueue.html#a42bf4e12f9b85d097e9c9e124472117e',1,'graph::GraphQueue']]],
+  ['csrcoo_12',['CSRCOO',['../dc/dbb/classgraph_1_1CSRCOO.html#adee75310ed8dd3fe435be693b32d78c3',1,'graph::CSRCOO']]],
+  ['cubscanexclusive_13',['CUBScanExclusive',['../d9/d17/cub__wrapper_8cuh.html#ab933ff94eddcef35fe9ea803f7d53ddb',1,'cub_wrapper.cuh']]],
+  ['cubselect_14',['CUBSelect',['../d9/d17/cub__wrapper_8cuh.html#af19df959312d7509f11b71500772d388',1,'cub_wrapper.cuh']]],
+  ['cudacontext_15',['CUDAContext',['../d8/d41/structCUDAContext.html#a15df253cc935effe335ff179042ed652',1,'CUDAContext']]]
+];

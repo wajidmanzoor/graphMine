@@ -80,6 +80,10 @@ with GitHub Pages from the `main` branch’s `/docs` directory:
 
 The site has no framework or build dependency. It reads the global problem
 catalog at runtime to render the searchable validated-operation documentation.
+It also includes a [low-level code reference](docs/reference/) for GraphMine's
+public C++ API and adapters plus isolated function-by-function C/C++/CUDA
+references for all 24 validated research source artifacts. Regenerate those
+committed pages with `node tools/build_code_docs.mjs` when code changes.
 
 ## Research artifacts
 

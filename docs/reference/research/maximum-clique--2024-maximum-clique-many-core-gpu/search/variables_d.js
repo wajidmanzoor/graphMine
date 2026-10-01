@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['n_0',['N',['../d7/d49/classgraph_1_1GPUArray.html#ad6198a5cd43394567b7e3db315de008f',1,'graph::GPUArray']]],
+  ['name_1',['name',['../d7/d49/classgraph_1_1GPUArray.html#a8e0614f76ea769aaf22a5ba69babd548',1,'graph::GPUArray']]],
+  ['newindex_2',['newIndex',['../dd/dd1/structmcp_1_1LOCAL__HANDLE.html#aaf970a64cfa45c1cce4932121ee040ad',1,'mcp::LOCAL_HANDLE']]],
+  ['next_3',['next',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#acdf56dd89a632b576a7d3e7caf6d6122',1,'graph::MultiGPU_MCP::next'],['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#aa7302458f10185aeb836adfe93b9ed64',1,'mcp::GLOBAL_HANDLE::next']]],
+  ['next_5fbucket_4',['next_bucket',['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a01cd5841bd26c63761fd2060b1260bcc',1,'mcp::SHARED_HANDLE']]],
+  ['next_5fbucket_5fsz_5',['next_bucket_sz',['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a984592d181683e9c9903814d0a98c21b',1,'mcp::SHARED_HANDLE']]],
+  ['node_5fdegree_6',['node_degree',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a8d2283b79f015bb038f92e84f3498843',1,'graph::MultiGPU_MCP']]],
+  ['nodedegree_7',['nodeDegree',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a32898666da1b1f105f05293591e39654',1,'graph::SingleGPU_Kcore']]],
+  ['nodepriority_8',['nodePriority',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a4ea5de6b69dfea4b91dca4cd5cb401de',1,'graph::SingleGPU_Kcore']]],
+  ['num_5fdivs_5flocal_9',['num_divs_local',['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a551e80e119fb5d88596540070c7e0984',1,'mcp::SHARED_HANDLE::num_divs_local'],['../df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ac76420f9f799d05ebab849fce9eb47be',1,'mcp::WARP_SHARED_HANDLE::num_divs_local']]],
+  ['num_5fsms_10',['num_SMs',['../d8/d41/structCUDAContext.html#adbb0f123c0a1651a79919c75e3b1f525',1,'CUDAContext']]],
+  ['number_5fof_5fsubgraphs_11',['number_of_subgraphs',['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a9cca959f1bd5c8f9ddc59c203acc3bf9',1,'graph::MultiGPU_MCP']]],
+  ['numdivs_12',['NUMDIVS',['../d2/d30/parameter_8cuh.html#ae9a420d7682efbb398481f0eaf67d8b3',1,'parameter.cuh']]],
+  ['numedges_13',['numedges',['../da/da5/structgraph_1_1COOCSRGraph.html#a11fb633aef7c8e8e24fc0b0f54ec8e3b',1,'graph::COOCSRGraph::numEdges'],['../d8/df4/structgraph_1_1COOCSRGraph__d.html#a6be89d7188cdd6cdce2ae60136d714cf',1,'graph::COOCSRGraph_d::numEdges']]],
+  ['numnodes_14',['numnodes',['../da/da5/structgraph_1_1COOCSRGraph.html#a55c9fdeea35e38e533172d845f97ec3d',1,'graph::COOCSRGraph::numNodes'],['../d8/df4/structgraph_1_1COOCSRGraph__d.html#a60ad9e4c8e826d78eea171f4de238a1c',1,'graph::COOCSRGraph_d::numNodes']]],
+  ['numpart_15',['NUMPART',['../d2/d30/parameter_8cuh.html#ab451bd0e00b99babf08f0b44377be139',1,'parameter.cuh']]],
+  ['numpartitions_16',['numPartitions',['../dd/dd1/structmcp_1_1LOCAL__HANDLE.html#a1f50026b0aded43b7e212aba4e2d3d5b',1,'mcp::LOCAL_HANDLE']]]
+];

@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Function-by-function reference for the validated C, C++, and CUDA research artifacts used by GraphMine." />
+    <meta name="theme-color" content="#ffffff" />
+    <title>GraphMine · Research code reference</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body class="research-portal">
+    <header class="reference-header">
+      <div class="shell header-inner">
+        <a class="brand" href="../">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M12 14 25 8l12 8-3 17-13 8-12-10Z" />
+            <path d="m12 14 12 12m13-10L24 26m-3 15 3-15" />
+            <circle cx="12" cy="14" r="4" /><circle cx="37" cy="16" r="4" />
+            <circle cx="21" cy="41" r="4" /><circle cx="24" cy="26" r="4" />
+          </svg>
+          <span>Graph<span>Mine</span></span>
+        </a>
+        <nav aria-label="Reference navigation">
+          <a href="../">Code reference</a>
+          <a href="../../">High-level guide</a>
+          <a href="https://github.com/wajidmanzoor/graphMine">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main class="shell">
+      <section class="artifact-hero">
+        <p class="eyebrow"><i></i> Original implementation internals</p>
+        <h1>Research code, <span>artifact by artifact.</span></h1>
+        <p class="lede">Search 24 isolated source references behind GraphMine's validated backends. Each reference covers host functions, CUDA kernels, types, files, callers, and exact annotated source without collisions between papers.</p>
+        <label class="artifact-search">
+          <span>Search artifact, problem, paper, or venue</span>
+          <input type="search" placeholder="Try maximal clique, GraphSet, or SC 2023" data-artifact-search />
+        </label>
+        <p class="artifact-result-count" data-result-count>24 artifacts shown</p>
+      </section>
+      <div class="artifact-sections">
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">1 artifact</p>
+            <h2>Centrality and Influential-Node Mining</h2>
+            <p>Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="centrality and influential-node mining 2021_turbobc turbobc: a memory efficient and scalable gpu based betweenness centrality algorithm in the language of linear algebra acm/ieee sc 2021">
+              <div class="artifact-meta">
+                <span>2021</span>
+                <span>ACM/IEEE SC 2021</span>
+              </div>
+              <h3>2021_turbobc</h3>
+              <p>TurboBC: A Memory Efficient and Scalable GPU Based Betweenness Centrality Algorithm in the Language of Linear Algebra</p>
+              <dl>
+                <div><dt>Source files</dt><dd>24</dd></div>
+                <div><dt>Commit</dt><dd><code>6e885a207902</code></dd></div>
+              </dl>
+              <a class="card-action" href="centrality-influential-node-mining--2021-turbobc/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">2 artifacts</p>
+            <h2>Disjoint Community Detection</h2>
+            <p>Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="disjoint community detection 2026_gleiden gleiden: accelerated community detection algorithms using directed and undirected graphs on gpus bioinformatics advances">
+              <div class="artifact-meta">
+                <span>2026</span>
+                <span>Bioinformatics Advances</span>
+              </div>
+              <h3>2026_gleiden</h3>
+              <p>gLeiden: Accelerated Community Detection Algorithms Using Directed and Undirected Graphs on GPUs</p>
+              <dl>
+                <div><dt>Source files</dt><dd>5</dd></div>
+                <div><dt>Commit</dt><dd><code>6aacd7f8e91d</code></dd></div>
+              </dl>
+              <a class="card-action" href="community-detection--2026-gleiden/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="disjoint community detection 2026_multilevel_graph_clustering gpu-accelerated multilevel graph clustering: a parallel perspective on louvain and leiden ieee ipdps 2026">
+              <div class="artifact-meta">
+                <span>2026</span>
+                <span>IEEE IPDPS 2026</span>
+              </div>
+              <h3>2026_multilevel_graph_clustering</h3>
+              <p>GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden</p>
+              <dl>
+                <div><dt>Source files</dt><dd>15</dd></div>
+                <div><dt>Commit</dt><dd><code>29c69d27ba38</code></dd></div>
+              </dl>
+              <a class="card-action" href="community-detection--2026-multilevel-graph-clustering/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">3 artifacts</p>
+            <h2>Graph Motif Counting</h2>
+            <p>Count occurrences of one or more supplied small structural patterns in a directed or undirected graph.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="graph motif counting 2022_g2miner g²miner: an efficient and scalable gpu-based graph pattern mining framework usenix osdi 2022">
+              <div class="artifact-meta">
+                <span>2022</span>
+                <span>USENIX OSDI 2022</span>
+              </div>
+              <h3>2022_g2miner</h3>
+              <p>G²Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework</p>
+              <dl>
+                <div><dt>Source files</dt><dd>85</dd></div>
+                <div><dt>Commit</dt><dd><code>2a76e3f612e4</code></dd></div>
+              </dl>
+              <a class="card-action" href="graph-motif-counting--2022-g2miner/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="graph motif counting 2023_graphset graphset: high-performance graph mining on gpus sc 2023">
+              <div class="artifact-meta">
+                <span>2023</span>
+                <span>SC 2023</span>
+              </div>
+              <h3>2023_graphset</h3>
+              <p>GraphSet: High-Performance Graph Mining on GPUs</p>
+              <dl>
+                <div><dt>Source files</dt><dd>64</dd></div>
+                <div><dt>Commit</dt><dd><code>3bc6e6b9e2e0</code></dd></div>
+              </dl>
+              <a class="card-action" href="graph-motif-counting--2023-graphset/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="graph motif counting 2024_dumato dumato: a dynamic gpu system for graph pattern mining journal of parallel and distributed computing">
+              <div class="artifact-meta">
+                <span>2024</span>
+                <span>Journal of Parallel and Distributed Computing</span>
+              </div>
+              <h3>2024_dumato</h3>
+              <p>DuMato: A Dynamic GPU System for Graph Pattern Mining</p>
+              <dl>
+                <div><dt>Source files</dt><dd>30</dd></div>
+                <div><dt>Commit</dt><dd><code>79c255ee2467</code></dd></div>
+              </dl>
+              <a class="card-action" href="graph-motif-counting--2024-dumato/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">3 artifacts</p>
+            <h2>k-Clique Counting and Enumeration</h2>
+            <p>Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="k-clique counting and enumeration 2022_parallel_k_clique_counting parallel k-clique counting on gpus acm ics 2022">
+              <div class="artifact-meta">
+                <span>2022</span>
+                <span>ACM ICS 2022</span>
+              </div>
+              <h3>2022_parallel_k_clique_counting</h3>
+              <p>Parallel K-Clique Counting on GPUs</p>
+              <dl>
+                <div><dt>Source files</dt><dd>29</dd></div>
+                <div><dt>Commit</dt><dd><code>314ac6d41fbe</code></dd></div>
+              </dl>
+              <a class="card-action" href="k-clique-counting-enumeration--2022-parallel-k-clique-counting/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="k-clique counting and enumeration 2023_graphset graphset: high-performance graph mining on gpus sc 2023">
+              <div class="artifact-meta">
+                <span>2023</span>
+                <span>SC 2023</span>
+              </div>
+              <h3>2023_graphset</h3>
+              <p>GraphSet: High-Performance Graph Mining on GPUs</p>
+              <dl>
+                <div><dt>Source files</dt><dd>64</dd></div>
+                <div><dt>Commit</dt><dd><code>3bc6e6b9e2e0</code></dd></div>
+              </dl>
+              <a class="card-action" href="k-clique-counting-enumeration--2023-graphset/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="k-clique counting and enumeration 2024_gamma a graph pattern mining framework for large graphs on gpu the vldb journal">
+              <div class="artifact-meta">
+                <span>2024</span>
+                <span>The VLDB Journal</span>
+              </div>
+              <h3>2024_gamma</h3>
+              <p>A Graph Pattern Mining Framework for Large Graphs on GPU</p>
+              <dl>
+                <div><dt>Source files</dt><dd>13</dd></div>
+                <div><dt>Commit</dt><dd><code>3e01be68eded</code></dd></div>
+              </dl>
+              <a class="card-action" href="k-clique-counting-enumeration--2024-gamma/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">1 artifact</p>
+            <h2>k-Core Decomposition</h2>
+            <p>Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="k-core decomposition 2023_accelerating_k_core_gpu accelerating k-core decomposition by a gpu ieee icde 2023">
+              <div class="artifact-meta">
+                <span>2023</span>
+                <span>IEEE ICDE 2023</span>
+              </div>
+              <h3>2023_accelerating_k_core_gpu</h3>
+              <p>Accelerating k-Core Decomposition by a GPU</p>
+              <dl>
+                <div><dt>Source files</dt><dd>16</dd></div>
+                <div><dt>Commit</dt><dd><code>0a2d37634024</code></dd></div>
+              </dl>
+              <a class="card-action" href="k-core-decomposition--2023-accelerating-k-core-gpu/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">1 artifact</p>
+            <h2>Maximal Biclique Enumeration</h2>
+            <p>Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="maximal biclique enumeration 2024_cumbe cumbe: gpu-accelerated maximal biclique enumeration arxiv preprint">
+              <div class="artifact-meta">
+                <span>2024</span>
+                <span>arXiv preprint</span>
+              </div>
+              <h3>2024_cumbe</h3>
+              <p>cuMBE: GPU-Accelerated Maximal Biclique Enumeration</p>
+              <dl>
+                <div><dt>Source files</dt><dd>8</dd></div>
+                <div><dt>Commit</dt><dd><code>2fff8005b2f7</code></dd></div>
+              </dl>
+              <a class="card-action" href="maximal-biclique-enumeration--2024-cumbe/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">3 artifacts</p>
+            <h2>Maximal Clique Enumeration</h2>
+            <p>Given an undirected graph, enumerate every vertex set that forms a clique and is not a proper subset of another clique.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="maximal clique enumeration 2023_parallelizing_mce parallelizing maximal clique enumeration on gpus pact 2023">
+              <div class="artifact-meta">
+                <span>2023</span>
+                <span>PACT 2023</span>
+              </div>
+              <h3>2023_parallelizing_mce</h3>
+              <p>Parallelizing Maximal Clique Enumeration on GPUs</p>
+              <dl>
+                <div><dt>Source files</dt><dd>23</dd></div>
+                <div><dt>Commit</dt><dd><code>44ef6e034e39</code></dd></div>
+              </dl>
+              <a class="card-action" href="maximal-clique-enumeration--2023-parallelizing-mce/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="maximal clique enumeration 2024_g2_aimd g²-aimd: efficient gpu acceleration for maximal clique enumeration ieee icde 2024">
+              <div class="artifact-meta">
+                <span>2024</span>
+                <span>IEEE ICDE 2024</span>
+              </div>
+              <h3>2024_g2_aimd</h3>
+              <p>G²-AIMD: Efficient GPU Acceleration for Maximal Clique Enumeration</p>
+              <dl>
+                <div><dt>Source files</dt><dd>45</dd></div>
+                <div><dt>Commit</dt><dd><code>751595c0511a</code></dd></div>
+              </dl>
+              <a class="card-action" href="maximal-clique-enumeration--2024-g2-aimd/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="maximal clique enumeration 2026_rdmce root-down exposure for maximal clique enumeration on gpus ppopp 2026">
+              <div class="artifact-meta">
+                <span>2026</span>
+                <span>PPoPP 2026</span>
+              </div>
+              <h3>2026_rdmce</h3>
+              <p>Root-Down Exposure for Maximal Clique Enumeration on GPUs</p>
+              <dl>
+                <div><dt>Source files</dt><dd>16</dd></div>
+                <div><dt>Commit</dt><dd><code>59452dcfbcdc</code></dd></div>
+              </dl>
+              <a class="card-action" href="maximal-clique-enumeration--2026-rdmce/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">3 artifacts</p>
+            <h2>Maximum Clique</h2>
+            <p>Given an undirected graph, find a clique with the largest possible number of vertices.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="maximum clique 2019_maximum_clique_cuda implementation of a maximum clique search procedure on cuda journal of heuristics">
+              <div class="artifact-meta">
+                <span>2019</span>
+                <span>Journal of Heuristics</span>
+              </div>
+              <h3>2019_maximum_clique_cuda</h3>
+              <p>Implementation of a Maximum Clique Search Procedure on CUDA</p>
+              <dl>
+                <div><dt>Source files</dt><dd>17</dd></div>
+                <div><dt>Commit</dt><dd><code>a0b6b00a1f67</code></dd></div>
+              </dl>
+              <a class="card-action" href="maximum-clique--2019-maximum-clique-cuda/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="maximum clique 2023_maximum_clique_enumeration_gpu maximum clique enumeration on the gpu ipdpsw/grapl 2023">
+              <div class="artifact-meta">
+                <span>2023</span>
+                <span>IPDPSW/GrAPL 2023</span>
+              </div>
+              <h3>2023_maximum_clique_enumeration_gpu</h3>
+              <p>Maximum Clique Enumeration on the GPU</p>
+              <dl>
+                <div><dt>Source files</dt><dd>3</dd></div>
+                <div><dt>Commit</dt><dd><code>2365400c7b4a</code></dd></div>
+              </dl>
+              <a class="card-action" href="maximum-clique--2023-maximum-clique-enumeration-gpu/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="maximum clique 2024_maximum_clique_many_core_gpu efficiently computing maximum clique of sparse graphs with many-core graphical processing units icsoft 2024">
+              <div class="artifact-meta">
+                <span>2024</span>
+                <span>ICSOFT 2024</span>
+              </div>
+              <h3>2024_maximum_clique_many_core_gpu</h3>
+              <p>Efficiently Computing Maximum Clique of Sparse Graphs with Many-Core Graphical Processing Units</p>
+              <dl>
+                <div><dt>Source files</dt><dd>19</dd></div>
+                <div><dt>Commit</dt><dd><code>62708c588219</code></dd></div>
+              </dl>
+              <a class="card-action" href="maximum-clique--2024-maximum-clique-many-core-gpu/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">1 artifact</p>
+            <h2>Quasi-Clique Mining</h2>
+            <p>Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="quasi-clique mining 2025_cuqc gpu-accelerated maximal quasi-clique mining ieee bigdata 2025">
+              <div class="artifact-meta">
+                <span>2025</span>
+                <span>IEEE BigData 2025</span>
+              </div>
+              <h3>2025_cuqc</h3>
+              <p>GPU-Accelerated Maximal Quasi-Clique Mining</p>
+              <dl>
+                <div><dt>Source files</dt><dd>1</dd></div>
+                <div><dt>Commit</dt><dd><code>e3785db225f2</code></dd></div>
+              </dl>
+              <a class="card-action" href="quasi-clique-mining--2025-cuqc/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">1 artifact</p>
+            <h2>Subgraph Isomorphism and Pattern Matching</h2>
+            <p>Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="subgraph isomorphism and pattern matching 2026_gmatch gmatch: a fast gpu-based subgraph matching system pvldb 2026">
+              <div class="artifact-meta">
+                <span>2026</span>
+                <span>PVLDB 2026</span>
+              </div>
+              <h3>2026_gmatch</h3>
+              <p>gMatch: A Fast GPU-Based Subgraph Matching System</p>
+              <dl>
+                <div><dt>Source files</dt><dd>14</dd></div>
+                <div><dt>Commit</dt><dd><code>4628e73dbcb5</code></dd></div>
+              </dl>
+              <a class="card-action" href="subgraph-isomorphism--2026-gmatch/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">2 artifacts</p>
+            <h2>Temporal Motif Mining</h2>
+            <p>Count occurrences of a small ordered edge pattern whose matched events occur in the required order within a bounded time window.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="temporal motif mining 2024_everest everest: gpu-accelerated system for mining temporal motifs pvldb">
+              <div class="artifact-meta">
+                <span>2024</span>
+                <span>PVLDB</span>
+              </div>
+              <h3>2024_everest</h3>
+              <p>Everest: GPU-Accelerated System for Mining Temporal Motifs</p>
+              <dl>
+                <div><dt>Source files</dt><dd>4</dd></div>
+                <div><dt>Commit</dt><dd><code>ef530d36f23e</code></dd></div>
+              </dl>
+              <a class="card-action" href="temporal-motif-mining--2024-everest/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="temporal motif mining 2025_mayura mayura: exploiting similarities in motifs for temporal co-mining pvldb">
+              <div class="artifact-meta">
+                <span>2025</span>
+                <span>PVLDB</span>
+              </div>
+              <h3>2025_mayura</h3>
+              <p>Mayura: Exploiting Similarities in Motifs for Temporal Co-Mining</p>
+              <dl>
+                <div><dt>Source files</dt><dd>4</dd></div>
+                <div><dt>Commit</dt><dd><code>8e4276aace4c</code></dd></div>
+              </dl>
+              <a class="card-action" href="temporal-motif-mining--2025-mayura/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+        <section class="artifact-section" data-artifact-section>
+          <div class="artifact-section-heading">
+            <p class="section-label">3 artifacts</p>
+            <h2>Triangle Counting and Listing</h2>
+            <p>Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts.</p>
+          </div>
+          <div class="artifact-grid">
+            <article class="artifact-card" data-artifact-card data-search="triangle counting and listing 2025_tot_tensor_cores triangle counting on tensor cores ieee tpds">
+              <div class="artifact-meta">
+                <span>2025</span>
+                <span>IEEE TPDS</span>
+              </div>
+              <h3>2025_tot_tensor_cores</h3>
+              <p>Triangle Counting on Tensor Cores</p>
+              <dl>
+                <div><dt>Source files</dt><dd>20</dd></div>
+                <div><dt>Commit</dt><dd><code>5f9cde83a528</code></dd></div>
+              </dl>
+              <a class="card-action" href="triangle-counting-listing--2025-tot-tensor-cores/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="triangle counting and listing 2025_wetric wedge-parallel triangle counting for gpus euro-par 2025">
+              <div class="artifact-meta">
+                <span>2025</span>
+                <span>Euro-Par 2025</span>
+              </div>
+              <h3>2025_wetric</h3>
+              <p>Wedge-Parallel Triangle Counting for GPUs</p>
+              <dl>
+                <div><dt>Source files</dt><dd>1</dd></div>
+                <div><dt>Commit</dt><dd><code>f0c80447dc42</code></dd></div>
+              </dl>
+              <a class="card-action" href="triangle-counting-listing--2025-wetric/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="artifact-card" data-artifact-card data-search="triangle counting and listing 2026_edtc exact triangle counting for dynamic graphs on gpu ieee tpds">
+              <div class="artifact-meta">
+                <span>2026</span>
+                <span>IEEE TPDS</span>
+              </div>
+              <h3>2026_edtc</h3>
+              <p>Exact Triangle Counting for Dynamic Graphs on GPU</p>
+              <dl>
+                <div><dt>Source files</dt><dd>9</dd></div>
+                <div><dt>Commit</dt><dd><code>7da15bf9aded</code></dd></div>
+              </dl>
+              <a class="card-action" href="triangle-counting-listing--2026-edtc/">Open function reference <span aria-hidden="true">→</span></a>
+            </article>
+          </div>
+        </section>
+      </div>
+      <p class="artifact-empty" data-empty hidden>No research artifact matches that search.</p>
+    </main>
+    <footer><div class="shell"><span>GraphMine research code reference</span><a href="../library/">Open the GraphMine library reference</a></div></footer>
+    <script>
+      const input = document.querySelector("[data-artifact-search]");
+      const cards = [...document.querySelectorAll("[data-artifact-card]")];
+      const sections = [...document.querySelectorAll("[data-artifact-section]")];
+      const count = document.querySelector("[data-result-count]");
+      const empty = document.querySelector("[data-empty]");
+      input.addEventListener("input", () => {
+        const query = input.value.trim().toLowerCase();
+        let visible = 0;
+        for (const card of cards) {
+          const matches = !query || card.dataset.search.includes(query);
+          card.hidden = !matches;
+          if (matches) visible += 1;
+        }
+        for (const section of sections) {
+          section.hidden = !section.querySelector("[data-artifact-card]:not([hidden])");
+        }
+        count.textContent = visible + (visible === 1 ? " artifact shown" : " artifacts shown");
+        empty.hidden = visible !== 0;
+      });
+    </script>
+  </body>
+</html>
