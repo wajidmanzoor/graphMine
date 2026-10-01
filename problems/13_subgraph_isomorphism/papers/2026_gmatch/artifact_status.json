@@ -1,0 +1,21 @@
+{
+  "problem_id": "subgraph_isomorphism",
+  "paper_id": "2026_gmatch",
+  "title": "gMatch: A Fast GPU-Based Subgraph Matching System",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": "https://arxiv.org/pdf/2604.10601",
+    "status": "downloaded",
+    "local_path": "paper.pdf",
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/SJTU-Liquid/gMatch",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "4628e73dbcb564dba367b3f042595e71f98c9046",
+    "license_file": "code/LICENSE",
+    "license_note": null,
+    "error": null
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "k_truss_decomposition",
+  "name": "k-Truss Decomposition",
+  "category": "dense_structure_mining",
+  "problem_statement": "Assign every edge the largest k for which it belongs to a maximal subgraph where each edge participates in at least k-2 triangles within that subgraph.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
+  },
+  "problem_inputs": [
+    {"name": "requested_k", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 2", "description": "Optionally materialize one k-truss in addition to the full decomposition."}
+  ],
+  "required_outputs": [
+    {"name": "truss_number_by_edge", "type": "map<edge_id,integer>", "description": "Largest k-truss containing each normalized edge."},
+    {"name": "maximum_truss_number", "type": "integer", "description": "Largest truss number assigned to any edge, or zero for an edgeless graph."}
+  ],
+  "optional_outputs": [
+    {"name": "requested_truss_edges", "type": "array<edge_id>", "description": "Edges with truss number at least requested_k."},
+    {"name": "requested_truss_vertices", "type": "array<vertex_id>", "description": "Endpoints of requested_truss_edges."},
+    {"name": "initial_support_by_edge", "type": "map<edge_id,integer>", "description": "Triangle support before iterative peeling."}
+  ],
+  "solution_semantics": {"objective": "Compute the complete edge truss decomposition using the k-2 support convention.", "exactness": "All truss numbers are exact.", "duplicate_policy": "Each normalized edge has exactly one truss number.", "ordering": "Edge removal order may vary while truss numbers remain invariant."},
+  "validation_rules": ["Every edge in a returned k-truss has support at least k-2 within that truss.", "No edge belongs to a truss above its reported number.", "Requested truss edges are exactly those with truss number at least requested_k."],
+  "edge_cases": ["Edges in no triangle have truss number two.", "A triangle's three edges have truss number three.", "An edgeless graph produces an empty map and maximum_truss_number zero."],
+  "evaluation_metrics": {"correctness": ["per-edge equality with oracle", "support-condition violations", "requested-truss equality"], "performance": ["end-to-end time", "decomposition time", "peak memory", "support updates per second"]}
+}

@@ -1,0 +1,16 @@
+{
+  "paper_id": "2021_turbobc",
+  "title": "TurboBC: A Memory Efficient and Scalable GPU Based Betweenness Centrality Algorithm in the Language of Linear Algebra",
+  "year": 2021,
+  "venue": "ACM/IEEE SC 2021",
+  "doi": "10.1145/3458744.3474047",
+  "publication_url": "https://doi.org/10.1145/3458744.3474047",
+  "pdf_url": "https://par.nsf.gov/servlets/purl/10319544",
+  "code_url": "https://github.com/pcdslab/TurboBC",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU betweenness-centrality computation.",
+  "notes": "The paper points to the PCDS Lab organization; its official GPL-3.0 TurboBC repository contains the CUDA implementation.",
+  "problem_id": "centrality_influential_node_mining",
+  "problem_dir": "18_centrality_influential_node_mining",
+  "research_cutoff": "2026-09-30"
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "subgraph_isomorphism",
+  "name": "Subgraph Isomorphism and Pattern Matching",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_data_graph_plus_query_graph",
+    "requirements": {"direction": "query_and_data_semantics_must_match", "weights": "available_to_predicates", "timestamps": "available_to_predicates", "vertex_attributes": "available_to_predicates", "edge_attributes": "available_to_predicates"},
+    "normalization": ["Preserve query and data edge direction.", "Preserve parallel-edge identity when predicates distinguish edges.", "Do not silently remove self-loops used by the query."]
+  },
+  "problem_inputs": [
+    {"name": "query_graph", "type": "canonical_graph", "required": true, "description": "Pattern graph expressed using canonical_edge_list_v1."},
+    {"name": "induced", "type": "boolean", "required": false, "default": false, "description": "Require mapped vertices to have no extra data edges beyond query edges."},
+    {"name": "vertex_predicates", "type": "array<attribute_predicate>", "required": false, "default": [], "description": "Declarative constraints on mapped vertex type, label, or attributes."},
+    {"name": "edge_predicates", "type": "array<attribute_predicate>", "required": false, "default": [], "description": "Declarative constraints on mapped edge type, weight, timestamp, or attributes."},
+    {"name": "result_limit", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum materialized mappings."}
+  ],
+  "required_outputs": [
+    {"name": "matches", "type": "array<map<query_vertex_id,data_vertex_id>>", "description": "Injective query-to-data vertex mappings."},
+    {"name": "returned_count", "type": "integer", "description": "Number of materialized mappings."},
+    {"name": "complete", "type": "boolean", "description": "Whether all qualifying mappings were found."}
+  ],
+  "optional_outputs": [{"name": "total_count", "type": "integer", "description": "Exact number of mappings when known."}],
+  "solution_semantics": {"objective": "Enumerate all injective mappings satisfying structural, directional, inducedness, and attribute constraints.", "exactness": "Every returned mapping is exact; complete=true requires exhaustive matching.", "duplicate_policy": "Distinct query-to-data mappings are distinct results, even when query automorphisms map to the same data vertex set.", "ordering": "Mapping order is irrelevant."},
+  "validation_rules": ["Mappings are injective.", "Every query edge has a matching data edge with correct direction and predicates.", "Induced matches contain no prohibited extra mapped edges.", "All vertex predicates hold."],
+  "edge_cases": ["A query larger than the data graph has no matches.", "An empty query has one empty mapping by convention.", "Query automorphisms may yield multiple mappings to one data vertex set."],
+  "evaluation_metrics": {"correctness": ["mapping set equality with oracle", "invalid mapping count", "duplicate mapping count"], "performance": ["end-to-end time", "matching time", "peak memory", "candidates explored", "matches per second"]}
+}

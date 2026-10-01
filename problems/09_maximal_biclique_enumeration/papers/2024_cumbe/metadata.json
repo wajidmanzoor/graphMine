@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_cumbe",
+  "title": "cuMBE: GPU-Accelerated Maximal Biclique Enumeration",
+  "year": 2024,
+  "venue": "arXiv preprint",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2401.05039",
+  "pdf_url": "https://arxiv.org/pdf/2401.05039",
+  "code_url": "https://github.com/NTUDDSNLab/cuMBE",
+  "semantic_fit": "exact",
+  "gpu_scope": "CUDA maximal-biclique enumeration.",
+  "notes": null,
+  "problem_id": "maximal_biclique_enumeration",
+  "problem_dir": "09_maximal_biclique_enumeration",
+  "research_cutoff": "2026-09-30"
+}

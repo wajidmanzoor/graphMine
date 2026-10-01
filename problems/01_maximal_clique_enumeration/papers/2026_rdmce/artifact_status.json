@@ -1,0 +1,21 @@
+{
+  "problem_id": "maximal_clique_enumeration",
+  "paper_id": "2026_rdmce",
+  "title": "Root-Down Exposure for Maximal Clique Enumeration on GPUs",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": null,
+    "status": "not_available",
+    "local_path": null,
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/Pz1996/RDMCE",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "59452dcfbcdc8dabf41abef277ef3e240248ee0c",
+    "license_file": "code/LICENSE",
+    "license_note": null,
+    "error": null
+  }
+}

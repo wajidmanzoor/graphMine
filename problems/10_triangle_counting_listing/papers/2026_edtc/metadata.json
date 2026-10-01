@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_edtc",
+  "title": "Exact Triangle Counting for Dynamic Graphs on GPU",
+  "year": 2026,
+  "venue": "IEEE TPDS",
+  "doi": "10.1109/TPDS.2025.3627974",
+  "publication_url": "https://doi.org/10.1109/TPDS.2025.3627974",
+  "pdf_url": null,
+  "code_url": "https://github.com/WXZ0v0/EDTC",
+  "semantic_fit": "variant",
+  "gpu_scope": "Exact incremental triangle counting for batches of dynamic graph updates on a GPU.",
+  "notes": "Dynamic-update variant; it can be evaluated for exact counts but is not a drop-in static triangle-listing implementation.",
+  "problem_id": "triangle_counting_listing",
+  "problem_dir": "10_triangle_counting_listing",
+  "research_cutoff": "2026-09-30"
+}

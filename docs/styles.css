@@ -1619,6 +1619,63 @@ code {
   font-size: 0.75rem;
 }
 
+.dialog-problem-summary {
+  margin-top: 22px;
+  padding: 16px 18px;
+  border: 1px solid #d7e7dc;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--green-wash), var(--white));
+}
+
+.dialog-problem-summary p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.dialog-problem-summary a {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--green-dark);
+  font-size: 0.72rem;
+  font-weight: 720;
+}
+
+.dialog-context {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.dialog-context summary {
+  padding: 13px 16px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 720;
+  list-style-position: inside;
+}
+
+.dialog-context[open] {
+  padding: 0 16px 18px;
+}
+
+.dialog-context[open] summary {
+  margin-inline: -16px;
+  padding-inline: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dialog-context .dialog-section {
+  margin-top: 20px;
+}
+
+.dialog-table-wrap {
+  overflow-x: auto;
+}
+
 .dialog-section {
   margin-top: 28px;
 }
@@ -1690,6 +1747,19 @@ code {
 
 .dialog-table td {
   color: var(--muted);
+}
+
+.dialog-input-table td strong {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+}
+
+.dialog-input-table td small {
+  display: block;
+  margin-top: 5px;
+  color: #809086;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.67rem;
 }
 
 .dialog-list {
@@ -2086,6 +2156,10 @@ code {
   .dialog-table td {
     display: block;
     width: 100%;
+  }
+
+  .dialog-input-table thead {
+    display: none;
   }
 
   .dialog-table tr {

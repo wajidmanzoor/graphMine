@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "overlapping_community_detection",
+  "name": "Overlapping Community Detection by k-Clique Percolation",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Find overlapping communities formed by connected components of the clique-adjacency graph, where two k-cliques are adjacent when they share k-1 vertices.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
+  },
+  "problem_inputs": [
+    {"name": "k", "type": "integer", "required": true, "constraints": "value >= 2", "description": "Clique size used to construct the clique-adjacency graph."},
+    {"name": "minimum_community_size", "type": "integer", "required": false, "default": 1, "constraints": "value >= 1", "description": "Minimum number of distinct original vertices in a returned community."},
+    {"name": "include_unassigned_vertices", "type": "boolean", "required": false, "default": true, "description": "Report vertices that belong to no qualifying k-clique."}
+  ],
+  "required_outputs": [
+    {"name": "communities", "type": "array<object>", "description": "Unique community IDs with the union of vertices in each k-clique component."},
+    {"name": "community_ids_by_vertex", "type": "map<vertex_id,array<community_id>>", "description": "Zero or more community memberships per vertex."}
+  ],
+  "optional_outputs": [
+    {"name": "member_k_cliques_by_community", "type": "map<community_id,array<array<vertex_id>>>", "description": "The k-cliques whose adjacency component defines each community."},
+    {"name": "unassigned_vertices", "type": "array<vertex_id>", "description": "Vertices belonging to no returned community."}
+  ],
+  "solution_semantics": {"objective": "Compute all connected components in the graph of k-cliques linked by k-1 shared vertices.", "exactness": "All qualifying k-cliques and their components are computed exactly.", "duplicate_policy": "Equivalent vertex-union communities produced by distinct clique components remain distinct only if their defining components differ; each component is returned once.", "ordering": "Community IDs and ordering are arbitrary."},
+  "validation_rules": ["Every member k-clique is a valid size-k clique.", "All cliques in a community are connected through k-1 overlap steps.", "No two returned communities belong to the same clique-adjacency component.", "Membership maps agree with community vertex sets."],
+  "edge_cases": ["If the graph contains no k-cliques, there are no communities.", "For k=2, communities correspond to nontrivial connected edge components.", "A vertex may belong to multiple communities."],
+  "evaluation_metrics": {"correctness": ["community component equality with oracle", "membership equality", "invalid k-clique count"], "performance": ["end-to-end time", "k-clique discovery time", "percolation time", "peak memory"]}
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "frequent_subgraph_mining",
+  "name": "Frequent Subgraph Mining",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Given a collection of graphs, discover unique subgraph patterns appearing in at least a specified fraction of the collection.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "graph_collection_each_member_uses_canonical_format",
+    "requirements": {"direction": "consistent_across_collection", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "labels_or_types_optional", "edge_attributes": "labels_or_types_optional"},
+    "normalization": ["Apply one self-loop and parallel-edge policy consistently to all collection members.", "Preserve direction when mining directed patterns.", "Use stable categorical values for any labels included in matching."]
+  },
+  "problem_inputs": [
+    {"name": "minimum_support_fraction", "type": "number", "required": true, "constraints": "0 < value <= 1", "description": "Minimum fraction of collection graphs containing at least one pattern occurrence."},
+    {"name": "minimum_edges", "type": "integer", "required": false, "default": 1, "constraints": "value >= 0", "description": "Minimum edges in a returned pattern."},
+    {"name": "maximum_edges", "type": "integer", "required": true, "constraints": "value >= minimum_edges", "description": "Maximum edges in a returned pattern."},
+    {"name": "induced", "type": "boolean", "required": false, "default": false, "description": "Use induced containment when measuring support."},
+    {"name": "label_semantics", "type": "enum", "required": false, "default": "vertex_and_edge_type", "allowed_values": ["unlabeled", "vertex_type", "edge_type", "vertex_and_edge_type"], "description": "Categorical fields participating in isomorphism."}
+  ],
+  "required_outputs": [
+    {"name": "patterns", "type": "array<object>", "description": "Canonical pattern graph, support graph count, and support fraction for every frequent pattern."},
+    {"name": "complete", "type": "boolean", "description": "Whether all qualifying patterns within the size bounds were discovered."}
+  ],
+  "optional_outputs": [
+    {"name": "supporting_graph_ids", "type": "map<pattern_id,array<graph_id>>", "description": "Collection members containing each pattern."},
+    {"name": "closed_or_maximal_status", "type": "map<pattern_id,string>", "description": "Whether a pattern is closed or maximal under support-preserving extension."}
+  ],
+  "solution_semantics": {"objective": "Enumerate one canonical representative for each isomorphism class whose graph-level support meets the threshold and size bounds.", "exactness": "complete=true requires exact exhaustive pattern discovery.", "duplicate_policy": "Isomorphic patterns under label_semantics appear once.", "ordering": "Pattern order is irrelevant."},
+  "validation_rules": ["Pattern support counts collection members, not raw occurrence multiplicity.", "Every reported support meets the threshold.", "Each pattern respects edge-size bounds.", "No two returned patterns are isomorphic under selected label semantics."],
+  "edge_cases": ["An empty collection yields no patterns.", "Duplicate copies of a pattern inside one graph contribute only one unit of graph-level support.", "A support fraction of one requires presence in every collection member."],
+  "evaluation_metrics": {"correctness": ["pattern set equality with oracle", "support equality", "isomorphic duplicate count"], "performance": ["end-to-end time", "mining time", "peak memory", "candidates generated and pruned"]}
+}

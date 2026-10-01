@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "triangle_counting_listing",
+  "name": "Triangle Counting and Listing",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
+  },
+  "problem_inputs": [
+    {"name": "list_instances", "type": "boolean", "required": false, "default": false, "description": "Materialize triangle vertex triples."},
+    {"name": "include_per_vertex_counts", "type": "boolean", "required": false, "default": false, "description": "Return triangle participation per vertex."},
+    {"name": "include_per_edge_counts", "type": "boolean", "required": false, "default": false, "description": "Return triangle support per edge."},
+    {"name": "result_limit", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum listed instances; it does not permit truncating the global count."}
+  ],
+  "required_outputs": [
+    {"name": "global_triangle_count", "type": "integer", "description": "Exact number of distinct undirected triangles."},
+    {"name": "instances_complete", "type": "boolean", "description": "Whether every triangle instance was listed when listing was requested."}
+  ],
+  "optional_outputs": [
+    {"name": "triangles", "type": "array<array<vertex_id>>", "description": "Unique three-vertex triangle instances."},
+    {"name": "per_vertex_count", "type": "map<vertex_id,integer>", "description": "Triangles containing each vertex."},
+    {"name": "per_edge_count", "type": "map<edge_id,integer>", "description": "Triangles containing each edge."}
+  ],
+  "solution_semantics": {"objective": "Count every size-three clique exactly once and materialize requested secondary outputs.", "exactness": "The global count and requested participation counts are exact.", "duplicate_policy": "Each unordered triple is counted and listed once.", "ordering": "No ordering is required."},
+  "validation_rules": ["Every listed triple contains three distinct pairwise-adjacent vertices.", "The sum of per-vertex counts equals three times the global count.", "The sum of per-edge counts equals three times the global count."],
+  "edge_cases": ["Graphs with fewer than three vertices have count zero.", "A complete n-vertex graph contains n choose 3 triangles.", "Isolated vertices have per-vertex count zero."],
+  "evaluation_metrics": {"correctness": ["global count equality", "instance set equality", "per-entity count equality"], "performance": ["end-to-end time", "counting time", "listing time", "peak memory", "edges processed per second"]}
+}

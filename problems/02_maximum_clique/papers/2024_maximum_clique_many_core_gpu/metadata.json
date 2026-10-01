@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_maximum_clique_many_core_gpu",
+  "title": "Efficiently Computing Maximum Clique of Sparse Graphs with Many-Core Graphical Processing Units",
+  "year": 2024,
+  "venue": "ICSOFT 2024",
+  "doi": "10.5220/0012852700003753",
+  "publication_url": "https://doi.org/10.5220/0012852700003753",
+  "pdf_url": "https://www.scitepress.org/Papers/2024/128527/128527.pdf",
+  "code_url": "https://github.com/stefanoquer/Maximum-Clique-on-GPU",
+  "semantic_fit": "exact",
+  "gpu_scope": "Exact maximum-clique search on GPUs.",
+  "notes": null,
+  "problem_id": "maximum_clique",
+  "problem_dir": "02_maximum_clique",
+  "research_cutoff": "2026-09-30"
+}

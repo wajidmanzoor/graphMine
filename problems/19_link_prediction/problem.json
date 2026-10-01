@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "link_prediction",
+  "name": "Link Prediction",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Score and rank currently unconnected vertex pairs according to a declared structural link-prediction measure.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed_or_undirected_measure_dependent", "weights": "ignored_in_version_1", "timestamps": "optional_for_time_filtering", "vertex_attributes": "optional_for_candidate_filters", "edge_attributes": "optional_for_candidate_filters"},
+    "normalization": ["Remove self-loops from the structural scoring graph.", "Collapse duplicate structural edges while retaining any separately applied temporal filter.", "Preserve direction only for measures explicitly defined for directed pairs."]
+  },
+  "problem_inputs": [
+    {"name": "scoring_measure", "type": "enum", "required": true, "allowed_values": ["common_neighbors", "jaccard", "adamic_adar", "resource_allocation", "preferential_attachment"], "description": "Structural definition used to assign pair scores."},
+    {"name": "candidate_pairs", "type": "array<pair<vertex_id,vertex_id>>_or_null", "required": false, "default": null, "description": "Pairs to evaluate; null means all permitted nonedges after filters."},
+    {"name": "exclude_existing_edges", "type": "boolean", "required": false, "default": true, "description": "Exclude pairs already connected in the scoring graph."},
+    {"name": "top_k", "type": "integer", "required": true, "constraints": "value >= 1", "description": "Maximum highest-scoring predictions to return."},
+    {"name": "source_vertex_filter", "type": "attribute_predicate_or_null", "required": false, "default": null, "description": "Optional predicate limiting first endpoints."},
+    {"name": "target_vertex_filter", "type": "attribute_predicate_or_null", "required": false, "default": null, "description": "Optional predicate limiting second endpoints."}
+  ],
+  "required_outputs": [
+    {"name": "ranked_predictions", "type": "array<object>", "description": "Candidate pair, score, and rank in descending score order."},
+    {"name": "evaluated_candidate_count", "type": "integer", "description": "Number of distinct candidate pairs scored."},
+    {"name": "complete", "type": "boolean", "description": "Whether every permitted candidate was evaluated before selecting top_k."}
+  ],
+  "optional_outputs": [
+    {"name": "score_components", "type": "map<pair,object>", "description": "Interpretable terms such as common-neighbor IDs or degree contributions."},
+    {"name": "evaluation_against_ground_truth", "type": "object", "description": "Precision, recall, MAP, or AUC when a held-out future-edge set is supplied externally."}
+  ],
+  "solution_semantics": {"objective": "Rank eligible distinct pairs by the exact selected structural score, not by a claim of guaranteed future connection.", "exactness": "complete=true means all eligible candidates were scored before top-k selection.", "duplicate_policy": "Undirected pairs are canonicalized and appear once; directed ordered pairs remain distinct.", "ordering": "Descending score with a stable pair-ID tie break."},
+  "validation_rules": ["Every returned endpoint exists and satisfies candidate filters.", "Existing edges are absent when exclusion is enabled.", "Scores recompute exactly under the selected measure.", "Ranks follow score and tie policy."],
+  "edge_cases": ["A complete graph has no eligible nonedge predictions when existing edges are excluded.", "Pairs with no relevant shared structure may receive zero score.", "If fewer than top_k candidates exist, return all of them."],
+  "evaluation_metrics": {"correctness": ["score equality", "top-k set and order agreement", "candidate eligibility violations"], "performance": ["end-to-end time", "candidate generation time", "scoring time", "peak memory", "pairs scored per second"]}
+}

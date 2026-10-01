@@ -1,0 +1,21 @@
+{
+  "problem_id": "temporal_motif_mining",
+  "paper_id": "2025_mayura",
+  "title": "Mayura: Exploiting Similarities in Motifs for Temporal Co-Mining",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": "https://www.vldb.org/pvldb/vol18/p5596-singapuram.pdf",
+    "status": "downloaded",
+    "local_path": "paper.pdf",
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/singam-sanjay/Mayura",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "8e4276aace4c711dc4ee047e2cb360ae587b092d",
+    "license_file": "code/LICENSE.txt",
+    "license_note": null,
+    "error": null
+  }
+}

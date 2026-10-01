@@ -1,0 +1,21 @@
+{
+  "problem_id": "graph_motif_counting",
+  "paper_id": "2024_dumato",
+  "title": "DuMato: A Dynamic GPU System for Graph Pattern Mining",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": "https://viniciusvdias.github.io/publications/ferraz2024dumato.pdf",
+    "status": "downloaded",
+    "local_path": "paper.pdf",
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/samuelbferraz/DuMato",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "79c255ee2467e436d49e3ee974b4d7149551c641",
+    "license_file": null,
+    "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+    "error": null
+  }
+}

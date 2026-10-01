@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "k_core_decomposition",
+  "name": "k-Core Decomposition",
+  "category": "dense_structure_mining",
+  "problem_statement": "Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
+  },
+  "problem_inputs": [
+    {"name": "requested_k", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 0", "description": "Optionally materialize the vertices and edges of one k-core in addition to the full decomposition."}
+  ],
+  "required_outputs": [
+    {"name": "core_number_by_vertex", "type": "map<vertex_id,integer>", "description": "Largest core order containing each vertex."},
+    {"name": "degeneracy", "type": "integer", "description": "Maximum core number in the graph."}
+  ],
+  "optional_outputs": [
+    {"name": "requested_core_vertices", "type": "array<vertex_id>", "description": "Vertices whose core number is at least requested_k."},
+    {"name": "requested_core_edges", "type": "array<edge_id>", "description": "Edges induced by requested_core_vertices."},
+    {"name": "peeling_order", "type": "array<vertex_id>", "description": "A valid order in which vertices were removed."}
+  ],
+  "solution_semantics": {"objective": "Compute the complete core decomposition and graph degeneracy.", "exactness": "Core numbers and degeneracy are exact.", "duplicate_policy": "Each input vertex has exactly one core number.", "ordering": "Peeling order may vary while core numbers remain invariant."},
+  "validation_rules": ["Every vertex assigned core c belongs to the c-core.", "No vertex belongs to a core with order greater than its reported core number.", "The requested k-core equals vertices with core number at least k."],
+  "edge_cases": ["Isolated vertices have core number zero.", "An empty graph has degeneracy zero and an empty map.", "Every vertex in a complete n-vertex graph has core number n-1."],
+  "evaluation_metrics": {"correctness": ["per-vertex equality with oracle", "degeneracy equality", "requested-core validity"], "performance": ["end-to-end time", "decomposition time", "peak memory", "edges processed per second"]}
+}

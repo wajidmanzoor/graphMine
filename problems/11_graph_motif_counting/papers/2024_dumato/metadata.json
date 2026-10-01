@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_dumato",
+  "title": "DuMato: A Dynamic GPU System for Graph Pattern Mining",
+  "year": 2024,
+  "venue": "Journal of Parallel and Distributed Computing",
+  "doi": "10.1016/j.jpdc.2024.104903",
+  "publication_url": "https://doi.org/10.1016/j.jpdc.2024.104903",
+  "pdf_url": "https://viniciusvdias.github.io/publications/ferraz2024dumato.pdf",
+  "code_url": "https://github.com/samuelbferraz/DuMato",
+  "semantic_fit": "general_framework",
+  "gpu_scope": "GPU graph-pattern mining including small motif enumeration.",
+  "notes": null,
+  "problem_id": "graph_motif_counting",
+  "problem_dir": "11_graph_motif_counting",
+  "research_cutoff": "2026-09-30"
+}

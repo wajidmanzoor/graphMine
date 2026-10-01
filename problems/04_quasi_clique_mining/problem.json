@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "quasi_clique_mining",
+  "name": "Quasi-Clique Mining",
+  "category": "dense_structure_mining",
+  "problem_statement": "Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
+  },
+  "problem_inputs": [
+    {"name": "gamma", "type": "number", "required": true, "constraints": "0 < value <= 1", "description": "Every selected vertex must have induced degree at least ceil(gamma * (|S|-1))."},
+    {"name": "minimum_size", "type": "integer", "required": true, "constraints": "value >= 2", "description": "Minimum vertices in a returned quasi-clique."},
+    {"name": "maximum_size", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= minimum_size", "description": "Optional upper bound on result size."},
+    {"name": "maximal_only", "type": "boolean", "required": false, "default": true, "description": "Return only qualifying sets not contained in a larger qualifying set."}
+  ],
+  "required_outputs": [
+    {"name": "quasi_cliques", "type": "array<object>", "description": "Unique vertex sets with size, induced edge count, density, and minimum internal degree."},
+    {"name": "complete", "type": "boolean", "description": "Whether every qualifying result was found."}
+  ],
+  "optional_outputs": [{"name": "count", "type": "integer", "description": "Number of qualifying results."}],
+  "solution_semantics": {"objective": "Enumerate induced vertex sets satisfying the gamma minimum-degree condition and size bounds.", "exactness": "All reported sets must satisfy the threshold; complete=true means exhaustive enumeration.", "duplicate_policy": "Each vertex set appears once.", "ordering": "No ordering is required."},
+  "validation_rules": ["Recompute induced degree for every selected vertex.", "Verify size bounds.", "When maximal_only=true, no result is contained in a larger qualifying set."],
+  "edge_cases": ["gamma=1 reduces the condition to clique mining.", "Disconnected sets normally fail for useful gamma values but connectivity is determined solely by the stated degree condition.", "No result is returned when minimum_size exceeds the vertex count."],
+  "evaluation_metrics": {"correctness": ["result set equality with oracle", "threshold violations", "non-maximal result count"], "performance": ["end-to-end time", "search time", "peak memory", "candidates explored"]}
+}

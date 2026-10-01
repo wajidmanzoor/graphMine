@@ -1,0 +1,2356 @@
+{
+  "classification_policy": {
+    "artifact_mismatch": "The pinned linked source snapshot is not an implementation of the paper's claimed problem.",
+    "build_blocked": "The pinned artifact cannot build because a required tool/dependency is unavailable.",
+    "correctness_fail": "At least one exercised supported result disagrees with the independent oracle.",
+    "partial_pass": "At least one exercised GPU path matches, but an interface, query, output, or variant is missing or fails.",
+    "pass": "All exercised required outputs match an independent CPU oracle within the stated tolerance."
+  },
+  "dataset_seed": 20260930,
+  "environment": {
+    "captured_at": "2026-09-30T20:51:32.681103+00:00",
+    "gcc": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "gpus": [
+      {
+        "compute_capability": "8.9",
+        "driver": "570.211.01",
+        "memory_mib": 49140,
+        "name": "NVIDIA RTX 6000 Ada Generation"
+      },
+      {
+        "compute_capability": "8.9",
+        "driver": "570.211.01",
+        "memory_mib": 49140,
+        "name": "NVIDIA RTX 6000 Ada Generation"
+      }
+    ],
+    "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+    "platform": "Linux-6.17.0-23-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "generated_at": "2026-09-30T20:51:32.686986+00:00",
+  "oracle_generator": "validation/gpu_correctness/generate_datasets.py",
+  "schema_version": "1.0",
+  "summary": {
+    "paper_artifact_statuses": {
+      "artifact_mismatch": 1,
+      "build_blocked": 2,
+      "correctness_fail": 4,
+      "partial_pass": 7,
+      "pass": 24
+    },
+    "paper_artifacts": 38,
+    "unique_workloads": 37,
+    "workload_statuses": {
+      "artifact_mismatch": 1,
+      "build_blocked": 2,
+      "correctness_fail": 3,
+      "partial_pass": 7,
+      "pass": 24
+    }
+  },
+  "workloads": [
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/mce_gpu_small.log",
+          "expected": 6,
+          "name": "small maximal-clique count",
+          "observed": 6,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/mce_gpu_medium.log",
+          "expected": 315,
+          "name": "medium maximal-clique count",
+          "observed": 315,
+          "passed": true
+        }
+      ],
+      "implementation": "mce-gpu",
+      "note": "Exact count matched the independent Bron-Kerbosch/NetworkX oracle on both graphs.",
+      "paper_artifacts": [
+        "2023_parallelizing_mce"
+      ],
+      "problem": "maximal_clique_enumeration",
+      "status": "pass",
+      "workload_id": "mce-mce-gpu-2023"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/g2_aimd_small.log",
+          "expected": 6,
+          "name": "small maximal-clique count",
+          "observed": 6,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/g2_aimd_medium.log",
+          "expected": 315,
+          "name": "medium maximal-clique count",
+          "observed": 315,
+          "passed": true
+        }
+      ],
+      "implementation": "G2-AIMD",
+      "note": "The per-chunk and Total No. of Cliques fields matched; the trailing buffer-accounting counter is not the result.",
+      "paper_artifacts": [
+        "2024_g2_aimd"
+      ],
+      "problem": "maximal_clique_enumeration",
+      "status": "pass",
+      "workload_id": "mce-g2-aimd-2024"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/rdmce_small.log",
+          "expected": 6,
+          "name": "small maximal-clique count",
+          "observed": 6,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/rdmce_medium.log",
+          "expected": 315,
+          "name": "medium maximal-clique count",
+          "observed": 315,
+          "passed": true
+        }
+      ],
+      "implementation": "RDMCE",
+      "note": "Exact maximal-clique counts matched on both graphs.",
+      "paper_artifacts": [
+        "2026_rdmce"
+      ],
+      "problem": "maximal_clique_enumeration",
+      "status": "pass",
+      "workload_id": "mce-rdmce-2026"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/cuda_ms_small.log",
+          "expected": 5,
+          "name": "small maximum-clique size",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/cuda_ms_small.log",
+          "expected": true,
+          "name": "small reported vertices form a clique",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/cuda_ms_medium.log",
+          "expected": 8,
+          "name": "medium maximum-clique size",
+          "observed": 8,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/cuda_ms_medium.log",
+          "expected": true,
+          "name": "medium reported vertices form a clique",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "implementation": "CUDA-MS",
+      "note": "Maximum sizes matched and the returned vertex sets were independently checked as cliques.",
+      "paper_artifacts": [
+        "2019_maximum_clique_cuda"
+      ],
+      "problem": "maximum_clique",
+      "status": "pass",
+      "workload_id": "maximum-clique-cuda-ms-2019"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/gpu_maximum_clique_2023_small.log",
+          "expected": 5,
+          "name": "small maximum-clique size",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gpu_maximum_clique_2023_medium.log",
+          "expected": 8,
+          "name": "medium maximum-clique size",
+          "observed": 8,
+          "passed": true
+        }
+      ],
+      "implementation": "GPUMaximumClique",
+      "note": "Reported maximum sizes matched on both graphs; logs also contain concrete maximum-clique vertices.",
+      "paper_artifacts": [
+        "2023_maximum_clique_enumeration_gpu"
+      ],
+      "problem": "maximum_clique",
+      "status": "pass",
+      "workload_id": "maximum-clique-gpu-2023"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/maximum_clique_2024_small.log",
+          "expected": 5,
+          "name": "small maximum-clique size",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/maximum_clique_2024_medium.log",
+          "expected": 8,
+          "name": "medium maximum-clique size",
+          "observed": 8,
+          "passed": true
+        }
+      ],
+      "implementation": "Maximum-Clique-on-GPU",
+      "note": "Maximum sizes matched on both graphs.",
+      "paper_artifacts": [
+        "2024_maximum_clique_many_core_gpu"
+      ],
+      "problem": "maximum_clique",
+      "status": "pass",
+      "workload_id": "maximum-clique-many-core-2024"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/kcgpu_small_k3.log",
+          "expected": 13,
+          "name": "small 3-clique count",
+          "observed": 13,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/kcgpu_small_k4.log",
+          "expected": 5,
+          "name": "small 4-clique count",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/kcgpu_small_k5.log",
+          "expected": 1,
+          "name": "small 5-clique count",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/kcgpu_medium_k3.log",
+          "expected": 304,
+          "name": "medium 3-clique count",
+          "observed": 304,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/kcgpu_medium_k4.log",
+          "expected": 290,
+          "name": "medium 4-clique count",
+          "observed": 290,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/kcgpu_medium_k5.log",
+          "expected": 193,
+          "name": "medium 5-clique count",
+          "observed": 193,
+          "passed": true
+        }
+      ],
+      "implementation": "KCGPU",
+      "note": "Exact 3-, 4-, and 5-clique counts matched on both graphs.",
+      "paper_artifacts": [
+        "2022_parallel_k_clique_counting"
+      ],
+      "problem": "k_clique_counting_enumeration",
+      "status": "pass",
+      "workload_id": "kclique-kcgpu-2022"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/g2miner_kclique_small_k3.log",
+          "expected": true,
+          "name": "small 3-clique interface available",
+          "observed": false,
+          "passed": false
+        },
+        {
+          "evidence": "run_logs/g2miner_kclique_small_k4.log",
+          "expected": 5,
+          "name": "small 4-clique count",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/g2miner_kclique_small_k5.log",
+          "expected": 1,
+          "name": "small 5-clique count",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/g2miner_kclique_medium_k3.log",
+          "expected": true,
+          "name": "medium 3-clique interface available",
+          "observed": false,
+          "passed": false
+        },
+        {
+          "evidence": "run_logs/g2miner_kclique_medium_k4.log",
+          "expected": 290,
+          "name": "medium 4-clique count",
+          "observed": 290,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/g2miner_kclique_medium_k5.log",
+          "expected": 193,
+          "name": "medium 5-clique count",
+          "observed": 193,
+          "passed": true
+        }
+      ],
+      "implementation": "GraphMiner/G2Miner",
+      "limitations": [
+        "k=3 is rejected by the implementation's k > 3 assertion."
+      ],
+      "note": "The supported 4- and 5-clique paths are exact; the shipped binary asserts for k=3.",
+      "paper_artifacts": [
+        "2022_g2miner"
+      ],
+      "problem": "k_clique_counting_enumeration",
+      "status": "partial_pass",
+      "workload_id": "kclique-graphminer-2022"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/graphset_kclique_small_k3.log",
+          "expected": 13,
+          "name": "small 3-clique count",
+          "observed": 13,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/graphset_kclique_small_k4.log",
+          "expected": 5,
+          "name": "small 4-clique count",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/graphset_kclique_small_k5.log",
+          "expected": 1,
+          "name": "small 5-clique count",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/graphset_kclique_medium_k3.log",
+          "expected": 304,
+          "name": "medium 3-clique count",
+          "observed": 304,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/graphset_kclique_medium_k4.log",
+          "expected": 290,
+          "name": "medium 4-clique count",
+          "observed": 290,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/graphset_kclique_medium_k5.log",
+          "expected": 193,
+          "name": "medium 5-clique count",
+          "observed": 193,
+          "passed": true
+        }
+      ],
+      "implementation": "GraphSet",
+      "note": "Exact 3-, 4-, and 5-clique counts matched on both graphs.",
+      "paper_artifacts": [
+        "2023_graphset"
+      ],
+      "problem": "k_clique_counting_enumeration",
+      "status": "pass",
+      "workload_id": "kclique-graphset-2023"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/gamma_small_k3.log",
+          "expected": 13,
+          "name": "small 3-clique count",
+          "observed": 13,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gamma_small_k4.log",
+          "expected": 5,
+          "name": "small 4-clique count",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gamma_small_k5.log",
+          "expected": 1,
+          "name": "small 5-clique count",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gamma_medium_k3.log",
+          "expected": 304,
+          "name": "medium 3-clique count",
+          "observed": 304,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gamma_medium_k4.log",
+          "expected": 290,
+          "name": "medium 4-clique count",
+          "observed": 290,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gamma_medium_k5.log",
+          "expected": 193,
+          "name": "medium 5-clique count",
+          "observed": 193,
+          "passed": true
+        }
+      ],
+      "implementation": "GAMMA",
+      "note": "Exact 3-, 4-, and 5-clique counts matched on both graphs.",
+      "paper_artifacts": [
+        "2024_gamma"
+      ],
+      "problem": "k_clique_counting_enumeration",
+      "status": "pass",
+      "workload_id": "kclique-gamma-2024"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "results/cuqc/small.txt",
+          "expected": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          ],
+          "name": "small maximal quasi-clique vertex sets",
+          "observed": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "results/cuqc/medium.txt",
+          "expected": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13
+            ],
+            [
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20
+            ],
+            [
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27
+            ]
+          ],
+          "name": "medium maximal quasi-clique vertex sets",
+          "observed": [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13
+            ],
+            [
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20
+            ],
+            [
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27
+            ]
+          ],
+          "passed": true
+        }
+      ],
+      "implementation": "cuQC",
+      "note": "Exact maximal quasi-clique vertex sets matched for gamma=0.8 and minimum size 4.",
+      "paper_artifacts": [
+        "2025_cuqc"
+      ],
+      "problem": "quasi_clique_mining",
+      "status": "pass",
+      "workload_id": "quasi-clique-cuqc-2025"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/cds_small_k2.log",
+          "expected": 2.0,
+          "name": "small k=2 densest k-clique density",
+          "observed": 1.73333,
+          "passed": false
+        },
+        {
+          "evidence": "run_logs/cds_small_k3.log",
+          "expected": 2.0,
+          "name": "small k=3 densest k-clique density",
+          "observed": 2.0,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/cds_small_k4.log",
+          "expected": 1.0,
+          "name": "small k=4 densest k-clique density",
+          "observed": 1.0,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/cds_medium_k2.log",
+          "expected": 3.5,
+          "name": "medium k=2 densest k-clique density",
+          "observed": 3.5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/cds_medium_k3.log",
+          "expected": 7.0,
+          "name": "medium k=3 densest k-clique density",
+          "observed": 7.0,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/cds_medium_k4.log",
+          "expected": 8.75,
+          "name": "medium k=4 densest k-clique density",
+          "observed": 8.75,
+          "passed": true
+        }
+      ],
+      "implementation": "CDS",
+      "limitations": [
+        "The artifact emits the optimum density only, not the selected vertex set required by the problem contract."
+      ],
+      "note": "Five of six exact density comparisons matched. For the small k=2 case, CDS reported 1.73333 while the exact optimum is 2.0.",
+      "paper_artifacts": [
+        "2026_bound_tightened_dsd"
+      ],
+      "problem": "densest_subgraph",
+      "status": "correctness_fail",
+      "workload_id": "densest-subgraph-cds-2026"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/kcore_gpu_small.log",
+          "expected": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "name": "small per-vertex core numbers",
+          "observed": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/kcore_gpu_medium.log",
+          "expected": [
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            3,
+            3,
+            2,
+            2,
+            3,
+            3,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            3,
+            3,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            3,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            2,
+            2,
+            3,
+            3,
+            3,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2
+          ],
+          "name": "medium per-vertex core numbers",
+          "observed": [
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            3,
+            3,
+            2,
+            2,
+            3,
+            3,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            3,
+            3,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            3,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            2,
+            2,
+            3,
+            3,
+            3,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2
+          ],
+          "passed": true
+        }
+      ],
+      "implementation": "KCoreGPU",
+      "note": "Every per-vertex core number matched the independent CPU oracle.",
+      "paper_artifacts": [
+        "2023_accelerating_k_core_gpu"
+      ],
+      "problem": "k_core_decomposition",
+      "status": "pass",
+      "workload_id": "kcore-kcoregpu-2023"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/pangolin_ktruss_small.log",
+          "expected": 5,
+          "name": "small maximum trussness",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/pangolin_ktruss_medium.log",
+          "expected": 8,
+          "name": "medium maximum trussness",
+          "observed": 8,
+          "passed": true
+        }
+      ],
+      "implementation": "Pangolin k-truss",
+      "limitations": [
+        "Only the maximum k value was available for comparison."
+      ],
+      "note": "Maximum trussness matched, but this artifact interface does not emit per-edge decomposition.",
+      "paper_artifacts": [
+        "2019_update_k_truss_gpu"
+      ],
+      "problem": "k_truss_decomposition",
+      "status": "partial_pass",
+      "workload_id": "ktruss-pangolin-2019"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/acctd_small.log",
+          "expected": {
+            "2": 2,
+            "3": 8,
+            "5": 10
+          },
+          "name": "small edge-trussness histogram",
+          "observed": {
+            "2": 2,
+            "3": 8,
+            "5": 10
+          },
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/acctd_medium.log",
+          "expected": {
+            "2": 280,
+            "3": 67,
+            "6": 45,
+            "7": 63,
+            "8": 56
+          },
+          "name": "medium edge-trussness histogram",
+          "observed": {
+            "2": 280,
+            "3": 64,
+            "4": 3,
+            "6": 43,
+            "7": 65,
+            "8": 54,
+            "9": 2
+          },
+          "passed": false
+        }
+      ],
+      "implementation": "AccTrussDecomposition/AccTD",
+      "note": "Small is exact; medium assigns an incorrect distribution and reports maximum truss 9 instead of 8.",
+      "paper_artifacts": [
+        "2020_accelerating_truss_heterogeneous"
+      ],
+      "problem": "k_truss_decomposition",
+      "status": "correctness_fail",
+      "workload_id": "ktruss-acctd-2020"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "problems/08_k_truss_decomposition/papers/2021_productive_k_truss_gpu/code/README.md",
+          "expected": true,
+          "name": "repository identifies itself as SpDNN Graph Challenge",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "implementation": "Graphchallenge21 linked snapshot",
+      "limitations": [
+        "No k-truss executable could be validated from this snapshot."
+      ],
+      "note": "The pinned linked repository snapshot contains a sparse-DNN Graph Challenge implementation, not k-truss code.",
+      "paper_artifacts": [
+        "2021_productive_k_truss_gpu"
+      ],
+      "problem": "k_truss_decomposition",
+      "status": "artifact_mismatch",
+      "workload_id": "ktruss-graphchallenge-2021"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/tdt_small.log",
+          "expected": 5,
+          "name": "small maximum trussness",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/tdt_medium.log",
+          "expected": 8,
+          "name": "medium maximum trussness",
+          "observed": 8,
+          "passed": true
+        }
+      ],
+      "implementation": "TDTdecomposition",
+      "limitations": [
+        "Only maximum trussness was compared."
+      ],
+      "note": "Maximum trussness matched; the exercised Python entry point did not provide a stable per-edge result export.",
+      "paper_artifacts": [
+        "2025_tdt"
+      ],
+      "problem": "k_truss_decomposition",
+      "status": "partial_pass",
+      "workload_id": "ktruss-tdt-2025"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/gmbe_small.log",
+          "expected": 7,
+          "name": "small maximal-biclique count",
+          "observed": 7,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gmbe_medium.log",
+          "expected": 15,
+          "name": "medium maximal-biclique count",
+          "observed": 16,
+          "passed": false
+        }
+      ],
+      "implementation": "MBE-GPU",
+      "note": "Both papers map to the same pinned repository/commit. Small is exact; medium reports 16 instead of 15.",
+      "paper_artifacts": [
+        "2023_efficient_mbe_gpus",
+        "2025_advanced_mbe_gpu_bitmaps"
+      ],
+      "problem": "maximal_biclique_enumeration",
+      "status": "correctness_fail",
+      "workload_id": "mbe-mbe-gpu-2023-2025"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/cumbe_small.log",
+          "expected": 7,
+          "name": "small maximal-biclique count",
+          "observed": 7,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/cumbe_medium.log",
+          "expected": 15,
+          "name": "medium maximal-biclique count",
+          "observed": 15,
+          "passed": true
+        }
+      ],
+      "implementation": "cuMBE",
+      "note": "Exact maximal-biclique counts matched on both bipartite graphs.",
+      "paper_artifacts": [
+        "2024_cumbe"
+      ],
+      "problem": "maximal_biclique_enumeration",
+      "status": "pass",
+      "workload_id": "mbe-cumbe-2024"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/tot_small.log",
+          "expected": 13,
+          "name": "small GPU triangle count",
+          "observed": 13,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/tot_small.log",
+          "expected": 13,
+          "name": "small artifact CPU verification",
+          "observed": 13,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/tot_medium.log",
+          "expected": 304,
+          "name": "medium GPU triangle count",
+          "observed": 304,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/tot_medium.log",
+          "expected": 304,
+          "name": "medium artifact CPU verification",
+          "observed": 304,
+          "passed": true
+        }
+      ],
+      "implementation": "ToT",
+      "note": "GPU counts and the artifact's CPU verification both matched the independent oracle.",
+      "paper_artifacts": [
+        "2025_tot_tensor_cores"
+      ],
+      "problem": "triangle_counting_listing",
+      "status": "pass",
+      "workload_id": "triangles-tot-2025"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/wetric_small.log",
+          "expected": 13,
+          "name": "small triangle count",
+          "observed": 13,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/wetric_medium.log",
+          "expected": 304,
+          "name": "medium triangle count",
+          "observed": 304,
+          "passed": true
+        }
+      ],
+      "implementation": "WeTriC",
+      "note": "Exact triangle counts matched on both graphs.",
+      "paper_artifacts": [
+        "2025_wetric"
+      ],
+      "problem": "triangle_counting_listing",
+      "status": "pass",
+      "workload_id": "triangles-wetric-2025"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/edtc_small.log",
+          "expected": 3,
+          "name": "small deleted triangles",
+          "observed": 3,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/edtc_small.log",
+          "expected": 1,
+          "name": "small inserted triangles",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/edtc_medium.log",
+          "expected": 4,
+          "name": "medium deleted triangles",
+          "observed": 4,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/edtc_medium.log",
+          "expected": 1,
+          "name": "medium inserted triangles",
+          "observed": 1,
+          "passed": true
+        }
+      ],
+      "implementation": "EDTC",
+      "note": "Triangle changes after one deletion and one insertion matched exact common-neighbor oracles.",
+      "paper_artifacts": [
+        "2026_edtc"
+      ],
+      "problem": "triangle_counting_listing",
+      "status": "pass",
+      "workload_id": "triangles-edtc-2026"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/g2miner_motif_small_k3.log",
+          "expected": [
+            13,
+            13
+          ],
+          "name": "small induced/non-induced 3-vertex motif vector",
+          "observed": [
+            13,
+            13
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/g2miner_motif_small_k4.log",
+          "expected": [
+            1,
+            15,
+            10,
+            0,
+            1,
+            5
+          ],
+          "name": "small induced/non-induced 4-vertex motif vector",
+          "observed": [
+            1,
+            15,
+            10,
+            0,
+            1,
+            5
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/g2miner_motif_medium_k3.log",
+          "expected": [
+            304,
+            1279
+          ],
+          "name": "medium induced/non-induced 3-vertex motif vector",
+          "observed": [
+            304,
+            1279
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/g2miner_motif_medium_k4.log",
+          "expected": [
+            818,
+            3206,
+            1281,
+            73,
+            47,
+            290
+          ],
+          "name": "medium induced/non-induced 4-vertex motif vector",
+          "observed": [
+            818,
+            3206,
+            1281,
+            73,
+            47,
+            290
+          ],
+          "passed": true
+        }
+      ],
+      "implementation": "GraphMiner/G2Miner",
+      "note": "All induced 3- and 4-vertex motif counts matched on both graphs.",
+      "paper_artifacts": [
+        "2022_g2miner"
+      ],
+      "problem": "graph_motif_counting",
+      "status": "pass",
+      "workload_id": "motif-graphminer-2022"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/graphset_motif_small_k3.log",
+          "expected": [
+            13,
+            52
+          ],
+          "name": "small induced/non-induced 3-vertex motif vector",
+          "observed": [
+            13,
+            52
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/graphset_motif_small_k4.log",
+          "expected": [
+            5,
+            31,
+            74,
+            33,
+            16,
+            101
+          ],
+          "name": "small induced/non-induced 4-vertex motif vector",
+          "observed": [
+            5,
+            31,
+            74,
+            33,
+            16,
+            101
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/graphset_motif_medium_k3.log",
+          "expected": [
+            304,
+            2191
+          ],
+          "name": "medium induced/non-induced 3-vertex motif vector",
+          "observed": [
+            304,
+            2191
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/graphset_motif_medium_k4.log",
+          "expected": [
+            290,
+            1787,
+            4949,
+            3353,
+            990,
+            9822
+          ],
+          "name": "medium induced/non-induced 4-vertex motif vector",
+          "observed": [
+            290,
+            1787,
+            4949,
+            3353,
+            990,
+            9822
+          ],
+          "passed": true
+        }
+      ],
+      "implementation": "GraphSet",
+      "note": "All non-induced occurrence counts matched on both graphs.",
+      "paper_artifacts": [
+        "2023_graphset"
+      ],
+      "problem": "graph_motif_counting",
+      "status": "pass",
+      "workload_id": "motif-graphset-2023"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/dumato_small_k3.log",
+          "expected": [
+            13,
+            13
+          ],
+          "name": "small induced/non-induced 3-vertex motif vector",
+          "observed": [
+            13,
+            13
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dumato_small_k4.log",
+          "expected": [
+            1,
+            1,
+            5,
+            10,
+            15
+          ],
+          "name": "small induced/non-induced 4-vertex motif vector",
+          "observed": [
+            1,
+            1,
+            5,
+            10,
+            15
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dumato_medium_k3.log",
+          "expected": [
+            304,
+            1279
+          ],
+          "name": "medium induced/non-induced 3-vertex motif vector",
+          "observed": [
+            304,
+            1279
+          ],
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dumato_medium_k4.log",
+          "expected": [
+            47,
+            73,
+            290,
+            818,
+            1281,
+            3206
+          ],
+          "name": "medium induced/non-induced 4-vertex motif vector",
+          "observed": [
+            47,
+            73,
+            290,
+            818,
+            1281,
+            3206
+          ],
+          "passed": true
+        }
+      ],
+      "implementation": "DuMato",
+      "note": "All nonzero induced 3- and 4-vertex motif counts matched on both graphs.",
+      "paper_artifacts": [
+        "2024_dumato"
+      ],
+      "problem": "graph_motif_counting",
+      "status": "pass",
+      "workload_id": "motif-dumato-2024"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/tdfs_small_p1.log",
+          "expected": 124,
+          "name": "small diamond embeddings",
+          "observed": 124,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/tdfs_medium_p1.log",
+          "expected": 7148,
+          "name": "medium diamond embeddings",
+          "observed": 7148,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/tdfs_small_p2.exit",
+          "expected": 0,
+          "name": "small K4 query exit code",
+          "observed": 139,
+          "passed": false
+        },
+        {
+          "evidence": "run_logs/tdfs_medium_p2.log",
+          "expected": 6960,
+          "name": "medium K4 embeddings",
+          "observed": 6960,
+          "passed": true
+        }
+      ],
+      "implementation": "TDFS",
+      "limitations": [
+        "Small K4 crashes before emitting a result."
+      ],
+      "note": "Diamond and medium K4 embeddings are exact; the small K4 query exits with signal 11 (code 139).",
+      "paper_artifacts": [
+        "2024_tdfs"
+      ],
+      "problem": "subgraph_isomorphism",
+      "status": "partial_pass",
+      "workload_id": "subgraph-tdfs-2024"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/mercury_small_p1.log",
+          "expected": 1,
+          "name": "small P1/star query",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/mercury_medium_p1.log",
+          "expected": 818,
+          "name": "medium P1/star query",
+          "observed": 818,
+          "passed": true
+        }
+      ],
+      "implementation": "Mercury",
+      "limitations": [
+        "Only one query shape was validated."
+      ],
+      "note": "The exposed P1/star workload matched; other patterns were not available through the checked driver.",
+      "paper_artifacts": [
+        "2024_mercury"
+      ],
+      "problem": "subgraph_isomorphism",
+      "status": "partial_pass",
+      "workload_id": "subgraph-mercury-2024"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "build_logs/sigmo.log",
+          "expected": true,
+          "name": "oneAPI compiler diagnostic captured",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "implementation": "SIGMo",
+      "limitations": [
+        "No correctness run was possible."
+      ],
+      "note": "Build is blocked because Intel oneAPI icpx/Codeplay SYCL is not installed.",
+      "paper_artifacts": [
+        "2025_sigmo"
+      ],
+      "problem": "subgraph_isomorphism",
+      "status": "build_blocked",
+      "workload_id": "subgraph-sigmo-2025"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/gmatch_small_triangle.log",
+          "expected": 78,
+          "name": "small triangle embeddings",
+          "observed": 78,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gmatch_small_clique4.log",
+          "expected": 120,
+          "name": "small clique4 embeddings",
+          "observed": 120,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gmatch_small_cycle4.log",
+          "expected": 128,
+          "name": "small cycle4 embeddings",
+          "observed": 128,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gmatch_small_diamond.log",
+          "expected": 124,
+          "name": "small diamond embeddings",
+          "observed": 124,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gmatch_medium_triangle.log",
+          "expected": 1824,
+          "name": "medium triangle embeddings",
+          "observed": 1824,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gmatch_medium_clique4.log",
+          "expected": 6960,
+          "name": "medium clique4 embeddings",
+          "observed": 6960,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gmatch_medium_cycle4.log",
+          "expected": 7920,
+          "name": "medium cycle4 embeddings",
+          "observed": 7920,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/gmatch_medium_diamond.log",
+          "expected": 7148,
+          "name": "medium diamond embeddings",
+          "observed": 7148,
+          "passed": true
+        }
+      ],
+      "implementation": "gMatch",
+      "note": "All four query shapes matched exact embedding counts on both graphs.",
+      "paper_artifacts": [
+        "2026_gmatch"
+      ],
+      "problem": "subgraph_isomorphism",
+      "status": "pass",
+      "workload_id": "subgraph-gmatch-2026"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/everest_small.log",
+          "expected": 3,
+          "name": "small temporal motif count",
+          "observed": 3,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/everest_medium.log",
+          "expected": 103,
+          "name": "medium temporal motif count",
+          "observed": 103,
+          "passed": true
+        }
+      ],
+      "implementation": "Everest",
+      "note": "Exact ordered temporal-triangle counts matched for delta=10.",
+      "paper_artifacts": [
+        "2024_everest"
+      ],
+      "problem": "temporal_motif_mining",
+      "status": "pass",
+      "workload_id": "temporal-everest-2024"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/mayura_small.log",
+          "expected": 3,
+          "name": "small feed-forward temporal-triangle count",
+          "observed": 3,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/mayura_medium.log",
+          "expected": 103,
+          "name": "medium feed-forward temporal-triangle count",
+          "observed": 103,
+          "passed": true
+        }
+      ],
+      "implementation": "Mayura",
+      "note": "Exact feed-forward temporal-triangle counts matched on both event streams for delta=10.",
+      "paper_artifacts": [
+        "2025_mayura"
+      ],
+      "problem": "temporal_motif_mining",
+      "status": "pass",
+      "workload_id": "temporal-mayura-2026"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "build_logs/mg_alpha_gcd.log",
+          "expected": true,
+          "name": "NVSHMEM dependency diagnostic captured",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "implementation": "MG-alphaGCD",
+      "limitations": [
+        "No correctness run was possible."
+      ],
+      "note": "CMake configuration is blocked by the unavailable NVSHMEM dependency.",
+      "paper_artifacts": [
+        "2025_mg_alpha_gcd"
+      ],
+      "problem": "community_detection",
+      "status": "build_blocked",
+      "workload_id": "community-mg-alpha-gcd-2025"
+    },
+    {
+      "checks": [
+        {
+          "absolute_tolerance": 1e-06,
+          "evidence": "run_logs/gleiden_small.log",
+          "expected": 0.6041666666666667,
+          "name": "small final modularity",
+          "observed": 0.604167,
+          "passed": true
+        },
+        {
+          "absolute_tolerance": 1e-06,
+          "evidence": "run_logs/gleiden_medium.log",
+          "expected": 0.7123425030604968,
+          "name": "medium final modularity",
+          "observed": 0.712343,
+          "passed": true
+        }
+      ],
+      "implementation": "gLeiden",
+      "limitations": [
+        "The upstream output does not expose original-vertex memberships after aggregation, so the verified output is the objective value."
+      ],
+      "note": "Final modularity matched the independently computed planted-partition modularity (within printed precision).",
+      "paper_artifacts": [
+        "2026_gleiden"
+      ],
+      "problem": "community_detection",
+      "status": "pass",
+      "workload_id": "community-gleiden-2026"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/low_memory_lpa_small.log",
+          "expected": true,
+          "name": "small rakLowmemStaticCudaBm scalar invariants",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/low_memory_lpa_small.log",
+          "expected": true,
+          "name": "small rakLowmemStaticCudaMg scalar invariants",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/low_memory_lpa_small.log",
+          "expected": true,
+          "name": "small rakStaticCuda scalar invariants",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/low_memory_lpa_medium.log",
+          "expected": true,
+          "name": "medium rakLowmemStaticCudaBm scalar invariants",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/low_memory_lpa_medium.log",
+          "expected": true,
+          "name": "medium rakLowmemStaticCudaMg scalar invariants",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/low_memory_lpa_medium.log",
+          "expected": true,
+          "name": "medium rakStaticCuda scalar invariants",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "implementation": "low-memory GPU LPA",
+      "limitations": [
+        "Membership vectors are not emitted, so exact partition recomputation is unavailable; only scalar invariants and reported quality were checked."
+      ],
+      "note": "All GPU modes returned finite, bounded modularity and valid community counts; heuristic quality varies by mode. [{\"method\":\"rakLowmemStaticCudaBm\",\"modularity\":0.0,\"communities\":1},{\"method\":\"rakLowmemStaticCudaMg\",\"modularity\":0.374131944,\"communities\":3},{\"method\":\"rakStaticCuda\",\"modularity\":0.604166667,\"communities\":3},{\"method\":\"rakLowmemStaticCudaBm\",\"modularity\":0.487351569,\"communities\":7},{\"method\":\"rakLowmemStaticCudaMg\",\"modularity\":0.680525809,\"communities\":5},{\"method\":\"rakStaticCuda\",\"modularity\":0.687650439,\"communities\":5}]",
+      "paper_artifacts": [
+        "2026_low_memory_lpa"
+      ],
+      "problem": "community_detection",
+      "status": "partial_pass",
+      "workload_id": "community-low-memory-lpa-2026"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "results/pggc/plouvain_small.clusters",
+          "expected": true,
+          "name": "small plouvain label coverage/community count",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/plouvain_small.clusters",
+          "expected": true,
+          "name": "small plouvain planted partition (label-invariant)",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/plouvain_small.clusters",
+          "expected": 0.6041666666666667,
+          "name": "small plouvain independently recomputed modularity",
+          "observed": 0.6041666666666667,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/pggc_plouvain_small.log; run_logs/pggc_plouvain_small_verify.log",
+          "expected": 0.6041666666666667,
+          "name": "small plouvain reported and verifier modularity",
+          "observed": {
+            "algorithm": 0.604166667,
+            "artifact_verifier": 0.604166667
+          },
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/plouvain_medium.clusters",
+          "expected": true,
+          "name": "medium plouvain label coverage/community count",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/plouvain_medium.clusters",
+          "expected": true,
+          "name": "medium plouvain planted partition (label-invariant)",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/plouvain_medium.clusters",
+          "expected": 0.7123425030604968,
+          "name": "medium plouvain independently recomputed modularity",
+          "observed": 0.7123425030604968,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/pggc_plouvain_medium.log; run_logs/pggc_plouvain_medium_verify.log",
+          "expected": 0.7123425030604968,
+          "name": "medium plouvain reported and verifier modularity",
+          "observed": {
+            "algorithm": 0.712342503,
+            "artifact_verifier": 0.712342503
+          },
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden_small.clusters",
+          "expected": true,
+          "name": "small pleiden label coverage/community count",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden_small.clusters",
+          "expected": true,
+          "name": "small pleiden planted partition (label-invariant)",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden_small.clusters",
+          "expected": 0.6041666666666667,
+          "name": "small pleiden independently recomputed modularity",
+          "observed": 0.6041666666666667,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/pggc_pleiden_small.log; run_logs/pggc_pleiden_small_verify.log",
+          "expected": 0.6041666666666667,
+          "name": "small pleiden reported and verifier modularity",
+          "observed": {
+            "algorithm": 0.604166667,
+            "artifact_verifier": 0.604166667
+          },
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden_medium.clusters",
+          "expected": true,
+          "name": "medium pleiden label coverage/community count",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden_medium.clusters",
+          "expected": true,
+          "name": "medium pleiden planted partition (label-invariant)",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden_medium.clusters",
+          "expected": 0.7123425030604968,
+          "name": "medium pleiden independently recomputed modularity",
+          "observed": 0.7123425030604968,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/pggc_pleiden_medium.log; run_logs/pggc_pleiden_medium_verify.log",
+          "expected": 0.7123425030604968,
+          "name": "medium pleiden reported and verifier modularity",
+          "observed": {
+            "algorithm": 0.712342503,
+            "artifact_verifier": 0.712342503
+          },
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden+_small.clusters",
+          "expected": true,
+          "name": "small pleiden+ label coverage/community count",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden+_small.clusters",
+          "expected": true,
+          "name": "small pleiden+ planted partition (label-invariant)",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden+_small.clusters",
+          "expected": 0.6041666666666667,
+          "name": "small pleiden+ independently recomputed modularity",
+          "observed": 0.6041666666666667,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/pggc_pleiden+_small.log; run_logs/pggc_pleiden+_small_verify.log",
+          "expected": 0.6041666666666667,
+          "name": "small pleiden+ reported and verifier modularity",
+          "observed": {
+            "algorithm": 0.604166667,
+            "artifact_verifier": 0.604166667
+          },
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden+_medium.clusters",
+          "expected": true,
+          "name": "medium pleiden+ label coverage/community count",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden+_medium.clusters",
+          "expected": true,
+          "name": "medium pleiden+ planted partition (label-invariant)",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "results/pggc/pleiden+_medium.clusters",
+          "expected": 0.7123425030604968,
+          "name": "medium pleiden+ independently recomputed modularity",
+          "observed": 0.7123425030604968,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/pggc_pleiden+_medium.log; run_logs/pggc_pleiden+_medium_verify.log",
+          "expected": 0.7123425030604968,
+          "name": "medium pleiden+ reported and verifier modularity",
+          "observed": {
+            "algorithm": 0.712342503,
+            "artifact_verifier": 0.712342503
+          },
+          "passed": true
+        }
+      ],
+      "implementation": "pLouvain/pLeiden/pLeiden+",
+      "note": "All six GPU runs recovered the planted partition, and independently recomputed modularity matched both the oracle and artifact verifier. [{\"dataset\":\"small\",\"algorithm\":\"plouvain\",\"vertices\":18,\"communities\":3,\"modularity\":0.6041666666666667},{\"dataset\":\"medium\",\"algorithm\":\"plouvain\",\"vertices\":240,\"communities\":4,\"modularity\":0.7123425030604968},{\"dataset\":\"small\",\"algorithm\":\"pleiden\",\"vertices\":18,\"communities\":3,\"modularity\":0.6041666666666667},{\"dataset\":\"medium\",\"algorithm\":\"pleiden\",\"vertices\":240,\"communities\":4,\"modularity\":0.7123425030604968},{\"dataset\":\"small\",\"algorithm\":\"pleiden+\",\"vertices\":18,\"communities\":3,\"modularity\":0.6041666666666667},{\"dataset\":\"medium\",\"algorithm\":\"pleiden+\",\"vertices\":240,\"communities\":4,\"modularity\":0.7123425030604968}]",
+      "paper_artifacts": [
+        "2026_multilevel_graph_clustering"
+      ],
+      "problem": "community_detection",
+      "status": "pass",
+      "workload_id": "community-plouvain-pleiden-2026"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/turbobc_small.log",
+          "expected": 12,
+          "name": "small complete betweenness vector",
+          "observed": 12,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/turbobc_small.log",
+          "expected": "all values within rel=1e-5 or abs=1e-4",
+          "name": "small GPU betweenness values",
+          "observed": {
+            "max_absolute_error": 0.0,
+            "max_relative_error_nonzero": 0.0
+          },
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/turbobc_small.log",
+          "expected": true,
+          "name": "small artifact GPU/CPU agreement",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/turbobc_medium.log",
+          "expected": 240,
+          "name": "medium complete betweenness vector",
+          "observed": 240,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/turbobc_medium.log",
+          "expected": "all values within rel=1e-5 or abs=1e-4",
+          "name": "medium GPU betweenness values",
+          "observed": {
+            "max_absolute_error": 0.018807592012308305,
+            "max_relative_error_nonzero": 3.990971107375532e-06
+          },
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/turbobc_medium.log",
+          "expected": true,
+          "name": "medium artifact GPU/CPU agreement",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "implementation": "TurboBC",
+      "note": "Every ordered-pair unnormalized betweenness score matched the independent oracle within single-precision tolerance. [{\"dataset\":\"small\",\"vertices\":12,\"max_absolute_error\":0.0,\"max_relative_error_nonzero\":0.0},{\"dataset\":\"medium\",\"vertices\":240,\"max_absolute_error\":0.018807592012308305,\"max_relative_error_nonzero\":3.990971107375532e-06}]",
+      "paper_artifacts": [
+        "2021_turbobc"
+      ],
+      "problem": "centrality_influential_node_mining",
+      "status": "pass",
+      "workload_id": "centrality-turbobc-2021"
+    },
+    {
+      "checks": [
+        {
+          "evidence": "run_logs/dynamic_pagerank_small.log",
+          "expected": "<= 1e-07",
+          "name": "small pagerankStaticCuda L1 error",
+          "observed": 1.3013443656006984e-09,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_small.log",
+          "expected": "<= 1e-07",
+          "name": "small pagerankNaiveDynamicCuda L1 error",
+          "observed": 8.63354610025624e-10,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_small.log",
+          "expected": "<= 1e-07",
+          "name": "small pagerankDynamicFrontierCuda L1 error",
+          "observed": 8.63354610025624e-10,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_small.log",
+          "expected": "<= 1e-05",
+          "name": "small pagerankPruneDynamicFrontierCuda L1 error",
+          "observed": 2.1702979981219617e-06,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_small.log",
+          "expected": "<= 1e-07",
+          "name": "small pagerankDynamicTraversalCuda L1 error",
+          "observed": 8.63354610025624e-10,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_partitioned_small.exit",
+          "expected": 0,
+          "name": "small partitioned CUDA variant exit code",
+          "observed": 136,
+          "passed": false
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_medium.log",
+          "expected": "<= 1e-07",
+          "name": "medium pagerankStaticCuda L1 error",
+          "observed": 4.046266781918342e-09,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_medium.log",
+          "expected": "<= 1e-07",
+          "name": "medium pagerankNaiveDynamicCuda L1 error",
+          "observed": 6.0949437018665426e-09,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_medium.log",
+          "expected": "<= 1e-07",
+          "name": "medium pagerankDynamicFrontierCuda L1 error",
+          "observed": 6.0949437018665426e-09,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_medium.log",
+          "expected": "<= 1e-05",
+          "name": "medium pagerankPruneDynamicFrontierCuda L1 error",
+          "observed": 6.349382170238276e-07,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_medium.log",
+          "expected": "<= 1e-07",
+          "name": "medium pagerankDynamicTraversalCuda L1 error",
+          "observed": 6.0949437018665426e-09,
+          "passed": true
+        },
+        {
+          "evidence": "run_logs/dynamic_pagerank_partitioned_medium.exit",
+          "expected": 0,
+          "name": "medium partitioned CUDA variant exit code",
+          "observed": 136,
+          "passed": false
+        }
+      ],
+      "implementation": "dynamic forward PageRank",
+      "limitations": [
+        "Partitioned CUDA variants fail with SIGFPE; all unpartitioned CUDA variants passed."
+      ],
+      "note": "Unpartitioned CUDA modes match independent NetworkX PageRank within tolerance. Partitioned CUDA mode exits 136 on both synthetic graphs. [{\"dataset\":\"small\",\"method\":\"pagerankStaticCuda\",\"l1_error\":1.3013443656006984e-09},{\"dataset\":\"small\",\"method\":\"pagerankNaiveDynamicCuda\",\"l1_error\":8.63354610025624e-10},{\"dataset\":\"small\",\"method\":\"pagerankDynamicFrontierCuda\",\"l1_error\":8.63354610025624e-10},{\"dataset\":\"small\",\"method\":\"pagerankPruneDynamicFrontierCuda\",\"l1_error\":2.1702979981219617e-06},{\"dataset\":\"small\",\"method\":\"pagerankDynamicTraversalCuda\",\"l1_error\":8.63354610025624e-10},{\"dataset\":\"medium\",\"method\":\"pagerankStaticCuda\",\"l1_error\":4.046266781918342e-09},{\"dataset\":\"medium\",\"method\":\"pagerankNaiveDynamicCuda\",\"l1_error\":6.0949437018665426e-09},{\"dataset\":\"medium\",\"method\":\"pagerankDynamicFrontierCuda\",\"l1_error\":6.0949437018665426e-09},{\"dataset\":\"medium\",\"method\":\"pagerankPruneDynamicFrontierCuda\",\"l1_error\":6.349382170238276e-07},{\"dataset\":\"medium\",\"method\":\"pagerankDynamicTraversalCuda\",\"l1_error\":6.0949437018665426e-09}]",
+      "paper_artifacts": [
+        "2024_dynamic_df_pagerank_gpu"
+      ],
+      "problem": "centrality_influential_node_mining",
+      "status": "partial_pass",
+      "workload_id": "pagerank-dynamic-df-2024"
+    }
+  ]
+}

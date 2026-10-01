@@ -1,0 +1,21 @@
+{
+  "problem_id": "maximal_clique_enumeration",
+  "paper_id": "2023_parallelizing_mce",
+  "title": "Parallelizing Maximal Clique Enumeration on GPUs",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": "https://arxiv.org/pdf/2212.01473",
+    "status": "downloaded",
+    "local_path": "paper.pdf",
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/yen-hsiang-chang/mce-gpu",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "44ef6e034e39660c77c31eee475455a16af470e1",
+    "license_file": "code/LICENSE",
+    "license_note": null,
+    "error": null
+  }
+}

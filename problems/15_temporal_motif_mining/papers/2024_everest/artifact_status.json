@@ -1,0 +1,21 @@
+{
+  "problem_id": "temporal_motif_mining",
+  "paper_id": "2024_everest",
+  "title": "Everest: GPU-Accelerated System for Mining Temporal Motifs",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": "https://www.vldb.org/pvldb/vol17/p162-yuan.pdf",
+    "status": "downloaded",
+    "local_path": "paper.pdf",
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/yichao-yuan-99/Everest",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "ef530d36f23e0830d815392a5b6fa8237c29cec4",
+    "license_file": "code/LICENSE.txt",
+    "license_note": null,
+    "error": null
+  }
+}

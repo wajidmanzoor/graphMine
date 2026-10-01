@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "maximal_biclique_enumeration",
+  "name": "Maximal Biclique Enumeration",
+  "category": "dense_structure_mining",
+  "problem_statement": "Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "partition_information_required", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops and collapse parallel edges.", "Reject any edge whose endpoints are in the same declared partition."]
+  },
+  "problem_inputs": [
+    {"name": "left_partition", "type": "array<vertex_id>", "required": true, "description": "All vertices belonging to the left side."},
+    {"name": "right_partition", "type": "array<vertex_id>", "required": true, "description": "All vertices belonging to the right side."},
+    {"name": "minimum_left_size", "type": "integer", "required": false, "default": 1, "constraints": "value >= 1", "description": "Minimum selected vertices on the left."},
+    {"name": "minimum_right_size", "type": "integer", "required": false, "default": 1, "constraints": "value >= 1", "description": "Minimum selected vertices on the right."},
+    {"name": "result_limit", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum materialized bicliques."}
+  ],
+  "required_outputs": [
+    {"name": "bicliques", "type": "array<object>", "description": "Distinct objects containing left_vertices and right_vertices."},
+    {"name": "returned_count", "type": "integer", "description": "Number of materialized bicliques."},
+    {"name": "complete", "type": "boolean", "description": "Whether every qualifying maximal biclique was enumerated."}
+  ],
+  "optional_outputs": [{"name": "total_count", "type": "integer", "description": "Total qualifying bicliques when known exactly."}],
+  "solution_semantics": {"objective": "Enumerate all inclusion-maximal pairs (L,R) with every possible cross-partition edge present.", "exactness": "Every returned pair must be exact; complete=true requires exhaustive enumeration.", "duplicate_policy": "Each pair of unordered vertex sets appears once.", "ordering": "Order within or among bicliques is irrelevant."},
+  "validation_rules": ["Partitions are disjoint and cover every endpoint used.", "Every left result vertex is adjacent to every right result vertex.", "No additional vertex can extend either result side while preserving completeness."],
+  "edge_cases": ["A graph with no cross-partition edges has no nonempty bicliques.", "An isolated vertex belongs to no biclique under the nonempty-side convention.", "A complete bipartite input has one maximal biclique containing both full partitions."],
+  "evaluation_metrics": {"correctness": ["set equality with oracle", "non-biclique result count", "non-maximal or duplicate result count"], "performance": ["end-to-end time", "enumeration time", "peak memory", "bicliques per second"]}
+}

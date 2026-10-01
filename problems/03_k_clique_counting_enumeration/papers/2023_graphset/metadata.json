@@ -1,0 +1,16 @@
+{
+  "paper_id": "2023_graphset",
+  "title": "GraphSet: High-Performance Graph Mining on GPUs",
+  "year": 2023,
+  "venue": "SC 2023",
+  "doi": "10.1145/3581784.3613213",
+  "publication_url": "https://doi.org/10.1145/3581784.3613213",
+  "pdf_url": null,
+  "code_url": "https://github.com/sth1997/GraphSet",
+  "semantic_fit": "general_framework",
+  "gpu_scope": "GPU graph-mining system supporting clique counting and related patterns.",
+  "notes": "No stable author-hosted open PDF was located during this pass.",
+  "problem_id": "k_clique_counting_enumeration",
+  "problem_dir": "03_k_clique_counting_enumeration",
+  "research_cutoff": "2026-09-30"
+}

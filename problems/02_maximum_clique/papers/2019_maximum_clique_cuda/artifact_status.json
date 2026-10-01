@@ -1,0 +1,21 @@
+{
+  "problem_id": "maximum_clique",
+  "paper_id": "2019_maximum_clique_cuda",
+  "title": "Implementation of a Maximum Clique Search Procedure on CUDA",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": "https://link.springer.com/content/pdf/10.1007%2Fs10732-018-9393-x.pdf",
+    "status": "download_failed",
+    "local_path": null,
+    "error": "The URL returned content that is not a PDF."
+  },
+  "code": {
+    "source_url": "https://github.com/pawelld/CUDA-MS",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "a0b6b00a1f67b6fe65380b2efcb242cf40889d83",
+    "license_file": "code/LICENSE",
+    "license_note": null,
+    "error": null
+  }
+}

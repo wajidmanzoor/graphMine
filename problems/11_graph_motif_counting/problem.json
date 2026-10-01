@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_motif_counting",
+  "name": "Graph Motif Counting",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Count occurrences of one or more supplied small structural patterns in a directed or undirected graph.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "must_match_each_motif", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Remove self-loops unless explicitly present in a future motif extension.", "Collapse parallel edges with identical direction into one edge.", "Preserve edge direction for directed motifs."]
+  },
+  "problem_inputs": [
+    {"name": "motifs", "type": "array<canonical_graph>", "required": true, "constraints": "nonempty array of small connected patterns", "description": "Motif definitions using the same canonical graph format."},
+    {"name": "induced", "type": "boolean", "required": false, "default": false, "description": "Require each occurrence to contain exactly the motif edges among selected vertices."},
+    {"name": "occurrence_identity", "type": "enum", "required": false, "default": "unique_vertex_set_and_mapping_class", "allowed_values": ["unique_vertex_set_and_mapping_class", "all_embeddings"], "description": "Controls whether automorphism-equivalent embeddings are counted separately."},
+    {"name": "list_instances", "type": "boolean", "required": false, "default": false, "description": "Materialize matching data-graph vertex mappings."},
+    {"name": "result_limit_per_motif", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum listed instances for each motif; counts remain exhaustive."}
+  ],
+  "required_outputs": [
+    {"name": "count_by_motif", "type": "map<motif_id,integer>", "description": "Exact occurrence count under the selected identity semantics."},
+    {"name": "instances_complete_by_motif", "type": "map<motif_id,boolean>", "description": "Whether every requested instance was materialized."}
+  ],
+  "optional_outputs": [
+    {"name": "instances_by_motif", "type": "map<motif_id,array<mapping>>", "description": "Mappings from motif vertices to data-graph vertices."},
+    {"name": "per_vertex_participation", "type": "map<motif_id,map<vertex_id,integer>>", "description": "Occurrence participation counts."}
+  ],
+  "solution_semantics": {"objective": "Count subgraphs isomorphic to each motif under direction, inducedness, and occurrence-identity settings.", "exactness": "Counts are exact; listing may be capped but must disclose completeness.", "duplicate_policy": "Occurrences follow occurrence_identity and are otherwise unique.", "ordering": "Result ordering is irrelevant; directed edge orientation is significant."},
+  "validation_rules": ["Every instance preserves motif adjacency and direction.", "Induced instances contain no additional edges among mapped vertices.", "Counts account for motif automorphisms according to occurrence_identity."],
+  "edge_cases": ["A motif larger than the data graph has count zero.", "Isomorphic motif definitions may produce identical counts but remain separately identified.", "Disconnected motif definitions are rejected in version 1."],
+  "evaluation_metrics": {"correctness": ["count agreement with exhaustive matcher", "instance validity", "automorphism overcount or undercount"], "performance": ["end-to-end time", "count time per motif", "peak memory", "occurrences processed per second"]}
+}

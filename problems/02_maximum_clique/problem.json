@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "maximum_clique",
+  "name": "Maximum Clique",
+  "category": "dense_structure_mining",
+  "problem_statement": "Given an undirected graph, find a clique with the largest possible number of vertices.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
+  },
+  "problem_inputs": [
+    {"name": "return_all_ties", "type": "boolean", "required": false, "default": false, "description": "Return every maximum clique rather than one representative."},
+    {"name": "known_lower_bound", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 0", "description": "A valid known lower bound on the optimal clique size."}
+  ],
+  "required_outputs": [
+    {"name": "maximum_size", "type": "integer", "description": "Cardinality of the best clique found."},
+    {"name": "cliques", "type": "array<array<vertex_id>>", "description": "One maximum clique, or all tied maximum cliques when requested."},
+    {"name": "optimal", "type": "boolean", "description": "Whether maximum_size has been proven globally optimal."}
+  ],
+  "optional_outputs": [
+    {"name": "upper_bound", "type": "integer", "description": "Best certified upper bound when optimal=false."}
+  ],
+  "solution_semantics": {
+    "objective": "Maximize the number of vertices in a complete induced vertex set.",
+    "exactness": "An exact completed result must have optimal=true; interrupted solvers may return a feasible clique and certified bound.",
+    "duplicate_policy": "Tied maximum cliques must be unique as vertex sets.",
+    "ordering": "No ordering is semantically required."
+  },
+  "validation_rules": ["Every returned set is a clique.", "Every returned clique has maximum_size vertices.", "optimal=true is valid only when no larger clique exists."],
+  "edge_cases": ["An empty graph has maximum_size 0 and one empty solution conventionally represented by an empty clique list.", "A nonempty edgeless graph has maximum_size 1.", "A complete graph's unique maximum clique contains every vertex."],
+  "evaluation_metrics": {"correctness": ["objective agreement with exact oracle", "clique feasibility", "bound validity"], "performance": ["time to best solution", "time to proof", "end-to-end time", "peak memory"]}
+}

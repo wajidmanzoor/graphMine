@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "temporal_motif_mining",
+  "name": "Temporal Motif Mining",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Count occurrences of a small ordered edge pattern whose matched events occur in the required order within a bounded time window.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "must_match_motif", "weights": "ignored", "timestamps": "required", "vertex_attributes": "optional_for_predicates", "edge_attributes": "optional_for_predicates"},
+    "normalization": ["Normalize all edge timestamps to UTC epoch seconds without changing order.", "Preserve parallel temporal events as distinct edge IDs.", "Preserve edge direction.", "Reject missing or invalid timestamps."]
+  },
+  "problem_inputs": [
+    {"name": "temporal_motif", "type": "ordered_pattern", "required": true, "description": "Small graph pattern whose edges have a required total or partial temporal order."},
+    {"name": "maximum_duration_seconds", "type": "number", "required": true, "constraints": "value >= 0", "description": "Maximum last-edge minus first-edge time for an occurrence."},
+    {"name": "allow_equal_timestamps", "type": "boolean", "required": false, "default": false, "description": "Whether consecutively ordered motif edges may share a timestamp."},
+    {"name": "temporal_induced", "type": "boolean", "required": false, "default": false, "description": "Reject occurrences with additional participating-vertex events inside the occurrence window."},
+    {"name": "list_instances", "type": "boolean", "required": false, "default": false, "description": "Materialize matched edge-event sequences."},
+    {"name": "result_limit", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum listed instances; the total count remains exhaustive."}
+  ],
+  "required_outputs": [
+    {"name": "occurrence_count", "type": "integer", "description": "Exact number of temporal motif occurrences."},
+    {"name": "instances_complete", "type": "boolean", "description": "Whether all instances were materialized when listing was requested."}
+  ],
+  "optional_outputs": [
+    {"name": "instances", "type": "array<object>", "description": "Matched vertices, ordered edge IDs, timestamps, and occurrence duration."},
+    {"name": "per_vertex_participation", "type": "map<vertex_id,integer>", "description": "Occurrences involving each data vertex."}
+  ],
+  "solution_semantics": {"objective": "Count structurally valid event sequences satisfying motif order, duration, equality, and temporal-inducedness semantics.", "exactness": "The occurrence count is exact; listing may be capped.", "duplicate_policy": "A distinct ordered tuple of edge-event IDs is a distinct occurrence.", "ordering": "Temporal order is semantically significant."},
+  "validation_rules": ["Each instance preserves motif structure and direction.", "Event timestamps satisfy the declared order.", "Occurrence duration does not exceed maximum_duration_seconds.", "No temporal-inducedness violation exists when enabled."],
+  "edge_cases": ["No events yields count zero.", "Equal-timestamp events are rejected from strict order positions unless allowed.", "Repeated edges between the same endpoints remain distinct events."],
+  "evaluation_metrics": {"correctness": ["count agreement with exhaustive temporal matcher", "structural violations", "ordering or window violations"], "performance": ["end-to-end time", "temporal matching time", "peak memory", "events processed per second"]}
+}

@@ -3,6 +3,7 @@
 const state = {
   manifest: null,
   operations: [],
+  problemRecords: new Map(),
   problemSpecs: new Map(),
   filter: "all",
   query: "",
@@ -61,11 +62,11 @@ const categoryLabel = (category) => {
 
 function manifestCandidates() {
   const raw =
-    "https://raw.githubusercontent.com/wajidmanzoor/graphMine/main/graphmine_manifest.json";
+    "https://raw.githubusercontent.com/wajidmanzoor/graphMine/main/graphmine_catalog.json";
   if (window.location.hostname.endsWith("github.io")) {
     return [raw];
   }
-  return ["./graphmine_manifest.json", "../graphmine_manifest.json", raw];
+  return ["./graphmine_catalog.json", "../graphmine_catalog.json", raw];
 }
 
 async function loadManifest() {
@@ -77,8 +78,8 @@ async function loadManifest() {
         throw new Error(`${candidate} returned ${response.status}`);
       }
       const manifest = await response.json();
-      if (!Array.isArray(manifest.operations)) {
-        throw new Error(`${candidate} is not a GraphMine library manifest`);
+      if (!Array.isArray(manifest.operations) || !Array.isArray(manifest.problems)) {
+        throw new Error(`${candidate} is not a GraphMine problem catalog`);
       }
       state.manifestUrl = candidate;
       return manifest;
@@ -86,14 +87,17 @@ async function loadManifest() {
       lastError = error;
     }
   }
-  throw lastError || new Error("No manifest source was available");
+  throw lastError || new Error("No catalog source was available");
 }
 
 function hydrateManifest(manifest) {
   state.manifest = manifest;
   state.operations = manifest.operations || [];
+  state.problemRecords = new Map(
+    (manifest.problems || []).map((entry) => [entry.spec.problem_id, entry]),
+  );
   state.problemSpecs = new Map(
-    (manifest.included_problem_specs || []).map((entry) => [
+    (manifest.problems || []).map((entry) => [
       entry.spec.problem_id,
       entry.spec,
     ]),
@@ -101,7 +105,7 @@ function hydrateManifest(manifest) {
 
   const scope = manifest.scope || {};
   const values = {
-    "research-problems": scope.research_problem_count,
+    "research-problems": scope.library_supported_problem_count,
     operations: scope.runnable_operation_count,
     backends: scope.validated_backend_count,
   };
@@ -114,7 +118,7 @@ function hydrateManifest(manifest) {
   if (manifestLink) {
     manifestLink.href = state.manifestUrl.startsWith("http")
       ? state.manifestUrl
-      : "https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_manifest.json";
+      : "https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json";
   }
 
   renderOperations();
@@ -122,6 +126,7 @@ function hydrateManifest(manifest) {
 
 function searchableText(operation) {
   const spec = state.problemSpecs.get(operation.research_problem_id) || {};
+  const problemRecord = state.problemRecords.get(operation.research_problem_id) || {};
   return [
     operation.id,
     operation.cpp_class,
@@ -129,6 +134,13 @@ function searchableText(operation) {
     operation.research_problem_id,
     spec.name,
     spec.category,
+    spec.problem_statement,
+    ...(problemRecord.intent_signals || []),
+    ...(spec.problem_inputs || []).flatMap((input) => [
+      input.name,
+      input.description,
+      input.constraints,
+    ]),
     ...(operation.backends || []),
     ...(operation.parameters || []),
     ...(operation.required_outputs || []),
@@ -139,6 +151,81 @@ function searchableText(operation) {
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
+}
+
+function problemInputMarkup(inputs) {
+  if (!inputs || inputs.length === 0) {
+    return '<p class="dialog-class">No problem-specific parameters.</p>';
+  }
+  return `
+    <div class="dialog-table-wrap">
+      <table class="dialog-table dialog-input-table">
+        <thead><tr><th>Input</th><th>Contract</th></tr></thead>
+        <tbody>
+          ${inputs
+            .map((input) => {
+              const defaultValue = Object.hasOwn(input, "default")
+                ? JSON.stringify(input.default)
+                : "none";
+              return `<tr>
+                <th><code>${escapeHtml(input.name)}</code></th>
+                <td>
+                  <strong>${escapeHtml(input.type)}</strong> · ${input.required ? "required" : `default ${escapeHtml(defaultValue)}`}<br />
+                  ${escapeHtml(input.description || "")}
+                  ${input.constraints ? `<small>${escapeHtml(input.constraints)}</small>` : ""}
+                </td>
+              </tr>`;
+            })
+            .join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function problemContextMarkup(spec, problemRecord) {
+  const requirements = Object.entries(spec.graph_input?.requirements || {});
+  const semantics = Object.entries(spec.solution_semantics || {});
+  const sourceUrl = problemRecord.source
+    ? `https://github.com/wajidmanzoor/graphMine/blob/main/${problemRecord.source}`
+    : "https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json";
+  return `
+    <div class="dialog-problem-summary">
+      <p>${escapeHtml(spec.problem_statement || "")}</p>
+      <a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noreferrer">Open exact problem JSON</a>
+    </div>
+    <details class="dialog-context">
+      <summary>Full problem contract</summary>
+      <div class="dialog-section">
+        <h3>Problem inputs</h3>
+        ${problemInputMarkup(spec.problem_inputs)}
+      </div>
+      <div class="dialog-section">
+        <h3>Graph requirements</h3>
+        <table class="dialog-table">
+          <tbody>${requirements
+            .map(
+              ([name, value]) =>
+                `<tr><th>${escapeHtml(humanize(name))}</th><td>${escapeHtml(value)}</td></tr>`,
+            )
+            .join("")}</tbody>
+        </table>
+      </div>
+      <div class="dialog-section">
+        <h3>Solution semantics</h3>
+        <table class="dialog-table">
+          <tbody>${semantics
+            .map(
+              ([name, value]) =>
+                `<tr><th>${escapeHtml(humanize(name))}</th><td>${escapeHtml(value)}</td></tr>`,
+            )
+            .join("")}</tbody>
+        </table>
+      </div>
+      <div class="dialog-section">
+        <h3>Edge cases</h3>
+        ${listMarkup(spec.edge_cases)}
+      </div>
+    </details>`;
 }
 
 function filteredOperations() {
@@ -243,6 +330,7 @@ function openOperationDialog(operationId) {
   const operation = state.operations.find((item) => item.id === operationId);
   if (!operation) return;
   const spec = state.problemSpecs.get(operation.research_problem_id) || {};
+  const problemRecord = state.problemRecords.get(operation.research_problem_id) || {};
   const auxiliary = operation.required_auxiliary_inputs || [];
   const profileNotes = [operation.validated_profile, operation.partition_rule].filter(Boolean);
 
@@ -250,6 +338,8 @@ function openOperationDialog(operationId) {
     <p class="dialog-kicker">${escapeHtml(categoryLabel(spec.category))}</p>
     <h2 class="dialog-title">${escapeHtml(operationTitle(operation))}</h2>
     <p class="dialog-class">${escapeHtml(operation.cpp_class)} · ${escapeHtml(operation.cmake_component)}</p>
+
+    ${problemContextMarkup(spec, problemRecord)}
 
     <div class="dialog-section">
       <h3>Validated backends</h3>
@@ -463,7 +553,7 @@ async function initializeManifest() {
     const manifest = await loadManifest();
     hydrateManifest(manifest);
   } catch (error) {
-    console.error("GraphMine manifest loading failed", error);
+    console.error("GraphMine catalog loading failed", error);
     catalogSummary.textContent = "The operation catalog is unavailable.";
     operationGrid.innerHTML = "";
     catalogError.hidden = false;

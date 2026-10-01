@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_multilevel_graph_clustering",
+  "title": "GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden",
+  "year": 2026,
+  "venue": "IEEE IPDPS 2026",
+  "doi": "10.1109/IPDPS65963.2026.00020",
+  "publication_url": "https://arxiv.org/abs/2608.01503",
+  "pdf_url": "https://arxiv.org/pdf/2608.01503",
+  "code_url": "https://github.com/euphoricpoptarts/PennsylvaniaGPUGraphClustering",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU multilevel Louvain and Leiden community detection.",
+  "notes": "The paper's artifact appendix identifies Zenodo DOI 10.5281/zenodo.18717935, which resolves to this Apache-2.0 author repository containing pLouvain, pLeiden, and pLeiden+.",
+  "problem_id": "community_detection",
+  "problem_dir": "16_community_detection",
+  "research_cutoff": "2026-09-30"
+}

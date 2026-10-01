@@ -1,0 +1,10 @@
+list(APPEND GRAPH "patents" "mico" "livejournal" "orkut")
+SET(N 6)
+
+FOREACH(G IN LISTS GRAPH)
+    FOREACH(X RANGE 1 ${N})
+        ADD_EXECUTABLE(${G}_p${X} ${G}_p${X}_main.cu)
+        SET_PROPERTY(TARGET ${G}_p${X} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+        TARGET_LINK_LIBRARIES(${G}_p${X} graph_mining)
+    ENDFOREACH()
+ENDFOREACH()

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "k_clique_counting_enumeration",
+  "name": "k-Clique Counting and Enumeration",
+  "category": "dense_structure_mining",
+  "problem_statement": "Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
+  },
+  "problem_inputs": [
+    {"name": "k", "type": "integer", "required": true, "constraints": "value >= 2", "description": "Required number of vertices in each clique."},
+    {"name": "mode", "type": "enum", "required": false, "default": "count", "allowed_values": ["count", "enumerate"], "description": "Whether to count cliques or materialize their vertex sets."},
+    {"name": "result_limit", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum materialized instances in enumerate mode."}
+  ],
+  "required_outputs": [
+    {"name": "count", "type": "integer", "description": "Number of k-cliques found; it is the total only when complete=true."},
+    {"name": "complete", "type": "boolean", "description": "Whether the count and enumeration cover all k-cliques."}
+  ],
+  "optional_outputs": [
+    {"name": "cliques", "type": "array<array<vertex_id>>", "description": "Distinct k-cliques when mode=enumerate."},
+    {"name": "per_vertex_count", "type": "map<vertex_id,integer>", "description": "Number of k-cliques containing each vertex."}
+  ],
+  "solution_semantics": {"objective": "Count or enumerate all size-k complete vertex sets.", "exactness": "complete=true requires an exact exhaustive result.", "duplicate_policy": "Each unordered vertex set is counted once.", "ordering": "Vertex and result order are irrelevant."},
+  "validation_rules": ["Every enumerated set contains exactly k distinct vertices.", "Every vertex pair in each result has an edge.", "When complete=true, count matches the number of unique qualifying sets."],
+  "edge_cases": ["If k exceeds the vertex count, count is zero.", "For k=2, every unique graph edge is a 2-clique.", "A complete n-vertex graph contains n choose k k-cliques."],
+  "evaluation_metrics": {"correctness": ["count agreement with oracle", "instance set equality", "duplicate count"], "performance": ["end-to-end time", "counting or enumeration time", "peak memory", "cliques per second"]}
+}

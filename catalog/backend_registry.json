@@ -1,0 +1,416 @@
+{
+  "schema_version": "1.0.0",
+  "operation_count": 13,
+  "validated_backend_count": 26,
+  "operations": [
+    {
+      "id": "maximal-cliques",
+      "research_problem": "maximal_clique_enumeration",
+      "usage": "graphmine run maximal-cliques --graph GRAPH.json [--backend auto|mce-gpu|g2-aimd|rdmce] [--minimum-clique-size N] [--result-limit N] [--include-total-count]",
+      "backends": [
+        {
+          "id": "mce-gpu",
+          "display_name": "mce-gpu",
+          "problem": "maximal_clique_enumeration",
+          "source_commit": "44ef6e034e39660c77c31eee475455a16af470e1",
+          "validated": true,
+          "capabilities": [
+            "exact_count",
+            "multi_gpu"
+          ]
+        },
+        {
+          "id": "g2-aimd",
+          "display_name": "G2-AIMD",
+          "problem": "maximal_clique_enumeration",
+          "source_commit": "751595c0511acadd662d4f999ebf04ff6cc3483a",
+          "validated": true,
+          "capabilities": [
+            "exact_count"
+          ]
+        },
+        {
+          "id": "rdmce",
+          "display_name": "RDMCE",
+          "problem": "maximal_clique_enumeration",
+          "source_commit": "59452dcfbcdc8dabf41abef277ef3e240248ee0c",
+          "validated": true,
+          "capabilities": [
+            "exact_count",
+            "single_gpu",
+            "multi_gpu_upstream"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "maximum-clique",
+      "research_problem": "maximum_clique",
+      "usage": "graphmine run maximum-clique --graph GRAPH.json [--backend auto|cuda-ms|gpu-maximum-clique|maximum-clique-on-gpu] [--return-all-ties] [--known-lower-bound N] [--include-upper-bound]",
+      "backends": [
+        {
+          "id": "cuda-ms",
+          "display_name": "CUDA-MS",
+          "problem": "maximum_clique",
+          "source_commit": "a0b6b00a1f67",
+          "validated": true,
+          "capabilities": [
+            "single_clique",
+            "single_gpu",
+            "dense_adjacency"
+          ]
+        },
+        {
+          "id": "gpu-maximum-clique",
+          "display_name": "GPUMaximumClique",
+          "problem": "maximum_clique",
+          "source_commit": "2365400c7b4a",
+          "validated": true,
+          "capabilities": [
+            "single_clique",
+            "single_gpu"
+          ]
+        },
+        {
+          "id": "maximum-clique-on-gpu",
+          "display_name": "Maximum-Clique-on-GPU",
+          "problem": "maximum_clique",
+          "source_commit": "62708c588219",
+          "validated": true,
+          "capabilities": [
+            "single_clique",
+            "multi_gpu_upstream"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k-cliques",
+      "research_problem": "k_clique_counting_enumeration",
+      "usage": "graphmine run k-cliques --graph GRAPH.json --k N [--backend auto|kcgpu|graphset|gamma] [--enumerate] [--include-per-vertex-counts] [--result-limit N]",
+      "backends": [
+        {
+          "id": "kcgpu",
+          "display_name": "KCGPU",
+          "problem": "k_clique_counting_enumeration",
+          "source_commit": "314ac6d41fbe6582c2a258c2094c67ec1aa47116",
+          "validated": true,
+          "capabilities": [
+            "exact_count",
+            "single_gpu",
+            "k_3_to_5_validated"
+          ]
+        },
+        {
+          "id": "graphset",
+          "display_name": "GraphSet",
+          "problem": "k_clique_counting_enumeration",
+          "source_commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
+          "validated": true,
+          "capabilities": [
+            "exact_count",
+            "single_gpu",
+            "k_3_to_5_validated"
+          ]
+        },
+        {
+          "id": "gamma",
+          "display_name": "GAMMA",
+          "problem": "k_clique_counting_enumeration",
+          "source_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+          "validated": true,
+          "capabilities": [
+            "exact_count",
+            "single_gpu",
+            "k_3_to_5_validated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quasi-cliques",
+      "research_problem": "quasi_clique_mining",
+      "usage": "graphmine run quasi-cliques --graph GRAPH.json [--minimum-degree-ratio R] [--minimum-size N] [--scheduling dynamic|static] [--result-limit N] [--include-total-count]",
+      "backends": [
+        {
+          "id": "cuqc",
+          "display_name": "cuQC",
+          "problem": "quasi_clique_mining",
+          "source_commit": "e3785db225f2730898c2b316a4fcc06516b16c06",
+          "validated": true,
+          "capabilities": [
+            "maximal_sets",
+            "gamma_at_least_one_half",
+            "single_gpu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k-core",
+      "research_problem": "k_core_decomposition",
+      "usage": "graphmine run k-core --graph GRAPH.json [--requested-k N] [--include-requested-core-vertices] [--include-requested-core-edges] [--include-peeling-order]",
+      "backends": [
+        {
+          "id": "kcore-gpu",
+          "display_name": "KCoreGPU",
+          "problem": "k_core_decomposition",
+          "source_commit": "0a2d37634024",
+          "validated": true,
+          "capabilities": [
+            "full_core_vector",
+            "single_gpu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "maximal-bicliques",
+      "research_problem": "maximal_biclique_enumeration",
+      "usage": "graphmine run maximal-bicliques --graph GRAPH.json --left-partition LEFT.json [--minimum-left-size N] [--minimum-right-size N] [--result-limit N] [--include-total-count]",
+      "backends": [
+        {
+          "id": "cumbe",
+          "display_name": "cuMBE",
+          "problem": "maximal_biclique_enumeration",
+          "source_commit": "2fff8005b2f74e5683d915f9cd817409f6499bcf",
+          "validated": true,
+          "capabilities": [
+            "exact_count",
+            "bipartite",
+            "single_gpu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "triangle-counting",
+      "research_problem": "triangle_counting_listing",
+      "usage": "graphmine run triangle-counting --graph GRAPH.json [--backend auto|tot|wetric] [--list-instances] [--include-per-vertex-counts] [--include-per-edge-counts] [--result-limit N]",
+      "backends": [
+        {
+          "id": "tot",
+          "display_name": "ToT",
+          "problem": "triangle_counting_listing",
+          "source_commit": "5f9cde83a528",
+          "validated": true,
+          "capabilities": [
+            "exact_global_count",
+            "single_gpu",
+            "tensor_cores"
+          ]
+        },
+        {
+          "id": "wetric",
+          "display_name": "WeTriC",
+          "problem": "triangle_counting_listing",
+          "source_commit": "f0c80447dc42",
+          "validated": true,
+          "capabilities": [
+            "exact_global_count",
+            "single_gpu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dynamic-triangle-counting",
+      "research_problem": "triangle_counting_listing",
+      "usage": "graphmine run dynamic-triangle-counting --graph GRAPH.json --updates UPDATES.json [--list-changed-instances] [--include-global-counts] [--result-limit N]",
+      "backends": [
+        {
+          "id": "edtc",
+          "display_name": "EDTC",
+          "problem": "triangle_counting_listing",
+          "source_commit": "7da15bf9aded",
+          "validated": true,
+          "capabilities": [
+            "exact_batch_changes",
+            "single_gpu",
+            "dynamic_graph"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "graph-motifs",
+      "research_problem": "graph_motif_counting",
+      "usage": "graphmine run graph-motifs --graph GRAPH.json --motif MOTIF.json [--motif OTHER.json ...] [--backend auto|graphminer|graphset|dumato] [--induced] [--include-instances] [--include-per-vertex-participation] [--result-limit-per-motif N]",
+      "backends": [
+        {
+          "id": "graphminer",
+          "display_name": "GraphMiner/G2Miner",
+          "problem": "graph_motif_counting",
+          "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+          "validated": true,
+          "capabilities": [
+            "induced",
+            "undirected",
+            "sizes_3_4",
+            "single_gpu"
+          ]
+        },
+        {
+          "id": "graphset",
+          "display_name": "GraphSet",
+          "problem": "graph_motif_counting",
+          "source_commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
+          "validated": true,
+          "capabilities": [
+            "non_induced",
+            "undirected",
+            "sizes_3_4",
+            "single_gpu"
+          ]
+        },
+        {
+          "id": "dumato",
+          "display_name": "DuMato",
+          "problem": "graph_motif_counting",
+          "source_commit": "79c255ee2467e436d49e3ee974b4d7149551c641",
+          "validated": true,
+          "capabilities": [
+            "induced",
+            "undirected",
+            "sizes_3_4",
+            "single_gpu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "subgraph-isomorphism",
+      "research_problem": "subgraph_isomorphism",
+      "usage": "graphmine run subgraph-isomorphism --graph DATA.json --query-graph QUERY.json [--ignore-vertex-labels] [--include-embeddings] [--result-limit N]",
+      "backends": [
+        {
+          "id": "gmatch",
+          "display_name": "gMatch",
+          "problem": "subgraph_isomorphism",
+          "source_commit": "4628e73dbcb564dba367b3f042595e71f98c9046",
+          "validated": true,
+          "capabilities": [
+            "labeled",
+            "non_induced",
+            "exact_count",
+            "single_gpu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "temporal-motif-mining",
+      "research_problem": "temporal_motif_mining",
+      "usage": "graphmine run temporal-motif-mining --graph GRAPH.json --max-time-span N [--backend auto|everest|mayura] [--include-instances] [--result-limit N]",
+      "backends": [
+        {
+          "id": "everest",
+          "display_name": "Everest",
+          "problem": "temporal_motif_mining",
+          "source_commit": "ef530d",
+          "validated": true,
+          "capabilities": [
+            "directed",
+            "parallel_events",
+            "integer_timestamps",
+            "feed_forward_triangle",
+            "single_gpu"
+          ]
+        },
+        {
+          "id": "mayura",
+          "display_name": "Mayura",
+          "problem": "temporal_motif_mining",
+          "source_commit": "8e4276",
+          "validated": true,
+          "capabilities": [
+            "directed",
+            "parallel_events",
+            "integer_timestamps",
+            "feed_forward_triangle",
+            "single_gpu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "community-detection",
+      "research_problem": "community_detection",
+      "usage": "graphmine run community-detection --graph GRAPH.json [--backend auto|gleiden|parallel-louvain|parallel-leiden|parallel-leiden-plus] [--include-communities] [--include-edge-cut]",
+      "backends": [
+        {
+          "id": "gleiden",
+          "display_name": "gLeiden",
+          "problem": "community_detection",
+          "source_commit": "6aacd7f8e91d",
+          "validated": true,
+          "capabilities": [
+            "unweighted",
+            "undirected",
+            "modularity",
+            "single_gpu"
+          ]
+        },
+        {
+          "id": "parallel-louvain",
+          "display_name": "Parallel Louvain",
+          "problem": "community_detection",
+          "source_commit": "29c69d27ba38",
+          "validated": true,
+          "capabilities": [
+            "unweighted",
+            "undirected",
+            "modularity",
+            "kokkos_cuda"
+          ]
+        },
+        {
+          "id": "parallel-leiden",
+          "display_name": "Parallel Leiden",
+          "problem": "community_detection",
+          "source_commit": "29c69d27ba38",
+          "validated": true,
+          "capabilities": [
+            "unweighted",
+            "undirected",
+            "modularity",
+            "kokkos_cuda"
+          ]
+        },
+        {
+          "id": "parallel-leiden-plus",
+          "display_name": "Parallel Leiden+",
+          "problem": "community_detection",
+          "source_commit": "29c69d27ba38",
+          "validated": true,
+          "capabilities": [
+            "unweighted",
+            "undirected",
+            "modularity",
+            "kokkos_cuda"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "betweenness-centrality",
+      "research_problem": "centrality_influential_node_mining",
+      "usage": "graphmine run betweenness-centrality --graph GRAPH.json [--include-normalized-scores] [--include-ranking] [--include-maximum]",
+      "backends": [
+        {
+          "id": "turbo-bc",
+          "display_name": "TurboBC",
+          "problem": "centrality_influential_node_mining",
+          "source_commit": "6e885a207902",
+          "validated": true,
+          "capabilities": [
+            "unweighted",
+            "undirected",
+            "full_score_vector",
+            "single_gpu"
+          ]
+        }
+      ]
+    }
+  ]
+}

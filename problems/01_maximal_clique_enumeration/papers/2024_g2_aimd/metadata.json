@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_g2_aimd",
+  "title": "G²-AIMD: Efficient GPU Acceleration for Maximal Clique Enumeration",
+  "year": 2024,
+  "venue": "IEEE ICDE 2024",
+  "doi": "10.1109/ICDE60146.2024.00245",
+  "publication_url": "https://doi.org/10.1109/ICDE60146.2024.00245",
+  "pdf_url": null,
+  "code_url": "https://github.com/Pz1996/g2-aimd",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU maximal-clique enumeration.",
+  "notes": "Public source is available; no clearly authorized open PDF was located.",
+  "problem_id": "maximal_clique_enumeration",
+  "problem_dir": "01_maximal_clique_enumeration",
+  "research_cutoff": "2026-09-30"
+}

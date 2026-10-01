@@ -1,0 +1,16 @@
+{
+  "paper_id": "2019_maximum_clique_cuda",
+  "title": "Implementation of a Maximum Clique Search Procedure on CUDA",
+  "year": 2019,
+  "venue": "Journal of Heuristics",
+  "doi": "10.1007/s10732-018-9393-x",
+  "publication_url": "https://doi.org/10.1007/s10732-018-9393-x",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1007%2Fs10732-018-9393-x.pdf",
+  "code_url": "https://github.com/pawelld/CUDA-MS",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA maximum-clique search procedure.",
+  "notes": "Heuristic search variant; do not treat its output as an exact optimum without checking the selected mode and termination behavior.",
+  "problem_id": "maximum_clique",
+  "problem_dir": "02_maximum_clique",
+  "research_cutoff": "2026-09-30"
+}

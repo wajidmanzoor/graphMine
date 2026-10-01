@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_mayura",
+  "title": "Mayura: Exploiting Similarities in Motifs for Temporal Co-Mining",
+  "year": 2025,
+  "venue": "PVLDB",
+  "doi": "10.14778/3773731.3773736",
+  "publication_url": "https://arxiv.org/abs/2507.14813",
+  "pdf_url": "https://www.vldb.org/pvldb/vol18/p5596-singapuram.pdf",
+  "code_url": "https://github.com/singam-sanjay/Mayura",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU temporal co-mining of multiple motifs with shared work.",
+  "notes": "The author repository contains both the GPU co-mining implementation and a CPU reference implementation.",
+  "problem_id": "temporal_motif_mining",
+  "problem_dir": "15_temporal_motif_mining",
+  "research_cutoff": "2026-09-30"
+}

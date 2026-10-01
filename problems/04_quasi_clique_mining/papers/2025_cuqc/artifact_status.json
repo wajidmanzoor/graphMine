@@ -1,0 +1,21 @@
+{
+  "problem_id": "quasi_clique_mining",
+  "paper_id": "2025_cuqc",
+  "title": "GPU-Accelerated Maximal Quasi-Clique Mining",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": "https://kokofan16.github.io/assets/papers/bigdata-2025.pdf",
+    "status": "downloaded",
+    "local_path": "paper.pdf",
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/Mike12041204/cuQC",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "e3785db225f2730898c2b316a4fcc06516b16c06",
+    "license_file": "code/LICENSE.md",
+    "license_note": null,
+    "error": null
+  }
+}

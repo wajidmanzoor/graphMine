@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "densest_k_subgraph",
+  "name": "Densest k-Subgraph",
+  "category": "dense_structure_mining",
+  "problem_statement": "Given an undirected graph and integer k, find exactly k vertices maximizing the total value of edges induced by those vertices.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "optional_nonnegative", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges by summing nonnegative weights; use unit weight in unweighted mode."]
+  },
+  "problem_inputs": [
+    {"name": "k", "type": "integer", "required": true, "constraints": "1 <= value <= number_of_vertices", "description": "Exact number of vertices to select."},
+    {"name": "weight_mode", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "edge_weight"], "description": "Use unit edge values or nonnegative input weights."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "approximate", "allowed_values": ["exact", "approximate"], "description": "Whether a nonoptimal solution is permitted."}
+  ],
+  "required_outputs": [
+    {"name": "vertices", "type": "array<vertex_id>", "description": "Exactly k distinct selected vertices."},
+    {"name": "induced_edge_value", "type": "number", "description": "Number or weight sum of edges induced by the result."},
+    {"name": "density", "type": "number", "description": "induced_edge_value divided by k."},
+    {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven."}
+  ],
+  "optional_outputs": [
+    {"name": "upper_bound", "type": "number", "description": "Certified upper bound on the optimal induced edge value."},
+    {"name": "induced_edges", "type": "array<edge_id>", "description": "Edges with both endpoints selected."}
+  ],
+  "solution_semantics": {"objective": "Maximize induced edge count or nonnegative weight over vertex sets of cardinality exactly k.", "exactness": "Exact mode requires optimal=true; approximate mode returns a feasible set and any known bound.", "duplicate_policy": "Return one best solution unless tied solutions are explicitly requested in a future extension.", "ordering": "Vertex order is irrelevant."},
+  "validation_rules": ["The result contains exactly k unique input vertices.", "Recomputed induced edge value equals the reported value.", "optimal=true is valid only when no feasible k-set has a larger objective."],
+  "edge_cases": ["k=1 always has induced edge value zero in a loop-free graph.", "k equal to the vertex count selects the whole graph.", "No feasible solution exists when k exceeds the vertex count."],
+  "evaluation_metrics": {"correctness": ["objective agreement with exact oracle", "feasibility", "optimality or approximation gap"], "performance": ["time to best solution", "end-to-end time", "peak memory"]}
+}

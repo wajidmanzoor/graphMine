@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_anomaly_detection",
+  "name": "Graph Anomaly Detection",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Rank graph entities by how strongly their declared structural or temporal features deviate from a specified normality reference.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph_or_target_plus_reference_graph",
+    "requirements": {"direction": "definition_dependent", "weights": "optional", "timestamps": "optional_or_required_by_features", "vertex_attributes": "optional", "edge_attributes": "optional"},
+    "normalization": ["Use identical normalization for target and reference data.", "Preserve fields required by feature definitions.", "Do not merge parallel temporal events when event multiplicity is a feature."]
+  },
+  "problem_inputs": [
+    {"name": "anomaly_target", "type": "enum", "required": true, "allowed_values": ["vertex", "edge", "subgraph"], "description": "Entity type to score."},
+    {"name": "feature_definitions", "type": "array<declarative_feature>", "required": true, "constraints": "nonempty", "description": "Structural, attribute, or temporal measurements used to characterize each entity."},
+    {"name": "normality_reference", "type": "object", "required": true, "description": "Reference population, graph, time range, labels, or baseline statistics defining normal behavior."},
+    {"name": "scoring_definition", "type": "object", "required": true, "description": "Exact rule or trained-model reference that maps entity features to a comparable anomaly score."},
+    {"name": "candidate_entities", "type": "array<entity_id>_or_null", "required": false, "default": null, "description": "Entities to score; null means every eligible entity of anomaly_target."},
+    {"name": "top_k", "type": "integer", "required": true, "constraints": "value >= 1", "description": "Maximum highest-scoring anomalies to return."}
+  ],
+  "required_outputs": [
+    {"name": "ranked_anomalies", "type": "array<object>", "description": "Entity identity, anomaly score, rank, and resolved target type."},
+    {"name": "scored_entity_count", "type": "integer", "description": "Number of eligible entities evaluated."},
+    {"name": "complete", "type": "boolean", "description": "Whether all eligible candidate entities were scored before top-k selection."}
+  ],
+  "optional_outputs": [
+    {"name": "feature_values", "type": "map<entity_id,object>", "description": "Resolved feature vector for returned anomalies."},
+    {"name": "feature_contributions", "type": "map<entity_id,object>", "description": "Available per-feature contribution to the score."},
+    {"name": "supporting_subgraph", "type": "map<entity_id,canonical_graph>", "description": "Local evidence subgraph used to explain a returned anomaly."},
+    {"name": "evaluation_against_labels", "type": "object", "description": "Precision, recall, average precision, or ROC-AUC when trusted anomaly labels exist."}
+  ],
+  "solution_semantics": {"objective": "Compute the declared anomaly score for every eligible entity and return the highest-ranked entities.", "exactness": "Exactness means faithful feature and score computation; an anomaly score is relative to normality_reference, not universal ground truth.", "duplicate_policy": "Each eligible entity appears at most once.", "ordering": "Descending anomaly score with a stable entity-ID tie break."},
+  "validation_rules": ["Every returned entity exists and matches anomaly_target.", "Features recompute from the normalized graph and reference.", "Scores reproduce from feature values and scoring_definition within tolerance.", "Ranks follow score and tie policy."],
+  "edge_cases": ["An empty candidate population returns no anomalies.", "All entities may tie under a constant or uninformative scoring definition.", "Reference and target populations must not be mixed accidentally when temporal leakage matters."],
+  "evaluation_metrics": {"correctness": ["feature equality", "score reproducibility", "top-k ranking agreement", "label-based metrics when available"], "performance": ["end-to-end time", "feature extraction time", "scoring time", "peak memory", "entities scored per second"]}
+}

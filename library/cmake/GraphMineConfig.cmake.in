@@ -1,0 +1,58 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+if(@GRAPHMINE_CONFIG_NEEDS_CUDA@)
+  find_dependency(CUDAToolkit)
+  if(NOT TARGET CUDA::cudadevrt)
+    find_library(GraphMine_CUDADEVRT_LIBRARY NAMES cudadevrt
+      HINTS ${CUDAToolkit_LIBRARY_DIR}
+    )
+    if(GraphMine_CUDADEVRT_LIBRARY)
+      add_library(CUDA::cudadevrt STATIC IMPORTED)
+      set_target_properties(CUDA::cudadevrt PROPERTIES
+        IMPORTED_LOCATION "${GraphMine_CUDADEVRT_LIBRARY}"
+      )
+    else()
+      set(GraphMine_FOUND FALSE)
+      set(GraphMine_NOT_FOUND_MESSAGE
+          "GraphMine requires the CUDA device runtime library (cudadevrt)")
+      return()
+    endif()
+  endif()
+endif()
+if(@GRAPHMINE_CONFIG_NEEDS_OPENMP@)
+  find_dependency(OpenMP)
+endif()
+if(@GRAPHMINE_CONFIG_NEEDS_KOKKOS@)
+  find_dependency(KokkosKernels)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/GraphMineTargets.cmake")
+
+set(GraphMine_supported_components
+  core
+  maximal_cliques
+  maximum_clique
+  k_core
+  triangle_counting
+  dynamic_triangle_counting
+  k_cliques
+  betweenness_centrality
+  maximal_bicliques
+  quasi_cliques
+  subgraph_isomorphism
+  graph_motifs
+  temporal_motif_mining
+  community_detection
+)
+foreach(GraphMine_component IN LISTS GraphMine_FIND_COMPONENTS)
+  if(GraphMine_component IN_LIST GraphMine_supported_components)
+    set(GraphMine_${GraphMine_component}_FOUND TRUE)
+  else()
+    set(GraphMine_FOUND FALSE)
+    set(GraphMine_NOT_FOUND_MESSAGE
+        "Unsupported GraphMine component: ${GraphMine_component}")
+  endif()
+endforeach()
+
+check_required_components(GraphMine)

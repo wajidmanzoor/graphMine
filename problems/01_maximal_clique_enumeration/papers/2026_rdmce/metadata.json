@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_rdmce",
+  "title": "Root-Down Exposure for Maximal Clique Enumeration on GPUs",
+  "year": 2026,
+  "venue": "PPoPP 2026",
+  "doi": "10.1145/3774934.3786449",
+  "publication_url": "https://craft.cs.tsinghua.edu.cn/publication/root-down-exposure-for-maximal-clique-enumeration-on-gpus/",
+  "pdf_url": null,
+  "code_url": "https://github.com/Pz1996/RDMCE",
+  "semantic_fit": "exact",
+  "gpu_scope": "CUDA GPU maximal-clique enumeration with a root-down search organization.",
+  "notes": "Newest verified GPU MCE work in the search window; no author-hosted open PDF was located.",
+  "problem_id": "maximal_clique_enumeration",
+  "problem_dir": "01_maximal_clique_enumeration",
+  "research_cutoff": "2026-09-30"
+}

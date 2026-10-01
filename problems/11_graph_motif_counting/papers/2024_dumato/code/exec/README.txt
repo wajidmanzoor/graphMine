@@ -1,0 +1,1 @@
+Folder containing executable files. All applications should be executed from this folder.

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "densest_subgraph",
+  "name": "Densest Subgraph",
+  "category": "dense_structure_mining",
+  "problem_statement": "Find a nonempty vertex subset maximizing total induced edge value divided by the number of selected vertices.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "optional_nonnegative", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges by summing nonnegative weights; use unit weight when weight_mode=unweighted."]
+  },
+  "problem_inputs": [
+    {"name": "weight_mode", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "edge_weight"], "description": "Use unit edge values or nonnegative input weights."},
+    {"name": "minimum_vertices", "type": "integer", "required": false, "default": 1, "constraints": "value >= 1", "description": "Minimum permitted result size; values above one define a constrained variant."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact", "allowed_values": ["exact", "approximate"], "description": "Whether an approximation is permitted."}
+  ],
+  "required_outputs": [
+    {"name": "vertices", "type": "array<vertex_id>", "description": "Selected nonempty vertex set."},
+    {"name": "density", "type": "number", "description": "Total induced edge value divided by selected vertex count."},
+    {"name": "induced_edge_value", "type": "number", "description": "Induced edge count or weight sum."},
+    {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven."}
+  ],
+  "optional_outputs": [
+    {"name": "approximation_bound", "type": "number", "description": "Certified solution-quality bound for an approximate result."},
+    {"name": "induced_edges", "type": "array<edge_id>", "description": "Edges with both endpoints selected."}
+  ],
+  "solution_semantics": {"objective": "Maximize induced_edge_value / |S| over permitted nonempty vertex sets S.", "exactness": "Exact mode requires optimal=true; approximate mode must disclose its bound when known.", "duplicate_policy": "Return one optimum unless tied solutions are explicitly added later.", "ordering": "Vertex order is irrelevant."},
+  "validation_rules": ["All induced edge values are recomputed from the normalized graph.", "Reported density equals induced_edge_value divided by result size.", "All edge weights are nonnegative in weighted mode."],
+  "edge_cases": ["An edgeless nonempty graph has density zero.", "Multiple distinct subsets may attain the same optimum.", "An empty input graph has no feasible nonempty solution."],
+  "evaluation_metrics": {"correctness": ["objective agreement with exact oracle", "feasibility", "optimality or approximation gap"], "performance": ["end-to-end time", "solver time", "peak memory", "edges processed per second"]}
+}

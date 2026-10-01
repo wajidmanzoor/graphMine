@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_tot_tensor_cores",
+  "title": "Triangle Counting on Tensor Cores",
+  "year": 2025,
+  "venue": "IEEE TPDS",
+  "doi": "10.1109/TPDS.2025.3606878",
+  "publication_url": "https://doi.org/10.1109/TPDS.2025.3606878",
+  "pdf_url": null,
+  "code_url": "https://github.com/yuang-chen/ToT-TPDS25",
+  "semantic_fit": "exact",
+  "gpu_scope": "Exact triangle counting using GPU tensor cores.",
+  "notes": "Counting only; no triangle-listing interface is claimed.",
+  "problem_id": "triangle_counting_listing",
+  "problem_dir": "10_triangle_counting_listing",
+  "research_cutoff": "2026-09-30"
+}

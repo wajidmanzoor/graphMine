@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_cuqc",
+  "title": "GPU-Accelerated Maximal Quasi-Clique Mining",
+  "year": 2025,
+  "venue": "IEEE BigData 2025",
+  "doi": "10.1109/BigData66926.2025.11401709",
+  "publication_url": "https://doi.org/10.1109/BigData66926.2025.11401709",
+  "pdf_url": "https://kokofan16.github.io/assets/papers/bigdata-2025.pdf",
+  "code_url": "https://github.com/Mike12041204/cuQC",
+  "semantic_fit": "exact",
+  "gpu_scope": "CUDA maximal quasi-clique mining.",
+  "notes": "The paper presents this as the first GPU solution for maximal quasi-clique mining.",
+  "problem_id": "quasi_clique_mining",
+  "problem_dir": "04_quasi_clique_mining",
+  "research_cutoff": "2026-09-30"
+}

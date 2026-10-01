@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_gleiden",
+  "title": "gLeiden: Accelerated Community Detection Algorithms Using Directed and Undirected Graphs on GPUs",
+  "year": 2026,
+  "venue": "Bioinformatics Advances",
+  "doi": "10.1093/bioadv/vbaf327",
+  "publication_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12987761/",
+  "pdf_url": null,
+  "code_url": "https://github.com/Beenishgul/Leiden",
+  "semantic_fit": "exact",
+  "gpu_scope": "CUDA C++ Leiden community detection for directed and undirected graphs.",
+  "notes": "The full article is openly readable at the publication URL, but both PMC and publisher PDF endpoints returned anti-automation pages during materialization.",
+  "problem_id": "community_detection",
+  "problem_dir": "16_community_detection",
+  "research_cutoff": "2026-09-30"
+}

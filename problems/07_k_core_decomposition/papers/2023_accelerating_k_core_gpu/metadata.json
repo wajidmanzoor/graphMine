@@ -1,0 +1,16 @@
+{
+  "paper_id": "2023_accelerating_k_core_gpu",
+  "title": "Accelerating k-Core Decomposition by a GPU",
+  "year": 2023,
+  "venue": "IEEE ICDE 2023",
+  "doi": "10.1109/ICDE55515.2023.00142",
+  "publication_url": "https://doi.org/10.1109/ICDE55515.2023.00142",
+  "pdf_url": "https://par.nsf.gov/servlets/purl/10472680",
+  "code_url": "https://github.com/akhlaqueak/KCoreGPU",
+  "semantic_fit": "exact",
+  "gpu_scope": "CUDA k-core decomposition.",
+  "notes": null,
+  "problem_id": "k_core_decomposition",
+  "problem_dir": "07_k_core_decomposition",
+  "research_cutoff": "2026-09-30"
+}

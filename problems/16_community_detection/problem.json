@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "community_detection",
+  "name": "Disjoint Community Detection",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "optional_nonnegative", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops unless the selected quality definition explicitly retains them.", "Collapse parallel edges by summing weights; use unit weights in unweighted mode."]
+  },
+  "problem_inputs": [
+    {"name": "quality_function", "type": "enum", "required": false, "default": "modularity", "allowed_values": ["modularity", "constant_potts_model"], "description": "Mathematical quality objective optimized by the partition."},
+    {"name": "resolution", "type": "number", "required": false, "default": 1.0, "constraints": "value > 0", "description": "Resolution parameter controlling the preferred community scale."},
+    {"name": "weight_mode", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "edge_weight"], "description": "Use unit edge values or nonnegative input weights."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "heuristic", "allowed_values": ["exact", "heuristic"], "description": "Whether global optimality is required or a locally optimized partition is acceptable."}
+  ],
+  "required_outputs": [
+    {"name": "community_by_vertex", "type": "map<vertex_id,community_id>", "description": "Exactly one community assignment for every input vertex."},
+    {"name": "community_count", "type": "integer", "description": "Number of nonempty communities."},
+    {"name": "quality_score", "type": "number", "description": "Recomputed selected objective value."},
+    {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven."}
+  ],
+  "optional_outputs": [
+    {"name": "community_statistics", "type": "map<community_id,object>", "description": "Size, internal edge value, boundary edge value, and density."},
+    {"name": "hierarchy", "type": "array<map<vertex_id,community_id>>", "description": "Intermediate or multilevel partitions when meaningful."}
+  ],
+  "solution_semantics": {"objective": "Maximize the selected partition quality over disjoint, exhaustive vertex assignments.", "exactness": "Heuristic mode returns a feasible partition without claiming a global optimum.", "duplicate_policy": "Community identifiers are arbitrary; partitions equal up to identifier permutation are equivalent.", "ordering": "No ordering is required."},
+  "validation_rules": ["Every vertex belongs to exactly one nonempty community.", "No unknown vertex appears.", "Recomputed quality equals quality_score within declared numeric tolerance."],
+  "edge_cases": ["An empty graph has no communities.", "Isolated vertices must still receive exactly one assignment.", "Multiple partitions may have the same quality score."],
+  "evaluation_metrics": {"correctness": ["partition validity", "recomputed quality", "objective gap when an exact oracle is available"], "performance": ["end-to-end time", "optimization time", "peak memory", "iterations", "quality versus time"]}
+}

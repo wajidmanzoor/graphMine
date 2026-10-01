@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_wetric",
+  "title": "Wedge-Parallel Triangle Counting for GPUs",
+  "year": 2025,
+  "venue": "Euro-Par 2025",
+  "doi": "10.1007/978-3-031-99872-0_1",
+  "publication_url": "https://doi.org/10.1007/978-3-031-99872-0_1",
+  "pdf_url": "https://davidbader.net/publication/2025-scbv/2025-scbv.pdf",
+  "code_url": "https://github.com/jeffreyspaan/wedge-parallel-triangle-counting",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU exact triangle counting organized around wedges.",
+  "notes": "Counting only; no triangle-listing interface is claimed.",
+  "problem_id": "triangle_counting_listing",
+  "problem_dir": "10_triangle_counting_listing",
+  "research_cutoff": "2026-09-30"
+}

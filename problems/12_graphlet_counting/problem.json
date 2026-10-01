@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graphlet_counting",
+  "name": "Graphlet Counting",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Classify and count small connected induced subgraphs by their unlabeled isomorphism class, optionally including per-vertex orbit participation.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
+  },
+  "problem_inputs": [
+    {"name": "graphlet_sizes", "type": "array<integer>", "required": true, "constraints": "unique values, each between 2 and 5 inclusive", "description": "Vertex cardinalities of connected induced graphlets to count."},
+    {"name": "include_orbit_counts", "type": "boolean", "required": false, "default": false, "description": "Compute per-vertex automorphism-orbit participation."},
+    {"name": "list_instances", "type": "boolean", "required": false, "default": false, "description": "Materialize classified vertex sets."},
+    {"name": "result_limit_per_graphlet", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum listed instances per graphlet class; counts remain exhaustive."}
+  ],
+  "required_outputs": [
+    {"name": "count_by_graphlet", "type": "map<canonical_graphlet_id,integer>", "description": "Exact count of each connected induced isomorphism class."},
+    {"name": "graphlet_dictionary", "type": "map<canonical_graphlet_id,canonical_graph>", "description": "Structural definition associated with each returned identifier."}
+  ],
+  "optional_outputs": [
+    {"name": "orbit_count_by_vertex", "type": "map<vertex_id,map<orbit_id,integer>>", "description": "Per-vertex orbit participation counts."},
+    {"name": "instances_by_graphlet", "type": "map<canonical_graphlet_id,array<array<vertex_id>>>", "description": "Classified induced vertex sets."},
+    {"name": "instances_complete_by_graphlet", "type": "map<canonical_graphlet_id,boolean>", "description": "Whether every instance was listed."}
+  ],
+  "solution_semantics": {"objective": "Count every connected induced vertex set of requested size once under unlabeled graph isomorphism.", "exactness": "Class counts and requested orbit counts are exact.", "duplicate_policy": "Each unordered data-graph vertex set contributes once.", "ordering": "No result order is required."},
+  "validation_rules": ["Every instance is induced and connected.", "Each instance is assigned to exactly one canonical graphlet class.", "Orbit counts respect automorphism-equivalent vertex positions."],
+  "edge_cases": ["Requested size greater than the data-graph vertex count contributes zero.", "Disconnected induced sets are excluded.", "For size two, each normalized edge is the sole connected graphlet type."],
+  "evaluation_metrics": {"correctness": ["per-class count equality", "classification errors", "orbit-count equality"], "performance": ["end-to-end time", "time by graphlet size", "peak memory", "vertex sets classified per second"]}
+}

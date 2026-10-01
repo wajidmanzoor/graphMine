@@ -1,0 +1,16 @@
+{
+  "paper_id": "2023_parallelizing_mce",
+  "title": "Parallelizing Maximal Clique Enumeration on GPUs",
+  "year": 2023,
+  "venue": "PACT 2023",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2212.01473",
+  "pdf_url": "https://arxiv.org/pdf/2212.01473",
+  "code_url": "https://github.com/yen-hsiang-chang/mce-gpu",
+  "semantic_fit": "exact",
+  "gpu_scope": "Single- and multi-GPU maximal-clique enumeration.",
+  "notes": null,
+  "problem_id": "maximal_clique_enumeration",
+  "problem_dir": "01_maximal_clique_enumeration",
+  "research_cutoff": "2026-09-30"
+}

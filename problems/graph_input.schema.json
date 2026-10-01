@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graph_input.schema.json",
+  "title": "Canonical Graph Input v1",
+  "description": "Logical interchange format shared by every problem. Large physical inputs may use CSV, Parquet, or Arrow, but adapters must normalize them to these graph, vertex, and edge fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["graph", "vertices", "edges"],
+  "properties": {
+    "graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "directed", "allows_self_loops", "allows_parallel_edges"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "directed": {"type": "boolean"},
+        "allows_self_loops": {"type": "boolean"},
+        "allows_parallel_edges": {"type": "boolean"},
+        "attributes": {"type": "object", "additionalProperties": true}
+      }
+    },
+    "vertices": {
+      "type": "array",
+      "description": "All vertices, including isolated vertices.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {"$ref": "#/$defs/external_id"},
+          "label": {"type": "string"},
+          "type": {"type": "string"},
+          "attributes": {"type": "object", "additionalProperties": true}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "source", "target"],
+        "properties": {
+          "id": {"$ref": "#/$defs/external_id"},
+          "source": {"$ref": "#/$defs/external_id"},
+          "target": {"$ref": "#/$defs/external_id"},
+          "weight": {"type": "number"},
+          "timestamp": {
+            "description": "RFC 3339 date-time string or integer epoch chosen consistently for the dataset.",
+            "oneOf": [
+              {"type": "string", "format": "date-time"},
+              {"type": "integer"}
+            ]
+          },
+          "type": {"type": "string"},
+          "attributes": {"type": "object", "additionalProperties": true}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "external_id": {
+      "description": "Stable application-facing identifier. The execution layer may map it to a dense integer ID.",
+      "oneOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "integer"}
+      ]
+    }
+  }
+}

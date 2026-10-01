@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "centrality_influential_node_mining",
+  "name": "Centrality and Influential-Node Mining",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed_or_undirected", "weights": "optional_measure_dependent", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Preserve direction when requested by the measure.", "Remove self-loops unless the selected centrality definition includes them.", "Collapse parallel edges according to the selected weight semantics."]
+  },
+  "problem_inputs": [
+    {"name": "centrality_measure", "type": "enum", "required": true, "allowed_values": ["degree", "pagerank", "betweenness", "closeness", "eigenvector", "katz"], "description": "Mathematical definition used to score vertices."},
+    {"name": "direction_mode", "type": "enum", "required": false, "default": "outgoing", "allowed_values": ["incoming", "outgoing", "both", "undirected_projection"], "description": "How directed edges contribute where the measure supports direction."},
+    {"name": "weight_semantics", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "strength", "distance"], "description": "Interpret edge weights as ignored, connection strength, or path distance."},
+    {"name": "top_k", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Optionally return only the highest-ranked vertices while retaining score-completeness metadata."},
+    {"name": "measure_parameters", "type": "object", "required": false, "default": {}, "description": "Definition-level values such as PageRank damping, Katz alpha and beta, normalization, or a restricted source set."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact_or_converged", "allowed_values": ["exact_or_converged", "approximate"], "description": "Whether approximation or sampling is permitted for expensive measures."}
+  ],
+  "required_outputs": [
+    {"name": "ranked_vertices", "type": "array<object>", "description": "Vertex ID, score, and rank ordered by descending influence."},
+    {"name": "score_definition", "type": "object", "description": "Resolved measure, direction, weight, normalization, and parameter semantics."},
+    {"name": "complete", "type": "boolean", "description": "Whether every vertex was scored and ranking was not truncated."}
+  ],
+  "optional_outputs": [
+    {"name": "converged", "type": "boolean", "description": "Whether an iterative measure met its convergence criterion."},
+    {"name": "error_or_sampling_bound", "type": "number", "description": "Known numerical or statistical bound for approximate scores."}
+  ],
+  "solution_semantics": {"objective": "Score and rank vertices exactly according to the selected centrality definition and resolved parameters.", "exactness": "Exactness is measure-specific; iterative and approximate methods must disclose convergence or bounds.", "duplicate_policy": "Each scored vertex appears once.", "ordering": "Descending score with a stable vertex-ID tie break for reproducibility."},
+  "validation_rules": ["Scores are recomputable from score_definition within numeric tolerance.", "Every returned vertex exists in the graph.", "Ranks are monotonic by score and ties follow the stated policy.", "Weight values satisfy the chosen semantics."],
+  "edge_cases": ["Disconnected graphs require explicitly defined closeness behavior.", "Dangling vertices require explicitly defined PageRank redistribution.", "Tied scores are permitted.", "An empty graph produces an empty ranking."],
+  "evaluation_metrics": {"correctness": ["score error versus reference", "rank agreement", "convergence or bound validity"], "performance": ["end-to-end time", "compute time", "peak memory", "iterations", "edges processed per second"]}
+}

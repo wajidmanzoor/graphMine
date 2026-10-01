@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="GraphMine is a validated C++17/CUDA graph-mining library with one canonical graph format, 13 operations, and 26 selectable GPU backends."
+      content="GraphMine is a validated C++17/CUDA graph-mining library with 20 exact problem contracts, 13 runnable operations, and 26 selectable GPU backends."
     />
     <meta name="theme-color" content="#ffffff" />
     <meta property="og:title" content="GraphMine documentation" />
@@ -92,7 +92,8 @@
           <p class="hero-lede">
             GraphMine preserves the original CUDA algorithm paths that passed
             correctness validation, then wraps them in one canonical graph
-            model, typed C++ APIs, and a build-once JSON command line.
+            model, typed C++ APIs, a problem-first catalog, and a build-once
+            JSON command line.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#quickstart">
@@ -109,7 +110,7 @@
           <dl class="hero-stats" aria-label="GraphMine library statistics">
             <div>
               <dt data-stat="research-problems">12</dt>
-              <dd>research problems</dd>
+              <dd>supported problems</dd>
             </div>
             <div>
               <dt data-stat="operations">13</dt>
@@ -305,15 +306,16 @@ cmake --build library/build --parallel \
             <p class="section-kicker">Algorithm catalog</p>
             <h2>Explore every validated operation.</h2>
             <p>
-              This catalog is rendered from the repository’s global library
-              manifest, so commands, parameters, outputs, and backends share one
-              source of truth.
+              This catalog is rendered from a problem-first global JSON. It
+              embeds all 20 exact local problem contracts, then links the 12
+              supported problems to commands, parameters, outputs, validation
+              evidence, and backend choices.
             </p>
           </div>
           <a
             id="manifest-link"
             class="manifest-link"
-            href="https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_manifest.json"
+            href="https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json"
             target="_blank"
             rel="noreferrer"
           >
@@ -343,14 +345,14 @@ cmake --build library/build --parallel \
         </div>
 
         <p id="catalog-summary" class="catalog-summary" aria-live="polite">
-          Loading operation manifest…
+          Loading problem and operation catalog…
         </p>
         <div id="operation-grid" class="operation-grid" aria-live="polite"></div>
         <div id="catalog-error" class="catalog-error" hidden>
           <div class="step-icon step-icon-orange">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5m0 3v.01M4 20h16L12 4z" /></svg>
           </div>
-          <h3>The operation manifest could not be loaded.</h3>
+          <h3>The problem catalog could not be loaded.</h3>
           <p>
             Serve the repository root locally or inspect the global JSON directly
             on GitHub.
@@ -377,7 +379,7 @@ cmake --build library/build --parallel \
             <div class="inline-actions">
               <a
                 class="button button-secondary"
-                href="https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_manifest.json"
+                href="https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json"
                 target="_blank"
                 rel="noreferrer"
               >Read the contract</a>
@@ -495,7 +497,7 @@ graphmine::MaximalCliques algorithm(options);
       <section class="content-section final-cta section-shell reveal">
         <div>
           <p class="section-kicker">Ready to mine</p>
-          <h2>Start with the manifest. Run with confidence.</h2>
+          <h2>Start with the problem. Run with confidence.</h2>
           <p>
             Inspect the exact validated profile for an operation, build once for
             your deployment GPU, and keep compilation out of the query path.

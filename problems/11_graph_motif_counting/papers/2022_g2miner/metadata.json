@@ -1,0 +1,16 @@
+{
+  "paper_id": "2022_g2miner",
+  "title": "G²Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework",
+  "year": 2022,
+  "venue": "USENIX OSDI 2022",
+  "doi": null,
+  "publication_url": "https://www.usenix.org/conference/osdi22/presentation/chen",
+  "pdf_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
+  "code_url": "https://github.com/chenxuhao/GraphMiner",
+  "semantic_fit": "general_framework",
+  "gpu_scope": "GPU graph-pattern mining framework supporting motif queries.",
+  "notes": null,
+  "problem_id": "graph_motif_counting",
+  "problem_dir": "11_graph_motif_counting",
+  "research_cutoff": "2026-09-30"
+}

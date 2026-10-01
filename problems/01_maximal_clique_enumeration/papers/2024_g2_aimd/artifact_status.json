@@ -1,0 +1,21 @@
+{
+  "problem_id": "maximal_clique_enumeration",
+  "paper_id": "2024_g2_aimd",
+  "title": "G²-AIMD: Efficient GPU Acceleration for Maximal Clique Enumeration",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": null,
+    "status": "not_available",
+    "local_path": null,
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/Pz1996/g2-aimd",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "751595c0511acadd662d4f999ebf04ff6cc3483a",
+    "license_file": null,
+    "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+    "error": null
+  }
+}

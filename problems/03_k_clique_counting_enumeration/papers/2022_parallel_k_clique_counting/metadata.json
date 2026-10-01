@@ -1,0 +1,16 @@
+{
+  "paper_id": "2022_parallel_k_clique_counting",
+  "title": "Parallel K-Clique Counting on GPUs",
+  "year": 2022,
+  "venue": "ACM ICS 2022",
+  "doi": "10.1145/3524059.3532382",
+  "publication_url": "https://arxiv.org/abs/2104.13209",
+  "pdf_url": "https://arxiv.org/pdf/2104.13209",
+  "code_url": "https://github.com/ssmoha7/KCGPU",
+  "semantic_fit": "exact",
+  "gpu_scope": "Exact k-clique counting on GPUs.",
+  "notes": "Counting implementation; it does not necessarily expose full clique enumeration.",
+  "problem_id": "k_clique_counting_enumeration",
+  "problem_dir": "03_k_clique_counting_enumeration",
+  "research_cutoff": "2026-09-30"
+}

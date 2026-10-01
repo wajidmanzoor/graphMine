@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_gmatch",
+  "title": "gMatch: A Fast GPU-Based Subgraph Matching System",
+  "year": 2026,
+  "venue": "PVLDB 2026",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2604.10601",
+  "pdf_url": "https://arxiv.org/pdf/2604.10601",
+  "code_url": "https://github.com/SJTU-Liquid/gMatch",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU subgraph matching/isomorphism.",
+  "notes": null,
+  "problem_id": "subgraph_isomorphism",
+  "problem_dir": "13_subgraph_isomorphism",
+  "research_cutoff": "2026-09-30"
+}

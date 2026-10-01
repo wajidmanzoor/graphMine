@@ -2,7 +2,8 @@
 
 This directory is a self-contained static GitHub Pages site. It uses plain
 HTML, CSS, and JavaScript and renders the algorithm catalog from the repository
-root `graphmine_manifest.json`.
+root `graphmine_catalog.json`. That catalog embeds all 20 local problem
+contracts and connects the 12 supported problems to validated operations.
 
 ## Preview locally
 
@@ -25,5 +26,5 @@ In the repository settings:
 
 The published address is expected to be
 <https://wajidmanzoor.github.io/graphMine/>. On GitHub Pages, the site reads the
-canonical manifest from the repository’s raw `main` branch, so no committed
+canonical catalog from the repository’s raw `main` branch, so no committed
 duplicate is required inside `docs/`.

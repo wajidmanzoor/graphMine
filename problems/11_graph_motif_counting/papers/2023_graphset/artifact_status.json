@@ -1,0 +1,21 @@
+{
+  "problem_id": "graph_motif_counting",
+  "paper_id": "2023_graphset",
+  "title": "GraphSet: High-Performance Graph Mining on GPUs",
+  "checked_at": "2026-09-30T16:43:19Z",
+  "paper": {
+    "source_url": null,
+    "status": "not_available",
+    "local_path": null,
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/sth1997/GraphSet",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
+    "license_file": "code/LICENSE",
+    "license_note": null,
+    "error": null
+  }
+}

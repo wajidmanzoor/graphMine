@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_everest",
+  "title": "Everest: GPU-Accelerated System for Mining Temporal Motifs",
+  "year": 2024,
+  "venue": "PVLDB",
+  "doi": "10.14778/3626292.3626299",
+  "publication_url": "https://www.vldb.org/pvldb/vol17/p162-yuan.pdf",
+  "pdf_url": "https://www.vldb.org/pvldb/vol17/p162-yuan.pdf",
+  "code_url": "https://github.com/yichao-yuan-99/Everest",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU temporal-motif mining with ordering and time-window constraints.",
+  "notes": null,
+  "problem_id": "temporal_motif_mining",
+  "problem_dir": "15_temporal_motif_mining",
+  "research_cutoff": "2026-09-30"
+}

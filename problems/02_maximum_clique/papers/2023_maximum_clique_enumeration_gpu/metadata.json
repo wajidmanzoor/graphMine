@@ -1,0 +1,16 @@
+{
+  "paper_id": "2023_maximum_clique_enumeration_gpu",
+  "title": "Maximum Clique Enumeration on the GPU",
+  "year": 2023,
+  "venue": "IPDPSW/GrAPL 2023",
+  "doi": null,
+  "publication_url": "https://escholarship.org/uc/item/7j96s061",
+  "pdf_url": "https://escholarship.org/content/qt7j96s061/qt7j96s061_noSplash_fd383d070ad1a52b15991afdfe1419a1.pdf",
+  "code_url": "https://github.com/owensgroup/GPUMaximumClique",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU maximum-clique enumeration, which includes finding the maximum clique size and solutions.",
+  "notes": null,
+  "problem_id": "maximum_clique",
+  "problem_dir": "02_maximum_clique",
+  "research_cutoff": "2026-09-30"
+}
