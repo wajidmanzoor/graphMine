@@ -1,0 +1,20 @@
+Loading from DIMACS file: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/empty_edges.dimacs
+---------<< Graph Status >>---------
+Number of nodes: 4
+Number of edges: 0
+Average degree: 0.00
+Standard deviation of degree: 0.00
+Maximum degree: 0 (Node 0)
+Minimum degree: 0 (Node 0)
+Source node: 0, Sink node: 3
+Using thread-centric push-relabel algorithm
+Starting preflow
+Excess_total: 0
+Starting push_relabel
+Inside push_relabel
+GPU Device: NVIDIA RTX 6000 Ada Generation
+Number of blocks: 142
+Number of threads per block: 1024
+Shared memory size: 12288
+Total kernel time: 0.000000 ms
+The maximum flow value of this flow network as calculated by the parallel implementation is 0, 0

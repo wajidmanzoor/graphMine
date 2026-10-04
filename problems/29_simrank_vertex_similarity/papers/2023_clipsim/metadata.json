@@ -1,0 +1,16 @@
+{
+  "paper_id": "2023_clipsim",
+  "title": "ClipSim: A GPU-friendly Parallel Framework for Single-Source SimRank with Accuracy Guarantee",
+  "year": 2023,
+  "venue": "ACM Transactions on Database Systems",
+  "doi": "10.1145/3588707",
+  "publication_url": "https://dl.acm.org/doi/10.1145/3588707",
+  "pdf_url": null,
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU-friendly single-source SimRank with a certified accuracy guarantee, up to 160x faster than the ExactSim CPU baseline.",
+  "notes": "ACM publisher page is paywalled; no open PDF or public code repository was located during this pass.",
+  "problem_id": "simrank_vertex_similarity",
+  "problem_dir": "29_simrank_vertex_similarity",
+  "research_cutoff": "2026-09-30"
+}

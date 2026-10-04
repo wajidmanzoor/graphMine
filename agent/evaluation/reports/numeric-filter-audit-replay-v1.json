@@ -1,0 +1,129 @@
+{
+  "created_at": "2026-10-03T23:11:51.004848+00:00",
+  "source_report": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4.json",
+  "arm": "adapter_nf4",
+  "original_score": {
+    "passed": 20,
+    "total": 22
+  },
+  "complete_source_coverage_verified": 22,
+  "findings": [
+    {
+      "identity": [
+        "sociopatterns-workplace-empty-result",
+        1,
+        1
+      ],
+      "query": "In the anonymous workplace contact sample, which groups of at least three participants have a direct connection between every pair, using only relationships with recorded contact_intervals equal to 0? List every such group that cannot be expanded by adding another participant while keeping every pair directly connected, and include each member’s anonymous participant label and department.",
+      "original_issues": [
+        "Requested attribute scope changed"
+      ],
+      "expected_filters": [
+        {
+          "target": "edges",
+          "field": "attributes.contact_intervals",
+          "operator": "eq",
+          "value": 0
+        }
+      ],
+      "actual_filters": [
+        {
+          "target": "edges",
+          "field": "attributes.contact_intervals",
+          "operator": "eq",
+          "value": 0.0
+        }
+      ],
+      "scope_issue_reported": true,
+      "numeric_filters_equivalent": true,
+      "no_other_reported_issues": true,
+      "stages": {
+        "requests": [
+          {
+            "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_e96c0d6c5d3a4f54b89040b821343fca/events/20261003T205620.776853Z_event_5db05dbc83eb4b6db587e52e74160558.json",
+            "sha256": "dbd090aec9d3d16b4700ce1e41d69dfd08f016bb9168e43d9b7e06514e76f9f6",
+            "schema": "RouteDecision"
+          },
+          {
+            "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_e96c0d6c5d3a4f54b89040b821343fca/events/20261003T205649.580655Z_event_e0ca1db4a6b040d3a129db4cddf1e44e.json",
+            "sha256": "cf7e2ab1fcd70753f77ddcc28520fc330fd6b44ac0211e5419374e2ff33d09c3",
+            "schema": "PlanDraft"
+          },
+          {
+            "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_e96c0d6c5d3a4f54b89040b821343fca/events/20261003T205728.126510Z_event_bec32f8937ac4c2388ae696fd5ea441a.json",
+            "sha256": "f057489b879f5298d6fc9c8316a67db74cb88bd1950b68f842693cd99f82871c",
+            "schema": "GroundedNarrative"
+          }
+        ],
+        "routing_call_recorded": true,
+        "note": "Stage participation is evidence for investigation, not automatic attribution of the failure to that stage. Empty history is missing evidence."
+      }
+    },
+    {
+      "identity": [
+        "string-ecoli-empty-result",
+        1,
+        1
+      ],
+      "query": "For organizing follow-up experiments, can you list every group of at least three proteins in the supplied E. coli association sample where every pair is directly connected and no additional protein can be added while keeping every pair connected? Use only relationships whose recorded score equals 0, and identify the proteins by gene name and original STRING identifier. Treat these associations as associations, not proof of binding or causation.",
+      "original_issues": [
+        "Requested attribute scope changed"
+      ],
+      "expected_filters": [
+        {
+          "target": "edges",
+          "field": "attributes.score",
+          "operator": "eq",
+          "value": 0
+        }
+      ],
+      "actual_filters": [
+        {
+          "target": "edges",
+          "field": "attributes.score",
+          "operator": "eq",
+          "value": 0.0
+        }
+      ],
+      "scope_issue_reported": true,
+      "numeric_filters_equivalent": true,
+      "no_other_reported_issues": true,
+      "stages": {
+        "requests": [
+          {
+            "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_a23389b8afc84c8aba347355880be2da/events/20261003T210709.888260Z_event_adb770ba2bbc4302a54854637b69f7b5.json",
+            "sha256": "9285d2073808744998f58b189b3fdc1f99d8931ff0f0a7b47d0cf64826d34c15",
+            "schema": "RouteDecision"
+          },
+          {
+            "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_a23389b8afc84c8aba347355880be2da/events/20261003T210741.087307Z_event_c7091887a2ee4585ad1c600e8c148763.json",
+            "sha256": "b19250cd328cb5036928eb720585bc07ff0dd38f23c5d9d28ee93488f2014088",
+            "schema": "PlanDraft"
+          },
+          {
+            "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_a23389b8afc84c8aba347355880be2da/events/20261003T210808.510362Z_event_4f7c13765c1b48e5be78e6bae7b273d3.json",
+            "sha256": "0f08a9a20801a6b88515c2acbd68f249b96fc57d7894dcc33b5d05d1bb5c9f33",
+            "schema": "GroundedNarrative"
+          }
+        ],
+        "routing_call_recorded": true,
+        "note": "Stage participation is evidence for investigation, not automatic attribution of the failure to that stage. Empty history is missing evidence."
+      }
+    }
+  ],
+  "original_grades_changed": false,
+  "replacement_aggregate_created": false,
+  "model_calls": 0,
+  "source_evaluation_was_final_holdout": false,
+  "deployment_changed": false,
+  "interpretation": "Diagnosis only. Uses the existing tested numeric-filter rule: equal numeric values retain field/operator distinctions and remain distinct from strings and booleans. Other reported issues remain visible. No replacement pass total or new model call is created. Stage participation does not establish failure causality.",
+  "evidence_sha256": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4.json": "6cac5874651bdbc0293624b7e1b0505a042306ca720693d8d8011ad66c002ce7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/status.json": "bc0094c6fd9290d70ed01a4c2487721bcf84366510a70392a6bc45112761033a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/protocol.json": "48f42e27d115c513430eda5733316c9a212f5a33c56081fbe31a9d8d876a8a80",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-test-suite-v2/plan.json": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/audit-application-filter-representations-v1.py": "2ca32623d48e9bf3568e4ea8063fcee817a727d64780497ab816b1f295d12fa0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/business_workflows.py": "4a6a7cad745154b7cb0adc3f17df360099312a3ee3c3c00a888a7c0eae03296b"
+  },
+  "audit_source_snapshot": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/evaluation/reports/numeric-filter-audit-replay-v1-audit-source.py"
+}

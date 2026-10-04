@@ -1,0 +1,11 @@
+graphB+ balancing code for signed social network graphs (/home/wajid/projects/graphDatabaseAgent/problems/32_signed_network_structural_balance/papers/2021_graphbplus/code/graphBplus_02.cu)
+Copyright 2021 Texas State University
+verification: off
+input: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/balanced_triangle.csv
+  read 4 lines
+nodes: 3
+edges: 6
+input time: 0.000028 s
+gpu: NVIDIA RTX 6000 Ada Generation with 142 SMs and 1536 mTpSM (2505.0 MHz and 10001.0 MHz)
+graph bal time: 0.000747 s
+overall runtime with I/O: 0.004918 s

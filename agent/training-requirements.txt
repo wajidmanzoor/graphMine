@@ -1,0 +1,9 @@
+# Isolated local adapter-training environment; do not install into serving vLLM.
+torch==2.13.0
+transformers==5.18.0
+peft==0.21.2
+bitsandbytes==0.50.2
+accelerate==1.15.0
+datasets==5.0.1
+flash-linear-attention==0.5.2
+fla-core==0.5.2

@@ -1,0 +1,43 @@
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/embedding.cuh: In member function ‘void EmbeddingList::check_all(int, uint64_t, patternID*, CSRGraph)’:
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/embedding.cuh:181:22: warning: format ‘%u’ expects argument of type ‘unsigned int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  181 |                 printf("show %u embeddings:\n", display_num);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~
+      |                                               |
+      |                                               uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/embedding.cuh:188:36: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  188 |                                 printf("node %d %d data %d %d id_data %d %d\n", first, sec, nodeData[first], nodeData[sec], lab&0xff, (lab>>8)&0xff);
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                              ~~~~~~~~~~~
+      |                                                                                                                             |
+      |                                                                                                                             uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/embedding.cuh:188:36: warning: format ‘%d’ expects argument of type ‘int’, but argument 7 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  188 |                                 printf("node %d %d data %d %d id_data %d %d\n", first, sec, nodeData[first], nodeData[sec], lab&0xff, (lab>>8)&0xff);
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                           ~~~~~~~~~~~~~~~~  
+      |                                                                                                                                                 |
+      |                                                                                                                                                 uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh: In function ‘void expand_in_batch(CSRGraph&, EmbeddingList&, int, expand_constraint&)’:
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:699:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘emb_off_type’ {aka ‘long unsigned int’} [-Wformat=]
+  699 |                 printf("for the %d th expand_alloc, the total size is %d\n", i, batch_expand_off[i]);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     ~~~~~~~~~~~~~~~~~~~
+      |                                                                                                 |
+      |                                                                                                 emb_off_type {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh: In function ‘void expand_dynamic(CSRGraph&, EmbeddingList&, int, expand_constraint&, bool)’:
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:799:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  799 |                 printf("all used mem is %d MB, and data label is %d MB\n", all_size/1024/1024, g.nnodes/1024/1024);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                              |
+      |                                                                                              uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh: In function ‘void expand_dynamic_by_edge(CSRGraph&, EmbeddingList&, int, uint32_t*)’:
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:1065:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+ 1065 |                 printf("all used mem is %d MB, and data label is %d MB\n", all_size/1024/1024, g.nnodes/1024/1024);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                              |
+      |                                                                                              uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/clock.h: In member function ‘const char* Clock::count(const char*, ...)’:
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/clock.h:38:14: warning: ‘%s’ directive writing up to 999 bytes into a region of size between 957 and 962 [-Wformat-overflow=]
+   38 |         sprintf(str, "[\033[1m\033[44;31m%-12s\033[0m] %.6lfs   %s", s.c_str(), t, str2);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                  ~~~~
+In function ‘int sprintf(char*, const char*, ...)’,
+    inlined from ‘const char* Clock::count(const char*, ...)’ at /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/clock.h:38:8:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:30:31: note: ‘__builtin___sprintf_chk’ output 39 or more bytes (assuming 1043) into a destination of size 1000
+   30 |   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+      |        ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                  

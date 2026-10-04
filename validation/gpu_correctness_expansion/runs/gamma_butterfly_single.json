@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/single",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+    "0",
+    "debug"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.7159476540982723,
+  "exit_code": 0,
+  "log": "runs/gamma_butterfly_single.log",
+  "stdin_path": null,
+  "timeout": false
+}

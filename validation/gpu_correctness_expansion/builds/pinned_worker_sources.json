@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "/home/wajid/projects/graphDatabaseAgent/library/tools/prepare_expansion_workers.py",
+    "/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.03187568485736847,
+  "exit_code": 0,
+  "log": "builds/pinned_worker_sources.log",
+  "stdin_path": null,
+  "timeout": false
+}

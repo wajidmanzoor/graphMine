@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/ecl_scc",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_scc/random_6.egr"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.26906412839889526,
+  "exit_code": 0,
+  "log": "runs/ecl_scc_random_6.log",
+  "timeout": false
+}

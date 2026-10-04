@@ -1,7 +1,7 @@
 @INCLUDE = tools/code_docs/Doxyfile.common
 
 PROJECT_NAME           = "GraphMine library code reference"
-PROJECT_NUMBER         = 0.1.0
+PROJECT_NUMBER         = 1.0.0
 PROJECT_BRIEF          = "Function-level C++ and CUDA documentation"
 PROJECT_LOGO           = tools/code_docs/graphmine-mark.svg
 OUTPUT_DIRECTORY       = docs/reference/library

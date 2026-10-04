@@ -1,0 +1,72 @@
+{
+  "backend": "graphbplus",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/graphbplus",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/positive_triangle.csv",
+        "32",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/positive_triangle.out"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26446107029914856,
+      "exit_code": 0,
+      "log": "runs/graphbplus_positive_triangle.log",
+      "name": "positive_triangle",
+      "output_headers": {
+        "positive_triangle.out": "original node ID, percentage node was in agreeable majority"
+      },
+      "passed": true,
+      "smoke_test_only": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/graphbplus",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/balanced_triangle.csv",
+        "32",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/balanced_triangle.out"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26462792605161667,
+      "exit_code": 0,
+      "log": "runs/graphbplus_balanced_triangle.log",
+      "name": "balanced_triangle",
+      "output_headers": {
+        "balanced_triangle.out": "original node ID, percentage node was in agreeable majority"
+      },
+      "passed": true,
+      "smoke_test_only": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/graphbplus",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/unbalanced_triangle.csv",
+        "32",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/unbalanced_triangle.out"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2645139042288065,
+      "exit_code": 0,
+      "log": "runs/graphbplus_unbalanced_triangle.log",
+      "name": "unbalanced_triangle",
+      "output_headers": {
+        "unbalanced_triangle.out": "original node ID, percentage node was in agreeable majority"
+      },
+      "passed": true,
+      "smoke_test_only": true,
+      "stdin_path": null,
+      "timeout": false
+    }
+  ],
+  "limitations": [
+    "Execution/output smoke checks only, not mathematical correctness. Executables emit tree-sampling statistics; no returned partition, frustrated-edge set, minimum-frustration value or optimality certificate. Not promoted."
+  ],
+  "passed": 3,
+  "seed": 20261004,
+  "status": "partial_pass",
+  "total": 3
+}

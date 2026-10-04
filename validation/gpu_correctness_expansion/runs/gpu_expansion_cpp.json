@@ -1,0 +1,16 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "/home/wajid/projects/graphDatabaseAgent/library/build",
+    "-R",
+    "graphmine_validated_expansion_test",
+    "--output-on-failure"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 1.467041626572609,
+  "exit_code": 0,
+  "log": "runs/gpu_expansion_cpp.log",
+  "stdin_path": null,
+  "timeout": false
+}

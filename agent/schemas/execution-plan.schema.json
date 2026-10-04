@@ -1,10 +1,257 @@
 {
+  "$defs": {
+    "ApplicationIntent": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "entity_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Type"
+        },
+        "filter_mode": {
+          "default": "inherit",
+          "enum": [
+            "inherit",
+            "replace",
+            "clear"
+          ],
+          "title": "Filter Mode",
+          "type": "string"
+        },
+        "filters": {
+          "items": {
+            "$ref": "#/$defs/DataFilter"
+          },
+          "maxItems": 12,
+          "title": "Filters",
+          "type": "array"
+        },
+        "objective": {
+          "default": "",
+          "maxLength": 1500,
+          "title": "Objective",
+          "type": "string"
+        },
+        "pattern_edges": {
+          "items": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "maxItems": 30,
+          "title": "Pattern Edges",
+          "type": "array"
+        },
+        "pattern_vertex_count": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pattern Vertex Count"
+        },
+        "relationship_meaning": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Relationship Meaning"
+        },
+        "requires_direction": {
+          "default": false,
+          "title": "Requires Direction",
+          "type": "boolean"
+        },
+        "requires_edge_weights": {
+          "default": false,
+          "title": "Requires Edge Weights",
+          "type": "boolean"
+        },
+        "time_unit": {
+          "default": "unspecified",
+          "enum": [
+            "seconds",
+            "milliseconds",
+            "native",
+            "unspecified"
+          ],
+          "title": "Time Unit",
+          "type": "string"
+        },
+        "time_window": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Window"
+        },
+        "weight_attribute": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weight Attribute"
+        },
+        "weight_usage": {
+          "anyOf": [
+            {
+              "enum": [
+                "path_length",
+                "strength",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weight Usage"
+        }
+      },
+      "title": "ApplicationIntent",
+      "type": "object"
+    },
+    "DataFilter": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "operator": {
+          "enum": [
+            "eq",
+            "ne",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "in"
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "target": {
+          "enum": [
+            "vertices",
+            "edges"
+          ],
+          "title": "Target",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "target",
+        "field",
+        "operator",
+        "value"
+      ],
+      "title": "DataFilter",
+      "type": "object"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "allow_directed_projection": {
       "default": false,
       "title": "Allow Directed Projection",
       "type": "boolean"
+    },
+    "application_intent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ApplicationIntent"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "auxiliary_inputs": {
       "additionalProperties": {

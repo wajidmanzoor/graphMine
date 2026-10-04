@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "entity_resolution_blocking",
+  "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Given a collection of candidate entity records and one or more declared blocking rules over record attributes, generate the reduced set of candidate record pairs worth comparing, and optionally confirm matches and merge them into resolved-entity clusters.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "ignored", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "required_record_fields", "edge_attributes": "ignored"},
+    "normalization": ["Treat every vertex as one candidate record; its attributes map holds the record's fields used by blocking_rules.", "Input edges, if present, are treated only as known-coreference hints and are not required; a purely edgeless vertex collection is valid input.", "Reject vertices missing any attribute field referenced by blocking_rules unless the rule declares that field optional."]
+  },
+  "problem_inputs": [
+    {"name": "task", "type": "enum", "required": true, "allowed_values": ["blocking", "resolution"], "description": "Generate candidate pairs only, or additionally confirm matches and merge them into resolved entity clusters."},
+    {"name": "blocking_rules", "type": "array<declarative_rule>", "required": true, "constraints": "nonempty", "description": "Declarative predicates over a pair of records' attributes (e.g. field equality, bounded edit distance, shared token) whose disjunction defines candidacy."},
+    {"name": "match_decision_rule", "type": "object_or_null", "required": false, "default": null, "constraints": "required when task=resolution", "description": "Declarative rule or trained-model reference confirming whether a candidate pair is a true match."},
+    {"name": "clustering_policy", "type": "enum", "required": false, "default": "connected_components", "allowed_values": ["connected_components", "correlation_clustering"], "description": "How confirmed match pairs are merged into final resolved-entity clusters when task=resolution."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact", "allowed_values": ["exact", "approximate"], "description": "blocking is always exact given blocking_rules; correlation_clustering under resolution is NP-hard and approximate mode must disclose a bound."}
+  ],
+  "required_outputs": [
+    {"name": "candidate_pairs", "type": "array<object>", "description": "Vertex pairs satisfying at least one blocking rule, each tagged with the satisfying rule id."},
+    {"name": "reduction_ratio", "type": "number", "description": "Fraction of the full pairwise comparison space (n*(n-1)/2) avoided by restricting to candidate_pairs."},
+    {"name": "complete", "type": "boolean", "description": "Whether every pair satisfying any blocking rule was found."}
+  ],
+  "optional_outputs": [
+    {"name": "resolved_entity_id", "type": "map<vertex_id,entity_cluster_id>", "description": "Final entity cluster per record; present when task=resolution."},
+    {"name": "match_decision", "type": "map<pair_id,boolean>", "description": "Whether each candidate pair was confirmed a true match; present when task=resolution."},
+    {"name": "evaluation_against_labels", "type": "object", "description": "Precision/recall of candidate_pairs or resolved_entity_id against trusted duplicate labels, when available."}
+  ],
+  "solution_semantics": {
+    "objective": "Produce candidate_pairs covering every pair satisfying blocking_rules while minimizing comparisons (maximizing reduction_ratio at full recall relative to the rules); for task=resolution, additionally confirm matches via match_decision_rule and merge confirmed pairs into resolved_entity_id per clustering_policy.",
+    "exactness": "blocking is exact and deterministic given blocking_rules; resolution's connected_components clustering is exact given match_decision, while correlation_clustering is NP-hard in general and approximate mode must disclose a bound.",
+    "duplicate_policy": "Each unordered vertex pair appears at most once in candidate_pairs even if multiple rules match it.",
+    "ordering": "candidate_pairs and resolved_entity_id are unordered."
+  },
+  "validation_rules": [
+    "Every pair in candidate_pairs satisfies at least one rule in blocking_rules when recomputed from the normalized vertex attributes.",
+    "No pair satisfying a blocking rule is missing from candidate_pairs (full recall relative to the declared rules).",
+    "reduction_ratio equals 1 minus |candidate_pairs| divided by n*(n-1)/2.",
+    "resolved_entity_id, when returned, assigns every vertex to exactly one cluster, and every pair with match_decision=true shares a cluster."
+  ],
+  "edge_cases": [
+    "A record matching no rule with any other record forms its own singleton candidate set and, under resolution, its own singleton resolved entity.",
+    "Conflicting match decisions (A matches B, B matches C, but A does not match C) under clustering_policy=connected_components are resolved by transitive merging; correlation_clustering may instead keep them separate at some frustration cost.",
+    "An empty blocking_rules array is rejected as invalid input.",
+    "A fully connected candidate graph (every pair blocks) is valid but yields reduction_ratio zero."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["recall of true-duplicate pairs within candidate_pairs relative to the declared rules (and trusted labels when available)", "rule-satisfaction recomputation", "resolved_entity_id cluster consistency with match_decision"],
+    "performance": ["end-to-end time", "rule-evaluation time", "peak memory", "comparisons evaluated per second", "reduction_ratio achieved"]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "paper_id": "2013_deveci_mcm_gpu",
+  "title": "GPU Accelerated Maximum Cardinality Matching Algorithms for Bipartite Graphs",
+  "year": 2013,
+  "venue": "Euro-Par 2013",
+  "doi": "10.1007/978-3-642-40047-6_84",
+  "publication_url": "https://doi.org/10.1007/978-3-642-40047-6_84",
+  "pdf_url": "https://arxiv.org/pdf/1303.1379",
+  "code_url": "http://tda.gatech.edu/software/matchmaker2/index.html",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU push-relabel-style and augmenting-path GPU algorithms for maximum cardinality bipartite matching (the unweighted case of this problem).",
+  "notes": "Code is distributed from the Georgia Tech HPC Lab's matchmaker2 project page rather than a git repository; a git clone of this URL is expected to fail and is recorded honestly rather than hidden.",
+  "problem_id": "bipartite_matching_assignment",
+  "problem_dir": "31_bipartite_matching_assignment",
+  "research_cutoff": "2026-09-30"
+}

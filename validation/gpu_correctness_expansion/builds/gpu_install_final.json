@@ -1,0 +1,15 @@
+{
+  "command": [
+    "cmake",
+    "--install",
+    "/home/wajid/projects/graphDatabaseAgent/library/build",
+    "--prefix",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.016380764544010162,
+  "exit_code": 0,
+  "log": "builds/gpu_install_final.log",
+  "stdin_path": null,
+  "timeout": false
+}

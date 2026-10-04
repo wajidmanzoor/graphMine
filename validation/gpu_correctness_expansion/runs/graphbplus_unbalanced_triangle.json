@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/graphbplus",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/unbalanced_triangle.csv",
+    "32",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/unbalanced_triangle.out"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.2645139042288065,
+  "exit_code": 0,
+  "log": "runs/graphbplus_unbalanced_triangle.log",
+  "stdin_path": null,
+  "timeout": false
+}

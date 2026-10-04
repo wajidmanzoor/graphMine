@@ -1,0 +1,9 @@
+In file included from algo/../model/RWIndexD.cuh:11,
+                 from algo/../model/HighRrwIndex.cuh:4,
+                 from algo/GtopkRrw.cuh:9,
+                 from query.h:6,
+                 from main.cu:10:
+algo/../model/RWIndex.h:10:10: fatal error: algo_setting.h: No such file or directory
+   10 | #include "algo_setting.h"
+      |          ^~~~~~~~~~~~~~~~
+compilation terminated.

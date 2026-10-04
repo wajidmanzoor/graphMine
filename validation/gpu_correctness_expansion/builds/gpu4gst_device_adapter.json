@@ -1,0 +1,20 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "--extended-lambda",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gpu4gst.cu",
+    "-I",
+    "/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2025_gpu4gst/code/code/TrimCDP-WB/include",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpu4gst_device0"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 5.22442239522934,
+  "exit_code": 0,
+  "log": "builds/gpu4gst_device_adapter.log",
+  "stdin_path": null,
+  "timeout": false
+}

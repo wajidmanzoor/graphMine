@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/kpar",
+    "indexing",
+    "--dataset",
+    "cycle_16",
+    "--epsilon",
+    "0.5"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/kpar/run",
+  "elapsed_seconds": 0.3150980528444052,
+  "exit_code": 0,
+  "log": "runs/kpar_cycle_16_index.log",
+  "stdin_path": null,
+  "timeout": false
+}

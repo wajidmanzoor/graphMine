@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import io
 import json
 import math
 import re
@@ -13,6 +14,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 from .config import Settings
 from .database import Database
+from .graph_context import semantic_context
 from .models import FileRole, GraphMetadata, StoredFile, new_id
 
 
@@ -53,6 +55,9 @@ class GraphStore:
         content: bytes,
         media_type: str | None = None,
         directed: bool = False,
+        source_column: str | None = None,
+        target_column: str | None = None,
+        timestamp_unit: str | None = None,
     ) -> StoredFile:
         self.database.get_session(session_id)
         if not content:
@@ -69,7 +74,21 @@ class GraphStore:
         canonical_graph: dict[str, Any] | None = None
         metadata: GraphMetadata | dict[str, Any] | None = None
         if role in {FileRole.graph, FileRole.query_graph, FileRole.motif}:
-            canonical_graph = self._read_graph(safe_name, content, directed=directed)
+            canonical_graph = self._read_graph(
+                safe_name,
+                content,
+                directed=directed,
+                source_column=source_column,
+                target_column=target_column,
+            )
+            if timestamp_unit:
+                if timestamp_unit not in {"seconds", "milliseconds"}:
+                    raise UploadError(
+                        "Timestamp units must be seconds or milliseconds."
+                    )
+                canonical_graph["graph"].setdefault("attributes", {})[
+                    "timestamp_unit"
+                ] = timestamp_unit
             self._validate_graph(canonical_graph)
             metadata = self._metadata(file_id, canonical_graph)
         elif role == FileRole.left_partition:
@@ -95,7 +114,10 @@ class GraphStore:
         canonical_path: Path | None = None
         try:
             directory.mkdir(parents=True, exist_ok=False)
-            source_path = directory / safe_name
+            # A canonical upload named graph.json must not overwrite its original bytes.
+            source_directory = directory / "source"
+            source_directory.mkdir()
+            source_path = source_directory / safe_name
             source_path.write_bytes(content)
             if canonical_graph is not None:
                 canonical_path = directory / "graph.json"
@@ -131,14 +153,156 @@ class GraphStore:
             raise UploadError(f"invalid JSON: {error}") from error
 
     def _read_graph(
-        self, filename: str, content: bytes, *, directed: bool
+        self,
+        filename: str,
+        content: bytes,
+        *,
+        directed: bool,
+        source_column: str | None = None,
+        target_column: str | None = None,
     ) -> dict[str, Any]:
         if filename.lower().endswith(".json"):
             value = self._read_json(content)
             if not isinstance(value, dict):
                 raise UploadError("canonical graph JSON must be an object")
             return value
+        if filename.lower().endswith(".csv"):
+            try:
+                text = content.decode("utf-8-sig")
+            except UnicodeDecodeError as error:
+                raise UploadError("CSV input must be UTF-8") from error
+            header = next(csv.reader(io.StringIO(text)), [])
+            names = {name.strip().lower(): name for name in header}
+            source = source_column or next(
+                (names[key] for key in ("source", "src", "from") if key in names), None
+            )
+            target = target_column or next(
+                (names[key] for key in ("target", "dst", "to") if key in names), None
+            )
+            if source or target:
+                return self._attribute_csv(
+                    filename, text, directed=directed, source=source, target=target
+                )
+            raise UploadError(
+                "Choose the CSV From and To columns, or use source,target headers. For a headerless edge list, use a .txt file."
+            )
         return self._edge_list_graph(filename, content, directed=directed)
+
+    @staticmethod
+    def _attribute_csv(
+        filename: str,
+        text: str,
+        *,
+        directed: bool,
+        source: str | None,
+        target: str | None,
+    ) -> dict[str, Any]:
+        reader = csv.DictReader(io.StringIO(text))
+        columns = reader.fieldnames or []
+        if (
+            not source
+            or not target
+            or source == target
+            or source not in columns
+            or target not in columns
+        ):
+            raise UploadError(
+                "Choose two different CSV columns identifying the connected records (From column and To column)."
+            )
+        if len(set(columns)) != len(columns):
+            raise UploadError("CSV column names must be unique.")
+        vertices = {}
+        edges = []
+
+        def value(raw):
+            if raw == "":
+                return None
+            if raw.lower() in {"true", "false"}:
+                return raw.lower() == "true"
+            try:
+                parsed = json.loads(raw)
+            except (ValueError, TypeError):
+                return raw
+            if isinstance(parsed, float) and not math.isfinite(parsed):
+                return raw
+            return (
+                parsed
+                if isinstance(parsed, (str, int, float, bool)) or parsed is None
+                else raw
+            )
+
+        for index, row in enumerate(reader, 1):
+            if None in row or any(item is None for item in row.values()):
+                raise UploadError(
+                    f"CSV record {index} has a different number of values than its header."
+                )
+            row = {name: item.strip() for name, item in row.items()}
+            endpoints = [_external_id(row[source]), _external_id(row[target])]
+            edge = {
+                "id": row.get("id") or index,
+                "source": endpoints[0],
+                "target": endpoints[1],
+            }
+            extras = {}
+            for side, identifier in zip(("source", "target"), endpoints, strict=True):
+                vertex = vertices.setdefault(json.dumps(identifier), {"id": identifier})
+                for field in ("label", "type"):
+                    candidate = row.get(f"{side}_{field}")
+                    if candidate:
+                        if field in vertex and vertex[field] != candidate:
+                            raise UploadError(
+                                f"Conflicting {field} values for record {identifier!r}."
+                            )
+                        vertex[field] = candidate
+                for column, raw in row.items():
+                    if column.startswith(f"{side}.") and raw.strip():
+                        field = column[len(side) + 1 :]
+                        attrs = vertex.setdefault("attributes", {})
+                        parsed = value(raw)
+                        if field in attrs and attrs[field] != parsed:
+                            raise UploadError(
+                                f"Conflicting {field} attributes for record {identifier!r}."
+                            )
+                        attrs[field] = parsed
+            for column, raw in row.items():
+                if column in {
+                    source,
+                    target,
+                    "id",
+                    "source_label",
+                    "target_label",
+                    "source_type",
+                    "target_type",
+                } or column.startswith(("source.", "target.")):
+                    continue
+                if column in {"weight", "timestamp"} and raw:
+                    try:
+                        edge[column] = int(raw) if column == "timestamp" else float(raw)
+                    except ValueError as error:
+                        raise UploadError(
+                            f"CSV {column} must be numeric; preserve dates in a separate attribute column if needed."
+                        ) from error
+                elif column == "type" and raw:
+                    edge[column] = raw
+                else:
+                    extras[column] = value(raw)
+            if extras:
+                edge["attributes"] = extras
+            edges.append(edge)
+        return {
+            "graph": {
+                "id": Path(filename).stem,
+                "directed": directed,
+                "allows_self_loops": any(
+                    edge["source"] == edge["target"] for edge in edges
+                ),
+                "allows_parallel_edges": GraphStore._has_parallel_edges(
+                    edges, directed
+                ),
+            },
+            "vertices": list(vertices.values()),
+            "edges": edges,
+        }
 
     @staticmethod
     def _edge_list_graph(
@@ -306,7 +470,12 @@ class GraphStore:
             isolated_vertex_count=sum(degree == 0 for degree in degrees),
             has_weights=any("weight" in edge for edge in edges),
             has_timestamps=any("timestamp" in edge for edge in edges),
+            semantic_context=semantic_context(graph),
         )
+
+    def read_graph(self, file_id: str, session_id: str) -> dict[str, Any]:
+        """Read the complete canonical graph, never a truncated UI preview."""
+        return self._read_json(self.execution_path(file_id, session_id).read_bytes())
 
     def execution_path(self, file_id: str, session_id: str) -> Path:
         record = self.database.get_file(file_id)

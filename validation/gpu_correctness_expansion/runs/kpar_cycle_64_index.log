@@ -1,0 +1,7 @@
+[0;32m--------------start------------2026-10-04 11:41:01[0m
+[0;32margs:indexing --dataset cycle_64 --epsilon 0.5 [0m
+action: indexing
+set GPU 0
+loaded graph n: 64 m: 64
+building index... 
+write index to ../data/cycle_64/kpar_index.txt

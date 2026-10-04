@@ -33,12 +33,32 @@ status. It never silently substitutes a different algorithm.
 | `GraphMotifs` | GraphMiner/G2Miner, GraphSet, DuMato |
 | `TemporalMotifMining` | Everest, Mayura |
 | `CommunityDetection` | gLeiden, parallel Louvain, parallel Leiden, parallel Leiden+ |
+| `ConnectedComponents` | ECL-SCC |
+| `MaxFlowMinCut` | ECL-MaxFlow |
+| `LinearAssignment` | HungarianGPU |
+| `TransitiveClosure` | GDlog |
+| `ButterflyCounting` | GraphMiner |
+
+See [the bounded expansion profiles](docs/validated_expansion.md) and
+[agent catalog/routing integration](../docs/ALGORITHM_EXPANSION.md) before using
+the five new APIs.
 
 The GPU artifact supplies each required count, score, clique, partition, or
 core result. When an artifact is count-only, optional instances are
 materialized by a common exact collector and checked against the GPU total.
 Results include backend/source provenance, timings, normalization warnings,
 and restored external vertex and edge IDs.
+
+Validation is fixture-scoped, not a universal correctness guarantee. The
+2026-10-03 synthetic application audit found that CUDA-MS could report a
+three-clique as optimal on a graph containing a four-clique. Its local
+relaxation mask no longer tightens the certified coloring bound; callers must
+inspect `optimal`, not assume every returned clique is a global maximum.
+Maximum-Clique-on-GPU also reproducibly aborts on one eight-vertex cycle-with-chord
+fixture; that adapter remains unrepaired. The Python agent quarantines both
+backends and uses GPUMaximumClique for this operation. Native-library/CLI callers
+should explicitly select `gpu-maximum-clique` until those adapters are re-audited.
+See [the independent audit record](../agent/evaluation/reports/synthetic-learning-2026-10-03.json).
 
 Temporal mining currently exposes the exact query that passed validation:
 `A->B`, then `B->C`, then `A->C`, with distinct vertices and an inclusive time
@@ -57,6 +77,7 @@ cmake -S library -B library/build -DCMAKE_BUILD_TYPE=Release \
   -DGRAPHMINE_BUILD_CLI=ON
 cmake --build library/build --parallel --target graphmine_cli
 
+library/build/graphmine --version
 library/build/graphmine list --pretty
 library/build/graphmine validate \
   --graph library/examples/data/triangle.json --pretty
@@ -68,8 +89,9 @@ library/build/graphmine run triangle-counting \
   --pretty
 ```
 
-`graphmine list` reports all 13 operations and whether each of the 26
-validated backend choices is compiled in the current binary. `graphmine
+`graphmine --version` prints the native release version. `graphmine list`
+reports that version, all 18 operations, and whether each of the 31 registered
+backend choices is compiled in the current binary. `graphmine
 describe OPERATION --pretty` reports the exact invocation. All graph, query,
 and motif files use `canonical_edge_list_v1`; results are JSON. Optional
 result fields are requested with explicit flags, so large materializations are
@@ -77,15 +99,15 @@ not produced accidentally.
 
 The compact runtime contract is
 [`manifests/graphmine_manifest.json`](manifests/graphmine_manifest.json). It
-contains the 12 supported problem specifications, canonical input contract,
+contains the 17 supported problem specifications, canonical input contract,
 auxiliary-input formats, every backend choice, parameters, output flags,
 required outputs, and ready-to-run commands. Static and dynamic triangle
 counting are separate operations within the same research problem.
 
 For problem identification and query planning, use the richer
 [`manifests/graphmine_catalog.json`](manifests/graphmine_catalog.json). It
-embeds all 20 authoritative `problems/*/problem.json` contracts exactly and
-links the 12 supported problems to C++ types, CLI arguments, backend
+embeds all 37 authoritative `problems/*/problem.json` contracts exactly and
+links the 17 supported problems to C++ types, CLI arguments, backend
 capabilities, source provenance, and passing validation evidence. Unsupported
 problems are explicitly marked `no_validated_backend` rather than being routed
 to a superficially similar operation.

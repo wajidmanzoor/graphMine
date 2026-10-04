@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cmake",
+    "--build",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/library-cpu",
+    "--target",
+    "graphmine_validated_expansion_test",
+    "-j",
+    "4"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 1.8171561490744352,
+  "exit_code": 0,
+  "log": "builds/cpu_expansion_cpp_build.log",
+  "stdin_path": null,
+  "timeout": false
+}

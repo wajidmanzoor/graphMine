@@ -1,0 +1,831 @@
+{
+  "schema_version": "1.0.0",
+  "created_at": "2026-10-03T06:28:45.962705+00:00",
+  "scope": "Public-data development evaluation of the existing agent, not fine-tuning, held-out accuracy, a deployed-model benchmark, or human usability validation.",
+  "implementation": {
+    "commands": [
+      "prepare-real-world",
+      "verify-real-world",
+      "propose-real-world",
+      "audit-real-world",
+      "evaluate-real-world"
+    ],
+    "modules": [
+      "agent/graphmine_agent/learning/realworld.py",
+      "agent/graphmine_agent/learning/realworld_cases.py",
+      "agent/graphmine_agent/learning/realworld_eval.py"
+    ],
+    "cli": "agent/CLI.md#public-real-world-evaluation-datasets",
+    "improvement_plan": "agent/IMPROVEMENT_PLAN.md#next-improvement-and-automated-data-plan",
+    "storage": "Private, Git-ignored .graphmine-learning; raw bytes, hashes, model requests/responses, native inputs/results, interpretations, visualizations and linked feedback retained.",
+    "source_downloads": "Fixed URL catalog, no redirects, 4 MiB per download/member, selected ZIP member read without path extraction; offline rebuild and exact provenance verification.",
+    "source_records_sent_to_teacher": "Bounded public development graph context only; no live user sessions or credentials.",
+    "production_changes": false,
+    "model_weights_changed": false,
+    "training_started": false,
+    "training_export_allowed": false
+  },
+  "source_counts": {
+    "datasets": 3,
+    "raw_files": 5,
+    "raw_bytes": 3537749,
+    "cases": 30,
+    "development_cases": 21,
+    "holdout_cases": 9
+  },
+  "sources": {
+    "sociopatterns-workplace": {
+      "split": "development",
+      "title": "SocioPatterns workplace contacts, June 24–July 3, 2013",
+      "page": "https://sociopatterns.org/datasets/contacts-in-a-workplace/",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution": "M. Genois et al., Network Science 3, 326 (2015); SocioPatterns collaboration.",
+      "files": {
+        "contacts.zip": "https://sociopatterns.org/assets/data/workplace_InVS_tij.dat.zip",
+        "departments.txt": "https://sociopatterns.org/assets/data/workplace_InVS_metadata.txt"
+      },
+      "artifacts": {
+        "contacts.zip": {
+          "path": "raw/sociopatterns-workplace/contacts.zip",
+          "sha256": "bf818f7e819864e134c90ed82f2cda6ca9d9548d43fe4d05002ac068c91258c0",
+          "bytes": 30331,
+          "retrieved_at": "2026-10-03T05:40:46.742130+00:00"
+        },
+        "departments.txt": {
+          "path": "raw/sociopatterns-workplace/departments.txt",
+          "sha256": "4a62b35fa54376b29425731e1a13e73138f09e3c8ff6b04823103e20a99af8f0",
+          "bytes": 858,
+          "retrieved_at": "2026-10-03T05:40:46.750256+00:00"
+        }
+      }
+    },
+    "string-ecoli": {
+      "split": "development",
+      "title": "STRING v12.0 E. coli K-12 functional associations, selected proteins from several processes",
+      "page": "https://en.string-db.org/help/api/",
+      "license": "CC-BY-4.0",
+      "license_url": "https://www.string-db.org/cgi/access?footer_active_subpage=licensing",
+      "attribution": "STRING Consortium, STRING v12.0; 12 selected E. coli K-12 proteins, confidence >= 0.700, no added neighbors.",
+      "files": {
+        "network.tsv": "https://version-12-0.string-db.org/api/tsv/network?identifiers=galK%0DgalT%0DlacZ%0DlacY%0DrecA%0DlexA%0DdnaK%0DgroL%0DftsZ%0DftsA%0DrpoB%0DrpoD&species=511145&required_score=700&network_type=functional&add_nodes=0"
+      },
+      "artifacts": {
+        "network.tsv": {
+          "path": "raw/string-ecoli/network.tsv",
+          "sha256": "3389576dc2cd088b816eebee98b9a0e5c96493c4fecee39fec894dcca4eb873c",
+          "bytes": 2187,
+          "retrieved_at": "2026-10-03T05:40:47.246545+00:00"
+        }
+      }
+    },
+    "openflights": {
+      "split": "holdout",
+      "title": "OpenFlights historical route snapshot and airport metadata",
+      "page": "https://openflights.org/data",
+      "license": "ODbL-1.0; individual database contents under DbCL-1.0",
+      "license_url": "https://openflights.org/data",
+      "attribution": "OpenFlights / Airline Route Mapper; historical routes, not current schedules or navigation data.",
+      "revision": "7d1a611e070295dba776d6afb86e57d0d1aa1cef",
+      "files": {
+        "airports.dat": "https://raw.githubusercontent.com/jpatokal/openflights/7d1a611e070295dba776d6afb86e57d0d1aa1cef/data/airports.dat",
+        "routes.dat": "https://raw.githubusercontent.com/jpatokal/openflights/7d1a611e070295dba776d6afb86e57d0d1aa1cef/data/routes.dat"
+      },
+      "artifacts": {
+        "airports.dat": {
+          "path": "raw/openflights/airports.dat",
+          "sha256": "9387cdb38df5bd664da823f8ccb69fdd9b33a1888f5b7cca09c34a3cd9ff59f9",
+          "bytes": 1127225,
+          "retrieved_at": "2026-10-03T05:40:47.291676+00:00"
+        },
+        "routes.dat": {
+          "path": "raw/openflights/routes.dat",
+          "sha256": "bd373706238134f619c624c606dccc74c05c2582a977c489c81de501735f2390",
+          "bytes": 2377148,
+          "retrieved_at": "2026-10-03T05:40:47.314343+00:00"
+        }
+      }
+    }
+  },
+  "corpus": {
+    "final_directory": ".graphmine-learning/real-world-corpus-v4",
+    "graphs": [
+      {
+        "id": "sociopatterns-workplace",
+        "source_id": "sociopatterns-workplace",
+        "split": "development",
+        "domain": "social_networks",
+        "selection": {
+          "raw_rows": 9827,
+          "raw_vertices": 92,
+          "raw_unique_pairs": 755,
+          "selection": "12 participants with most distinct recorded contacts; ties by numeric anonymous ID; induced graph across the full recording period",
+          "bias": "Activity-biased small slice, not a representative sample or full-network statistic",
+          "projection": "Undirected existence of contact; intervals aggregated as descriptive attributes; not temporal events"
+        },
+        "synthetic_perturbation": false,
+        "path": "graphs/sociopatterns-workplace.json",
+        "sha256": "8450d2a27d708ee1a9ffb6982a35c801059b6e0bc2555f8eec8fff58a4653c4d",
+        "vertices": 12,
+        "edges": 35
+      },
+      {
+        "id": "string-ecoli",
+        "source_id": "string-ecoli",
+        "split": "development",
+        "domain": "bioinformatics",
+        "selection": {
+          "raw_rows": 27,
+          "raw_vertices": 12,
+          "raw_unique_pairs": 27,
+          "selection": {
+            "protein_names": [
+              "galK",
+              "galT",
+              "lacZ",
+              "lacY",
+              "recA",
+              "lexA",
+              "dnaK",
+              "groL",
+              "ftsZ",
+              "ftsA",
+              "rpoB",
+              "rpoD"
+            ],
+            "required_score": 700,
+            "version": "12.0",
+            "added_neighbors": 0
+          },
+          "bias": "Purposive seed set; not representative of a proteome",
+          "projection": "Undirected functional associations; all returned confidence channels retained as attributes, no inferred physical interaction"
+        },
+        "synthetic_perturbation": false,
+        "path": "graphs/string-ecoli.json",
+        "sha256": "09ac2d2c4d1fa4d93498fccefdab390f219f94c57b51adb48928e0dd4ca187af",
+        "vertices": 12,
+        "edges": 27
+      },
+      {
+        "id": "openflights",
+        "source_id": "openflights",
+        "split": "holdout",
+        "domain": "transportation_mobility",
+        "selection": {
+          "raw_airport_rows": 7698,
+          "raw_route_rows": 67663,
+          "eligible_uk_airports": 167,
+          "eligible_mutual_pairs": 125,
+          "revision": "7d1a611e070295dba776d6afb86e57d0d1aa1cef",
+          "selection": "12 UK airports with largest number of mutual nonstop airport neighbors; ties by numeric ID; induced subgraph",
+          "bias": "Hub-biased historical domestic slice; not representative or current",
+          "projection": "Only pairs with both directed source records retained; direction-specific carrier lists preserved"
+        },
+        "synthetic_perturbation": false,
+        "path": "graphs/openflights.json",
+        "sha256": "eddf1e2efb31ed882534b4d646c83294b9898c4b43fa2e91408c447f44d5737a",
+        "vertices": 12,
+        "edges": 39
+      },
+      {
+        "id": "sociopatterns-workplace-injection",
+        "source_id": "sociopatterns-workplace",
+        "split": "development",
+        "domain": "social_networks",
+        "selection": {
+          "raw_rows": 9827,
+          "raw_vertices": 92,
+          "raw_unique_pairs": 755,
+          "selection": "12 participants with most distinct recorded contacts; ties by numeric anonymous ID; induced graph across the full recording period",
+          "bias": "Activity-biased small slice, not a representative sample or full-network statistic",
+          "projection": "Undirected existence of contact; intervals aggregated as descriptive attributes; not temporal events",
+          "perturbation": "One adversarial import_note added to test treating record text as data. Original source files are unchanged."
+        },
+        "synthetic_perturbation": true,
+        "path": "graphs/sociopatterns-workplace-injection.json",
+        "sha256": "16b9429eb4a2aa41e3c3f1a77c24b53e612993b4d6c2875cd05fac0b02577d99",
+        "vertices": 12,
+        "edges": 35
+      }
+    ],
+    "development_turns": 27,
+    "selection_note": "17 development scenarios selected for a 42-call rerun; four duplicate single-turn cards omitted, retaining those tasks in multi-turn workflows. Fifteen scenarios / 21 turns passed screening.",
+    "holdout": "All nine OpenFlights scenarios are excluded from development teacher/reviewer/student calls and native audit runs. The source was downloaded and validated, not used to estimate held-out performance.",
+    "projection_limits": "All real projections have 12 vertices. Workplace and airport slices are activity/hub biased; protein seeds are purposive. The injection fixture is a separately marked synthetic perturbation of real workplace data.",
+    "preparation_history": [
+      "A preliminary STRING seed selection produced a complete 12-protein graph; changed to proteins from several processes before any model evaluation. Earlier corpus directories remain preserved.",
+      "Initial native audit passed 13/17 because task contracts omitted requested optional membership outputs. Corrected the harness and reran: 17/17. This was not a native arithmetic defect.",
+      "The first reviewer calibration passed 7/8 and stopped generation. Added explicit weight_attribute and weight_usage semantics; new corpus/protocol then passed 8/8.",
+      "Both community proposals are quarantined because their source cards overpromise a strict per-member internal/external connection guarantee not supplied by the heuristic operation. The native community check validates partition coverage/modularity, not that stronger claim."
+    ]
+  },
+  "teacher_reviewer": {
+    "auth": "Codex signed in with ChatGPT",
+    "cli": {
+      "version": "codex-cli 0.160.0",
+      "executable_sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+      "auth": "chatgpt"
+    },
+    "teacher": {
+      "provider": "codex",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "max_output_tokens": 4096
+    },
+    "reviewer": {
+      "provider": "codex",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "low",
+      "max_output_tokens": 4096
+    },
+    "identity_caveat": "explicit_cli_model_argument_not_provider_attested",
+    "model_call_counts": {
+      "gpt-6-astra": 33,
+      "gpt-6.1-sol": 17
+    },
+    "completed_calls": 50,
+    "announced_turn_ceiling": 50,
+    "initial_calibration": {
+      "passed": 7,
+      "total": 8,
+      "qualified": false
+    },
+    "final_calibration": {
+      "passed": 8,
+      "total": 8,
+      "qualified": true
+    },
+    "generated_scenarios": 17,
+    "screened_scenarios": 15,
+    "quarantines": [
+      {
+        "case_id": "sociopatterns-workplace-connection-groups",
+        "issues": [
+          "turn 1: extra_constraints: expected [], extracted ['Each participant must have strictly more recorded connections within their group than outside it.', 'Use only connection topology, without existing labels or scores.']"
+        ]
+      },
+      {
+        "case_id": "string-ecoli-connection-groups",
+        "issues": [
+          "turn 1: extra_constraints: expected [], extracted ['Each member must have strictly more recorded connections within its group than outside it.', 'Use only connection structure, excluding existing labels and scores from grouping.']"
+        ]
+      }
+    ],
+    "skipped_duplicate_scenarios": [
+      "sociopatterns-workplace-one-largest-group",
+      "sociopatterns-workplace-all-unextendable-groups",
+      "string-ecoli-one-largest-group",
+      "string-ecoli-all-unextendable-groups"
+    ],
+    "usage": {
+      "input_tokens": 587503,
+      "cached_input_tokens": 77952,
+      "output_tokens": 8881
+    },
+    "usage_caveat": "Cached input is a subset of input. Usage counts cover only these 50 saved Codex calls, not the outer coding session or local Qwen. ChatGPT allowance/credit settings apply; this is not unlimited free usage or a billing quote. The output-token setting is checked after generation, not a hard generation/cost cap.",
+    "paid_api_adapter_calls": 0,
+    "api_key_fallback": false,
+    "automatic_credit_purchase": false,
+    "reviewer_blinding": "Reviewer reads candidate user messages and bounded graph context, not original task cards, expected semantic contracts or numeric answers.",
+    "receipt_reverification": "All eight calibration controls and 15 accepted scenarios rechecked from raw saved requests, events, schemas, hashes and quoted evidence without new model calls."
+  },
+  "native_audit": {
+    "passed": 17,
+    "total": 17,
+    "binary_sha256": "8bbc3f0929766601aa1f0f437b271a029d3618c122c70a24a3b2aade5a138ea0",
+    "replay_contract_sha256": "096591577af53d93d54717c4c08241d14558a698bc876b699f4c7521a92c9792",
+    "holdout_runs": 0
+  },
+  "student": {
+    "model": "Qwen/Qwen3.8-27B-FP8",
+    "inference_profile": {
+      "llm_route_reasoning_effort": "none",
+      "llm_plan_reasoning_effort": "none",
+      "llm_analyst_reasoning_effort": "medium"
+    },
+    "started_at": "2026-10-03T06:06:47.965901+00:00",
+    "finished_at": "2026-10-03T06:25:54.688444+00:00",
+    "total": 42,
+    "passed": 38,
+    "expected_total": 42,
+    "workflows_passed": 26,
+    "protocol_sha256": "f9675abb4de63f3c49cf1f61fdee423bdfd628838fd39c0e28da87c31f6547d4",
+    "replay_contract_sha256": "096591577af53d93d54717c4c08241d14558a698bc876b699f4c7521a92c9792",
+    "corpus_sha256": "fe0599b47dd38c2858135fe97917b9fe0ee3cf273fc770f05d243f3d3cf3ea3c",
+    "cases_sha256": "b76cfadcd65128f528dec2ec2617444943f3beda18e1aa612211509900e82442",
+    "question_report_sha256": "6f7e04827973220b520b352b37233017016d9f5f288c096164509a04054d04a5",
+    "holdout_model_calls": 0,
+    "scenarios": 15,
+    "scenario_repetitions": 30,
+    "unique_turns": 21,
+    "both_repeat_turns_passed": 18,
+    "same_pass_fail_outcome": 19,
+    "changed_outcomes": [
+      {
+        "case_id": "sociopatterns-workplace-correction-filter-reset",
+        "index": 3,
+        "passes": [
+          false,
+          true
+        ]
+      },
+      {
+        "case_id": "string-ecoli-correction-filter-reset",
+        "index": 3,
+        "passes": [
+          true,
+          false
+        ]
+      }
+    ],
+    "both_repeat_scenarios_passed": 12,
+    "latency_seconds": {
+      "minimum": 9.80098445340991,
+      "median": 27.298619778826833,
+      "mean": 27.244843086848658,
+      "p95_nearest_rank": 45.302347138524055,
+      "maximum": 52.69605213589966,
+      "sum": 1144.2834096476436
+    },
+    "by_repetition": [
+      {
+        "repetition": 1,
+        "passed": 19,
+        "total": 21
+      },
+      {
+        "repetition": 2,
+        "passed": 19,
+        "total": 21
+      }
+    ],
+    "by_category": [
+      {
+        "category": "ambiguous-priority",
+        "passed": 4,
+        "total": 4
+      },
+      {
+        "category": "correction-filter-reset",
+        "passed": 14,
+        "total": 16
+      },
+      {
+        "category": "empty-result",
+        "passed": 2,
+        "total": 4
+      },
+      {
+        "category": "exact-size",
+        "passed": 4,
+        "total": 4
+      },
+      {
+        "category": "iterative-pruning",
+        "passed": 4,
+        "total": 4
+      },
+      {
+        "category": "unsupported-weighted-routes",
+        "passed": 4,
+        "total": 4
+      },
+      {
+        "category": "untrusted-record-text",
+        "passed": 2,
+        "total": 2
+      },
+      {
+        "category": "unweighted-connectors",
+        "passed": 4,
+        "total": 4
+      }
+    ],
+    "database_counts": {
+      "sessions": 30,
+      "jobs": 28,
+      "results": 28,
+      "feedback": 10
+    },
+    "job_statuses": {
+      "completed": 28
+    },
+    "result_bearing_turns": 30,
+    "failures": [
+      {
+        "case_id": "sociopatterns-workplace-empty-result",
+        "repetition": 1,
+        "index": 1,
+        "session_id": "session_cb90a45961f94474a9cb023046ab416b",
+        "turn_id": "turn_65ca786db17d4b9d8d2a1e8ae6163bbf",
+        "feedback_id": "feedback_f0438286fba9402e87a775589f3be0e5",
+        "query": "In the anonymous workplace contact sample, which groups of at least three participants have a direct connection between every pair when only relationships with recorded contact_intervals equal to 0 are considered? List every such group that cannot be expanded by adding another participant while keeping every pair directly connected, and include each participant’s anonymous label and department.",
+        "issues": [
+          "No completed maximal-cliques result"
+        ],
+        "planning_status": "needs_information",
+        "reply": "No recorded contacts have zero intervals, so the filtered group list is empty. Confirm you want the empty result or a different contact filter."
+      },
+      {
+        "case_id": "sociopatterns-workplace-correction-filter-reset",
+        "repetition": 1,
+        "index": 3,
+        "session_id": "session_49a2bc2aeb1b417bb6360fb03c886f58",
+        "turn_id": "turn_e41b2c715324419d92d312d60fc8a6ef",
+        "feedback_id": "feedback_95e1d5a3b28944599d391bcdb45f5545",
+        "query": "Limit those groups to participants in department DISQ. Keep the same rules: at least three participants, a direct recorded relationship between every pair, and no group contained in a larger qualifying group. Continue including the anonymous participant labels and departments.",
+        "issues": [
+          "No completed maximal-cliques result"
+        ],
+        "planning_status": "needs_information",
+        "reply": "Only one participant is in department DISQ, so no group of at least three DISQ participants can exist. Would you like the same maximal-clique list for all departments, or for a different department with at least three participants?"
+      },
+      {
+        "case_id": "sociopatterns-workplace-empty-result",
+        "repetition": 2,
+        "index": 1,
+        "session_id": "session_2e04fbfe238948d1a0bf4f15fcc796a1",
+        "turn_id": "turn_5e1de9d1a0ce45d79bb620526ccac86c",
+        "feedback_id": "feedback_cf08ab04633f417cbffd6405c088ff61",
+        "query": "In the anonymous workplace contact sample, which groups of at least three participants have a direct connection between every pair when only relationships with recorded contact_intervals equal to 0 are considered? List every such group that cannot be expanded by adding another participant while keeping every pair directly connected, and include each participant’s anonymous label and department.",
+        "issues": [
+          "No completed maximal-cliques result"
+        ],
+        "planning_status": "needs_information",
+        "reply": "The request asks for maximal cliques of size at least three using only edges with contact_intervals = 0. Inspection shows zero such edges, so the filtered graph has no edges and no qualifying groups. The formal problem is maximal clique enumeration, but the requested filter yields an empty result set. Missing: No edge in the uploaded graph has contact_intervals equal to 0; the minimum recorded value is 1, so the requested filtered graph is empty and no maximal cliques of at least three participants exist."
+      },
+      {
+        "case_id": "string-ecoli-correction-filter-reset",
+        "repetition": 2,
+        "index": 3,
+        "session_id": "session_7192dedf625b40e6981f269299610b22",
+        "turn_id": "turn_af69b85cdae94b1aa53a3bd221c43557",
+        "feedback_id": "feedback_6b72553a47a042fba3838d2237bf863c",
+        "query": "Now limit the relationships used to associations with a recorded score of exactly 0.999. Keep the previous requirements: every qualifying group of at least three proteins, a direct association between every pair, and no groups contained in larger qualifying groups. Keep the same protein identifiers and interpretation of associations.",
+        "issues": [
+          "No completed maximal-cliques result"
+        ],
+        "planning_status": "unsupported",
+        "reply": "This question needs connection costs or strengths to affect the calculation, but none of the available analyses use those values. Adding cost data would not enable that calculation. I have not run an unweighted substitute."
+      }
+    ],
+    "deployed_planning_reasoning_effort": "medium",
+    "profile_caveat": "This isolated evaluation explicitly uses planning effort none; production remains medium. Do not present these measurements as an evaluation of the deployed configuration.",
+    "runtime": ".graphmine-learning/real-world-student-runtime-v1",
+    "completed_result_checks": "All 30 result-bearing turns passed current independent operation/parameter/scope, arithmetic/membership and original-attribute checks; 28 native jobs completed, with two turns reusing verified prior results.",
+    "grading_limits": "A pass checks structured completion/capability behavior, computed results and attributes, plus nonempty visualization specifications. It does not validate every free-text limitation, domain usefulness, readability or visual quality.",
+    "failure_analysis": [
+      {
+        "category": "empty_request_not_completed",
+        "turns": 3,
+        "detail": "The workplace replies correctly describe an empty set, but return needs_information and no completed result. This is a workflow/status-contract failure, not incorrect arithmetic. A future evidence-bearing deterministic empty result should be accepted without requiring a needless kernel run."
+      },
+      {
+        "category": "filter_mistaken_for_weight_use",
+        "turns": 1,
+        "detail": "In repetition 2, filtering protein associations by score == 0.999 set requires_edge_weights=true and falsely declared pre-analysis filtering unavailable. Equality filtering does not require weighted clique computation; the same turn completed in repetition 1."
+      }
+    ],
+    "repeat_caveat": "Both repetitions score 19/21, but not on the same turns. Only 18/21 turn identities and 12/15 full scenarios pass in both. Two repetitions do not establish a reliability rate.",
+    "exit_code": 1,
+    "exit_code_reason": "The CLI correctly returned nonzero because four task-contract checks failed; the run completed all 42 scheduled turns."
+  },
+  "qualitative": {
+    "review_type": "root assistant qualitative inspection of five first-repetition turns plus verification of a repeated false claim in repetition 2; selected examples, not exhaustive, blinded or human assessment",
+    "automatic_check_passing_turns_reviewed": 6,
+    "unique_turn_identities_reviewed": 5,
+    "linked_feedback": [
+      {
+        "issue_id": "score-column-grounding",
+        "case_id": "string-ecoli-empty-result",
+        "repetition": 1,
+        "turn_index": 1,
+        "automatic_check_passed": true,
+        "feedback": {
+          "what_went_wrong": "[Qualitative assistant review; not a human or blinded grader] The numeric empty result is correct, but its displayed limitation says attributes.score has eight edges with value 0.0. The source has zero such edges and minimum score 0.705; the separate ascore column has eight zeros. This is a false factual claim in a numerically passing answer.",
+          "expected_behavior": "Say no associations match score = 0, give the verified source range and active filter, and return a clear completed empty answer. Validate factual claims in assumptions/limitations against attribute-qualified evidence; never borrow counts from another column.",
+          "turn_id": "turn_c7ea1b2c6b6a4e42b7ab74ea033e9d5c",
+          "job_id": "job_0d573dde46e841c99d5db4ef4012f6c6",
+          "result_id": "result_5396181a11264e04a66667e6e14e52b6",
+          "source": "assistant_evaluation",
+          "id": "feedback_0f5e9ed8626546f69160a14d8d117421",
+          "session_id": "session_09c3fe9edfd04fac90a6af538e7c2df2",
+          "created_at": "2026-10-03T06:22:51.250554Z"
+        }
+      },
+      {
+        "issue_id": "readable-trio-membership",
+        "case_id": "sociopatterns-workplace-exact-size",
+        "repetition": 1,
+        "turn_index": 1,
+        "automatic_check_passed": true,
+        "feedback": {
+          "what_went_wrong": "[Qualitative assistant review; not a human or blinded grader] All 37 trios are correct, but the headline says matching groups of entities, limitations expose k/clique terminology, and the group table serializes member arrays/IDs with clipped text. Departments are not readable alongside each requested trio in the default view. Only tables are offered; that is not inherently wrong for 37 overlapping groups, but the current table does not make the task easy.",
+          "expected_behavior": "Lead with 37 participant trios and a readable table containing the three participant labels and departments. Keep internal IDs/extra connection counts in details, and offer an optional selected-trio network. Do not require the user to understand cliques or inspect JSON.",
+          "turn_id": "turn_d2afe0490ba546f286915dc94ca065d3",
+          "job_id": "job_e89afd218ee84bf080f9c16ab58b3a98",
+          "result_id": "result_829ef4031c8946f3bd95fd57514491e1",
+          "source": "assistant_evaluation",
+          "id": "feedback_e352cc678c6643fdb2d46cdb6683643b",
+          "session_id": "session_1a5b7b6e702d4b4ba382d88372d42720",
+          "created_at": "2026-10-03T06:22:51.262283Z"
+        }
+      },
+      {
+        "issue_id": "domain-default-visualization",
+        "case_id": "sociopatterns-workplace-iterative-pruning",
+        "repetition": 1,
+        "turn_index": 1,
+        "automatic_check_passed": true,
+        "feedback": {
+          "what_went_wrong": "[Qualitative assistant review; not a human or blinded grader] The answer network correctly includes all 12 surviving participants and 35 contacts, and department attributes are available. However, the initial color selector defaults to type, giving all participants the same color; department coloring requires a manual choice. The default summary says entities and implementation assumptions precede the view.",
+          "expected_behavior": "Use participant vocabulary, select department coloring when the requested output includes departments, and place the concise result and readable answer view before technical details. Preserve the correct 12-node scope; showing the whole input is appropriate here because all 12 participants satisfy this question.",
+          "turn_id": "turn_e16604e3f8aa4095833762ae912a60e3",
+          "job_id": "job_a5917e9bb9d44cecb9b658696ebb8189",
+          "result_id": "result_a3d1d64d55d44a059080cd43a214f644",
+          "source": "assistant_evaluation",
+          "id": "feedback_851da841596a4d22aaca897f39872251",
+          "session_id": "session_55566277fce34b75910e663ad2a5709a",
+          "created_at": "2026-10-03T06:22:51.268535Z"
+        }
+      },
+      {
+        "issue_id": "nontechnical-protein-followups",
+        "case_id": "string-ecoli-correction-filter-reset",
+        "repetition": 1,
+        "turn_index": 1,
+        "automatic_check_passed": true,
+        "feedback": {
+          "what_went_wrong": "[Qualitative assistant review; not a human or blinded grader] The largest-group result and six-protein, 15-association network are correct and answer-focused. Yet the response uses entities, displays one-per-ID frequency breakdowns, and suggests Enumerate all maximal cliques / Compute k-core decomposition / Run community detection. These require the graph-mining knowledge the intended user should not need.",
+          "expected_behavior": "Name the six proteins, show gene name and STRING identifier as paired readable fields, keep functional-association caveats, and offer domain-language next actions backed by executable intent. Hide algorithm names and unhelpful ID histograms in details.",
+          "turn_id": "turn_f0c02282fbfd43ff91823475bff5f203",
+          "job_id": "job_6d4753aeb14644f1a518fabe449dedd7",
+          "result_id": "result_31b64972b53042bfa807316ac5d2c4aa",
+          "source": "assistant_evaluation",
+          "id": "feedback_52d743489fb54f41aa7001d744e9c778",
+          "session_id": "session_10d116e281134bdfa1a8e16eb898d233",
+          "created_at": "2026-10-03T06:22:51.275070Z"
+        }
+      },
+      {
+        "issue_id": "application-first-clarification",
+        "case_id": "string-ecoli-ambiguous-priority",
+        "repetition": 1,
+        "turn_index": 1,
+        "automatic_check_passed": true,
+        "feedback": {
+          "what_went_wrong": "[Qualitative assistant review; not a human or blinded grader] The agent correctly asks for clarification and creates no job, but the clarification explains betweenness, degree and clique/community membership and claims betweenness is the most common default. This turns an experimental-prioritization question into an algorithm choice and adds an unsupported generalization.",
+          "expected_behavior": "Ask what the experiment aims to distinguish or test, with simple options such as connections across groups versus many direct associations. Explain that associations alone do not predict experimental success. Do not require algorithm vocabulary or invent a universally preferred ranking criterion.",
+          "turn_id": "turn_af35d88b4f284c8b948f47fac90c02ee",
+          "job_id": null,
+          "result_id": null,
+          "source": "assistant_evaluation",
+          "id": "feedback_9718b383d72341838eb06fbf12f21ad8",
+          "session_id": "session_7bbe02d2ced14557b8cd8a0b4beb1d99",
+          "created_at": "2026-10-03T06:22:51.280885Z"
+        }
+      },
+      {
+        "issue_id": "score-column-grounding-repeated",
+        "case_id": "string-ecoli-empty-result",
+        "repetition": 2,
+        "turn_index": 1,
+        "automatic_check_passed": true,
+        "feedback": {
+          "what_went_wrong": "[Qualitative assistant review; not a human or blinded grader] The numeric empty result is correct, but its displayed limitation says attributes.score has eight edges with value 0.0. The source has zero such edges and minimum score 0.705; the separate ascore column has eight zeros. This is a false factual claim in a numerically passing answer. The same false explanation also occurred in repetition 1.",
+          "expected_behavior": "Say no associations match score = 0, give the verified source range and active filter, and return a clear completed empty answer. Validate factual claims in assumptions/limitations against attribute-qualified evidence; never borrow counts from another column.",
+          "turn_id": "turn_7f0bfdeb7f87447eb6619fa7bd888f57",
+          "job_id": "job_982a3fb803944186ba60049e7bb77b06",
+          "result_id": "result_2dd252f4864a4d08b4c3a8fdef131732",
+          "source": "assistant_evaluation",
+          "id": "feedback_d3f245f1962b4342a1bfdfa3270f3f8e",
+          "session_id": "session_021dc6409f5c4a4495bad3a1a20155d1",
+          "created_at": "2026-10-03T06:24:46.738549Z"
+        }
+      }
+    ],
+    "additional_failure_feedback": 4,
+    "total_saved_feedback": 10,
+    "observed_false_claim": {
+      "occurrences": 2,
+      "case_id": "string-ecoli-empty-result",
+      "statement": "attributes.score has 8 edges with value 0.0",
+      "source_zero_score_edges": 0,
+      "source_minimum_score": 0.705,
+      "source_maximum_score": 0.999,
+      "source_zero_ascore_edges": 8,
+      "mechanism_evidence": "answers.py copies planner assumptions into displayed limitations without validating their factual claims. Planner context contains the eight-zero statistic under ascore, not score; cross-column confusion is plausible, not proven internal reasoning."
+    },
+    "positive_observations": [
+      "Three real saved answers render offline with no HTTP(S) resource requests.",
+      "The protein largest-group network contains only the six returned proteins and 15 associations, with original gene labels.",
+      "Workplace department metadata survives execution and works as a selectable color field; its default selection is unhelpful type, not missing data.",
+      "The marked record-text injection did not alter the requested operation or computed memberships in either trial; this is a limited two-trial check, not a general security guarantee."
+    ],
+    "limitations": "Assistant inspection of selected examples, not blinded grading or a domain-user study. Correct computations and working rendering do not imply good explanations."
+  },
+  "browser_samples": [
+    {
+      "case_id": "sociopatterns-workplace-exact-size",
+      "turn_index": 1,
+      "network_views": 0,
+      "table_views": 2,
+      "external_requests": [],
+      "artifacts": [
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_1a5b7b6e702d4b4ba382d88372d42720/reviews/answer.html",
+          "sha256": "ec439abf8423f20900c1fa3976b1e2d7e134aa813d6b099cb1f04f0a40270566"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_1a5b7b6e702d4b4ba382d88372d42720/reviews/answer.png",
+          "sha256": "95a4615137c2f80bafd16656185f05c065f6fff6e6c79ef93a22bc69693baaa5"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_1a5b7b6e702d4b4ba382d88372d42720/reviews/browser.json",
+          "sha256": "427066d837c2dc8906faa3c2a17f75a10781048aae49c0fab515408eb1f111a5"
+        }
+      ]
+    },
+    {
+      "case_id": "sociopatterns-workplace-iterative-pruning",
+      "turn_index": 1,
+      "network_views": 1,
+      "table_views": 1,
+      "external_requests": [],
+      "artifacts": [
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_55566277fce34b75910e663ad2a5709a/reviews/answer.html",
+          "sha256": "5fea916c74d78e858cf710ad268f34656d38ee0fa81bf9c4e2a6e9d320b933bf"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_55566277fce34b75910e663ad2a5709a/reviews/answer.png",
+          "sha256": "bfe734a42b803e773cea5c7350b05ce081b669f2a487d9dc34946abd9afddeb1"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_55566277fce34b75910e663ad2a5709a/reviews/browser.json",
+          "sha256": "e72054325efcbcc9097f2b60e0317f18a308e5ba423d69ed7a07db45770de0bc"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_55566277fce34b75910e663ad2a5709a/reviews/network-browser.json",
+          "sha256": "a012366ced1d67e8cbade6a13c513fd83000411af4e100ef62c1ad708c048a12"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_55566277fce34b75910e663ad2a5709a/reviews/network-detail.png",
+          "sha256": "0e0f450ca956920cb09263133ebc5560f3aee9d47bed096bbb50d354167e7457"
+        }
+      ]
+    },
+    {
+      "case_id": "string-ecoli-correction-filter-reset",
+      "turn_index": 1,
+      "network_views": 1,
+      "table_views": 2,
+      "external_requests": [],
+      "artifacts": [
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_10d116e281134bdfa1a8e16eb898d233/reviews/answer.html",
+          "sha256": "4ae0d89b3173cf0203e97359aaf0a4da9bb0f24ef7982a5a792b5cfe5a1fb3dc"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_10d116e281134bdfa1a8e16eb898d233/reviews/answer.png",
+          "sha256": "4862745dd6092382871b5192bc00d1f80e35d0bebe734069946d39c0b2a2a18b"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_10d116e281134bdfa1a8e16eb898d233/reviews/browser.json",
+          "sha256": "c730a50129ebb622f3a3308038d1d98a87e1f82857f1166dd7c7703b4e18e5b2"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_10d116e281134bdfa1a8e16eb898d233/reviews/network-browser.json",
+          "sha256": "01e606b18cfed63d7cbe1d6d5a0b0a65e0ca73bd366deeb75eb60e7279d48c11"
+        },
+        {
+          "path": ".graphmine-learning/real-world-student-runtime-v1/history/session_10d116e281134bdfa1a8e16eb898d233/reviews/network-detail.png",
+          "sha256": "3ad6c0d5238cf873e83bae76fa0ccce17510dd9c0d54a3ae4862d0be3015b62a"
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "python": {
+      "command": ".venv/bin/pytest agent/tests -q",
+      "passed": 199,
+      "warnings": 1,
+      "seconds": 15.28,
+      "warning": "Existing Starlette TestClient/httpx deprecation warning."
+    },
+    "browser": {
+      "command": ".venv/bin/pytest agent/browser_tests -q",
+      "passed": 2,
+      "seconds": 27.97,
+      "scope": "UI regression fixtures use fake model/native outputs; separate real-answer browser inspections are listed above."
+    },
+    "lint": "Ruff check passed for three real-world modules, learning CLI and new tests.",
+    "formatting": "Ruff format --check passed for those five files.",
+    "whitespace": "git diff --check passed.",
+    "source_verification": {
+      "graphs": 4,
+      "cases": 30,
+      "verified": true
+    },
+    "live_service": {
+      "status": "ready",
+      "api_pid": 3935693,
+      "model_pid": 3498391,
+      "restarted": false,
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    "screen_inspection_note": "An initial manual browser wait incorrectly expected a network on a table-only trio answer; it was replaced with a wait for the actual offline answer. No application fix was made to manufacture a passing screenshot."
+  },
+  "next_steps": [
+    {
+      "priority": "P0",
+      "task": "Validate all displayed factual claims, including planner assumptions and limitations, against attribute-qualified evidence.",
+      "acceptance": "The repeated zero-score falsehood is blocked even with correct numeric output."
+    },
+    {
+      "priority": "P0",
+      "task": "Complete valid empty requests with a source-bound structured result or verified deterministic empty proof.",
+      "acceptance": "No unnecessary clarification; filters remain explicit and later resets work."
+    },
+    {
+      "priority": "P0",
+      "task": "Separate supported pre-analysis attribute filtering from unsupported numeric weight use.",
+      "acceptance": "score == 0.999 filtering works in repeated trials; using score as route length is still correctly refused."
+    },
+    {
+      "priority": "P1",
+      "task": "Use domain names, readable attribute columns, relevant color defaults and executable plain-language follow-ups.",
+      "acceptance": "Browser checks and domain users can locate and understand the requested answer without algorithm terminology."
+    },
+    {
+      "priority": "P1",
+      "task": "Repair community cards, add short messy application goals and clarification replies, broaden source/family holdouts and cascade cases.",
+      "acceptance": "Recalibrate before replacement generation; keep the current airport holdout unused until configuration is frozen."
+    },
+    {
+      "priority": "P2",
+      "task": "Measure larger graphs, pagination, cancellation, concurrency and end-to-end latency.",
+      "acceptance": "Do not infer scale from 12-node exact-check graphs or GPU runtime alone."
+    },
+    {
+      "priority": "After application fixes",
+      "task": "Generate executable, independently checked synthetic training candidates from failure categories; compare prompt/retrieval/stronger-planner baselines against task-specific adaptation.",
+      "acceptance": "Separate graph/workflow/source holdouts, repeated trials and sampled human validation; no automatic export of real-data evaluation cases."
+    }
+  ],
+  "artifacts": {
+    "real-world-corpus-v4/manifest.json": {
+      "path": ".graphmine-learning/real-world-corpus-v4/manifest.json",
+      "sha256": "fe0599b47dd38c2858135fe97917b9fe0ee3cf273fc770f05d243f3d3cf3ea3c"
+    },
+    "real-world-questions-v1/questions.json": {
+      "path": ".graphmine-learning/real-world-questions-v1/questions.json",
+      "sha256": "6ba5cba887420428cc5a8bac1abfc4b16497c76e26f5c9a52a74fc35c303611f"
+    },
+    "real-world-questions-v2/questions.json": {
+      "path": ".graphmine-learning/real-world-questions-v2/questions.json",
+      "sha256": "6f7e04827973220b520b352b37233017016d9f5f288c096164509a04054d04a5"
+    },
+    "real-world-native-v1.json": {
+      "path": ".graphmine-learning/real-world-native-v1.json",
+      "sha256": "28803df1d42726fb11d9be3e8641ceddc86108229014b5d12e0e18e013a6d0c9"
+    },
+    "real-world-native-v3.json": {
+      "path": ".graphmine-learning/real-world-native-v3.json",
+      "sha256": "d7e2cc73d3851dc07e6a026da26b2ebeec9aa44cff96fefc3ba80af512770739"
+    },
+    "real-world-student-v1.json": {
+      "path": ".graphmine-learning/real-world-student-v1.json",
+      "sha256": "8d4d92063e71a89b0ef36ac775d29f3b3d5d0d12ebb53ec529f489c0d97f2166"
+    },
+    "real-world-qualitative-v1.json": {
+      "path": ".graphmine-learning/real-world-qualitative-v1.json",
+      "sha256": "a3727deebe71092315ddb82555817efa4ac03864587fea434cb451f5befc394a"
+    },
+    "real-world-qualitative-v2.json": {
+      "path": ".graphmine-learning/real-world-qualitative-v2.json",
+      "sha256": "b4337d0facfe2f6c103b69c878572391684e0d9b35079c6bf814215ab68b88af"
+    }
+  },
+  "methodological_references": [
+    {
+      "title": "OpenAI evaluation best practices",
+      "url": "https://developers.openai.com/api/docs/guides/evaluation-best-practices",
+      "influence": "Task-specific evaluations, calibrated graders, repeated trials and separation of automated scores from human judgment."
+    },
+    {
+      "title": "Codex non-interactive mode",
+      "url": "https://learn.chatgpt.com/docs/non-interactive-mode",
+      "influence": "Existing authenticated CLI workflow with structured output; no credential copying or API-key fallback."
+    }
+  ],
+  "non_claims": [
+    "No weights trained, no new model deployed and no production restart.",
+    "No held-out accuracy, large-graph scalability or population-level finding is established.",
+    "Public datasets may already be familiar to pretrained models; whole-source separation only describes this workflow.",
+    "Most accepted prompts express explicit mathematical requirements in plain language. They do not yet show successful handling of underspecified real user goals.",
+    "The native community checks do not validate the quarantined stronger user-language guarantee.",
+    "Source licenses/attribution are recorded; redistribution or future training requires a separate data-use review.",
+    "No need for manual authoring of every example does not mean correctness can be guaranteed without validation."
+  ]
+}

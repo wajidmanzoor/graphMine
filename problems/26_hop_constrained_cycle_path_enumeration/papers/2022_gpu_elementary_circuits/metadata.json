@@ -1,0 +1,16 @@
+{
+  "paper_id": "2022_gpu_elementary_circuits",
+  "title": "Fast parallel algorithms for finding elementary circuits of a directed graph: a GPU-based approach",
+  "year": 2022,
+  "venue": "The Journal of Supercomputing",
+  "doi": "10.1007/s11227-022-04835-3",
+  "publication_url": "https://link.springer.com/article/10.1007/s11227-022-04835-3",
+  "pdf_url": null,
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "BFS-based GPU exploration (V-FEC/T-FEC) enumerating all elementary circuits of a directed graph, reporting up to 190x speedup over Johnson's algorithm.",
+  "notes": "Publisher page is paywalled; no open PDF or public code repository was located during this pass.",
+  "problem_id": "hop_constrained_cycle_path_enumeration",
+  "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+  "research_cutoff": "2026-09-30"
+}

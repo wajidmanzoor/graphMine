@@ -86,10 +86,30 @@ class Catalog:
             raise CatalogError("unsupported program instruction schema")
         if self.domain_catalog.get("schema_version") != "1.0.0":
             raise CatalogError("unsupported domain profile schema")
-        if len(self.problems) != 20:
-            raise CatalogError(
-                f"expected 20 problem definitions, found {len(self.problems)}"
-            )
+        scope = self.global_catalog.get("scope", {})
+        collections = (
+            ("problems", self.problems, self.global_catalog.get("problems", [])),
+            (
+                "manifest operations",
+                self.manifest_operations,
+                self.manifest.get("operations", []),
+            ),
+            (
+                "catalog operations",
+                self.catalog_operations,
+                self.global_catalog.get("operations", []),
+            ),
+            (
+                "instructions",
+                self.instructions,
+                self.program_instructions.get("operations", []),
+            ),
+        )
+        for label, indexed, records in collections:
+            if not indexed or len(indexed) != len(records):
+                raise CatalogError(f"{label} must contain nonempty, unique IDs")
+        if len(self.problems) != scope.get("catalog_problem_count"):
+            raise CatalogError("problem count differs from the declared catalog scope")
 
         operation_sets = {
             "manifest": set(self.manifest_operations),
@@ -104,9 +124,11 @@ class Catalog:
                 raise CatalogError(
                     f"{label} operation set differs; missing={missing}, extra={extra}"
                 )
-        if len(expected) != 13:
+        if len(expected) != scope.get("runnable_operation_count") or len(
+            expected
+        ) != self.manifest.get("scope", {}).get("runnable_operation_count"):
             raise CatalogError(
-                f"expected 13 runnable operations, found {len(expected)}"
+                "operation count differs from the declared catalog scope"
             )
 
         for operation_id in sorted(expected):
@@ -125,6 +147,9 @@ class Catalog:
             problem_id = next(iter(problem_ids))
             if problem_id not in self.problems:
                 raise CatalogError(f"unknown problem {problem_id} for {operation_id}")
+            support = self.problems[problem_id]["library_support"]
+            if not support["available"] or operation_id not in support["operation_ids"]:
+                raise CatalogError(f"missing problem support for {operation_id}")
             manifest_backends = set(manifest["backends"])
             catalog_backends = set(catalog["backends"])
             if manifest_backends != catalog_backends:
@@ -141,6 +166,52 @@ class Catalog:
                 # Nested path notation differs for graph motifs; its top-level
                 # output is intentionally represented as the motifs array.
                 raise CatalogError(f"required output mismatch for {operation_id}")
+
+        backend_count = sum(
+            len(item["backends"]) for item in self.manifest_operations.values()
+        )
+        if backend_count != scope.get(
+            "validated_backend_count"
+        ) or backend_count != self.manifest["scope"].get("validated_backend_count"):
+            raise CatalogError("backend count differs from the declared catalog scope")
+        for problem_id, record in self.problems.items():
+            actual = {
+                op_id
+                for op_id, op in self.manifest_operations.items()
+                if op["research_problem_id"] == problem_id
+            }
+            support = record["library_support"]
+            if (
+                set(support["operation_ids"]) != actual
+                or bool(actual) != support["available"]
+            ):
+                raise CatalogError(f"inconsistent operation support for {problem_id}")
+        supported_ids = {
+            problem_id
+            for problem_id, record in self.problems.items()
+            if record["library_support"]["available"]
+        }
+        if (
+            len(supported_ids) != scope.get("library_supported_problem_count")
+            or len(self.problems) - len(supported_ids)
+            != scope.get("library_unsupported_problem_count")
+            or len(supported_ids)
+            != self.manifest["scope"].get("research_problem_count")
+        ):
+            raise CatalogError(
+                "supported problem count differs from the declared scope"
+            )
+        embedded = self.manifest.get("included_problem_specs", [])
+        if (
+            len(embedded) != len(supported_ids)
+            or {entry["spec"]["problem_id"] for entry in embedded} != supported_ids
+        ):
+            raise CatalogError(
+                "manifest must embed every supported problem exactly once"
+            )
+        for entry in embedded:
+            if entry["spec"] != self.problems[entry["spec"]["problem_id"]]["spec"]:
+                raise CatalogError("manifest and catalog problem specifications differ")
 
         if "general" not in self.domains:
             raise CatalogError("domain profiles require a general fallback")
@@ -193,7 +264,13 @@ class Catalog:
                     "domain_relevant": problem_id in domain.relevant_problem_ids,
                 }
             )
-        return {"domain": domain.model_dump(mode="json"), "problems": problems}
+        return {
+            "contract_version": self.global_catalog.get("routing", {}).get(
+                "contract_version", "legacy-20"
+            ),
+            "domain": domain.model_dump(mode="json"),
+            "problems": problems,
+        }
 
     def operation_context(self, operation_id: str) -> dict[str, Any]:
         operation = self.operation(operation_id)

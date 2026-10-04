@@ -1,0 +1,6 @@
+{
+  "name": "graphmine-answer-views",
+  "private": true,
+  "scripts": {"build": "node build.mjs"},
+  "dependencies": {"cytoscape": "3.34.3"}
+}

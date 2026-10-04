@@ -1,0 +1,73 @@
+{
+  "phase": "failed",
+  "started_at": "2026-10-03T20:27:03.951170+00:00",
+  "source_sha256": "8330709b81f72057a77a73076e0185cf5df6de2d1d8d1555542c6d19d98277d1",
+  "suite_sha256": "b90978bb034b098254b29be3dd2e4a5416a26782a87247c01fa12875576b977b",
+  "scope": "Plan-only supplied-file gate check using saved adapter routing responses and live unchanged FP8 planning. No fresh adapter predictions, native execution, or model-accuracy claim.",
+  "holdout_consumed": false,
+  "rows": [
+    {
+      "id": "retention-v1-general-dynamic-triangle-counting",
+      "passed_supplied_input_gate": true,
+      "graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "auxiliary_sha256": "732c3ae4d00f8a58073c19398155845e1c0690ea8498905323215ed335c0c851",
+      "auxiliary_file_id": "file_6065b8e2345a4af081b812c4492f3bb9",
+      "route_source_sha256": "898554e4726244952d7451310c86f660ec5240034ad5a9976c69014f7f99735b",
+      "routing_payload_has_file_inventory": false,
+      "replayed_route_calls": 1,
+      "job_ids": [],
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-auxiliary-positive-v1/retention-v1-general-dynamic-triangle-counting/history/session_7698578391a14848a4e397261e824553",
+      "outcome": {
+        "query": "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
+        "response": {
+          "mode": "planner",
+          "message": "The analysis is ready (1 step).",
+          "planning_status": "ready",
+          "plan": {
+            "schema_version": "1.0.0",
+            "session_id": "session_7698578391a14848a4e397261e824553",
+            "graph_id": "file_476d283aeb714f8a8440502bee5c12a4",
+            "problem_id": "triangle_counting_listing",
+            "operation_id": "dynamic-triangle-counting",
+            "backend_id": "auto",
+            "parameters": {},
+            "optional_outputs": [],
+            "auxiliary_inputs": {
+              "updates": [
+                "file_6065b8e2345a4af081b812c4492f3bb9"
+              ]
+            },
+            "allow_directed_projection": false,
+            "collect_statistics": true,
+            "missing_inputs": [],
+            "rationale": "Dynamic triangle counting with the supplied updates file yields inserted, deleted, and net counts as required outputs.",
+            "application_intent": {
+              "objective": "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
+              "entity_type": "employee",
+              "relationship_meaning": "worked on a project together",
+              "filters": [],
+              "filter_mode": "replace",
+              "requires_edge_weights": false,
+              "weight_attribute": null,
+              "weight_usage": null,
+              "requires_direction": false,
+              "pattern_vertex_count": null,
+              "pattern_edges": [],
+              "time_unit": "unspecified",
+              "time_window": null,
+              "assumptions": []
+            }
+          },
+          "interpretation": null,
+          "interpretation_source": null,
+          "job_id": null,
+          "result_id": null,
+          "turn_id": "turn_342f730d02d54c89ae7f525c693a6590",
+          "feedback_id": null,
+          "job_ids": []
+        }
+      }
+    }
+  ],
+  "error": "ClientError: graph schema validation failed: $: Additional properties are not allowed ('schema_version' was unexpected)"
+}

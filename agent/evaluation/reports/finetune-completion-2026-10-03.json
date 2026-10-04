@@ -1,0 +1,16 @@
+{
+  "created_at": "2026-10-03T17:58:17.045281+00:00",
+  "run": ".graphmine-learning/finetune-qwen27b-v3",
+  "completed_steps": 48,
+  "expected_steps": 48,
+  "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+  "adapter_bytes": 467047680,
+  "tensor_count": 992,
+  "nonfinite_tensors": [],
+  "nonzero_lora_B_tensors": 496,
+  "lora_B_tensor_count": 496,
+  "run_config_verified": true,
+  "training_export_verified": true,
+  "runtime_prompt_matches_training": true,
+  "deployed": false
+}

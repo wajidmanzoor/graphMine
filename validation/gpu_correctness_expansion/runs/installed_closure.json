@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/bin/graphmine",
+    "run",
+    "transitive-closure",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/library/closure_dag.json",
+    "--worker-directory",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/libexec/graphmine"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.3147226311266422,
+  "exit_code": 0,
+  "log": "runs/installed_closure.log",
+  "stdin_path": null,
+  "timeout": false
+}

@@ -1,0 +1,16 @@
+ECL-SGB signed graph balancing code for signed social network graphs (/home/wajid/projects/graphDatabaseAgent/problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/code/src/ECL-SGB.cu)
+Copyright 2026 Texas State University
+verification: off
+input: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_sgb/positive_triangle.csv
+  read 4 lines
+nodes: 3
+edges: 6
+input reading time: 0.000036 s
+gpu: NVIDIA RTX 6000 Ada Generation with 142 SMs and 1536 mTpSM (2505.0 MHz and 10001.0 MHz)
+init time:  0.004691 s
+total time spent generating trees: 0.000542 s
+total time spent marking tree edges: 0.000303 s
+total time spent calculating path signs: 0.000182 s
+total time spent processing cycles: 0.000100 s
+total time spent finding majority (Harary Cut): 0.000571 s
+overall runtime after init: 0.002408 s

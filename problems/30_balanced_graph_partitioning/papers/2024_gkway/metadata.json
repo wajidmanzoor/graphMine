@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_gkway",
+  "title": "G-kway: Multilevel GPU-Accelerated k-way Graph Partitioner using Task Graph Parallelism",
+  "year": 2024,
+  "venue": "ACM/IEEE DAC 2024 (journal version: ACM TODAES 2025)",
+  "doi": "10.1145/3649329.3656238",
+  "publication_url": "https://doi.org/10.1145/3649329.3656238",
+  "pdf_url": "https://tsung-wei-huang.github.io/papers/2024-DAC-gkway.pdf",
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "Multilevel GPU k-way graph partitioner with union-find-based coarsening, independent-set-based refinement, and CUDA-Graph-accelerated uncoarsening; 8.6x/3.8x speedup over CPU/GPU baselines.",
+  "notes": "No public repository was located; the paper and secondary citations reference a GitHub release without a resolvable URL during this pass.",
+  "problem_id": "balanced_graph_partitioning",
+  "problem_dir": "30_balanced_graph_partitioning",
+  "research_cutoff": "2026-09-30"
+}

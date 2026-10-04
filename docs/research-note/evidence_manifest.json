@@ -1,0 +1,383 @@
+{
+  "created_at": "2026-10-04T03:08:52.929782+00:00",
+  "purpose": "Evidence index for graphmine.tex; source/report reads and document build only. No new model, training, or native experiment was run.",
+  "repository_head": "d2c2c128a131e21d6e984db82c1a973ded80d6d8",
+  "working_tree_had_preexisting_changes": true,
+  "privacy": "No API token, private environment file, or user conversation is included.",
+  "external_references": [
+    "https://arxiv.org/abs/2106.09685",
+    "https://arxiv.org/abs/2305.14314"
+  ],
+  "selected_facts": {
+    "catalog_scope": {
+      "catalog_problem_count": 20,
+      "library_supported_problem_count": 12,
+      "library_unsupported_problem_count": 8,
+      "runnable_operation_count": 13,
+      "validated_backend_count": 26,
+      "passing_validation_workload_count": 24,
+      "operation_count_note": "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations."
+    },
+    "business_data_rows": {
+      "train": 180,
+      "validation": 68
+    },
+    "business_optimizer_steps": 45,
+    "business_trainable_parameters": 116727808,
+    "business_parameter_fraction_percent": 0.43212153717706764,
+    "business_peak_allocated_gib": 26.57590913772583,
+    "business_strict_scores": {
+      "base_nf4": {
+        "passed": 99,
+        "total": 124
+      },
+      "adapter_nf4": {
+        "passed": 118,
+        "total": 124
+      }
+    },
+    "business_reviewed_scores": {
+      "base_nf4": {
+        "passed": 113,
+        "total": 124
+      },
+      "adapter_nf4": {
+        "passed": 118,
+        "total": 124
+      }
+    },
+    "business_reviewed_pairing": {
+      "both_pass": 112,
+      "improved": 6,
+      "both_fail": 5,
+      "regressed": 1
+    },
+    "business_review_caution": "Grading corrections were defined after inspecting early test outputs. Original scores and raw outputs are preserved. This is not an untouched final benchmark or complete-agent validation."
+  },
+  "files": [
+    {
+      "path": ".graphmine-learning/business-curriculum-v1/audit.json",
+      "bytes": 238538,
+      "sha256": "eaa3c3e1c9c95bcaf3e495e01b2f4c56e972d01693e707097f0bb0d76aa61b8a"
+    },
+    {
+      "path": ".graphmine-learning/business-curriculum-v1/manifest.json",
+      "bytes": 1332514,
+      "sha256": "927249e4becbf0a758a241c507760eafaef37ddb031a02572ac6ae52f6934f2a"
+    },
+    {
+      "path": ".graphmine-learning/business-routing-data-v1/provenance.json",
+      "bytes": 134360,
+      "sha256": "ca1d059a7e1fbc2eb2603ffbcd2a1430e7f457b033b2abe7db0df78df546c963"
+    },
+    {
+      "path": ".graphmine-learning/finetune-corpus-v2/manifest.json",
+      "bytes": 1242097,
+      "sha256": "13e8bea1bba99d511b2261eb096f1340d3825469f6c90b2d740053a27318d5a0"
+    },
+    {
+      "path": ".graphmine-learning/finetune-native-v1.json",
+      "bytes": 1225139,
+      "sha256": "3db1114c6a18e4da69a512b0e609e538e9e33417f5e3fc16f965b75f4b004fbf"
+    },
+    {
+      "path": ".graphmine-learning/finetune-qwen27b-business-v1/adapter/adapter_config.json",
+      "bytes": 1414,
+      "sha256": "2b2c3d954aad0cc80c4340da0edac3ad3b5996d1ef9b5663b530586af9ea8072"
+    },
+    {
+      "path": ".graphmine-learning/finetune-qwen27b-business-v1/metrics.jsonl",
+      "bytes": 6698,
+      "sha256": "876c205957d7e07184b8101ef94c7f8f02119491faa038ffb3c62ba887685739"
+    },
+    {
+      "path": ".graphmine-learning/finetune-qwen27b-business-v1/run.json",
+      "bytes": 5084,
+      "sha256": "72987c753a64af782a67f7e0a24677b8d0180119a475a5627616962d1a05adfd"
+    },
+    {
+      "path": ".graphmine-learning/finetune-qwen27b-business-v1/status.json",
+      "bytes": 1322,
+      "sha256": "8a933bb7d4ad4a17943a2f97e974a56c930316f041269b71c3a4eaa054ee88da"
+    },
+    {
+      "path": ".graphmine-learning/finetune-qwen27b-v3/metrics.jsonl",
+      "bytes": 7034,
+      "sha256": "af9a82c83237ee5a948d253c383e454574e066e8b904db6721c92114c3df16e3"
+    },
+    {
+      "path": ".graphmine-learning/finetune-qwen27b-v3/run.json",
+      "bytes": 5084,
+      "sha256": "1e9f29970377e0a71b115aaa6d2d70870ac95046801f70908f9244a45a2082b5"
+    },
+    {
+      "path": ".graphmine-learning/finetune-qwen27b-v3/status.json",
+      "bytes": 1302,
+      "sha256": "db6f8283449d162f7fc7588dfae2fafa1b9714894672bf30315866c3228cec73"
+    },
+    {
+      "path": "agent/IMPROVEMENT_PLAN.md",
+      "bytes": 55494,
+      "sha256": "5b6c4d3b4ca47b4f326436745b4ffc9d318286e61835e8405397fc8f9ba5b7fa"
+    },
+    {
+      "path": "agent/README.md",
+      "bytes": 23222,
+      "sha256": "67c37f249422d782608508df88fee57cb4ce8a82abb9dd03ca2d6e5c942dcc60"
+    },
+    {
+      "path": "agent/evaluation/FINETUNING_PROGRESS.md",
+      "bytes": 65010,
+      "sha256": "bbe0d87f864138a89093d68b0644d261f4c1d95c97eb824393307106007095d0"
+    },
+    {
+      "path": "agent/evaluation/reports/adapter-business-fp8-review-2026-10-03.json",
+      "bytes": 325517,
+      "sha256": "10c4eed72e2762e9b9813aee822170edf5a89a47813746639d5cd76e3a38c49e"
+    },
+    {
+      "path": "agent/evaluation/reports/adapter-business-new-review-v1.json",
+      "bytes": 619802,
+      "sha256": "6065e664cdad1a5a0f8f5ae4a0c404998c1a7aeacbeb16e719d886af927789f1"
+    },
+    {
+      "path": "agent/evaluation/reports/adapter-challenge-review-2026-10-03.json",
+      "bytes": 755766,
+      "sha256": "a0c6717035cefac67939ec54f0933e3be4f15a463ef16f983479a5a042532fe8"
+    },
+    {
+      "path": "agent/evaluation/reports/adapter-realworld-comparison-2026-10-03.json",
+      "bytes": 11902,
+      "sha256": "48c03f1589a6f25dfa368457313ce4389a9298e6366995bb473c84ee7a92009c"
+    },
+    {
+      "path": "agent/evaluation/reports/adapter-realworld-numeric-filter-audit-2026-10-03.json",
+      "bytes": 2816,
+      "sha256": "1b9ddffcf7d134df9eac3d62b66ac1a45f6a8e410f586ddffb6c34ed42269efc"
+    },
+    {
+      "path": "agent/evaluation/reports/adapter-test-review-2026-10-03.json",
+      "bytes": 969064,
+      "sha256": "374272976713995f38acfa432be2b7c1314c1227c9742a76493fb5090e3f1b8d"
+    },
+    {
+      "path": "agent/evaluation/reports/adapter-workflow-comparison-2026-10-03.json",
+      "bytes": 14344,
+      "sha256": "e7f9049eebfc9b26a24eab7ae7aae44186d7a973c194305c91a69c6dca505f9e"
+    },
+    {
+      "path": "agent/evaluation/reports/business-finetune-completion-2026-10-03.json",
+      "bytes": 3028,
+      "sha256": "c1071f14dd55299698b1f6110f78b2cf57ef80005fffed821e955ebdfb355eea"
+    },
+    {
+      "path": "agent/evaluation/reports/business-payment-regression-replay-v1.json",
+      "bytes": 67583,
+      "sha256": "a29ca726319f1f781989eeffefbcf8c4ae011adc3a9096c41399ac01d63f5254"
+    },
+    {
+      "path": "agent/evaluation/reports/business-question-curriculum-2026-10-03.json",
+      "bytes": 9040,
+      "sha256": "75b930554b21c8d5ff70fc7daf003e0d9bc914f6b6b9e39da99c463d78c828a4"
+    },
+    {
+      "path": "agent/evaluation/reports/business-routing-change-audit-v1.json",
+      "bytes": 8824,
+      "sha256": "c7b3c8292751a54bbfa13e18be9371a2c195b78d9cdb6f603015b19ba7949f04"
+    },
+    {
+      "path": "agent/evaluation/reports/business-workflows-fp8-review-2026-10-03.json",
+      "bytes": 30466,
+      "sha256": "40f4e6613bfac0025e8522862ffc4daf453368b75ba4c44836b60d63c476ce81"
+    },
+    {
+      "path": "agent/evaluation/reports/finetune-completion-2026-10-03.json",
+      "bytes": 518,
+      "sha256": "5faf6ab75facee69fb78388fd24b19f3eaab4bb5b23424da494b4530587cb7e8"
+    },
+    {
+      "path": "agent/evaluation/reports/finetuning-user-stop-2026-10-03.json",
+      "bytes": 11452,
+      "sha256": "83d5a68d3e0a67544bbfce8f4b055b03a06e7b346b4125a595f0a0048b80f242"
+    },
+    {
+      "path": "agent/evaluation/reports/pilot-deployment-2026-10-04.json",
+      "bytes": 6823,
+      "sha256": "11bdba74b00191c73c33a2d88a5c433ea42a58064647be7e39be11890212e374"
+    },
+    {
+      "path": "agent/graphmine_agent/adapter_server.py",
+      "bytes": 3882,
+      "sha256": "13900db7aaf3f7f4977cffa85463e7e4e022529e7e04c9653c80bc38658fc92a"
+    },
+    {
+      "path": "agent/graphmine_agent/agent_service.py",
+      "bytes": 44046,
+      "sha256": "f436f830dc6270e0bdfe5e4d520523fdebaa8ea91e96a6586a45e5315a87b8e4"
+    },
+    {
+      "path": "agent/graphmine_agent/answers.py",
+      "bytes": 23472,
+      "sha256": "49f82005c8d0e37c8fb9d667e27bc6cb368f8918eed6a1089f6a7e96bb620c36"
+    },
+    {
+      "path": "agent/graphmine_agent/api.py",
+      "bytes": 24233,
+      "sha256": "20ac7cbb85ca13fdb0b14c1235ca540c47f1befb7a2683c875f839ebc2b1b6f2"
+    },
+    {
+      "path": "agent/graphmine_agent/commands.py",
+      "bytes": 3926,
+      "sha256": "813daf252972df4a671aa2b1114daa2269e28a579e306680fbc112c649b46fc2"
+    },
+    {
+      "path": "agent/graphmine_agent/config.py",
+      "bytes": 6976,
+      "sha256": "fcf42c40cd942654105d4d245564a73ea2e1a867aecaf085f287b6b99eedae96"
+    },
+    {
+      "path": "agent/graphmine_agent/database.py",
+      "bytes": 20616,
+      "sha256": "8b1ca325e718867bdb17405c2486e2bec54ea7e029d5259520fa341b3d113e69"
+    },
+    {
+      "path": "agent/graphmine_agent/execution.py",
+      "bytes": 15185,
+      "sha256": "68bb3ea000cd33f852715fec0d815ab9a1b0b329cad044b1b86b711ad56d1093"
+    },
+    {
+      "path": "agent/graphmine_agent/graph_context.py",
+      "bytes": 9177,
+      "sha256": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0"
+    },
+    {
+      "path": "agent/graphmine_agent/graph_store.py",
+      "bytes": 21452,
+      "sha256": "553bff60b714eb7ce9aac94fbc1a32e8a3794258359a9ac5595abc52a3686785"
+    },
+    {
+      "path": "agent/graphmine_agent/history.py",
+      "bytes": 13049,
+      "sha256": "b17c8f3253cddca2496269955341a7520e1caa17a9d32d97fb2dbbd1139a0c06"
+    },
+    {
+      "path": "agent/graphmine_agent/jobs.py",
+      "bytes": 11631,
+      "sha256": "049a7eb9f18ca63ee229c58e0f79a3915f6947bc9cb438162c2726e9c1642193"
+    },
+    {
+      "path": "agent/graphmine_agent/learning/adapter_eval.py",
+      "bytes": 30511,
+      "sha256": "7746a5a21eff011159112d2446795d6d01f150ff01d6e77ef9172d03b63713f4"
+    },
+    {
+      "path": "agent/graphmine_agent/learning/adapter_workflows.py",
+      "bytes": 15330,
+      "sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40"
+    },
+    {
+      "path": "agent/graphmine_agent/learning/business_curriculum.py",
+      "bytes": 14803,
+      "sha256": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e"
+    },
+    {
+      "path": "agent/graphmine_agent/learning/business_questions.py",
+      "bytes": 29272,
+      "sha256": "be434b7d19de01af6fb1efa6d0a7d440a8cb2145b064695b11870f57b0e18c91"
+    },
+    {
+      "path": "agent/graphmine_agent/learning/finetune.py",
+      "bytes": 20445,
+      "sha256": "94321639fc9ce6328f1057427cfea3716d231dc87f0a0b038b1412a279291a53"
+    },
+    {
+      "path": "agent/graphmine_agent/learning/oracles.py",
+      "bytes": 14535,
+      "sha256": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+    },
+    {
+      "path": "agent/graphmine_agent/llm.py",
+      "bytes": 32544,
+      "sha256": "a6b2bace1f017b183114be66641cf2efdf1d2bb05044631adea21f927fe28105"
+    },
+    {
+      "path": "agent/graphmine_agent/models.py",
+      "bytes": 16822,
+      "sha256": "bb8d256792e65f089df277ddf04940287c2d0c8c8e22fbf47ca11f7291e4fba5"
+    },
+    {
+      "path": "agent/graphmine_agent/planning.py",
+      "bytes": 18215,
+      "sha256": "4caa6566d0dd7026088fc5f2ab7b80e7808c5c1df2cf7eb1a8727302e4c338f7"
+    },
+    {
+      "path": "agent/graphmine_agent/presentation.py",
+      "bytes": 4758,
+      "sha256": "b7e07b96a3cacd3b763d871fc59d546d40f4ce6ed429b46bb5b41f7321cba07e"
+    },
+    {
+      "path": "agent/graphmine_agent/selector.py",
+      "bytes": 7525,
+      "sha256": "e854b4bc63f089b70997fefb00cfa0958811f73130a2a5682bd4cb5708b4bdd9"
+    },
+    {
+      "path": "agent/graphmine_agent/static/app.js",
+      "bytes": 55863,
+      "sha256": "e5c4cf0841a0a325787392f525c24c320acf9a7baa346210681021e177e8cdf2"
+    },
+    {
+      "path": "agent/graphmine_agent/static/index.html",
+      "bytes": 12114,
+      "sha256": "aa27129dd47da6e797118712fcbbba5fb2b8fae7421b8c647ebf9ba1ead2ae7f"
+    },
+    {
+      "path": "deploy/README.md",
+      "bytes": 9888,
+      "sha256": "d69492c4a91917429257b46f05ff964b4105284507b9989d11ec6aff73df0b1c"
+    },
+    {
+      "path": "deploy/start-agent.sh",
+      "bytes": 296,
+      "sha256": "3f12bfaa89fbeed926f5fb218e5a89d5955ecb95f34c41bab9046860de266334"
+    },
+    {
+      "path": "deploy/start-router.sh",
+      "bytes": 1153,
+      "sha256": "18bdd6a2b0e0eae88d920d428f49342720827464de39cacd7b68f4a3550548d8"
+    },
+    {
+      "path": "deploy/start-vllm.sh",
+      "bytes": 1592,
+      "sha256": "0f37b04ee5e7abf92f479aedf5fae5b4ddc05c96820b44b59804761cdf57ce11"
+    },
+    {
+      "path": "docs/V1.md",
+      "bytes": 4197,
+      "sha256": "9b9dbcf02179ee7b5bcce5b2aa7ec17ad2afd6f988c82fff0034029b1a8b9f33"
+    },
+    {
+      "path": "graphmine_catalog.json",
+      "bytes": 331956,
+      "sha256": "66545c0a0ca8c87b37668b0f6662cb666ff1778f7ccf0704d79586d6070bbe01"
+    },
+    {
+      "path": "graphmine_manifest.json",
+      "bytes": 51733,
+      "sha256": "7b42235ea3b2ba8118456d17f870e03c44e11b78b89c4b06ed819a758bdd49bd"
+    }
+  ],
+  "document_build": {
+    "completed_at": "2026-10-04T03:16:10.533916+00:00",
+    "compiler": "Tectonic 0.17.0 (official portable musl build)",
+    "compiler_archive_sha256": "8533d07f9ccbd7a65824b9e0459041bca34af1eb33daba48f59215593753a3b7",
+    "source": "graphmine.tex",
+    "source_sha256": "625dc63e2bf1df2283dca3aa54714235a280b50cd305b3fab98bb00f8ca46e6d",
+    "pdf": "graphmine.pdf",
+    "pdf_sha256": "8c38ecbd0c238d4525cf568180f92fb4bc5f7fdf5d4d4396ec491deda657a3f5",
+    "pages": 23,
+    "extracted_words": 8510,
+    "latex_warnings": [],
+    "visual_checks": "Cover, architecture diagram, training configuration, evaluation table, feedback diagram; final corrected diagrams rechecked.",
+    "evidence_hashes_rechecked": 62
+  }
+}

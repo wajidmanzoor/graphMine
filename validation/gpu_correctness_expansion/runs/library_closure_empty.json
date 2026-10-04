@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "transitive-closure",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/closure_empty.json"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.007842333987355232,
+  "exit_code": 0,
+  "log": "runs/library_closure_empty.log",
+  "stdin_path": null,
+  "timeout": false
+}

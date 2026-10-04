@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_curpq",
+  "title": "cuRPQ: A High-Performance GPU-Based Framework for Processing Regular and Conjunctive Regular Path Queries",
+  "year": 2026,
+  "venue": "ACM SIGMOD 2026",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2602.20748",
+  "pdf_url": "https://arxiv.org/pdf/2602.20748",
+  "code_url": null,
+  "semantic_fit": "general_framework",
+  "gpu_scope": "GPU framework for regular and conjunctive regular path queries; plain reachability is the special case of a Kleene-star query with no intermediate label constraints.",
+  "notes": "Very recently accepted (SIGMOD 2026); no public code repository was located as of this pass, plausibly not yet released.",
+  "problem_id": "transitive_closure_reachability",
+  "problem_dir": "33_transitive_closure_reachability",
+  "research_cutoff": "2026-09-30"
+}

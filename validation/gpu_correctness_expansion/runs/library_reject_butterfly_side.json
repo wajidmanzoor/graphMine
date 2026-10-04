@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "butterfly-counting",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/reject_butterfly_side.json"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.007772969081997871,
+  "exit_code": 3,
+  "log": "runs/library_reject_butterfly_side.log",
+  "stdin_path": null,
+  "timeout": false
+}

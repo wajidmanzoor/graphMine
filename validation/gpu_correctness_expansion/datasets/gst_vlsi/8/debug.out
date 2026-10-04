@@ -1,0 +1,86 @@
+
+V: 8  E: 7
+
+Total GPU time (FW): 0.098535
+Graph: 
+	INF   1 INF INF INF INF INF INF 
+	  1 INF   1 INF INF INF INF INF 
+	INF   1 INF   1 INF INF INF INF 
+	INF INF   1 INF   1 INF INF INF 
+	INF INF INF   1 INF   1 INF INF 
+	INF INF INF INF   1 INF   1 INF 
+	INF INF INF INF INF   1 INF   1 
+	INF INF INF INF INF INF   1 INF 
+	
+Metric Closure: 
+	  2   1   2   3   4   5   6   7 
+	  1   2   1   2   3   4   5   6 
+	  2   1   2   1   2   3   4   5 
+	  3   2   1   2   1   2   3   4 
+	  4   3   2   1   2   1   2   3 
+	  5   4   3   2   1   2   1   2 
+	  6   5   4   3   2   1   2   1 
+	  7   6   5   4   3   2   1   2 
+	
+Predecessors: 
+	  1   0   1   2   3   4   5   6 
+	  1   0   1   2   3   4   5   6 
+	  1   2   1   2   3   4   5   6 
+	  1   2   3   2   3   4   5   6 
+	  1   2   3   4   3   4   5   6 
+	  1   2   3   4   5   4   5   6 
+	  1   2   3   4   5   6   5   6 
+	  1   2   3   4   5   6   7   6 
+	
+
+Terminal vertices: 
+	# of vertices: 8  List of vertices: 0 1 2 3 4 5 6 7 
+
+Groups: 
+	Num of groups: 2
+		Group 0 (1): 0 
+		Group 1 (1): 7 
+
+
+One star cost: 
+	Root0:    0    7  
+	Root1:    1    6  
+	Root2:    2    5  
+	Root3:    3    4  
+	Root4:    4    3  
+	Root5:    5    2  
+	Root6:    6    1  
+	Root7:    7    0  
+
+One star vertices: 
+	Root0:    0    7  
+	Root1:    0    7  
+	Root2:    0    7  
+	Root3:    0    7  
+	Root4:    0    7  
+	Root5:    0    7  
+	Root6:    0    7  
+	Root7:    0    7  
+
+Total CPU time : 0.000021
+
+Total time: 0.098592
+
+TWOSTAR: 
+	Cost: 7 Root: 1
+
+Parital stars: 
+	Intermediate: 0 # of Groups: 1 Group IDs  0 
+	Intermediate: 2 # of Groups: 1 Group IDs  1 
+
+Solution Graph: 
+	INF   1 INF INF INF INF INF INF 
+	  1 INF   1 INF INF INF INF INF 
+	INF   1 INF   1 INF INF INF INF 
+	INF INF   1 INF   1 INF INF INF 
+	INF INF INF   1 INF   1 INF INF 
+	INF INF INF INF   1 INF   1 INF 
+	INF INF INF INF INF   1 INF   1 
+	INF INF INF INF INF INF   1 INF 
+	
+Final Graph Cost: 7

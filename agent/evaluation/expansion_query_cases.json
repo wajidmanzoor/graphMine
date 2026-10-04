@@ -1,0 +1,733 @@
+{
+  "schema_version": "1.0.0",
+  "evaluation_only": true,
+  "description": "New, unscored expansion holdout. Never merge into training data or reuse historical adapter scores as evidence for these cases.",
+  "cases": [
+    {
+      "id": "expansion-general-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "On the directed General graph analysis graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-general-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "On the directed General graph analysis graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-general-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "For the General graph analysis data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-general-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "For the directed General graph analysis graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-general-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "For the undirected General graph analysis bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-fraud_detection-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "fraud_detection",
+      "user_query": "On the directed Fraud and financial crime graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-fraud_detection-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "fraud_detection",
+      "user_query": "On the directed Fraud and financial crime graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-fraud_detection-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "fraud_detection",
+      "user_query": "For the Fraud and financial crime data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-fraud_detection-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "fraud_detection",
+      "user_query": "For the directed Fraud and financial crime graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-fraud_detection-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "fraud_detection",
+      "user_query": "For the undirected Fraud and financial crime bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-bioinformatics-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "bioinformatics",
+      "user_query": "On the directed Bioinformatics graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-bioinformatics-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "bioinformatics",
+      "user_query": "On the directed Bioinformatics graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-bioinformatics-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "bioinformatics",
+      "user_query": "For the Bioinformatics data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-bioinformatics-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "bioinformatics",
+      "user_query": "For the directed Bioinformatics graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-bioinformatics-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "bioinformatics",
+      "user_query": "For the undirected Bioinformatics bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-cybersecurity-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "cybersecurity",
+      "user_query": "On the directed Cybersecurity graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-cybersecurity-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "cybersecurity",
+      "user_query": "On the directed Cybersecurity graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-cybersecurity-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "cybersecurity",
+      "user_query": "For the Cybersecurity data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-cybersecurity-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "cybersecurity",
+      "user_query": "For the directed Cybersecurity graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-cybersecurity-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "cybersecurity",
+      "user_query": "For the undirected Cybersecurity bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-social_networks-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "social_networks",
+      "user_query": "On the directed Social and collaboration networks graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-social_networks-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "social_networks",
+      "user_query": "On the directed Social and collaboration networks graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-social_networks-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "social_networks",
+      "user_query": "For the Social and collaboration networks data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-social_networks-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "social_networks",
+      "user_query": "For the directed Social and collaboration networks graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-social_networks-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "social_networks",
+      "user_query": "For the undirected Social and collaboration networks bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-recommendation_ecommerce-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "recommendation_ecommerce",
+      "user_query": "On the directed Recommendation and e-commerce graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-recommendation_ecommerce-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "recommendation_ecommerce",
+      "user_query": "On the directed Recommendation and e-commerce graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-recommendation_ecommerce-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "recommendation_ecommerce",
+      "user_query": "For the Recommendation and e-commerce data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-recommendation_ecommerce-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "recommendation_ecommerce",
+      "user_query": "For the directed Recommendation and e-commerce graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-recommendation_ecommerce-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "recommendation_ecommerce",
+      "user_query": "For the undirected Recommendation and e-commerce bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-knowledge_graphs-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "knowledge_graphs",
+      "user_query": "On the directed Knowledge graphs graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-knowledge_graphs-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "knowledge_graphs",
+      "user_query": "On the directed Knowledge graphs graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-knowledge_graphs-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "knowledge_graphs",
+      "user_query": "For the Knowledge graphs data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-knowledge_graphs-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "knowledge_graphs",
+      "user_query": "For the directed Knowledge graphs graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-knowledge_graphs-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "knowledge_graphs",
+      "user_query": "For the undirected Knowledge graphs bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-communications_infrastructure-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "communications_infrastructure",
+      "user_query": "On the directed Communications and infrastructure graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-communications_infrastructure-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "communications_infrastructure",
+      "user_query": "On the directed Communications and infrastructure graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-communications_infrastructure-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "communications_infrastructure",
+      "user_query": "For the Communications and infrastructure data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-communications_infrastructure-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "communications_infrastructure",
+      "user_query": "For the directed Communications and infrastructure graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-communications_infrastructure-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "communications_infrastructure",
+      "user_query": "For the undirected Communications and infrastructure bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-transportation_mobility-connected-components",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "transportation_mobility",
+      "user_query": "On the directed Transportation and mobility graph, find every strongly connected component: every member must reach every other member following edge direction.",
+      "expected": {
+        "problem_id": "connected_components",
+        "operation_id": "connected-components",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-transportation_mobility-max-flow-min-cut",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "transportation_mobility",
+      "user_query": "On the directed Transportation and mobility graph, compute maximum flow and a minimum cut from vertex 0 to vertex 3, both present. Use the nonnegative integer edge weight as capacity; total capacity is below 1 billion. There are no vertex capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": "max-flow-min-cut",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-transportation_mobility-linear-assignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "transportation_mobility",
+      "user_query": "For the Transportation and mobility data, compute a minimum-cost perfect assignment. The undirected bipartite graph is complete and square with 4 vertices per side, attributes.side left/right, and integer edge weight costs 0 through 999.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": "linear-assignment",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-transportation_mobility-transitive-closure",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "transportation_mobility",
+      "user_query": "For the directed Transportation and mobility graph of 10 vertices, materialize the full transitive closure including each vertex reaching itself. Do not build a reusable index.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": "transitive-closure",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-transportation_mobility-butterfly-counting",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "transportation_mobility",
+      "user_query": "For the undirected Transportation and mobility bipartite graph with every vertex labeled attributes.side left/right, compute only the exact global count of distinct complete 2-by-2 butterflies.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": "butterfly-counting",
+        "supported": true
+      }
+    },
+    {
+      "id": "expansion-unsupported-personalized_pagerank_rwr",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Personalized PageRank and Random Walk with Restart. Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds.",
+      "expected": {
+        "problem_id": "personalized_pagerank_rwr",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-graph_edit_distance_mcs",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Graph Edit Distance and Maximum Common Subgraph. Given two graphs, compute either the minimum total cost of vertex/edge insertions, deletions, and substitutions transforming one graph into the other (graph edit distance), or a largest common induced or non-induced subgraph shared by both (maximum common subgraph).",
+      "expected": {
+        "problem_id": "graph_edit_distance_mcs",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-network_alignment",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Pairwise Network Alignment. Given two graphs and optional vertex-similarity priors, find a vertex mapping between them that maximizes conserved topology (and prior similarity, when supplied), either as a global one-to-one mapping or a local many-to-one set of high-scoring alignments.",
+      "expected": {
+        "problem_id": "network_alignment",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-hop_constrained_cycle_path_enumeration",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Hop-Constrained Simple Path and Cycle Enumeration. Given a directed graph and a hop bound k, enumerate every simple (vertex-disjoint except endpoints) s-t path with at most k edges, or every simple cycle through a given vertex or edge with at most k edges.",
+      "expected": {
+        "problem_id": "hop_constrained_cycle_path_enumeration",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-group_steiner_tree",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Group Steiner Tree. Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group.",
+      "expected": {
+        "problem_id": "group_steiner_tree",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-influence_maximization",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Influence Maximization under Diffusion Models. Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated.",
+      "expected": {
+        "problem_id": "influence_maximization",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-simrank_vertex_similarity",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute SimRank and General Vertex-to-Vertex Structural Similarity. Compute a pairwise structural similarity score between vertices based on the recursive principle that two vertices are similar to the extent their in-neighbors (or neighbors) are similar, for a single source vertex, a query pair, or top-k over all vertices.",
+      "expected": {
+        "problem_id": "simrank_vertex_similarity",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-balanced_graph_partitioning",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Balanced k-Way Graph Partitioning. Given an undirected graph and a target part count k, assign every vertex to exactly one of k parts of approximately equal size so that the total weight of edges crossing between parts is minimized.",
+      "expected": {
+        "problem_id": "balanced_graph_partitioning",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-signed_network_structural_balance",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Signed Network Structural Balance and Frustration Minimization. Given a graph whose edges are each labeled positive or negative, determine whether it is structurally balanced (partitionable into two factions so every positive edge stays within a faction and every negative edge crosses factions), and when it is not, find a two-faction assignment minimizing the total weight of frustrated edges.",
+      "expected": {
+        "problem_id": "signed_network_structural_balance",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-entity_resolution_blocking",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Graph-Based Entity Resolution and Rule-Based Blocking. Given a collection of candidate entity records and one or more declared blocking rules over record attributes, generate the reduced set of candidate record pairs worth comparing, and optionally confirm matches and merge them into resolved-entity clusters.",
+      "expected": {
+        "problem_id": "entity_resolution_blocking",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-graph_layout_force_directed",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Force-Directed Graph Layout. Given a graph, compute a position for every vertex in 2 or 3 dimensions under a declared force model, so that connected vertices are pulled together and all vertices repel each other, producing a drawing that visually reveals clusters and hubs.",
+      "expected": {
+        "problem_id": "graph_layout_force_directed",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-unsupported-null_model_significance_testing",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute Null-Model Significance Testing via Degree-Preserving Graph Randomization. Given an observed graph and a declared structural statistic, determine how unusual the statistic's observed value is by comparing it against its distribution over an ensemble of randomized graphs sampled from a declared null model, typically one preserving the degree sequence.",
+      "expected": {
+        "problem_id": "null_model_significance_testing",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-maximum-weight",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Find a maximum-weight bipartite matching. Maximize benefit; do not minimize cost.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-sparse-matching",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Find a minimum-cost perfect assignment in a sparse bipartite graph. Missing edges are forbidden matches.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-rectangular-matching",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Assign 3 workers to 5 tasks at minimum cost on this rectangular bipartite graph.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-negative-cost",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Find a minimum-cost perfect assignment using integer costs including -5.",
+      "expected": {
+        "problem_id": "bipartite_matching_assignment",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-fractional-flow",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute maximum flow from source 0 to sink 3 using fractional edge capacities 1.5 and 2.25, without rounding.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-vertex-capacity",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute maximum flow with a capacity of 5 on each intermediate vertex as well as edge capacities.",
+      "expected": {
+        "problem_id": "max_flow_min_cut",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-reachability-index",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Build a reusable reachability index for repeated directed reachability queries on a million-vertex graph.",
+      "expected": {
+        "problem_id": "transitive_closure_reachability",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-butterfly-per-vertex",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Return the exact butterfly participation count for each vertex, not only the global total.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": null,
+        "supported": false
+      }
+    },
+    {
+      "id": "expansion-profile-butterfly-core",
+      "split": "expansion_held_out_evaluation",
+      "domain_id": "general",
+      "user_query": "Compute the alpha-beta butterfly core decomposition of this bipartite graph.",
+      "expected": {
+        "problem_id": "butterfly_counting_bipartite",
+        "operation_id": null,
+        "supported": false
+      }
+    }
+  ]
+}

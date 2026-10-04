@@ -1,0 +1,19 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_gim/code/IM.cu",
+    "/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_gim/code/kernels.cu",
+    "/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_gim/code/testgraph.cu",
+    "-lcurand",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.3691701702773571,
+  "exit_code": 1,
+  "log": "builds/gim.log",
+  "timeout": false
+}

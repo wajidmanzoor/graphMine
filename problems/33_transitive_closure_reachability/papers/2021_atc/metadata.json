@@ -1,0 +1,16 @@
+{
+  "paper_id": "2021_atc",
+  "title": "Anti-Section Transitive Closure",
+  "year": 2021,
+  "venue": "IEEE HiPC 2021",
+  "doi": null,
+  "publication_url": "https://ieeexplore.ieee.org/document/9680370/",
+  "pdf_url": "https://davidbader.net/publication/2021-gdpxlb/2021-gdpxlb.pdf",
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "Anti-section-based GPU transitive-closure algorithm built on the Hornet dynamic-graph data structure, demonstrated on an NVIDIA Titan V.",
+  "notes": "No standalone public repository was located; the implementation may live inside the broader Hornet/cuSTINGER ecosystem rather than as a dedicated release.",
+  "problem_id": "transitive_closure_reachability",
+  "problem_dir": "33_transitive_closure_reachability",
+  "research_cutoff": "2026-09-30"
+}

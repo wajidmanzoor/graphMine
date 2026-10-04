@@ -1,0 +1,19 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "-include",
+    "thrust/reduce.h",
+    "/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/sm.cu",
+    "/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/log.cpp",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 9.640080185607076,
+  "exit_code": 1,
+  "log": "builds/gamma_butterfly_v2.log",
+  "timeout": false
+}

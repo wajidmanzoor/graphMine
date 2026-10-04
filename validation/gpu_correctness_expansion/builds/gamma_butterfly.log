@@ -1,0 +1,5 @@
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/embedding.cuh(370): error: namespace "thrust" has no member "reduce"
+    emb_off_type valid_num = thrust::reduce(thrust::device, block_results, block_results + 256/32*block_num);
+                                     ^
+
+1 error detected in the compilation of "/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/sm.cu".

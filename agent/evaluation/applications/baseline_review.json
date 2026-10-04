@@ -1,0 +1,106 @@
+{
+  "source": "assistant_evaluation",
+  "method": "Review of preserved live outputs and uploaded synthetic graphs. Renderer observations are explicitly static source review; no browser rendering pass is claimed.",
+  "reviews": [
+    {
+      "case_id": "fraud_mutual_groups",
+      "step": 1,
+      "severity": "P1",
+      "category": "grounding_and_clarity",
+      "finding": "The calculation is correct, but the explanation says the two remaining edges connect the triangles/non-clique vertices. The actual remaining edges are acct_drew–acct_fran and the separate acct_gray–acct_harper component. It also equates ignored vertex attributes with absent attributes and includes the literal placeholder data_refs_used_earlier_in_message.",
+      "expected_behavior": "List the two account groups and a short investigation caveat. Make claims about other connections only after reading or computing them; distinguish ignored fields from absent data, and omit internal placeholders.",
+      "basis": "Observed analyst output compared with fraud_accounts.json."
+    },
+    {
+      "case_id": "biology_largest_complex",
+      "step": 1,
+      "severity": "P2",
+      "category": "grounding",
+      "finding": "The four-protein answer is correct, but the explanation mixes result evidence with detailed p53/kinase/complex claims not supplied in this synthetic graph. Several data_refs point to clique membership or vertex count rather than evidence for the biological claims.",
+      "expected_behavior": "Clearly separate the four returned protein names and graph limitations from optional general biological background. Do not present external biological claims as supported by the graph result.",
+      "basis": "Observed analyst output and the graph's available annotations; no judgment about the external biological claims' real-world truth."
+    },
+    {
+      "case_id": "biology_supported_core",
+      "step": 1,
+      "severity": "P2",
+      "category": "visualization_contract",
+      "finding": "The model promises a table filtered to the four surviving proteins using filters core_number >= 3. The current browser renderVisualization/renderTable code does not apply spec.filters, so that promise is not implemented by the renderer.",
+      "expected_behavior": "Show exactly the four selected proteins when the description says the table is filtered, with an explicit way to show all proteins. Validate renderer support before promising interactions or filters.",
+      "basis": "Observed saved visualization specification plus static review of static/app.js; not a browser screenshot claim."
+    },
+    {
+      "case_id": "retail_shared_purchases",
+      "step": 1,
+      "severity": "P1",
+      "category": "domain_clarification",
+      "finding": "The entire reply was: The plan needs additional input: left_partition. The graph already supplies customer/product vertex types, but the planner receives only aggregate metadata and exposes an internal input name instead of helping the user.",
+      "expected_behavior": "Use the customer/product types when unambiguous, or ask which names are customers and which are products in ordinary language. Explain the needed input and provide a usable example without requiring graph-mining terminology.",
+      "basis": "Observed reply, customer_purchases.json types, and the recorded model input."
+    },
+    {
+      "case_id": "retail_shared_purchases",
+      "step": 2,
+      "severity": "P1",
+      "category": "visualization_selection",
+      "finding": "The model proposed three domain-specific views using result.output.bicliques references. All were rejected by the visualization validator, and generic network/table defaults replaced them. Similar reference-root mismatches occur in several other cases.",
+      "expected_behavior": "Preserve valid customer/product visualization intent using a single documented data-reference convention, and make any fallback and its reason explicit in history and the user response.",
+      "basis": "Recorded model.parsed Interpretation versus saved interpretation.visualizations."
+    },
+    {
+      "case_id": "collaboration_followup",
+      "step": 1,
+      "severity": "P1",
+      "category": "grounding",
+      "finding": "The answer correctly counts five trios, but says the Eli/Fatima/Gus group is disconnected from the Ava/Ben/Chen/Divya group because their memberships do not overlap. The uploaded graph explicitly contains the Divya–Eli bridge.",
+      "expected_behavior": "Do not infer disconnectedness from disjoint group membership. Inspect the original edges or compute connected components before making that claim.",
+      "basis": "Observed finding compared with coworker_collaboration.json."
+    },
+    {
+      "case_id": "collaboration_followup",
+      "step": 2,
+      "severity": "P1",
+      "category": "followup_visualization_and_evaluation",
+      "adjudication": "The automatic expectation of a fresh maximum-clique job was too strict for this particular complete result. The four-person answer is correct by derivation from the five exhaustive triangles; that reuse alone is not a user-facing failure.",
+      "finding": "The follow-up correctly identifies Ava/Ben/Chen/Divya without another computation, so the automatic missing-job feedback must not be treated as a confirmed wrong answer. However, it promises a maximum-group network while referencing the old triangles plus filters the renderer does not apply. The default network adapter selects only the first group, and the statement that maximum degree 4 alone rules out a 5-clique is logically invalid.",
+      "expected_behavior": "Accept and label justified reuse of complete prior evidence. Materialize the derived four-person selection for the view, and only request new computation when the existing result is insufficient. Keep automated feedback separate from reviewed correctness labels.",
+      "basis": "Observed follow-up answer, independent clique oracle, and static networkData/filter handling review."
+    },
+    {
+      "case_id": "collaboration_circles",
+      "step": 1,
+      "severity": "P2",
+      "category": "grounding_and_followup_capabilities",
+      "finding": "The two groups are correct, but the analyst describes modularity 0.355 as meaningful without a comparison or null model, and suggests seed/resolution changes although the exposed community-detection operation has no parameters for those controls.",
+      "expected_behavior": "Describe the observed partition and heuristic limits without claiming statistical significance. Suggest only controls actually available through the current application.",
+      "basis": "Observed summary and program_instructions.json community-detection contract."
+    },
+    {
+      "case_id": "security_supported_sequence",
+      "step": 1,
+      "severity": "P1",
+      "category": "interpretation_and_timing",
+      "finding": "The event match is correct, but the explanation says the remaining 8 edges did not participate when one three-edge instance in a nine-edge graph leaves 6 unused edges. It calls the native 203 ms statistic end-to-end interactive time although the actual user turn took about 113 seconds. It also suggests allow_equal_timestamps and attribute-fetching behavior not exposed by the executable contract; the saved timeline has event IDs but no joined timestamps.",
+      "expected_behavior": "Report event participation using event IDs, distinguish native algorithm time from full response latency, expose only supported follow-ups, and join instance IDs to their source timestamps for a time-based view.",
+      "basis": "Observed interpretation, event fixture, measured elapsed time and current executable parameters."
+    },
+    {
+      "case_id": "security_unsupported_chain",
+      "step": 1,
+      "severity": "P0",
+      "category": "semantic_execution_gate",
+      "finding": "The planner rationale explicitly says the four-host A→B→C→D query is unsupported and no plan is produced for execution, yet structured fields form a runnable Everest plan with missing_inputs empty. The orchestrator executes the fixed three-host A→B, B→C, A→C pattern and returns count 1. The requested pattern has 2 occurrences in the fixture. The analyst acknowledges the mismatch only afterward and adds unsupported sparse-graph/no-path claims and placeholder findings.",
+      "expected_behavior": "Represent unsupported semantic decisions in a typed non-executable outcome and block the job before queueing. Explain the supported pattern in domain terms. Never substitute a different topology or infer absence of paths from density.",
+      "basis": "Observed planner rationale, submitted job, result, analyst response, and independently enumerated temporal patterns."
+    },
+    {
+      "case_id": "fraud_ambiguous_investigation",
+      "step": 1,
+      "severity": "P1",
+      "category": "domain_clarification",
+      "finding": "The system safely avoided execution but said the user had not specified a formal graph problem, offering centrality/community/anomaly terminology rather than an application-level question.",
+      "expected_behavior": "Ask what investigation signal matters, such as unusually coordinated payment groups, accounts connecting otherwise separate groups, or a time-specific behavior. The user should not need to choose an algorithm.",
+      "basis": "Observed routing clarification."
+    }
+  ]
+}

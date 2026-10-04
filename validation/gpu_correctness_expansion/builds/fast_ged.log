@@ -1,0 +1,3 @@
+🔹 Compiling Java files with classpath...
+/bin/sh: 1: javac: not found
+make: *** [Makefile:37: compile_java] Error 127

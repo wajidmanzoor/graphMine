@@ -1,0 +1,94 @@
+{
+  "graph": {
+    "id": "coworker-collaboration",
+    "directed": false,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "domain": "social_networks",
+      "description": "Undirected past collaboration. Ava, Ben, Chen and Divya all collaborated pairwise; Eli, Fatima and Gus all collaborated pairwise. One cross-team collaboration joins Divya to Eli."
+    }
+  },
+  "vertices": [
+    {
+      "id": "Ava",
+      "label": "Ava"
+    },
+    {
+      "id": "Ben",
+      "label": "Ben"
+    },
+    {
+      "id": "Chen",
+      "label": "Chen"
+    },
+    {
+      "id": "Divya",
+      "label": "Divya"
+    },
+    {
+      "id": "Eli",
+      "label": "Eli"
+    },
+    {
+      "id": "Fatima",
+      "label": "Fatima"
+    },
+    {
+      "id": "Gus",
+      "label": "Gus"
+    }
+  ],
+  "edges": [
+    {
+      "id": "event-1",
+      "source": "Ava",
+      "target": "Ben"
+    },
+    {
+      "id": "event-2",
+      "source": "Ava",
+      "target": "Chen"
+    },
+    {
+      "id": "event-3",
+      "source": "Ava",
+      "target": "Divya"
+    },
+    {
+      "id": "event-4",
+      "source": "Ben",
+      "target": "Chen"
+    },
+    {
+      "id": "event-5",
+      "source": "Ben",
+      "target": "Divya"
+    },
+    {
+      "id": "event-6",
+      "source": "Chen",
+      "target": "Divya"
+    },
+    {
+      "id": "event-7",
+      "source": "Eli",
+      "target": "Fatima"
+    },
+    {
+      "id": "event-8",
+      "source": "Eli",
+      "target": "Gus"
+    },
+    {
+      "id": "event-9",
+      "source": "Fatima",
+      "target": "Gus"
+    },
+    {
+      "id": "event-10",
+      "source": "Divya",
+      "target": "Eli"
+    }
+  ]
+}

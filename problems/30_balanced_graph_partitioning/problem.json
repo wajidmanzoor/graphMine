@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "balanced_graph_partitioning",
+  "name": "Balanced k-Way Graph Partitioning",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Given an undirected graph and a target part count k, assign every vertex to exactly one of k parts of approximately equal size so that the total weight of edges crossing between parts is minimized.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "optional_nonnegative", "timestamps": "ignored", "vertex_attributes": "optional_as_balance_weight", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops; they never cross a partition boundary.", "Collapse parallel edges by summing nonnegative weights; use unit weight when edge_weight_mode=unweighted."]
+  },
+  "problem_inputs": [
+    {"name": "num_parts", "type": "integer", "required": true, "constraints": "value >= 2 and value <= vertex_count", "description": "Target number k of parts."},
+    {"name": "balance_mode", "type": "enum", "required": false, "default": "vertex_count", "allowed_values": ["vertex_count", "vertex_weight"], "description": "Whether a part's size is measured by vertex count or by the sum of declared vertex weights."},
+    {"name": "vertex_weights", "type": "map<vertex_id,number>_or_null", "required": false, "default": null, "constraints": "required and nonnegative when balance_mode=vertex_weight", "description": "Per-vertex balance weight."},
+    {"name": "imbalance_tolerance", "type": "number", "required": false, "default": 0.03, "constraints": "value >= 0", "description": "Maximum allowed fractional deviation of any part's size from the ideal average size (e.g. 0.03 permits up to 3% imbalance)."},
+    {"name": "edge_weight_mode", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "edge_weight"], "description": "Use unit edge cost or declared nonnegative edge weights for the cut objective."},
+    {"name": "objective", "type": "enum", "required": false, "default": "edge_cut", "allowed_values": ["edge_cut", "normalized_cut"], "description": "Minimize total crossing edge weight, or total crossing edge weight normalized by part size (conductance-style objective)."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "approximate", "allowed_values": ["exact", "approximate"], "description": "Balanced partitioning is NP-hard; approximate (heuristic, multilevel) solutions are the norm beyond tiny graphs."}
+  ],
+  "required_outputs": [
+    {"name": "partition_assignment", "type": "map<vertex_id,integer>", "description": "Part index in [0, num_parts) assigned to every vertex."},
+    {"name": "objective_value", "type": "number", "description": "Achieved value of the selected objective (edge_cut or normalized_cut)."},
+    {"name": "part_sizes", "type": "array<number>", "description": "Size of each part under balance_mode, indexed by part number."},
+    {"name": "balanced", "type": "boolean", "description": "Whether every part's size is within imbalance_tolerance of the ideal average."}
+  ],
+  "optional_outputs": [
+    {"name": "imbalance_ratio", "type": "number", "description": "Maximum achieved fractional deviation of any part's size from the ideal average."},
+    {"name": "cut_edges", "type": "array<edge_id>", "description": "Edges whose endpoints fall in different parts."},
+    {"name": "approximation_bound", "type": "number", "description": "Disclosed bound or gap-to-best-known for an approximate result, when available."}
+  ],
+  "solution_semantics": {
+    "objective": "Minimize objective_value over partition_assignment subject to every part's balance_mode size being within imbalance_tolerance of the ideal average size (total size divided by num_parts).",
+    "exactness": "Exact mode requires optimal=true and is only expected to terminate on small graphs; approximate mode must disclose imbalance_ratio and, when known, approximation_bound.",
+    "duplicate_policy": "Each vertex is assigned to exactly one part.",
+    "ordering": "Part indices are an arbitrary stable labeling, not a ranking."
+  },
+  "validation_rules": [
+    "Every vertex appears in partition_assignment with exactly one part index in [0, num_parts).",
+    "part_sizes recomputes exactly from partition_assignment and balance_mode.",
+    "objective_value recomputes exactly from partition_assignment, cut_edges, and the normalized graph.",
+    "balanced=true only when every entry of part_sizes is within imbalance_tolerance of the ideal average."
+  ],
+  "edge_cases": [
+    "num_parts equal to vertex_count makes every part a single vertex with objective_value equal to the total edge weight.",
+    "num_parts == 1 is rejected; a single-part result is trivial and not a meaningful partitioning request.",
+    "A connected component much larger than the ideal part size forces either splitting that component or accepting it cannot be perfectly balanced within imbalance_tolerance; the latter must be reported via balanced=false rather than silently relaxed.",
+    "Isolated vertices may be assigned to any part to help satisfy balance without affecting objective_value."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["objective-value recomputation", "balance-constraint satisfaction", "assignment completeness (every vertex assigned exactly once)"],
+    "performance": ["end-to-end time", "coarsening time", "refinement time", "peak memory", "vertices processed per second"]
+  }
+}

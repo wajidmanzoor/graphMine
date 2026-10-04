@@ -1,0 +1,135 @@
+{
+  "created_at": "2026-10-04T01:08:39.913685+00:00",
+  "status": "deployed_for_user_testing",
+  "version": "business-v1-pilot.1",
+  "urls": {
+    "lan": "http://10.33.76.25:18000",
+    "tailscale": "http://100.102.13.108:18000",
+    "local": "http://127.0.0.1:18000"
+  },
+  "deployment": {
+    "version": "business-v1-pilot.1",
+    "routing_model": "graphmine-business-v1",
+    "adapter_sha256": "dd7017735094300c4a89f217cb094c0d8b9981d1c7d86182596a7a6f7ef5f4d6",
+    "answer_model": "Qwen/Qwen3.8-27B-FP8",
+    "llm_enabled": true,
+    "routing_scope": "RouteDecision"
+  },
+  "services": {
+    "graphmine-pilot-api.service": {
+      "MainPID": "425321",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/home/wajid/.config/systemd/user/graphmine-pilot-api.service"
+    },
+    "graphmine-pilot-router.service": {
+      "MainPID": "416978",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/home/wajid/.config/systemd/user/graphmine-pilot-router.service"
+    }
+  },
+  "serving_fp8_process_restarted": false,
+  "original_database_rows_preserved_exactly": {
+    "sessions": 9,
+    "files": 6,
+    "jobs": 6,
+    "results": 4,
+    "messages": 32,
+    "events": 26,
+    "feedback": 0
+  },
+  "data_root": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-v1",
+  "verification": {
+    "python_suite_passed": 295,
+    "browser_scenarios_passed": 2,
+    "final_archive_change_focused_tests_passed": 13,
+    "lint_passed": true,
+    "javascript_syntax_passed": true,
+    "live_model_native_browser_acceptance_passed": true,
+    "actual_model_stages": [
+      {
+        "model": "graphmine-business-v1",
+        "schema": "RouteDecision"
+      },
+      {
+        "model": "Qwen/Qwen3.8-27B-FP8",
+        "schema": "PlanDraft"
+      },
+      {
+        "model": "Qwen/Qwen3.8-27B-FP8",
+        "schema": "GroundedNarrative"
+      }
+    ],
+    "named_collaboration_groups_returned": 2,
+    "live_reasoning_display_matches_model_output": true,
+    "reasoning_characters": 2282,
+    "reasoning_ui_verification_added_model_calls": 0,
+    "archive_file_count": 61,
+    "archive_conversation_verified": true,
+    "feedback_jsonl_verified": true
+  },
+  "acceptance_session_id": "session_3c70614b05c34a0194c5a2e79dd80ed3",
+  "acceptance_result_id": "result_a8bd661ae5d24b4491bfee0aee9db071",
+  "acceptance_data_source": "Authored sample data; feedback is marked assistant_evaluation, not real-user feedback.",
+  "features": [
+    "Business adapter used only for RouteDecision with fingerprint checks",
+    "Separate Chat and Results pages with saved-result URLs",
+    "Observable activity summaries and expandable reasoning actually returned by local Qwen",
+    "Feedback forms and slash/backslash commands excluded from model prompts",
+    "Feedback/corrections/ratings/notes with conversation and deployment snapshots",
+    "Restorable sessions, optional tester aliases, complete archives and JSONL annotations",
+    "Example CSV and offline HTML result reports"
+  ],
+  "commands": [
+    "feedback",
+    "correct",
+    "rate",
+    "note",
+    "export",
+    "status",
+    "help"
+  ],
+  "feedback_automatically_used_for_training": false,
+  "remaining_finetuning_queue_state": "inactive",
+  "final_reserved_source_consumed": false,
+  "limitations": [
+    "Known exact-size account-group false refusal remains",
+    "Pilot deployment acceptance does not prove a general end-to-end fine-tuning gain",
+    "Earlier candidate comparisons remain incomplete and stopped",
+    "Shared-token workspace has no per-user account/session isolation",
+    "Large-graph and concurrent-user load are not certified; router shares compute GPU",
+    "Qwen reasoning appears only after stages that return it; routing thinking remains disabled",
+    "Existing FP8 model startup lifecycle was not changed"
+  ],
+  "evidence_sha256": {
+    "agent/graphmine_agent/adapter_server.py": "13900db7aaf3f7f4977cffa85463e7e4e022529e7e04c9653c80bc38658fc92a",
+    "agent/graphmine_agent/commands.py": "813daf252972df4a671aa2b1114daa2269e28a579e306680fbc112c649b46fc2",
+    "agent/graphmine_agent/config.py": "fcf42c40cd942654105d4d245564a73ea2e1a867aecaf085f287b6b99eedae96",
+    "agent/graphmine_agent/models.py": "bb8d256792e65f089df277ddf04940287c2d0c8c8e22fbf47ca11f7291e4fba5",
+    "agent/graphmine_agent/history.py": "b17c8f3253cddca2496269955341a7520e1caa17a9d32d97fb2dbbd1139a0c06",
+    "agent/graphmine_agent/database.py": "8b1ca325e718867bdb17405c2486e2bec54ea7e029d5259520fa341b3d113e69",
+    "agent/graphmine_agent/llm.py": "a6b2bace1f017b183114be66641cf2efdf1d2bb05044631adea21f927fe28105",
+    "agent/graphmine_agent/agent_service.py": "f436f830dc6270e0bdfe5e4d520523fdebaa8ea91e96a6586a45e5315a87b8e4",
+    "agent/graphmine_agent/api.py": "20ac7cbb85ca13fdb0b14c1235ca540c47f1befb7a2683c875f839ebc2b1b6f2",
+    "agent/graphmine_agent/static/app.js": "e5c4cf0841a0a325787392f525c24c320acf9a7baa346210681021e177e8cdf2",
+    "agent/graphmine_agent/static/index.html": "aa27129dd47da6e797118712fcbbba5fb2b8fae7421b8c647ebf9ba1ead2ae7f",
+    "agent/graphmine_agent/static/styles.css": "0f326f40755b4c0373ce33c993e3e27f9b7e9dd0eab7774c0aafe2bcda87a6da",
+    "agent/graphmine_agent/static/sample-team-connections.csv": "dd047624c651b248609ee95d4452f3f95155c989bb4b8e6945a23081f9773986",
+    "agent/tests/test_pilot_feedback.py": "01b1e9b5fa950fa51d19a0cc7b8a66c17d3f01bb3c29fa88518ac5acfc85fa9e",
+    "agent/tests/test_llm.py": "1d1d6bc44f8cfcd0d80bcac4ab2fbce5543b09097e02afa8e4b2b0374364d765",
+    "agent/browser_tests/test_browser_e2e.py": "7ac8ff2e07f7dc6528a0eaa7b07d61abf89a78ae7c35e89f416daeefddfb8c53",
+    "deploy/start-router.sh": "18bdd6a2b0e0eae88d920d428f49342720827464de39cacd7b68f4a3550548d8",
+    "agent/README.md": "67c37f249422d782608508df88fee57cb4ce8a82abb9dd03ca2d6e5c942dcc60",
+    "agent/CLI.md": "9a2b71c0ba53c7cc68e299b94ab6e6a1d87b809ef853681dd3339f7cea5857d6",
+    "deploy/README.md": "4374af2888dd08c4a4e79909790bafd98810599277b2ad72ca439c90f7f226c4",
+    "agent/IMPROVEMENT_PLAN.md": "5b6c4d3b4ca47b4f326436745b4ffc9d318286e61835e8405397fc8f9ba5b7fa",
+    "agent/evaluation/FINETUNING_PROGRESS.md": "bbe0d87f864138a89093d68b0644d261f4c1d95c97eb824393307106007095d0",
+    ".graphmine-learning/pilot-deployment-v1/before.json": "0fffc8b4232cdf366a733a77fab8ca52fea8d163d632c7d548ba1c7bc2a2cc67",
+    ".graphmine-learning/pilot-deployment-v1/cutover.json": "560536aaef77f3130909fe6f0967fde7b51f0469fb9ce5b7b7723286dd20c6cd",
+    ".graphmine-learning/pilot-deployment-v1/live-acceptance.json": "845a059a9c9ed8acf9bb627a7dd30012b23d59a55d2840085b57e9cb127ed347",
+    ".graphmine-learning/pilot-deployment-v1/reasoning-ui-acceptance.json": "eb54b5e23906c449d0eff6bcd7374586ca62ad65e1c67c5cda10378ab2356ef6"
+  }
+}

@@ -1,0 +1,82 @@
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(517): warning #1650-D: result of call is not used
+    scanf("%d", &no_of_nodes);
+    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(537): warning #1650-D: result of call is not used
+      scanf("%d %d", &start, &edgeno);
+      ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(549): warning #1650-D: result of call is not used
+    scanf("%d", &dummy);
+    ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(551): warning #1650-D: result of call is not used
+    scanf("%d", &edge_list_size);
+    ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(563): warning #1650-D: result of call is not used
+      scanf("%d %d", &id, &id1);
+      ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(574): warning #1650-D: result of call is not used
+    scanf("%d", &terminalSize);
+    ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(579): warning #1650-D: result of call is not used
+      scanf("%d", &id);
+      ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(517): warning #1650-D: result of call is not used
+    scanf("%d", &no_of_nodes);
+    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(537): warning #1650-D: result of call is not used
+      scanf("%d %d", &start, &edgeno);
+      ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(549): warning #1650-D: result of call is not used
+    scanf("%d", &dummy);
+    ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(551): warning #1650-D: result of call is not used
+    scanf("%d", &edge_list_size);
+    ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(563): warning #1650-D: result of call is not used
+      scanf("%d %d", &id, &id1);
+      ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(574): warning #1650-D: result of call is not used
+    scanf("%d", &terminalSize);
+    ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu(579): warning #1650-D: result of call is not used
+      scanf("%d", &id);
+      ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu: In function ‘void KMBAlgo(int, char**)’:
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu:517:6: warning: ignoring return value of ‘int scanf(const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  517 |   scanf("%d", &no_of_nodes);
+      |   ~~~^~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu:537:6: warning: ignoring return value of ‘int scanf(const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  537 |     scanf("%d %d", &start, &edgeno);
+      |     ~^~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu:549:6: warning: ignoring return value of ‘int scanf(const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  549 |   scanf("%d", &dummy);  // not use else where
+      |   ~~~^~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu:551:6: warning: ignoring return value of ‘int scanf(const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  551 |   scanf("%d", &edge_list_size);
+      |   ~~~^~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu:563:6: warning: ignoring return value of ‘int scanf(const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  563 |     scanf("%d %d", &id, &id1);
+      |     ~^~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu:574:6: warning: ignoring return value of ‘int scanf(const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  574 |   scanf("%d", &terminalSize);
+      |   ~~~^~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/code/gpuSteiner6-oddAgainWithKtimer2Sh3.cu:579:6: warning: ignoring return value of ‘int scanf(const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  579 |     scanf("%d", &id);
+      |     ~^~~~~~~~~~~

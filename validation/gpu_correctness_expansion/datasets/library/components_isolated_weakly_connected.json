@@ -1,0 +1,23 @@
+{
+  "edges": [],
+  "graph": {
+    "allows_parallel_edges": false,
+    "allows_self_loops": false,
+    "directed": true,
+    "id": "validation"
+  },
+  "vertices": [
+    {
+      "id": 0
+    },
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    }
+  ]
+}

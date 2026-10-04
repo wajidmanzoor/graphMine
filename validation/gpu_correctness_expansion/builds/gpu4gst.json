@@ -1,0 +1,19 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "--extended-lambda",
+    "/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2025_gpu4gst/code/code/TrimCDP-WB/src/GSTnonHop.cu",
+    "-I",
+    "/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2025_gpu4gst/code/code/TrimCDP-WB/include",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpu4gst"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 5.429863246157765,
+  "exit_code": 0,
+  "log": "builds/gpu4gst.log",
+  "timeout": false
+}

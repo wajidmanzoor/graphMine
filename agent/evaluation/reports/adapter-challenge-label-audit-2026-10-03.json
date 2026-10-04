@@ -1,0 +1,75 @@
+{
+  "version": "routing-label-audit-v1",
+  "created_at": "2026-10-03T19:04:56.622226+00:00",
+  "suite_plan_sha256": "b90978bb034b098254b29be3dd2e4a5416a26782a87247c01fa12875576b977b",
+  "basis": "Assistant inspection of the immutable model inputs after the serving FP8 reference completed; not a blinded independent human review.",
+  "policy": "Apply the identical corrections to every arm in a separately named audited score set. Preserve all original labels, model outputs, and strict and application-review scores. No cases are removed.",
+  "corrections": [
+    {
+      "id": "retention-v1-general-dynamic-triangle-counting",
+      "case_sha256": "7315059a1f965039880b5ad38a8956a41e76b3c947b2baff12b346bd7db31c9e",
+      "original_behavior": "execute",
+      "reviewed_behavior": "clarify",
+      "reason": "The request refers to attached edge updates, but the fixture contains neither an update sequence nor an attachment reference. Identifying dynamic-triangle-counting and asking for the updates is appropriate; immediate execution is not supported by the supplied inputs.",
+      "evidence": {
+        "message": "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
+        "payload_keys": [
+          "active_constraints",
+          "application_preprocessing",
+          "graph_context",
+          "graph_metadata",
+          "message",
+          "pending_request",
+          "routing_context",
+          "task"
+        ],
+        "active_constraints": null,
+        "pending_request": null
+      }
+    },
+    {
+      "id": "retention-v1-general-graph-motifs",
+      "case_sha256": "d3a2fdc45e1c063757eac225d5c19b9822dabdca465c098ed7aa5c437efe1940",
+      "original_behavior": "execute",
+      "reviewed_behavior": "clarify",
+      "reason": "The request refers to an attached motif, but no motif graph, edge list, or attachment reference is provided. The induced mode is specified and should not need clarification, but the motif structure is still missing.",
+      "evidence": {
+        "message": "Count induced occurrences of the attached motif and include per-vertex participation.",
+        "payload_keys": [
+          "active_constraints",
+          "application_preprocessing",
+          "graph_context",
+          "graph_metadata",
+          "message",
+          "pending_request",
+          "routing_context",
+          "task"
+        ],
+        "active_constraints": null,
+        "pending_request": null
+      }
+    },
+    {
+      "id": "retention-v1-general-subgraph-isomorphism",
+      "case_sha256": "d88c70689e2685cd67ea8741bfa337c5c54988a38c0a7d2a2792fa1dc643a763",
+      "original_behavior": "execute",
+      "reviewed_behavior": "clarify",
+      "reason": "The request refers to an attached query graph, but no query graph or attachment reference is provided. The supplied graph is the target graph; it cannot substitute for the missing query pattern.",
+      "evidence": {
+        "message": "Count label-respecting embeddings of the attached query graph and include the embeddings.",
+        "payload_keys": [
+          "active_constraints",
+          "application_preprocessing",
+          "graph_context",
+          "graph_metadata",
+          "message",
+          "pending_request",
+          "routing_context",
+          "task"
+        ],
+        "active_constraints": null,
+        "pending_request": null
+      }
+    }
+  ]
+}

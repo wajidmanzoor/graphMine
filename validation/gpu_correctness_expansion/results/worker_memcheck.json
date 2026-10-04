@@ -1,0 +1,90 @@
+{
+  "backend": "worker_memcheck",
+  "cases": [
+    {
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "86",
+        "/home/wajid/projects/graphDatabaseAgent/library/build/workers/graphmine-worker-ecl-scc",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_scc/small.egr"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.5669573247432709,
+      "exit_code": 0,
+      "log": "runs/memcheck_scc.log",
+      "name": "scc",
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "86",
+        "/home/wajid/projects/graphDatabaseAgent/library/build/workers/graphmine-worker-ecl-maxflow",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_flow/small.egr",
+        "0",
+        "5",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6165656317025423,
+      "exit_code": 0,
+      "log": "runs/memcheck_flow.log",
+      "name": "flow",
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "86",
+        "/home/wajid/projects/graphDatabaseAgent/library/build/workers/graphmine-worker-hungarian-cuda",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/hungarian/small.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.41494200751185417,
+      "exit_code": 0,
+      "log": "runs/memcheck_assignment.log",
+      "name": "assignment",
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "86",
+        "/home/wajid/projects/graphDatabaseAgent/library/build/workers/graphmine-worker-gdlog",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gdlog_tc/dag.tsv",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6660737078636885,
+      "exit_code": 0,
+      "log": "runs/memcheck_closure.log",
+      "name": "closure",
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    }
+  ],
+  "limitations": [],
+  "passed": 4,
+  "seed": 20261004,
+  "status": "pass",
+  "total": 4
+}

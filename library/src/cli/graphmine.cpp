@@ -1,3 +1,4 @@
+#include "graphmine/problems/validated_expansion.hpp"
 #include <boost/json/src.hpp>
 
 #include <algorithm>
@@ -40,6 +41,10 @@
 #include "graphmine/problems/subgraph_isomorphism.hpp"
 #include "graphmine/problems/temporal_motif_mining.hpp"
 #include "graphmine/problems/triangle_counting.hpp"
+
+#ifndef GRAPHMINE_VERSION
+#define GRAPHMINE_VERSION "unknown"
+#endif
 
 namespace json = boost::json;
 
@@ -1420,6 +1425,64 @@ json::object run_community_detection(Arguments& arguments,
                      community_output);
 }
 
+void expansion_backend(const CommonOptions& common, const std::string& expected) {
+  if (common.backend != "auto" && common.backend != expected)
+    throw UsageError("this operation supports only backend " + expected);
+  if (common.allow_directed_projection)
+    throw UsageError("this operation does not accept --allow-directed-projection");
+}
+
+template<class Options>
+void isolated_options(Options& options, Arguments& arguments, const CommonOptions& common) {
+  options.execution=common.execution;
+  if(auto value=arguments.optional("timeout-seconds")) options.timeout_seconds=parse_integer<std::uint32_t>(*value,"timeout-seconds",1);
+  if(auto value=arguments.optional("worker-directory")) options.worker_directory=*value;
+}
+
+ExternalId argument_id(const std::string& text) {
+  boost::system::error_code error;
+  auto value=json::parse(text,error);
+  if(error) return ExternalId(text);
+  return parse_external_id(value,"vertex id argument");
+}
+
+json::object run_expansion(const std::string& operation, Arguments& arguments, const CommonOptions& common) {
+  auto graph=read_graph(common.graph_path);
+  if(operation=="connected-components") {
+    expansion_backend(common,"ecl-scc");graphmine::ConnectedComponentsOptions options;isolated_options(options,arguments,common);
+    auto mode=arguments.required("connectivity-mode");
+    if(mode=="weakly_connected") options.connectivity_mode=graphmine::ConnectivityMode::weakly_connected;
+    else if(mode!="strongly_connected") throw UsageError("connectivity-mode must be weakly_connected or strongly_connected");
+    arguments.finish();auto result=graphmine::ConnectedComponents(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::ConnectedComponentsOutput& out){
+      json::array assignments,sizes;for(const auto& entry:out.component_assignment) assignments.push_back(json::object{{"vertex",id_json(entry.vertex)},{"component",entry.component}});
+      for(auto size:out.component_sizes)sizes.push_back(size);
+      return json::object{{"component_assignment",std::move(assignments)},{"component_count",out.component_count},{"component_sizes",std::move(sizes)}};
+    });
+  }
+  if(operation=="max-flow-min-cut") {
+    expansion_backend(common,"ecl-maxflow");graphmine::MaxFlowOptions options;isolated_options(options,arguments,common);
+    options.source=argument_id(arguments.required("source"));options.sink=argument_id(arguments.required("sink"));options.unit_capacity=arguments.flag("unit-capacity");arguments.finish();
+    auto result=graphmine::MaxFlowMinCut(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::MaxFlowOutput& out){
+      json::array flows;for(const auto& entry:out.flow_assignment)flows.push_back(json::object{{"edge",id_json(entry.edge)},{"flow",entry.flow}});
+      return json::object{{"max_flow_value",out.max_flow_value},{"min_cut_value",out.min_cut_value},{"min_cut_edges",ids_json(out.min_cut_edges)},{"flow_assignment",std::move(flows)},{"source_side_vertices",ids_json(out.source_side_vertices)},{"optimal",out.optimal}};
+    });
+  }
+  if(operation=="linear-assignment") {
+    expansion_backend(common,"hungarian-cuda");graphmine::LinearAssignmentOptions options;isolated_options(options,arguments,common);arguments.finish();
+    auto result=graphmine::LinearAssignment(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::LinearAssignmentOutput& out){return json::object{{"matching_edges",ids_json(out.matching_edges)},{"matching_size",out.matching_size},{"objective_value",out.objective_value},{"feasible",out.feasible},{"optimal",out.optimal}};});
+  }
+  if(operation=="transitive-closure") {
+    expansion_backend(common,"gdlog");graphmine::ReachabilityOptions options;isolated_options(options,arguments,common);arguments.finish();auto result=graphmine::TransitiveClosure(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::ReachabilityOutput& out){json::array pairs;for(const auto& pair:out.reachable_pairs)pairs.push_back(json::object{{"source",id_json(pair.source)},{"target",id_json(pair.target)}});return json::object{{"transitive_closure_edges",std::move(pairs)},{"reachable_pair_count",out.reachable_pair_count},{"reachability_results",json::array{}},{"complete",out.complete}};});
+  }
+  expansion_backend(common,"graphminer");graphmine::ButterflyOptions options;options.execution=common.execution;arguments.finish();
+  auto result=invoke_backend([&]{return graphmine::ButterflyCounting(options).run(graph);});
+  return result_json(result,common.execution.collect_statistics,[](const graphmine::ButterflyOutput& out){return json::object{{"butterfly_count",out.butterfly_count},{"complete",out.complete}};});
+}
+
 using BackendProvider = std::function<std::vector<graphmine::BackendInfo>()>;
 
 struct OperationDescriptor {
@@ -1431,6 +1494,11 @@ struct OperationDescriptor {
 
 const std::vector<OperationDescriptor>& operations() {
   static const std::vector<OperationDescriptor> values = {
+      {"connected-components","connected_components","graphmine run connected-components --graph GRAPH.json --connectivity-mode weakly_connected|strongly_connected [--backend ecl-scc] [--timeout-seconds N]",graphmine::ConnectedComponents::backends},
+      {"max-flow-min-cut","max_flow_min_cut","graphmine run max-flow-min-cut --graph GRAPH.json --source ID --sink ID [--unit-capacity] [--backend ecl-maxflow] [--timeout-seconds N]",graphmine::MaxFlowMinCut::backends},
+      {"linear-assignment","bipartite_matching_assignment","graphmine run linear-assignment --graph GRAPH.json [--backend hungarian-cuda] [--timeout-seconds N] (complete square minimum-cost perfect assignment, <=64 per side, integer costs 0..999)",graphmine::LinearAssignment::backends},
+      {"transitive-closure","transitive_closure_reachability","graphmine run transitive-closure --graph GRAPH.json [--backend gdlog] [--timeout-seconds N] (reflexive closure; <=1024 vertices)",graphmine::TransitiveClosure::backends},
+      {"butterfly-counting","butterfly_counting_bipartite","graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",graphmine::ButterflyCounting::backends},
       {"maximal-cliques", "maximal_clique_enumeration",
        "graphmine run maximal-cliques --graph GRAPH.json [--backend "
        "auto|mce-gpu|g2-aimd|rdmce] [--minimum-clique-size N] "
@@ -1557,6 +1625,7 @@ json::object list_json() {
     values.push_back(std::move(item));
   }
   return {{"schema_version", "1.0.0"},
+          {"library_version", GRAPHMINE_VERSION},
           {"operation_count", values.size()},
           {"validated_backend_count", backend_count},
           {"compiled_backend_count", compiled_count},
@@ -1578,6 +1647,8 @@ json::object validate_graph_json(const graphmine::Graph& graph) {
 
 json::object run_operation(const std::string& operation, Arguments& arguments,
                            const CommonOptions& common) {
+  if(operation=="connected-components" || operation=="max-flow-min-cut" || operation=="linear-assignment" || operation=="transitive-closure" || operation=="butterfly-counting")
+    return run_expansion(operation,arguments,common);
   if (operation == "maximal-cliques") {
     return run_maximal_cliques(arguments, common);
   }
@@ -1620,6 +1691,7 @@ void print_help() {
   std::cout
       << "GraphMine build-once/run-many command line interface\n\n"
       << "Usage:\n"
+      << "  graphmine --version\n"
       << "  graphmine list [--output FILE] [--pretty]\n"
       << "  graphmine describe OPERATION [--output FILE] [--pretty]\n"
       << "  graphmine validate --graph GRAPH.json [--output FILE] [--pretty]\n"
@@ -1644,6 +1716,11 @@ bool json_succeeded(const json::object& result) {
 
 int main(int argc, char** argv) {
   try {
+    if (argc == 2 && (std::string_view(argv[1]) == "--version" ||
+                      std::string_view(argv[1]) == "-V")) {
+      std::cout << "GraphMine " << GRAPHMINE_VERSION << '\n';
+      return 0;
+    }
     if (argc < 2 || std::string_view(argv[1]) == "--help" ||
         std::string_view(argv[1]) == "-h" ||
         std::string_view(argv[1]) == "help") {

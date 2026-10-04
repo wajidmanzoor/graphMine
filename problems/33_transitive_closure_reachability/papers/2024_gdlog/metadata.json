@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_gdlog",
+  "title": "Optimizing Datalog for the GPU",
+  "year": 2024,
+  "venue": "ACM PPoPP 2025",
+  "doi": "10.1145/3669940.3707274",
+  "publication_url": "https://doi.org/10.1145/3669940.3707274",
+  "pdf_url": "https://thomas.gilray.org/pdf/datalog-gpu.pdf",
+  "code_url": "https://github.com/harp-lab/gdlog",
+  "semantic_fit": "general_framework",
+  "gpu_scope": "GPUlog/GDlog: GPU Datalog engine over the HISA range-indexed data structure; explicitly implements transitive closure as a documented operation (TC executable), 5-45x faster than prior work.",
+  "notes": "Confirmed genuine CUDA source, MIT license, and explicit transitive-closure support by direct inspection; the most directly reusable code artifact for this problem.",
+  "problem_id": "transitive_closure_reachability",
+  "problem_dir": "33_transitive_closure_reachability",
+  "research_cutoff": "2026-09-30"
+}

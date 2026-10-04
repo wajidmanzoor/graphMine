@@ -1,0 +1,20 @@
+========= COMPUTE-SANITIZER
+ECL-SCC v1.0
+
+input: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_scc/small.egr
+nodes: 10
+edges: 10
+avg degree: 1.00
+
+GPU: NVIDIA RTX 6000 Ada Generation with 142 SMs and 1536 mTpSM (2505.0 MHz and 10001.0 MHz)
+
+running algorithm
+compute time: 0.008068 s
+
+GRAPHMINE_COMPONENTS 2 2 2 4 4 5 7 7 8 9
+result:
+1 SCCs of size 3
+2 SCCs of size 2
+3 SCCs of size 1
+number of SCCs: 6
+========= ERROR SUMMARY: 0 errors

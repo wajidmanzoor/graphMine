@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "connected-components",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/reject_multiple_devices.json",
+    "--connectivity-mode",
+    "strongly_connected",
+    "--device",
+    "0,1"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.007719496265053749,
+  "exit_code": 3,
+  "log": "runs/library_reject_multiple_devices.log",
+  "stdin_path": null,
+  "timeout": false
+}

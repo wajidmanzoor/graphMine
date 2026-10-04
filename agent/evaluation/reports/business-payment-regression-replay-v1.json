@@ -1,0 +1,1979 @@
+{
+  "phase": "completed",
+  "pid": 77718,
+  "started_at": "2026-10-03T23:38:57.750417+00:00",
+  "source_sha256": "f4aa9a6517f17052bea18be13867d6334ca0b49431f327173195abafee14c392",
+  "suite_plan_sha256": "4fd4dca2aea987a075be437931704b302054826a9901a8871fefcc5e64e14713",
+  "case_sha256": "0eac3bc93818a5c1ae75e19bdb2061e3524b82cc276d8af85138861628a78af1",
+  "adapter_sha256": "dd7017735094300c4a89f217cb094c0d8b9981d1c7d86182596a7a6f7ef5f4d6",
+  "graph_sha256": "a756345e19afa24858dd82d4a6f11f242956bb0bc6b458a0539f6ef4a0171bc2",
+  "case_id": "business-barbell-02-q08",
+  "query": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+  "expected_operation": "k-cliques",
+  "expected_answer": {
+    "groups": [
+      [
+        "account-595-0",
+        "account-176-1",
+        "account-919-2"
+      ],
+      [
+        "account-595-0",
+        "account-176-1",
+        "account-251-3"
+      ],
+      [
+        "account-595-0",
+        "account-919-2",
+        "account-251-3"
+      ],
+      [
+        "account-176-1",
+        "account-919-2",
+        "account-251-3"
+      ],
+      [
+        "account-620-4",
+        "account-411-5",
+        "account-859-6"
+      ]
+    ],
+    "size": 3,
+    "count": 5
+  },
+  "native_gpu": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+  "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+  "scope": "Application diagnostic from unchanged saved base and business-adapter routes, with fresh FP8 planning/answers and native jobs. Not fresh routing predictions, a model-accuracy estimate, or a controlled latency comparison.",
+  "fresh_local_route_predictions": 0,
+  "oracle_feedback_sent": false,
+  "holdout_consumed": false,
+  "deployment_changed": false,
+  "rows": [
+    {
+      "arm": "base_nf4",
+      "route_source": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-business-nf4-v1/calls/business-barbell-02-q08--base_nf4.json",
+      "route_source_sha256": "4259e58407897a50a0c6bac4e94d06c031b60cf60731db4d3a90965678784d23",
+      "replayed_route_calls": 1,
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-payment-regression-replay-v1/base_nf4-runtime/history/session_1a1b8d13d0ec4b5fbc945a1b76770754",
+      "turn_id": "turn_4219e6a9d3b645a69a10fae5d8a34066",
+      "elapsed_seconds": 48.05394582077861,
+      "planning_status": "ready",
+      "job_id": "job_89e19440051841f5b4d2f7c2f9976e75",
+      "job_ids": [
+        "job_89e19440051841f5b4d2f7c2f9976e75"
+      ],
+      "passed_workflow_checks": true,
+      "issues": [],
+      "original_grader_issues": [],
+      "numeric_filter_equivalence_applied": false,
+      "observed": {
+        "query": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+        "response": {
+          "mode": "planner",
+          "message": "I'll answer your question using 1 validated analysis step.",
+          "planning_status": "ready",
+          "plan": {
+            "schema_version": "1.0.0",
+            "session_id": "session_1a1b8d13d0ec4b5fbc945a1b76770754",
+            "graph_id": "file_f3117caeed224d75aceef924733e270d",
+            "problem_id": "k_clique_counting_enumeration",
+            "operation_id": "k-cliques",
+            "backend_id": "auto",
+            "parameters": {
+              "k": 3,
+              "result_limit": 56
+            },
+            "optional_outputs": [
+              "cliques"
+            ],
+            "auxiliary_inputs": {},
+            "allow_directed_projection": false,
+            "collect_statistics": true,
+            "missing_inputs": [],
+            "rationale": "k=3 clique enumeration lists every complete three-account set, including those inside larger cliques, matching the review-queue request exactly.",
+            "application_intent": {
+              "objective": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+              "entity_type": "account",
+              "relationship_meaning": "mutual payment exchange",
+              "filters": [],
+              "filter_mode": "inherit",
+              "requires_edge_weights": false,
+              "weight_attribute": null,
+              "weight_usage": null,
+              "requires_direction": false,
+              "pattern_vertex_count": 3,
+              "pattern_edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2
+                ]
+              ],
+              "time_unit": "unspecified",
+              "time_window": null,
+              "assumptions": [
+                "Graph is undirected, so mutual payment is represented by a single edge.",
+                "'Bigger circles' means larger cliques; k=3 enumeration naturally includes triangles that are subsets of larger cliques."
+              ]
+            }
+          },
+          "interpretation": null,
+          "interpretation_source": null,
+          "job_id": "job_89e19440051841f5b4d2f7c2f9976e75",
+          "result_id": null,
+          "turn_id": "turn_4219e6a9d3b645a69a10fae5d8a34066",
+          "feedback_id": null,
+          "job_ids": [
+            "job_89e19440051841f5b4d2f7c2f9976e75"
+          ]
+        },
+        "job": {
+          "id": "job_89e19440051841f5b4d2f7c2f9976e75",
+          "session_id": "session_1a1b8d13d0ec4b5fbc945a1b76770754",
+          "plan": {
+            "schema_version": "1.0.0",
+            "session_id": "session_1a1b8d13d0ec4b5fbc945a1b76770754",
+            "graph_id": "file_f3117caeed224d75aceef924733e270d",
+            "problem_id": "k_clique_counting_enumeration",
+            "operation_id": "k-cliques",
+            "backend_id": "auto",
+            "parameters": {
+              "k": 3,
+              "result_limit": 56
+            },
+            "optional_outputs": [
+              "cliques"
+            ],
+            "auxiliary_inputs": {},
+            "allow_directed_projection": false,
+            "collect_statistics": true,
+            "missing_inputs": [],
+            "rationale": "k=3 clique enumeration lists every complete three-account set, including those inside larger cliques, matching the review-queue request exactly.",
+            "application_intent": {
+              "objective": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+              "entity_type": "account",
+              "relationship_meaning": "mutual payment exchange",
+              "filters": [],
+              "filter_mode": "inherit",
+              "requires_edge_weights": false,
+              "weight_attribute": null,
+              "weight_usage": null,
+              "requires_direction": false,
+              "pattern_vertex_count": 3,
+              "pattern_edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  2
+                ],
+                [
+                  0,
+                  2
+                ]
+              ],
+              "time_unit": "unspecified",
+              "time_window": null,
+              "assumptions": [
+                "Graph is undirected, so mutual payment is represented by a single edge.",
+                "'Bigger circles' means larger cliques; k=3 enumeration naturally includes triangles that are subsets of larger cliques."
+              ]
+            }
+          },
+          "turn_id": "turn_4219e6a9d3b645a69a10fae5d8a34066",
+          "analysis_id": "analysis_e76838cd5fe44eb9af60367003067041",
+          "step_index": 0,
+          "step_count": 1,
+          "status": "completed",
+          "command": [
+            "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+            "run",
+            "k-cliques",
+            "--graph",
+            "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-payment-regression-replay-v1/base_nf4-runtime/sessions/session_1a1b8d13d0ec4b5fbc945a1b76770754/files/file_f3117caeed224d75aceef924733e270d/graph.json",
+            "--backend",
+            "kcgpu",
+            "--device",
+            "0",
+            "--k",
+            "3",
+            "--result-limit",
+            "56",
+            "--enumerate",
+            "--output",
+            "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-payment-regression-replay-v1/base_nf4-runtime/jobs/job_89e19440051841f5b4d2f7c2f9976e75/result.json",
+            "--pretty"
+          ],
+          "result_id": "result_a7eaccb685d646cdb9a86e86787a21f9",
+          "error": null,
+          "created_at": "2026-10-03T23:39:39.465194Z",
+          "started_at": "2026-10-03T23:39:39.475745Z",
+          "finished_at": "2026-10-03T23:39:45.909805Z"
+        },
+        "result": {
+          "id": "result_a7eaccb685d646cdb9a86e86787a21f9",
+          "job_id": "job_89e19440051841f5b4d2f7c2f9976e75",
+          "session_id": "session_1a1b8d13d0ec4b5fbc945a1b76770754",
+          "operation_id": "k-cliques",
+          "payload": {
+            "ok": true,
+            "provenance": {
+              "problem": "k_clique_counting_enumeration",
+              "backend": "kcgpu",
+              "backend_version": "KCGPU artifact",
+              "source_commit": "314ac6d41fbe6582c2a258c2094c67ec1aa47116",
+              "execution_path": "original KCGPU GPU count + optional common exact materializer"
+            },
+            "warnings": [],
+            "statistics": {
+              "end_to_end_ms": 129.147042,
+              "backend_ms": 14.515122,
+              "output_materialization_ms": 0.004577
+            },
+            "output": {
+              "count": 5,
+              "complete": true,
+              "cliques": [
+                [
+                  "account-595-0",
+                  "account-176-1",
+                  "account-919-2"
+                ],
+                [
+                  "account-595-0",
+                  "account-176-1",
+                  "account-251-3"
+                ],
+                [
+                  "account-595-0",
+                  "account-919-2",
+                  "account-251-3"
+                ],
+                [
+                  "account-176-1",
+                  "account-919-2",
+                  "account-251-3"
+                ],
+                [
+                  "account-620-4",
+                  "account-411-5",
+                  "account-859-6"
+                ]
+              ]
+            }
+          },
+          "summary": {
+            "ok": true,
+            "provenance": {
+              "problem": "k_clique_counting_enumeration",
+              "backend": "kcgpu",
+              "backend_version": "KCGPU artifact",
+              "source_commit": "314ac6d41fbe6582c2a258c2094c67ec1aa47116",
+              "execution_path": "original KCGPU GPU count + optional common exact materializer"
+            },
+            "warnings": {
+              "_type": "array",
+              "count": 0,
+              "items": [],
+              "truncated": false
+            },
+            "statistics": {
+              "end_to_end_ms": 129.147042,
+              "backend_ms": 14.515122,
+              "output_materialization_ms": 0.004577
+            },
+            "output": {
+              "count": 5,
+              "complete": true,
+              "cliques": {
+                "_type": "array",
+                "count": 5,
+                "items": [
+                  {
+                    "_type": "array",
+                    "count": 3,
+                    "items": [
+                      "account-595-0",
+                      "account-176-1",
+                      "account-919-2"
+                    ],
+                    "truncated": false,
+                    "frequent_values": [
+                      {
+                        "value": "account-595-0",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-176-1",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-919-2",
+                        "count": 1
+                      }
+                    ]
+                  },
+                  {
+                    "_type": "array",
+                    "count": 3,
+                    "items": [
+                      "account-595-0",
+                      "account-176-1",
+                      "account-251-3"
+                    ],
+                    "truncated": false,
+                    "frequent_values": [
+                      {
+                        "value": "account-595-0",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-176-1",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-251-3",
+                        "count": 1
+                      }
+                    ]
+                  },
+                  {
+                    "_type": "array",
+                    "count": 3,
+                    "items": [
+                      "account-595-0",
+                      "account-919-2",
+                      "account-251-3"
+                    ],
+                    "truncated": false,
+                    "frequent_values": [
+                      {
+                        "value": "account-595-0",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-919-2",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-251-3",
+                        "count": 1
+                      }
+                    ]
+                  },
+                  {
+                    "_type": "array",
+                    "count": 3,
+                    "items": [
+                      "account-176-1",
+                      "account-919-2",
+                      "account-251-3"
+                    ],
+                    "truncated": false,
+                    "frequent_values": [
+                      {
+                        "value": "account-176-1",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-919-2",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-251-3",
+                        "count": 1
+                      }
+                    ]
+                  },
+                  {
+                    "_type": "array",
+                    "count": 3,
+                    "items": [
+                      "account-620-4",
+                      "account-411-5",
+                      "account-859-6"
+                    ],
+                    "truncated": false,
+                    "frequent_values": [
+                      {
+                        "value": "account-620-4",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-411-5",
+                        "count": 1
+                      },
+                      {
+                        "value": "account-859-6",
+                        "count": 1
+                      }
+                    ]
+                  }
+                ],
+                "truncated": false
+              }
+            }
+          },
+          "answer": {
+            "question": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+            "operation_id": "k-cliques",
+            "entity_noun": "accounts",
+            "facts": [
+              {
+                "id": "fact_0",
+                "statement": "Found 5 matching groups of accounts.",
+                "value": 5,
+                "source": "output.cliques",
+                "kind": "computed"
+              },
+              {
+                "id": "fact_1",
+                "statement": "Group 1: Account A, Account B, Account C. 3 accounts.",
+                "value": {
+                  "id": 0,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 3
+                },
+                "source": "original_graph + result membership",
+                "kind": "computed"
+              },
+              {
+                "id": "fact_2",
+                "statement": "Group 2: Account A, Account B, Account D. 3 accounts.",
+                "value": {
+                  "id": 1,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 4
+                },
+                "source": "original_graph + result membership",
+                "kind": "computed"
+              },
+              {
+                "id": "fact_3",
+                "statement": "Group 3: Account A, Account C, Account D. 3 accounts.",
+                "value": {
+                  "id": 2,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 4
+                },
+                "source": "original_graph + result membership",
+                "kind": "computed"
+              },
+              {
+                "id": "fact_4",
+                "statement": "Group 4: Account B, Account C, Account D. 3 accounts.",
+                "value": {
+                  "id": 3,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 4
+                },
+                "source": "original_graph + result membership",
+                "kind": "computed"
+              },
+              {
+                "id": "fact_5",
+                "statement": "Group 5: Account E, Account F, Account G. 3 accounts.",
+                "value": {
+                  "id": 4,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 1
+                },
+                "source": "original_graph + result membership",
+                "kind": "computed"
+              },
+              {
+                "id": "fact_6",
+                "statement": "Group 1 — region: North: 2; South: 1.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 2,
+                  "examples": [
+                    {
+                      "value": "North",
+                      "count": 2
+                    },
+                    {
+                      "value": "South",
+                      "count": 1
+                    }
+                  ]
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_7",
+                "statement": "Group 1 — tenure years: average 3.33; range 1–5.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 3,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 5,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 1,
+                  "maximum": 5,
+                  "mean": 3.3333333333333335
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_8",
+                "statement": "Group 2 — region: North: 3.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": "North",
+                      "count": 3
+                    }
+                  ]
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_9",
+                "statement": "Group 2 — tenure years: average 4.33; range 1–8.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 3,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 8,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 1,
+                  "maximum": 8,
+                  "mean": 4.333333333333333
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_10",
+                "statement": "Group 3 — region: North: 2; South: 1.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 2,
+                  "examples": [
+                    {
+                      "value": "North",
+                      "count": 2
+                    },
+                    {
+                      "value": "South",
+                      "count": 1
+                    }
+                  ]
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_11",
+                "statement": "Group 3 — tenure years: average 4.67; range 1–8.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 3,
+                  "examples": [
+                    {
+                      "value": 8,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 5,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 1,
+                  "maximum": 8,
+                  "mean": 4.666666666666667
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_12",
+                "statement": "Group 4 — region: North: 2; South: 1.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 2,
+                  "examples": [
+                    {
+                      "value": "North",
+                      "count": 2
+                    },
+                    {
+                      "value": "South",
+                      "count": 1
+                    }
+                  ]
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_13",
+                "statement": "Group 4 — tenure years: average 5.67; range 4–8.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 3,
+                  "examples": [
+                    {
+                      "value": 8,
+                      "count": 1
+                    },
+                    {
+                      "value": 5,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 4,
+                  "maximum": 8,
+                  "mean": 5.666666666666667
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_14",
+                "statement": "Group 5 — region: North: 3.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": "North",
+                      "count": 3
+                    }
+                  ]
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              },
+              {
+                "id": "fact_15",
+                "statement": "Group 5 — tenure years: average 6.67; range 2–11.",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 3,
+                  "examples": [
+                    {
+                      "value": 7,
+                      "count": 1
+                    },
+                    {
+                      "value": 11,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 2,
+                  "maximum": 11,
+                  "mean": 6.666666666666667
+                },
+                "source": "original_graph.attributes",
+                "kind": "attribute_summary"
+              }
+            ],
+            "metrics": {
+              "count": 5,
+              "complete": true
+            },
+            "groups": [
+              {
+                "id": 0,
+                "label": "Group 1",
+                "vertices": [
+                  "account-595-0",
+                  "account-176-1",
+                  "account-919-2"
+                ],
+                "members": [
+                  "Account A",
+                  "Account B",
+                  "Account C"
+                ],
+                "size": 3,
+                "internal_connections": 3,
+                "external_connections": 3,
+                "attribute_summary": {
+                  "attributes.region": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 2,
+                    "examples": [
+                      {
+                        "value": "North",
+                        "count": 2
+                      },
+                      {
+                        "value": "South",
+                        "count": 1
+                      }
+                    ]
+                  },
+                  "attributes.tenure_years": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "int"
+                    ],
+                    "distinct_count": 3,
+                    "examples": [
+                      {
+                        "value": 1,
+                        "count": 1
+                      },
+                      {
+                        "value": 5,
+                        "count": 1
+                      },
+                      {
+                        "value": 4,
+                        "count": 1
+                      }
+                    ],
+                    "minimum": 1,
+                    "maximum": 5,
+                    "mean": 3.3333333333333335
+                  },
+                  "type": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 1,
+                    "examples": [
+                      {
+                        "value": "account",
+                        "count": 3
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": 1,
+                "label": "Group 2",
+                "vertices": [
+                  "account-595-0",
+                  "account-176-1",
+                  "account-251-3"
+                ],
+                "members": [
+                  "Account A",
+                  "Account B",
+                  "Account D"
+                ],
+                "size": 3,
+                "internal_connections": 3,
+                "external_connections": 4,
+                "attribute_summary": {
+                  "attributes.region": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 1,
+                    "examples": [
+                      {
+                        "value": "North",
+                        "count": 3
+                      }
+                    ]
+                  },
+                  "attributes.tenure_years": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "int"
+                    ],
+                    "distinct_count": 3,
+                    "examples": [
+                      {
+                        "value": 1,
+                        "count": 1
+                      },
+                      {
+                        "value": 8,
+                        "count": 1
+                      },
+                      {
+                        "value": 4,
+                        "count": 1
+                      }
+                    ],
+                    "minimum": 1,
+                    "maximum": 8,
+                    "mean": 4.333333333333333
+                  },
+                  "type": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 1,
+                    "examples": [
+                      {
+                        "value": "account",
+                        "count": 3
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": 2,
+                "label": "Group 3",
+                "vertices": [
+                  "account-595-0",
+                  "account-919-2",
+                  "account-251-3"
+                ],
+                "members": [
+                  "Account A",
+                  "Account C",
+                  "Account D"
+                ],
+                "size": 3,
+                "internal_connections": 3,
+                "external_connections": 4,
+                "attribute_summary": {
+                  "attributes.region": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 2,
+                    "examples": [
+                      {
+                        "value": "North",
+                        "count": 2
+                      },
+                      {
+                        "value": "South",
+                        "count": 1
+                      }
+                    ]
+                  },
+                  "attributes.tenure_years": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "int"
+                    ],
+                    "distinct_count": 3,
+                    "examples": [
+                      {
+                        "value": 8,
+                        "count": 1
+                      },
+                      {
+                        "value": 1,
+                        "count": 1
+                      },
+                      {
+                        "value": 5,
+                        "count": 1
+                      }
+                    ],
+                    "minimum": 1,
+                    "maximum": 8,
+                    "mean": 4.666666666666667
+                  },
+                  "type": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 1,
+                    "examples": [
+                      {
+                        "value": "account",
+                        "count": 3
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": 3,
+                "label": "Group 4",
+                "vertices": [
+                  "account-176-1",
+                  "account-919-2",
+                  "account-251-3"
+                ],
+                "members": [
+                  "Account B",
+                  "Account C",
+                  "Account D"
+                ],
+                "size": 3,
+                "internal_connections": 3,
+                "external_connections": 4,
+                "attribute_summary": {
+                  "attributes.region": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 2,
+                    "examples": [
+                      {
+                        "value": "North",
+                        "count": 2
+                      },
+                      {
+                        "value": "South",
+                        "count": 1
+                      }
+                    ]
+                  },
+                  "attributes.tenure_years": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "int"
+                    ],
+                    "distinct_count": 3,
+                    "examples": [
+                      {
+                        "value": 8,
+                        "count": 1
+                      },
+                      {
+                        "value": 5,
+                        "count": 1
+                      },
+                      {
+                        "value": 4,
+                        "count": 1
+                      }
+                    ],
+                    "minimum": 4,
+                    "maximum": 8,
+                    "mean": 5.666666666666667
+                  },
+                  "type": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 1,
+                    "examples": [
+                      {
+                        "value": "account",
+                        "count": 3
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": 4,
+                "label": "Group 5",
+                "vertices": [
+                  "account-620-4",
+                  "account-411-5",
+                  "account-859-6"
+                ],
+                "members": [
+                  "Account E",
+                  "Account F",
+                  "Account G"
+                ],
+                "size": 3,
+                "internal_connections": 3,
+                "external_connections": 1,
+                "attribute_summary": {
+                  "attributes.region": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 1,
+                    "examples": [
+                      {
+                        "value": "North",
+                        "count": 3
+                      }
+                    ]
+                  },
+                  "attributes.tenure_years": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "int"
+                    ],
+                    "distinct_count": 3,
+                    "examples": [
+                      {
+                        "value": 7,
+                        "count": 1
+                      },
+                      {
+                        "value": 11,
+                        "count": 1
+                      },
+                      {
+                        "value": 2,
+                        "count": 1
+                      }
+                    ],
+                    "minimum": 2,
+                    "maximum": 11,
+                    "mean": 6.666666666666667
+                  },
+                  "type": {
+                    "present": 3,
+                    "missing": 0,
+                    "null": 0,
+                    "types": [
+                      "str"
+                    ],
+                    "distinct_count": 1,
+                    "examples": [
+                      {
+                        "value": "account",
+                        "count": 3
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "rows": [
+              {
+                "id": "account-176-1",
+                "label": "Account B",
+                "type": "account",
+                "attributes": {
+                  "region": "North",
+                  "tenure_years": 4
+                },
+                "key": "\"account-176-1\"",
+                "groups": [
+                  0,
+                  1,
+                  3
+                ],
+                "community": 0
+              },
+              {
+                "id": "account-251-3",
+                "label": "Account D",
+                "type": "account",
+                "attributes": {
+                  "region": "North",
+                  "tenure_years": 8
+                },
+                "key": "\"account-251-3\"",
+                "groups": [
+                  1,
+                  2,
+                  3
+                ],
+                "community": 1
+              },
+              {
+                "id": "account-411-5",
+                "label": "Account F",
+                "type": "account",
+                "attributes": {
+                  "region": "North",
+                  "tenure_years": 7
+                },
+                "key": "\"account-411-5\"",
+                "groups": [
+                  4
+                ],
+                "community": 4
+              },
+              {
+                "id": "account-595-0",
+                "label": "Account A",
+                "type": "account",
+                "attributes": {
+                  "region": "North",
+                  "tenure_years": 1
+                },
+                "key": "\"account-595-0\"",
+                "groups": [
+                  0,
+                  1,
+                  2
+                ],
+                "community": 0
+              },
+              {
+                "id": "account-620-4",
+                "label": "Account E",
+                "type": "account",
+                "attributes": {
+                  "region": "North",
+                  "tenure_years": 2
+                },
+                "key": "\"account-620-4\"",
+                "groups": [
+                  4
+                ],
+                "community": 4
+              },
+              {
+                "id": "account-859-6",
+                "label": "Account G",
+                "type": "account",
+                "attributes": {
+                  "region": "North",
+                  "tenure_years": 11
+                },
+                "key": "\"account-859-6\"",
+                "groups": [
+                  4
+                ],
+                "community": 4
+              },
+              {
+                "id": "account-919-2",
+                "label": "Account C",
+                "type": "account",
+                "attributes": {
+                  "region": "South",
+                  "tenure_years": 5
+                },
+                "key": "\"account-919-2\"",
+                "groups": [
+                  0,
+                  2,
+                  3
+                ],
+                "community": 0
+              }
+            ],
+            "events": [],
+            "tables": {
+              "members": [
+                {
+                  "Name": "Account B",
+                  "Region": "North",
+                  "Tenure years": 4,
+                  "Original ID": "account-176-1"
+                },
+                {
+                  "Name": "Account D",
+                  "Region": "North",
+                  "Tenure years": 8,
+                  "Original ID": "account-251-3"
+                },
+                {
+                  "Name": "Account F",
+                  "Region": "North",
+                  "Tenure years": 7,
+                  "Original ID": "account-411-5"
+                },
+                {
+                  "Name": "Account A",
+                  "Region": "North",
+                  "Tenure years": 1,
+                  "Original ID": "account-595-0"
+                },
+                {
+                  "Name": "Account E",
+                  "Region": "North",
+                  "Tenure years": 2,
+                  "Original ID": "account-620-4"
+                },
+                {
+                  "Name": "Account G",
+                  "Region": "North",
+                  "Tenure years": 11,
+                  "Original ID": "account-859-6"
+                },
+                {
+                  "Name": "Account C",
+                  "Region": "South",
+                  "Tenure years": 5,
+                  "Original ID": "account-919-2"
+                }
+              ],
+              "groups": [
+                {
+                  "Group": "Group 1",
+                  "Name": "Account A",
+                  "Region": "North",
+                  "Tenure years": 1,
+                  "Original ID": "account-595-0"
+                },
+                {
+                  "Group": "Group 1",
+                  "Name": "Account B",
+                  "Region": "North",
+                  "Tenure years": 4,
+                  "Original ID": "account-176-1"
+                },
+                {
+                  "Group": "Group 1",
+                  "Name": "Account C",
+                  "Region": "South",
+                  "Tenure years": 5,
+                  "Original ID": "account-919-2"
+                },
+                {
+                  "Group": "Group 2",
+                  "Name": "Account A",
+                  "Region": "North",
+                  "Tenure years": 1,
+                  "Original ID": "account-595-0"
+                },
+                {
+                  "Group": "Group 2",
+                  "Name": "Account B",
+                  "Region": "North",
+                  "Tenure years": 4,
+                  "Original ID": "account-176-1"
+                },
+                {
+                  "Group": "Group 2",
+                  "Name": "Account D",
+                  "Region": "North",
+                  "Tenure years": 8,
+                  "Original ID": "account-251-3"
+                },
+                {
+                  "Group": "Group 3",
+                  "Name": "Account A",
+                  "Region": "North",
+                  "Tenure years": 1,
+                  "Original ID": "account-595-0"
+                },
+                {
+                  "Group": "Group 3",
+                  "Name": "Account C",
+                  "Region": "South",
+                  "Tenure years": 5,
+                  "Original ID": "account-919-2"
+                },
+                {
+                  "Group": "Group 3",
+                  "Name": "Account D",
+                  "Region": "North",
+                  "Tenure years": 8,
+                  "Original ID": "account-251-3"
+                },
+                {
+                  "Group": "Group 4",
+                  "Name": "Account B",
+                  "Region": "North",
+                  "Tenure years": 4,
+                  "Original ID": "account-176-1"
+                },
+                {
+                  "Group": "Group 4",
+                  "Name": "Account C",
+                  "Region": "South",
+                  "Tenure years": 5,
+                  "Original ID": "account-919-2"
+                },
+                {
+                  "Group": "Group 4",
+                  "Name": "Account D",
+                  "Region": "North",
+                  "Tenure years": 8,
+                  "Original ID": "account-251-3"
+                },
+                {
+                  "Group": "Group 5",
+                  "Name": "Account E",
+                  "Region": "North",
+                  "Tenure years": 2,
+                  "Original ID": "account-620-4"
+                },
+                {
+                  "Group": "Group 5",
+                  "Name": "Account F",
+                  "Region": "North",
+                  "Tenure years": 7,
+                  "Original ID": "account-411-5"
+                },
+                {
+                  "Group": "Group 5",
+                  "Name": "Account G",
+                  "Region": "North",
+                  "Tenure years": 11,
+                  "Original ID": "account-859-6"
+                }
+              ],
+              "total_members": 7,
+              "total_memberships": 15,
+              "truncated": false
+            },
+            "network": {
+              "nodes": [
+                {
+                  "id": "account-176-1",
+                  "label": "Account B",
+                  "type": "account",
+                  "attributes": {
+                    "region": "North",
+                    "tenure_years": 4
+                  },
+                  "key": "\"account-176-1\"",
+                  "groups": [
+                    0,
+                    1,
+                    3
+                  ],
+                  "community": 0
+                },
+                {
+                  "id": "account-251-3",
+                  "label": "Account D",
+                  "type": "account",
+                  "attributes": {
+                    "region": "North",
+                    "tenure_years": 8
+                  },
+                  "key": "\"account-251-3\"",
+                  "groups": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "community": 1
+                },
+                {
+                  "id": "account-411-5",
+                  "label": "Account F",
+                  "type": "account",
+                  "attributes": {
+                    "region": "North",
+                    "tenure_years": 7
+                  },
+                  "key": "\"account-411-5\"",
+                  "groups": [
+                    4
+                  ],
+                  "community": 4
+                },
+                {
+                  "id": "account-595-0",
+                  "label": "Account A",
+                  "type": "account",
+                  "attributes": {
+                    "region": "North",
+                    "tenure_years": 1
+                  },
+                  "key": "\"account-595-0\"",
+                  "groups": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "community": 0
+                },
+                {
+                  "id": "account-620-4",
+                  "label": "Account E",
+                  "type": "account",
+                  "attributes": {
+                    "region": "North",
+                    "tenure_years": 2
+                  },
+                  "key": "\"account-620-4\"",
+                  "groups": [
+                    4
+                  ],
+                  "community": 4
+                },
+                {
+                  "id": "account-859-6",
+                  "label": "Account G",
+                  "type": "account",
+                  "attributes": {
+                    "region": "North",
+                    "tenure_years": 11
+                  },
+                  "key": "\"account-859-6\"",
+                  "groups": [
+                    4
+                  ],
+                  "community": 4
+                },
+                {
+                  "id": "account-919-2",
+                  "label": "Account C",
+                  "type": "account",
+                  "attributes": {
+                    "region": "South",
+                    "tenure_years": 5
+                  },
+                  "key": "\"account-919-2\"",
+                  "groups": [
+                    0,
+                    2,
+                    3
+                  ],
+                  "community": 0
+                }
+              ],
+              "edges": [
+                {
+                  "id": "relationship-0",
+                  "source": "account-595-0",
+                  "target": "account-176-1",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2025,
+                    "source_system": "synthetic-demo",
+                    "score": 0.52,
+                    "ascore": 0.8,
+                    "cost": 1
+                  },
+                  "source_key": "\"account-595-0\"",
+                  "target_key": "\"account-176-1\""
+                },
+                {
+                  "id": "relationship-1",
+                  "source": "account-595-0",
+                  "target": "account-919-2",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2026,
+                    "source_system": "synthetic-demo",
+                    "score": 0.77,
+                    "ascore": 0.0,
+                    "cost": 2
+                  },
+                  "source_key": "\"account-595-0\"",
+                  "target_key": "\"account-919-2\""
+                },
+                {
+                  "id": "relationship-2",
+                  "source": "account-595-0",
+                  "target": "account-251-3",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2026,
+                    "source_system": "synthetic-demo",
+                    "score": 0.94,
+                    "ascore": 0.0,
+                    "cost": 3
+                  },
+                  "source_key": "\"account-595-0\"",
+                  "target_key": "\"account-251-3\""
+                },
+                {
+                  "id": "relationship-3",
+                  "source": "account-176-1",
+                  "target": "account-919-2",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2025,
+                    "source_system": "synthetic-demo",
+                    "score": 0.999,
+                    "ascore": 0.8,
+                    "cost": 4
+                  },
+                  "source_key": "\"account-176-1\"",
+                  "target_key": "\"account-919-2\""
+                },
+                {
+                  "id": "relationship-4",
+                  "source": "account-176-1",
+                  "target": "account-251-3",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2026,
+                    "source_system": "synthetic-demo",
+                    "score": 0.52,
+                    "ascore": 0.0,
+                    "cost": 5
+                  },
+                  "source_key": "\"account-176-1\"",
+                  "target_key": "\"account-251-3\""
+                },
+                {
+                  "id": "relationship-5",
+                  "source": "account-919-2",
+                  "target": "account-251-3",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2026,
+                    "source_system": "synthetic-demo",
+                    "score": 0.77,
+                    "ascore": 0.0,
+                    "cost": 6
+                  },
+                  "source_key": "\"account-919-2\"",
+                  "target_key": "\"account-251-3\""
+                },
+                {
+                  "id": "relationship-7",
+                  "source": "account-620-4",
+                  "target": "account-411-5",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2026,
+                    "source_system": "synthetic-demo",
+                    "score": 0.999,
+                    "ascore": 0.0,
+                    "cost": 8
+                  },
+                  "source_key": "\"account-620-4\"",
+                  "target_key": "\"account-411-5\""
+                },
+                {
+                  "id": "relationship-8",
+                  "source": "account-620-4",
+                  "target": "account-859-6",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2026,
+                    "source_system": "synthetic-demo",
+                    "score": 0.52,
+                    "ascore": 0.0,
+                    "cost": 9
+                  },
+                  "source_key": "\"account-620-4\"",
+                  "target_key": "\"account-859-6\""
+                },
+                {
+                  "id": "relationship-10",
+                  "source": "account-411-5",
+                  "target": "account-859-6",
+                  "type": "relationship",
+                  "attributes": {
+                    "year": 2026,
+                    "source_system": "synthetic-demo",
+                    "score": 0.94,
+                    "ascore": 0.0,
+                    "cost": 1
+                  },
+                  "source_key": "\"account-411-5\"",
+                  "target_key": "\"account-859-6\""
+                }
+              ],
+              "layout": "groups",
+              "groups": [
+                {
+                  "id": 0,
+                  "label": "Group 1",
+                  "size": 3
+                },
+                {
+                  "id": 1,
+                  "label": "Group 2",
+                  "size": 3
+                },
+                {
+                  "id": 2,
+                  "label": "Group 3",
+                  "size": 3
+                },
+                {
+                  "id": 3,
+                  "label": "Group 4",
+                  "size": 3
+                },
+                {
+                  "id": 4,
+                  "label": "Group 5",
+                  "size": 3
+                }
+              ],
+              "default_group": null,
+              "entity_noun": "accounts",
+              "total_nodes": 7,
+              "total_edges": 9,
+              "truncated": false
+            },
+            "limitations": [],
+            "diagnostics": {
+              "backend_notes": [],
+              "unverified_planner_notes": [
+                "Graph is undirected, so mutual payment is represented by a single edge.",
+                "'Bigger circles' means larger cliques; k=3 enumeration naturally includes triangles that are subsets of larger cliques."
+              ],
+              "note": "Planner notes are unverified and are not factual answer evidence."
+            },
+            "provenance": {
+              "source_sha256": "a756345e19afa24858dd82d4a6f11f242956bb0bc6b458a0539f6ef4a0171bc2",
+              "graph_id": "file_f3117caeed224d75aceef924733e270d",
+              "directed": false,
+              "filters": [],
+              "filter_evidence": [],
+              "input_vertices": 8,
+              "input_edges": 11,
+              "attribute_use": "joined from original input for explanation and display; filters are applied before execution",
+              "timestamp_unit": "unspecified"
+            }
+          },
+          "interpretation": {
+            "schema_version": "1.0.0",
+            "summary": "Found 5 matching groups of accounts.",
+            "findings": [
+              "Found 5 matching groups of accounts.",
+              "Group 1: Account A, Account B, Account C. 3 accounts.",
+              "Group 2: Account A, Account B, Account D. 3 accounts.",
+              "Group 3: Account A, Account C, Account D. 3 accounts.",
+              "Group 4: Account B, Account C, Account D. 3 accounts.",
+              "Group 5: Account E, Account F, Account G. 3 accounts.",
+              "Group 1 — region: North: 2; South: 1.",
+              "Group 1 — tenure years: average 3.33; range 1–5."
+            ],
+            "limitations": [],
+            "evidence": [
+              {
+                "claim": "Found 5 matching groups of accounts.",
+                "data_ref": "answer.facts.0.value",
+                "value": 5
+              },
+              {
+                "claim": "Group 1: Account A, Account B, Account C. 3 accounts.",
+                "data_ref": "answer.facts.1.value",
+                "value": {
+                  "id": 0,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 3
+                }
+              },
+              {
+                "claim": "Group 2: Account A, Account B, Account D. 3 accounts.",
+                "data_ref": "answer.facts.2.value",
+                "value": {
+                  "id": 1,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 4
+                }
+              },
+              {
+                "claim": "Group 3: Account A, Account C, Account D. 3 accounts.",
+                "data_ref": "answer.facts.3.value",
+                "value": {
+                  "id": 2,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 4
+                }
+              },
+              {
+                "claim": "Group 4: Account B, Account C, Account D. 3 accounts.",
+                "data_ref": "answer.facts.4.value",
+                "value": {
+                  "id": 3,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 4
+                }
+              },
+              {
+                "claim": "Group 5: Account E, Account F, Account G. 3 accounts.",
+                "data_ref": "answer.facts.5.value",
+                "value": {
+                  "id": 4,
+                  "size": 3,
+                  "internal_connections": 3,
+                  "external_connections": 1
+                }
+              },
+              {
+                "claim": "Group 1 — region: North: 2; South: 1.",
+                "data_ref": "answer.facts.6.value",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 2,
+                  "examples": [
+                    {
+                      "value": "North",
+                      "count": 2
+                    },
+                    {
+                      "value": "South",
+                      "count": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "claim": "Group 1 — tenure years: average 3.33; range 1–5.",
+                "data_ref": "answer.facts.7.value",
+                "value": {
+                  "present": 3,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 3,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 5,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 1,
+                  "maximum": 5,
+                  "mean": 3.3333333333333335
+                }
+              }
+            ],
+            "suggested_followups": [
+              "Inspect the accounts and their original attributes",
+              "Explore connections in the answer",
+              "Which accounts connect routes through this sample?"
+            ],
+            "followup_actions": [
+              {
+                "id": "show_members",
+                "label": "Inspect the accounts and their original attributes",
+                "kind": "show_view",
+                "view_id": "members",
+                "request": null
+              },
+              {
+                "id": "show_connections",
+                "label": "Explore connections in the answer",
+                "kind": "show_view",
+                "view_id": "network",
+                "request": null
+              },
+              {
+                "id": "rank_connectors",
+                "label": "Which accounts connect routes through this sample?",
+                "kind": "ask",
+                "view_id": null,
+                "request": "Using the same sample and active filters, rank all accounts by how often they lie between other pairs along routes with the fewest links. Count each link as one step, not as a weighted distance, and include original names and attributes."
+              }
+            ],
+            "visualizations": [
+              {
+                "id": "network",
+                "type": "network",
+                "title": "Connections among the returned accounts",
+                "data_ref": "answer.network",
+                "encodings": {
+                  "node_id": "id",
+                  "node_label": "label",
+                  "node_color": "community"
+                },
+                "filters": [],
+                "interactions": [
+                  "filter"
+                ],
+                "limit": 1000,
+                "description": "Inspect a returned group, or show the answer overview. Names and attributes come from the original data."
+              },
+              {
+                "id": "groups",
+                "type": "table",
+                "title": "Group membership",
+                "data_ref": "answer.tables.groups",
+                "encodings": {},
+                "filters": [],
+                "interactions": [
+                  "filter"
+                ],
+                "limit": 1000,
+                "description": "Showing 15 of 15 memberships; one row per named member. The same member may appear in several groups. Original attributes are shown alongside each name."
+              },
+              {
+                "id": "members",
+                "type": "table",
+                "title": "Returned accounts and their attributes",
+                "data_ref": "answer.tables.members",
+                "encodings": {},
+                "filters": [],
+                "interactions": [
+                  "filter"
+                ],
+                "limit": 1000,
+                "description": "7 named accounts; values joined from the original data."
+              }
+            ],
+            "requires_new_execution": false,
+            "proposed_request": null,
+            "hypotheses": []
+          },
+          "interpretation_source": "llm",
+          "created_at": "2026-10-03T23:39:39.684504Z"
+        }
+      }
+    },
+    {
+      "arm": "adapter_nf4",
+      "route_source": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-business-nf4-v1/calls/business-barbell-02-q08--adapter_nf4.json",
+      "route_source_sha256": "c6ed13e838ade59cadd65933d227a2775b5a1c811f83da209250e0a87e6cc378",
+      "replayed_route_calls": 1,
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-payment-regression-replay-v1/adapter_nf4-runtime/history/session_25eafe1f5960420e9fa60fe98041dba2",
+      "turn_id": "turn_ff6fc1d18d05433fa9973d1d9e906344",
+      "elapsed_seconds": 36.897876128554344,
+      "planning_status": "unsupported",
+      "job_id": null,
+      "job_ids": [],
+      "passed_workflow_checks": false,
+      "issues": [
+        "No completed k-cliques result"
+      ],
+      "original_grader_issues": [
+        "No completed k-cliques result"
+      ],
+      "numeric_filter_equivalence_applied": false,
+      "observed": {
+        "query": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+        "response": {
+          "mode": "planner",
+          "message": "I can find the largest complete payment circles, but I can't separately list every three-account circle that sits inside a bigger group. The tool only returns the outermost circles, not the smaller ones nested within them.",
+          "planning_status": "unsupported",
+          "plan": null,
+          "interpretation": null,
+          "interpretation_source": null,
+          "job_id": null,
+          "result_id": null,
+          "turn_id": "turn_ff6fc1d18d05433fa9973d1d9e906344",
+          "feedback_id": null,
+          "job_ids": []
+        }
+      }
+    }
+  ],
+  "finished_at": "2026-10-03T23:40:22.994885+00:00"
+}

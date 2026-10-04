@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_igkway",
+  "title": "iG-kway: Incremental k-way Graph Partitioning on GPU",
+  "year": 2025,
+  "venue": "ACM/IEEE DAC 2025",
+  "doi": null,
+  "publication_url": "https://www.researchgate.net/publication/395608469_iG-kway_Incremental_k-way_Graph_Partitioning_on_GPU",
+  "pdf_url": null,
+  "code_url": null,
+  "semantic_fit": "variant",
+  "gpu_scope": "Incremental GPU k-way partitioner that updates only affected vertices after small graph changes, from the same group as G-kway.",
+  "notes": "Incremental/dynamic-update variant of balanced k-way partitioning; no open PDF or public code repository was located during this pass.",
+  "problem_id": "balanced_graph_partitioning",
+  "problem_dir": "30_balanced_graph_partitioning",
+  "research_cutoff": "2026-09-30"
+}

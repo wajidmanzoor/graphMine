@@ -1,0 +1,6 @@
+original node ID, percentage node was in agreeable majority
+0,100.0
+1,0.0
+2,100.0
+source node ID, destination node ID, percentage edge was in tree, percentage edge was negative
+0,1,15.6,101150.0

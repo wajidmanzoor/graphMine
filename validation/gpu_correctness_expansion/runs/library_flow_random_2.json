@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "max-flow-min-cut",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/flow_random_2.json",
+    "--source",
+    "0",
+    "--sink",
+    "11"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.26485233195126057,
+  "exit_code": 0,
+  "log": "runs/library_flow_random_2.log",
+  "stdin_path": null,
+  "timeout": false
+}

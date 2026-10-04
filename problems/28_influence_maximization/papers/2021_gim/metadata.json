@@ -1,0 +1,16 @@
+{
+  "paper_id": "2021_gim",
+  "title": "gIM: GPU Accelerated RIS-Based Influence Maximization Algorithm",
+  "year": 2021,
+  "venue": "IEEE Transactions on Parallel and Distributed Systems",
+  "doi": "10.1109/TPDS.2021.3068690",
+  "publication_url": "https://arxiv.org/abs/2009.07325",
+  "pdf_url": "https://arxiv.org/pdf/2009.07325",
+  "code_url": "https://github.com/LIS-Laboratory/gim",
+  "semantic_fit": "exact",
+  "gpu_scope": "Single-GPU RIS/IMM-based influence maximization supporting both independent-cascade and linear-threshold models.",
+  "notes": null,
+  "problem_id": "influence_maximization",
+  "problem_dir": "28_influence_maximization",
+  "research_cutoff": "2026-09-30"
+}

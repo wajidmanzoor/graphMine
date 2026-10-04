@@ -1,0 +1,90 @@
+{
+  "phase": "completed",
+  "started_at": "2026-10-03T19:50:31.700840+00:00",
+  "source_sha256": "11050907185d6674ef1b9b2e28216daf850ba0c13a0b3ed2d912b0e85642450c",
+  "suite_sha256": "b90978bb034b098254b29be3dd2e4a5416a26782a87247c01fa12875576b977b",
+  "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+  "scope": "Application-gate diagnostic using replayed adapter routes and live unchanged FP8 planning. These are not fresh adapter generations or a model accuracy score.",
+  "holdout_consumed": false,
+  "rows": [
+    {
+      "id": "retention-v1-general-dynamic-triangle-counting",
+      "query": "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
+      "route_source_sha256": "898554e4726244952d7451310c86f660ec5240034ad5a9976c69014f7f99735b",
+      "graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "replayed_route_calls": 1,
+      "passed_missing_input_gate": true,
+      "job_ids": [],
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-auxiliary-diagnostic-v1/retention-v1-general-dynamic-triangle-counting/history/session_4d2977c24e45452a9a6843caf177e4a4",
+      "outcome": {
+        "query": "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
+        "response": {
+          "mode": "planner",
+          "message": "Please attach the edge-updates file (insertions and deletions) so I can apply them and report the triangle changes.",
+          "planning_status": "needs_information",
+          "plan": null,
+          "interpretation": null,
+          "interpretation_source": null,
+          "job_id": null,
+          "result_id": null,
+          "turn_id": "turn_b82be2c3ca7f4e2b98d5e3cf9454110e",
+          "feedback_id": null,
+          "job_ids": []
+        }
+      }
+    },
+    {
+      "id": "retention-v1-general-graph-motifs",
+      "query": "Count induced occurrences of the attached motif and include per-vertex participation.",
+      "route_source_sha256": "7138e1c7c62c611d935595532f6ebb781eba43b40860b119af89f524b5433b45",
+      "graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "replayed_route_calls": 1,
+      "passed_missing_input_gate": true,
+      "job_ids": [],
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-auxiliary-diagnostic-v1/retention-v1-general-graph-motifs/history/session_55ee2b1952eb4b168ac5e75b9204b7c8",
+      "outcome": {
+        "query": "Count induced occurrences of the attached motif and include per-vertex participation.",
+        "response": {
+          "mode": "planner",
+          "message": "Please provide the motif file you'd like to count. I can see the graph, but no motif pattern has been attached to this session.",
+          "planning_status": "needs_information",
+          "plan": null,
+          "interpretation": null,
+          "interpretation_source": null,
+          "job_id": null,
+          "result_id": null,
+          "turn_id": "turn_9d5d0558dd534a8ba3f5d248f0b70dd3",
+          "feedback_id": null,
+          "job_ids": []
+        }
+      }
+    },
+    {
+      "id": "retention-v1-general-subgraph-isomorphism",
+      "query": "Count label-respecting embeddings of the attached query graph and include the embeddings.",
+      "route_source_sha256": "90715d75c54c8e9e464c046981d4e1b78eb5c832d7f8b762cd4f60e28be86cb1",
+      "graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "replayed_route_calls": 1,
+      "passed_missing_input_gate": true,
+      "job_ids": [],
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-auxiliary-diagnostic-v1/retention-v1-general-subgraph-isomorphism/history/session_840fbcbd52ce4cb2833f3a0454c609d1",
+      "outcome": {
+        "query": "Count label-respecting embeddings of the attached query graph and include the embeddings.",
+        "response": {
+          "mode": "planner",
+          "message": "Please provide the query graph file you'd like to match against the employee collaboration network.",
+          "planning_status": "needs_information",
+          "plan": null,
+          "interpretation": null,
+          "interpretation_source": null,
+          "job_id": null,
+          "result_id": null,
+          "turn_id": "turn_840c9a69f9a64fa7a90e2c7c274e6346",
+          "feedback_id": null,
+          "job_ids": []
+        }
+      }
+    }
+  ],
+  "finished_at": "2026-10-03T19:51:32.526411+00:00"
+}

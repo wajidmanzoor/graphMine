@@ -1,0 +1,89 @@
+{
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/bin/graphmine",
+        "run",
+        "connected-components",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/library/components_small_strongly_connected.json",
+        "--worker-directory",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/libexec/graphmine",
+        "--connectivity-mode",
+        "strongly_connected"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.31473684310913086,
+      "exit_code": 0,
+      "log": "runs/installed_components.log",
+      "name": "components",
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/bin/graphmine",
+        "run",
+        "max-flow-min-cut",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/library/flow_small.json",
+        "--worker-directory",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/libexec/graphmine",
+        "--source",
+        "0",
+        "--sink",
+        "5"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26459874399006367,
+      "exit_code": 0,
+      "log": "runs/installed_flow.log",
+      "name": "flow",
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/bin/graphmine",
+        "run",
+        "linear-assignment",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/library/assignment_small.json",
+        "--worker-directory",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/libexec/graphmine"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.264429310336709,
+      "exit_code": 0,
+      "log": "runs/installed_assignment.log",
+      "name": "assignment",
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/bin/graphmine",
+        "run",
+        "transitive-closure",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/library/closure_dag.json",
+        "--worker-directory",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/libexec/graphmine"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.3147226311266422,
+      "exit_code": 0,
+      "log": "runs/installed_closure.log",
+      "name": "closure",
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    }
+  ],
+  "passed": 4,
+  "status": "pass",
+  "total": 4
+}

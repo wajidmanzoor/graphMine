@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/ecl_flow",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_flow/empty_edges.egr",
+    "0",
+    "3"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.26885667629539967,
+  "exit_code": 255,
+  "log": "runs/ecl_flow_empty_edges.log",
+  "timeout": false
+}

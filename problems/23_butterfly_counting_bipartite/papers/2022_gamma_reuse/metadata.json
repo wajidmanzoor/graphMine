@@ -1,0 +1,16 @@
+{
+  "paper_id": "2022_gamma_reuse",
+  "title": "A Graph Pattern Mining Framework for Large Graphs on GPU",
+  "year": 2024,
+  "venue": "The VLDB Journal",
+  "doi": "10.1007/s00778-024-00883-8",
+  "publication_url": "https://doi.org/10.1007/s00778-024-00883-8",
+  "pdf_url": "https://www.wict.pku.edu.cn/docs/20250717175100880217.pdf",
+  "code_url": "https://github.com/pkumod/GAMMA",
+  "semantic_fit": "general_framework",
+  "gpu_scope": "General GPU graph-pattern-mining framework; a 4-cycle pattern query on bipartite-labeled input is semantically equivalent to butterfly counting.",
+  "notes": "Already validated and cloned for problem 03 (k_clique_counting_enumeration); reused here as a framework lead. Its butterfly-specific pattern configuration has not yet been independently validated.",
+  "problem_id": "butterfly_counting_bipartite",
+  "problem_dir": "23_butterfly_counting_bipartite",
+  "research_cutoff": "2026-09-30"
+}

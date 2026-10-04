@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/bin/graphmine",
+    "run",
+    "connected-components",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/library/components_small_strongly_connected.json",
+    "--worker-directory",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/libexec/graphmine",
+    "--connectivity-mode",
+    "strongly_connected"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.31473684310913086,
+  "exit_code": 0,
+  "log": "runs/installed_components.log",
+  "stdin_path": null,
+  "timeout": false
+}

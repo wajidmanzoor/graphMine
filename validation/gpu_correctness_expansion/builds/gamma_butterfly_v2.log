@@ -1,0 +1,724 @@
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/embedding.cuh: In member function ‘void EmbeddingList::check_all(int, uint64_t, patternID*, CSRGraph)’:
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/embedding.cuh:180:22: warning: format ‘%u’ expects argument of type ‘unsigned int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  180 |                 printf("show %u embeddings:\n", display_num);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~
+      |                                               |
+      |                                               uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/embedding.cuh:187:36: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  187 |                                 printf("node %d %d data %d %d id_data %d %d\n", first, sec, nodeData[first], nodeData[sec], lab&0xff, (lab>>8)&0xff);
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                              ~~~~~~~~~~~
+      |                                                                                                                             |
+      |                                                                                                                             uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/embedding.cuh:187:36: warning: format ‘%d’ expects argument of type ‘int’, but argument 7 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  187 |                                 printf("node %d %d data %d %d id_data %d %d\n", first, sec, nodeData[first], nodeData[sec], lab&0xff, (lab>>8)&0xff);
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                           ~~~~~~~~~~~~~~~~  
+      |                                                                                                                                                 |
+      |                                                                                                                                                 uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/expand.cuh: In function ‘void expand_in_batch(CSRGraph&, EmbeddingList&, int, expand_constraint&)’:
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/expand.cuh:699:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘emb_off_type’ {aka ‘long unsigned int’} [-Wformat=]
+  699 |                 printf("for the %d th expand_alloc, the total size is %d\n", i, batch_expand_off[i]);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     ~~~~~~~~~~~~~~~~~~~
+      |                                                                                                 |
+      |                                                                                                 emb_off_type {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/expand.cuh: In function ‘void expand_dynamic(CSRGraph&, EmbeddingList&, int, expand_constraint&, bool)’:
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/expand.cuh:799:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  799 |                 printf("all used mem is %d MB, and data label is %d MB\n", all_size/1024/1024, g.nnodes/1024/1024);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                              |
+      |                                                                                              uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/expand.cuh: In function ‘void expand_dynamic_by_edge(CSRGraph&, EmbeddingList&, int, uint32_t*)’:
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/expand.cuh:1065:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+ 1065 |                 printf("all used mem is %d MB, and data label is %d MB\n", all_size/1024/1024, g.nnodes/1024/1024);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                              |
+      |                                                                                              uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/clock.h: In member function ‘const char* Clock::count(const char*, ...)’:
+/home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/clock.h:38:14: warning: ‘%s’ directive writing up to 999 bytes into a region of size between 957 and 962 [-Wformat-overflow=]
+   38 |         sprintf(str, "[\033[1m\033[44;31m%-12s\033[0m] %.6lfs   %s", s.c_str(), t, str2);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                  ~~~~
+In function ‘int sprintf(char*, const char*, ...)’,
+    inlined from ‘const char* Clock::count(const char*, ...)’ at /home/wajid/projects/graphDatabaseAgent/problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/clock.h:38:8:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:30:31: note: ‘__builtin___sprintf_chk’ output 39 or more bytes (assuming 1043) into a destination of size 1000
+   30 |   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+      |        ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                  
+In file included from /usr/include/cub/block/block_exchange.cuh:46,
+                 from /usr/include/cub/block/block_load.cuh:44,
+                 from /usr/include/cub/agent/agent_reduce.cuh:46,
+                 from /usr/include/cub/device/dispatch/dispatch_reduce.cuh:47,
+                 from /usr/include/cub/device/device_reduce.cuh:47,
+                 from /usr/include/thrust/system/cuda/detail/reduce.h:43,
+                 from /usr/include/thrust/system/detail/adl/reduce.h:50,
+                 from /usr/include/thrust/detail/reduce.inl:31,
+                 from /usr/include/thrust/reduce.h:763,
+                 from <command-line>:
+/usr/include/cub/util_ptx.cuh: In function ‘void cub::CUB_200700_890_NS::CTA_SYNC()’:
+/usr/include/cub/util_ptx.cuh:240:3: error: ‘__syncthreads’ was not declared in this scope
+  240 |   __syncthreads();
+      |   ^~~~~~~~~~~~~
+/usr/include/cub/util_ptx.cuh: In function ‘int cub::CUB_200700_890_NS::CTA_SYNC_AND(int)’:
+/usr/include/cub/util_ptx.cuh:248:10: error: ‘__syncthreads_and’ was not declared in this scope
+  248 |   return __syncthreads_and(p);
+      |          ^~~~~~~~~~~~~~~~~
+/usr/include/cub/util_ptx.cuh: In function ‘int cub::CUB_200700_890_NS::CTA_SYNC_OR(int)’:
+/usr/include/cub/util_ptx.cuh:256:10: error: ‘__syncthreads_or’ was not declared in this scope
+  256 |   return __syncthreads_or(p);
+      |          ^~~~~~~~~~~~~~~~
+/usr/include/cub/util_ptx.cuh: In function ‘void cub::CUB_200700_890_NS::WARP_SYNC(unsigned int)’:
+/usr/include/cub/util_ptx.cuh:264:3: error: ‘__syncwarp’ was not declared in this scope
+  264 |   __syncwarp(member_mask);
+      |   ^~~~~~~~~~
+/usr/include/cub/util_ptx.cuh: In function ‘int cub::CUB_200700_890_NS::WARP_ANY(int, unsigned int)’:
+/usr/include/cub/util_ptx.cuh:272:10: error: ‘__any_sync’ was not declared in this scope
+  272 |   return __any_sync(member_mask, predicate);
+      |          ^~~~~~~~~~
+/usr/include/cub/util_ptx.cuh: In function ‘int cub::CUB_200700_890_NS::WARP_ALL(int, unsigned int)’:
+/usr/include/cub/util_ptx.cuh:280:10: error: ‘__all_sync’ was not declared in this scope
+  280 |   return __all_sync(member_mask, predicate);
+      |          ^~~~~~~~~~
+/usr/include/cub/util_ptx.cuh: In function ‘int cub::CUB_200700_890_NS::WARP_BALLOT(int, unsigned int)’:
+/usr/include/cub/util_ptx.cuh:288:10: error: ‘__ballot_sync’ was not declared in this scope
+  288 |   return __ballot_sync(member_mask, predicate);
+      |          ^~~~~~~~~~~~~
+/usr/include/cub/util_ptx.cuh: In function ‘unsigned int cub::CUB_200700_890_NS::SHFL_IDX_SYNC(unsigned int, int, unsigned int)’:
+/usr/include/cub/util_ptx.cuh:332:10: error: ‘__shfl_sync’ was not declared in this scope
+  332 |   return __shfl_sync(member_mask, word, src_lane);
+      |          ^~~~~~~~~~~
+/usr/include/cub/util_ptx.cuh: In function ‘int cub::CUB_200700_890_NS::RowMajorTid(int, int, int)’:
+/usr/include/cub/util_ptx.cuh:378:37: error: ‘threadIdx’ was not declared in this scope
+  378 |   return ((block_dim_z == 1) ? 0 : (threadIdx.z * block_dim_x * block_dim_y))
+      |                                     ^~~~~~~~~
+In file included from /usr/include/cub/warp/warp_reduce.cuh:49,
+                 from /usr/include/cub/block/specializations/block_reduce_raking.cuh:50,
+                 from /usr/include/cub/block/block_reduce.cuh:45,
+                 from /usr/include/cub/agent/agent_reduce.cuh:47:
+/usr/include/cub/warp/specializations/warp_reduce_shfl.cuh: In member function ‘T cub::CUB_200700_890_NS::WarpReduceShfl<T, LOGICAL_WARP_THREADS, LEGACY_PTX_ARCH>::SegmentedReduce(T, FlagT, ReductionOp)’:
+/usr/include/cub/warp/specializations/warp_reduce_shfl.cuh:715:27: error: there are no arguments to ‘__brev’ that depend on a template parameter, so a declaration of ‘__brev’ must be available [-fpermissive]
+  715 |     int last_lane = __clz(__brev(warp_flags));
+      |                           ^~~~~~
+/usr/include/cub/warp/specializations/warp_reduce_shfl.cuh:715:27: note: (if you use ‘-fpermissive’, G++ will accept your code, but allowing the use of an undeclared name is deprecated)
+In file included from /usr/include/cub/warp/warp_reduce.cuh:50:
+/usr/include/cub/warp/specializations/warp_reduce_smem.cuh: In member function ‘T cub::CUB_200700_890_NS::WarpReduceSmem<T, LOGICAL_WARP_THREADS, LEGACY_PTX_ARCH>::SegmentedReduce(T, FlagT, ReductionOp, cub::CUB_200700_890_NS::Int2Type<1>)’:
+/usr/include/cub/warp/specializations/warp_reduce_smem.cuh:242:27: error: there are no arguments to ‘__brev’ that depend on a template parameter, so a declaration of ‘__brev’ must be available [-fpermissive]
+  242 |     int next_flag = __clz(__brev(warp_flags));
+      |                           ^~~~~~
+In file included from /usr/include/cub/agent/agent_reduce.cuh:49:
+/usr/include/cub/grid/grid_even_share.cuh: In member function ‘void cub::CUB_200700_890_NS::GridEvenShare<OffsetT>::BlockInit()’:
+/usr/include/cub/grid/grid_even_share.cuh:189:27: error: ‘blockIdx’ was not declared in this scope
+  189 |     BlockInit<TILE_ITEMS>(blockIdx.x, Int2Type<STRATEGY>());
+      |                           ^~~~~~~~
+/usr/include/cub/agent/agent_reduce.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentReduce<AgentReducePolicy, InputIteratorT, OutputIteratorT, OffsetT, ReductionOp, AccumT, TransformOp>::ConsumeTile(AccumT&, OffsetT, int, cub::CUB_200700_890_NS::Int2Type<1>, cub::CUB_200700_890_NS::Int2Type<0>)’:
+/usr/include/cub/agent/agent_reduce.cuh:253:7: error: ‘threadIdx’ was not declared in this scope
+  253 |       threadIdx.x, d_wrapped_in + block_offset, items, transform_op);
+      |       ^~~~~~~~~
+/usr/include/cub/agent/agent_reduce.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentReduce<AgentReducePolicy, InputIteratorT, OutputIteratorT, OffsetT, ReductionOp, AccumT, TransformOp>::ConsumeTile(AccumT&, OffsetT, int, cub::CUB_200700_890_NS::Int2Type<1>, cub::CUB_200700_890_NS::Int2Type<1>)’:
+/usr/include/cub/agent/agent_reduce.cuh:282:76: error: ‘threadIdx’ was not declared in this scope
+  282 |     InputT* d_in_unqualified = const_cast<InputT*>(d_in) + block_offset + (threadIdx.x * VECTOR_LOAD_LENGTH);
+      |                                                                            ^~~~~~~~~
+/usr/include/cub/agent/agent_reduce.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentReduce<AgentReducePolicy, InputIteratorT, OutputIteratorT, OffsetT, ReductionOp, AccumT, TransformOp>::ConsumeTile(AccumT&, OffsetT, int, cub::CUB_200700_890_NS::Int2Type<0>, cub::CUB_200700_890_NS::Int2Type<STEP>)’:
+/usr/include/cub/agent/agent_reduce.cuh:324:25: error: ‘threadIdx’ was not declared in this scope
+  324 |     int thread_offset = threadIdx.x;
+      |                         ^~~~~~~~~
+In file included from /usr/include/cub/device/dispatch/dispatch_reduce.cuh:48:
+/usr/include/cub/device/dispatch/kernels/reduce.cuh: At global scope:
+/usr/include/cub/device/dispatch/kernels/reduce.cuh:143:18: error: expected constructor, destructor, or type conversion before ‘(’ token
+  143 | __launch_bounds__(int(ChainedPolicyT::ActivePolicy::ReducePolicy::BLOCK_THREADS)) void DeviceReduceKernel(
+      |                  ^
+/usr/include/cub/device/dispatch/kernels/reduce.cuh:224:47: error: expected constructor, destructor, or type conversion before ‘(’ token
+  224 | CUB_DETAIL_KERNEL_ATTRIBUTES __launch_bounds__(
+      |                                               ^
+In file included from /usr/include/cub/device/dispatch/dispatch_reduce.cuh:58:
+/usr/include/thrust/system/cuda/detail/core/triple_chevron_launch.h: In member function ‘cudaError_t thrust::THRUST_200700_890_NS::cuda_cub::launcher::triple_chevron::doit_host(K, const Args& ...) const’:
+/usr/include/thrust/system/cuda/detail/core/triple_chevron_launch.h:68:8: error: expected primary-expression before ‘<’ token
+   68 |     k<<<grid, block, shared_mem, stream>>>(args...);
+      |        ^
+/usr/include/thrust/system/cuda/detail/core/triple_chevron_launch.h:68:42: error: expected primary-expression before ‘>’ token
+   68 |     k<<<grid, block, shared_mem, stream>>>(args...);
+      |                                          ^
+/usr/include/thrust/system/cuda/detail/core/triple_chevron_launch.h:68:48: error: expected ‘)’ before ‘...’ token
+   68 |     k<<<grid, block, shared_mem, stream>>>(args...);
+      |                                                ^~~
+/usr/include/thrust/system/cuda/detail/core/triple_chevron_launch.h:68:43: note: to match this ‘(’
+   68 |     k<<<grid, block, shared_mem, stream>>>(args...);
+      |                                           ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh: At global scope:
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:149:18: error: expected constructor, destructor, or type conversion before ‘(’ token
+  149 | __launch_bounds__(int(ChainedPolicyT::ActivePolicy::ReducePolicy::BLOCK_THREADS)) void DeviceSegmentedReduceKernel(
+      |                  ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh: In member function ‘cudaError_t cub::CUB_200700_890_NS::DispatchReduce<InputIteratorT, OutputIteratorT, OffsetT, ReductionOpT, InitT, AccumT, SelectedPolicy, TransformOpT>::Invoke()’:
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:649:9: error: ‘DeviceReduceSingleTileKernel’ was not declared in this scope
+  649 |         DeviceReduceSingleTileKernel<MaxPolicyT,
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:649:48: error: expected primary-expression before ‘,’ token
+  649 |         DeviceReduceSingleTileKernel<MaxPolicyT,
+      |                                                ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:650:52: error: expected primary-expression before ‘,’ token
+  650 |                                      InputIteratorT,
+      |                                                    ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:651:53: error: expected primary-expression before ‘,’ token
+  651 |                                      OutputIteratorT,
+      |                                                     ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:652:45: error: expected primary-expression before ‘,’ token
+  652 |                                      OffsetT,
+      |                                             ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:653:50: error: expected primary-expression before ‘,’ token
+  653 |                                      ReductionOpT,
+      |                                                  ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:654:43: error: expected primary-expression before ‘,’ token
+  654 |                                      InitT,
+      |                                           ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:655:44: error: expected primary-expression before ‘,’ token
+  655 |                                      AccumT,
+      |                                            ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:656:50: error: expected primary-expression before ‘>’ token
+  656 |                                      TransformOpT>);
+      |                                                  ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:656:51: error: expected primary-expression before ‘)’ token
+  656 |                                      TransformOpT>);
+      |                                                   ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:662:9: error: ‘DeviceReduceKernel’ was not declared in this scope; did you mean ‘DeviceReducePolicy’?
+  662 |         DeviceReduceKernel<typename DispatchReduce::MaxPolicy, InputIteratorT, OffsetT, ReductionOpT, AccumT, TransformOpT>,
+      |         ^~~~~~~~~~~~~~~~~~
+      |         DeviceReducePolicy
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:662:62: error: expected ‘(’ before ‘,’ token
+  662 |         DeviceReduceKernel<typename DispatchReduce::MaxPolicy, InputIteratorT, OffsetT, ReductionOpT, AccumT, TransformOpT>,
+      |                                                              ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:662:78: error: expected primary-expression before ‘,’ token
+  662 |         DeviceReduceKernel<typename DispatchReduce::MaxPolicy, InputIteratorT, OffsetT, ReductionOpT, AccumT, TransformOpT>,
+      |                                                                              ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:662:87: error: expected primary-expression before ‘,’ token
+  662 |         DeviceReduceKernel<typename DispatchReduce::MaxPolicy, InputIteratorT, OffsetT, ReductionOpT, AccumT, TransformOpT>,
+      |                                                                                       ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:662:101: error: expected primary-expression before ‘,’ token
+  662 |         DeviceReduceKernel<typename DispatchReduce::MaxPolicy, InputIteratorT, OffsetT, ReductionOpT, AccumT, TransformOpT>,
+      |                                                                                                     ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:662:109: error: expected primary-expression before ‘,’ token
+  662 |         DeviceReduceKernel<typename DispatchReduce::MaxPolicy, InputIteratorT, OffsetT, ReductionOpT, AccumT, TransformOpT>,
+      |                                                                                                             ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:662:123: error: expected primary-expression before ‘>’ token
+  662 |         DeviceReduceKernel<typename DispatchReduce::MaxPolicy, InputIteratorT, OffsetT, ReductionOpT, AccumT, TransformOpT>,
+      |                                                                                                                           ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:662:124: error: expected primary-expression before ‘,’ token
+  662 |         DeviceReduceKernel<typename DispatchReduce::MaxPolicy, InputIteratorT, OffsetT, ReductionOpT, AccumT, TransformOpT>,
+      |                                                                                                                            ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:663:9: error: ‘DeviceReduceSingleTileKernel’ was not declared in this scope
+  663 |         DeviceReduceSingleTileKernel<MaxPolicyT,
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:663:48: error: expected primary-expression before ‘,’ token
+  663 |         DeviceReduceSingleTileKernel<MaxPolicyT,
+      |                                                ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:664:44: error: expected primary-expression before ‘*’ token
+  664 |                                      AccumT*,
+      |                                            ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:664:45: error: expected primary-expression before ‘,’ token
+  664 |                                      AccumT*,
+      |                                             ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:665:53: error: expected primary-expression before ‘,’ token
+  665 |                                      OutputIteratorT,
+      |                                                     ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:666:38: error: expected primary-expression before ‘int’
+  666 |                                      int, // Always used with int
+      |                                      ^~~
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:668:50: error: expected primary-expression before ‘,’ token
+  668 |                                      ReductionOpT,
+      |                                                  ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:669:43: error: expected primary-expression before ‘,’ token
+  669 |                                      InitT,
+      |                                           ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:670:44: error: expected primary-expression before ‘>’ token
+  670 |                                      AccumT>);
+      |                                            ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:670:45: error: expected primary-expression before ‘)’ token
+  670 |                                      AccumT>);
+      |                                             ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh: In member function ‘cudaError_t cub::CUB_200700_890_NS::DispatchSegmentedReduce<InputIteratorT, OutputIteratorT, BeginOffsetIteratorT, EndOffsetIteratorT, OffsetT, ReductionOpT, InitT, AccumT, SelectedPolicy>::Invoke()’:
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1046:7: error: ‘DeviceSegmentedReduceKernel’ was not declared in this scope
+ 1046 |       DeviceSegmentedReduceKernel<
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1047:19: error: expected primary-expression before ‘,’ token
+ 1047 |         MaxPolicyT,
+      |                   ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1048:23: error: expected primary-expression before ‘,’ token
+ 1048 |         InputIteratorT,
+      |                       ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1049:24: error: expected primary-expression before ‘,’ token
+ 1049 |         OutputIteratorT,
+      |                        ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1050:29: error: expected primary-expression before ‘,’ token
+ 1050 |         BeginOffsetIteratorT,
+      |                             ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1051:27: error: expected primary-expression before ‘,’ token
+ 1051 |         EndOffsetIteratorT,
+      |                           ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1052:16: error: expected primary-expression before ‘,’ token
+ 1052 |         OffsetT,
+      |                ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1053:21: error: expected primary-expression before ‘,’ token
+ 1053 |         ReductionOpT,
+      |                     ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1054:14: error: expected primary-expression before ‘,’ token
+ 1054 |         InitT,
+      |              ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1055:15: error: expected primary-expression before ‘>’ token
+ 1055 |         AccumT>);
+      |               ^
+/usr/include/cub/device/dispatch/dispatch_reduce.cuh:1055:16: error: expected primary-expression before ‘)’ token
+ 1055 |         AccumT>);
+      |                ^
+In file included from /usr/include/nv/detail/__target_macros:14,
+                 from /usr/include/nv/target:215,
+                 from /usr/include/cuda_fp16.h:4492,
+                 from /usr/include/cuda/std/__cccl/extended_floating_point.h:49,
+                 from /usr/include/cuda/__cccl_config:20,
+                 from /usr/include/thrust/detail/config/config.h:24,
+                 from /usr/include/thrust/detail/config.h:22,
+                 from /usr/include/thrust/reduce.h:23:
+/usr/include/cub/detail/strong_load.cuh: In function ‘ulonglong2 cub::CUB_200700_890_NS::detail::load_acquire(const ulonglong2*)’:
+/usr/include/cub/detail/strong_load.cuh:199:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  199 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_load.cuh: In function ‘uint2 cub::CUB_200700_890_NS::detail::load_acquire(const uint2*)’:
+/usr/include/cub/detail/strong_load.cuh:216:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  216 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_load.cuh: In function ‘unsigned int cub::CUB_200700_890_NS::detail::load_acquire(const unsigned int*)’:
+/usr/include/cub/detail/strong_load.cuh:233:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  233 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_store.cuh: In function ‘void cub::CUB_200700_890_NS::detail::store_release(uint4*, uint4)’:
+/usr/include/cub/detail/strong_store.cuh:177:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  177 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_store.cuh: In function ‘void cub::CUB_200700_890_NS::detail::store_release(ulonglong2*, ulonglong2)’:
+/usr/include/cub/detail/strong_store.cuh:192:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  192 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_store.cuh: In function ‘void cub::CUB_200700_890_NS::detail::store_release(ushort4*, ushort4)’:
+/usr/include/cub/detail/strong_store.cuh:207:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  207 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_store.cuh: In function ‘void cub::CUB_200700_890_NS::detail::store_release(uint2*, uint2)’:
+/usr/include/cub/detail/strong_store.cuh:222:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  222 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_store.cuh: In function ‘void cub::CUB_200700_890_NS::detail::store_release(long long unsigned int*, long long unsigned int)’:
+/usr/include/cub/detail/strong_store.cuh:237:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  237 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_store.cuh: In function ‘void cub::CUB_200700_890_NS::detail::store_release(unsigned int*, unsigned int)’:
+/usr/include/cub/detail/strong_store.cuh:252:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  252 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_store.cuh: In function ‘void cub::CUB_200700_890_NS::detail::store_release(short unsigned int*, short unsigned int)’:
+/usr/include/cub/detail/strong_store.cuh:267:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  267 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/detail/strong_store.cuh: In function ‘void cub::CUB_200700_890_NS::detail::store_release(unsigned char*, unsigned char)’:
+/usr/include/cub/detail/strong_store.cuh:282:3: error: ‘__threadfence’ was not declared in this scope; did you mean ‘__gthread_once’?
+  282 |   NV_IF_TARGET(
+      |   ^~~~~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In function ‘void cub::CUB_200700_890_NS::detail::delay_or_prevent_hoisting()’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:184:3: error: there are no arguments to ‘__threadfence_block’ that depend on a template parameter, so a declaration of ‘__threadfence_block’ must be available [-fpermissive]
+  184 |   NV_IF_TARGET(NV_PROVIDES_SM_70, (delay<Delay, GridThreshold>();), (__threadfence_block();));
+      |   ^~~~~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In function ‘void cub::CUB_200700_890_NS::detail::delay_or_prevent_hoisting(int)’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:190:3: error: there are no arguments to ‘__threadfence_block’ that depend on a template parameter, so a declaration of ‘__threadfence_block’ must be available [-fpermissive]
+  190 |   NV_IF_TARGET(NV_PROVIDES_SM_70, (delay<GridThreshold>(ns);), ((void) ns; __threadfence_block();));
+      |   ^~~~~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In function ‘void cub::CUB_200700_890_NS::detail::always_delay_or_prevent_hoisting()’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:196:3: error: there are no arguments to ‘__threadfence_block’ that depend on a template parameter, so a declaration of ‘__threadfence_block’ must be available [-fpermissive]
+  196 |   NV_IF_TARGET(NV_PROVIDES_SM_70, (always_delay(Delay);), (__threadfence_block();));
+      |   ^~~~~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In function ‘void cub::CUB_200700_890_NS::detail::always_delay_or_prevent_hoisting(int)’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:201:3: error: ‘__threadfence_block’ was not declared in this scope
+  201 |   NV_IF_TARGET(NV_PROVIDES_SM_70, (always_delay(ns);), ((void) ns; __threadfence_block();));
+      |   ^~~~~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In member function ‘void cub::CUB_200700_890_NS::detail::no_delay_constructor_t<L2WriteLatency>::delay_t::operator()()’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:211:7: error: there are no arguments to ‘__threadfence_block’ that depend on a template parameter, so a declaration of ‘__threadfence_block’ must be available [-fpermissive]
+  211 |       NV_IF_TARGET(NV_PROVIDES_SM_70, (), (__threadfence_block();));
+      |       ^~~~~~~~~~~~
+In file included from /usr/include/cub/agent/agent_reduce_by_key.cuh:46,
+                 from /usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:46,
+                 from /usr/include/cub/device/device_reduce.cuh:48:
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In member function ‘void cub::CUB_200700_890_NS::ScanTileState<T, true>::InitializeStatus(int)’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:635:21: error: ‘blockIdx’ was not declared in this scope
+  635 |     int tile_idx = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                     ^~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh:635:34: error: ‘blockDim’ was not declared in this scope
+  635 |     int tile_idx = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                                  ^~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh:635:48: error: ‘threadIdx’ was not declared in this scope
+  635 |     int tile_idx = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                                                ^~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In member function ‘typename cuda::std::__4::enable_if<(Order == cub::CUB_200700_890_NS::MemoryOrder::acquire_release), void>::type cub::CUB_200700_890_NS::ScanTileState<T, true>::ThreadfenceForLoadAcqPreVolta()’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:694:5: error: there are no arguments to ‘__threadfence’ that depend on a template parameter, so a declaration of ‘__threadfence’ must be available [-fpermissive]
+  694 |     NV_IF_TARGET(NV_PROVIDES_SM_70, (), (__threadfence();));
+      |     ^~~~~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In member function ‘void cub::CUB_200700_890_NS::ScanTileState<T, false>::InitializeStatus(int)’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:876:21: error: ‘blockIdx’ was not declared in this scope
+  876 |     int tile_idx = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                     ^~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh:876:34: error: ‘blockDim’ was not declared in this scope
+  876 |     int tile_idx = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                                  ^~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh:876:48: error: ‘threadIdx’ was not declared in this scope
+  876 |     int tile_idx = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                                                ^~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In member function ‘void cub::CUB_200700_890_NS::ScanTileState<T, false>::WaitForValid(int, StatusWord&, T&, DelayT)’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:922:7: error: there are no arguments to ‘__threadfence’ that depend on a template parameter, so a declaration of ‘__threadfence’ must be available [-fpermissive]
+  922 |       __threadfence();
+      |       ^~~~~~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In member function ‘void cub::CUB_200700_890_NS::ReduceByKeyScanTileState<ValueT, KeyT, true>::InitializeStatus(int)’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:1072:35: error: ‘blockIdx’ was not declared in this scope
+ 1072 |     int tile_idx               = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                                   ^~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh:1072:48: error: ‘blockDim’ was not declared in this scope
+ 1072 |     int tile_idx               = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                                                ^~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh:1072:62: error: ‘threadIdx’ was not declared in this scope
+ 1072 |     int tile_idx               = (blockIdx.x * blockDim.x) + threadIdx.x;
+      |                                                              ^~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In constructor ‘cub::CUB_200700_890_NS::TilePrefixCallbackOp<T, ScanOpT, ScanTileStateT, LEGACY_PTX_ARCH, DelayConstructorT>::TilePrefixCallbackOp(ScanTileStateT&, TempStorage&, ScanOpT)’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:1220:66: error: ‘blockIdx’ was not declared in this scope
+ 1220 |       : TilePrefixCallbackOp(tile_status, temp_storage, scan_op, blockIdx.x)
+      |                                                                  ^~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh: In member function ‘T cub::CUB_200700_890_NS::TilePrefixCallbackOp<T, ScanOpT, ScanTileStateT, LEGACY_PTX_ARCH, DelayConstructorT>::operator()(T)’:
+/usr/include/cub/agent/single_pass_scan_operators.cuh:1254:9: error: ‘threadIdx’ was not declared in this scope
+ 1254 |     if (threadIdx.x == 0)
+      |         ^~~~~~~~~
+/usr/include/cub/agent/single_pass_scan_operators.cuh:1261:38: error: ‘threadIdx’ was not declared in this scope
+ 1261 |     int predecessor_idx = tile_idx - threadIdx.x - 1;
+      |                                      ^~~~~~~~~
+In file included from /usr/include/cub/util_arch.cuh:47,
+                 from /usr/include/cub/config.cuh:46,
+                 from /usr/include/cub/util_debug.cuh:39,
+                 from /usr/include/thrust/system/cuda/config.h:49,
+                 from /usr/include/thrust/system/cuda/detail/execution_policy.h:40,
+                 from /usr/include/thrust/iterator/detail/device_system_tag.h:31,
+                 from /usr/include/thrust/iterator/iterator_traits.h:74,
+                 from /usr/include/thrust/reduce.h:33:
+/usr/include/cub/warp/specializations/warp_scan_shfl.cuh: In member function ‘void cub::CUB_200700_890_NS::WarpScanShfl<T, LOGICAL_WARP_THREADS, LEGACY_PTX_ARCH>::InclusiveScan(cub::CUB_200700_890_NS::KeyValuePair<KeyT, ValueT>, cub::CUB_200700_890_NS::KeyValuePair<KeyT, ValueT>&, cub::CUB_200700_890_NS::ReduceByKeyOp<ReductionOpT>)’:
+/usr/include/cub/warp/specializations/warp_scan_shfl.cuh:545:30: error: there are no arguments to ‘__clz’ that depend on a template parameter, so a declaration of ‘__clz’ must be available [-fpermissive]
+  545 |     int segment_first_lane = CUB_MAX(0, 31 - __clz(ballot));
+      |                              ^~~~~~~
+/usr/include/cub/warp/specializations/warp_scan_shfl.cuh:545:30: error: there are no arguments to ‘__clz’ that depend on a template parameter, so a declaration of ‘__clz’ must be available [-fpermissive]
+  545 |     int segment_first_lane = CUB_MAX(0, 31 - __clz(ballot));
+      |                              ^~~~~~~
+/usr/include/cub/agent/agent_reduce_by_key.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentReduceByKey<AgentReduceByKeyPolicyT, KeysInputIteratorT, UniqueOutputIteratorT, ValuesInputIteratorT, AggregatesOutputIteratorT, NumRunsOutputIteratorT, EqualityOpT, ReductionOpT, OffsetT, AccumT>::ScatterTwoPhase(KeyValuePairT (&)[ITEMS_PER_THREAD], OffsetT (&)[ITEMS_PER_THREAD], OffsetT (&)[ITEMS_PER_THREAD], OffsetT, OffsetT)’:
+/usr/include/cub/agent/agent_reduce_by_key.cuh:442:21: error: ‘threadIdx’ was not declared in this scope
+  442 |     for (int item = threadIdx.x; item < num_tile_segments; item += BLOCK_THREADS)
+      |                     ^~~~~~~~~
+/usr/include/cub/agent/agent_reduce_by_key.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentReduceByKey<AgentReduceByKeyPolicyT, KeysInputIteratorT, UniqueOutputIteratorT, ValuesInputIteratorT, AggregatesOutputIteratorT, NumRunsOutputIteratorT, EqualityOpT, ReductionOpT, OffsetT, AccumT>::ConsumeTile(OffsetT, int, OffsetT, ScanTileStateT&)’:
+/usr/include/cub/agent/agent_reduce_by_key.cuh:531:9: error: ‘threadIdx’ was not declared in this scope
+  531 |     if (threadIdx.x == 0)
+      |         ^~~~~~~~~
+/usr/include/cub/agent/agent_reduce_by_key.cuh:573:9: error: ‘threadIdx’ was not declared in this scope
+  573 |     if (threadIdx.x == 0 && tile_idx == 0)
+      |         ^~~~~~~~~
+/usr/include/cub/agent/agent_reduce_by_key.cuh:604:31: error: ‘threadIdx’ was not declared in this scope
+  604 |       if ((!IS_LAST_TILE) && (threadIdx.x == 0))
+      |                               ^~~~~~~~~
+/usr/include/cub/agent/agent_reduce_by_key.cuh:640:28: error: ‘threadIdx’ was not declared in this scope
+  640 |     if ((IS_LAST_TILE) && (threadIdx.x == BLOCK_THREADS - 1))
+      |                            ^~~~~~~~~
+/usr/include/cub/agent/agent_reduce_by_key.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentReduceByKey<AgentReduceByKeyPolicyT, KeysInputIteratorT, UniqueOutputIteratorT, ValuesInputIteratorT, AggregatesOutputIteratorT, NumRunsOutputIteratorT, EqualityOpT, ReductionOpT, OffsetT, AccumT>::ConsumeRange(OffsetT, ScanTileStateT&, int)’:
+/usr/include/cub/agent/agent_reduce_by_key.cuh:675:33: error: ‘blockIdx’ was not declared in this scope
+  675 |     int tile_idx = start_tile + blockIdx.x;
+      |                                 ^~~~~~~~
+In file included from /usr/include/cub/device/dispatch/dispatch_scan.cuh:48,
+                 from /usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:47:
+/usr/include/cub/agent/agent_scan.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentScan<AgentScanPolicyT, InputIteratorT, OutputIteratorT, ScanOpT, InitValueT, OffsetT, AccumT, ForceInclusive>::ConsumeTile(OffsetT, int, OffsetT, ScanTileStateT&)’:
+/usr/include/cub/agent/agent_scan.cuh:390:31: error: ‘threadIdx’ was not declared in this scope
+  390 |       if ((!IS_LAST_TILE) && (threadIdx.x == 0))
+      |                               ^~~~~~~~~
+/usr/include/cub/agent/agent_scan.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentScan<AgentScanPolicyT, InputIteratorT, OutputIteratorT, ScanOpT, InitValueT, OffsetT, AccumT, ForceInclusive>::ConsumeRange(OffsetT, ScanTileStateT&, int)’:
+/usr/include/cub/agent/agent_scan.cuh:433:33: error: ‘blockIdx’ was not declared in this scope
+  433 |     int tile_idx = start_tile + blockIdx.x;
+      |                                 ^~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_scan.cuh: In function ‘void cub::CUB_200700_890_NS::DeviceCompactInitKernel(ScanTileStateT, int, NumSelectedIteratorT)’:
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:115:8: error: ‘blockIdx’ was not declared in this scope
+  115 |   if ((blockIdx.x == 0) && (threadIdx.x == 0))
+      |        ^~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:115:29: error: ‘threadIdx’ was not declared in this scope
+  115 |   if ((blockIdx.x == 0) && (threadIdx.x == 0))
+      |                             ^~~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_scan.cuh: At global scope:
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:178:18: error: expected constructor, destructor, or type conversion before ‘(’ token
+  178 | __launch_bounds__(int(ChainedPolicyT::ActivePolicy::ScanPolicyT::BLOCK_THREADS))
+      |                  ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh: In member function ‘cudaError_t cub::CUB_200700_890_NS::DispatchScan<InputIteratorT, OutputIteratorT, ScanOpT, InitValueT, OffsetT, AccumT, SelectedPolicy, ForceInclusive>::Invoke()’:
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:516:7: error: ‘DeviceScanKernel’ was not declared in this scope; did you mean ‘DeviceScanInitKernel’?
+  516 |       DeviceScanKernel<MaxPolicyT,
+      |       ^~~~~~~~~~~~~~~~
+      |       DeviceScanInitKernel
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:516:34: error: expected primary-expression before ‘,’ token
+  516 |       DeviceScanKernel<MaxPolicyT,
+      |                                  ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:517:38: error: expected primary-expression before ‘,’ token
+  517 |                        InputIteratorT,
+      |                                      ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:518:39: error: expected primary-expression before ‘,’ token
+  518 |                        OutputIteratorT,
+      |                                       ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:519:38: error: expected primary-expression before ‘,’ token
+  519 |                        ScanTileStateT,
+      |                                      ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:520:31: error: expected primary-expression before ‘,’ token
+  520 |                        ScanOpT,
+      |                               ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:521:34: error: expected primary-expression before ‘,’ token
+  521 |                        InitValueT,
+      |                                  ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:522:31: error: expected primary-expression before ‘,’ token
+  522 |                        OffsetT,
+      |                               ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:523:30: error: expected primary-expression before ‘,’ token
+  523 |                        AccumT,
+      |                              ^
+/usr/include/cub/device/dispatch/dispatch_scan.cuh:524:39: error: expected primary-expression before ‘)’ token
+  524 |                        ForceInclusive>);
+      |                                       ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh: At global scope:
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:143:18: error: expected constructor, destructor, or type conversion before ‘(’ token
+  143 | __launch_bounds__(int(ChainedPolicyT::ActivePolicy::ReduceByKeyPolicyT::BLOCK_THREADS))
+      |                  ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh: In member function ‘cudaError_t cub::CUB_200700_890_NS::DispatchReduceByKey<KeysInputIteratorT, UniqueOutputIteratorT, ValuesInputIteratorT, AggregatesOutputIteratorT, NumRunsOutputIteratorT, EqualityOpT, ReductionOpT, OffsetT, AccumT, SelectedPolicy>::Invoke()’:
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:449:7: error: ‘DeviceReduceByKeyKernel’ was not declared in this scope
+  449 |       DeviceReduceByKeyKernel<
+      |       ^~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:450:19: error: expected primary-expression before ‘,’ token
+  450 |         MaxPolicyT,
+      |                   ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:451:27: error: expected primary-expression before ‘,’ token
+  451 |         KeysInputIteratorT,
+      |                           ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:452:30: error: expected primary-expression before ‘,’ token
+  452 |         UniqueOutputIteratorT,
+      |                              ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:453:29: error: expected primary-expression before ‘,’ token
+  453 |         ValuesInputIteratorT,
+      |                             ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:454:34: error: expected primary-expression before ‘,’ token
+  454 |         AggregatesOutputIteratorT,
+      |                                  ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:455:31: error: expected primary-expression before ‘,’ token
+  455 |         NumRunsOutputIteratorT,
+      |                               ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:456:23: error: expected primary-expression before ‘,’ token
+  456 |         ScanTileStateT,
+      |                       ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:457:20: error: expected primary-expression before ‘,’ token
+  457 |         EqualityOpT,
+      |                    ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:458:21: error: expected primary-expression before ‘,’ token
+  458 |         ReductionOpT,
+      |                     ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:459:16: error: expected primary-expression before ‘,’ token
+  459 |         OffsetT,
+      |                ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:460:15: error: expected primary-expression before ‘>’ token
+  460 |         AccumT>);
+      |               ^
+/usr/include/cub/device/dispatch/dispatch_reduce_by_key.cuh:460:16: error: expected primary-expression before ‘)’ token
+  460 |         AccumT>);
+      |                ^
+In file included from /usr/include/cub/device/dispatch/dispatch_for.cuh:40,
+                 from /usr/include/cub/device/device_for.cuh:41,
+                 from /usr/include/thrust/system/cuda/detail/parallel_for.h:43,
+                 from /usr/include/thrust/system/cuda/detail/uninitialized_copy.h:42,
+                 from /usr/include/thrust/system/cuda/detail/internal/copy_cross_system.h:49,
+                 from /usr/include/thrust/system/cuda/detail/copy.h:79,
+                 from /usr/include/thrust/system/cuda/detail/assign_value.h:33,
+                 from /usr/include/thrust/system/detail/adl/assign_value.h:50,
+                 from /usr/include/thrust/detail/reference.h:35,
+                 from /usr/include/thrust/memory.h:35,
+                 from /usr/include/thrust/detail/allocator/temporary_allocator.h:31,
+                 from /usr/include/thrust/detail/temporary_array.h:46,
+                 from /usr/include/thrust/system/cuda/detail/reduce.h:49:
+/usr/include/cub/agent/agent_for.cuh: In member function ‘void cub::CUB_200700_890_NS::detail::for_each::agent_block_striped_t<PolicyT, OffsetT, OpT>::consume_tile(int, int)’:
+/usr/include/cub/agent/agent_for.cuh:71:68: error: ‘threadIdx’ was not declared in this scope
+   71 |       const auto idx = static_cast<OffsetT>(block_threads * item + threadIdx.x);
+      |                                                                    ^~~~~~~~~
+In file included from /usr/include/cub/device/dispatch/dispatch_for.cuh:41:
+/usr/include/cub/device/dispatch/kernels/for_each.cuh: In function ‘void cub::CUB_200700_890_NS::detail::for_each::dynamic_kernel(OffsetT, OpT)’:
+/usr/include/cub/device/dispatch/kernels/for_each.cuh:109:52: error: ‘blockDim’ was not declared in this scope
+  109 |   const auto block_threads  = static_cast<OffsetT>(blockDim.x);
+      |                                                    ^~~~~~~~
+/usr/include/cub/device/dispatch/kernels/for_each.cuh:111:52: error: ‘blockIdx’ was not declared in this scope
+  111 |   const auto tile_base      = static_cast<OffsetT>(blockIdx.x) * items_per_tile;
+      |                                                    ^~~~~~~~
+/usr/include/cub/device/dispatch/kernels/for_each.cuh: At global scope:
+/usr/include/cub/device/dispatch/kernels/for_each.cuh:128:18: error: expected constructor, destructor, or type conversion before ‘(’ token
+  128 | __launch_bounds__(ChainedPolicyT::ActivePolicy::for_policy_t::block_threads) //
+      |                  ^
+/usr/include/cub/device/dispatch/dispatch_for.cuh: In member function ‘cudaError_t cub::CUB_200700_890_NS::detail::for_each::dispatch_t<OffsetT, OpT, PolicyHubT>::Invoke(cuda::std::__4::true_type)’:
+/usr/include/cub/device/dispatch/dispatch_for.cuh:160:39: error: ‘static_kernel’ is not a member of ‘cub::CUB_200700_890_NS::detail::for_each’; did you mean ‘dynamic_kernel’?
+  160 |               .doit(detail::for_each::static_kernel<max_policy_t, OffsetT, OpT>, num_items, op);
+      |                                       ^~~~~~~~~~~~~
+      |                                       dynamic_kernel
+/usr/include/cub/device/dispatch/dispatch_for.cuh:160:65: error: expected primary-expression before ‘,’ token
+  160 |               .doit(detail::for_each::static_kernel<max_policy_t, OffsetT, OpT>, num_items, op);
+      |                                                                 ^
+/usr/include/cub/device/dispatch/dispatch_for.cuh:160:74: error: expected primary-expression before ‘,’ token
+  160 |               .doit(detail::for_each::static_kernel<max_policy_t, OffsetT, OpT>, num_items, op);
+      |                                                                          ^
+/usr/include/cub/device/dispatch/dispatch_for.cuh:160:79: error: expected primary-expression before ‘>’ token
+  160 |               .doit(detail::for_each::static_kernel<max_policy_t, OffsetT, OpT>, num_items, op);
+      |                                                                               ^
+/usr/include/cub/device/dispatch/dispatch_for.cuh:160:80: error: expected primary-expression before ‘,’ token
+  160 |               .doit(detail::for_each::static_kernel<max_policy_t, OffsetT, OpT>, num_items, op);
+      |                                                                                ^
+/usr/include/thrust/system/cuda/detail/reduce.h: In member function ‘void thrust::THRUST_200700_890_NS::cuda_cub::__reduce::ReduceAgent<InputIt, OutputIt, T, Size, ReductionOp>::impl::consume_tile(T&, Size, int, thrust::THRUST_200700_890_NS::detail::true_type, thrust::THRUST_200700_890_NS::detail::false_type)’:
+/usr/include/thrust/system/cuda/detail/reduce.h:289:45: error: ‘threadIdx’ was not declared in this scope
+  289 |       cub::LoadDirectStriped<BLOCK_THREADS>(threadIdx.x, load_it + block_offset, items);
+      |                                             ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h: In member function ‘void thrust::THRUST_200700_890_NS::cuda_cub::__reduce::ReduceAgent<InputIt, OutputIt, T, Size, ReductionOp>::impl::consume_tile(T&, Size, int, thrust::THRUST_200700_890_NS::detail::true_type, thrust::THRUST_200700_890_NS::detail::true_type)’:
+/usr/include/thrust/system/cuda/detail/reduce.h:317:72: error: ‘threadIdx’ was not declared in this scope
+  317 |       T* d_in_unqualified = const_cast<T*>(input_it) + block_offset + (threadIdx.x * VECTOR_LOAD_LENGTH);
+      |                                                                        ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h: In member function ‘void thrust::THRUST_200700_890_NS::cuda_cub::__reduce::ReduceAgent<InputIt, OutputIt, T, Size, ReductionOp>::impl::consume_tile(T&, Size, int, thrust::THRUST_200700_890_NS::detail::false_type, CAN_VECTORIZE)’:
+/usr/include/thrust/system/cuda/detail/reduce.h:342:27: error: ‘threadIdx’ was not declared in this scope
+  342 |       int thread_offset = threadIdx.x;
+      |                           ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h: In member function ‘T thrust::THRUST_200700_890_NS::cuda_cub::__reduce::ReduceAgent<InputIt, OutputIt, T, Size, ReductionOp>::impl::consume_tiles_impl(Size, cub::CUB_200700_890_NS::GridQueue<typename thrust::THRUST_200700_890_NS::cuda_cub::detail::make_unsigned_special<Size>::type>, CAN_VECTORIZE)’:
+/usr/include/thrust/system/cuda/detail/reduce.h:448:30: error: ‘blockIdx’ was not declared in this scope
+  448 |       Size block_offset    = blockIdx.x * ITEMS_PER_TILE;
+      |                              ^~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h:449:30: error: ‘gridDim’ was not declared in this scope
+  449 |       Size even_share_base = gridDim.x * ITEMS_PER_TILE;
+      |                              ^~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h:465:13: error: ‘threadIdx’ was not declared in this scope
+  465 |         if (threadIdx.x == 0)
+      |             ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h:484:15: error: ‘threadIdx’ was not declared in this scope
+  484 |           if (threadIdx.x == 0)
+      |               ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h: In static member function ‘static void thrust::THRUST_200700_890_NS::cuda_cub::__reduce::ReduceAgent<InputIt, OutputIt, T, Size, ReductionOp>::entry(InputIt, OutputIt, Size, ReductionOp, char*)’:
+/usr/include/thrust/system/cuda/detail/reduce.h:542:9: error: ‘threadIdx’ was not declared in this scope
+  542 |     if (threadIdx.x == 0)
+      |         ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h: In static member function ‘static void thrust::THRUST_200700_890_NS::cuda_cub::__reduce::ReduceAgent<InputIt, OutputIt, T, Size, ReductionOp>::entry(InputIt, OutputIt, Size, ReductionOp, T, char*)’:
+/usr/include/thrust/system/cuda/detail/reduce.h:556:11: error: ‘threadIdx’ was not declared in this scope
+  556 |       if (threadIdx.x == 0)
+      |           ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h:565:9: error: ‘threadIdx’ was not declared in this scope
+  565 |     if (threadIdx.x == 0)
+      |         ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h: In static member function ‘static void thrust::THRUST_200700_890_NS::cuda_cub::__reduce::ReduceAgent<InputIt, OutputIt, T, Size, ReductionOp>::entry(InputIt, OutputIt, Size, cub::CUB_200700_890_NS::GridEvenShare<OffsetT>, cub::CUB_200700_890_NS::GridQueue<typename thrust::THRUST_200700_890_NS::cuda_cub::detail::make_unsigned_special<Size>::type>, ReductionOp, char*)’:
+/usr/include/thrust/system/cuda/detail/reduce.h:587:9: error: ‘threadIdx’ was not declared in this scope
+  587 |     if (threadIdx.x == 0)
+      |         ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce.h:589:17: error: ‘blockIdx’ was not declared in this scope
+  589 |       output_it[blockIdx.x] = block_aggregate;
+      |                 ^~~~~~~~
+In file included from /usr/include/thrust/system/detail/adl/reduce_by_key.h:50,
+                 from /usr/include/thrust/detail/reduce.inl:32:
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h: In member function ‘void thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::impl::zip_values_and_flags(thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_type, thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::value_type (&)[thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ITEMS_PER_THREAD], thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_type (&)[thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ITEMS_PER_THREAD], thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_value_pair_t (&)[thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ITEMS_PER_THREAD])’:
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:348:34: error: ‘threadIdx’ was not declared in this scope
+  348 |         if (IS_LAST_TILE && Size(threadIdx.x * ITEMS_PER_THREAD) + ITEM == num_remaining)
+      |                                  ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h: In member function ‘void thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::impl::scatter_two_phase(thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::key_value_pair_t (&)[thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ITEMS_PER_THREAD], thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_type (&)[thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ITEMS_PER_THREAD], thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_type (&)[thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ITEMS_PER_THREAD], thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_type, thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_type)’:
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:428:23: error: ‘threadIdx’ was not declared in this scope
+  428 |       for (int item = threadIdx.x; item < num_tile_segments; item += BLOCK_THREADS)
+      |                       ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h: In member function ‘void thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::impl::finalize_last_tile(thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_type, thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::size_type, thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::key_type, thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::value_type)’:
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:468:11: error: ‘threadIdx’ was not declared in this scope
+  468 |       if (threadIdx.x == BLOCK_THREADS - 1)
+      |           ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h: In member function ‘void thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::impl::consume_first_tile(Size, Size, thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ScanTileState&)’:
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:542:11: error: ‘threadIdx’ was not declared in this scope
+  542 |       if (threadIdx.x == 0)
+      |           ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:554:11: error: ‘threadIdx’ was not declared in this scope
+  554 |       if (threadIdx.x == 0)
+      |           ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h: In member function ‘void thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::impl::consume_subsequent_tile(Size, int, Size, thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ScanTileState&)’:
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:612:33: error: ‘threadIdx’ was not declared in this scope
+  612 |       key_type tile_pred_key = (threadIdx.x == 0) ? key_type(keys_load_it[tile_offset - 1]) : key_type();
+      |                                 ^~~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h: In constructor ‘thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::impl::impl(thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::TempStorage&, KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, NumRunsOutputIt, EqualityOp, ReductionOp, Size, int, thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::ReduceByKeyAgent<KeysInputIt, ValuesInputIt, KeysOutputIt, ValuesOutputIt, EqualityOp, ReductionOp, NumRunsOutputIt, Size>::ScanTileState&)’:
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:697:28: error: ‘blockIdx’ was not declared in this scope
+  697 |       int tile_idx       = blockIdx.x;
+      |                            ^~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h: In static member function ‘static void thrust::THRUST_200700_890_NS::cuda_cub::__reduce_by_key::InitAgent<ScanTileState, Size, NumSelectedIt>::entry(ScanTileState, Size, NumSelectedIt, char*)’:
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:763:9: error: ‘blockIdx’ was not declared in this scope
+  763 |     if (blockIdx.x == 0 && threadIdx.x == 0)
+      |         ^~~~~~~~
+/usr/include/thrust/system/cuda/detail/reduce_by_key.h:763:28: error: ‘threadIdx’ was not declared in this scope
+  763 |     if (blockIdx.x == 0 && threadIdx.x == 0)
+      |                            ^~~~~~~~~
+In file included from /usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:46,
+                 from /usr/include/cub/device/device_scan.cuh:48,
+                 from /usr/include/thrust/system/cuda/detail/scan.h:43,
+                 from /usr/include/thrust/system/detail/adl/scan.h:50,
+                 from /usr/include/thrust/detail/scan.inl:30,
+                 from /usr/include/thrust/scan.h:1695,
+                 from /usr/include/thrust/system/detail/generic/reduce_by_key.inl:36,
+                 from /usr/include/thrust/system/detail/generic/reduce_by_key.h:89,
+                 from /usr/include/thrust/detail/reduce.inl:34:
+/usr/include/cub/agent/agent_scan_by_key.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentScanByKey<AgentScanByKeyPolicyT, KeysInputIteratorT, ValuesInputIteratorT, ValuesOutputIteratorT, EqualityOp, ScanOpT, InitValueT, OffsetT, AccumT>::ZipValuesAndFlags(OffsetT, AccumT (&)[ITEMS_PER_THREAD], OffsetT (&)[ITEMS_PER_THREAD], SizeValuePairT (&)[ITEMS_PER_THREAD])’:
+/usr/include/cub/agent/agent_scan_by_key.cuh:273:35: error: ‘threadIdx’ was not declared in this scope
+  273 |       if (IS_LAST_TILE && OffsetT(threadIdx.x * ITEMS_PER_THREAD) + ITEM == num_remaining)
+      |                                   ^~~~~~~~~
+/usr/include/cub/agent/agent_scan_by_key.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentScanByKey<AgentScanByKeyPolicyT, KeysInputIteratorT, ValuesInputIteratorT, ValuesOutputIteratorT, EqualityOp, ScanOpT, InitValueT, OffsetT, AccumT>::ConsumeTile(OffsetT, OffsetT, int, OffsetT, ScanTileStateT&)’:
+/usr/include/cub/agent/agent_scan_by_key.cuh:365:11: error: ‘threadIdx’ was not declared in this scope
+  365 |       if (threadIdx.x == 0)
+      |           ^~~~~~~~~
+/usr/include/cub/agent/agent_scan_by_key.cuh:377:29: error: ‘threadIdx’ was not declared in this scope
+  377 |       KeyT tile_pred_key = (threadIdx.x == 0) ? d_keys_prev_in[tile_idx] : KeyT();
+      |                             ^~~~~~~~~
+/usr/include/cub/agent/agent_scan_by_key.cuh: In member function ‘void cub::CUB_200700_890_NS::AgentScanByKey<AgentScanByKeyPolicyT, KeysInputIteratorT, ValuesInputIteratorT, ValuesOutputIteratorT, EqualityOp, ScanOpT, InitValueT, OffsetT, AccumT>::ConsumeRange(OffsetT, ScanTileStateT&, int)’:
+/usr/include/cub/agent/agent_scan_by_key.cuh:447:29: error: ‘blockIdx’ was not declared in this scope
+  447 |     int tile_idx          = blockIdx.x;
+      |                             ^~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh: At global scope:
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:138:18: error: expected constructor, destructor, or type conversion before ‘(’ token
+  138 | __launch_bounds__(int(ChainedPolicyT::ActivePolicy::ScanByKeyPolicyT::BLOCK_THREADS))
+      |                  ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh: In function ‘void cub::CUB_200700_890_NS::DeviceScanByKeyInitKernel(ScanTileStateT, KeysInputIteratorT, detail::value_t<RandomAccessIterator>*, unsigned int, int)’:
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:184:30: error: ‘threadIdx’ was not declared in this scope
+  184 |   const unsigned tid       = threadIdx.x + blockDim.x * blockIdx.x;
+      |                              ^~~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:184:44: error: ‘blockDim’ was not declared in this scope
+  184 |   const unsigned tid       = threadIdx.x + blockDim.x * blockIdx.x;
+      |                                            ^~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:184:57: error: ‘blockIdx’ was not declared in this scope
+  184 |   const unsigned tid       = threadIdx.x + blockDim.x * blockIdx.x;
+      |                                                         ^~~~~~~~
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh: In member function ‘cudaError_t cub::CUB_200700_890_NS::DispatchScanByKey<KeysInputIteratorT, ValuesInputIteratorT, ValuesOutputIteratorT, EqualityOp, ScanOpT, InitValueT, OffsetT, AccumT, SelectedPolicy>::Invoke()’:
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:538:7: error: ‘DeviceScanByKeyKernel’ was not declared in this scope; did you mean ‘DeviceScanByKeyInitKernel’?
+  538 |       DeviceScanByKeyKernel<MaxPolicyT,
+      |       ^~~~~~~~~~~~~~~~~~~~~
+      |       DeviceScanByKeyInitKernel
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:538:39: error: expected primary-expression before ‘,’ token
+  538 |       DeviceScanByKeyKernel<MaxPolicyT,
+      |                                       ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:539:47: error: expected primary-expression before ‘,’ token
+  539 |                             KeysInputIteratorT,
+      |                                               ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:540:49: error: expected primary-expression before ‘,’ token
+  540 |                             ValuesInputIteratorT,
+      |                                                 ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:541:50: error: expected primary-expression before ‘,’ token
+  541 |                             ValuesOutputIteratorT,
+      |                                                  ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:542:48: error: expected primary-expression before ‘,’ token
+  542 |                             ScanByKeyTileStateT,
+      |                                                ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:543:39: error: expected primary-expression before ‘,’ token
+  543 |                             EqualityOp,
+      |                                       ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:544:36: error: expected primary-expression before ‘,’ token
+  544 |                             ScanOpT,
+      |                                    ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:545:39: error: expected primary-expression before ‘,’ token
+  545 |                             InitValueT,
+      |                                       ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:546:36: error: expected primary-expression before ‘,’ token
+  546 |                             OffsetT,
+      |                                    ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:547:35: error: expected primary-expression before ‘>’ token
+  547 |                             AccumT>);
+      |                                   ^
+/usr/include/cub/device/dispatch/dispatch_scan_by_key.cuh:547:36: error: expected primary-expression before ‘)’ token
+  547 |                             AccumT>);
+      |                                    ^

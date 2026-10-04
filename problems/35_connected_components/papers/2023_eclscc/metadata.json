@@ -1,0 +1,16 @@
+{
+  "paper_id": "2023_eclscc",
+  "title": "A GPU Algorithm for Detecting Strongly Connected Components",
+  "year": 2023,
+  "venue": "ACM ICS 2023",
+  "doi": "10.1145/3581784.3607071",
+  "publication_url": "https://doi.org/10.1145/3581784.3607071",
+  "pdf_url": "https://userweb.cs.txstate.edu/~burtscher/papers/sc23c.pdf",
+  "code_url": "https://github.com/burtscher/ECL-SCC",
+  "semantic_fit": "exact",
+  "gpu_scope": "ECL-SCC: GPU strongly-connected-components algorithm where all vertices concurrently act as pivots; on par with the fastest prior GPU code on power-law graphs and 7.8x faster on mesh graphs.",
+  "notes": "From the same ECL (Texas State) lab behind ECL-MaxFlow and ECL-SGB already validated/catalogued elsewhere in this project.",
+  "problem_id": "connected_components",
+  "problem_dir": "35_connected_components",
+  "research_cutoff": "2026-09-30"
+}

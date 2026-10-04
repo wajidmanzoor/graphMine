@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "transitive-closure",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/closure_single_vertex.json"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.26470817625522614,
+  "exit_code": 0,
+  "log": "runs/library_closure_single_vertex.log",
+  "stdin_path": null,
+  "timeout": false
+}

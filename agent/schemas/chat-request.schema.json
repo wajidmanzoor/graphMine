@@ -1,6 +1,11 @@
 {
   "additionalProperties": false,
   "properties": {
+    "allow_directed_projection": {
+      "default": false,
+      "title": "Allow Directed Projection",
+      "type": "boolean"
+    },
     "execute": {
       "default": true,
       "title": "Execute",

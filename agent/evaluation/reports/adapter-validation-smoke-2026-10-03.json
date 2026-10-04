@@ -1,0 +1,166 @@
+{
+  "created_at": "2026-10-03T18:13:13.289686+00:00",
+  "scope": "Four development validation questions, harness smoke test only; not held-out accuracy.",
+  "suite": ".graphmine-learning/adapter-validation-smoke-v1",
+  "results": ".graphmine-learning/adapter-validation-comparison-v1",
+  "plan_sha256": "dd481d13f0fea8c14ae6825ecbbc78a15247d89204c00fc40912f4641f853a71",
+  "source_sha256": "67ec466e3b3516e0eef7a6918376c554fce54096261e1ef515cec72c5c6fb206",
+  "summary": {
+    "by_arm": {
+      "base_nf4": {
+        "passed": 3,
+        "total": 4,
+        "schema_valid": 4,
+        "raw_route_matches": 3,
+        "truncated": 0,
+        "median_amortized_seconds": 16.234147309791297,
+        "by": {
+          "behavior": {
+            "execute": {
+              "passed": 3,
+              "total": 3
+            },
+            "unsupported": {
+              "passed": 0,
+              "total": 1
+            }
+          },
+          "family": {
+            "cycle_chords": {
+              "passed": 1,
+              "total": 2
+            },
+            "retail_nested": {
+              "passed": 2,
+              "total": 2
+            }
+          },
+          "operation_id": {
+            "betweenness-centrality": {
+              "passed": 0,
+              "total": 1
+            },
+            "maximal-bicliques": {
+              "passed": 2,
+              "total": 2
+            },
+            "maximal-cliques": {
+              "passed": 1,
+              "total": 1
+            }
+          }
+        }
+      },
+      "adapter_nf4": {
+        "passed": 4,
+        "total": 4,
+        "schema_valid": 4,
+        "raw_route_matches": 4,
+        "truncated": 0,
+        "median_amortized_seconds": 15.023557510226965,
+        "by": {
+          "behavior": {
+            "execute": {
+              "passed": 3,
+              "total": 3
+            },
+            "unsupported": {
+              "passed": 1,
+              "total": 1
+            }
+          },
+          "family": {
+            "cycle_chords": {
+              "passed": 2,
+              "total": 2
+            },
+            "retail_nested": {
+              "passed": 2,
+              "total": 2
+            }
+          },
+          "operation_id": {
+            "betweenness-centrality": {
+              "passed": 1,
+              "total": 1
+            },
+            "maximal-bicliques": {
+              "passed": 2,
+              "total": 2
+            },
+            "maximal-cliques": {
+              "passed": 1,
+              "total": 1
+            }
+          }
+        }
+      },
+      "serving_fp8": {
+        "passed": 3,
+        "total": 4,
+        "schema_valid": 4,
+        "raw_route_matches": 3,
+        "truncated": 0,
+        "median_amortized_seconds": 12.232582232914865,
+        "by": {
+          "behavior": {
+            "execute": {
+              "passed": 3,
+              "total": 3
+            },
+            "unsupported": {
+              "passed": 0,
+              "total": 1
+            }
+          },
+          "family": {
+            "cycle_chords": {
+              "passed": 1,
+              "total": 2
+            },
+            "retail_nested": {
+              "passed": 2,
+              "total": 2
+            }
+          },
+          "operation_id": {
+            "betweenness-centrality": {
+              "passed": 0,
+              "total": 1
+            },
+            "maximal-bicliques": {
+              "passed": 2,
+              "total": 2
+            },
+            "maximal-cliques": {
+              "passed": 1,
+              "total": 1
+            }
+          }
+        }
+      }
+    },
+    "paired_nf4": {
+      "improved": 1,
+      "both_pass": 3
+    },
+    "regressions": [],
+    "improvements": [
+      "cycle_chords-02-q07"
+    ],
+    "expected_cases_per_arm": 4,
+    "complete": true,
+    "latency_caution": "Local values are amortized batch time, not end-user latency; first batch includes warm-up. FP8 has another engine/precision."
+  },
+  "finding": "The only difference was preservation of the formal requested problem ID on a correctly refused cost-weighted request. All arms refused the unsupported weighted calculation.",
+  "tests": {
+    "command": ".venv/bin/pytest -q agent/tests/test_adapter_eval.py agent/tests/test_finetune.py",
+    "passed": 14
+  },
+  "remaining": [
+    "Evaluate all reserved synthetic test cases",
+    "Evaluate new wording, contextual scope changes, and untrained operations",
+    "Complete application evaluation before promotion"
+  ],
+  "deployed": false
+}

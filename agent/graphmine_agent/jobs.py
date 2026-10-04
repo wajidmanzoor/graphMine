@@ -82,6 +82,14 @@ class JobManager:
         self._worker: asyncio.Task[None] | None = None
         self._active: dict[str, asyncio.Task[None]] = {}
 
+    def statistics(self) -> dict[str, Any]:
+        return {
+            "queue_depth": self._queue.qsize(),
+            "active_count": len(self._active),
+            "active_job_ids": sorted(self._active),
+            "worker_running": self._worker is not None and not self._worker.done(),
+        }
+
     async def start(self) -> None:
         if self._worker is not None:
             return
@@ -102,8 +110,24 @@ class JobManager:
         if self._active:
             await asyncio.gather(*self._active.values(), return_exceptions=True)
 
-    async def enqueue(self, plan: ExecutionPlan) -> JobRecord:
-        job = self.database.save_job(JobRecord(session_id=plan.session_id, plan=plan))
+    async def enqueue(
+        self,
+        plan: ExecutionPlan,
+        *,
+        analysis_id: str | None = None,
+        step_index: int = 0,
+        step_count: int = 1,
+    ) -> JobRecord:
+        job = self.database.save_job(
+            JobRecord(
+                session_id=plan.session_id,
+                plan=plan,
+                turn_id=self.database.history.turn_id(),
+                analysis_id=analysis_id,
+                step_index=step_index,
+                step_count=step_count,
+            )
+        )
         await self.event_bus.publish(
             plan.session_id,
             "job.queued",
@@ -153,6 +177,17 @@ class JobManager:
                 self._queue.task_done()
 
     async def _execute(self, job: JobRecord) -> None:
+        history = self.database.history
+        workspace = self.runner.settings.workspaces_root / job.id
+        with history.scope(
+            job.session_id, "execution", job.plan, turn_id=job.turn_id, job_id=job.id
+        ):
+            try:
+                await self._execute_job(job)
+            finally:
+                history.capture_workspace(job.session_id, job.id, workspace)
+
+    async def _execute_job(self, job: JobRecord) -> None:
         running = job.model_copy(
             update={"status": JobStatus.running, "started_at": utc_now()}
         )
@@ -165,6 +200,41 @@ class JobManager:
         )
         workspace = self.runner.settings.workspaces_root / job.id
         try:
+            if job.analysis_id and job.step_index:
+                earlier = [
+                    item
+                    for item in self.database.list_jobs(job.session_id)
+                    if item.analysis_id == job.analysis_id
+                    and item.step_index < job.step_index
+                ]
+                if len(earlier) != job.step_index or any(
+                    item.status != JobStatus.completed for item in earlier
+                ):
+                    raise ExecutionError(
+                        "supporting_analysis_incomplete",
+                        "A supporting analysis failed or was cancelled; the remaining workflow was not executed.",
+                    )
+            inputs = [job.plan.graph_id] + [
+                identifier
+                for values in job.plan.auxiliary_inputs.values()
+                for identifier in values
+            ]
+            history = self.database.history
+            history.snapshot(
+                job.session_id,
+                f"jobs/{job.id}/inputs.json",
+                {
+                    "plan": job.plan,
+                    "files": [
+                        self.database.get_file(identifier) for identifier in inputs
+                    ],
+                    "history_files": [
+                        f"files/{identifier}/metadata.json" for identifier in inputs
+                    ],
+                    "capabilities": self.runner.capabilities,
+                    "timeout_seconds": self.runner.settings.job_timeout_seconds,
+                },
+            )
             payload, command = await self.runner.execute(job.plan, workspace)
             validate_result(self.runner.catalog, job.plan.operation_id, payload)
             if not payload["ok"]:

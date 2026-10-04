@@ -80,5 +80,32 @@ int main() {
           "GPUMaximumClique tied size mismatch");
   require(ties_result.value().cliques.size() == 5,
           "GPUMaximumClique did not return every tied cycle edge");
+
+  // Seeded application audit: CUDA-MS finds a three-clique here, while
+  // {2, 4, 6, 7} is a four-clique. Its relaxation mask must not certify three.
+  const std::vector<graphmine::ExternalId> audit_vertices = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+  const std::vector<std::pair<graphmine::ExternalId, graphmine::ExternalId>> audit_edges = {
+      {0, 1}, {0, 2}, {0, 3}, {0, 8}, {1, 2}, {1, 4}, {1, 8}, {2, 4},
+      {2, 6}, {2, 7}, {3, 5}, {4, 6}, {4, 7}, {5, 7}, {5, 8}, {6, 7}};
+  const auto audit_graph = graphmine::Graph::from_edges(
+      "synthetic-random-01-false-optimality", audit_vertices, audit_edges);
+  for (const auto backend :
+       {graphmine::MaximumCliqueBackend::cuda_ms,
+        graphmine::MaximumCliqueBackend::gpu_maximum_clique,
+        graphmine::MaximumCliqueBackend::maximum_clique_on_gpu}) {
+    graphmine::MaximumCliqueOptions options;
+    options.backend = backend;
+    options.optional_outputs = graphmine::MaximumCliqueOptionalOutput::upper_bound;
+    const auto result = graphmine::MaximumClique(options).run(audit_graph);
+    require(result.ok(), result.status().message().c_str());
+    require(result.value().upper_bound.has_value() && *result.value().upper_bound >= 4,
+            "relaxation mask incorrectly reduced the certified upper bound");
+    require(!result.value().optimal || result.value().maximum_size == 4,
+            "a non-maximum clique was certified as optimal");
+    if (backend != graphmine::MaximumCliqueBackend::cuda_ms) {
+      require(result.value().maximum_size == 4 && result.value().optimal,
+              "exact backend failed the seeded four-clique regression");
+    }
+  }
   return 0;
 }

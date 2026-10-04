@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gst_vlsi",
+    "-o"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gst_vlsi/64",
+  "elapsed_seconds": 0.6653836704790592,
+  "exit_code": 0,
+  "log": "runs/gst_vlsi_64.log",
+  "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gst_vlsi/64/graph.txt",
+  "timeout": false
+}

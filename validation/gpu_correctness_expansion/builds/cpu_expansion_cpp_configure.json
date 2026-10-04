@@ -1,0 +1,15 @@
+{
+  "command": [
+    "cmake",
+    "-S",
+    "/home/wajid/projects/graphDatabaseAgent/library",
+    "-B",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/library-cpu"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.11507671885192394,
+  "exit_code": 0,
+  "log": "builds/cpu_expansion_cpp_configure.log",
+  "stdin_path": null,
+  "timeout": false
+}

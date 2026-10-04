@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/graphbplus",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/positive_triangle.csv",
+    "32",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphbplus/positive_triangle.out"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.26446107029914856,
+  "exit_code": 0,
+  "log": "runs/graphbplus_positive_triangle.log",
+  "stdin_path": null,
+  "timeout": false
+}

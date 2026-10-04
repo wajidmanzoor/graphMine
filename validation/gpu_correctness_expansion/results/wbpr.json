@@ -1,0 +1,264 @@
+{
+  "backend": "wbpr",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/small.dimacs",
+        "-a",
+        "0"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.3150717727839947,
+      "exit_code": 0,
+      "expected": 23,
+      "log": "runs/wbpr_small_0.log",
+      "name": "small_0",
+      "observed": 23,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/small.dimacs",
+        "-a",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2646009437739849,
+      "exit_code": 0,
+      "expected": 23,
+      "log": "runs/wbpr_small_1.log",
+      "name": "small_1",
+      "observed": 23,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/disconnected.dimacs",
+        "-a",
+        "0"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2642268966883421,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/wbpr_disconnected_0.log",
+      "name": "disconnected_0",
+      "observed": 0,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/disconnected.dimacs",
+        "-a",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2647972088307142,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/wbpr_disconnected_1.log",
+      "name": "disconnected_1",
+      "observed": 0,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/zero_capacities.dimacs",
+        "-a",
+        "0"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26463672891259193,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/wbpr_zero_capacities_0.log",
+      "name": "zero_capacities_0",
+      "observed": 0,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/zero_capacities.dimacs",
+        "-a",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26468553952872753,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/wbpr_zero_capacities_1.log",
+      "name": "zero_capacities_1",
+      "observed": 0,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/empty_edges.dimacs",
+        "-a",
+        "0"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26448202319443226,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/wbpr_empty_edges_0.log",
+      "name": "empty_edges_0",
+      "observed": 0,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/empty_edges.dimacs",
+        "-a",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2646942939609289,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/wbpr_empty_edges_1.log",
+      "name": "empty_edges_1",
+      "observed": 0,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/dead_end.dimacs",
+        "-a",
+        "0"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2644915711134672,
+      "exit_code": 0,
+      "expected": 3,
+      "log": "runs/wbpr_dead_end_0.log",
+      "name": "dead_end_0",
+      "observed": 3,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/dead_end.dimacs",
+        "-a",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26467013731598854,
+      "exit_code": 0,
+      "expected": 3,
+      "log": "runs/wbpr_dead_end_1.log",
+      "name": "dead_end_1",
+      "observed": 3,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/random_0.dimacs",
+        "-a",
+        "0"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2647414468228817,
+      "exit_code": 0,
+      "expected": 21,
+      "log": "runs/wbpr_random_0_0.log",
+      "name": "random_0_0",
+      "observed": 21,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+        "-v",
+        "2",
+        "-f",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/random_0.dimacs",
+        "-a",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2646121606230736,
+      "exit_code": 0,
+      "expected": 21,
+      "log": "runs/wbpr_random_0_1.log",
+      "name": "random_0_1",
+      "observed": 21,
+      "passed": true,
+      "stdin_path": null,
+      "timeout": false
+    }
+  ],
+  "limitations": [
+    "Scalar value screening only: flow conservation and returned cut not certified. The license found in maxflow-bcsr2 does not establish the license of maxflow-cuda."
+  ],
+  "passed": 12,
+  "seed": 20261004,
+  "status": "partial_pass",
+  "total": 12
+}

@@ -1,0 +1,16 @@
+/home/wajid/projects/graphDatabaseAgent/problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/code/src/ECL-SGB.cu(123): warning #1650-D: result of call is not used
+    getline(&ptr, &linesize, fin);
+    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/code/src/ECL-SGB.cu(123): warning #1650-D: result of call is not used
+    getline(&ptr, &linesize, fin);
+    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/code/src/ECL-SGB.cu: In function ‘Graph readGraph(const char*)’:
+/home/wajid/projects/graphDatabaseAgent/problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/code/src/ECL-SGB.cu:123:8: warning: ignoring return value of ‘__ssize_t getline(char**, size_t*, FILE*)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  123 |   getline(&ptr, &linesize, fin);  // skip first line
+      |   ~~~~~^~~~~~~~~~~~~~~~~~~~~~

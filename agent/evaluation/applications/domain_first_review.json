@@ -1,0 +1,51 @@
+{
+  "source": "assistant_evaluation",
+  "method": "Review of preserved live Qwen/native outputs, original synthetic graphs, and headless Firefox inspection of saved answer reports. These are assistant usability judgments, not recruited-user ratings or automatic training labels. The community-layout defect found in the browser was fixed and rechecked separately after the numerical replay.",
+  "reviews": [
+    {
+      "case_id": "collaboration_circles",
+      "step": 1,
+      "severity": "P2",
+      "category": "application_language",
+      "finding": "Group memberships and the Divya-Eli connection are now correct, but next questions still use betweenness centrality, quasi-clique mining and k-core decomposition. The generic caveat also mentions fraud rings in a coworker task, and a renderer implementation detail is exposed as an assumption.",
+      "expected_behavior": "Suggest application questions such as 'Who connects these teams?' and keep limitations specific to collaboration data. Hide rendering implementation details and unrelated domain examples.",
+      "basis": "Saved final-replay interpretation and offline browser screenshot."
+    },
+    {
+      "case_id": "biology_supported_core",
+      "step": 1,
+      "severity": "P2",
+      "category": "actionable_followups",
+      "finding": "The surviving four proteins are correct. Suggested follow-ups ask about external pathways/complexes, which are not supplied by this fixture, and a maximum clique within the remaining core, which requires a dependent selection that the current independent-step workflow does not directly expose.",
+      "expected_behavior": "Offer only executable next actions on available data, or clearly identify the extra annotations or transformation needed. Use typed, validated next actions rather than unconstrained strings.",
+      "basis": "Saved follow-up suggestions compared with protein_interactions.json and the current workflow contract."
+    },
+    {
+      "case_id": "retail_shared_purchases",
+      "step": 1,
+      "severity": "P2",
+      "category": "presentation",
+      "finding": "Both expected customer-product bundles are correct and the partition file is derived automatically. The model selects generic groups and members tables, which expose internal fields such as vertices, attribute_summary, left and right instead of a concise customer/product presentation. The available bipartite network is not selected in this run.",
+      "expected_behavior": "Present Customers and Products as explicit named columns and make the two-sided answer view available without requiring graph terminology. Keep implementation keys in the technical view.",
+      "basis": "Saved visualization specifications and materialized answer rows; not a claim that a retail network was rendered in this run."
+    },
+    {
+      "case_id": "workplace_exploration",
+      "step": 1,
+      "severity": "P2",
+      "category": "answer_coverage",
+      "finding": "Both computations succeed and the answer contains the full ranking. The selected textual facts repeat Divya's score 18 while omitting Eli's score 16 from the verified findings; Eli is mentioned in a separately labeled hypothesis and is available in the ranking view.",
+      "expected_behavior": "Use the limited text budget to cover all parts of the question without duplicate claims. Name both nonzero connectors and their scores in the concise verified answer.",
+      "basis": "Selected findings compared with the combined answer's step_1 ranking and actual native results."
+    },
+    {
+      "case_id": "workplace_exploration",
+      "step": 3,
+      "severity": "P2",
+      "category": "conversation_relevance",
+      "finding": "The inherited 2026 filter is correct and all seven zero scores are clearly described as non-discriminating. One proposed follow-up asks which returned group to inspect even though this ranking result has no groups.",
+      "expected_behavior": "Tie suggestions to the current result or explicitly refer to a particular earlier group result, preserving its graph and filter provenance.",
+      "basis": "Saved final-turn suggestions and the current answer.groups array."
+    }
+  ]
+}

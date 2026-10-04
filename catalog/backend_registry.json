@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
-  "operation_count": 13,
-  "validated_backend_count": 26,
+  "operation_count": 18,
+  "validated_backend_count": 31,
   "operations": [
     {
       "id": "maximal-cliques",
@@ -408,6 +408,97 @@
             "undirected",
             "full_score_vector",
             "single_gpu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "connected-components",
+      "research_problem": "connected_components",
+      "usage": "graphmine run connected-components --graph GRAPH.json --connectivity-mode weakly_connected|strongly_connected [--backend ecl-scc] [--timeout-seconds N]",
+      "backends": [
+        {
+          "id": "ecl-scc",
+          "display_name": "ECL-SCC 1.0",
+          "problem": "connected_components",
+          "source_commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+          "validated": true,
+          "capabilities": [
+            "exact weak/strong components; loops removed; parallel edges collapsed",
+            "at most 1M vertices/10M input edges; isolated CUDA worker"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "max-flow-min-cut",
+      "research_problem": "max_flow_min_cut",
+      "usage": "graphmine run max-flow-min-cut --graph GRAPH.json --source ID --sink ID [--unit-capacity] [--backend ecl-maxflow] [--timeout-seconds N]",
+      "backends": [
+        {
+          "id": "ecl-maxflow",
+          "display_name": "ECL-MaxFlow",
+          "problem": "max_flow_min_cut",
+          "source_commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+          "validated": true,
+          "capabilities": [
+            "directed edge capacities: nonnegative integers; unit_capacity supported",
+            "total capacity <= 1e9; no vertex capacities; exact flow/cut certificate",
+            "parallel capacities summed; original edge flows restored; bounded worker"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "linear-assignment",
+      "research_problem": "bipartite_matching_assignment",
+      "usage": "graphmine run linear-assignment --graph GRAPH.json [--backend hungarian-cuda] [--timeout-seconds N] (complete square minimum-cost perfect assignment, <=64 per side, integer costs 0..999)",
+      "backends": [
+        {
+          "id": "hungarian-cuda",
+          "display_name": "HungarianCUDA",
+          "problem": "bipartite_matching_assignment",
+          "source_commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+          "validated": true,
+          "capabilities": [
+            "minimum-cost perfect assignment only; complete square graph; at most 64 per side",
+            "integer costs [0,999]; attributes.side = left|right; no general matching modes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transitive-closure",
+      "research_problem": "transitive_closure_reachability",
+      "usage": "graphmine run transitive-closure --graph GRAPH.json [--backend gdlog] [--timeout-seconds N] (reflexive closure; <=1024 vertices)",
+      "backends": [
+        {
+          "id": "gdlog",
+          "display_name": "GDlog",
+          "problem": "transitive_closure_reachability",
+          "source_commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+          "validated": true,
+          "capabilities": [
+            "exact reflexive transitive closure; directed input; loops/duplicates normalized",
+            "complete pair materialization, at most 1024 vertices; no persistent reachability index"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "butterfly-counting",
+      "research_problem": "butterfly_counting_bipartite",
+      "usage": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",
+      "backends": [
+        {
+          "id": "graphminer",
+          "display_name": "GraphMiner/G2Miner",
+          "problem": "butterfly_counting_bipartite",
+          "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+          "validated": true,
+          "capabilities": [
+            "exact global butterfly count on checked bipartite topology",
+            "reuses existing GraphMiner square kernel; no alpha/beta core or listing modes"
           ]
         }
       ]

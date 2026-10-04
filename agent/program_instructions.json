@@ -16,80 +16,190 @@
       "problem_id": "maximal_clique_enumeration",
       "default_backend": "rdmce",
       "parameters": {
-        "minimum_clique_size": {"flag": "--minimum-clique-size", "type": "integer", "minimum": 1, "default": 1},
-        "result_limit": {"flag": "--result-limit", "type": "integer", "minimum": 1}
+        "minimum_clique_size": {
+          "flag": "--minimum-clique-size",
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "result_limit": {
+          "flag": "--result-limit",
+          "type": "integer",
+          "minimum": 1
+        }
       },
       "optional_outputs": {
         "total_count": "--include-total-count"
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["cliques", "returned_count", "complete"],
-      "visualization_candidates": ["network", "table", "metric_cards"]
+      "required_outputs": [
+        "cliques",
+        "returned_count",
+        "complete"
+      ],
+      "visualization_candidates": [
+        "network",
+        "table",
+        "metric_cards"
+      ]
     },
     {
       "id": "maximum-clique",
       "problem_id": "maximum_clique",
       "default_backend": "cuda-ms",
       "parameters": {
-        "return_all_ties": {"flag": "--return-all-ties", "type": "boolean", "default": false},
-        "known_lower_bound": {"flag": "--known-lower-bound", "type": "integer", "minimum": 0}
+        "return_all_ties": {
+          "flag": "--return-all-ties",
+          "type": "boolean",
+          "default": false
+        },
+        "known_lower_bound": {
+          "flag": "--known-lower-bound",
+          "type": "integer",
+          "minimum": 0
+        }
       },
       "optional_outputs": {
         "upper_bound": "--include-upper-bound"
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["maximum_size", "cliques", "optimal"],
+      "required_outputs": [
+        "maximum_size",
+        "cliques",
+        "optimal"
+      ],
       "backend_constraints": {
-        "gpu-maximum-clique": {"supports": ["return_all_ties"]},
-        "cuda-ms": {"forbids_true": ["return_all_ties"]},
-        "maximum-clique-on-gpu": {"forbids_true": ["return_all_ties"]}
+        "gpu-maximum-clique": {
+          "supports": [
+            "return_all_ties"
+          ]
+        },
+        "cuda-ms": {
+          "forbids_true": [
+            "return_all_ties"
+          ]
+        },
+        "maximum-clique-on-gpu": {
+          "forbids_true": [
+            "return_all_ties"
+          ]
+        }
       },
-      "visualization_candidates": ["network", "table", "metric_cards"]
+      "visualization_candidates": [
+        "network",
+        "table",
+        "metric_cards"
+      ]
     },
     {
       "id": "k-cliques",
       "problem_id": "k_clique_counting_enumeration",
       "default_backend": "graphset",
       "parameters": {
-        "k": {"flag": "--k", "type": "integer", "minimum": 2, "default": 3},
-        "result_limit": {"flag": "--result-limit", "type": "integer", "minimum": 1, "requires_output": "cliques"}
+        "k": {
+          "flag": "--k",
+          "type": "integer",
+          "minimum": 2,
+          "default": 3
+        },
+        "result_limit": {
+          "flag": "--result-limit",
+          "type": "integer",
+          "minimum": 1,
+          "requires_output": "cliques"
+        }
       },
       "optional_outputs": {
         "cliques": "--enumerate",
         "per_vertex_count": "--include-per-vertex-counts"
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["count", "complete"],
+      "required_outputs": [
+        "count",
+        "complete"
+      ],
       "backend_constraints": {
-        "kcgpu": {"parameter_maximum": {"k": 5}},
-        "graphset": {"parameter_maximum": {"k": 6}},
-        "gamma": {"parameter_maximum": {"k": 5}}
+        "kcgpu": {
+          "parameter_maximum": {
+            "k": 5
+          }
+        },
+        "graphset": {
+          "parameter_maximum": {
+            "k": 6
+          }
+        },
+        "gamma": {
+          "parameter_maximum": {
+            "k": 5
+          }
+        }
       },
-      "visualization_candidates": ["network", "bar", "table", "metric_cards"]
+      "visualization_candidates": [
+        "network",
+        "bar",
+        "table",
+        "metric_cards"
+      ]
     },
     {
       "id": "quasi-cliques",
       "problem_id": "quasi_clique_mining",
       "default_backend": "cuqc",
       "parameters": {
-        "minimum_degree_ratio": {"flag": "--minimum-degree-ratio", "type": "number", "minimum": 0.5, "maximum": 1.0, "default": 0.8},
-        "minimum_size": {"flag": "--minimum-size", "type": "integer", "minimum": 2, "default": 4},
-        "scheduling": {"flag": "--scheduling", "type": "string", "choices": ["dynamic", "static"], "default": "dynamic"},
-        "result_limit": {"flag": "--result-limit", "type": "integer", "minimum": 1}
+        "minimum_degree_ratio": {
+          "flag": "--minimum-degree-ratio",
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 1.0,
+          "default": 0.8
+        },
+        "minimum_size": {
+          "flag": "--minimum-size",
+          "type": "integer",
+          "minimum": 2,
+          "default": 4
+        },
+        "scheduling": {
+          "flag": "--scheduling",
+          "type": "string",
+          "choices": [
+            "dynamic",
+            "static"
+          ],
+          "default": "dynamic"
+        },
+        "result_limit": {
+          "flag": "--result-limit",
+          "type": "integer",
+          "minimum": 1
+        }
       },
       "optional_outputs": {
         "total_count": "--include-total-count"
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["quasi_cliques", "returned_count", "complete"],
-      "visualization_candidates": ["network", "table", "bar"]
+      "required_outputs": [
+        "quasi_cliques",
+        "returned_count",
+        "complete"
+      ],
+      "visualization_candidates": [
+        "network",
+        "table",
+        "bar"
+      ]
     },
     {
       "id": "k-core",
       "problem_id": "k_core_decomposition",
       "default_backend": "kcore-gpu",
       "parameters": {
-        "requested_k": {"flag": "--requested-k", "type": "integer", "minimum": 0}
+        "requested_k": {
+          "flag": "--requested-k",
+          "type": "integer",
+          "minimum": 0
+        }
       },
       "optional_outputs": {
         "requested_core_vertices": "--include-requested-core-vertices",
@@ -97,39 +207,98 @@
         "peeling_order": "--include-peeling-order"
       },
       "output_constraints": {
-        "requested_core_vertices": {"requires_parameter": "requested_k"},
-        "requested_core_edges": {"requires_parameter": "requested_k"}
+        "requested_core_vertices": {
+          "requires_parameter": "requested_k"
+        },
+        "requested_core_edges": {
+          "requires_parameter": "requested_k"
+        }
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["core_number_by_vertex", "degeneracy"],
-      "visualization_candidates": ["network", "histogram", "bar", "table"]
+      "required_outputs": [
+        "core_number_by_vertex",
+        "degeneracy"
+      ],
+      "visualization_candidates": [
+        "network",
+        "histogram",
+        "bar",
+        "table"
+      ]
     },
     {
       "id": "maximal-bicliques",
       "problem_id": "maximal_biclique_enumeration",
       "default_backend": "cumbe",
       "parameters": {
-        "minimum_left_size": {"flag": "--minimum-left-size", "type": "integer", "minimum": 1, "default": 1},
-        "minimum_right_size": {"flag": "--minimum-right-size", "type": "integer", "minimum": 1, "default": 1},
-        "result_limit": {"flag": "--result-limit", "type": "integer", "minimum": 1}
+        "minimum_left_size": {
+          "flag": "--minimum-left-size",
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "minimum_right_size": {
+          "flag": "--minimum-right-size",
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "result_limit": {
+          "flag": "--result-limit",
+          "type": "integer",
+          "minimum": 1
+        }
       },
       "optional_outputs": {
         "total_count": "--include-total-count"
       },
       "auxiliary_inputs": {
-        "left_partition": {"flag": "--left-partition", "role": "left_partition", "required": true, "multiple": false}
+        "left_partition": {
+          "flag": "--left-partition",
+          "role": "left_partition",
+          "required": true,
+          "multiple": false
+        }
       },
-      "required_outputs": ["bicliques", "returned_count", "complete"],
-      "visualization_candidates": ["network", "heatmap", "table", "bar"]
+      "required_outputs": [
+        "bicliques",
+        "returned_count",
+        "complete"
+      ],
+      "visualization_candidates": [
+        "network",
+        "heatmap",
+        "table",
+        "bar"
+      ]
     },
     {
       "id": "triangle-counting",
       "problem_id": "triangle_counting_listing",
       "default_backend": "tot",
       "parameters": {
-        "result_limit": {"flag": "--result-limit", "type": "integer", "minimum": 1, "requires_output": "triangles"},
-        "wetric_spread": {"flag": "--wetric-spread", "type": "integer", "minimum": 1, "default": 5, "backend": "wetric", "performance_only": true},
-        "wetric_adjacency_matrix_length": {"flag": "--wetric-adjacency-matrix-length", "type": "integer", "minimum": 1, "default": 64, "backend": "wetric", "performance_only": true}
+        "result_limit": {
+          "flag": "--result-limit",
+          "type": "integer",
+          "minimum": 1,
+          "requires_output": "triangles"
+        },
+        "wetric_spread": {
+          "flag": "--wetric-spread",
+          "type": "integer",
+          "minimum": 1,
+          "default": 5,
+          "backend": "wetric",
+          "performance_only": true
+        },
+        "wetric_adjacency_matrix_length": {
+          "flag": "--wetric-adjacency-matrix-length",
+          "type": "integer",
+          "minimum": 1,
+          "default": 64,
+          "backend": "wetric",
+          "performance_only": true
+        }
       },
       "optional_outputs": {
         "triangles": "--list-instances",
@@ -137,15 +306,31 @@
         "per_edge_count": "--include-per-edge-counts"
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["global_triangle_count", "instances_complete"],
-      "visualization_candidates": ["network", "bar", "histogram", "metric_cards"]
+      "required_outputs": [
+        "global_triangle_count",
+        "instances_complete"
+      ],
+      "visualization_candidates": [
+        "network",
+        "bar",
+        "histogram",
+        "metric_cards"
+      ]
     },
     {
       "id": "dynamic-triangle-counting",
       "problem_id": "triangle_counting_listing",
       "default_backend": "edtc",
       "parameters": {
-        "result_limit": {"flag": "--result-limit", "type": "integer", "minimum": 1, "requires_any_output": ["deleted_triangles", "inserted_triangles"]}
+        "result_limit": {
+          "flag": "--result-limit",
+          "type": "integer",
+          "minimum": 1,
+          "requires_any_output": [
+            "deleted_triangles",
+            "inserted_triangles"
+          ]
+        }
       },
       "optional_outputs": {
         "initial_global_triangle_count": "--include-global-counts",
@@ -154,67 +339,168 @@
         "inserted_triangles": "--list-changed-instances"
       },
       "auxiliary_inputs": {
-        "updates": {"flag": "--updates", "role": "updates", "required": true, "multiple": false}
+        "updates": {
+          "flag": "--updates",
+          "role": "updates",
+          "required": true,
+          "multiple": false
+        }
       },
-      "required_outputs": ["deleted_triangle_count", "inserted_triangle_count", "net_triangle_change", "changed_instances_complete"],
-      "visualization_candidates": ["line", "network", "table", "metric_cards"]
+      "required_outputs": [
+        "deleted_triangle_count",
+        "inserted_triangle_count",
+        "net_triangle_change",
+        "changed_instances_complete"
+      ],
+      "visualization_candidates": [
+        "line",
+        "network",
+        "table",
+        "metric_cards"
+      ]
     },
     {
       "id": "graph-motifs",
       "problem_id": "graph_motif_counting",
       "default_backend": "graphset",
       "parameters": {
-        "induced": {"flag": "--induced", "type": "boolean", "default": false},
-        "occurrence_identity": {"flag": "--occurrence-identity", "type": "string", "choices": ["unique-vertex-set-and-mapping-class", "all-embeddings"], "default": "unique-vertex-set-and-mapping-class"},
-        "result_limit_per_motif": {"flag": "--result-limit-per-motif", "type": "integer", "minimum": 1, "requires_output": "instances"}
+        "induced": {
+          "flag": "--induced",
+          "type": "boolean",
+          "default": false
+        },
+        "occurrence_identity": {
+          "flag": "--occurrence-identity",
+          "type": "string",
+          "choices": [
+            "unique-vertex-set-and-mapping-class",
+            "all-embeddings"
+          ],
+          "default": "unique-vertex-set-and-mapping-class"
+        },
+        "result_limit_per_motif": {
+          "flag": "--result-limit-per-motif",
+          "type": "integer",
+          "minimum": 1,
+          "requires_output": "instances"
+        }
       },
       "optional_outputs": {
         "instances": "--include-instances",
         "per_vertex_participation": "--include-per-vertex-participation"
       },
       "auxiliary_inputs": {
-        "motifs": {"flag": "--motif", "role": "motif", "required": true, "multiple": true}
+        "motifs": {
+          "flag": "--motif",
+          "role": "motif",
+          "required": true,
+          "multiple": true
+        }
       },
-      "required_outputs": ["motifs"],
+      "required_outputs": [
+        "motifs"
+      ],
       "backend_constraints": {
-        "graphminer": {"parameter_equals": {"induced": true}},
-        "graphset": {"parameter_equals": {"induced": false}},
-        "dumato": {"parameter_equals": {"induced": true}}
+        "graphminer": {
+          "parameter_equals": {
+            "induced": true
+          }
+        },
+        "graphset": {
+          "parameter_equals": {
+            "induced": false
+          }
+        },
+        "dumato": {
+          "parameter_equals": {
+            "induced": true
+          }
+        }
       },
-      "visualization_candidates": ["bar", "network", "table", "metric_cards"]
+      "visualization_candidates": [
+        "bar",
+        "network",
+        "table",
+        "metric_cards"
+      ]
     },
     {
       "id": "subgraph-isomorphism",
       "problem_id": "subgraph_isomorphism",
       "default_backend": "gmatch",
       "parameters": {
-        "ignore_vertex_labels": {"flag": "--ignore-vertex-labels", "type": "boolean", "default": false},
-        "initial_match_capacity": {"flag": "--initial-match-capacity", "type": "integer", "minimum": 1, "default": 1000000, "performance_only": true},
-        "result_limit": {"flag": "--result-limit", "type": "integer", "minimum": 1, "requires_output": "embeddings"}
+        "ignore_vertex_labels": {
+          "flag": "--ignore-vertex-labels",
+          "type": "boolean",
+          "default": false
+        },
+        "initial_match_capacity": {
+          "flag": "--initial-match-capacity",
+          "type": "integer",
+          "minimum": 1,
+          "default": 1000000,
+          "performance_only": true
+        },
+        "result_limit": {
+          "flag": "--result-limit",
+          "type": "integer",
+          "minimum": 1,
+          "requires_output": "embeddings"
+        }
       },
       "optional_outputs": {
         "embeddings": "--include-embeddings"
       },
       "auxiliary_inputs": {
-        "query_graph": {"flag": "--query-graph", "role": "query_graph", "required": true, "multiple": false}
+        "query_graph": {
+          "flag": "--query-graph",
+          "role": "query_graph",
+          "required": true,
+          "multiple": false
+        }
       },
-      "required_outputs": ["count", "embeddings_complete"],
-      "visualization_candidates": ["network", "table", "bar"]
+      "required_outputs": [
+        "count",
+        "embeddings_complete"
+      ],
+      "visualization_candidates": [
+        "network",
+        "table",
+        "bar"
+      ]
     },
     {
       "id": "temporal-motif-mining",
       "problem_id": "temporal_motif_mining",
       "default_backend": "everest",
       "parameters": {
-        "max_time_span": {"flag": "--max-time-span", "type": "integer", "minimum": 0, "required": true},
-        "result_limit": {"flag": "--result-limit", "type": "integer", "minimum": 1, "requires_output": "instances"}
+        "max_time_span": {
+          "flag": "--max-time-span",
+          "type": "integer",
+          "minimum": 0,
+          "required": true
+        },
+        "result_limit": {
+          "flag": "--result-limit",
+          "type": "integer",
+          "minimum": 1,
+          "requires_output": "instances"
+        }
       },
       "optional_outputs": {
         "instances": "--include-instances"
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["count", "instances_complete"],
-      "visualization_candidates": ["timeline", "network", "table", "metric_cards"]
+      "required_outputs": [
+        "count",
+        "instances_complete"
+      ],
+      "visualization_candidates": [
+        "timeline",
+        "network",
+        "table",
+        "metric_cards"
+      ]
     },
     {
       "id": "community-detection",
@@ -226,8 +512,17 @@
         "edge_cut": "--include-edge-cut"
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["assignment_by_vertex", "community_count", "modularity"],
-      "visualization_candidates": ["network", "bar", "table", "metric_cards"]
+      "required_outputs": [
+        "assignment_by_vertex",
+        "community_count",
+        "modularity"
+      ],
+      "visualization_candidates": [
+        "network",
+        "bar",
+        "table",
+        "metric_cards"
+      ]
     },
     {
       "id": "betweenness-centrality",
@@ -240,8 +535,137 @@
         "maximum": "--include-maximum"
       },
       "auxiliary_inputs": {},
-      "required_outputs": ["score_by_vertex"],
-      "visualization_candidates": ["network", "bar", "histogram", "table"]
+      "required_outputs": [
+        "score_by_vertex"
+      ],
+      "visualization_candidates": [
+        "network",
+        "bar",
+        "histogram",
+        "table"
+      ]
+    },
+    {
+      "id": "connected-components",
+      "problem_id": "connected_components",
+      "default_backend": "ecl-scc",
+      "parameters": {
+        "connectivity_mode": {
+          "flag": "--connectivity-mode",
+          "type": "string",
+          "required": true,
+          "choices": [
+            "weakly_connected",
+            "strongly_connected"
+          ]
+        }
+      },
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "component_assignment",
+        "component_count",
+        "component_sizes"
+      ],
+      "validated_profile": "weak or strong exact connectivity",
+      "visualization_candidates": [
+        "table",
+        "metric_cards",
+        "network"
+      ]
+    },
+    {
+      "id": "max-flow-min-cut",
+      "problem_id": "max_flow_min_cut",
+      "default_backend": "ecl-maxflow",
+      "parameters": {
+        "source": {
+          "flag": "--source",
+          "type": "vertex_id",
+          "required": true,
+          "description": "Exact external vertex ID; preserve integer versus string identity."
+        },
+        "sink": {
+          "flag": "--sink",
+          "type": "vertex_id",
+          "required": true,
+          "description": "Exact external vertex ID; preserve integer versus string identity."
+        },
+        "unit_capacity": {
+          "flag": "--unit-capacity",
+          "type": "boolean",
+          "default": false,
+          "description": "True only when the user explicitly assigns every edge capacity one."
+        }
+      },
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "max_flow_value",
+        "min_cut_value",
+        "min_cut_edges",
+        "optimal"
+      ],
+      "validated_profile": "directed, integer edge capacities, total capacity <= 1e9; no vertex capacities",
+      "visualization_candidates": [
+        "table",
+        "metric_cards"
+      ]
+    },
+    {
+      "id": "linear-assignment",
+      "problem_id": "bipartite_matching_assignment",
+      "default_backend": "hungarian-cuda",
+      "parameters": {},
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "matching_edges",
+        "matching_size",
+        "objective_value",
+        "optimal"
+      ],
+      "validated_profile": "complete square minimum-cost perfect assignment; <=64 per side; costs integer 0..999; declared sides",
+      "visualization_candidates": [
+        "table",
+        "metric_cards"
+      ]
+    },
+    {
+      "id": "transitive-closure",
+      "problem_id": "transitive_closure_reachability",
+      "default_backend": "gdlog",
+      "parameters": {},
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "reachability_results",
+        "complete",
+        "reachable_pair_count",
+        "transitive_closure_edges"
+      ],
+      "validated_profile": "directed full reflexive materialized closure; <=1024 vertices; build_index=false",
+      "visualization_candidates": [
+        "table",
+        "metric_cards"
+      ]
+    },
+    {
+      "id": "butterfly-counting",
+      "problem_id": "butterfly_counting_bipartite",
+      "default_backend": "graphminer",
+      "parameters": {},
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "butterfly_count",
+        "complete"
+      ],
+      "validated_profile": "exact global count only; declared bipartite sides",
+      "visualization_candidates": [
+        "table",
+        "metric_cards"
+      ]
     }
   ]
 }

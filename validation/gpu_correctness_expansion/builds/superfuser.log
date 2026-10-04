@@ -1,0 +1,79 @@
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/common.h(154): warning #177-D: variable "mode" was declared but never referenced
+   int mode;
+       ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/sketch.h(170): warning #177-D: variable "gflag" was declared but never referenced
+     bool gflag = false;
+          ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/sketch.h(157): warning #177-D: variable "n" was declared but never referenced
+   const uint32_t n = g.n, BLOCKSIZE = 64;
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(64): warning #177-D: variable "mode" was declared but never referenced
+      int mode;
+          ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(611): warning #177-D: variable "c" was declared but never referenced
+      int K = 50, R = 64, c, blocksize = 32, n_devices = 1;
+                          ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(611): warning #550-D: variable "blocksize" was set but never used
+      int K = 50, R = 64, c, blocksize = 32, n_devices = 1;
+                             ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(612): warning #177-D: variable "directed" was declared but never referenced
+      bool directed = false;
+           ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(613): warning #177-D: variable "p" was declared but never referenced
+      float p = 0.01, eps = 0.3, tr = 0.01, trc = 0.01;
+            ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(613): warning #550-D: variable "eps" was set but never used
+      float p = 0.01, eps = 0.3, tr = 0.01, trc = 0.01;
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(613): warning #550-D: variable "tr" was set but never used
+      float p = 0.01, eps = 0.3, tr = 0.01, trc = 0.01;
+                                 ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(613): warning #550-D: variable "trc" was set but never used
+      float p = 0.01, eps = 0.3, tr = 0.01, trc = 0.01;
+                                            ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/sketch.h(91): warning #177-D: variable "total" was declared but never referenced
+   float total = 0;
+         ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(414): warning #177-D: variable "old" was declared but never referenced
+      float old = 0, cnt = 0;
+            ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(414): warning #177-D: variable "cnt" was declared but never referenced
+      float old = 0, cnt = 0;
+                     ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(419): warning #177-D: variable "dont_rebuild" was declared but never referenced
+      bool dont_rebuild = 0, dont_cascade = 0;
+           ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(419): warning #177-D: variable "dont_cascade" was declared but never referenced
+      bool dont_rebuild = 0, dont_cascade = 0;
+                             ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(424): warning #177-D: variable "next_size" was declared but never referenced
+      int next_size = 1;
+          ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(425): warning #177-D: variable "i" was declared but never referenced
+      int i = 0;
+          ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu(228): warning #177-D: variable "score" was declared but never referenced
+      int score = 0;
+          ^
+          detected during instantiation of "void superfuser_gpufx2<T>(const graph_t &, int, size_t, int *, int, int) [with T=float]" at line 607
+

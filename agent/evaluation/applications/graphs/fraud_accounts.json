@@ -1,0 +1,88 @@
+{
+  "graph": {
+    "id": "account-counterparties",
+    "directed": false,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "domain": "fraud_detection",
+      "description": "Synthetic account counterparties; a connection means the two accounts exchanged payments. Links are undirected and do not establish fraud."
+    }
+  },
+  "vertices": [
+    {
+      "id": "acct_alex",
+      "label": "acct_alex"
+    },
+    {
+      "id": "acct_blair",
+      "label": "acct_blair"
+    },
+    {
+      "id": "acct_casey",
+      "label": "acct_casey"
+    },
+    {
+      "id": "acct_drew",
+      "label": "acct_drew"
+    },
+    {
+      "id": "acct_erin",
+      "label": "acct_erin"
+    },
+    {
+      "id": "acct_fran",
+      "label": "acct_fran"
+    },
+    {
+      "id": "acct_gray",
+      "label": "acct_gray"
+    },
+    {
+      "id": "acct_harper",
+      "label": "acct_harper"
+    }
+  ],
+  "edges": [
+    {
+      "id": "event-1",
+      "source": "acct_alex",
+      "target": "acct_blair"
+    },
+    {
+      "id": "event-2",
+      "source": "acct_alex",
+      "target": "acct_casey"
+    },
+    {
+      "id": "event-3",
+      "source": "acct_blair",
+      "target": "acct_casey"
+    },
+    {
+      "id": "event-4",
+      "source": "acct_casey",
+      "target": "acct_drew"
+    },
+    {
+      "id": "event-5",
+      "source": "acct_casey",
+      "target": "acct_erin"
+    },
+    {
+      "id": "event-6",
+      "source": "acct_drew",
+      "target": "acct_erin"
+    },
+    {
+      "id": "event-7",
+      "source": "acct_drew",
+      "target": "acct_fran"
+    },
+    {
+      "id": "event-8",
+      "source": "acct_gray",
+      "target": "acct_harper"
+    }
+  ]
+}

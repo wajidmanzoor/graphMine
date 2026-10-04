@@ -1,0 +1,20 @@
+{
+  "command": [
+    "compute-sanitizer",
+    "--tool",
+    "memcheck",
+    "--error-exitcode",
+    "86",
+    "/home/wajid/projects/graphDatabaseAgent/library/build/workers/graphmine-worker-ecl-maxflow",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_flow/small.egr",
+    "0",
+    "5",
+    "1"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.6165656317025423,
+  "exit_code": 0,
+  "log": "runs/memcheck_flow.log",
+  "stdin_path": null,
+  "timeout": false
+}

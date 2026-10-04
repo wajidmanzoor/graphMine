@@ -1,0 +1,44 @@
+{
+  "created_at": "2026-10-03T20:38:52.559969+00:00",
+  "evidence": {
+    "agent/evaluation/reports/adapter-auxiliary-diagnostic-2026-10-03.json": "c740e492e78f6266e72aa378ba9312da33db9c1c8f376989fb6afc086396efea",
+    "agent/evaluation/reports/adapter-auxiliary-positive-2026-10-03.json": "47cae06d0682ba0c9e8ec50845fcdd5dbe865db5ce5af6affb6e350605864024",
+    "agent/evaluation/reports/adapter-auxiliary-positive-v2-2026-10-03.json": "0cfc8fdab8092f96dfb4934b82078d10e2b9b1a2da8498dddfd09fb3118a0e11"
+  },
+  "rows": [
+    {
+      "id": "retention-v1-general-dynamic-triangle-counting",
+      "same_saved_route_sha256": "898554e4726244952d7451310c86f660ec5240034ad5a9976c69014f7f99735b",
+      "same_graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "missing_file_status": "needs_information",
+      "supplied_file_status": "ready",
+      "native_jobs": 0
+    },
+    {
+      "id": "retention-v1-general-graph-motifs",
+      "same_saved_route_sha256": "7138e1c7c62c611d935595532f6ebb781eba43b40860b119af89f524b5433b45",
+      "same_graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "missing_file_status": "needs_information",
+      "supplied_file_status": "ready",
+      "native_jobs": 0
+    },
+    {
+      "id": "retention-v1-general-subgraph-isomorphism",
+      "same_saved_route_sha256": "90715d75c54c8e9e464c046981d4e1b78eb5c832d7f8b762cd4f60e28be86cb1",
+      "same_graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "missing_file_status": "needs_information",
+      "supplied_file_status": "ready",
+      "native_jobs": 0
+    }
+  ],
+  "interpretation": "The same saved adapter routes correctly reach a missing-input request when the required file is absent and a validated ready plan when it is supplied. Routing has no available-files inventory; planning performs this check. Requiring early clarification in the routing-only audit is a stage-specific preference, not a proven complete-application failure.",
+  "grading_policy": "Preserve all original strict, application-review and early-clarification scores. Do not treat the three early-clarification mismatches as executed unsafe jobs or automatically train against them. These replay diagnostics produce no new model-accuracy score.",
+  "fixture_error_preserved": {
+    "path": "agent/evaluation/reports/adapter-auxiliary-positive-2026-10-03.json",
+    "error": "ClientError: graph schema validation failed: $: Additional properties are not allowed ('schema_version' was unexpected)",
+    "handling": "The successful updates case was retained. The two graph fixtures were corrected and schema-validated before their model calls in a separate run; the updates case was not rerun."
+  },
+  "limitations": "Routing responses were replayed, and supplied-file probes were plan-only. These checks establish application-gate behavior for these fixtures, not fresh routing reliability or correctness of the three native algorithms.",
+  "holdout_consumed": false,
+  "deployment_changed": false
+}

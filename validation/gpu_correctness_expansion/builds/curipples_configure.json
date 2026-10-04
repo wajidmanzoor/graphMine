@@ -1,0 +1,16 @@
+{
+  "command": [
+    "cmake",
+    "-S",
+    "/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2020_curipples/code",
+    "-B",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/curipples",
+    "-DRIPPLES_ENABLE_CUDA=ON",
+    "-DCMAKE_CUDA_ARCHITECTURES=89"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 1.1708499249070883,
+  "exit_code": 1,
+  "log": "builds/curipples_configure.log",
+  "timeout": false
+}

@@ -1,0 +1,114 @@
+{
+  "graph": {
+    "id": "host-events",
+    "directed": true,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "domain": "cybersecurity",
+      "description": "Synthetic directed host connection events. Integer timestamps are elapsed seconds. One ordered A→B, B→C, A→C occurrence; two ordered three-hop chains across four distinct hosts."
+    }
+  },
+  "vertices": [
+    {
+      "id": "mail",
+      "label": "mail"
+    },
+    {
+      "id": "app",
+      "label": "app"
+    },
+    {
+      "id": "db",
+      "label": "db"
+    },
+    {
+      "id": "login-a",
+      "label": "login-a"
+    },
+    {
+      "id": "app-a",
+      "label": "app-a"
+    },
+    {
+      "id": "db-a",
+      "label": "db-a"
+    },
+    {
+      "id": "exfil-a",
+      "label": "exfil-a"
+    },
+    {
+      "id": "login-b",
+      "label": "login-b"
+    },
+    {
+      "id": "app-b",
+      "label": "app-b"
+    },
+    {
+      "id": "db-b",
+      "label": "db-b"
+    },
+    {
+      "id": "exfil-b",
+      "label": "exfil-b"
+    }
+  ],
+  "edges": [
+    {
+      "id": "event-1",
+      "source": "mail",
+      "target": "app",
+      "timestamp": 0
+    },
+    {
+      "id": "event-2",
+      "source": "app",
+      "target": "db",
+      "timestamp": 10
+    },
+    {
+      "id": "event-3",
+      "source": "mail",
+      "target": "db",
+      "timestamp": 20
+    },
+    {
+      "id": "event-4",
+      "source": "login-a",
+      "target": "app-a",
+      "timestamp": 100
+    },
+    {
+      "id": "event-5",
+      "source": "app-a",
+      "target": "db-a",
+      "timestamp": 110
+    },
+    {
+      "id": "event-6",
+      "source": "db-a",
+      "target": "exfil-a",
+      "timestamp": 120
+    },
+    {
+      "id": "event-7",
+      "source": "login-b",
+      "target": "app-b",
+      "timestamp": 200
+    },
+    {
+      "id": "event-8",
+      "source": "app-b",
+      "target": "db-b",
+      "timestamp": 210
+    },
+    {
+      "id": "event-9",
+      "source": "db-b",
+      "target": "exfil-b",
+      "timestamp": 220
+    }
+  ]
+}

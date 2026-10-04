@@ -1,0 +1,16 @@
+{
+  "paper_id": "2022_gbfc",
+  "title": "Efficient Load-Balanced Butterfly Counting on GPU",
+  "year": 2022,
+  "venue": "PVLDB 15(11)",
+  "doi": "10.14778/3551793.3551806",
+  "publication_url": "https://doi.org/10.14778/3551793.3551806",
+  "pdf_url": "https://www.vldb.org/pvldb/vol15/p2450-zhang.pdf",
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "G-BFC: GPU butterfly counting with shared-memory synchronization, adaptive load balancing, and wedge-reduction preprocessing.",
+  "notes": "No public paper-specific implementation was located; contact authors for artifact availability.",
+  "problem_id": "butterfly_counting_bipartite",
+  "problem_dir": "23_butterfly_counting_bipartite",
+  "research_cutoff": "2026-09-30"
+}

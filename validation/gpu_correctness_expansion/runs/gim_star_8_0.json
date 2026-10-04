@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/star_8.txt",
+    "1",
+    "0.2",
+    "1"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.4148116484284401,
+  "exit_code": 0,
+  "log": "runs/gim_star_8_0.log",
+  "timeout": false
+}

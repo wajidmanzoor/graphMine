@@ -1,0 +1,71 @@
+{
+  "created_at": "2026-10-03T21:16:08.157547+00:00",
+  "source_report": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4.json",
+  "source_report_sha256": "6cac5874651bdbc0293624b7e1b0505a042306ca720693d8d8011ad66c002ce7",
+  "comparison_report_sha256": "48c03f1589a6f25dfa368457313ce4389a9298e6366995bb473c84ee7a92009c",
+  "original_adapter_score": {
+    "passed": 20,
+    "total": 22
+  },
+  "rows": [
+    {
+      "case_id": "sociopatterns-workplace-empty-result",
+      "turn": 1,
+      "original_issues": [
+        "Requested attribute scope changed"
+      ],
+      "expected_filters": [
+        {
+          "target": "edges",
+          "field": "attributes.contact_intervals",
+          "operator": "eq",
+          "value": 0
+        }
+      ],
+      "actual_filters": [
+        {
+          "target": "edges",
+          "field": "attributes.contact_intervals",
+          "operator": "eq",
+          "value": 0.0
+        }
+      ],
+      "numeric_filters_equivalent": true,
+      "no_other_reported_issues": true,
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_e96c0d6c5d3a4f54b89040b821343fca",
+      "turn_id": "turn_39b4be2569ef40ecadaa3d4e21154e21"
+    },
+    {
+      "case_id": "string-ecoli-empty-result",
+      "turn": 1,
+      "original_issues": [
+        "Requested attribute scope changed"
+      ],
+      "expected_filters": [
+        {
+          "target": "edges",
+          "field": "attributes.score",
+          "operator": "eq",
+          "value": 0
+        }
+      ],
+      "actual_filters": [
+        {
+          "target": "edges",
+          "field": "attributes.score",
+          "operator": "eq",
+          "value": 0.0
+        }
+      ],
+      "numeric_filters_equivalent": true,
+      "no_other_reported_issues": true,
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_a23389b8afc84c8aba347355880be2da",
+      "turn_id": "turn_b526d3093fef471baa097f6015520e65"
+    }
+  ],
+  "original_grades_changed": false,
+  "interpretation": "Both raw failures compare integer zero with floating-point zero on the same field and equality operator. They preserve the requested numeric scope; the existing grader serializes numbers before comparing and reports no other issue for either turn. This addendum creates no replacement aggregate score.",
+  "remaining": "Future business application evaluation should compare numeric filter values by numeric meaning while retaining field, operator, scalar type and boolean distinctions. Preserve the original reports.",
+  "holdout_consumed": false,
+  "deployment_changed": false
+}

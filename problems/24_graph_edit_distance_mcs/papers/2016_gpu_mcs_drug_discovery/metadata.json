@@ -1,0 +1,16 @@
+{
+  "paper_id": "2016_gpu_mcs_drug_discovery",
+  "title": "A GPU Based Maximum Common Subgraph Algorithm for Drug Discovery Applications",
+  "year": 2016,
+  "venue": "IEEE (Chicago)",
+  "doi": "10.1109/BigData.2015.7363820",
+  "publication_url": "https://people.cse.nitc.ac.in/jayaraj/files/gpumcs_chicago.pdf",
+  "pdf_url": "https://people.cse.nitc.ac.in/jayaraj/files/gpumcs_chicago.pdf",
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU maximum common subgraph search targeted at cheminformatics/drug-discovery molecular graphs.",
+  "notes": "Predates common open-source hosting norms for this subfield; no public repository was located.",
+  "problem_id": "graph_edit_distance_mcs",
+  "problem_dir": "24_graph_edit_distance_mcs",
+  "research_cutoff": "2026-09-30"
+}

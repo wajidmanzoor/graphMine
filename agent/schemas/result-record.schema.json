@@ -29,6 +29,58 @@
       "title": "EvidenceItem",
       "type": "object"
     },
+    "FollowupAction": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "show_view",
+            "ask"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "request": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request"
+        },
+        "view_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "View Id"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "kind"
+      ],
+      "title": "FollowupAction",
+      "type": "object"
+    },
     "Interpretation": {
       "additionalProperties": false,
       "properties": {
@@ -46,6 +98,20 @@
           },
           "minItems": 1,
           "title": "Findings",
+          "type": "array"
+        },
+        "followup_actions": {
+          "items": {
+            "$ref": "#/$defs/FollowupAction"
+          },
+          "title": "Followup Actions",
+          "type": "array"
+        },
+        "hypotheses": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hypotheses",
           "type": "array"
         },
         "limitations": {
@@ -204,6 +270,11 @@
   },
   "additionalProperties": false,
   "properties": {
+    "answer": {
+      "additionalProperties": true,
+      "title": "Answer",
+      "type": "object"
+    },
     "created_at": {
       "format": "date-time",
       "title": "Created At",
@@ -223,6 +294,23 @@
         }
       ],
       "default": null
+    },
+    "interpretation_source": {
+      "anyOf": [
+        {
+          "enum": [
+            "llm",
+            "offline_rules",
+            "fallback"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Interpretation Source"
     },
     "job_id": {
       "title": "Job Id",

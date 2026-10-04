@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_gbc_biclique",
+  "title": "Accelerating Biclique Counting on GPU",
+  "year": 2024,
+  "venue": "IEEE ICDE 2024",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2403.07858",
+  "pdf_url": "https://arxiv.org/pdf/2403.07858",
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "GBC: GPU (p,q)-biclique counting via bitmap-hashed adjacency intersection; butterfly counting is the p=q=2 case.",
+  "notes": "No public repository was located during this pass.",
+  "problem_id": "butterfly_counting_bipartite",
+  "problem_dir": "23_butterfly_counting_bipartite",
+  "research_cutoff": "2026-09-30"
+}

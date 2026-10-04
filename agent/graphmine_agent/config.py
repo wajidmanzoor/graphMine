@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -28,6 +29,7 @@ class Settings:
     manifest_path: Path
     program_instructions_path: Path
     graph_schema_path: Path
+    backend_policy_path: Path
     api_host: str
     api_port: int
     api_token: str | None
@@ -47,6 +49,26 @@ class Settings:
     llm_route_max_tokens: int = 768
     llm_plan_max_tokens: int = 3072
     llm_analyst_max_tokens: int = 3072
+    history_directory: Path | None = None
+    llm_route_base_url: str | None = None
+    llm_route_model: str = "graphmine-business-v1"
+    llm_route_adapter_sha256: str | None = None
+    deployment_version: str = "base"
+
+    @property
+    def routing_contract_version(self) -> str:
+        catalog = json.loads(self.catalog_path.read_text(encoding="utf-8"))
+        return catalog.get("routing", {}).get("contract_version", "legacy-20")
+
+    @property
+    def routing_adapter_active(self) -> bool:
+        return bool(
+            self.llm_route_base_url and self.routing_contract_version == "legacy-20"
+        )
+
+    @property
+    def active_routing_model(self) -> str:
+        return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
         if not 1 <= self.api_port <= 65_535:
@@ -111,6 +133,12 @@ class Settings:
                 root / "agent" / "program_instructions.json"
             ).resolve(),
             graph_schema_path=(root / "problems" / "graph_input.schema.json").resolve(),
+            backend_policy_path=Path(
+                os.getenv(
+                    "GRAPHMINE_BACKEND_POLICY",
+                    str(root / "agent" / "backend_policy.json"),
+                )
+            ).resolve(),
             api_host=os.getenv("GRAPHMINE_API_HOST", "0.0.0.0"),
             api_port=_integer("GRAPHMINE_API_PORT", 8000),
             api_token=token,
@@ -138,6 +166,19 @@ class Settings:
             llm_route_max_tokens=_integer("GRAPHMINE_LLM_ROUTE_MAX_TOKENS", 768),
             llm_plan_max_tokens=_integer("GRAPHMINE_LLM_PLAN_MAX_TOKENS", 3072),
             llm_analyst_max_tokens=_integer("GRAPHMINE_LLM_ANALYST_MAX_TOKENS", 3072),
+            history_directory=(
+                Path(os.environ["GRAPHMINE_HISTORY_ROOT"]).expanduser().resolve()
+                if os.getenv("GRAPHMINE_HISTORY_ROOT")
+                else None
+            ),
+            llm_route_base_url=os.getenv("GRAPHMINE_ROUTER_BASE_URL", "").rstrip("/")
+            or None,
+            llm_route_model=os.getenv(
+                "GRAPHMINE_ROUTER_MODEL", "graphmine-business-v1"
+            ),
+            llm_route_adapter_sha256=os.getenv("GRAPHMINE_ROUTER_ADAPTER_SHA256")
+            or None,
+            deployment_version=os.getenv("GRAPHMINE_DEPLOYMENT_VERSION", "base"),
         )
 
     @property
@@ -147,3 +188,7 @@ class Settings:
     @property
     def workspaces_root(self) -> Path:
         return self.data_root / "jobs"
+
+    @property
+    def history_root(self) -> Path:
+        return self.history_directory or self.data_root / "history"

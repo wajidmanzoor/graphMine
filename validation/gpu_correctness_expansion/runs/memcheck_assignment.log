@@ -1,0 +1,22 @@
+========= COMPUTE-SANITIZER
+kernel 	 time (ms) 	 runs
+init	 1.57855 	 1
+calc_min_in_rows	 1.04855 	 1
+step_1_row_sub	 0.111578 	 1
+calc_min_in_cols	 0.107152 	 1
+step_1_col_sub	 0.412903 	 1
+compress_matrix	 0.195144 	 3
+step_2	 0.460235 	 2
+step_3ini	 0.226922 	 2
+step_3	 0.153672 	 2
+step_4_init	 0.100471 	 1
+step_4	 2.81987 	 5
+min_reduce_kernel1	 0.426454 	 2
+min_reduce_kernel2	 0.172761 	 2
+step_6_add_sub	 0.242596 	 2
+step_5a	 0.199602 	 1
+step_5b	 0.120972 	 1
+step_5c	 0 	 0
+Total time(ms) 	 9.31901
+GRAPHMINE_ASSIGNMENT 1 0 2
+========= ERROR SUMMARY: 0 errors

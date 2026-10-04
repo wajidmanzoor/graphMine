@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_hyperblocker",
+  "title": "HyperBlocker: Accelerating Rule-based Blocking in Entity Resolution using GPUs",
+  "year": 2025,
+  "venue": "PVLDB 18",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2410.04349",
+  "pdf_url": "https://arxiv.org/pdf/2410.04349",
+  "code_url": "https://github.com/hsiaoko/HyperBlocker",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU-accelerated rule-based blocking for entity resolution via a pipelined CPU/GPU architecture; 6.8x/9.1x faster than prior CPU-distributed and GPU-based ER systems.",
+  "notes": "Covers the blocking task exactly; the resolution task's match-clustering stage is not addressed by this artifact and has no dedicated GPU paper of its own.",
+  "problem_id": "entity_resolution_blocking",
+  "problem_dir": "34_entity_resolution_blocking",
+  "research_cutoff": "2026-09-30"
+}

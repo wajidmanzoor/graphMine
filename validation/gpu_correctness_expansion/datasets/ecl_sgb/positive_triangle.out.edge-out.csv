@@ -1,0 +1,4 @@
+source node ID, destination node ID, percentage edge was in tree, percentage edge was negative
+0,1,68.75,0.00
+0,2,65.62,0.00
+1,2,65.62,0.00

@@ -1,0 +1,40 @@
+{
+  "description": "Frozen scope of the original v1 routing evaluations. These evaluations do not measure expansion routing.",
+  "problem_ids": [
+    "maximal_clique_enumeration",
+    "maximum_clique",
+    "k_clique_counting_enumeration",
+    "quasi_clique_mining",
+    "densest_subgraph",
+    "densest_k_subgraph",
+    "k_core_decomposition",
+    "k_truss_decomposition",
+    "maximal_biclique_enumeration",
+    "triangle_counting_listing",
+    "graph_motif_counting",
+    "graphlet_counting",
+    "subgraph_isomorphism",
+    "frequent_subgraph_mining",
+    "temporal_motif_mining",
+    "community_detection",
+    "overlapping_community_detection",
+    "centrality_influential_node_mining",
+    "link_prediction",
+    "graph_anomaly_detection"
+  ],
+  "operation_ids": [
+    "maximal-cliques",
+    "maximum-clique",
+    "k-cliques",
+    "quasi-cliques",
+    "k-core",
+    "maximal-bicliques",
+    "triangle-counting",
+    "dynamic-triangle-counting",
+    "graph-motifs",
+    "subgraph-isomorphism",
+    "temporal-motif-mining",
+    "community-detection",
+    "betweenness-centrality"
+  ]
+}

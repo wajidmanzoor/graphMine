@@ -1,0 +1,12 @@
+algo/GtopkRrw.cuh(323): warning #177-D: variable "isNextFrontier" was declared but never referenced
+     int isNextFrontier = 0;
+         ^
+          detected during:
+            instantiation of "void ForwardPush_ITR<IndexType,ValueType>(GraphD *, PprDataD *, RWIndexD *, int &) [with IndexType=IndexType, ValueType=ValueType]" at line 770
+            instantiation of "void kPAR<IndexType,ValueType>(GraphD *, PprDataD *, RWIndexD *, HighRrwIndex *) [with IndexType=IndexType, ValueType=ValueType]" at line 78 of query.h
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/usr/bin/ld: cannot find -lgsl: No such file or directory
+/usr/bin/ld: cannot find -lgslcblas: No such file or directory
+collect2: error: ld returned 1 exit status

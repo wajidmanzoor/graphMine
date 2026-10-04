@@ -1,0 +1,13 @@
+Input graph rows: 4
+edge size 4
+ memory alloc time: 0 ; Join time: 0.000243104 ; merge full time: 0 ; rebuild full time: 1.024e-06 ; rebuild delta time: 2.048e-06 ; set diff time: 0.000154272
+Rebuild relation detail time : rebuild rel sort time: 0 ; rebuild rel unique time: 0 ; rebuild rel index time: 0
+Path counts 4
+Relation tuples >>> validation
+Total tuples counts:  4
+0	0	
+1	1	
+2	2	
+3	3	
+end <<<
+TC time: 0.000546816

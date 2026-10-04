@@ -1,0 +1,35 @@
+11:21:16 INFO  (ts: 1791127276.726619) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:37: [[1m[44;30mStart       [0m] Start...
+11:21:16 INFO  (ts: 1791127276.726652) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:38: [[1m[44;31mStart       [0m] 0.000032s   nedges 70, nnodes 12
+11:21:16 INFO  (ts: 1791127276.737954) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:66: [[1m[44;31mStart       [0m] 0.011333s   embedding initialization done!
+11:21:16 INFO  (ts: 1791127276.738040) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:79: [[1m[44;31mStart       [0m] 0.011420s   access controller initalization done!
+11:21:16 INFO  (ts: 1791127276.738058) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:81: [[1m[44;30mExpand      [0m] Start...
+11:21:16 INFO  (ts: 1791127276.738075) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:128: [[1m[44;31mExpand      [0m] 0.000017s   for the 1th iteration, start expand... ...
+11:21:16 INFO  (ts: 1791127276.738092) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:743: the last level size is 32
+11:21:16 INFO  (ts: 1791127276.738107) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:745: the batch num is 1
+11:21:16 INFO  (ts: 1791127276.738715) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:762: start processing chunk 0
+11:21:16 INFO  (ts: 1791127276.741553) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:767: end kernel for chuck 0
+11:21:16 INFO  (ts: 1791127276.755872) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:805: [[1m[44;31mexpand in dynamic[0m] 0.017780s   end expand here, and valid emb number is 70
+11:21:16 INFO  (ts: 1791127276.755889) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:132: [[1m[44;31mExpand      [0m] 0.017831s   for the 1th iteration, end expand
+11:21:16 INFO  (ts: 1791127276.755897) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:140: [[1m[44;31mExpand      [0m] 0.017839s   for the 1th iteration, end set access mode
+11:21:16 INFO  (ts: 1791127276.755905) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:128: [[1m[44;31mExpand      [0m] 0.017847s   for the 2th iteration, start expand... ...
+11:21:16 INFO  (ts: 1791127276.755913) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:743: the last level size is 3072000
+11:21:16 INFO  (ts: 1791127276.755920) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:745: the batch num is 1
+11:21:16 INFO  (ts: 1791127276.760123) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:762: start processing chunk 0
+11:21:16 INFO  (ts: 1791127276.888326) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:767: end kernel for chuck 0
+11:21:16 INFO  (ts: 1791127276.901563) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:805: [[1m[44;31mexpand in dynamic[0m] 0.145650s   end expand here, and valid emb number is 217
+11:21:16 INFO  (ts: 1791127276.901577) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:132: [[1m[44;31mExpand      [0m] 0.163519s   for the 2th iteration, end expand
+11:21:16 INFO  (ts: 1791127276.901583) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:140: [[1m[44;31mExpand      [0m] 0.163525s   for the 2th iteration, end set access mode
+11:21:16 INFO  (ts: 1791127276.901594) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:128: [[1m[44;31mExpand      [0m] 0.163536s   for the 3th iteration, start expand... ...
+11:21:16 INFO  (ts: 1791127276.901600) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:743: the last level size is 3072128
+11:21:16 INFO  (ts: 1791127276.901605) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:745: the batch num is 1
+11:21:16 INFO  (ts: 1791127276.905247) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:762: start processing chunk 0
+11:21:17 INFO  (ts: 1791127277.033829) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:767: end kernel for chuck 0
+11:21:17 INFO  (ts: 1791127277.039547) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/expand.cuh:805: [[1m[44;31mexpand in dynamic[0m] 0.137947s   end expand here, and valid emb number is 1435
+11:21:17 INFO  (ts: 1791127277.039558) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:132: [[1m[44;31mExpand      [0m] 0.301501s   for the 3th iteration, end expand
+11:21:17 INFO  (ts: 1791127277.039565) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:140: [[1m[44;31mExpand      [0m] 0.301507s   for the 3th iteration, end set access mode
+11:21:17 INFO  (ts: 1791127277.039570) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:143: [[1m[44;31mExpand      [0m] 0.301512s   end expand
+11:21:17 INFO  (ts: 1791127277.039576) /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gamma/sm.cu:144: [[1m[44;31mStart       [0m] 0.312957s   k-clique count ends.
+Reading graph from file: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/complete
+all used mem is 68 MB, and data label is 0 MB
+all used mem is 137 MB, and data label is 0 MB
+all used mem is 205 MB, and data label is 0 MB

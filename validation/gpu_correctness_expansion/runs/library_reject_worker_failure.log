@@ -1,0 +1,1 @@
+{"ok":false,"provenance":{"problem":"connected_components","backend":"ecl-scc","backend_version":"ECL-SCC 1.0","source_commit":"8e67732687d06f75cdd602f36e1fe54429ba4f99","execution_path":"isolated upstream CUDA worker; canonical component labels"},"warnings":[],"error":{"code":"execution_failed","message":"ecl-scc worker failed: "}}

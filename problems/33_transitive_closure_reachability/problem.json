@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "transitive_closure_reachability",
+  "name": "Transitive Closure and Reachability Indexing",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Given a directed graph, determine for queried vertex pairs whether the target is reachable from the source via a directed path, and optionally materialize or index full reachability to answer many such queries efficiently.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Collapse parallel directed edges between the same ordered pair to one edge.", "Retain self-loops only insofar as every vertex already reaches itself by the reflexive convention; a self-loop does not change any reachability result.", "Reject undirected input unless an explicit directed projection (both directions) is requested."]
+  },
+  "problem_inputs": [
+    {"name": "query_mode", "type": "enum", "required": true, "allowed_values": ["single_pair", "batch_pairs", "full_transitive_closure"], "description": "Answer one (source,target) pair, a batch of pairs, or characterize reachability for every ordered pair."},
+    {"name": "query_pairs", "type": "array<object>_or_null", "required": false, "default": null, "constraints": "required and nonempty for single_pair (exactly one entry) and batch_pairs", "description": "List of {source, target} pairs to answer."},
+    {"name": "build_index", "type": "boolean", "required": false, "default": true, "description": "Whether to construct a reusable reachability index amortizing cost across future queries, versus a one-off traversal per query."},
+    {"name": "enumerate_closure_edges", "type": "boolean", "required": false, "default": false, "description": "For full_transitive_closure, whether to return every reachable (source,target) pair explicitly; only feasible when the result is small."}
+  ],
+  "required_outputs": [
+    {"name": "reachability_results", "type": "array<object>", "description": "For single_pair/batch_pairs: {source, target, reachable} per queried pair, in query_pairs order."},
+    {"name": "complete", "type": "boolean", "description": "Whether every requested query (or, for full_transitive_closure, every ordered pair) was correctly resolved."}
+  ],
+  "optional_outputs": [
+    {"name": "reachable_pair_count", "type": "integer", "description": "Total number of reachable ordered pairs (including reflexive pairs); present for full_transitive_closure."},
+    {"name": "transitive_closure_edges", "type": "array<object>", "description": "Explicit list of all reachable (source,target) pairs; returned only when enumerate_closure_edges=true and the result size is tractable."},
+    {"name": "index_descriptor", "type": "object", "description": "Opaque reference/metadata for a built reachability index, reusable by later single_pair/batch_pairs queries without rebuilding."}
+  ],
+  "solution_semantics": {
+    "objective": "For each queried pair, determine whether target is reachable from source via a directed path of length >= 0 in the normalized graph (a vertex always reaches itself); full_transitive_closure characterizes this for every ordered pair.",
+    "exactness": "Reachability is always answered exactly; no approximate mode is defined for this problem.",
+    "duplicate_policy": "A repeated pair in query_pairs returns a consistent, identical result each time.",
+    "ordering": "reachability_results preserves the order of query_pairs."
+  },
+  "validation_rules": [
+    "Every reachable=true result is witnessed by at least one directed walk from source to target in the normalized graph.",
+    "Every reachable=false result has no directed walk from source to target, verifiable by exhaustive BFS/DFS on small/medium fixtures.",
+    "Every vertex is reachable from itself (reflexive case).",
+    "transitive_closure_edges, when returned, is consistent with reachable_pair_count."
+  ],
+  "edge_cases": [
+    "source equals target returns reachable=true by the reflexive convention regardless of self-loops.",
+    "An edgeless graph has every non-reflexive pair unreachable.",
+    "Every pair of vertices within the same strongly connected component is mutually reachable.",
+    "full_transitive_closure on a graph where the closure is too large to enumerate must omit transitive_closure_edges and still return a correct reachable_pair_count with complete=true."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["reachability agreement with exhaustive BFS/DFS oracle on small/medium fixtures", "reflexive-case compliance", "closure-edge-count consistency with transitive_closure_edges when both are returned"],
+    "performance": ["end-to-end time", "index build time", "amortized query time after index build", "peak memory", "queries answered per second"]
+  }
+}

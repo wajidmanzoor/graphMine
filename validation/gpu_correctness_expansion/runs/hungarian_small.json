@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/hungarian",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/hungarian/small.txt"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.26788863725960255,
+  "exit_code": 0,
+  "log": "runs/hungarian_small.log",
+  "timeout": false
+}

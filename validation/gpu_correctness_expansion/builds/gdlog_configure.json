@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cmake",
+    "-S",
+    "/home/wajid/projects/graphDatabaseAgent/problems/33_transitive_closure_reachability/papers/2024_gdlog/code",
+    "-B",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/gdlog",
+    "-DCMAKE_CUDA_ARCHITECTURES=89",
+    "-DCMAKE_CUDA_STANDARD=20",
+    "-DCMAKE_BUILD_TYPE=Release"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 1.6726309601217508,
+  "exit_code": 0,
+  "log": "builds/gdlog_configure.log",
+  "timeout": false
+}

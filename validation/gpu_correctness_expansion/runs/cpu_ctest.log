@@ -1,0 +1,56 @@
+Internal ctest changing into directory: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/library-cpu
+Test project /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/library-cpu
+      Start  1: graphmine_graph_test
+ 1/17 Test  #1: graphmine_graph_test .......................   Passed    0.00 sec
+      Start  2: graphmine_cli_list_test
+ 2/17 Test  #2: graphmine_cli_list_test ....................   Passed    0.00 sec
+      Start  3: graphmine_cli_validate_test
+ 3/17 Test  #3: graphmine_cli_validate_test ................   Passed    0.00 sec
+      Start  4: graphmine_cli_triangle_run_test
+ 4/17 Test  #4: graphmine_cli_triangle_run_test ............***Not Run (Disabled)   0.00 sec
+      Start  5: graphmine_maximal_cliques_test
+ 5/17 Test  #5: graphmine_maximal_cliques_test .............***Not Run (Disabled)   0.00 sec
+      Start  6: graphmine_k_core_test
+ 6/17 Test  #6: graphmine_k_core_test ......................***Not Run (Disabled)   0.00 sec
+      Start  7: graphmine_maximum_clique_test
+ 7/17 Test  #7: graphmine_maximum_clique_test ..............***Not Run (Disabled)   0.00 sec
+      Start  8: graphmine_triangle_counting_test
+ 8/17 Test  #8: graphmine_triangle_counting_test ...........***Not Run (Disabled)   0.00 sec
+      Start  9: graphmine_dynamic_triangle_counting_test
+ 9/17 Test  #9: graphmine_dynamic_triangle_counting_test ...***Not Run (Disabled)   0.00 sec
+      Start 10: graphmine_k_cliques_test
+10/17 Test #10: graphmine_k_cliques_test ...................***Not Run (Disabled)   0.00 sec
+      Start 11: graphmine_betweenness_centrality_test
+11/17 Test #11: graphmine_betweenness_centrality_test ......***Not Run (Disabled)   0.00 sec
+      Start 12: graphmine_maximal_bicliques_test
+12/17 Test #12: graphmine_maximal_bicliques_test ...........***Not Run (Disabled)   0.00 sec
+      Start 13: graphmine_quasi_cliques_test
+13/17 Test #13: graphmine_quasi_cliques_test ...............***Not Run (Disabled)   0.00 sec
+      Start 14: graphmine_subgraph_isomorphism_test
+14/17 Test #14: graphmine_subgraph_isomorphism_test ........***Not Run (Disabled)   0.00 sec
+      Start 15: graphmine_graph_motifs_test
+15/17 Test #15: graphmine_graph_motifs_test ................***Not Run (Disabled)   0.00 sec
+      Start 16: graphmine_temporal_motif_mining_test
+16/17 Test #16: graphmine_temporal_motif_mining_test .......***Not Run (Disabled)   0.00 sec
+      Start 17: graphmine_community_detection_test
+17/17 Test #17: graphmine_community_detection_test .........***Not Run (Disabled)   0.00 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =   0.01 sec
+
+The following tests did not run:
+	  4 - graphmine_cli_triangle_run_test (Disabled)
+	  5 - graphmine_maximal_cliques_test (Disabled)
+	  6 - graphmine_k_core_test (Disabled)
+	  7 - graphmine_maximum_clique_test (Disabled)
+	  8 - graphmine_triangle_counting_test (Disabled)
+	  9 - graphmine_dynamic_triangle_counting_test (Disabled)
+	 10 - graphmine_k_cliques_test (Disabled)
+	 11 - graphmine_betweenness_centrality_test (Disabled)
+	 12 - graphmine_maximal_bicliques_test (Disabled)
+	 13 - graphmine_quasi_cliques_test (Disabled)
+	 14 - graphmine_subgraph_isomorphism_test (Disabled)
+	 15 - graphmine_graph_motifs_test (Disabled)
+	 16 - graphmine_temporal_motif_mining_test (Disabled)
+	 17 - graphmine_community_detection_test (Disabled)

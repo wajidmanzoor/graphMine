@@ -1,0 +1,13 @@
+{
+  "command": [
+    "make",
+    "-j2",
+    "NVCC_FLAG=-O2 -arch=sm_89 -UWORKLOAD",
+    "CC_FLAG=-O2 -UWORKLOAD"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr",
+  "elapsed_seconds": 12.447917530313134,
+  "exit_code": 0,
+  "log": "builds/wbpr.log",
+  "timeout": false
+}

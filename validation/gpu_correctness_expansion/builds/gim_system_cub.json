@@ -1,0 +1,19 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gim/IM.cu",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gim/kernels.cu",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gim/testgraph.cu",
+    "-lcurand",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 10.238248236477375,
+  "exit_code": 1,
+  "log": "builds/gim_system_cub.log",
+  "timeout": false
+}

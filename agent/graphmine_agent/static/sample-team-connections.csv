@@ -1,0 +1,7 @@
+source,target,source_label,target_label,source.department,target.department
+1,2,Maya,Noah,Engineering,Engineering
+1,3,Maya,Leah,Engineering,Operations
+2,3,Noah,Leah,Engineering,Operations
+3,4,Leah,Owen,Operations,Support
+3,5,Leah,Zoe,Operations,Support
+4,5,Owen,Zoe,Support,Support

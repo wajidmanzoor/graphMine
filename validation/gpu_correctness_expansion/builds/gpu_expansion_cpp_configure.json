@@ -1,0 +1,15 @@
+{
+  "command": [
+    "cmake",
+    "-S",
+    "/home/wajid/projects/graphDatabaseAgent/library",
+    "-B",
+    "/home/wajid/projects/graphDatabaseAgent/library/build"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.4158899784088135,
+  "exit_code": 0,
+  "log": "builds/gpu_expansion_cpp_configure.log",
+  "stdin_path": null,
+  "timeout": false
+}

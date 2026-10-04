@@ -1,0 +1,162 @@
+[  1%] Building CXX object CMakeFiles/graphmine_core.dir/src/core/graph.cpp.o
+[  2%] Linking CXX static library libgraphmine_core.a
+[  2%] Built target graphmine_core
+[  3%] Building CXX object CMakeFiles/graphmine_backend_kcoregpu.dir/src/backends/kcore_gpu_stub.cpp.o
+[  3%] Building CXX object CMakeFiles/graphmine_backend_rdmce.dir/src/backends/maximal_cliques/rdmce_backend_stub.cpp.o
+[  4%] Building CXX object CMakeFiles/graphmine_backend_g2_aimd.dir/src/backends/maximal_cliques/g2_aimd_backend_stub.cpp.o
+[  5%] Building CXX object CMakeFiles/graphmine_backend_mce_gpu.dir/src/backends/maximal_cliques/mce_gpu_backend_stub.cpp.o
+[  6%] Linking CXX static library libgraphmine_backend_rdmce.a
+[  6%] Linking CXX static library libgraphmine_backend_g2_aimd.a
+[  7%] Linking CXX static library libgraphmine_backend_mce_gpu.a
+[  8%] Linking CXX static library libgraphmine_backend_kcoregpu.a
+[  8%] Built target graphmine_backend_rdmce
+[  8%] Built target graphmine_backend_g2_aimd
+[  8%] Built target graphmine_backend_kcoregpu
+[  8%] Built target graphmine_backend_mce_gpu
+[  9%] Building CXX object CMakeFiles/graphmine_backend_tot.dir/src/backends/tot_stub.cpp.o
+[  9%] Building CXX object CMakeFiles/graphmine_backend_cuda_ms.dir/src/backends/cuda_ms_stub.cpp.o
+[ 10%] Building CXX object CMakeFiles/graphmine_backend_maximum_clique_on_gpu.dir/src/backends/maximum_clique_on_gpu_stub.cpp.o
+[ 11%] Building CXX object CMakeFiles/graphmine_backend_gpu_maximum_clique.dir/src/backends/gpu_maximum_clique_stub.cpp.o
+[ 13%] Linking CXX static library libgraphmine_backend_tot.a
+[ 13%] Linking CXX static library libgraphmine_backend_cuda_ms.a
+[ 14%] Linking CXX static library libgraphmine_backend_maximum_clique_on_gpu.a
+[ 15%] Linking CXX static library libgraphmine_backend_gpu_maximum_clique.a
+[ 15%] Built target graphmine_backend_tot
+[ 15%] Built target graphmine_backend_cuda_ms
+[ 15%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 15%] Built target graphmine_backend_gpu_maximum_clique
+[ 16%] Building CXX object CMakeFiles/graphmine_backend_wetric.dir/src/backends/wetric_stub.cpp.o
+[ 17%] Building CXX object CMakeFiles/graphmine_backend_edtc.dir/src/backends/edtc_stub.cpp.o
+[ 18%] Building CXX object CMakeFiles/graphmine_backend_graphset_kclique.dir/src/backends/graphset_kclique_stub.cpp.o
+[ 19%] Building CXX object CMakeFiles/graphmine_backend_kcgpu.dir/src/backends/kcgpu_stub.cpp.o
+[ 20%] Linking CXX static library libgraphmine_backend_kcgpu.a
+[ 21%] Linking CXX static library libgraphmine_backend_wetric.a
+[ 22%] Linking CXX static library libgraphmine_backend_graphset_kclique.a
+[ 23%] Linking CXX static library libgraphmine_backend_edtc.a
+[ 23%] Built target graphmine_backend_edtc
+[ 23%] Built target graphmine_backend_kcgpu
+[ 23%] Built target graphmine_backend_graphset_kclique
+[ 23%] Built target graphmine_backend_wetric
+[ 24%] Building CXX object CMakeFiles/graphmine_backend_gamma_kclique.dir/src/backends/gamma_kclique_stub.cpp.o
+[ 25%] Building CXX object CMakeFiles/graphmine_backend_turbobc.dir/src/backends/turbobc_stub.cpp.o
+[ 26%] Building CXX object CMakeFiles/graphmine_backend_cuqc.dir/src/backends/cuqc_stub.cpp.o
+[ 27%] Building CXX object CMakeFiles/graphmine_backend_cumbe.dir/src/backends/cumbe_stub.cpp.o
+[ 28%] Linking CXX static library libgraphmine_backend_cumbe.a
+[ 28%] Built target graphmine_backend_cumbe
+[ 29%] Building CXX object CMakeFiles/graphmine_backend_gmatch.dir/src/backends/gmatch_stub.cpp.o
+[ 30%] Linking CXX static library libgraphmine_backend_gamma_kclique.a
+[ 31%] Linking CXX static library libgraphmine_backend_turbobc.a
+[ 32%] Linking CXX static library libgraphmine_backend_cuqc.a
+[ 32%] Built target graphmine_backend_turbobc
+[ 32%] Built target graphmine_backend_gamma_kclique
+[ 32%] Built target graphmine_backend_cuqc
+[ 33%] Building CXX object CMakeFiles/graphmine_backend_graphminer_motif.dir/src/backends/g2miner_motif_stub.cpp.o
+[ 34%] Building CXX object CMakeFiles/graphmine_backend_graphset_motif.dir/src/backends/graphset_motif_stub.cpp.o
+[ 35%] Building CXX object CMakeFiles/graphmine_backend_dumato_motif.dir/src/backends/dumato_motif_stub.cpp.o
+[ 36%] Linking CXX static library libgraphmine_backend_gmatch.a
+[ 36%] Built target graphmine_backend_gmatch
+[ 37%] Building CXX object CMakeFiles/graphmine_backend_everest.dir/src/backends/everest_stub.cpp.o
+[ 37%] Linking CXX static library libgraphmine_backend_graphset_motif.a
+[ 38%] Linking CXX static library libgraphmine_backend_graphminer_motif.a
+[ 39%] Linking CXX static library libgraphmine_backend_dumato_motif.a
+[ 39%] Built target graphmine_backend_dumato_motif
+[ 39%] Built target graphmine_backend_graphminer_motif
+[ 39%] Built target graphmine_backend_graphset_motif
+[ 40%] Building CXX object CMakeFiles/graphmine_backend_pggc.dir/src/backends/pggc_stub.cpp.o
+[ 41%] Building CXX object CMakeFiles/graphmine_backend_gleiden.dir/src/backends/gleiden_stub.cpp.o
+[ 42%] Building CXX object CMakeFiles/graphmine_backend_mayura.dir/src/backends/mayura_stub.cpp.o
+[ 43%] Linking CXX static library libgraphmine_backend_everest.a
+[ 43%] Built target graphmine_backend_everest
+[ 44%] Building CXX object CMakeFiles/graphmine_maximal_cliques.dir/src/problems/maximal_cliques.cpp.o
+[ 45%] Linking CXX static library libgraphmine_backend_mayura.a
+[ 45%] Built target graphmine_backend_mayura
+[ 46%] Building CXX object CMakeFiles/graphmine_graph_test.dir/tests/graph_test.cpp.o
+[ 47%] Linking CXX static library libgraphmine_backend_pggc.a
+[ 48%] Linking CXX static library libgraphmine_backend_gleiden.a
+[ 48%] Built target graphmine_backend_pggc
+[ 48%] Built target graphmine_backend_gleiden
+[ 49%] Building CXX object CMakeFiles/graphmine_maximum_clique.dir/src/problems/maximum_clique.cpp.o
+[ 50%] Building CXX object CMakeFiles/graphmine_k_core.dir/src/problems/k_core.cpp.o
+[ 51%] Linking CXX executable graphmine_graph_test
+[ 51%] Built target graphmine_graph_test
+[ 52%] Building CXX object CMakeFiles/graphmine_triangle_counting.dir/src/problems/triangle_counting.cpp.o
+[ 53%] Linking CXX static library libgraphmine_maximal_cliques.a
+[ 54%] Linking CXX static library libgraphmine_maximum_clique.a
+[ 54%] Built target graphmine_maximal_cliques
+[ 55%] Building CXX object CMakeFiles/graphmine_dynamic_triangle_counting.dir/src/problems/dynamic_triangle_counting.cpp.o
+[ 56%] Linking CXX static library libgraphmine_k_core.a
+[ 56%] Built target graphmine_maximum_clique
+[ 57%] Building CXX object CMakeFiles/graphmine_k_cliques.dir/src/problems/k_cliques.cpp.o
+[ 57%] Built target graphmine_k_core
+[ 58%] Building CXX object CMakeFiles/graphmine_betweenness_centrality.dir/src/problems/betweenness_centrality.cpp.o
+[ 59%] Linking CXX static library libgraphmine_triangle_counting.a
+[ 59%] Built target graphmine_triangle_counting
+[ 60%] Building CXX object CMakeFiles/graphmine_maximal_bicliques.dir/src/problems/maximal_bicliques.cpp.o
+[ 61%] Linking CXX static library libgraphmine_k_cliques.a
+[ 61%] Built target graphmine_k_cliques
+[ 62%] Building CXX object CMakeFiles/graphmine_quasi_cliques.dir/src/problems/quasi_cliques.cpp.o
+[ 63%] Linking CXX static library libgraphmine_dynamic_triangle_counting.a
+[ 63%] Built target graphmine_dynamic_triangle_counting
+[ 63%] Building CXX object CMakeFiles/graphmine_subgraph_isomorphism.dir/src/problems/subgraph_isomorphism.cpp.o
+[ 64%] Linking CXX static library libgraphmine_betweenness_centrality.a
+[ 64%] Built target graphmine_betweenness_centrality
+[ 65%] Building CXX object CMakeFiles/graphmine_graph_motifs.dir/src/problems/graph_motifs.cpp.o
+[ 66%] Linking CXX static library libgraphmine_maximal_bicliques.a
+[ 66%] Built target graphmine_maximal_bicliques
+[ 67%] Building CXX object CMakeFiles/graphmine_temporal_motif_mining.dir/src/problems/temporal_motif_mining.cpp.o
+[ 68%] Linking CXX static library libgraphmine_quasi_cliques.a
+[ 68%] Built target graphmine_quasi_cliques
+[ 68%] Building CXX object CMakeFiles/graphmine_community_detection.dir/src/problems/community_detection.cpp.o
+[ 69%] Linking CXX static library libgraphmine_subgraph_isomorphism.a
+[ 69%] Built target graphmine_subgraph_isomorphism
+[ 70%] Building CXX object CMakeFiles/graphmine_maximal_cliques_test.dir/tests/maximal_cliques_test.cpp.o
+[ 71%] Linking CXX static library libgraphmine_temporal_motif_mining.a
+[ 71%] Built target graphmine_temporal_motif_mining
+[ 72%] Building CXX object CMakeFiles/graphmine_k_core_test.dir/tests/k_core_test.cpp.o
+[ 73%] Linking CXX executable graphmine_maximal_cliques_test
+[ 73%] Built target graphmine_maximal_cliques_test
+[ 74%] Building CXX object CMakeFiles/graphmine_maximum_clique_test.dir/tests/maximum_clique_test.cpp.o
+[ 75%] Linking CXX static library libgraphmine_community_detection.a
+[ 76%] Linking CXX static library libgraphmine_graph_motifs.a
+[ 76%] Built target graphmine_community_detection
+[ 77%] Building CXX object CMakeFiles/graphmine_triangle_counting_test.dir/tests/triangle_counting_test.cpp.o
+[ 77%] Built target graphmine_graph_motifs
+[ 78%] Building CXX object CMakeFiles/graphmine_dynamic_triangle_counting_test.dir/tests/dynamic_triangle_counting_test.cpp.o
+[ 79%] Linking CXX executable graphmine_k_core_test
+[ 79%] Built target graphmine_k_core_test
+[ 80%] Building CXX object CMakeFiles/graphmine_k_cliques_test.dir/tests/k_cliques_test.cpp.o
+[ 81%] Linking CXX executable graphmine_maximum_clique_test
+[ 81%] Built target graphmine_maximum_clique_test
+[ 82%] Building CXX object CMakeFiles/graphmine_betweenness_centrality_test.dir/tests/betweenness_centrality_test.cpp.o
+[ 83%] Linking CXX executable graphmine_triangle_counting_test
+[ 83%] Built target graphmine_triangle_counting_test
+[ 84%] Building CXX object CMakeFiles/graphmine_maximal_bicliques_test.dir/tests/maximal_bicliques_test.cpp.o
+[ 85%] Linking CXX executable graphmine_dynamic_triangle_counting_test
+[ 85%] Built target graphmine_dynamic_triangle_counting_test
+[ 86%] Building CXX object CMakeFiles/graphmine_quasi_cliques_test.dir/tests/quasi_cliques_test.cpp.o
+[ 87%] Linking CXX executable graphmine_k_cliques_test
+[ 87%] Built target graphmine_k_cliques_test
+[ 88%] Building CXX object CMakeFiles/graphmine_subgraph_isomorphism_test.dir/tests/subgraph_isomorphism_test.cpp.o
+[ 89%] Linking CXX executable graphmine_betweenness_centrality_test
+[ 89%] Built target graphmine_betweenness_centrality_test
+[ 90%] Building CXX object CMakeFiles/graphmine_graph_motifs_test.dir/tests/graph_motifs_test.cpp.o
+[ 91%] Linking CXX executable graphmine_quasi_cliques_test
+[ 91%] Linking CXX executable graphmine_maximal_bicliques_test
+[ 91%] Built target graphmine_quasi_cliques_test
+[ 91%] Built target graphmine_maximal_bicliques_test
+[ 92%] Building CXX object CMakeFiles/graphmine_temporal_motif_mining_test.dir/tests/temporal_motif_mining_test.cpp.o
+[ 93%] Building CXX object CMakeFiles/graphmine_community_detection_test.dir/tests/community_detection_test.cpp.o
+[ 94%] Linking CXX executable graphmine_subgraph_isomorphism_test
+[ 94%] Built target graphmine_subgraph_isomorphism_test
+[ 95%] Building CXX object CMakeFiles/graphmine_validated_expansion.dir/src/problems/validated_expansion.cpp.o
+[ 96%] Linking CXX executable graphmine_community_detection_test
+[ 96%] Built target graphmine_community_detection_test
+[ 97%] Linking CXX executable graphmine_temporal_motif_mining_test
+[ 97%] Built target graphmine_temporal_motif_mining_test
+[ 97%] Linking CXX executable graphmine_graph_motifs_test
+[ 97%] Built target graphmine_graph_motifs_test
+[ 98%] Linking CXX static library libgraphmine_validated_expansion.a
+[ 98%] Built target graphmine_validated_expansion
+[ 99%] Building CXX object CMakeFiles/graphmine_cli.dir/src/cli/graphmine.cpp.o
+[100%] Linking CXX executable graphmine
+[100%] Built target graphmine_cli

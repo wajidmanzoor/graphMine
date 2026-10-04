@@ -1,0 +1,13 @@
+[  3%] Built target graphmine_core
+[  7%] Built target graphmine_worker_ecl_scc
+[ 11%] Built target graphmine_worker_ecl_flow
+[ 18%] Built target graphmine_worker_hungarian
+[ 29%] Built target graphmine_backend_graphminer_motif
+[ 55%] Built target graphmine_backend_graphset_motif
+[ 74%] Built target graphmine_worker_gdlog_tc
+[ 88%] Built target graphmine_backend_dumato_motif
+[ 92%] Built target graphmine_graph_motifs
+[ 96%] Built target graphmine_validated_expansion
+[100%] Building CXX object CMakeFiles/graphmine_validated_expansion_test.dir/tests/validated_expansion_test.cpp.o
+[100%] Linking CXX executable graphmine_validated_expansion_test
+[100%] Built target graphmine_validated_expansion_test

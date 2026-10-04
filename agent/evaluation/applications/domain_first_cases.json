@@ -1,0 +1,405 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Domain-first regression targets after rich-context, semantic-gating and answer-view changes. Reuses baseline tasks without editing the original baseline. Small synthetic probes, not a general usability score.",
+  "cases": [
+    {
+      "id": "fraud_mutual_groups",
+      "domain": "fraud_detection",
+      "graph": "fraud_accounts.json",
+      "steps": [
+        {
+          "query": "Show every group of at least three accounts where each account has exchanged payments with every other account in that group. Do not show smaller groups contained in a larger one. Give me the account names to investigate, and explain what this does and does not tell me about fraud.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "maximal-cliques"
+            ],
+            "checks": [
+              {
+                "path": "output.cliques",
+                "kind": "groups",
+                "value": [
+                  [
+                    "acct_alex",
+                    "acct_blair",
+                    "acct_casey"
+                  ],
+                  [
+                    "acct_casey",
+                    "acct_drew",
+                    "acct_erin"
+                  ]
+                ]
+              }
+            ],
+            "user_expectation": "List the two complete groups by account name; explain that connectivity alone is not proof of fraud."
+          }
+        }
+      ]
+    },
+    {
+      "id": "biology_largest_complex",
+      "domain": "bioinformatics",
+      "graph": "protein_interactions.json",
+      "steps": [
+        {
+          "query": "I am looking for a candidate protein complex. Find the largest group in which every protein physically interacts with every other member, list its protein names, and explain the limits of calling it a complex.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "maximum-clique"
+            ],
+            "checks": [
+              {
+                "path": "output.maximum_size",
+                "kind": "equals",
+                "value": 4
+              },
+              {
+                "path": "output.cliques",
+                "kind": "groups",
+                "value": [
+                  [
+                    "TP53",
+                    "MDM2",
+                    "ATM",
+                    "CHEK2"
+                  ]
+                ]
+              }
+            ],
+            "user_expectation": "Return TP53, MDM2, ATM and CHEK2 as the largest pairwise interacting group, with a biological-validation caveat."
+          }
+        }
+      ]
+    },
+    {
+      "id": "biology_supported_core",
+      "domain": "bioinformatics",
+      "graph": "protein_interactions.json",
+      "steps": [
+        {
+          "query": "Keep removing proteins with fewer than three interaction partners, including proteins that fall below three after others are removed. Which proteins remain? List their names so I can select a well-supported experimental panel.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "k-core"
+            ],
+            "checks": [
+              {
+                "path": "output.requested_core_vertices",
+                "kind": "set",
+                "value": [
+                  "TP53",
+                  "MDM2",
+                  "ATM",
+                  "CHEK2"
+                ]
+              }
+            ],
+            "user_expectation": "List exactly TP53, MDM2, ATM and CHEK2 after repeated pruning at three interaction partners."
+          }
+        }
+      ]
+    },
+    {
+      "id": "infrastructure_bridge_router",
+      "domain": "communications_infrastructure",
+      "graph": "office_network.json",
+      "steps": [
+        {
+          "query": "Which router lies on the most shortest connection routes between other devices? Rank the devices by this measure, show their names, and explain which router I should monitor first without claiming this measures actual traffic.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "betweenness-centrality"
+            ],
+            "checks": [
+              {
+                "path": "output.ranking.0.vertex",
+                "kind": "equals",
+                "value": "gateway-01"
+              },
+              {
+                "path": "output.ranking.0.score",
+                "kind": "equals",
+                "value": 18
+              }
+            ],
+            "user_expectation": "Rank gateway-01 first; distinguish structural shortest-path importance from measured traffic."
+          }
+        }
+      ]
+    },
+    {
+      "id": "retail_shared_purchases",
+      "domain": "recommendation_ecommerce",
+      "graph": "customer_purchases.json",
+      "steps": [
+        {
+          "query": "Find groups of at least two customers who all bought the same set of at least two products. Give me every group that cannot be enlarged, with the customer names and product names for a bundle promotion.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "maximal-bicliques"
+            ],
+            "checks": [
+              {
+                "path": "output.returned_count",
+                "kind": "equals",
+                "value": 2
+              }
+            ],
+            "user_expectation": "Infer customer/product membership from the original typed records, execute without a technical file request, and show both bundles with original attributes."
+          }
+        },
+        {
+          "uploads_before": [
+            {
+              "path": "customers.json",
+              "role": "left_partition"
+            }
+          ],
+          "query": "I have added the customer list. Please find groups of at least two customers who all bought the same set of at least two products. Give every group that cannot be enlarged, including customer and product names.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "maximal-bicliques"
+            ],
+            "checks": [
+              {
+                "path": "output.returned_count",
+                "kind": "equals",
+                "value": 2
+              }
+            ],
+            "user_expectation": "Return Alice/Bob with Coffee/Tea and Bob/Carol with Coffee/Cocoa, with customer/product roles clear."
+          }
+        }
+      ]
+    },
+    {
+      "id": "collaboration_followup",
+      "domain": "social_networks",
+      "graph": "coworker_collaboration.json",
+      "steps": [
+        {
+          "query": "Count all groups of exactly three coworkers where everyone has collaborated directly with the other two. List the names in each group.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "triangle-counting",
+              "k-cliques"
+            ],
+            "checks": [
+              {
+                "paths": [
+                  "output.global_triangle_count",
+                  "output.count"
+                ],
+                "kind": "equals",
+                "value": 5
+              }
+            ],
+            "user_expectation": "Count and list all five coworker trios, preserving names."
+          }
+        },
+        {
+          "query": "Now show the single largest group where everybody has collaborated directly with everyone else.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "maximum-clique"
+            ],
+            "checks": [
+              {
+                "path": "output.maximum_size",
+                "kind": "equals",
+                "value": 4
+              }
+            ],
+            "user_expectation": "Recognize that this changes the question; compute the largest group and return Ava, Ben, Chen and Divya."
+          }
+        }
+      ]
+    },
+    {
+      "id": "collaboration_circles",
+      "domain": "social_networks",
+      "graph": "coworker_collaboration.json",
+      "steps": [
+        {
+          "query": "Split these coworkers into collaboration circles based on who tends to work together. Tell me who belongs to each circle and suggest a view where the circles have different colors.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "community-detection"
+            ],
+            "checks": [
+              {
+                "path": "output.community_count",
+                "kind": "equals",
+                "value": 2
+              },
+              {
+                "path": "output.assignment_by_vertex",
+                "kind": "length",
+                "value": 7
+              }
+            ],
+            "user_expectation": "Return two sensible collaboration circles with all seven names and a colored membership view; explain that clustering is heuristic."
+          }
+        }
+      ]
+    },
+    {
+      "id": "delivery_unsupported_route",
+      "domain": "transportation_mobility",
+      "graph": "delivery_routes.json",
+      "steps": [
+        {
+          "query": "Find the fastest delivery route from Depot to Clinic. Roads are one-way and the edge weights are travel times in minutes. Give the route and total travel time.",
+          "expected": {
+            "behavior": "unsupported",
+            "checks": [],
+            "user_expectation": "Explain that shortest travel-time routing is not available; do not substitute centrality or ignore the one-way travel times. The independently known route is Depot → North → South → Clinic, 6 minutes."
+          }
+        }
+      ]
+    },
+    {
+      "id": "security_supported_sequence",
+      "domain": "cybersecurity",
+      "graph": "security_events.json",
+      "steps": [
+        {
+          "query": "Find sequences where host A contacts B, then B contacts C, then A contacts C, all within 60 seconds. Count them and list the actual hosts and event IDs in time order so I can inspect the connections.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "temporal-motif-mining"
+            ],
+            "checks": [
+              {
+                "path": "output.count",
+                "kind": "equals",
+                "value": 1
+              },
+              {
+                "path": "output.instances.0.edges_in_temporal_order",
+                "kind": "equals",
+                "value": [
+                  "event-1",
+                  "event-2",
+                  "event-3"
+                ]
+              }
+            ],
+            "user_expectation": "Count one ordered sequence mail→app, app→db, mail→db; list original event IDs and explain it is not proof of compromise."
+          }
+        }
+      ]
+    },
+    {
+      "id": "security_unsupported_chain",
+      "domain": "cybersecurity",
+      "graph": "security_events.json",
+      "steps": [
+        {
+          "query": "Find sequences of three successive host-to-host connections through four different hosts, A to B then B to C then C to D, completed within 60 seconds. Count these chains and list their hosts and event IDs.",
+          "expected": {
+            "behavior": "unsupported",
+            "checks": [],
+            "user_expectation": "Explain that the current temporal kernel only supports A→B, B→C, A→C and cannot answer this four-host chain query; do not silently substitute that pattern. This graph contains two of the requested chains."
+          }
+        }
+      ]
+    },
+    {
+      "id": "fraud_ambiguous_investigation",
+      "domain": "fraud_detection",
+      "graph": "fraud_accounts.json",
+      "steps": [
+        {
+          "query": "Which accounts should I investigate first?",
+          "expected": {
+            "behavior": "clarify",
+            "checks": [],
+            "user_expectation": "Ask what suspicious behavior or investigation priority means, or explain the available structural signals without declaring any account fraudulent."
+          }
+        }
+      ]
+    },
+    {
+      "id": "workplace_exploration",
+      "domain": "social_networks",
+      "graph": "workplace_projects.json",
+      "steps": [
+        {
+          "query": "Which groups of people mainly work together, and which people connect different parts of the organization? Show their names and departments.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "betweenness-centrality",
+              "community-detection"
+            ],
+            "analysis_operations": [
+              "community-detection",
+              "betweenness-centrality"
+            ],
+            "checks": [
+              {
+                "scope": "answer",
+                "path": "steps.step_0.provenance.input_vertices",
+                "kind": "equals",
+                "value": 7
+              }
+            ],
+            "user_expectation": "Use multiple analyses, identify both groups, name Divya Shah and Eli Brown as the highest shortest-route connectors, and preserve names, departments and roles in the views."
+          }
+        },
+        {
+          "query": "Now show the groups using only collaborations from 2026. Keep the employee names and departments.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "community-detection"
+            ],
+            "checks": [
+              {
+                "scope": "answer",
+                "path": "provenance.input_edges",
+                "kind": "equals",
+                "value": 9
+              },
+              {
+                "path": "output.community_count",
+                "kind": "equals",
+                "value": 2
+              }
+            ],
+            "user_expectation": "Apply the year filter before computation, retain original attributes, and show no cross-group collaboration after removing the 2025 connection."
+          }
+        },
+        {
+          "query": "Which coworkers now sit on the most shortest collaboration routes between other coworkers? Rank everyone's names, still using only collaborations from 2026.",
+          "expected": {
+            "behavior": "execute",
+            "operations": [
+              "betweenness-centrality"
+            ],
+            "checks": [
+              {
+                "scope": "answer",
+                "path": "provenance.input_edges",
+                "kind": "equals",
+                "value": 9
+              }
+            ],
+            "user_expectation": "Run the new measure without requiring run or compute, preserve the 2026 filter, and report all scores as zero without inventing a standout connector."
+          }
+        }
+      ]
+    }
+  ]
+}

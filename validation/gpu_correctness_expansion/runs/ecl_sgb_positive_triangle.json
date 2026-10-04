@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/ecl_sgb",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_sgb/positive_triangle.csv",
+    "32",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_sgb/positive_triangle.out"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.264647513628006,
+  "exit_code": 0,
+  "log": "runs/ecl_sgb_positive_triangle.log",
+  "stdin_path": null,
+  "timeout": false
+}

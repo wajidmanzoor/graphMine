@@ -1,0 +1,42 @@
+{
+  "created_at": "2026-10-03T19:28:18.429612+00:00",
+  "real_data_historical_reference": {
+    "path": ".graphmine-learning/real-world-student-v2.json",
+    "sha256": "1300f876632550da73727d39daef6591b94f3a9e768459c2156dfb433f853905",
+    "checks": {
+      "finished": true,
+      "result_protocol": true,
+      "application_replay_contract": true,
+      "cases": true,
+      "recorded_model_name": true,
+      "recorded_inference_profile": true,
+      "corpus": true,
+      "questions": true
+    },
+    "passed": 44,
+    "total": 44,
+    "repeats": 2,
+    "workflows_passed": 32,
+    "current_protocol_sha256": "ea4b9c4526aea7537951550ced645f1290abec27a35f86fee66fe0f46ca8949e",
+    "current_replay_contract_sha256": "6d5ea1f2928e68220f67c9663089dfae7a5f5f015455c0ba6db2d1d3c423939c",
+    "use": "Historical serving-FP8 reference with matching recorded code/data/settings. NF4 base and adapter still require a fresh matched run.",
+    "limitation": "This earlier report records a model name, not an independently verified serving weight fingerprint; it is not a freshly generated third arm or causal training comparison."
+  },
+  "synthetic_reference_requires_new_run": {
+    "path": ".graphmine-learning/conversation-final-v1.json",
+    "sha256": "ccf81331aa362db2438f400ef2057488514eb33aed8b3c9f074f241224f44113",
+    "changed_source_files": [
+      "agent_service.py",
+      "planning.py",
+      "llm.py",
+      "models.py",
+      "answers.py",
+      "visualization.py",
+      "learning/pipeline.py"
+    ],
+    "same_cases": false,
+    "same_inference_profile": false
+  },
+  "model_calls_performed": 0,
+  "holdout_consumed": false
+}

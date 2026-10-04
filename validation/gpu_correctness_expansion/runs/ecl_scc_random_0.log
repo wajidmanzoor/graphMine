@@ -1,0 +1,17 @@
+ECL-SCC v1.0
+
+input: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_scc/random_0.egr
+nodes: 24
+edges: 47
+avg degree: 1.96
+
+GPU: NVIDIA RTX 6000 Ada Generation with 142 SMs and 1536 mTpSM (2505.0 MHz and 10001.0 MHz)
+
+running algorithm
+compute time: 0.000223 s
+
+VALIDATION_COMPONENTS 0 23 23 23 4 23 6 23 23 9 10 11 12 23 14 15 23 23 23 19 23 21 22 23
+result:
+1 SCCs of size 12
+12 SCCs of size 1
+number of SCCs: 13

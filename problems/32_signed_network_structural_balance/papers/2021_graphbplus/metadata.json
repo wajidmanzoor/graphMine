@@ -1,0 +1,16 @@
+{
+  "paper_id": "2021_graphbplus",
+  "title": "Discovering and Balancing Fundamental Cycles in Large Signed Graphs",
+  "year": 2021,
+  "venue": "ACM/IEEE SC 2021",
+  "doi": "10.1145/3458817.3476153",
+  "publication_url": "https://doi.org/10.1145/3458817.3476153",
+  "pdf_url": "https://userweb.cs.txstate.edu/~burtscher/papers/sc21.pdf",
+  "code_url": "https://github.com/burtscher/graphBplus",
+  "semantic_fit": "exact",
+  "gpu_scope": "graphB+: predecessor spanning-tree/fundamental-cycle-labeling algorithm for signed-graph balancing, with both OpenMP (CPU) and CUDA (GPU) implementations.",
+  "notes": "Confirmed genuine CUDA source (graphBplus_02.cu) alongside a CPU OpenMP variant in the same repository, with a LICENSE file present.",
+  "problem_id": "signed_network_structural_balance",
+  "problem_dir": "32_signed_network_structural_balance",
+  "research_cutoff": "2026-09-30"
+}

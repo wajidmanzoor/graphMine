@@ -1,0 +1,16 @@
+{
+  "paper_id": "2023_cualign",
+  "title": "cuAlign: Scalable Network Alignment on GPU Accelerators",
+  "year": 2023,
+  "venue": "IA^3 2023 (SC23 workshop)",
+  "doi": "10.1145/3624062.3625129",
+  "publication_url": "https://www.pnnl.gov/publications/cualign-scalable-network-alignment-gpu-accelerators",
+  "pdf_url": null,
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU network alignment combining node embedding, sparsification, belief propagation, and approximate weighted matching.",
+  "notes": "No public PNNL or University of Utah repository was located during this pass.",
+  "problem_id": "network_alignment",
+  "problem_dir": "25_network_alignment",
+  "research_cutoff": "2026-09-30"
+}

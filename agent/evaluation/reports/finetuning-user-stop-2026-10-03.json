@@ -1,0 +1,248 @@
+{
+  "created_at": "2026-10-03T23:52:58.786753+00:00",
+  "state": "stopped_by_user",
+  "stopped_at": "2026-10-03T23:41:16.615427+00:00",
+  "reason": "User asked to stop fine-tuning/evaluation at this point and receive final status before end-to-end test setup.",
+  "training_runs": [
+    {
+      "name": "original_routing_adapter",
+      "run": ".graphmine-learning/finetune-qwen27b-v3",
+      "completed_steps": 48,
+      "expected_steps": 48,
+      "data_counts": {
+        "train": 192,
+        "validation": 72
+      },
+      "adapter_sha256_rechecked_at_handoff": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+      "adapter_bytes": 467047680,
+      "tensor_count": 992,
+      "nonfinite_tensors": [],
+      "nonzero_lora_B_tensors": 496,
+      "scope": "routing only",
+      "deployed": false
+    },
+    {
+      "name": "business_routing_adapter",
+      "run": ".graphmine-learning/finetune-qwen27b-business-v1",
+      "completed_steps": 45,
+      "expected_steps": 45,
+      "data_counts": {
+        "train": 180,
+        "validation": 68
+      },
+      "adapter_sha256_rechecked_at_handoff": "dd7017735094300c4a89f217cb094c0d8b9981d1c7d86182596a7a6f7ef5f4d6",
+      "adapter_bytes": 467047680,
+      "tensor_count": 992,
+      "nonfinite_tensors": [],
+      "nonzero_lora_B_tensors": 496,
+      "scope": "routing only",
+      "deployed": false
+    }
+  ],
+  "business_curriculum": {
+    "cards": {
+      "train": 180,
+      "validation": 68,
+      "evaluation": 124
+    },
+    "distinct_question_strings": {
+      "train": 61,
+      "validation": 59,
+      "evaluation": 61
+    },
+    "domains": [
+      "staffing",
+      "payment review",
+      "service planning",
+      "retail campaigns",
+      "incident review",
+      "laboratory follow-ups"
+    ],
+    "question_style": "Practical business/application requests; implementation-specific GPU/program names remain in internal labels.",
+    "provenance": "Authored synthetic supervision, not collected customer questions or independently reviewed teacher outputs.",
+    "exact_question_overlap_between_splits": 0,
+    "graph_families_separated": true
+  },
+  "latest_matched_routing": {
+    "complete": true,
+    "cases_per_arm": 124,
+    "reviewed_scores": {
+      "base_nf4": {
+        "passed": 113,
+        "total": 124
+      },
+      "adapter_nf4": {
+        "passed": 118,
+        "total": 124
+      }
+    },
+    "strict_scores_preserved": {
+      "base_nf4": {
+        "passed": 99,
+        "total": 124
+      },
+      "adapter_nf4": {
+        "passed": 118,
+        "total": 124
+      }
+    },
+    "paired": {
+      "both_pass": 112,
+      "improved": 6,
+      "both_fail": 5,
+      "regressed": 1
+    },
+    "gain_interpretation": "Five clarification-metadata improvements and one corrected unnecessary clarification; one genuine operation regression.",
+    "scope": "Static routing development evaluation; no complete-application gain established.",
+    "review_caution": "Grading corrections were defined after inspecting early test outputs. Original scores and raw outputs are preserved. This is not an untouched final benchmark or complete-agent validation."
+  },
+  "completed_application_diagnostic": {
+    "case_id": "business-barbell-02-q08",
+    "query": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+    "finished_at": "2026-10-03T23:40:22.994885+00:00",
+    "expected_answer": {
+      "groups": [
+        [
+          "account-595-0",
+          "account-176-1",
+          "account-919-2"
+        ],
+        [
+          "account-595-0",
+          "account-176-1",
+          "account-251-3"
+        ],
+        [
+          "account-595-0",
+          "account-919-2",
+          "account-251-3"
+        ],
+        [
+          "account-176-1",
+          "account-919-2",
+          "account-251-3"
+        ],
+        [
+          "account-620-4",
+          "account-411-5",
+          "account-859-6"
+        ]
+      ],
+      "size": 3,
+      "count": 5
+    },
+    "rows": [
+      {
+        "arm": "base_nf4",
+        "planning_status": "ready",
+        "passed_workflow_checks": true,
+        "issues": [],
+        "job_id": "job_89e19440051841f5b4d2f7c2f9976e75",
+        "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-payment-regression-replay-v1/base_nf4-runtime/history/session_1a1b8d13d0ec4b5fbc945a1b76770754",
+        "turn_id": "turn_4219e6a9d3b645a69a10fae5d8a34066"
+      },
+      {
+        "arm": "adapter_nf4",
+        "planning_status": "unsupported",
+        "passed_workflow_checks": false,
+        "issues": [
+          "No completed k-cliques result"
+        ],
+        "job_id": null,
+        "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-payment-regression-replay-v1/adapter_nf4-runtime/history/session_25eafe1f5960420e9fa60fe98041dba2",
+        "turn_id": "turn_ff6fc1d18d05433fa9973d1d9e906344"
+      }
+    ],
+    "conclusion": "Base saved route produced the five requested three-account groups. The business-adapter saved route led to an incorrect unsupported response and no computation. Planning prevented the wrong computation but did not recover the routing mistake.",
+    "scope": "Application diagnostic from unchanged saved base and business-adapter routes, with fresh FP8 planning/answers and native jobs. Not fresh routing predictions, a model-accuracy estimate, or a controlled latency comparison.",
+    "fresh_local_route_predictions": 0
+  },
+  "earlier_application_implementation": {
+    "fixes_from_prior_checkpoint": [
+      "Unchecked planner assumptions moved to explicitly unverified diagnostics, not displayed facts.",
+      "Exact-field filter counts/ranges retained; score and ascore cannot be interchanged in server facts.",
+      "Valid empty selections complete with a computed empty answer.",
+      "Application-layer filtering distinguished from unsupported weighted computation, with bounded re-review and unchanged safety gates.",
+      "Source names/attributes joined into readable tables and answer-only, application-colored networks.",
+      "Plain-language clarification guidance and validated follow-up actions.",
+      "Production routing prompt and export input contract shared."
+    ],
+    "evidence": "agent/evaluation/reports/real-world-fixes-finetune-2026-10-03.json",
+    "note": "Historical application fixes and checks, distinct from fine-tuning effects; no new application deployment during this handoff."
+  },
+  "historical_original_adapter_application_comparison": {
+    "synthetic_turns": {
+      "base": "20/21",
+      "original_adapter": "20/21"
+    },
+    "real_data_raw_turns": {
+      "base": "22/22",
+      "original_adapter": "20/22"
+    },
+    "real_data_failure_audit": "Both original-adapter flags compare numeric 0.0 with 0 on otherwise identical filters; separate audit preserves the raw grades.",
+    "end_to_end_quality_gain_established": false
+  },
+  "serving_business_reference": {
+    "adapter_loaded": false,
+    "practical_routing_reviewed": "115/124",
+    "application_turns_passed": "21/21",
+    "application_workflows": 9,
+    "caution": "FP8 serving reference uses different precision/engine from the matched local comparison."
+  },
+  "stopped_partial_comparison": {
+    "run": ".graphmine-learning/adapter-business-original-nf4-v1",
+    "saved_calls": 46,
+    "planned_calls": 124,
+    "phase": "stopped_by_user",
+    "process_confirmed_stopped": true,
+    "aggregate_accuracy_reported": false
+  },
+  "remaining_not_started": [
+    {
+      "task": "business_workflows_matched_pair",
+      "intended_output": ".graphmine-learning/business-workflows-new-nf4-v1",
+      "output_directory_exists": false
+    },
+    {
+      "task": "business_workflows_original_adapter",
+      "intended_output": ".graphmine-learning/business-workflows-original-nf4-v1",
+      "output_directory_exists": false
+    },
+    {
+      "task": "business_adapter_53_case_retention",
+      "intended_output": ".graphmine-learning/adapter-business-retention-nf4-v1",
+      "output_directory_exists": false
+    },
+    {
+      "task": "business_adapter_22_turn_real_data",
+      "intended_output": ".graphmine-learning/business-realworld-nf4-v1",
+      "output_directory_exists": false
+    }
+  ],
+  "candidate_selected_for_final_source": false,
+  "final_reserved_source_consumed": false,
+  "adapter_deployed": false,
+  "user_end_to_end_test_integration_completed": false,
+  "serving_application_stop_requested": false,
+  "serving_liveness_caution": "Serving model process was retained. Web application liveness was not established by the named deployment-template service checks.",
+  "handoff_actions": "Preserved existing weights, results, partial calls, status snapshots, and logs; stopped the evaluation queue; updated progress documentation. No new training/evaluation predictions.",
+  "evidence_sha256": {
+    "agent/evaluation/reports/finetune-completion-2026-10-03.json": "5faf6ab75facee69fb78388fd24b19f3eaab4bb5b23424da494b4530587cb7e8",
+    "agent/evaluation/reports/business-finetune-completion-2026-10-03.json": "c1071f14dd55299698b1f6110f78b2cf57ef80005fffed821e955ebdfb355eea",
+    "agent/evaluation/reports/business-question-curriculum-2026-10-03.json": "75b930554b21c8d5ff70fc7daf003e0d9bc914f6b6b9e39da99c463d78c828a4",
+    "agent/evaluation/reports/adapter-business-new-review-v1.json": "6065e664cdad1a5a0f8f5ae4a0c404998c1a7aeacbeb16e719d886af927789f1",
+    "agent/evaluation/reports/business-routing-change-audit-v1.json": "c7b3c8292751a54bbfa13e18be9371a2c195b78d9cdb6f603015b19ba7949f04",
+    "agent/evaluation/reports/business-payment-regression-replay-v1.json": "a29ca726319f1f781989eeffefbcf8c4ae011adc3a9096c41399ac01d63f5254",
+    "agent/evaluation/reports/business-workflows-fp8-review-2026-10-03.json": "40f4e6613bfac0025e8522862ffc4daf453368b75ba4c44836b60d63c476ce81",
+    "agent/evaluation/reports/adapter-workflow-comparison-2026-10-03.json": "e7f9049eebfc9b26a24eab7ae7aae44186d7a973c194305c91a69c6dca505f9e",
+    "agent/evaluation/reports/adapter-realworld-comparison-2026-10-03.json": "48c03f1589a6f25dfa368457313ce4389a9298e6366995bb473c84ee7a92009c",
+    "agent/evaluation/reports/adapter-realworld-numeric-filter-audit-2026-10-03.json": "1b9ddffcf7d134df9eac3d62b66ac1a45f6a8e410f586ddffb6c34ed42269efc",
+    "agent/evaluation/reports/real-world-fixes-finetune-2026-10-03.json": "7d8b8eea4979d866081b48c361ad48353bdaedabb6fcd88fad891f18be68170c",
+    ".graphmine-learning/business-evaluation-user-stop-v1.json": "20bfca4e00b8166cc73accb0c3c6f8808669ed365fb66e638dfcf5844a5cb1da",
+    ".graphmine-learning/business-evaluation-queue-v1/plan.json": "aee41bb32c0a4327d31a2c7e1961e645c12fd40efd3f0d5c7efc5587044ab24e",
+    ".graphmine-learning/business-evaluation-queue-v1/status.json": "63386adfe57ea013d1f4350acb373ba906f960ebc52d0e7571982a895e04c7da",
+    ".graphmine-learning/business-evaluation-queue-v1/status-before-user-stop-v1.json": "31f0c24ed1d7042d52b7cf31883de1e22d0a915a5612bbf6b742b383187874dc",
+    ".graphmine-learning/adapter-business-original-nf4-v1/status.json": "e466073b5bcc41cdcd72f12ba1fcd30a23345393cd3dea66502f5817a47c9062",
+    ".graphmine-learning/adapter-business-original-nf4-v1/status-before-user-stop-v1.json": "02dc234fffdeca8b4e24219c040633c3191feadfe8f421074cc7c05653d04c88"
+  }
+}

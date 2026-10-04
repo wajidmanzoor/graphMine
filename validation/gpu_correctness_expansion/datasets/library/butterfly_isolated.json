@@ -1,0 +1,47 @@
+{
+  "edges": [],
+  "graph": {
+    "allows_parallel_edges": false,
+    "allows_self_loops": false,
+    "directed": false,
+    "id": "validation"
+  },
+  "vertices": [
+    {
+      "attributes": {
+        "side": "right"
+      },
+      "id": 0
+    },
+    {
+      "attributes": {
+        "side": "right"
+      },
+      "id": 1
+    },
+    {
+      "attributes": {
+        "side": "right"
+      },
+      "id": 2
+    },
+    {
+      "attributes": {
+        "side": "right"
+      },
+      "id": 3
+    },
+    {
+      "attributes": {
+        "side": "right"
+      },
+      "id": 4
+    },
+    {
+      "attributes": {
+        "side": "right"
+      },
+      "id": 5
+    }
+  ]
+}

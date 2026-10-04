@@ -1,0 +1,416 @@
+{
+  "schema_version": "1.0.0",
+  "created_at": "2026-10-03 05:15:58 UTC",
+  "scope": "Bounded synthetic teacher/reviewer/student data-pipeline pilot using the existing ChatGPT-authenticated Codex CLI. Not held-out accuracy, human usability evidence, or weight training.",
+  "roles": {
+    "teacher": {
+      "provider": "codex",
+      "model": "gpt-6.1-sol",
+      "max_output_tokens": 4096,
+      "reasoning_effort": "low"
+    },
+    "reviewer": {
+      "provider": "codex",
+      "model": "gpt-6-astra",
+      "max_output_tokens": 4096,
+      "reasoning_effort": "low"
+    },
+    "student": {
+      "provider": "local",
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "planning_reasoning_effort": "none",
+      "deployed_planning_reasoning_effort": "medium",
+      "weights_changed": false
+    }
+  },
+  "codex_cli": {
+    "auth": "chatgpt",
+    "version": "codex-cli 0.160.0",
+    "executable_sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "model_identity_source": "Explicit CLI model argument, not provider-attested identity in the event stream.",
+    "execution_policy": {
+      "version": "codex-chatgpt-v1",
+      "config": {
+        "model_provider": "openai",
+        "forced_login_method": "chatgpt",
+        "approval_policy": "never",
+        "web_search": "disabled",
+        "project_doc_max_bytes": 0,
+        "history.persistence": "none",
+        "model_reasoning_effort": "low",
+        "features.shell_tool": false,
+        "features.unified_exec": false,
+        "features.shell_snapshot": false,
+        "features.multi_agent": false,
+        "features.multi_agent_v2": false,
+        "features.apps": false,
+        "features.plugins": false,
+        "features.hooks": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false
+      },
+      "sandbox": "read-only",
+      "ephemeral": true,
+      "ignore_user_config": true,
+      "working_directory": "new_empty_temporary_directory",
+      "environment": "allowlisted_no_api_keys_or_endpoint_overrides",
+      "timeout_seconds": 120,
+      "stream_byte_limit": 1048576,
+      "retries": "No application retries; built-in CLI retries may occur within the per-call timeout",
+      "output_token_limit_enforcement": "post-call acceptance check, not a generation or billing cap",
+      "billing": "ChatGPT plan allowance; no API-key fallback or automatic credit purchase"
+    },
+    "credential_store_read_or_copied_by_adapter": false,
+    "paid_api_adapter_calls": 0,
+    "api_key_fallback": false,
+    "automatic_credit_purchase": false
+  },
+  "corpus": {
+    "seed": 314159,
+    "generator": "synthetic-v1",
+    "graphs": 24,
+    "source_questions": 114,
+    "manifest_path": ".graphmine-learning/corpus-v1/manifest.json",
+    "manifest_sha256": "abf46fbc14780ea80372ef2086754c120aca7f8b5d09eb37f446973261ea918b",
+    "pilot_source_graphs": 5,
+    "pilot_domains": 4,
+    "pilot_operations": 3,
+    "candidate_source_split": "train",
+    "calibration_scope": "Existing train/validation controls; not an untouched holdout.",
+    "selected_examples": [
+      {
+        "id": "random-00-q00",
+        "domain": "social_networks",
+        "family": "random",
+        "split": "train",
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques"
+      },
+      {
+        "id": "clique_tail-00-q00",
+        "domain": "fraud_detection",
+        "family": "clique_tail",
+        "split": "train",
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques"
+      },
+      {
+        "id": "two_blocks-00-q00",
+        "domain": "social_networks",
+        "family": "two_blocks",
+        "split": "train",
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques"
+      },
+      {
+        "id": "retail_random-00-q00",
+        "domain": "recommendation_ecommerce",
+        "family": "retail_random",
+        "split": "train",
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques"
+      },
+      {
+        "id": "events_forward-00-q00",
+        "domain": "cybersecurity",
+        "family": "events_forward",
+        "split": "train",
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining"
+      }
+    ]
+  },
+  "calibration": {
+    "path": ".graphmine-learning/codex-astra-calibration-v2/comparison.json",
+    "sha256": "50d4e26d6c25bdf870a559d4bfb8e7dd39cede6220a7b487bf9a1846f9a73803",
+    "started_at": "2026-10-03T04:55:31.189848+00:00",
+    "finished_at": "2026-10-03T04:57:52.381298+00:00",
+    "passed": 14,
+    "total": 14,
+    "qualified_for_screening": true,
+    "controls_sha256": "5ea472100fd3c323e4329c4a839a9b3bc53c9ad50011aab95014842f1b1507d9",
+    "meaning_sha256": "3c311efeda051b8bebdc0469e4e6cc95baa5afbcb296b7ef38bd115597823a62",
+    "reviewer_contract_sha256": "7451e19174b48d63d8b84b59fab8349c22aec3bef5a6e4884004776ae17bd38e"
+  },
+  "generation": {
+    "path": ".graphmine-learning/codex-sol-proposals-v1/candidates.json",
+    "sha256": "4511707be5c475ecb4233d69c7033b9a3891f3475ef1e2578a9d9ce0d6454646",
+    "started_at": "2026-10-03T04:59:02.326259+00:00",
+    "finished_at": "2026-10-03T04:59:39.267817+00:00",
+    "inference_invocations": 5,
+    "proposed_questions": 10,
+    "initial_state": "quarantined"
+  },
+  "native_audit": {
+    "path": ".graphmine-learning/codex-pilot-native-v1.json",
+    "sha256": "9268c8e915667a453b931134c21e205b7760d8da6184921f3d5c20d22dab7096",
+    "started_at": "2026-10-03T04:59:48.882983+00:00",
+    "finished_at": "2026-10-03T04:59:50.202000+00:00",
+    "passed": 5,
+    "total": 5,
+    "split": "train",
+    "binary_sha256": "8bbc3f0929766601aa1f0f437b271a029d3618c122c70a24a3b2aade5a138ea0",
+    "source_sha256": "a11fff5c2b9c5dca7faf814217b65a43d97dd889e0204910f8dc6958141292c2",
+    "adapter_source_sha256": {
+      "execution.py": "68bb3ea000cd33f852715fec0d815ab9a1b0b329cad044b1b86b711ad56d1093",
+      "selector.py": "e854b4bc63f089b70997fefb00cfa0958811f73130a2a5682bd4cb5708b4bdd9",
+      "planning.py": "bdc87a1e422dab4af3c3e77f562697b857f9e5e7ce23efa1e71f6cafcc8a23de",
+      "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0"
+    },
+    "checker_sha256": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+  },
+  "review_and_student_replay": {
+    "path": ".graphmine-learning/codex-astra-review-v1/review.json",
+    "sha256": "fe10957fdbb8b44c0285f433b737653f49b819c0b6b2d544ff8a15f43644bc89",
+    "started_at": "2026-10-03T05:00:12.738486+00:00",
+    "finished_at": "2026-10-03T05:05:38.789357+00:00",
+    "screened": 10,
+    "replayed": 10,
+    "accepted": 10,
+    "distinct_reviewer": true,
+    "reviewer_calibrated": true,
+    "student_model": "Qwen/Qwen3.8-27B-FP8",
+    "reviewer_contract_sha256": "7451e19174b48d63d8b84b59fab8349c22aec3bef5a6e4884004776ae17bd38e",
+    "replay_contract_sha256": "096591577af53d93d54717c4c08241d14558a698bc876b699f4c7521a92c9792",
+    "candidate_results": [
+      {
+        "id": "proposal-4a4d5c4283928b57",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-5755ce119610a8ff",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-48a1b02709c39c72",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-39d0b02ab9ceba9d",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-dc4f1a82590a4d12",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-7c35ff02ce222328",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-80cbe8e569b9383f",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-e1ab33dfd74da2a0",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-c4d54c45d2304e80",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      },
+      {
+        "id": "proposal-9abc975955081a43",
+        "screening_passed": true,
+        "replay_passed": true,
+        "blockers": []
+      }
+    ],
+    "data_directory": ".graphmine-learning/codex-student-replay-v1",
+    "model_calls": "10 Codex reviewer invocations; student calls use the existing local Qwen endpoint.",
+    "checks": "Blinded extraction and quoted evidence; deterministic source-meaning/wording comparison; live Qwen/native execution; independent numeric and answer-view/attribute checks."
+  },
+  "export": {
+    "directory": ".graphmine-learning/codex-reviewed-candidates-v1",
+    "provenance_sha256": "19764aaed2f06aac72b0e180d84ce83b3c0ea3c6b53a3e7525bd613142f8df7a",
+    "created_at": "2026-10-03T05:10:46.013395+00:00",
+    "train_jsonl_sha256": "8f92cc28728bd6117d1b672c5653536eecba221e05475bbfe4deefac338b2a25",
+    "exporter_sha256": "7aa2514db8dfd219c55b61ba04786c4e9c72c17c407a2f251372c3299fb58712",
+    "candidate_rows": 10,
+    "quarantined": 0,
+    "rows": [
+      {
+        "id": "proposal-4a4d5c4283928b57",
+        "example_id": "random-00-q00",
+        "split": "train",
+        "family": "random",
+        "row_sha256": "7e3ba7fce94bff6e2b547563b8dca33a5ef9b0e920749d22a16b979ffd190273",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-5755ce119610a8ff",
+        "example_id": "random-00-q00",
+        "split": "train",
+        "family": "random",
+        "row_sha256": "c8cee850d440785dab7cb2377c2d1a43d4c9c1ee750a6e2db03280ecb3614f3a",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-48a1b02709c39c72",
+        "example_id": "clique_tail-00-q00",
+        "split": "train",
+        "family": "clique_tail",
+        "row_sha256": "173461bd83662ad119b9021dcd0ec9ed5da8b14a6243b5076bd92fbb527d1a49",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-39d0b02ab9ceba9d",
+        "example_id": "clique_tail-00-q00",
+        "split": "train",
+        "family": "clique_tail",
+        "row_sha256": "c14ba62181a92ac1156fb7cf60a4c1a81f5a1fa9d0b34846a19ec6ab9d25abc6",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-dc4f1a82590a4d12",
+        "example_id": "two_blocks-00-q00",
+        "split": "train",
+        "family": "two_blocks",
+        "row_sha256": "c9a5af5366b45592eb03b50140fa337eeb7fcebd0112a5e2536be58ab8629279",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-7c35ff02ce222328",
+        "example_id": "two_blocks-00-q00",
+        "split": "train",
+        "family": "two_blocks",
+        "row_sha256": "f56e797941f99df3fc7878c9fbbb45c10acd976915a3fa837625784d87931bfa",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-80cbe8e569b9383f",
+        "example_id": "retail_random-00-q00",
+        "split": "train",
+        "family": "retail_random",
+        "row_sha256": "3068cf51dd689da9969a7d542e3b7c3c5d347d2229c52821ea2dd2803c5c0bcd",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-e1ab33dfd74da2a0",
+        "example_id": "retail_random-00-q00",
+        "split": "train",
+        "family": "retail_random",
+        "row_sha256": "4b358e21192d4665cb69468e0eb35eefbe2cf8025b3c7cbc73ea953789abc3ec",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-c4d54c45d2304e80",
+        "example_id": "events_forward-00-q00",
+        "split": "train",
+        "family": "events_forward",
+        "row_sha256": "b89974615abd60a9bcfdcf4539abb0812d0c5d047226764157b1790b5013eb0c",
+        "stage": "RouteDecision"
+      },
+      {
+        "id": "proposal-9abc975955081a43",
+        "example_id": "events_forward-00-q00",
+        "split": "train",
+        "family": "events_forward",
+        "row_sha256": "a8cfcf76cd9f2222ccccdd2e6292651510c26cf4a37c75047c8216701a0bd2bc",
+        "stage": "RouteDecision"
+      }
+    ],
+    "label_source": "Source semantic template plus blinded review and independently checked execution; teacher reasoning is not the gold label.",
+    "stage": "RouteDecision",
+    "schema_and_hash_validation_passed": true,
+    "file_permissions": "0700 directory; 0600 train.jsonl and provenance.json",
+    "human_reviewed": false,
+    "training_started": false,
+    "training_uploaded": false
+  },
+  "usage": {
+    "successful_inference_invocations": 29,
+    "calibration_invocations": 14,
+    "generation_invocations": 5,
+    "review_invocations": 10,
+    "reported_input_tokens": 332232,
+    "reported_cached_input_tokens": 35328,
+    "reported_output_tokens": 4466,
+    "all_successful_calls_chatgpt_authenticated": true,
+    "cached_tokens_are_subset_of_input": true,
+    "billing_note": "Uses ChatGPT/Codex allowance and account credit settings. No API adapter calls. Not a dollar charge or a measurement of remaining allowance.",
+    "accounting_scope": "Successful pilot Codex call artifacts only; excludes the outer coding session and local student. Built-in CLI retries may not be separately reported."
+  },
+  "retained_initial_failure": {
+    "path": ".graphmine-learning/codex-astra-calibration-v1/comparison.json",
+    "sha256": "0f3173c498ad9732a74bc5ce67006e05840f3a60d1ea632784dc5f545a88af05",
+    "cli_launches": 1,
+    "category": "local_cli_configuration_rejection_before_reported_inference",
+    "explanation": "The installed CLI forbids overriding reserved built-in model_providers.openai settings. Corrected to the unmodified built-in provider before the v2 calibration.",
+    "model_usage_reported": false,
+    "is_model_accuracy_result": false
+  },
+  "verification": {
+    "python_tests": {
+      "passed": 186,
+      "command": ".venv/bin/pytest -q agent/tests"
+    },
+    "browser_tests": {
+      "passed": 2,
+      "command": ".venv/bin/pytest -q agent/browser_tests",
+      "note": "Model/native test doubles; separate from the live pilot."
+    },
+    "real_native_audit_passed": 5,
+    "real_student_replays_passed": 10,
+    "exported_route_decisions_validated": 10,
+    "current_export_gates_passed": true,
+    "production": {
+      "health_http_status": 200,
+      "status": "ready",
+      "model_available": true,
+      "model_pid": 3498391,
+      "api_pid": 3935693,
+      "restarted_during_pilot": false,
+      "model_deployment_changed": false
+    }
+  },
+  "implementation_sha256": {
+    "learning/codex.py": "03f22ef40f24ed5fb71df8529c24b981e4fcc52bbf91f061cad8eabbd3e9c17a",
+    "learning/inference.py": "21dc642486f8cc8a91092c6eea0eafbde52541c72f1ebc515600ece3bfa933fe",
+    "learning/review.py": "35af157cee4e0f8b4eda1e4fdfe04f3755d37439a7b796100456c12d5f03a09b",
+    "learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "learning/cli.py": "27b20c79a43d965d98b2bc036695a87bcfbce5c3245d6367e5475082f66a7c06",
+    "tests/test_learning_codex.py": "e1c0d5e34361e48ea2fa4afb7d9b49d57778b87e87be39ee8e2cde10dff71fea"
+  },
+  "limitations": [
+    "Ten close paraphrases of precise synthetic task templates; no broad application-goal understanding claim.",
+    "Existing training graph families and controls; no untouched held-out accuracy or reliable success-rate estimate.",
+    "No weight update; successful replay does not mean the student learned.",
+    "Routing candidate labels only; not answer-writing or visualization training data.",
+    "Numeric and view/attribute contracts do not establish visual attractiveness or user satisfaction.",
+    "Different model identifiers do not establish independent model lineage or error independence.",
+    "CLI output-token threshold is post-call acceptance, not a generation or spending cap.",
+    "Local evidence and source hashes detect stale/mismatched artifacts, not cryptographically attested provider identity.",
+    "Adding the provider changed review-source hashes; previous calibration/review artifacts need fresh runs to qualify new exports."
+  ],
+  "next_steps": [
+    "Agree a bounded broader run scope using harder application-only questions, ambiguity and unsupported requests.",
+    "Add untouched graph/workflow families and repeated baseline runs before training.",
+    "Inspect sampled interpretations and answer visualizations for actual domain usefulness.",
+    "Compare prompting/retrieval and any separately approved small training experiment against the unchanged student with a rollback path."
+  ],
+  "documentation": {
+    "usage": "agent/CLI.md#codex-with-a-chatgpt-subscription",
+    "plan": "agent/IMPROVEMENT_PLAN.md#codex-subscription-teacher-pilot--2026-10-03-utc",
+    "official_cli": "https://learn.chatgpt.com/docs/non-interactive-mode",
+    "official_auth": "https://learn.chatgpt.com/docs/auth"
+  }
+}

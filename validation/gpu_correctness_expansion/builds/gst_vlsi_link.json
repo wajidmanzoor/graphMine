@@ -1,0 +1,18 @@
+{
+  "command": [
+    "mpicxx",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/main.o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/utils.o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/gst_vlsi_cuda.o",
+    "-L/usr/lib/x86_64-linux-gnu",
+    "-lcudart",
+    "-lm",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gst_vlsi"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.06422019191086292,
+  "exit_code": 0,
+  "log": "builds/gst_vlsi_link.log",
+  "timeout": false
+}

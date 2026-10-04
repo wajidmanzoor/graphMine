@@ -1,0 +1,20 @@
+kernel 	 time (ms) 	 runs
+init	 0.016806 	 1
+calc_min_in_rows	 0.011066 	 1
+step_1_row_sub	 0.008273 	 1
+calc_min_in_cols	 0.009945 	 1
+step_1_col_sub	 0.227163 	 1
+compress_matrix	 0.011066 	 1
+step_2	 0.125419 	 2
+step_3ini	 0.619144 	 3
+step_3	 0.029024 	 3
+step_4_init	 0.014952 	 2
+step_4	 0.577051 	 2
+min_reduce_kernel1	 0 	 0
+min_reduce_kernel2	 0 	 0
+step_6_add_sub	 0 	 0
+step_5a	 0.019469 	 2
+step_5b	 0.018609 	 2
+step_5c	 0 	 0
+Total time(ms) 	 3.01716
+VALIDATION_ASSIGNMENT 0 2 3 1 4

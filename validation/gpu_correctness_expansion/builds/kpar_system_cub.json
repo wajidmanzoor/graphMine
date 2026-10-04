@@ -1,0 +1,26 @@
+{
+  "command": [
+    "nvcc",
+    "main.cu",
+    "-Ialgo",
+    "-Imodel",
+    "-Iutil",
+    "-std=c++17",
+    "-lcurand",
+    "-lm",
+    "-lgsl",
+    "-lgslcblas",
+    "-arch=sm_89",
+    "-O2",
+    "--expt-relaxed-constexpr",
+    "--default-stream",
+    "per-thread",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/kpar"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/vendor/kpar/kPAR/src",
+  "elapsed_seconds": 0.31553494185209274,
+  "exit_code": 1,
+  "log": "builds/kpar_system_cub.log",
+  "timeout": false
+}

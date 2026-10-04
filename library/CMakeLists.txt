@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(GraphMine VERSION 0.1.0 LANGUAGES C CXX)
+project(GraphMine VERSION 1.0.0 LANGUAGES C CXX)
 
 include(CheckLanguage)
 include(GNUInstallDirs)
@@ -10,6 +10,7 @@ option(GRAPHMINE_BUILD_TESTS "Build GraphMine tests" ON)
 option(GRAPHMINE_BUILD_EXAMPLES "Build GraphMine examples" ON)
 option(GRAPHMINE_BUILD_CLI
        "Build the precompiled graphmine run-many command line interface" ON)
+option(GRAPHMINE_ENABLE_VALIDATED_EXPANSION "Build validated expansion GPU workers" ON)
 option(GRAPHMINE_ENABLE_CUDA_BACKENDS
        "Enable validated CUDA backends (individual options still apply)" ON)
 option(GRAPHMINE_ENABLE_RDMCE "Build the validated RDMCE backend" ON)
@@ -48,6 +49,7 @@ option(GRAPHMINE_ENABLE_GLEIDEN
 option(GRAPHMINE_ENABLE_PGGC
        "Build the validated parallel Louvain/Leiden community backends" ON)
 if(NOT GRAPHMINE_ENABLE_CUDA_BACKENDS)
+  set(GRAPHMINE_ENABLE_VALIDATED_EXPANSION OFF)
   set(GRAPHMINE_ENABLE_RDMCE OFF)
   set(GRAPHMINE_ENABLE_MCE_GPU OFF)
   set(GRAPHMINE_ENABLE_G2_AIMD OFF)
@@ -125,7 +127,7 @@ set_target_properties(graphmine_core PROPERTIES
 )
 
 set(GRAPHMINE_CUDA_AVAILABLE OFF)
-if(GRAPHMINE_ENABLE_RDMCE OR GRAPHMINE_ENABLE_MCE_GPU OR
+if(GRAPHMINE_ENABLE_VALIDATED_EXPANSION OR GRAPHMINE_ENABLE_RDMCE OR GRAPHMINE_ENABLE_MCE_GPU OR
    GRAPHMINE_ENABLE_G2_AIMD OR
    GRAPHMINE_ENABLE_KCOREGPU OR
    GRAPHMINE_ENABLE_CUDAMS OR GRAPHMINE_ENABLE_GPU_MAXIMUM_CLIQUE OR
@@ -1857,6 +1859,8 @@ set_target_properties(graphmine_maximal_cliques PROPERTIES
   POSITION_INDEPENDENT_CODE ON
 )
 
+include(cmake/ValidatedExpansion.cmake)
+
 if(GRAPHMINE_BUILD_CLI)
   find_path(GRAPHMINE_BOOST_JSON_INCLUDE_DIR boost/json.hpp)
   if(NOT GRAPHMINE_BOOST_JSON_INCLUDE_DIR)
@@ -1869,7 +1873,11 @@ if(GRAPHMINE_BUILD_CLI)
     PRIVATE ${GRAPHMINE_BOOST_JSON_INCLUDE_DIR}
   )
   target_compile_features(graphmine_cli PRIVATE cxx_std_17)
+  target_compile_definitions(graphmine_cli
+    PRIVATE GRAPHMINE_VERSION="${PROJECT_VERSION}"
+  )
   target_link_libraries(graphmine_cli PRIVATE
+    GraphMine::validated_expansion
     GraphMine::maximal_cliques
     GraphMine::maximum_clique
     GraphMine::k_cliques
@@ -1897,11 +1905,19 @@ endif()
 
 if(GRAPHMINE_BUILD_TESTS)
   enable_testing()
+  add_executable(graphmine_validated_expansion_test tests/validated_expansion_test.cpp)
+  target_link_libraries(graphmine_validated_expansion_test PRIVATE GraphMine::validated_expansion)
+  add_test(NAME graphmine_validated_expansion_test COMMAND graphmine_validated_expansion_test)
+  set_tests_properties(graphmine_validated_expansion_test PROPERTIES TIMEOUT 120)
   add_executable(graphmine_graph_test tests/graph_test.cpp)
   target_link_libraries(graphmine_graph_test PRIVATE GraphMine::core)
   add_test(NAME graphmine_graph_test COMMAND graphmine_graph_test)
 
   if(GRAPHMINE_BUILD_CLI)
+    add_test(NAME graphmine_cli_version_test COMMAND graphmine_cli --version)
+    set_tests_properties(graphmine_cli_version_test
+      PROPERTIES PASS_REGULAR_EXPRESSION "GraphMine ${PROJECT_VERSION}"
+    )
     add_test(NAME graphmine_cli_list_test COMMAND graphmine_cli list)
     add_test(NAME graphmine_cli_validate_test
              COMMAND graphmine_cli validate
@@ -2058,12 +2074,21 @@ if(GRAPHMINE_BUILD_TESTS)
   target_link_libraries(graphmine_community_detection_test
     PRIVATE GraphMine::community_detection
   )
-  add_test(NAME graphmine_community_detection_test
-           COMMAND graphmine_community_detection_test)
-  if(NOT GRAPHMINE_HAS_GLEIDEN OR NOT GRAPHMINE_HAS_PGGC)
-    set_tests_properties(graphmine_community_detection_test
+  add_test(NAME graphmine_community_detection_gleiden_test
+           COMMAND graphmine_community_detection_test gleiden)
+  if(NOT GRAPHMINE_HAS_GLEIDEN)
+    set_tests_properties(graphmine_community_detection_gleiden_test
                          PROPERTIES DISABLED TRUE)
   endif()
+  foreach(backend IN ITEMS parallel-louvain parallel-leiden parallel-leiden-plus)
+    string(REPLACE "-" "_" backend_test_name "${backend}")
+    add_test(NAME graphmine_community_detection_${backend_test_name}_test
+             COMMAND graphmine_community_detection_test ${backend})
+    if(NOT GRAPHMINE_HAS_PGGC)
+      set_tests_properties(graphmine_community_detection_${backend_test_name}_test
+                           PROPERTIES DISABLED TRUE)
+    endif()
+  endforeach()
 endif()
 
 install(TARGETS

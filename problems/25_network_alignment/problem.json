@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "network_alignment",
+  "name": "Pairwise Network Alignment",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Given two graphs and optional vertex-similarity priors, find a vertex mapping between them that maximizes conserved topology (and prior similarity, when supplied), either as a global one-to-one mapping or a local many-to-one set of high-scoring alignments.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "graph_pair",
+    "requirements": {"direction": "undirected_or_directed_matched_across_pair", "weights": "optional", "timestamps": "ignored", "vertex_attributes": "optional_as_similarity_prior", "edge_attributes": "ignored"},
+    "normalization": ["Both graphs must use the same direction semantics.", "Remove self-loops.", "Collapse parallel edges to a single edge, summing weight when weight_mode=edge_weight."]
+  },
+  "problem_inputs": [
+    {"name": "alignment_mode", "type": "enum", "required": false, "default": "global_one_to_one", "allowed_values": ["global_one_to_one", "local_many_to_one"], "description": "Whether every vertex of the smaller graph must receive exactly one distinct match, or high-scoring local correspondences are reported independently."},
+    {"name": "node_similarity_prior", "type": "map<vertex_id_pair,number>_or_null", "required": false, "default": null, "description": "Optional external similarity (e.g. sequence or attribute similarity) between specific cross-graph vertex pairs."},
+    {"name": "topology_weight", "type": "number", "required": false, "default": 1.0, "constraints": "value >= 0", "description": "Relative weight of topological conservation versus node_similarity_prior in the objective."},
+    {"name": "top_k", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "For local_many_to_one, maximum number of correspondences to return, ranked by score."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "approximate", "allowed_values": ["exact", "approximate"], "description": "Whether a heuristic/approximate alignment with a disclosed objective value is permitted; exact is intractable beyond small graphs."}
+  ],
+  "required_outputs": [
+    {"name": "vertex_mapping", "type": "array<object>", "description": "Pairs of (graph_a_vertex, graph_b_vertex, score) realizing the alignment."},
+    {"name": "objective_value", "type": "number", "description": "Total conserved-edge weight (edge correctness) plus weighted node_similarity_prior achieved by vertex_mapping."},
+    {"name": "complete", "type": "boolean", "description": "Whether every eligible vertex (global mode) or the full requested top_k (local mode) was produced."}
+  ],
+  "optional_outputs": [
+    {"name": "edge_correctness", "type": "number", "description": "Fraction of graph_a edges whose mapped endpoints are also connected in graph_b."},
+    {"name": "conserved_edges", "type": "array<object>", "description": "Edge pairs, one from each graph, whose endpoints correspond under vertex_mapping."},
+    {"name": "approximation_bound", "type": "number", "description": "Disclosed bound or confidence measure for an approximate alignment."}
+  ],
+  "solution_semantics": {
+    "objective": "Maximize topology_weight times conserved-edge weight plus the sum of node_similarity_prior over the chosen vertex_mapping, subject to alignment_mode's cardinality constraint.",
+    "exactness": "Exact mode requires optimal=true and is only expected to terminate on small graph pairs; approximate mode must disclose objective_value and, when known, approximation_bound.",
+    "duplicate_policy": "global_one_to_one maps each vertex at most once in each direction; local_many_to_one may map one graph_b vertex to multiple graph_a vertices across separate reported correspondences.",
+    "ordering": "vertex_mapping is ordered by descending per-pair score with a stable tie break."
+  },
+  "validation_rules": [
+    "global_one_to_one vertex_mapping is injective in both directions.",
+    "objective_value recomputes from vertex_mapping, conserved_edges, and node_similarity_prior within tolerance.",
+    "edge_correctness, when returned, equals conserved edge count divided by graph_a edge count.",
+    "Every vertex and edge referenced exists in its respective normalized graph."
+  ],
+  "edge_cases": [
+    "Graphs of unequal vertex count under global_one_to_one map every vertex of the smaller graph and leave the rest of the larger graph unmapped.",
+    "Two isomorphic graphs admit a mapping with edge_correctness 1.0.",
+    "Disconnected input graphs are valid; alignment may map vertices across different components.",
+    "Empty node_similarity_prior degenerates to a purely topological alignment objective."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["edge-correctness recomputation", "mapping cardinality constraint satisfaction", "objective-value agreement with declared scoring"],
+    "performance": ["end-to-end time", "compute time", "peak memory", "vertex pairs scored per second"]
+  }
+}

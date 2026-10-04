@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cmake",
+    "--build",
+    "/home/wajid/projects/graphDatabaseAgent/library/build",
+    "--target",
+    "graphmine_cli",
+    "-j",
+    "4"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 30.82810007967055,
+  "exit_code": 0,
+  "log": "builds/library_expansion.log",
+  "stdin_path": null,
+  "timeout": false
+}

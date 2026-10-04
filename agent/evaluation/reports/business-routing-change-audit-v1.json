@@ -1,0 +1,188 @@
+{
+  "created_at": "2026-10-03T23:32:23.076639+00:00",
+  "review": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/evaluation/reports/adapter-business-new-review-v1.json",
+  "complete": true,
+  "paired_counts": {
+    "both_pass": 112,
+    "improved": 6,
+    "both_fail": 5,
+    "regressed": 1
+  },
+  "changes": [
+    {
+      "id": "business-barbell-00-q06-goal",
+      "change": "improvements",
+      "category": "clarification_metadata",
+      "query": "Which groups of colleagues should management pay attention to?",
+      "before_behavior": "clarify",
+      "after_behavior": "clarify",
+      "before_issues": [
+        "problem_id: expected None, got community_detection",
+        "additional_analyses: missing or unexpected supporting computation"
+      ],
+      "after_issues": []
+    },
+    {
+      "id": "business-barbell-02-q06-goal",
+      "change": "improvements",
+      "category": "clarification_metadata",
+      "query": "What are the suspicious circles we should prioritize?",
+      "before_behavior": "clarify",
+      "after_behavior": "clarify",
+      "before_issues": [
+        "problem_id: expected None, got maximal_clique_enumeration",
+        "additional_analyses: missing or unexpected supporting computation"
+      ],
+      "after_issues": []
+    },
+    {
+      "id": "business-branching-00-q06-goal",
+      "change": "improvements",
+      "category": "clarification_metadata",
+      "query": "Which groups of colleagues should management pay attention to?",
+      "before_behavior": "clarify",
+      "after_behavior": "clarify",
+      "before_issues": [
+        "problem_id: expected None, got community_detection",
+        "additional_analyses: missing or unexpected supporting computation"
+      ],
+      "after_issues": []
+    },
+    {
+      "id": "business-branching-01-q02",
+      "change": "improvements",
+      "category": "false_clarification_corrected",
+      "query": "Build the full candidate panel for follow-up assays so each included protein has at least 2 recorded interaction partners among those included. Treat this as an eligibility rule, not proof of biological importance.",
+      "before_behavior": "clarify",
+      "after_behavior": "execute",
+      "before_issues": [
+        "problem_id: expected k_core_decomposition, got None",
+        "operation_id: expected k-core, got None",
+        "behavior: expected execute, got clarify"
+      ],
+      "after_issues": []
+    },
+    {
+      "id": "business-branching-02-q06-goal",
+      "change": "improvements",
+      "category": "clarification_metadata",
+      "query": "What are the suspicious circles we should prioritize?",
+      "before_behavior": "clarify",
+      "after_behavior": "clarify",
+      "before_issues": [
+        "problem_id: expected None, got maximal_clique_enumeration",
+        "additional_analyses: missing or unexpected supporting computation"
+      ],
+      "after_issues": []
+    },
+    {
+      "id": "business-branching-03-q06",
+      "change": "improvements",
+      "category": "clarification_metadata",
+      "query": "Which equipment is most important to our service?",
+      "before_behavior": "clarify",
+      "after_behavior": "clarify",
+      "before_issues": [
+        "problem_id: expected None, got centrality_influential_node_mining",
+        "additional_analyses: missing or unexpected supporting computation"
+      ],
+      "after_issues": []
+    },
+    {
+      "id": "business-barbell-02-q08",
+      "change": "regressions",
+      "category": "operation_choice_regression",
+      "query": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+      "before_behavior": "execute",
+      "after_behavior": "execute",
+      "before_issues": [],
+      "after_issues": [
+        "problem_id: expected k_clique_counting_enumeration, got maximal_clique_enumeration",
+        "operation_id: expected k-cliques, got maximal-cliques"
+      ]
+    }
+  ],
+  "business_adapter_failures": [
+    {
+      "id": "business-barbell-02-q02",
+      "query": "Which accounts can form a mutually supported review pool, with at least 3 payment partners per account among those included? Give me the full eligible pool; this is a structural lead, not a verdict.",
+      "category": "wrong_operation",
+      "expected_operation": "k-core",
+      "selected_operation": "maximal-cliques",
+      "issues": [
+        "problem_id: expected k_core_decomposition, got maximal_clique_enumeration",
+        "operation_id: expected k-core, got maximal-cliques"
+      ]
+    },
+    {
+      "id": "business-barbell-02-q08",
+      "query": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+      "category": "wrong_operation",
+      "expected_operation": "k-cliques",
+      "selected_operation": "maximal-cliques",
+      "issues": [
+        "problem_id: expected k_clique_counting_enumeration, got maximal_clique_enumeration",
+        "operation_id: expected k-cliques, got maximal-cliques"
+      ]
+    },
+    {
+      "id": "business-barbell-03-q06-goal",
+      "query": "Which parts of the network deserve their own service team?",
+      "category": "authored_goal_clarification_expectation",
+      "expected_operation": null,
+      "selected_operation": "community-detection",
+      "issues": [
+        "problem_id: expected None, got community_detection",
+        "behavior: expected clarify, got execute"
+      ]
+    },
+    {
+      "id": "business-branching-02-q02",
+      "query": "Which accounts can form a mutually supported review pool, with at least 2 payment partners per account among those included? Give me the full eligible pool; this is a structural lead, not a verdict.",
+      "category": "wrong_operation",
+      "expected_operation": "k-core",
+      "selected_operation": "maximal-cliques",
+      "issues": [
+        "problem_id: expected k_core_decomposition, got maximal_clique_enumeration",
+        "operation_id: expected k-core, got maximal-cliques"
+      ]
+    },
+    {
+      "id": "business-branching-02-q08",
+      "query": "Give me all three-account mutual-payment sets for our review queue. Keep sets that are part of bigger circles as well. The output should describe the recorded pattern, not infer misconduct.",
+      "category": "wrong_operation",
+      "expected_operation": "k-cliques",
+      "selected_operation": "maximal-cliques",
+      "issues": [
+        "problem_id: expected k_clique_counting_enumeration, got maximal_clique_enumeration",
+        "operation_id: expected k-cliques, got maximal-cliques"
+      ]
+    },
+    {
+      "id": "business-branching-03-q06-goal",
+      "query": "Which parts of the network deserve their own service team?",
+      "category": "authored_goal_clarification_expectation",
+      "expected_operation": null,
+      "selected_operation": "community-detection",
+      "issues": [
+        "problem_id: expected None, got community_detection",
+        "behavior: expected clarify, got execute"
+      ]
+    }
+  ],
+  "grading_changed": false,
+  "model_calls": 0,
+  "native_jobs": 0,
+  "evidence_sha256": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/evaluation/reports/adapter-business-new-review-v1.json": "6065e664cdad1a5a0f8f5ae4a0c404998c1a7aeacbeb16e719d886af927789f1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-business-suite-new-v1/cases.json": "8e6d1621fa20141509d069ada3c2b2b25f8affb172cbe8682b8156a706a97c59",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-business-nf4-v1/status.json": "c77d6a6fab063a9e93a68c1fcb7fb2433e7943968cc79b936a0152e718288853"
+  },
+  "interpretation": [
+    "Five reviewed gains clean up speculative operation/supporting-analysis metadata in routes that already asked for clarification. They are not five newly correct completed computations.",
+    "One gain corrects an unnecessary request for the protein-panel starting pool. One new failure selects full payment circles instead of every three-account set.",
+    "Four payment-review operation errors remain across two wording patterns and two graphs. Two further failures reflect the authored expectation that service-team goals need clarification; this expectation is not an independent user judgment.",
+    "Both arms preserve all typed semantic requirements under the established application review. The scorer records two execution proposals against clarification labels for each arm; no native jobs were run in this comparison.",
+    "Complete practical application, original-adapter and retention comparisons remain required before candidate selection."
+  ]
+}

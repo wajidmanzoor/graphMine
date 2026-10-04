@@ -1,0 +1,294 @@
+{
+  "version": "adapter-application-comparison-v1",
+  "created_at": "2026-10-03T20:26:57.967186+00:00",
+  "complete": true,
+  "contract": {
+    "wrapper_source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+    "mode": "conversation-regressions-v1",
+    "corpus_sha256": "13e8bea1bba99d511b2261eb096f1340d3825469f6c90b2d740053a27318d5a0",
+    "cases_sha256": "9a95146aafbffd1ee05a737e492226e5970520520cad254cefc3deeba324f761",
+    "repeats": 1,
+    "source_sha256": {
+      "agent_service.py": "2bcca4a4ad50a2d001141d43fc375f0962dbec01899e0ac23b08531eb0ba8642",
+      "planning.py": "4caa6566d0dd7026088fc5f2ab7b80e7808c5c1df2cf7eb1a8727302e4c338f7",
+      "llm.py": "49d6d67d76ab435d3f857c44708ed327a5f1001fdc97b955c474cfd2b42c20e2",
+      "models.py": "460a868c74a5b92d04c83c25e831a2cb8c5d10e7bf8f3e2ac86ade5ee6c1d182",
+      "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+      "answers.py": "49f82005c8d0e37c8fb9d667e27bc6cb368f8918eed6a1089f6a7e96bb620c36",
+      "visualization.py": "0ae31394caf9518d8004d513a3b2e2c4317ab08f937add922554db8542f7939d",
+      "terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+      "learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+      "learning/pipeline.py": "48530cd37e6c7bd55ecb326650074eaf76b0a7c3aa4732ab06bb69ba579c4545",
+      "learning/oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+    },
+    "protocol_sha256": null,
+    "replay_contract_sha256": null,
+    "inference_profile": {
+      "llm_route_reasoning_effort": "none",
+      "llm_plan_reasoning_effort": "medium",
+      "llm_analyst_reasoning_effort": "medium",
+      "llm_route_max_tokens": 768,
+      "llm_plan_max_tokens": 3072,
+      "llm_analyst_max_tokens": 3072
+    },
+    "suite_plan_sha256": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+    "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+    "routing_only": true,
+    "route_context_budget": 16384,
+    "route_completion_budget": 2400,
+    "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+    "llm_plan_reasoning_effort": "medium",
+    "llm_analyst_reasoning_effort": "medium",
+    "final_holdout": false
+  },
+  "by_arm": {
+    "base_nf4": {
+      "passed": 20,
+      "total": 21,
+      "workflows_passed": 5,
+      "workflows_total": 6,
+      "median_turn_seconds": 46.18343477137387,
+      "maximum_turn_seconds": 87.2298664599657,
+      "recorded_route_completion_budget": 2400,
+      "failures": [
+        {
+          "identity": [
+            "group-quantifiers",
+            1,
+            3
+          ],
+          "query": "Actually, show just one largest group again. One is enough if several tie.",
+          "issues": [
+            "No completed maximum-clique result"
+          ],
+          "turn_id": "turn_2eb694a8808b4753a6c4b38dd894c0f9",
+          "stages": {
+            "requests": [
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflows-nf4-v1/base_nf4-runtime/history/session_d07aa2915e384d2d987fff316b1aff85/events/20261003T195842.903982Z_event_6298225bfe384728bc21e6685da3bdff.json",
+                "sha256": "b1856fe4777e007bed9cd29c16c6fcbbc22a8d69e9c88a82ebeea094ef2d3602",
+                "schema": "TurnDecision"
+              },
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflows-nf4-v1/base_nf4-runtime/history/session_d07aa2915e384d2d987fff316b1aff85/events/20261003T195849.206505Z_event_4e65faa5d3624c569359912cd7776c27.json",
+                "sha256": "bcd26345fba81afc42889af79aca216bcc8eb68d96e49e6a83fab8257baa943c",
+                "schema": "GroundedNarrative"
+              }
+            ],
+            "routing_call_recorded": false,
+            "note": "Stage participation is evidence for investigation, not automatic attribution of the failure to that stage. Empty history is missing evidence."
+          }
+        }
+      ]
+    },
+    "adapter_nf4": {
+      "passed": 20,
+      "total": 21,
+      "workflows_passed": 5,
+      "workflows_total": 6,
+      "median_turn_seconds": 49.41405916586518,
+      "maximum_turn_seconds": 88.9791317358613,
+      "recorded_route_completion_budget": 2400,
+      "failures": [
+        {
+          "identity": [
+            "group-quantifiers",
+            1,
+            3
+          ],
+          "query": "Actually, show just one largest group again. One is enough if several tie.",
+          "issues": [
+            "No completed maximum-clique result"
+          ],
+          "turn_id": "turn_2e4eae1201f84e188b757b2733776292",
+          "stages": {
+            "requests": [
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflows-nf4-v1/adapter_nf4-runtime/history/session_aa990d3644a342a0a897ed3451815b7f/events/20261003T201408.259692Z_event_2681cc93f09c45e28c1f4caa8ac230f6.json",
+                "sha256": "083f0dc574ca0d2aa3c3fb4007236c39c7aba261fd94ba7942954dfc758ffbd3",
+                "schema": "TurnDecision"
+              },
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflows-nf4-v1/adapter_nf4-runtime/history/session_aa990d3644a342a0a897ed3451815b7f/events/20261003T201414.893811Z_event_7f29c887107a4c958e3686b3ae11bd6a.json",
+                "sha256": "9f4eb6e9b2c41a1f6883e6e3b5fbc6988c54920161d832e4671c9f69ddada846",
+                "schema": "GroundedNarrative"
+              }
+            ],
+            "routing_call_recorded": false,
+            "note": "Stage participation is evidence for investigation, not automatic attribution of the failure to that stage. Empty history is missing evidence."
+          }
+        }
+      ]
+    },
+    "serving_fp8": {
+      "passed": 20,
+      "total": 21,
+      "workflows_passed": 5,
+      "workflows_total": 6,
+      "median_turn_seconds": 38.58321411162615,
+      "maximum_turn_seconds": 88.62139494158328,
+      "recorded_route_completion_budget": 768,
+      "failures": [
+        {
+          "identity": [
+            "group-quantifiers",
+            1,
+            3
+          ],
+          "query": "Actually, show just one largest group again. One is enough if several tie.",
+          "issues": [
+            "No completed maximum-clique result"
+          ],
+          "turn_id": "turn_f8cca0a7d84e487fb76eb852dc7e2068",
+          "stages": {
+            "requests": [
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflow-fp8-v2/serving_fp8-runtime/history/session_585035bc759d4629bd3f2612f379a020/events/20261003T193756.244681Z_event_07f33ce3ec1c4829828349c6fbfffab9.json",
+                "sha256": "5323d9907d2646847fd8c78de99c5a0780487e0b463b2179ecff49c9f6a8c318",
+                "schema": "TurnDecision"
+              },
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflow-fp8-v2/serving_fp8-runtime/history/session_585035bc759d4629bd3f2612f379a020/events/20261003T193804.741439Z_event_47ccd73f2c4845d59ef4a3794c50a373.json",
+                "sha256": "251700b98aeb64c40f37a1118806addd8d225ffbca6989c3f4cdfc472b4ebb77",
+                "schema": "GroundedNarrative"
+              }
+            ],
+            "routing_call_recorded": false,
+            "note": "Stage participation is evidence for investigation, not automatic attribution of the failure to that stage. Empty history is missing evidence."
+          }
+        }
+      ]
+    }
+  },
+  "paired_nf4": {
+    "both_pass": 20,
+    "both_fail": 1
+  },
+  "improvements": [],
+  "regressions": [],
+  "protocols": {
+    "base_nf4": {
+      "suite_plan_sha256": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+      "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+      "source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+      "arms": [
+        "base_nf4",
+        "adapter_nf4"
+      ],
+      "repeats": 1,
+      "route_context_budget": 16384,
+      "route_completion_budget": 2400,
+      "routing_only": true,
+      "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+      "llm_plan_reasoning_effort": "medium",
+      "llm_analyst_reasoning_effort": "medium",
+      "native_gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "local_route_environment": {
+        "gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "base_checkpoint_files_verified": true,
+        "packages": {
+          "torch": "2.13.0",
+          "transformers": "5.18.0",
+          "peft": "0.21.2",
+          "bitsandbytes": "0.50.2",
+          "accelerate": "1.15.0",
+          "datasets": "5.0.1",
+          "flash-linear-attention": "0.5.2",
+          "xgrammar": "0.2.8",
+          "apache-tvm-ffi": "0.1.14.post1"
+        },
+        "quantization": "NF4 double quantization, BF16 computation, same frozen weights for both arms",
+        "loading": {
+          "missing_keys": [],
+          "unexpected_keys": [],
+          "mismatched_keys": [],
+          "error_msgs": []
+        }
+      },
+      "scope": "Complete application development workflows. GPU placement is recorded; no concurrency/throughput or novice-usability claim.",
+      "real_corpus": null,
+      "questions": null,
+      "final_holdout": false,
+      "deployment_changed": false
+    },
+    "adapter_nf4": {
+      "suite_plan_sha256": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+      "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+      "source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+      "arms": [
+        "base_nf4",
+        "adapter_nf4"
+      ],
+      "repeats": 1,
+      "route_context_budget": 16384,
+      "route_completion_budget": 2400,
+      "routing_only": true,
+      "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+      "llm_plan_reasoning_effort": "medium",
+      "llm_analyst_reasoning_effort": "medium",
+      "native_gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "local_route_environment": {
+        "gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "base_checkpoint_files_verified": true,
+        "packages": {
+          "torch": "2.13.0",
+          "transformers": "5.18.0",
+          "peft": "0.21.2",
+          "bitsandbytes": "0.50.2",
+          "accelerate": "1.15.0",
+          "datasets": "5.0.1",
+          "flash-linear-attention": "0.5.2",
+          "xgrammar": "0.2.8",
+          "apache-tvm-ffi": "0.1.14.post1"
+        },
+        "quantization": "NF4 double quantization, BF16 computation, same frozen weights for both arms",
+        "loading": {
+          "missing_keys": [],
+          "unexpected_keys": [],
+          "mismatched_keys": [],
+          "error_msgs": []
+        }
+      },
+      "scope": "Complete application development workflows. GPU placement is recorded; no concurrency/throughput or novice-usability claim.",
+      "real_corpus": null,
+      "questions": null,
+      "final_holdout": false,
+      "deployment_changed": false
+    },
+    "serving_fp8": {
+      "suite_plan_sha256": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+      "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+      "source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+      "arms": [
+        "serving_fp8"
+      ],
+      "repeats": 1,
+      "route_context_budget": 16384,
+      "route_completion_budget": 2400,
+      "routing_only": true,
+      "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+      "llm_plan_reasoning_effort": "medium",
+      "llm_analyst_reasoning_effort": "medium",
+      "native_gpu": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+      "local_route_environment": null,
+      "scope": "Complete application development workflows. GPU placement is recorded; no concurrency/throughput or novice-usability claim.",
+      "real_corpus": null,
+      "questions": null,
+      "final_holdout": false,
+      "deployment_changed": false
+    }
+  },
+  "evidence_sha256": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflows-nf4-v1/base_nf4.json": "669025fe9f21d1827ac5a8d3997d82e044fce14b9640333e3f506706a2e26d47",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflows-nf4-v1/protocol.json": "44e42b0d789f3145c7af49b6fd635d37f3ba8dc5c210a514ccb2e8b3def98d97",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflows-nf4-v1/status.json": "a9a6a95bfd4e760cfed8cf52158e1ba25afd70ab325add983f439846963c67ce",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflows-nf4-v1/adapter_nf4.json": "a7b6fd10acb8768248140e2ef4fbb66197af0e367b4fd3ca63773dddad00e522",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflow-fp8-v2/serving_fp8.json": "dd48db3ebc59f335d8a11e69230ec12b3a06a0fe61b6f057746e5a299d71b70b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflow-fp8-v2/protocol.json": "8460904f8afce3955fc58e6a1f3511c8751afe20f3665500ad6aafc53f1a4a8e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflow-fp8-v2/status.json": "0c6a112febd3888d2ff61debc27b3053d02d12b6053d51ae5914995a9e87fbbf"
+  },
+  "review_source_sha256": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+  "caution": "Preserves the original workflow grades; no regeneration or post-hoc regrading. Stage participation alone does not establish causality. Turn times include every model stage and native work; the serving FP8 reference can have different GPU sharing and precision. A development comparison does not establish untouched general accuracy or novice usability.",
+  "deployment_changed": false,
+  "review_source_snapshot": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/evaluation/reports/adapter-workflow-comparison-2026-10-03-review-source.py"
+}

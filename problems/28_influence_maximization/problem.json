@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "influence_maximization",
+  "name": "Influence Maximization under Diffusion Models",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed", "weights": "required_as_influence_probability_or_threshold_input", "timestamps": "ignored", "vertex_attributes": "optional_as_threshold", "edge_attributes": "optional"},
+    "normalization": ["Treat edge weight as the independent-cascade activation probability, or as linear-threshold edge weight depending on diffusion_model.", "Reject edge weight outside [0,1] for independent_cascade.", "Collapse parallel edges per diffusion_model's combination rule (declared explicitly, since probabilities do not sum like capacities).", "Remove self-loops; they do not affect diffusion."]
+  },
+  "problem_inputs": [
+    {"name": "diffusion_model", "type": "enum", "required": true, "allowed_values": ["independent_cascade", "linear_threshold"], "description": "Stochastic process governing how activation spreads from seeds."},
+    {"name": "seed_set_size", "type": "integer", "required": true, "constraints": "value >= 1", "description": "Number of seed vertices to select (the budget k)."},
+    {"name": "vertex_thresholds", "type": "map<vertex_id,number>_or_null", "required": false, "default": null, "description": "Per-vertex activation thresholds for linear_threshold; null means thresholds are drawn uniformly at random per the model's standard definition."},
+    {"name": "estimation_method", "type": "enum", "required": false, "default": "reverse_influence_sampling", "allowed_values": ["reverse_influence_sampling", "monte_carlo_simulation"], "description": "Technique used to estimate expected spread while selecting seeds."},
+    {"name": "approximation_guarantee", "type": "number", "required": false, "default": 0.63, "constraints": "0 < value <= 1", "description": "Target multiplicative approximation ratio to the optimal expected spread (e.g. 1 - 1/e for the standard greedy guarantee)."},
+    {"name": "failure_probability", "type": "number", "required": false, "default": 0.001, "constraints": "0 < value < 1", "description": "Allowed probability that the returned seed set fails to meet approximation_guarantee, under the sampling method's own randomness."}
+  ],
+  "required_outputs": [
+    {"name": "seed_set", "type": "array<vertex_id>", "description": "Selected seed vertices, with cardinality equal to seed_set_size."},
+    {"name": "expected_spread", "type": "number", "description": "Estimated expected number of activated vertices when diffusion starts from seed_set."},
+    {"name": "guarantee_met", "type": "boolean", "description": "Whether the returned seed_set is certified to meet approximation_guarantee under failure_probability."}
+  ],
+  "optional_outputs": [
+    {"name": "marginal_gains", "type": "array<number>", "description": "Estimated marginal expected-spread gain contributed by each seed, in selection order."},
+    {"name": "sample_count", "type": "integer", "description": "Number of reverse-reachable sets or Monte Carlo simulations used to produce the estimate."},
+    {"name": "confidence_interval", "type": "object", "description": "Statistical interval around expected_spread for the estimation method used."}
+  ],
+  "solution_semantics": {
+    "objective": "Choose seed_set of size seed_set_size maximizing expected_spread under diffusion_model, where expected_spread is the expectation over the model's randomness of the number of eventually-activated vertices.",
+    "exactness": "Exact computation of expected_spread is #P-hard in general; guarantee_met=true requires the disclosed approximation_guarantee and failure_probability to hold under the estimation_method's established theoretical bounds.",
+    "duplicate_policy": "seed_set contains each vertex at most once.",
+    "ordering": "seed_set has no required output ordering unless marginal_gains is returned, in which case order reflects the greedy selection sequence."
+  },
+  "validation_rules": [
+    "seed_set has exactly seed_set_size distinct vertices that exist in the graph.",
+    "expected_spread is non-negative and at most the total vertex count.",
+    "Re-estimating expected_spread for the returned seed_set via independent simulation falls within confidence_interval or a stated tolerance.",
+    "vertex_thresholds, when supplied, are all within [0,1] for linear_threshold."
+  ],
+  "edge_cases": [
+    "seed_set_size greater than or equal to the vertex count makes expected_spread equal to the vertex count.",
+    "A graph with no edges gives expected_spread equal to seed_set_size regardless of diffusion_model.",
+    "All edge probabilities zero under independent_cascade gives expected_spread equal to seed_set_size.",
+    "Disconnected components require seeds to be distributed to maximize total spread, not concentrated in one component."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["expected-spread estimate agreement with high-sample-count simulation oracle", "cardinality and feasibility checks", "guarantee validity under disclosed sampling parameters"],
+    "performance": ["end-to-end time", "sampling/simulation time", "peak memory", "reverse-reachable sets or simulations per second"]
+  }
+}

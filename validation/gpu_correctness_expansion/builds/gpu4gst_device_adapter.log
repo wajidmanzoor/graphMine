@@ -1,0 +1,22 @@
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2025_gpu4gst/code/code/TrimCDP-WB/include/mapper.cuh(388): warning #177-D: variable "vline" was declared but never referenced
+     index_t beg = beg_pos[v], end = beg_pos[v + 1], x_slash = full - p, vline = v * width;
+                                                                         ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2025_gpu4gst/code/code/TrimCDP-WB/include/reducer.cuh(327): warning #177-D: variable "my_front_sml" was declared but never referenced
+    vertex_t my_front_sml = 0;
+             ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2025_gpu4gst/code/code/TrimCDP-WB/include/reducer.cuh(328): warning #177-D: variable "my_front_mid" was declared but never referenced
+    vertex_t my_front_mid = 0;
+             ^
+
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2025_gpu4gst/code/code/TrimCDP-WB/include/reducer.cuh(329): warning #177-D: variable "my_front_lrg" was declared but never referenced
+    vertex_t my_front_lrg = 0;
+             ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gpu4gst.cu(170): warning #177-D: variable "prop" was declared but never referenced
+   cudaDeviceProp prop;
+                  ^
+

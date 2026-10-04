@@ -1,0 +1,13 @@
+{
+  "command": [
+    "make",
+    "-j2",
+    "graph_viewer"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gpu_layout/builds/linux",
+  "elapsed_seconds": 0.31571337580680847,
+  "exit_code": 2,
+  "log": "builds/gpu_layout.log",
+  "stdin_path": null,
+  "timeout": false
+}

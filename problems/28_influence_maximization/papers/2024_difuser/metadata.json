@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_difuser",
+  "title": "DiFuseR: A Distributed Sketch-based Influence Maximization Algorithm for GPUs",
+  "year": 2024,
+  "venue": "The Journal of Supercomputing",
+  "doi": "10.1007/s11227-024-06566-z",
+  "publication_url": "https://arxiv.org/abs/2410.14047",
+  "pdf_url": "https://arxiv.org/pdf/2410.14047",
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "Distributed sketch-based (count-distinct) influence maximization across multiple GPUs with error-adaptive cardinality estimation.",
+  "notes": "No public repository confirmed distinct from the 2021 infuser/SuperFuseR codebase was located; do not substitute that repository as this paper's official code.",
+  "problem_id": "influence_maximization",
+  "problem_dir": "28_influence_maximization",
+  "research_cutoff": "2026-09-30"
+}

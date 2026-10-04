@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/ecl_flow",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_flow/dead_end.egr",
+    "0",
+    "4"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.268827011808753,
+  "exit_code": 0,
+  "log": "runs/ecl_flow_dead_end.log",
+  "timeout": false
+}

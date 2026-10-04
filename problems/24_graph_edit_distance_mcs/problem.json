@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_edit_distance_mcs",
+  "name": "Graph Edit Distance and Maximum Common Subgraph",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Given two graphs, compute either the minimum total cost of vertex/edge insertions, deletions, and substitutions transforming one graph into the other (graph edit distance), or a largest common induced or non-induced subgraph shared by both (maximum common subgraph).",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "graph_pair",
+    "requirements": {"direction": "directed_or_undirected_matched_across_pair", "weights": "ignored_unless_cost_definition_uses_them", "timestamps": "ignored", "vertex_attributes": "optional_as_labels", "edge_attributes": "optional_as_labels"},
+    "normalization": ["Both graphs in the pair must use the same direction and label semantics.", "Remove self-loops unless the cost/isomorphism definition explicitly covers them.", "Collapse parallel edges per the declared multigraph policy; default is to reject multi-edges."]
+  },
+  "problem_inputs": [
+    {"name": "task", "type": "enum", "required": true, "allowed_values": ["graph_edit_distance", "maximum_common_subgraph"], "description": "Compute minimum edit cost or a largest common subgraph."},
+    {"name": "induced", "type": "boolean", "required": false, "default": true, "description": "For maximum_common_subgraph, whether the common subgraph must be vertex-induced in both graphs."},
+    {"name": "edit_costs", "type": "object", "required": false, "default": {"vertex_insertion": 1, "vertex_deletion": 1, "vertex_substitution": 1, "edge_insertion": 1, "edge_deletion": 1, "edge_substitution": 1}, "description": "Per-operation nonnegative costs used when task=graph_edit_distance."},
+    {"name": "label_match_policy", "type": "enum", "required": false, "default": "exact", "allowed_values": ["exact", "ignore_labels", "custom_predicate"], "description": "How vertex/edge labels affect substitution cost or common-subgraph eligibility."},
+    {"name": "time_budget_seconds", "type": "number_or_null", "required": false, "default": null, "description": "Optional wall-clock budget after which the best proven bound and incumbent solution are returned."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact", "allowed_values": ["exact", "approximate"], "description": "Whether a heuristic/approximate result with a disclosed bound is permitted."}
+  ],
+  "required_outputs": [
+    {"name": "task_result", "type": "object", "description": "distance (number) for graph_edit_distance, or subgraph (vertex/edge sets with the correspondence mapping) for maximum_common_subgraph."},
+    {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven within any stated time_budget_seconds."}
+  ],
+  "optional_outputs": [
+    {"name": "vertex_correspondence", "type": "map<vertex_id,vertex_id_or_null>", "description": "Mapping between the two graphs' vertices realizing the returned edit path or common subgraph; null marks an inserted/deleted vertex."},
+    {"name": "edit_path", "type": "array<object>", "description": "Ordered list of edit operations realizing graph_edit_distance."},
+    {"name": "lower_bound", "type": "number", "description": "Best proven bound when optimal=false due to a time budget."},
+    {"name": "approximation_bound", "type": "number", "description": "Certified gap for an approximate result."}
+  ],
+  "solution_semantics": {
+    "objective": "Minimize total edit_costs over a sequence of operations transforming graph A into graph B (graph_edit_distance), or maximize the vertex count of a common subgraph consistent with label_match_policy and induced (maximum_common_subgraph).",
+    "exactness": "Exact mode requires optimal=true; approximate/time-budgeted mode must disclose lower_bound or approximation_bound.",
+    "duplicate_policy": "Multiple optimal correspondences may exist; return one unless alternates are explicitly requested.",
+    "ordering": "edit_path, when returned, is ordered as an applicable operation sequence; vertex_correspondence is an unordered mapping."
+  },
+  "validation_rules": [
+    "Applying edit_path to graph A reproduces graph B exactly.",
+    "task_result.distance equals the sum of edit_costs over edit_path.",
+    "vertex_correspondence for maximum_common_subgraph is injective and every mapped edge exists in both graphs (and, if induced=true, non-edges correspond to non-edges).",
+    "Reported optimal=true matches independent verification against an exhaustive oracle on small fixtures."
+  ],
+  "edge_cases": [
+    "Identical graphs have graph_edit_distance zero and maximum_common_subgraph equal to the whole graph.",
+    "Disjoint label alphabets with label_match_policy=exact force every vertex substitution to use insertion+deletion cost.",
+    "One or both input graphs empty is a valid degenerate case with a well-defined distance or empty common subgraph.",
+    "A time_budget_seconds expiring before proof of optimality must still return a feasible incumbent with optimal=false."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["distance or subgraph-size agreement with exact oracle on small fixtures", "edit-path/correspondence feasibility", "optimality or gap validity"],
+    "performance": ["end-to-end time", "search-tree nodes explored", "peak memory", "time to first feasible incumbent"]
+  }
+}

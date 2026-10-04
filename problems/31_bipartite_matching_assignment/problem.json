@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "bipartite_matching_assignment",
+  "name": "Bipartite Matching and Linear Assignment",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Given a bipartite graph, find a matching (a set of edges with no shared endpoints) that is optimal under a declared objective: maximum cardinality, maximum total weight, or minimum total cost.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected_bipartite", "weights": "required_for_weighted_objectives", "timestamps": "ignored", "vertex_attributes": "required_side_label", "edge_attributes": "ignored"},
+    "normalization": ["Reject edges whose endpoints share the same declared side.", "Reject self-loops (impossible in valid bipartite input).", "Collapse parallel edges between the same pair by keeping the single best-objective weight."]
+  },
+  "problem_inputs": [
+    {"name": "objective", "type": "enum", "required": true, "allowed_values": ["maximum_cardinality", "maximum_weight", "minimum_cost"], "description": "Maximize the number of matched pairs, maximize total matched weight, or minimize total matched cost."},
+    {"name": "weight_mode", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "edge_weight"], "description": "maximum_cardinality always behaves as unweighted; maximum_weight and minimum_cost require edge_weight."},
+    {"name": "perfect_matching_required", "type": "boolean", "required": false, "default": false, "description": "Whether every vertex on the smaller side (or both sides, if equal size) must be covered by the returned matching; infeasibility must be reported explicitly rather than returning a partial match."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact", "allowed_values": ["exact", "approximate"], "description": "This problem is polynomial-time solvable; exact is the default, with approximate permitted only for very large instances with a disclosed bound."}
+  ],
+  "required_outputs": [
+    {"name": "matching_edges", "type": "array<edge_id>", "description": "Selected edges forming the matching; no two share a vertex."},
+    {"name": "matching_size", "type": "integer", "description": "Number of matched pairs, equal to |matching_edges|."},
+    {"name": "objective_value", "type": "number", "description": "Total weight/cost of matching_edges under the declared objective (equal to matching_size for maximum_cardinality)."},
+    {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven."}
+  ],
+  "optional_outputs": [
+    {"name": "unmatched_left_vertices", "type": "array<vertex_id>", "description": "Left-side vertices not covered by matching_edges."},
+    {"name": "unmatched_right_vertices", "type": "array<vertex_id>", "description": "Right-side vertices not covered by matching_edges."},
+    {"name": "feasible", "type": "boolean", "description": "Whether a perfect matching exists, when perfect_matching_required=true."},
+    {"name": "approximation_bound", "type": "number", "description": "Certified relative error bound for an approximate result."}
+  ],
+  "solution_semantics": {
+    "objective": "Select a matching optimal under the declared objective: maximize |matching_edges| for maximum_cardinality, maximize total weight for maximum_weight, or minimize total weight for minimum_cost.",
+    "exactness": "Exact mode requires optimal=true; this problem admits polynomial-time exact algorithms (augmenting paths, Hungarian algorithm), so approximate mode is only for extreme scale and must disclose approximation_bound.",
+    "duplicate_policy": "Each vertex appears in at most one entry of matching_edges.",
+    "ordering": "matching_edges is an unordered set."
+  },
+  "validation_rules": [
+    "matching_edges forms a valid matching (no two edges share an endpoint) in the normalized bipartite graph.",
+    "matching_size equals |matching_edges|.",
+    "objective_value recomputes exactly as the sum of matched edge weights (or equals matching_size for maximum_cardinality).",
+    "perfect_matching_required=true with feasible=true implies every vertex on the smaller (or both, if equal) side is covered; feasible=false must correspond to a provably infeasible instance."
+  ],
+  "edge_cases": [
+    "An edgeless graph has matching_size zero and empty matching_edges.",
+    "A graph admitting a perfect matching must return one when perfect_matching_required=true.",
+    "Maximum matching size is bounded above by the smaller side's vertex count.",
+    "Negative weights under minimum_cost are valid input and must not be clamped to zero."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["matching validity (no shared endpoints)", "optimality agreement with an exact oracle (e.g. Hopcroft-Karp or Hungarian algorithm) on small/medium fixtures", "objective-value recomputation", "feasibility correctness for perfect_matching_required"],
+    "performance": ["end-to-end time", "solver time", "peak memory", "augmenting paths or auction rounds performed"]
+  }
+}

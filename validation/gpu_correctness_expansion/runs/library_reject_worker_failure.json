@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "connected-components",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/reject_worker_failure.json",
+    "--connectivity-mode",
+    "strongly_connected",
+    "--worker-directory",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/fake"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.015937035903334618,
+  "exit_code": 3,
+  "log": "runs/library_reject_worker_failure.log",
+  "stdin_path": null,
+  "timeout": false
+}

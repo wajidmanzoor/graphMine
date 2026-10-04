@@ -1,0 +1,15 @@
+{
+  "command": [
+    "mpicc",
+    "-std=c99",
+    "-O2",
+    "/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/main.c",
+    "/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/utils.c",
+    "-c"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build",
+  "elapsed_seconds": 0.314624797552824,
+  "exit_code": 0,
+  "log": "builds/gst_vlsi_host.log",
+  "timeout": false
+}

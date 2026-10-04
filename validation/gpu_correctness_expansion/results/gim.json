@@ -1,0 +1,414 @@
+{
+  "backend": "gim",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/star_8.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.4148116484284401,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_star_8_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_8_0",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/star_8.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8159294109791517,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_star_8_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_8_1",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/star_8.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8659507855772972,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_star_8_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_8_2",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/chain_8.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.865913599729538,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_chain_8_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_8_0",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/chain_8.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.866069633513689,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_chain_8_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_8_1",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/chain_8.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8186684716492891,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_chain_8_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_8_2",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/two_stars_8.txt",
+        "2",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8661735821515322,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_two_stars_8_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_8_0",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        4,
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/two_stars_8.txt",
+        "2",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8155973181128502,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_two_stars_8_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_8_1",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        4,
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/two_stars_8.txt",
+        "2",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8656619898974895,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/gim_two_stars_8_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_8_2",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        4,
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/star_64.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8155946843326092,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_star_64_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_64_0",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/star_64.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8670612424612045,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_star_64_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_64_1",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/star_64.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.815725652500987,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_star_64_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_64_2",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/chain_64.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8664757274091244,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_chain_64_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_64_0",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/chain_64.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8158815577626228,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_chain_64_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_64_1",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/chain_64.txt",
+        "1",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8658731169998646,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_chain_64_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_64_2",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/two_stars_64.txt",
+        "2",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8654716927558184,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_two_stars_64_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_64_0",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0,
+        32
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/two_stars_64.txt",
+        "2",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8656666185706854,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_two_stars_64_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_64_1",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0,
+        32
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/two_stars_64.txt",
+        "2",
+        "0.2",
+        "1"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.8663242887705564,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/gim_two_stars_64_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_64_2",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0,
+        32
+      ],
+      "timeout": false
+    }
+  ],
+  "limitations": [
+    "Deterministic probability-one independent-cascade fixtures only. General probabilities, linear-threshold behavior, spread-estimator calibration and the requested failure probability are not certified."
+  ],
+  "passed": 18,
+  "seed": 20261004,
+  "status": "partial_pass",
+  "total": 18
+}

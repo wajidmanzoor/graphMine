@@ -1,0 +1,16 @@
+{
+  "paper_id": "2014_gpu_chordless_cycles",
+  "title": "A GPU-based parallel algorithm for enumerating all chordless cycles in graphs",
+  "year": 2014,
+  "venue": "arXiv preprint",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1410.4876",
+  "pdf_url": "https://arxiv.org/pdf/1410.4876",
+  "code_url": null,
+  "semantic_fit": "variant",
+  "gpu_scope": "GPU enumeration of all chordless cycles (a restricted subset of simple cycles) in a graph.",
+  "notes": "Chordless-cycle enumeration is a stricter variant than general hop-constrained simple-cycle enumeration; no public code repository was located.",
+  "problem_id": "hop_constrained_cycle_path_enumeration",
+  "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+  "research_cutoff": "2026-09-30"
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "max_flow_min_cut",
+  "name": "Maximum Flow and Minimum s-t Cut",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Given a directed capacitated graph and designated source and sink vertices, compute a maximum feasible flow from source to sink and a minimum-capacity edge set whose removal disconnects source from sink.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed", "weights": "required_nonnegative_as_capacity", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "optional"},
+    "normalization": ["Treat edge weight as capacity; reject negative capacity.", "Collapse parallel edges between the same ordered pair by summing capacity.", "Treat an undirected edge request as two opposite directed edges with equal capacity.", "Remove self-loops; they never contribute to an s-t flow or cut."]
+  },
+  "problem_inputs": [
+    {"name": "source", "type": "vertex_id", "required": true, "description": "Flow source vertex."},
+    {"name": "sink", "type": "vertex_id", "required": true, "constraints": "sink != source", "description": "Flow sink vertex."},
+    {"name": "capacity_mode", "type": "enum", "required": false, "default": "edge_weight", "allowed_values": ["edge_weight", "unit_capacity"], "description": "Use declared edge weights or treat every edge as unit capacity."},
+    {"name": "vertex_capacities", "type": "map<vertex_id,number>_or_null", "required": false, "default": null, "description": "Optional per-vertex capacity for vertex-connectivity-style cuts; null means edge-only capacities."},
+    {"name": "return_cut_side", "type": "boolean", "required": false, "default": true, "description": "Whether to return the source-side vertex partition induced by the minimum cut."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact", "allowed_values": ["exact", "approximate"], "description": "Whether an approximate max-flow value with a disclosed bound is permitted."}
+  ],
+  "required_outputs": [
+    {"name": "max_flow_value", "type": "number", "description": "Value of the maximum feasible source-to-sink flow."},
+    {"name": "min_cut_value", "type": "number", "description": "Total capacity of the minimum s-t cut; equals max_flow_value by the max-flow min-cut theorem."},
+    {"name": "min_cut_edges", "type": "array<edge_id>", "description": "Edges crossing from the source side to the sink side of a minimum cut."},
+    {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven."}
+  ],
+  "optional_outputs": [
+    {"name": "flow_assignment", "type": "map<edge_id,number>", "description": "Feasible flow value on each edge satisfying capacity and conservation constraints."},
+    {"name": "source_side_vertices", "type": "array<vertex_id>", "description": "Vertices reachable from source in the residual graph at optimality."},
+    {"name": "approximation_bound", "type": "number", "description": "Certified relative or additive gap for an approximate result."}
+  ],
+  "solution_semantics": {
+    "objective": "Maximize total flow leaving source subject to capacity and conservation constraints; the minimum cut is any minimum-capacity edge set separating source from sink.",
+    "exactness": "Exact mode requires optimal=true and max_flow_value == min_cut_value within tolerance.",
+    "duplicate_policy": "Multiple minimum cuts may exist; return one unless alternates are explicitly requested.",
+    "ordering": "Not applicable; outputs are a value, an edge set, and optionally a flow assignment."
+  },
+  "validation_rules": [
+    "flow_assignment, when returned, satisfies 0 <= flow <= capacity on every edge and conservation at every non-terminal vertex.",
+    "min_cut_edges all cross from the source side to the sink side and their capacity sum equals min_cut_value.",
+    "max_flow_value equals min_cut_value within numeric tolerance.",
+    "Removing min_cut_edges leaves no directed path from source to sink."
+  ],
+  "edge_cases": [
+    "No directed path exists from source to sink: max_flow_value is zero and min_cut_edges is empty.",
+    "Source and sink are the same vertex is rejected as invalid input.",
+    "Disconnected or zero-capacity edges do not affect optimality but may affect returned flow_assignment sparsity.",
+    "Multiple minimum cuts of equal value may exist; any one is acceptable unless the caller requests the source-side-maximal or sink-side-maximal canonical cut."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["flow value agreement with exact oracle", "capacity and conservation feasibility", "cut-value equals flow-value", "cut-edge separation check"],
+    "performance": ["end-to-end time", "solver time", "peak memory", "augmentations or relabel operations", "edges processed per second"]
+  }
+}

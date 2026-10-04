@@ -1,0 +1,49 @@
+{
+  "created_at": "2026-10-03T22:19:31.255124+00:00",
+  "run": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-business-v1",
+  "scope": "Completed local business-question routing adapter; generation and full-application comparisons remain required. No deployment.",
+  "completed_steps": 45,
+  "expected_steps": 45,
+  "data_counts": {
+    "train": 180,
+    "validation": 68
+  },
+  "evaluation_cases_excluded": 124,
+  "maximum_tokenized_length": 7333,
+  "mean_training_loss": 0.14274560898354846,
+  "validation_token_loss": 0.01499837078154087,
+  "loss_is_not_task_accuracy": true,
+  "adapter_sha256": "dd7017735094300c4a89f217cb094c0d8b9981d1c7d86182596a7a6f7ef5f4d6",
+  "adapter_bytes": 467047680,
+  "tensor_count": 992,
+  "tensor_shapes_sha256": "4dac4651ac4c8957c366c2f38081b688f84e65426077490539f6dd77d882ece2",
+  "nonfinite_tensors": [],
+  "nonzero_lora_B_tensors": 496,
+  "lora_B_tensor_count": 496,
+  "lora_B_tensors_differing_from_first_adapter": 496,
+  "first_adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+  "matched_training_configuration_fields": [
+    "base_model",
+    "base_revision",
+    "checkpoint_files",
+    "hyperparameters",
+    "max_sequence_length",
+    "packages",
+    "prompt_sha256",
+    "source_sha256"
+  ],
+  "training_export_and_source_contracts_revalidated": true,
+  "runtime_prompt_matches_training": true,
+  "independent_language_review": false,
+  "artifacts": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-business-v1/run.json": "72987c753a64af782a67f7e0a24677b8d0180119a475a5627616962d1a05adfd",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-business-v1/status.json": "8a933bb7d4ad4a17943a2f97e974a56c930316f041269b71c3a4eaa054ee88da",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-business-v1/metrics.jsonl": "876c205957d7e07184b8101ef94c7f8f02119491faa038ffb3c62ba887685739",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-business-v1/adapter/adapter_config.json": "2b2c3d954aad0cc80c4340da0edac3ad3b5996d1ef9b5663b530586af9ea8072",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-routing-data-v1/provenance.json": "ca1d059a7e1fbc2eb2603ffbcd2a1430e7f457b033b2abe7db0df78df546c963",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-curriculum-v1/manifest.json": "927249e4becbf0a758a241c507760eafaef37ddb031a02572ac6ae52f6934f2a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-curriculum-v1/audit.json": "eaa3c3e1c9c95bcaf3e495e01b2f4c56e972d01693e707097f0bb0d76aa61b8a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/verify-business-completion-v1.py": "97dbfa13e51786d36dac82fef471122b56a016a23f887c10867e88b1df760cd3"
+  },
+  "deployed": false
+}

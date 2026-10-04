@@ -1,0 +1,46 @@
+{
+  "backend": "gst_vlsi",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gst_vlsi",
+        "-o"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gst_vlsi/8",
+      "elapsed_seconds": 0.7655991036444902,
+      "exit_code": 0,
+      "expected": 7,
+      "log": "runs/gst_vlsi_8.log",
+      "name": "path_8",
+      "observed": 7,
+      "passed": true,
+      "solution_log": "datasets/gst_vlsi/8/debug.out",
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gst_vlsi/8/graph.txt",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gst_vlsi",
+        "-o"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gst_vlsi/64",
+      "elapsed_seconds": 0.6653836704790592,
+      "exit_code": 0,
+      "expected": 63,
+      "log": "runs/gst_vlsi_64.log",
+      "name": "path_64",
+      "observed": 63,
+      "passed": true,
+      "solution_log": "datasets/gst_vlsi/64/debug.out",
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gst_vlsi/64/graph.txt",
+      "timeout": false
+    }
+  ],
+  "limitations": [
+    "Only two singleton groups on a path; no general group coverage/approximation certificate validation. No explicit license detected."
+  ],
+  "passed": 2,
+  "seed": 20261004,
+  "status": "partial_pass",
+  "total": 2
+}

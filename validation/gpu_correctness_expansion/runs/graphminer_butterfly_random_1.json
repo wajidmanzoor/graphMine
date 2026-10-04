@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+    "run",
+    "graph-motifs",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_1.json",
+    "--motif",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+    "--backend",
+    "graphminer",
+    "--induced",
+    "--output",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_1.result.json"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.26452408358454704,
+  "exit_code": 0,
+  "log": "runs/graphminer_butterfly_random_1.log",
+  "timeout": false
+}

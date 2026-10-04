@@ -1,0 +1,8 @@
+Internal ctest changing into directory: /home/wajid/projects/graphDatabaseAgent/library/build
+Test project /home/wajid/projects/graphDatabaseAgent/library/build
+    Start 1: graphmine_validated_expansion_test
+1/1 Test #1: graphmine_validated_expansion_test ...   Passed    1.44 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   1.44 sec

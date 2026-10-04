@@ -1,0 +1,12 @@
+{
+  "command": [
+    "make",
+    "-j2",
+    "CFLAGS=-std=c++17 -lcurand -lm -lgsl -lgslcblas -arch=sm_89 -O2 --default-stream per-thread"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/vendor/kpar/kPAR/src",
+  "elapsed_seconds": 0.26827782951295376,
+  "exit_code": 2,
+  "log": "builds/kpar.log",
+  "timeout": false
+}

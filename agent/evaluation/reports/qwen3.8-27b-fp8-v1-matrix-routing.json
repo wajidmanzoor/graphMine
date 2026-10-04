@@ -1,0 +1,3567 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-01T17:12:18.703322+00:00",
+  "cases_sha256": "11b3bb847f13142cc24ad34e38f2608881c9f9cecc61d6b3e159af4560928640",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "routing_configuration": {
+    "reasoning_effort": "none",
+    "max_completion_tokens": 768,
+    "temperature": 0.0,
+    "seed": 0,
+    "concurrency": 6
+  },
+  "split": "v1_matrix_evaluation",
+  "passed": 117,
+  "total": 117,
+  "accuracy": 1.0,
+  "by_domain": {
+    "general": {
+      "passed": 13,
+      "total": 13
+    },
+    "fraud_detection": {
+      "passed": 13,
+      "total": 13
+    },
+    "bioinformatics": {
+      "passed": 13,
+      "total": 13
+    },
+    "cybersecurity": {
+      "passed": 13,
+      "total": 13
+    },
+    "social_networks": {
+      "passed": 13,
+      "total": 13
+    },
+    "recommendation_ecommerce": {
+      "passed": 13,
+      "total": 13
+    },
+    "knowledge_graphs": {
+      "passed": 13,
+      "total": 13
+    },
+    "communications_infrastructure": {
+      "passed": 13,
+      "total": 13
+    },
+    "transportation_mobility": {
+      "passed": 13,
+      "total": 13
+    }
+  },
+  "cases": [
+    {
+      "id": "v1-general-maximal-cliques",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate every inclusion-maximal fully connected group of vertices. This matches the formal definition of maximal clique enumeration, which is distinct from finding a single maximum clique. The problem has a validated backend."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate every inclusion-maximal fully connected group of vertices. This matches the formal definition of maximal clique enumeration, which is distinct from finding a single maximum clique. The problem has a validated backend."
+      },
+      "latency_seconds": 22.208,
+      "error": null
+    },
+    {
+      "id": "v1-general-maximum-clique",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for 'one largest fully connected set,' which maps directly to the Maximum Clique problem (finding a single largest clique) rather than Maximal Clique Enumeration (finding all inclusion-maximal cliques). The 'maximum-clique' operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for 'one largest fully connected set,' which maps directly to the Maximum Clique problem (finding a single largest clique) rather than Maximal Clique Enumeration (finding all inclusion-maximal cliques). The 'maximum-clique' operation is validated and available."
+      },
+      "latency_seconds": 26.221,
+      "error": null
+    },
+    {
+      "id": "v1-general-k-cliques",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to count fully connected groups of exactly four vertices, which maps directly to k-clique counting with k=4. This is a validated operation in the general graph analysis domain."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to count fully connected groups of exactly four vertices, which maps directly to k-clique counting with k=4. This is a validated operation in the general graph analysis domain."
+      },
+      "latency_seconds": 22.202,
+      "error": null
+    },
+    {
+      "id": "v1-general-quasi-cliques",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'near-complete groups' where members reach '80 percent of the others' maps directly to quasi-clique mining with a minimum internal-degree fraction of 0.8 and a minimum size of 5."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'near-complete groups' where members reach '80 percent of the others' maps directly to quasi-clique mining with a minimum internal-degree fraction of 0.8 and a minimum size of 5."
+      },
+      "latency_seconds": 26.222,
+      "error": null
+    },
+    {
+      "id": "v1-general-k-core",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute core numbers and identify vertices in the 5-core, which directly matches the k-core decomposition problem definition and intent signals."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute core numbers and identify vertices in the 5-core, which directly matches the k-core decomposition problem definition and intent signals."
+      },
+      "latency_seconds": 19.949,
+      "error": null
+    },
+    {
+      "id": "v1-general-maximal-bicliques",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate maximal bicliques in a bipartite graph with specific size constraints. This maps directly to the validated 'maximal_biclique_enumeration' problem and its 'maximal-bicliques' operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate maximal bicliques in a bipartite graph with specific size constraints. This maps directly to the validated 'maximal_biclique_enumeration' problem and its 'maximal-bicliques' operation."
+      },
+      "latency_seconds": 30.459,
+      "error": null
+    },
+    {
+      "id": "v1-general-triangle-counting",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count all triangles and include per-vertex participation. This maps directly to the Triangle Counting and Listing problem, which supports both global counts and per-vertex triangle participation metrics. The 'triangle-counting' operation is validated and available in the general domain."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count all triangles and include per-vertex participation. This maps directly to the Triangle Counting and Listing problem, which supports both global counts and per-vertex triangle participation metrics. The 'triangle-counting' operation is validated and available in the general domain."
+      },
+      "latency_seconds": 15.901,
+      "error": null
+    },
+    {
+      "id": "v1-general-dynamic-triangle-counting",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to apply edge updates and report inserted, deleted, and net triangle counts. This maps directly to the 'triangle changes after edge updates' intent signal for the triangle_counting_listing problem, which has a validated dynamic-triangle-counting operation."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to apply edge updates and report inserted, deleted, and net triangle counts. This maps directly to the 'triangle changes after edge updates' intent signal for the triangle_counting_listing problem, which has a validated dynamic-triangle-counting operation."
+      },
+      "latency_seconds": 17.607,
+      "error": null
+    },
+    {
+      "id": "v1-general-graph-motifs",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of an attached motif and include per-vertex participation. This maps directly to the 'graph_motif_counting' problem, which supports counting supplied small structural patterns (induced or non-induced) and is validated with the 'graph-motifs' operation."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of an attached motif and include per-vertex participation. This maps directly to the 'graph_motif_counting' problem, which supports counting supplied small structural patterns (induced or non-induced) and is validated with the 'graph-motifs' operation."
+      },
+      "latency_seconds": 19.833,
+      "error": null
+    },
+    {
+      "id": "v1-general-subgraph-isomorphism",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count and include label-respecting embeddings of a query graph, which directly matches the formal definition and intent signals for subgraph isomorphism and pattern matching."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count and include label-respecting embeddings of a query graph, which directly matches the formal definition and intent signals for subgraph isomorphism and pattern matching."
+      },
+      "latency_seconds": 9.631,
+      "error": null
+    },
+    {
+      "id": "v1-general-temporal-motif-mining",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered feed-forward triangle events within a 3600-second window. This matches the formal definition of temporal motif mining, which counts ordered edge patterns within bounded time windows. The 'feed-forward triangle' is a specific temporal motif, and the 3600-second constraint corresponds to the duration window parameter. The intent to return only the count is supported by the operation's counting capability."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered feed-forward triangle events within a 3600-second window. This matches the formal definition of temporal motif mining, which counts ordered edge patterns within bounded time windows. The 'feed-forward triangle' is a specific temporal motif, and the 3600-second constraint corresponds to the duration window parameter. The intent to return only the count is supported by the operation's counting capability."
+      },
+      "latency_seconds": 22.378,
+      "error": null
+    },
+    {
+      "id": "v1-general-community-detection",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition an undirected network into modularity communities and return their members. This maps directly to the 'community_detection' problem, which is defined as partitioning vertices into nonoverlapping communities to maximize a quality function (modularity). The 'community-detection' operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition an undirected network into modularity communities and return their members. This maps directly to the 'community_detection' problem, which is defined as partitioning vertices into nonoverlapping communities to maximize a quality function (modularity). The 'community-detection' operation is validated and available."
+      },
+      "latency_seconds": 15.418,
+      "error": null
+    },
+    {
+      "id": "v1-general-betweenness-centrality",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to rank vertices by betweenness centrality. This maps directly to the 'centrality_influential_node_mining' problem, which has a validated backend operation 'betweenness-centrality' available in the general domain."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to rank vertices by betweenness centrality. This maps directly to the 'centrality_influential_node_mining' problem, which has a validated backend operation 'betweenness-centrality' available in the general domain."
+      },
+      "latency_seconds": 20.644,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-maximal-cliques",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to list all complete groups that cannot be extended, which is the formal definition of maximal clique enumeration. This is distinct from finding a single maximum clique. The operation is validated and supported."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to list all complete groups that cannot be extended, which is the formal definition of maximal clique enumeration. This is distinct from finding a single maximum clique. The operation is validated and supported."
+      },
+      "latency_seconds": 16.558,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-maximum-clique",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The user explicitly requests the 'maximum clique' and 'globally largest complete group,' which maps directly to the formal problem of finding the largest clique, not enumerating all maximal cliques. A validated backend exists for this operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The user explicitly requests the 'maximum clique' and 'globally largest complete group,' which maps directly to the formal problem of finding the largest clique, not enumerating all maximal cliques. A validated backend exists for this operation."
+      },
+      "latency_seconds": 14.692,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-k-cliques",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the count of 4-cliques, which maps directly to the k-clique counting problem with k=4. This is distinct from maximal or maximum clique enumeration."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the count of 4-cliques, which maps directly to the k-clique counting problem with k=4. This is distinct from maximal or maximum clique enumeration."
+      },
+      "latency_seconds": 15.021,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-quasi-cliques",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine quasi-cliques with a minimum size and degree ratio, which directly matches the formal definition and intent signals for quasi-clique mining. A validated backend exists for this operation."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine quasi-cliques with a minimum size and degree ratio, which directly matches the formal definition and intent signals for quasi-clique mining. A validated backend exists for this operation."
+      },
+      "latency_seconds": 15.103,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-k-core",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-core decomposition with k=5. This maps directly to the validated k_core_decomposition problem and k-core operation. The intent to return members surviving at k=5 is a standard filtering of the core number output."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-core decomposition with k=5. This maps directly to the validated k_core_decomposition problem and k-core operation. The intent to return members surviving at k=5 is a standard filtering of the core number output."
+      },
+      "latency_seconds": 15.313,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-maximal-bicliques",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find all maximal complete bipartite groups, which maps directly to the formal problem of maximal biclique enumeration. The specified side sizes (2 left, 3 right) act as filtering constraints on the enumerated results rather than changing the core problem definition. A validated backend exists for this operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find all maximal complete bipartite groups, which maps directly to the formal problem of maximal biclique enumeration. The specified side sizes (2 left, 3 right) act as filtering constraints on the enumerated results rather than changing the core problem definition. A validated backend exists for this operation."
+      },
+      "latency_seconds": 23.116,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-triangle-counting",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure closed triples and per-vertex counts directly matches the formal definition of triangle counting and listing. The 'triangle-counting' operation is validated and supports the required per-vertex participation counts."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure closed triples and per-vertex counts directly matches the formal definition of triangle counting and listing. The 'triangle-counting' operation is validated and supports the required per-vertex participation counts."
+      },
+      "latency_seconds": 14.676,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-dynamic-triangle-counting",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to update a graph using an insertion/deletion file and compute the resulting triangle-count change. This maps directly to the formal problem of triangle counting with dynamic updates, which has a validated backend operation 'dynamic-triangle-counting'."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to update a graph using an insertion/deletion file and compute the resulting triangle-count change. This maps directly to the formal problem of triangle counting with dynamic updates, which has a validated backend operation 'dynamic-triangle-counting'."
+      },
+      "latency_seconds": 16.95,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-graph-motifs",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of a supplied motif and aggregate participation, which directly matches the formal definition and intent signals for Graph Motif Counting. The operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of a supplied motif and aggregate participation, which directly matches the formal definition and intent signals for Graph Motif Counting. The operation is validated and available."
+      },
+      "latency_seconds": 14.219,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-subgraph-isomorphism",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to match a query pattern against a network while preserving labels and listing every embedding directly corresponds to subgraph isomorphism. This problem is validated and supported by the subgraph-isomorphism operation."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to match a query pattern against a network while preserving labels and listing every embedding directly corresponds to subgraph isomorphism. This problem is validated and supported by the subgraph-isomorphism operation."
+      },
+      "latency_seconds": 16.573,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-temporal-motif-mining",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count temporal motif occurrences (A-to-B, B-to-C, A-to-C) within a one-hour window without listing instances. This maps directly to the validated 'temporal-motif-mining' operation, which counts time-ordered edge-event patterns within a bounded duration."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count temporal motif occurrences (A-to-B, B-to-C, A-to-C) within a one-hour window without listing instances. This maps directly to the validated 'temporal-motif-mining' operation, which counts time-ordered edge-event patterns within a bounded duration."
+      },
+      "latency_seconds": 17.577,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-community-detection",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for disjoint communities using modularity optimization, which directly matches the formal definition and intent signals for Disjoint Community Detection. The operation is validated and supported."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for disjoint communities using modularity optimization, which directly matches the formal definition and intent signals for Disjoint Community Detection. The operation is validated and supported."
+      },
+      "latency_seconds": 14.566,
+      "error": null
+    },
+    {
+      "id": "v1-fraud_detection-betweenness-centrality",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for a betweenness ranking to identify accounts on the most shortest paths. This maps directly to the validated betweenness-centrality operation under the centrality_influential_node_mining problem."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for a betweenness ranking to identify accounts on the most shortest paths. This maps directly to the validated betweenness-centrality operation under the centrality_influential_node_mining problem."
+      },
+      "latency_seconds": 15.813,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-maximal-cliques",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find every maximal clique, distinguishing it from the largest clique. This maps directly to the validated maximal_clique_enumeration problem and its corresponding operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find every maximal clique, distinguishing it from the largest clique. This maps directly to the validated maximal_clique_enumeration problem and its corresponding operation."
+      },
+      "latency_seconds": 13.054,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-maximum-clique",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the 'largest' group and excludes 'every maximal group', which maps directly to the Maximum Clique problem rather than Maximal Clique Enumeration."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the 'largest' group and excludes 'every maximal group', which maps directly to the Maximum Clique problem rather than Maximal Clique Enumeration."
+      },
+      "latency_seconds": 11.016,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-k-cliques",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure the number of complete four-member protein groups maps to counting 4-cliques. This is a fixed-k clique counting query, which is a validated operation in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure the number of complete four-member protein groups maps to counting 4-cliques. This is a fixed-k clique counting query, which is a validated operation in GraphMine."
+      },
+      "latency_seconds": 15.061,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-quasi-cliques",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for dense groups with a minimum internal-degree threshold maps directly to quasi-clique mining. The 'five-or-more' constraint is a size filter, while the 80% threshold defines the gamma parameter for the validated operation."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for dense groups with a minimum internal-degree threshold maps directly to quasi-clique mining. The 'five-or-more' constraint is a size filter, while the 80% threshold defines the gamma parameter for the validated operation."
+      },
+      "latency_seconds": 15.906,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-k-core",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for core numbers and the vertex members of the 5-core. This maps directly to the k-core decomposition problem, which is supported by the validated 'k-core' operation."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for core numbers and the vertex members of the 5-core. This maps directly to the k-core decomposition problem, which is supported by the validated 'k-core' operation."
+      },
+      "latency_seconds": 13.069,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-maximal-bicliques",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to list maximal bicliques in a bipartite graph, which directly matches the formal definition of maximal biclique enumeration. The '2-by-3-or-larger' constraint is a size filter on the output, not a change to the core problem definition, and the operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to list maximal bicliques in a bipartite graph, which directly matches the formal definition of maximal biclique enumeration. The '2-by-3-or-larger' constraint is a size filter on the output, not a change to the core problem definition, and the operation is validated and available."
+      },
+      "latency_seconds": 21.398,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-triangle-counting",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'three-way closed connections' and per-member counts maps directly to triangle counting and listing. The problem statement explicitly supports counting triples and per-vertex participation counts, which matches the user's intent."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'three-way closed connections' and per-member counts maps directly to triangle counting and listing. The problem statement explicitly supports counting triples and per-vertex participation counts, which matches the user's intent."
+      },
+      "latency_seconds": 16.541,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-dynamic-triangle-counting",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure gained and lost closed triples using a dynamic batch directly matches the intent signals for dynamic triangle counting. The problem is validated and supported by the 'dynamic-triangle-counting' operation."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure gained and lost closed triples using a dynamic batch directly matches the intent signals for dynamic triangle counting. The problem is validated and supported by the 'dynamic-triangle-counting' operation."
+      },
+      "latency_seconds": 16.59,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-graph-motifs",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced instances of an uploaded motif definition and report participating proteins. This maps directly to the formal problem of Graph Motif Counting, which supports counting supplied small structural patterns (induced or non-induced) and is validated in the bioinformatics domain."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced instances of an uploaded motif definition and report participating proteins. This maps directly to the formal problem of Graph Motif Counting, which supports counting supplied small structural patterns (induced or non-induced) and is validated in the bioinformatics domain."
+      },
+      "latency_seconds": 16.706,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-subgraph-isomorphism",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to find every embedding of a specific subgraph pattern in a protein network directly matches the formal definition of subgraph isomorphism. This problem is supported by a validated backend in the bioinformatics domain."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to find every embedding of a specific subgraph pattern in a protein network directly matches the formal definition of subgraph isomorphism. This problem is supported by a validated backend in the bioinformatics domain."
+      },
+      "latency_seconds": 18.485,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-temporal-motif-mining",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count ordered three-edge temporal motifs within a 3600-second span. This maps directly to the formal definition of Temporal Motif Mining, which counts ordered edge patterns within a bounded time window. The 'without materializing instances' constraint aligns with the counting objective of the validated operation."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count ordered three-edge temporal motifs within a 3600-second span. This maps directly to the formal definition of Temporal Motif Mining, which counts ordered edge patterns within a bounded time window. The 'without materializing instances' constraint aligns with the counting objective of the validated operation."
+      },
+      "latency_seconds": 22.124,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-community-detection",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition a protein interaction network into non-overlapping communities and list their vertices. This maps directly to the formal problem 'community_detection' (Disjoint Community Detection), which is supported by the validated 'community-detection' operation."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition a protein interaction network into non-overlapping communities and list their vertices. This maps directly to the formal problem 'community_detection' (Disjoint Community Detection), which is supported by the validated 'community-detection' operation."
+      },
+      "latency_seconds": 17.895,
+      "error": null
+    },
+    {
+      "id": "v1-bioinformatics-betweenness-centrality",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute betweenness scores and rank influential vertices. This maps directly to the validated 'betweenness-centrality' operation under the 'centrality_influential_node_mining' problem, which is supported in the bioinformatics domain."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute betweenness scores and rank influential vertices. This maps directly to the validated 'betweenness-centrality' operation under the 'centrality_influential_node_mining' problem, which is supported in the bioinformatics domain."
+      },
+      "latency_seconds": 20.089,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-maximal-cliques",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate every inclusion-maximal fully connected group, which directly matches the formal definition of Maximal Clique Enumeration. This is distinct from finding a single maximum clique or counting fixed-size k-cliques. The operation is validated and supported."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate every inclusion-maximal fully connected group, which directly matches the formal definition of Maximal Clique Enumeration. This is distinct from finding a single maximum clique or counting fixed-size k-cliques. The operation is validated and supported."
+      },
+      "latency_seconds": 18.595,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-maximum-clique",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for 'one largest fully connected set,' which maps directly to the Maximum Clique problem (finding a single largest clique) rather than Maximal Clique Enumeration (finding all inclusion-maximal cliques). The 'maximum-clique' operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for 'one largest fully connected set,' which maps directly to the Maximum Clique problem (finding a single largest clique) rather than Maximal Clique Enumeration (finding all inclusion-maximal cliques). The 'maximum-clique' operation is validated and available."
+      },
+      "latency_seconds": 17.17,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-k-cliques",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to count fully connected groups of exactly four hosts, which maps directly to counting 4-cliques. This is a fixed-k clique counting problem, supported by the validated k-cliques operation."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to count fully connected groups of exactly four hosts, which maps directly to counting 4-cliques. This is a fixed-k clique counting problem, supported by the validated k-cliques operation."
+      },
+      "latency_seconds": 16.275,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-quasi-cliques",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'near-complete groups' where members reach '80 percent' of others maps directly to quasi-clique mining with a minimum internal-degree fraction of 0.8 and a minimum size of 5."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'near-complete groups' where members reach '80 percent' of others maps directly to quasi-clique mining with a minimum internal-degree fraction of 0.8 and a minimum size of 5."
+      },
+      "latency_seconds": 15.621,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-k-core",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute core numbers and identify vertices in the 5-core, which directly matches the formal definition and intent signals for k-Core Decomposition. This problem has a validated backend available in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute core numbers and identify vertices in the 5-core, which directly matches the formal definition and intent signals for k-Core Decomposition. This problem has a validated backend available in GraphMine."
+      },
+      "latency_seconds": 13.569,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-maximal-bicliques",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate maximal bicliques in a bipartite graph with specific size constraints. This maps directly to the validated 'maximal_biclique_enumeration' problem and 'maximal-bicliques' operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate maximal bicliques in a bipartite graph with specific size constraints. This maps directly to the validated 'maximal_biclique_enumeration' problem and 'maximal-bicliques' operation."
+      },
+      "latency_seconds": 15.505,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-triangle-counting",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count all triangles and include per-vertex participation. This maps directly to the validated 'triangle_counting_listing' problem and the 'triangle-counting' operation, which supports both global counts and per-vertex metrics."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count all triangles and include per-vertex participation. This maps directly to the validated 'triangle_counting_listing' problem and the 'triangle-counting' operation, which supports both global counts and per-vertex metrics."
+      },
+      "latency_seconds": 15.181,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-dynamic-triangle-counting",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to apply edge updates and report inserted, deleted, and net triangle counts. This maps directly to the 'triangle changes after edge updates' intent signal for the validated dynamic-triangle-counting operation."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to apply edge updates and report inserted, deleted, and net triangle counts. This maps directly to the 'triangle changes after edge updates' intent signal for the validated dynamic-triangle-counting operation."
+      },
+      "latency_seconds": 15.138,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-graph-motifs",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of an attached motif, which directly matches the formal definition of Graph Motif Counting. The operation 'graph-motifs' is validated and supports this specific query type."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of an attached motif, which directly matches the formal definition of Graph Motif Counting. The operation 'graph-motifs' is validated and supports this specific query type."
+      },
+      "latency_seconds": 16.884,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-subgraph-isomorphism",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count and include label-respecting embeddings of a query graph. This maps directly to the formal problem of Subgraph Isomorphism and Pattern Matching, which is supported by the validated 'subgraph-isomorphism' operation."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count and include label-respecting embeddings of a query graph. This maps directly to the formal problem of Subgraph Isomorphism and Pattern Matching, which is supported by the validated 'subgraph-isomorphism' operation."
+      },
+      "latency_seconds": 17.218,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-temporal-motif-mining",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered feed-forward triangle events within a 3600-second window. This matches the formal definition of temporal motif mining, which counts ordered edge patterns within bounded time windows. The 'feed-forward triangle' is a standard temporal motif, and the 3600-second constraint maps directly to the duration window parameter. The operation is validated and supported."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered feed-forward triangle events within a 3600-second window. This matches the formal definition of temporal motif mining, which counts ordered edge patterns within bounded time windows. The 'feed-forward triangle' is a standard temporal motif, and the 3600-second constraint maps directly to the duration window parameter. The operation is validated and supported."
+      },
+      "latency_seconds": 21.749,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-community-detection",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition an undirected network into modularity communities and return members. This maps directly to the validated 'community_detection' problem and 'community-detection' operation, which supports disjoint community partitioning via modularity optimization."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition an undirected network into modularity communities and return members. This maps directly to the validated 'community_detection' problem and 'community-detection' operation, which supports disjoint community partitioning via modularity optimization."
+      },
+      "latency_seconds": 15.189,
+      "error": null
+    },
+    {
+      "id": "v1-cybersecurity-betweenness-centrality",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to rank hosts by betweenness centrality. This maps directly to the 'centrality_influential_node_mining' problem, which has a validated backend operation 'betweenness-centrality' available in the cybersecurity domain."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to rank hosts by betweenness centrality. This maps directly to the 'centrality_influential_node_mining' problem, which has a validated backend operation 'betweenness-centrality' available in the cybersecurity domain."
+      },
+      "latency_seconds": 19.263,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-maximal-cliques",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to list all complete groups that cannot be extended, which is the formal definition of maximal clique enumeration. This is distinct from finding a single maximum clique. The operation 'maximal-cliques' is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to list all complete groups that cannot be extended, which is the formal definition of maximal clique enumeration. This is distinct from finding a single maximum clique. The operation 'maximal-cliques' is validated and available."
+      },
+      "latency_seconds": 17.22,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-maximum-clique",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The user explicitly requests the 'maximum clique' and 'globally largest complete group,' which maps directly to the formal problem of finding a single largest clique, not enumerating all maximal cliques."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The user explicitly requests the 'maximum clique' and 'globally largest complete group,' which maps directly to the formal problem of finding a single largest clique, not enumerating all maximal cliques."
+      },
+      "latency_seconds": 14.819,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-k-cliques",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the count of 4-cliques, which maps directly to the k-clique counting problem with k=4. This is a validated operation in the social networks domain."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the count of 4-cliques, which maps directly to the k-clique counting problem with k=4. This is a validated operation in the social networks domain."
+      },
+      "latency_seconds": 15.034,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-quasi-cliques",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine quasi-cliques with a minimum size of 5 and a degree ratio of 0.8. This maps directly to the validated `quasi_clique_mining` problem and the `quasi-cliques` operation, which supports these specific parameters for finding dense groups that are not complete cliques."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine quasi-cliques with a minimum size of 5 and a degree ratio of 0.8. This maps directly to the validated `quasi_clique_mining` problem and the `quasi-cliques` operation, which supports these specific parameters for finding dense groups that are not complete cliques."
+      },
+      "latency_seconds": 20.846,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-k-core",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-core decomposition with k=5. This maps directly to the validated k_core_decomposition problem and the k-core operation. The intent to return members surviving at k=5 is a standard filtering of the core number output."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-core decomposition with k=5. This maps directly to the validated k_core_decomposition problem and the k-core operation. The intent to return members surviving at k=5 is a standard filtering of the core number output."
+      },
+      "latency_seconds": 13.497,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-maximal-bicliques",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for maximal complete bipartite groups (bicliques) with specific side sizes. This maps directly to the validated 'maximal_biclique_enumeration' problem and 'maximal-bicliques' operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for maximal complete bipartite groups (bicliques) with specific side sizes. This maps directly to the validated 'maximal_biclique_enumeration' problem and 'maximal-bicliques' operation."
+      },
+      "latency_seconds": 20.356,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-triangle-counting",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure closed triples and per-vertex counts directly matches the formal definition of triangle counting and listing. The 'triangle-counting' operation is validated and supports the requested per-vertex participation counts."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure closed triples and per-vertex counts directly matches the formal definition of triangle counting and listing. The 'triangle-counting' operation is validated and supports the requested per-vertex participation counts."
+      },
+      "latency_seconds": 10.081,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-dynamic-triangle-counting",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to update a social network using an insertion/deletion file and compute the resulting triangle-count change. This maps directly to the formal problem of triangle counting and listing, specifically the dynamic variant that handles edge updates. The 'dynamic-triangle-counting' operation is validated and available in the library support for this problem."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to update a social network using an insertion/deletion file and compute the resulting triangle-count change. This maps directly to the formal problem of triangle counting and listing, specifically the dynamic variant that handles edge updates. The 'dynamic-triangle-counting' operation is validated and available in the library support for this problem."
+      },
+      "latency_seconds": 19.785,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-graph-motifs",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of a supplied motif and aggregate participation, which directly matches the formal definition and intent signals for Graph Motif Counting. The operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of a supplied motif and aggregate participation, which directly matches the formal definition and intent signals for Graph Motif Counting. The operation is validated and available."
+      },
+      "latency_seconds": 18.598,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-subgraph-isomorphism",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to match a query pattern against a social network while preserving labels and listing every embedding directly corresponds to subgraph isomorphism. This problem is validated and supported by the subgraph-isomorphism operation."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to match a query pattern against a social network while preserving labels and listing every embedding directly corresponds to subgraph isomorphism. This problem is validated and supported by the subgraph-isomorphism operation."
+      },
+      "latency_seconds": 18.705,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-temporal-motif-mining",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count temporal motif occurrences (A-to-B, B-to-C, A-to-C) within a one-hour window without listing instances. This maps directly to the formal problem of Temporal Motif Mining, which counts ordered edge-event patterns within a bounded time window. The operation 'temporal-motif-mining' is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count temporal motif occurrences (A-to-B, B-to-C, A-to-C) within a one-hour window without listing instances. This maps directly to the formal problem of Temporal Motif Mining, which counts ordered edge-event patterns within a bounded time window. The operation 'temporal-motif-mining' is validated and available."
+      },
+      "latency_seconds": 25.012,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-community-detection",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for disjoint communities using modularity optimization, which directly matches the formal definition and intent signals for Disjoint Community Detection. The 'community-detection' operation is validated and available in the social networks domain."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for disjoint communities using modularity optimization, which directly matches the formal definition and intent signals for Disjoint Community Detection. The 'community-detection' operation is validated and available in the social networks domain."
+      },
+      "latency_seconds": 15.796,
+      "error": null
+    },
+    {
+      "id": "v1-social_networks-betweenness-centrality",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for a betweenness ranking of people, which maps directly to the validated betweenness-centrality operation under centrality_influential_node_mining."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for a betweenness ranking of people, which maps directly to the validated betweenness-centrality operation under centrality_influential_node_mining."
+      },
+      "latency_seconds": 13.296,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-maximal-cliques",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find every maximal clique, distinguishing it from the largest clique. This maps directly to the validated 'maximal_clique_enumeration' problem and its 'maximal-cliques' operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find every maximal clique, distinguishing it from the largest clique. This maps directly to the validated 'maximal_clique_enumeration' problem and its 'maximal-cliques' operation."
+      },
+      "latency_seconds": 15.063,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-maximum-clique",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the 'largest' group and excludes 'every maximal group', which maps directly to the Maximum Clique problem rather than Maximal Clique Enumeration."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the 'largest' group and excludes 'every maximal group', which maps directly to the Maximum Clique problem rather than Maximal Clique Enumeration."
+      },
+      "latency_seconds": 12.682,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-k-cliques",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure the number of complete four-member groups maps directly to counting 4-cliques. This is a fixed-k clique counting query, which is a validated operation in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure the number of complete four-member groups maps directly to counting 4-cliques. This is a fixed-k clique counting query, which is a validated operation in GraphMine."
+      },
+      "latency_seconds": 14.923,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-quasi-cliques",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for dense groups with a minimum internal-degree threshold directly matches the formal definition of quasi-clique mining. The 80% threshold corresponds to the gamma parameter, and the size constraint is a standard filter for this operation."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for dense groups with a minimum internal-degree threshold directly matches the formal definition of quasi-clique mining. The 80% threshold corresponds to the gamma parameter, and the size constraint is a standard filter for this operation."
+      },
+      "latency_seconds": 17.0,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-k-core",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for core numbers and the vertex members of the 5-core. This maps directly to the k-core decomposition problem, which is supported by the validated 'k-core' operation."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for core numbers and the vertex members of the 5-core. This maps directly to the k-core decomposition problem, which is supported by the validated 'k-core' operation."
+      },
+      "latency_seconds": 13.399,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-maximal-bicliques",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to list maximal bicliques in a bipartite graph, which directly matches the formal definition of Maximal Biclique Enumeration. The specified size constraint (2-by-3-or-larger) is a post-filtering criterion on the enumerated results, not a change to the core problem definition. The operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to list maximal bicliques in a bipartite graph, which directly matches the formal definition of Maximal Biclique Enumeration. The specified size constraint (2-by-3-or-larger) is a post-filtering criterion on the enumerated results, not a change to the core problem definition. The operation is validated and available."
+      },
+      "latency_seconds": 20.01,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-triangle-counting",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'three-way closed connections' and per-member counts maps directly to triangle counting and listing. The 'triangle-counting' operation is validated and supports per-vertex participation counts."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'three-way closed connections' and per-member counts maps directly to triangle counting and listing. The 'triangle-counting' operation is validated and supports per-vertex participation counts."
+      },
+      "latency_seconds": 12.956,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-dynamic-triangle-counting",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure gained and lost closed triples using a dynamic batch directly matches the intent signals for dynamic triangle counting. The 'dynamic-triangle-counting' operation is validated and specifically designed for tracking triangle changes after edge updates."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure gained and lost closed triples using a dynamic batch directly matches the intent signals for dynamic triangle counting. The 'dynamic-triangle-counting' operation is validated and specifically designed for tracking triangle changes after edge updates."
+      },
+      "latency_seconds": 15.189,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-graph-motifs",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced instances of an uploaded motif definition. This maps directly to the formal problem of Graph Motif Counting, which supports counting supplied small structural patterns. The domain context of e-commerce customers aligns with the vertex entities in the graph."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced instances of an uploaded motif definition. This maps directly to the formal problem of Graph Motif Counting, which supports counting supplied small structural patterns. The domain context of e-commerce customers aligns with the vertex entities in the graph."
+      },
+      "latency_seconds": 19.416,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-subgraph-isomorphism",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to find every embedding of an attached subgraph pattern matches the formal definition of Subgraph Isomorphism and Pattern Matching. This problem is supported by a validated backend in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to find every embedding of an attached subgraph pattern matches the formal definition of Subgraph Isomorphism and Pattern Matching. This problem is supported by a validated backend in GraphMine."
+      },
+      "latency_seconds": 13.661,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-temporal-motif-mining",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count ordered three-edge temporal motifs within a 3600-second span. This maps directly to the formal definition of Temporal Motif Mining, which counts ordered edge patterns within a bounded time window. The 'without materializing instances' constraint aligns with the counting objective of the validated operation."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count ordered three-edge temporal motifs within a 3600-second span. This maps directly to the formal definition of Temporal Motif Mining, which counts ordered edge patterns within a bounded time window. The 'without materializing instances' constraint aligns with the counting objective of the validated operation."
+      },
+      "latency_seconds": 19.643,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-community-detection",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition a customer-product network into non-overlapping communities and list their vertices. This maps directly to the formal problem 'Disjoint Community Detection' and the validated 'community-detection' operation."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition a customer-product network into non-overlapping communities and list their vertices. This maps directly to the formal problem 'Disjoint Community Detection' and the validated 'community-detection' operation."
+      },
+      "latency_seconds": 15.238,
+      "error": null
+    },
+    {
+      "id": "v1-recommendation_ecommerce-betweenness-centrality",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute betweenness scores and rank influential vertices. This maps directly to the validated 'betweenness-centrality' operation under the 'centrality_influential_node_mining' problem, which is supported in the recommendation domain."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute betweenness scores and rank influential vertices. This maps directly to the validated 'betweenness-centrality' operation under the 'centrality_influential_node_mining' problem, which is supported in the recommendation domain."
+      },
+      "latency_seconds": 17.752,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-maximal-cliques",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate every inclusion-maximal fully connected group, which directly matches the formal definition of Maximal Clique Enumeration. This is distinct from finding a single maximum clique. The problem has a validated backend available in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate every inclusion-maximal fully connected group, which directly matches the formal definition of Maximal Clique Enumeration. This is distinct from finding a single maximum clique. The problem has a validated backend available in GraphMine."
+      },
+      "latency_seconds": 17.478,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-maximum-clique",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for 'one largest fully connected set,' which maps directly to the Maximum Clique problem (finding a single largest clique) rather than Maximal Clique Enumeration (finding all inclusion-maximal cliques). The 'maximum-clique' operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks for 'one largest fully connected set,' which maps directly to the Maximum Clique problem (finding a single largest clique) rather than Maximal Clique Enumeration (finding all inclusion-maximal cliques). The 'maximum-clique' operation is validated and available."
+      },
+      "latency_seconds": 18.374,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-k-cliques",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to count fully connected groups of exactly four entities, which maps directly to k-clique counting with k=4. The k_clique_counting_enumeration problem is validated and supported by the k-cliques operation."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to count fully connected groups of exactly four entities, which maps directly to k-clique counting with k=4. The k_clique_counting_enumeration problem is validated and supported by the k-cliques operation."
+      },
+      "latency_seconds": 17.13,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-quasi-cliques",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'near-complete groups' where members reach '80 percent' of others maps directly to quasi-clique mining with a minimum internal-degree fraction (gamma) of 0.8 and a minimum size of 5."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'near-complete groups' where members reach '80 percent' of others maps directly to quasi-clique mining with a minimum internal-degree fraction (gamma) of 0.8 and a minimum size of 5."
+      },
+      "latency_seconds": 19.703,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-k-core",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute core numbers and identify entities in the 5-core, which directly matches the formal definition and intent signals for k-Core Decomposition. This problem has a validated backend available in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute core numbers and identify entities in the 5-core, which directly matches the formal definition and intent signals for k-Core Decomposition. This problem has a validated backend available in GraphMine."
+      },
+      "latency_seconds": 16.217,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-maximal-bicliques",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate maximal bicliques in a bipartite graph with specific size constraints. This maps directly to the validated 'maximal_biclique_enumeration' problem and 'maximal-bicliques' operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to enumerate maximal bicliques in a bipartite graph with specific size constraints. This maps directly to the validated 'maximal_biclique_enumeration' problem and 'maximal-bicliques' operation."
+      },
+      "latency_seconds": 22.881,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-triangle-counting",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count all triangles and include per-vertex participation. This maps directly to the Triangle Counting and Listing problem, which supports both global counts and per-vertex triangle participation metrics. The 'triangle-counting' operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count all triangles and include per-vertex participation. This maps directly to the Triangle Counting and Listing problem, which supports both global counts and per-vertex triangle participation metrics. The 'triangle-counting' operation is validated and available."
+      },
+      "latency_seconds": 22.702,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-dynamic-triangle-counting",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to apply edge updates and report inserted, deleted, and net triangle counts. This maps directly to the 'triangle changes after edge updates' intent signal for the validated dynamic-triangle-counting operation."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to apply edge updates and report inserted, deleted, and net triangle counts. This maps directly to the 'triangle changes after edge updates' intent signal for the validated dynamic-triangle-counting operation."
+      },
+      "latency_seconds": 21.058,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-graph-motifs",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of an attached motif, which directly matches the formal definition of Graph Motif Counting. The 'per-vertex participation' requirement is a standard optional output for this operation, distinguishing it from graphlet counting (which is unsupported) or subgraph isomorphism (which focuses on mappings rather than aggregate counts)."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of an attached motif, which directly matches the formal definition of Graph Motif Counting. The 'per-vertex participation' requirement is a standard optional output for this operation, distinguishing it from graphlet counting (which is unsupported) or subgraph isomorphism (which focuses on mappings rather than aggregate counts)."
+      },
+      "latency_seconds": 21.812,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-subgraph-isomorphism",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count and include label-respecting embeddings of a query graph, which directly matches the formal definition of subgraph isomorphism and pattern matching. The 'subgraph-isomorphism' operation is validated and available in the knowledge graphs domain."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count and include label-respecting embeddings of a query graph, which directly matches the formal definition of subgraph isomorphism and pattern matching. The 'subgraph-isomorphism' operation is validated and available in the knowledge graphs domain."
+      },
+      "latency_seconds": 18.995,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-temporal-motif-mining",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered feed-forward triangle events within a 3600-second window. This matches the formal definition of temporal motif mining, which counts ordered edge patterns within bounded time windows. The 'feed-forward triangle' is a specific temporal motif, and the 3600-second constraint maps directly to the duration window parameter. The intent to return only the count is supported by the operation's counting capability."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered feed-forward triangle events within a 3600-second window. This matches the formal definition of temporal motif mining, which counts ordered edge patterns within bounded time windows. The 'feed-forward triangle' is a specific temporal motif, and the 3600-second constraint maps directly to the duration window parameter. The intent to return only the count is supported by the operation's counting capability."
+      },
+      "latency_seconds": 23.79,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-community-detection",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition an undirected graph into modularity communities. This maps directly to the 'community_detection' problem, which is validated and supported by the 'community-detection' operation in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition an undirected graph into modularity communities. This maps directly to the 'community_detection' problem, which is validated and supported by the 'community-detection' operation in GraphMine."
+      },
+      "latency_seconds": 13.182,
+      "error": null
+    },
+    {
+      "id": "v1-knowledge_graphs-betweenness-centrality",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to rank entities by betweenness centrality. This maps directly to the 'centrality_influential_node_mining' problem, which has a validated backend operation 'betweenness-centrality' available in the knowledge graphs domain."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to rank entities by betweenness centrality. This maps directly to the 'centrality_influential_node_mining' problem, which has a validated backend operation 'betweenness-centrality' available in the knowledge graphs domain."
+      },
+      "latency_seconds": 15.743,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-maximal-cliques",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to list all complete groups that cannot be extended, which is the formal definition of maximal clique enumeration. The domain context maps 'routers' to vertices and 'mutually connected' to clique edges. This problem has a validated backend."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request asks to list all complete groups that cannot be extended, which is the formal definition of maximal clique enumeration. The domain context maps 'routers' to vertices and 'mutually connected' to clique edges. This problem has a validated backend."
+      },
+      "latency_seconds": 15.561,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-maximum-clique",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The user explicitly requests the 'maximum clique' and 'globally largest complete group,' which maps directly to the formal Maximum Clique problem. This is distinct from maximal clique enumeration. The context confirms a validated backend exists for this operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The user explicitly requests the 'maximum clique' and 'globally largest complete group,' which maps directly to the formal Maximum Clique problem. This is distinct from maximal clique enumeration. The context confirms a validated backend exists for this operation."
+      },
+      "latency_seconds": 15.167,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-k-cliques",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count 4-cliques, which maps directly to the k-clique counting problem with k=4. The 'k-cliques' operation is validated and available in the library."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count 4-cliques, which maps directly to the k-clique counting problem with k=4. The 'k-cliques' operation is validated and available in the library."
+      },
+      "latency_seconds": 15.18,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-quasi-cliques",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine quasi-cliques with a minimum size and degree ratio, which directly matches the formal definition and intent signals for quasi-clique mining. A validated backend exists for this operation."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine quasi-cliques with a minimum size and degree ratio, which directly matches the formal definition and intent signals for quasi-clique mining. A validated backend exists for this operation."
+      },
+      "latency_seconds": 15.096,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-k-core",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-core decomposition with k=5. This maps directly to the validated k_core_decomposition problem and k-core operation. The intent to return surviving members is a standard output of this decomposition."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-core decomposition with k=5. This maps directly to the validated k_core_decomposition problem and k-core operation. The intent to return surviving members is a standard output of this decomposition."
+      },
+      "latency_seconds": 15.06,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-maximal-bicliques",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find all maximal complete bipartite groups, which maps directly to the formal problem of maximal biclique enumeration. The specified size constraints (2 left, 3 right) are filtering criteria for the results, not a change to the underlying formal problem definition. A validated backend exists for this operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find all maximal complete bipartite groups, which maps directly to the formal problem of maximal biclique enumeration. The specified size constraints (2 left, 3 right) are filtering criteria for the results, not a change to the underlying formal problem definition. A validated backend exists for this operation."
+      },
+      "latency_seconds": 19.398,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-triangle-counting",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure closed triples and per-vertex counts directly matches the formal definition of triangle counting and listing. The selected operation is validated and supports the requested per-vertex participation metrics."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure closed triples and per-vertex counts directly matches the formal definition of triangle counting and listing. The selected operation is validated and supports the requested per-vertex participation metrics."
+      },
+      "latency_seconds": 14.335,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-dynamic-triangle-counting",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to update a topology using an insertion/deletion file and compute the resulting triangle-count change. This maps directly to the formal problem of triangle counting with dynamic updates, which is supported by the validated 'dynamic-triangle-counting' operation."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to update a topology using an insertion/deletion file and compute the resulting triangle-count change. This maps directly to the formal problem of triangle counting with dynamic updates, which is supported by the validated 'dynamic-triangle-counting' operation."
+      },
+      "latency_seconds": 18.632,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-graph-motifs",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of a supplied motif, which maps directly to the validated Graph Motif Counting problem. The operation 'graph-motifs' is available and supports the required structural pattern matching."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced occurrences of a supplied motif, which maps directly to the validated Graph Motif Counting problem. The operation 'graph-motifs' is available and supports the required structural pattern matching."
+      },
+      "latency_seconds": 16.02,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-subgraph-isomorphism",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to match a query pattern against a topology while preserving labels and listing every embedding directly maps to the formal definition of Subgraph Isomorphism. The 'subgraph-isomorphism' operation is validated and available in the communications infrastructure domain."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to match a query pattern against a topology while preserving labels and listing every embedding directly maps to the formal definition of Subgraph Isomorphism. The 'subgraph-isomorphism' operation is validated and available in the communications infrastructure domain."
+      },
+      "latency_seconds": 16.766,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-temporal-motif-mining",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered edge-event patterns (A-to-B, B-to-C, A-to-C) within a bounded one-hour window. This matches the formal definition of Temporal Motif Mining, which counts occurrences of ordered edge patterns within a specified duration. The user specified counting only, not listing instances, which aligns with the standard counting output of this operation."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count time-ordered edge-event patterns (A-to-B, B-to-C, A-to-C) within a bounded one-hour window. This matches the formal definition of Temporal Motif Mining, which counts occurrences of ordered edge patterns within a specified duration. The user specified counting only, not listing instances, which aligns with the standard counting output of this operation."
+      },
+      "latency_seconds": 21.387,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-community-detection",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for disjoint communities using modularity optimization, which directly matches the formal definition and intent signals for Disjoint Community Detection. The operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for disjoint communities using modularity optimization, which directly matches the formal definition and intent signals for Disjoint Community Detection. The operation is validated and available."
+      },
+      "latency_seconds": 12.804,
+      "error": null
+    },
+    {
+      "id": "v1-communications_infrastructure-betweenness-centrality",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for a betweenness ranking to identify routers on the most shortest paths. This maps directly to the validated betweenness-centrality operation under the centrality_influential_node_mining problem."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for a betweenness ranking to identify routers on the most shortest paths. This maps directly to the validated betweenness-centrality operation under the centrality_influential_node_mining problem."
+      },
+      "latency_seconds": 15.494,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-maximal-cliques",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find every maximal clique, distinguishing it from the largest clique. This maps directly to the validated maximal_clique_enumeration problem and its maximal-cliques operation."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_clique_enumeration",
+        "operation_id": "maximal-cliques",
+        "supported": true,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to find every maximal clique, distinguishing it from the largest clique. This maps directly to the validated maximal_clique_enumeration problem and its maximal-cliques operation."
+      },
+      "latency_seconds": 17.696,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-maximum-clique",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the 'largest' group and excludes 'every maximal group', which maps directly to the Maximum Clique problem rather than Maximal Clique Enumeration."
+      },
+      "raw_observed": {
+        "problem_id": "maximum_clique",
+        "operation_id": "maximum-clique",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the 'largest' group and excludes 'every maximal group', which maps directly to the Maximum Clique problem rather than Maximal Clique Enumeration."
+      },
+      "latency_seconds": 14.228,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-k-cliques",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure the number of complete four-member station groups maps directly to counting 4-cliques. This is a fixed-k clique counting query, which is a validated operation in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "k_clique_counting_enumeration",
+        "operation_id": "k-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure the number of complete four-member station groups maps directly to counting 4-cliques. This is a fixed-k clique counting query, which is a validated operation in GraphMine."
+      },
+      "latency_seconds": 17.977,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-quasi-cliques",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for dense groups with a minimum internal-degree threshold directly matches the formal definition of quasi-clique mining. The 80% threshold corresponds to the gamma parameter, and the size constraint is a standard filter for this operation."
+      },
+      "raw_observed": {
+        "problem_id": "quasi_clique_mining",
+        "operation_id": "quasi-cliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for dense groups with a minimum internal-degree threshold directly matches the formal definition of quasi-clique mining. The 80% threshold corresponds to the gamma parameter, and the size constraint is a standard filter for this operation."
+      },
+      "latency_seconds": 20.088,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-k-core",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for core numbers and the vertex members of the 5-core. This maps directly to the validated k-core decomposition operation, which computes per-vertex core numbers and supports extracting the specific k-core vertex set."
+      },
+      "raw_observed": {
+        "problem_id": "k_core_decomposition",
+        "operation_id": "k-core",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for core numbers and the vertex members of the 5-core. This maps directly to the validated k-core decomposition operation, which computes per-vertex core numbers and supports extracting the specific k-core vertex set."
+      },
+      "latency_seconds": 18.38,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-maximal-bicliques",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to list maximal bicliques in a bipartite graph, which directly matches the formal definition of Maximal Biclique Enumeration. The '2-by-3-or-larger' constraint is a size filter on the output, not a change to the core problem definition. The operation is validated and available."
+      },
+      "raw_observed": {
+        "problem_id": "maximal_biclique_enumeration",
+        "operation_id": "maximal-bicliques",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to list maximal bicliques in a bipartite graph, which directly matches the formal definition of Maximal Biclique Enumeration. The '2-by-3-or-larger' constraint is a size filter on the output, not a change to the core problem definition. The operation is validated and available."
+      },
+      "latency_seconds": 24.449,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-triangle-counting",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'three-way closed connections' and per-member counts maps directly to triangle counting and listing. The problem statement explicitly supports counting triples and per-vertex participation counts, which matches the user's intent."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request for 'three-way closed connections' and per-member counts maps directly to triangle counting and listing. The problem statement explicitly supports counting triples and per-vertex participation counts, which matches the user's intent."
+      },
+      "latency_seconds": 16.52,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-dynamic-triangle-counting",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure gained and lost closed triples using a dynamic batch directly maps to dynamic triangle counting. Closed triples are triangles, and the dynamic batch implies edge updates requiring delta tracking."
+      },
+      "raw_observed": {
+        "problem_id": "triangle_counting_listing",
+        "operation_id": "dynamic-triangle-counting",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to measure gained and lost closed triples using a dynamic batch directly maps to dynamic triangle counting. Closed triples are triangles, and the dynamic batch implies edge updates requiring delta tracking."
+      },
+      "latency_seconds": 15.067,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-graph-motifs",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced instances of an uploaded motif definition. This maps directly to the validated graph_motif_counting problem and the graph-motifs operation. The domain context (transportation) aligns with the problem's relevance, and the specific request for participating stations is a standard output for motif enumeration."
+      },
+      "raw_observed": {
+        "problem_id": "graph_motif_counting",
+        "operation_id": "graph-motifs",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced instances of an uploaded motif definition. This maps directly to the validated graph_motif_counting problem and the graph-motifs operation. The domain context (transportation) aligns with the problem's relevance, and the specific request for participating stations is a standard output for motif enumeration."
+      },
+      "latency_seconds": 16.067,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-subgraph-isomorphism",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to find every embedding of an attached subgraph pattern matches the formal definition of Subgraph Isomorphism and Pattern Matching. The 'subgraph-isomorphism' operation is validated and available in GraphMine."
+      },
+      "raw_observed": {
+        "problem_id": "subgraph_isomorphism",
+        "operation_id": "subgraph-isomorphism",
+        "supported": true,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to find every embedding of an attached subgraph pattern matches the formal definition of Subgraph Isomorphism and Pattern Matching. The 'subgraph-isomorphism' operation is validated and available in GraphMine."
+      },
+      "latency_seconds": 11.544,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-temporal-motif-mining",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count ordered three-edge temporal motifs within a 3600-second span. This maps directly to the formal definition of Temporal Motif Mining, which counts ordered edge patterns within a bounded time window. The 'without materializing instances' constraint aligns with the counting objective of the validated operation."
+      },
+      "raw_observed": {
+        "problem_id": "temporal_motif_mining",
+        "operation_id": "temporal-motif-mining",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count ordered three-edge temporal motifs within a 3600-second span. This maps directly to the formal definition of Temporal Motif Mining, which counts ordered edge patterns within a bounded time window. The 'without materializing instances' constraint aligns with the counting objective of the validated operation."
+      },
+      "latency_seconds": 10.771,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-community-detection",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition a transport network into non-overlapping communities and list their vertices. This maps directly to the formal problem 'Disjoint Community Detection' (community_detection), which is validated and supported by the 'community-detection' operation in the transportation_mobility domain."
+      },
+      "raw_observed": {
+        "problem_id": "community_detection",
+        "operation_id": "community-detection",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to partition a transport network into non-overlapping communities and list their vertices. This maps directly to the formal problem 'Disjoint Community Detection' (community_detection), which is validated and supported by the 'community-detection' operation in the transportation_mobility domain."
+      },
+      "latency_seconds": 8.234,
+      "error": null
+    },
+    {
+      "id": "v1-transportation_mobility-betweenness-centrality",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true
+      },
+      "observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute betweenness scores and rank influential vertices. This maps directly to the validated 'betweenness-centrality' operation under the 'centrality_influential_node_mining' problem, which is supported in the transportation domain."
+      },
+      "raw_observed": {
+        "problem_id": "centrality_influential_node_mining",
+        "operation_id": "betweenness-centrality",
+        "supported": true,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to compute betweenness scores and rank influential vertices. This maps directly to the validated 'betweenness-centrality' operation under the 'centrality_influential_node_mining' problem, which is supported in the transportation domain."
+      },
+      "latency_seconds": 8.482,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gim",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gim/chain_8.txt",
+    "1",
+    "0.2",
+    "1"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.865913599729538,
+  "exit_code": 0,
+  "log": "runs/gim_chain_8_0.log",
+  "timeout": false
+}

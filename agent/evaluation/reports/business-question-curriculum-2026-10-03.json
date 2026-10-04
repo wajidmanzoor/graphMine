@@ -1,0 +1,175 @@
+{
+  "created_at": "2026-10-03T21:27:35.937702+00:00",
+  "user_requirement": "Train on practical application and business questions, without explicitly describing the underlying GPU programs.",
+  "curriculum_counts": {
+    "train": 180,
+    "validation": 68,
+    "test": 124
+  },
+  "authored_synthetic_questions": true,
+  "independent_language_review": false,
+  "exact_question_overlap_between_splits": 0,
+  "source_graph_family_separation": true,
+  "omitted_source_examples": 48,
+  "broad_goal_cases": 24,
+  "training_domains": {
+    "social_networks": 39,
+    "bioinformatics": 39,
+    "fraud_detection": 45,
+    "communications_infrastructure": 45,
+    "recommendation_ecommerce": 4,
+    "cybersecurity": 8
+  },
+  "samples": [
+    {
+      "domain": "bioinformatics",
+      "behavior": "execute",
+      "id": "business-random-01-q00",
+      "question": "For follow-up assay batches, show every set of at least three proteins with a recorded physical interaction between any two members. Give the full sets rather than smaller sets inside them, and name the proteins. These are assay leads, not confirmed functional complexes.",
+      "target_clarification": []
+    },
+    {
+      "domain": "bioinformatics",
+      "behavior": "clarify",
+      "id": "business-random-01-q06",
+      "question": "Which proteins should we test first in our next experiment?",
+      "target_clarification": [
+        "Are you looking for mutually interacting assay candidates or proteins that connect different interaction groups? These records alone cannot predict experimental success."
+      ]
+    },
+    {
+      "domain": "communications_infrastructure",
+      "behavior": "execute",
+      "id": "business-random-03-q00",
+      "question": "For local service pods, list every set of at least three devices where every device can connect directly to all the others. Keep full pods rather than smaller sets inside them, and show the device names.",
+      "target_clarification": []
+    },
+    {
+      "domain": "communications_infrastructure",
+      "behavior": "clarify",
+      "id": "business-random-03-q06",
+      "question": "Which devices should we prioritize for upgrades?",
+      "target_clarification": [
+        "Is the goal to find transit bottlenecks, plan directly connected test groups, or organize maintenance responsibilities?"
+      ]
+    },
+    {
+      "domain": "communications_infrastructure",
+      "behavior": "unsupported",
+      "id": "business-random-03-q07",
+      "question": "For cost-aware network planning, rank every device by how often it would carry communication between other devices if we always chose connections with the lowest total recorded cost. Add up the costs along a journey; using the fewest hops would answer a different question.",
+      "target_clarification": []
+    },
+    {
+      "domain": "cybersecurity",
+      "behavior": "execute",
+      "id": "business-events_forward-00-q00",
+      "question": "For an incident review, find occasions when one machine contacted a second, the second then contacted a third, and the first then contacted that same third machine, all within 20 seconds. The machines must be different. Show their names and the event records in time order; this sequence alone does not prove an attack.",
+      "target_clarification": []
+    },
+    {
+      "domain": "cybersecurity",
+      "behavior": "unsupported",
+      "id": "business-events_forward-00-q01",
+      "question": "For incident review, count occasions when a connection passes from one machine to a second, then a third, then a fourth, within 20 seconds from the first contact to the last. All four machines must be different. Show the machines and event records too.",
+      "target_clarification": []
+    },
+    {
+      "domain": "fraud_detection",
+      "behavior": "execute",
+      "id": "business-random-02-q00",
+      "question": "For an investigator's review queue, show every circle of at least three accounts where each account has exchanged payments with all the others. Keep the full circles rather than smaller circles inside them, and list the account names. A circle alone is not evidence of wrongdoing.",
+      "target_clarification": []
+    },
+    {
+      "domain": "fraud_detection",
+      "behavior": "clarify",
+      "id": "business-random-02-q06",
+      "question": "Which accounts should our fraud team investigate first?",
+      "target_clarification": [
+        "Are you looking for mutually connected payment circles, possible intermediaries between accounts, or another pattern? Connections alone cannot establish fraud."
+      ]
+    },
+    {
+      "domain": "fraud_detection",
+      "behavior": "unsupported",
+      "id": "business-random-02-q07",
+      "question": "For a payment-intermediary cost study, rank all accounts by how often they would connect other accounts when a chain is chosen for the lowest total recorded cost. Add the cost of each payment relationship along the chain; don't choose chains just by the number of transfers. This is a scenario calculation, not evidence of actual fund movement.",
+      "target_clarification": []
+    },
+    {
+      "domain": "recommendation_ecommerce",
+      "behavior": "execute",
+      "id": "business-retail_random-00-q00",
+      "question": "For a bundle campaign, show customer groups of at least two people who all bought the same two or more products. I want every complete customer-and-product set, without breaking it into smaller sets when another customer or shared product can be included. List customers and products separately.",
+      "target_clarification": []
+    },
+    {
+      "domain": "social_networks",
+      "behavior": "execute",
+      "id": "business-random-00-q00",
+      "question": "Help me staff projects with ready-made teams. Show every team of at least three coworkers who have all worked with one another. Leave out a team if it is entirely included in another qualifying team, and give me the members' names.",
+      "target_clarification": []
+    },
+    {
+      "domain": "social_networks",
+      "behavior": "clarify",
+      "id": "business-random-00-q06",
+      "question": "We need to improve collaboration. Which coworkers should I focus on first?",
+      "target_clarification": [
+        "Are you trying to assemble people who have worked together, find people who connect different teams, or something else?"
+      ]
+    }
+  ],
+  "matched_training_fields": [
+    "base_model",
+    "base_revision",
+    "checkpoint_files",
+    "hyperparameters",
+    "max_sequence_length",
+    "packages",
+    "prompt_sha256",
+    "source_sha256"
+  ],
+  "training_run": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-business-v1",
+  "training_state_at_report": {
+    "phase": "training",
+    "training_started": true,
+    "global_step": 6,
+    "pid": 4166078,
+    "gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+    "gpu_name": "NVIDIA RTX 6000 Ada Generation",
+    "gpu_total_bytes": 50866356224,
+    "started_at": "2026-10-03T21:19:29.274737+00:00",
+    "config_sha256": "72987c753a64af782a67f7e0a24677b8d0180119a475a5627616962d1a05adfd",
+    "deployed": false,
+    "updated_at": "2026-10-03T21:27:00.727976+00:00",
+    "trainable_parameters": 116727808,
+    "all_parameters": 27012726272,
+    "planned_steps": 45,
+    "epoch": 0.13333333333333333,
+    "peak_gpu_bytes": 28429835264,
+    "last_metrics": {
+      "loss": 0.6128296256065369,
+      "grad_norm": 1.1342124938964844,
+      "learning_rate": 0.0001,
+      "epoch": 0.13333333333333333
+    },
+    "latest_checkpoint": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-business-v1/checkpoints/checkpoint-2"
+  },
+  "expected_optimizer_steps": 45,
+  "artifacts": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-curriculum-v1/manifest.json": "927249e4becbf0a758a241c507760eafaef37ddb031a02572ac6ae52f6934f2a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-curriculum-v1/audit.json": "eaa3c3e1c9c95bcaf3e495e01b2f4c56e972d01693e707097f0bb0d76aa61b8a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-routing-data-v1/provenance.json": "ca1d059a7e1fbc2eb2603ffbcd2a1430e7f457b033b2abe7db0df78df546c963",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-business-v1/run.json": "72987c753a64af782a67f7e0a24677b8d0180119a475a5627616962d1a05adfd",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-curriculum-tests-v1.xml": "15e0df2ba6e20b1f9728e84b3db5f109a61c2f9d6c1700ffbb5deaacc50599a0"
+  },
+  "remaining": [
+    "Complete training and verify saved weights.",
+    "Compare against the same NF4 base, the first adapter and serving reference on practical requests.",
+    "Test complete business conversations, including clarification and filter changes.",
+    "Choose the candidate before consuming the reserved real source."
+  ],
+  "deployment_changed": false
+}

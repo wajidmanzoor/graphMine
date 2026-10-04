@@ -1,0 +1,18 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/ecl_scc.cu",
+    "-I",
+    "/home/wajid/projects/graphDatabaseAgent/problems/35_connected_components/papers/2023_eclscc/code/source",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/ecl_scc"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 1.1719696894288063,
+  "exit_code": 0,
+  "log": "builds/ecl_scc.log",
+  "timeout": false
+}

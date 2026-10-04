@@ -1,0 +1,16 @@
+{
+  "command": [
+    "cmake",
+    "-S",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/consumer",
+    "-B",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/consumer/build",
+    "-DCMAKE_PREFIX_PATH=/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/cpu"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.2147910576313734,
+  "exit_code": 0,
+  "log": "builds/consumer_configure.log",
+  "stdin_path": null,
+  "timeout": false
+}

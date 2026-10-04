@@ -1,0 +1,16 @@
+{
+  "paper_id": "2017_gpugraphlayout",
+  "title": "Exploiting GPUs for Fast Force-Directed Visualization of Large-Scale Networks",
+  "year": 2017,
+  "venue": "46th International Conference on Parallel Processing (ICPP 2017)",
+  "doi": "10.1109/ICPP.2017.56",
+  "publication_url": "https://ieeexplore.ieee.org/document/8025312/",
+  "pdf_url": "https://liacs.leidenuniv.nl/~takesfw/pdf/network-visualization-gpu-icpp2018.pdf",
+  "code_url": "https://github.com/govertb/GPUGraphLayout",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU parallelization of the ForceAtlas2 force-directed layout algorithm with CUDA-specific memory coalescing and load balancing; 40x-123x speedup over CPU implementations.",
+  "notes": "Confirmed genuine repository (govertb/GPUGraphLayout) matching this exact paper and authors; the author's own PDF filename says icpp2018 despite the paper appearing in the ICPP 2017 proceedings.",
+  "problem_id": "graph_layout_force_directed",
+  "problem_dir": "36_graph_layout_force_directed",
+  "research_cutoff": "2026-09-30"
+}

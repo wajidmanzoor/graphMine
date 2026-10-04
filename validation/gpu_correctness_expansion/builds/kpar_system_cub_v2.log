@@ -1,0 +1,49 @@
+algo/../model/RWIndex.h(18): error: namespace "std" has no member "uniform_real_distribution"
+  inline int do_random_walk(int start, const Graph& graph, std::uniform_real_distribution<> &dist,
+                                                                ^
+
+algo/../model/RWIndex.h(18): error: expected a ")"
+  inline int do_random_walk(int start, const Graph& graph, std::uniform_real_distribution<> &dist,
+                                                                                         ^
+
+algo/../model/RWIndex.h(29): error: identifier "rand_gen" is undefined
+     k = floor(dist(rand_gen) * graph.g[cur].size());
+                    ^
+
+algo/../model/RWIndex.h(29): error: identifier "dist" is undefined
+     k = floor(dist(rand_gen) * graph.g[cur].size());
+               ^
+
+algo/../model/RWIndex.h(35): error: identifier "rand_gen" is undefined
+    if (dist(rand_gen) < config.alpha) {
+             ^
+
+algo/../model/RWIndex.h(35): error: identifier "dist" is undefined
+    if (dist(rand_gen) < config.alpha) {
+        ^
+
+algo/../model/RWIndex.h(134): error: namespace "std" has no member "random_device"
+    std::random_device rd;
+         ^
+
+algo/../model/RWIndex.h(135): error: namespace "std" has no member "mt19937"
+    std::mt19937 rand_gen(rd());
+         ^
+
+algo/../model/RWIndex.h(136): error: namespace "std" has no member "uniform_real_distribution"
+    std::uniform_real_distribution<> dist(0.0, 1.0);
+         ^
+
+algo/../model/RWIndex.h(136): error: expected an expression
+    std::uniform_real_distribution<> dist(0.0, 1.0);
+                                   ^
+
+algo/../model/RWIndex.h(142): error: identifier "dist" is undefined
+      IndexType destination = do_random_walk(source, graph, dist, rand_gen);
+                                                            ^
+
+algo/../model/RWIndex.h(142): error: too many arguments in function call
+      IndexType destination = do_random_walk(source, graph, dist, rand_gen);
+                                                                  ^
+
+12 errors detected in the compilation of "main.cu".

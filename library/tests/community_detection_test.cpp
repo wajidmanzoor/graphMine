@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstdint>
 #include <iostream>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -56,13 +57,26 @@ void check_backend(graphmine::CommunityDetectionBackend backend,
 
 }  // namespace
 
-int main() {
-  check_backend(graphmine::CommunityDetectionBackend::gleiden, true);
-  check_backend(graphmine::CommunityDetectionBackend::parallel_louvain,
-                false);
-  check_backend(graphmine::CommunityDetectionBackend::parallel_leiden,
-                false);
-  check_backend(graphmine::CommunityDetectionBackend::parallel_leiden_plus,
-                false);
+int main(int argc, char** argv) {
+  if (argc != 2) {
+    std::cerr << "usage: graphmine_community_detection_test BACKEND\n";
+    return 2;
+  }
+  const std::string backend = argv[1];
+  if (backend == "gleiden") {
+    check_backend(graphmine::CommunityDetectionBackend::gleiden, true);
+  } else if (backend == "parallel-louvain") {
+    check_backend(graphmine::CommunityDetectionBackend::parallel_louvain,
+                  false);
+  } else if (backend == "parallel-leiden") {
+    check_backend(graphmine::CommunityDetectionBackend::parallel_leiden,
+                  false);
+  } else if (backend == "parallel-leiden-plus") {
+    check_backend(graphmine::CommunityDetectionBackend::parallel_leiden_plus,
+                  false);
+  } else {
+    std::cerr << "unknown backend: " << backend << '\n';
+    return 2;
+  }
   return 0;
 }

@@ -1,0 +1,20 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/ecl_flow.cu",
+    "-I",
+    "/home/wajid/projects/graphDatabaseAgent/problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/code/lib",
+    "-I",
+    "/home/wajid/projects/graphDatabaseAgent/problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/code/src",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/ecl_flow"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 2.5274776872247458,
+  "exit_code": 0,
+  "log": "builds/ecl_flow.log",
+  "timeout": false
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "group_steiner_tree",
+  "name": "Group Steiner Tree",
+  "category": "dense_structure_mining",
+  "problem_statement": "Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "required_nonnegative", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges by keeping the minimum nonnegative weight.", "Reject negative edge weights."]
+  },
+  "problem_inputs": [
+    {"name": "groups", "type": "array<array<vertex_id>>", "required": true, "constraints": "at least one group; every group nonempty; groups may overlap and may share vertices with each other", "description": "Each group must contribute at least one vertex to the returned tree."},
+    {"name": "required_vertices", "type": "array<vertex_id>_or_null", "required": false, "default": null, "description": "Optional vertices (e.g. single-terminal requirements) that must appear in the tree regardless of group membership; equivalent to singleton groups."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact", "allowed_values": ["exact", "approximate"], "description": "Whether a certified-approximation result (e.g. a 2-approximation) with a disclosed ratio is permitted instead of an exact minimum."}
+  ],
+  "required_outputs": [
+    {"name": "tree_edges", "type": "array<edge_id>", "description": "Edges forming the returned connected subtree."},
+    {"name": "tree_weight", "type": "number", "description": "Sum of weights of tree_edges."},
+    {"name": "selected_vertices", "type": "array<vertex_id>", "description": "Vertices spanned by tree_edges, including at least one representative per group."},
+    {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven."}
+  ],
+  "optional_outputs": [
+    {"name": "group_representatives", "type": "map<integer,vertex_id>", "description": "The specific vertex chosen to satisfy each group index, when a group has multiple qualifying vertices in the tree."},
+    {"name": "approximation_bound", "type": "number", "description": "Certified worst-case ratio to optimal for an approximate result."}
+  ],
+  "solution_semantics": {
+    "objective": "Minimize tree_weight over connected subtrees of the normalized graph that contain at least one vertex from every group in groups and every vertex in required_vertices.",
+    "exactness": "Exact mode requires optimal=true; approximate mode must disclose approximation_bound.",
+    "duplicate_policy": "Multiple minimum-weight trees may exist; return one unless alternates are explicitly requested.",
+    "ordering": "tree_edges and selected_vertices are unordered sets."
+  },
+  "validation_rules": [
+    "tree_edges forms a single connected acyclic subgraph (a tree) in the normalized graph.",
+    "Every group in groups has at least one vertex in selected_vertices.",
+    "Every vertex in required_vertices is in selected_vertices.",
+    "tree_weight equals the sum of tree_edges weights.",
+    "Reported optimal=true matches independent verification against an exhaustive oracle on small fixtures."
+  ],
+  "edge_cases": [
+    "A single group containing the whole vertex set reduces to the cheapest single vertex, with an empty tree_edges and tree_weight zero.",
+    "Groups that already share a common vertex may be satisfied by a single-vertex tree.",
+    "Disconnected graphs where some group is entirely unreachable from another group make the instance infeasible; this must be reported rather than silently returning a partial tree.",
+    "Overlapping groups may be satisfied by the same vertex without double-selecting it."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["tree-weight agreement with exact oracle on small/medium fixtures", "connectivity and acyclicity check", "group-coverage completeness"],
+    "performance": ["end-to-end time", "search time", "peak memory", "groups processed per second"]
+  }
+}

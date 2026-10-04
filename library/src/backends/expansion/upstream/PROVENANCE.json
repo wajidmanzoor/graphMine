@@ -1,0 +1,85 @@
+{
+  "ecl_scc": {
+    "metadata": "problems/35_connected_components/papers/2023_eclscc/metadata.json",
+    "code": {
+      "source_url": "https://github.com/burtscher/ECL-SCC",
+      "status": "cloned",
+      "local_path": "code",
+      "commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+      "license_file": "code/LICENSE",
+      "license_note": null,
+      "error": null
+    },
+    "files": {
+      "LICENSE": "f4eb698030500c6af7c9bb55a741691608b341e2cc1b4caa16892ddac8d4a82b",
+      "source/ECLgraph.h": "493172c79c8c70ca8f5c1a776beb01084e51536d385b56c2a6087bec81a39afc",
+      "source/ECL-SCC_10.cu": "6666bec4e4874354912348035b3048a0916e5dde5ef8c85febc15258652872ae"
+    }
+  },
+  "ecl_flow": {
+    "metadata": "problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/metadata.json",
+    "code": {
+      "source_url": "https://github.com/burtscher/ECL-MaxFlow",
+      "status": "cloned",
+      "local_path": "code",
+      "commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+      "license_file": "code/LICENSE",
+      "license_note": null,
+      "error": null
+    },
+    "files": {
+      "LICENSE": "37518e1ddf51f7bfc835437dcd5bc490816b2a099ef866bc104b94a5a05d7c0b",
+      "src/main.cu": "75d7a18be80bc34cc9e074668309529a9be284e58573902e7dd13ec12437115b",
+      "src/maxflow.cu": "9d2634a5d10bdc901f2eeb208608c2c66cccacd573fd923203766e7fffa2e61a",
+      "src/maxflow.h": "9fc60aabfed3bf8f27535c8aaaae2406d93464ed53b85868182662210bc55c25",
+      "lib/ECLgraph.h": "77edc26d5c02e0f7637fab9536a246bd6988fef1ce3462e245bba37f5f61571a"
+    }
+  },
+  "hungarian": {
+    "metadata": "problems/31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json",
+    "code": {
+      "source_url": "https://github.com/paclopes/HungarianGPU",
+      "status": "cloned",
+      "local_path": "code",
+      "commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+      "license_file": "code/LICENSE.txt",
+      "license_note": null,
+      "error": null
+    },
+    "files": {
+      "HungarianCUDA.cu": "189e4ae9b3b43bc8ac4498a66a06c3a53eeb23c2bf99b199b309d03d65654264",
+      "LICENSE.txt": "bc923af3112dc1a190240b3394ba014e387a60de413b3a2bac8596a6fef9b04c"
+    }
+  },
+  "gdlog": {
+    "metadata": "problems/33_transitive_closure_reachability/papers/2024_gdlog/metadata.json",
+    "code": {
+      "source_url": "https://github.com/harp-lab/gdlog",
+      "status": "cloned",
+      "local_path": "code",
+      "commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+      "license_file": "code/LICENSE",
+      "license_note": null,
+      "error": null
+    },
+    "files": {
+      "LICENSE": "c2794a9c58d1f671c98ba4eda8f6d569def5805ca2df55e843c2b6c8149af447",
+      "test/tc.cu": "12a756a918971b26249954695165b024bb731df8750a46544d2da03c5e2e3c63",
+      "src/copy.cu": "da9b1f2ced047084b4416b4ee8f52b7ae7e573fce9ea9eb6484e8b5e68f05bc5",
+      "src/lie.cu": "3ae941175ce69c691807fa72f915aeaef40895c002361b18d2c509087b49fb39",
+      "src/acopy.cu": "b0d368ab99b96a3afe49368b384fa24c28fa2bde66b0185fbc3f858916a59ad4",
+      "src/join.cu": "f042edbf6873d5aa28976a8fb52d7de5c14ec824d766d2db5358dd65bcc58962",
+      "src/print.cu": "8d973aa3011de7f1d6f48891c925144ecd2f2b64bb0f64bf1823a8d2845162f8",
+      "src/tuple.cu": "3274bce4244a894c2eb31961f0a004268129e87f9f6366f56ee2859fdcc3e931",
+      "src/relation.cu": "dccf6d46b0077a3911a3bd02c58d68b7078360f5a012f8ed3d4df1899333a633",
+      "include/timer.cuh": "5d0aa8efa0b0fffad23f8ed72e0e77a87c20ec628005526bf161561320c6810c",
+      "include/lie.cuh": "a7f7deaed8fe265c90c22186c0677a2edea4660d9a82c4f4436347a08cb78cd1",
+      "include/dynamic_dispatch.h": "cdc2a778782e3990024aba84a1cc8d73fe667f7f4c793cf6ba35d371430ec34b",
+      "include/exception.cuh": "3d53378c86767b2284dec02c62505675bb7fd5a340a772210f9d052855cdf2e8",
+      "include/relation.cuh": "2e6c40b7c5b675ccc84fadd7537fd73452ca9e4fa85e97d8afc4420e0b27fb2c",
+      "include/relational_algebra.cuh": "cc6ef907d3cd05a517a914798b6b8ecc2c34f919300537aae028751fbf655f08",
+      "include/print.cuh": "c892fce9d1cdb5a1e302b2a015a46df592e6cf46954ab45dfb86b4c6274b3fde",
+      "include/tuple.cuh": "48fd743aae8545ba2381e96ef07c8ff7c51c8c9b38ac383415b4626e95aeab11"
+    }
+  }
+}

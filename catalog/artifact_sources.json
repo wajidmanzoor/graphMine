@@ -40,7 +40,7 @@
     {
       "problem_id": "graph_motif_counting",
       "paper_id": "2022_g2miner",
-      "title": "G²Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework",
+      "title": "G\u00b2Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework",
       "year": 2022,
       "venue": "USENIX OSDI 2022",
       "publication_url": "https://www.usenix.org/conference/osdi22/presentation/chen",
@@ -148,7 +148,7 @@
     {
       "problem_id": "maximal_clique_enumeration",
       "paper_id": "2024_g2_aimd",
-      "title": "G²-AIMD: Efficient GPU Acceleration for Maximal Clique Enumeration",
+      "title": "G\u00b2-AIMD: Efficient GPU Acceleration for Maximal Clique Enumeration",
       "year": 2024,
       "venue": "IEEE ICDE 2024",
       "publication_url": "https://doi.org/10.1109/ICDE60146.2024.00245",
@@ -288,6 +288,76 @@
       "code_commit": "7da15bf9aded217c8bff9fdc4c7b52a6b1e25947",
       "license_file": null,
       "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution."
+    },
+    {
+      "problem_id": "max_flow_min_cut",
+      "paper_id": "2025_ecl_maxflow",
+      "title": "An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs",
+      "year": 2025,
+      "venue": "IPCCC 2025",
+      "publication_url": "https://userweb.cs.txstate.edu/~mb92/papers/ipccc25a.pdf",
+      "code_url": "https://github.com/burtscher/ECL-MaxFlow",
+      "code_commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+      "license_file": "library/src/backends/expansion/upstream/ecl_flow/LICENSE",
+      "license_note": null,
+      "metadata_path": "problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/metadata.json",
+      "vendored_code_root": "library/src/backends/expansion/upstream/ecl_flow"
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "paper_id": "2022_g2miner_reuse",
+      "title": "G2Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework",
+      "year": 2022,
+      "venue": "USENIX OSDI 2022",
+      "publication_url": "https://www.usenix.org/conference/osdi22/presentation/chen",
+      "code_url": "https://github.com/chenxuhao/GraphMiner",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "license_file": "problems/11_graph_motif_counting/papers/2022_g2miner/code/LICENSE",
+      "license_note": null,
+      "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_g2miner_reuse/metadata.json",
+      "vendored_code_root": "problems/11_graph_motif_counting/papers/2022_g2miner/code"
+    },
+    {
+      "problem_id": "bipartite_matching_assignment",
+      "paper_id": "2019_hungariangpu",
+      "title": "Fast block distributed CUDA implementation of the Hungarian algorithm",
+      "year": 2019,
+      "venue": "Journal of Parallel and Distributed Computing",
+      "publication_url": "https://github.com/paclopes/HungarianGPU",
+      "code_url": "https://github.com/paclopes/HungarianGPU",
+      "code_commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+      "license_file": "library/src/backends/expansion/upstream/hungarian/LICENSE.txt",
+      "license_note": null,
+      "metadata_path": "problems/31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json",
+      "vendored_code_root": "library/src/backends/expansion/upstream/hungarian"
+    },
+    {
+      "problem_id": "transitive_closure_reachability",
+      "paper_id": "2024_gdlog",
+      "title": "Optimizing Datalog for the GPU",
+      "year": 2024,
+      "venue": "ACM PPoPP 2025",
+      "publication_url": "https://doi.org/10.1145/3669940.3707274",
+      "code_url": "https://github.com/harp-lab/gdlog",
+      "code_commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+      "license_file": "library/src/backends/expansion/upstream/gdlog/LICENSE",
+      "license_note": null,
+      "metadata_path": "problems/33_transitive_closure_reachability/papers/2024_gdlog/metadata.json",
+      "vendored_code_root": "library/src/backends/expansion/upstream/gdlog"
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2023_eclscc",
+      "title": "A GPU Algorithm for Detecting Strongly Connected Components",
+      "year": 2023,
+      "venue": "ACM ICS 2023",
+      "publication_url": "https://doi.org/10.1145/3581784.3607071",
+      "code_url": "https://github.com/burtscher/ECL-SCC",
+      "code_commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+      "license_file": "library/src/backends/expansion/upstream/ecl_scc/LICENSE",
+      "license_note": null,
+      "metadata_path": "problems/35_connected_components/papers/2023_eclscc/metadata.json",
+      "vendored_code_root": "library/src/backends/expansion/upstream/ecl_scc"
     }
   ]
 }

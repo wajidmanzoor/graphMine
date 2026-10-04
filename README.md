@@ -1,21 +1,26 @@
 # GraphMine
 
-GraphMine is a C++17/CUDA library interface for graph-mining implementations
+GraphMine 1.0.0 is a C++17/CUDA library interface for graph-mining implementations
 that passed the project’s GPU correctness validation. It provides one canonical
 graph model, typed problem APIs, runtime backend selection, and a build-once
 JSON command-line runner.
 
-- **20** complete graph-problem contracts for problem identification
-- **12** problems with validated library support
-- **13** runnable library operations
-- **26** selectable validated backends
+- **37** complete graph-problem contracts for problem identification
+- **17** problems with validated library support
+- **18** runnable library operations
+- **31** registered backend choices (existing agent correctness exclusions still apply)
 - Canonical JSON graph input and structured JSON results
+
+The [2026-10-04 expansion](docs/ALGORITHM_EXPANSION.md) explains the five new
+executable profiles, all 17 new problem definitions, and routing without mandatory
+retraining. The original V1 release scope and scores remain in
+[`docs/V1.md`](docs/V1.md).
 
 ## Repository layout
 
 - [`library/`](library/) contains the public headers, adapters, CLI, examples,
   tests, CMake package, and install rules.
-- [`problems/`](problems/) contains all 20 authoritative `problem.json` files,
+- [`problems/`](problems/) contains all 37 authoritative `problem.json` files,
   the canonical graph schema, and the pinned source files required by the
   validated adapters.
 - [`graphmine_catalog.json`](graphmine_catalog.json) is the problem-first global
@@ -38,6 +43,7 @@ cmake -S library -B library/build \
 cmake --build library/build --parallel --target graphmine_cli
 
 library/build/graphmine list --pretty
+library/build/graphmine --version
 library/build/graphmine run triangle-counting \
   --graph library/examples/data/triangle.json \
   --backend tot \
@@ -57,9 +63,25 @@ instance produces schema-constrained plans and result interpretations; a
 deterministic orchestrator validates every request against the problem catalog
 and invokes the precompiled CLI on a separate GPU. The bundled browser UI
 supports file uploads, streamed job progress, follow-up questions, and
-analyst-selected interactive visualizations.
+analyst-selected interactive visualizations. Its source is
+[`agent/graphmine_agent/static/`](agent/graphmine_agent/static/): `index.html`
+is the entry point, with behavior in `app.js` and presentation in `styles.css`.
 The [system architecture page](docs/system/) documents the full two-machine
 flow, GPU isolation, planner/analyst boundary, and deployment sequence.
+
+For an end-to-end local deployment on the two-GPU server:
+
+```bash
+deploy/validate-v1.sh
+deploy/configure-v1.sh --origin http://GPU_SERVER_LAN_IP:8000
+deploy/start-vllm.sh   # terminal 1
+deploy/start-agent.sh  # terminal 2
+deploy/smoke-v1.sh     # terminal 3, after Qwen is ready
+```
+
+Then open `http://GPU_SERVER_LAN_IP:8000` from the research computer and enter
+the generated token through the UI settings button. The detailed operator and
+recovery guide is [`deploy/README.md`](deploy/README.md).
 
 ## Problem-first catalog
 
@@ -77,7 +99,7 @@ For supported problems, the catalog connects that formal contract to:
 - selectable backend capabilities and source provenance;
 - the passing validation workload, checks, and notes.
 
-For the other eight problem definitions, the catalog explicitly returns
+For the other 20 problem definitions, the catalog explicitly returns
 `no_validated_backend`; a query planner must not substitute a nearby problem.
 Regenerate the catalog after changing a problem or library contract with:
 
@@ -96,7 +118,9 @@ The site has no framework or build dependency. It reads the global problem
 catalog at runtime to render the searchable validated-operation documentation.
 It also includes a [low-level code reference](docs/reference/) for GraphMine's
 public C++ API and adapters plus isolated function-by-function C/C++/CUDA
-references for all 24 validated research source artifacts. Regenerate those
+references for the original 24 research source artifacts. The new profiles are
+documented in the expansion guide; the generator also supports their source
+paths. Regenerate those
 committed pages with `node tools/build_code_docs.mjs` when code changes.
 
 ## Research artifacts

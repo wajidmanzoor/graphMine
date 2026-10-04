@@ -1,0 +1,91 @@
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(41): warning #1650-D: result of call is not used
+                  fscanf(data_file, "%lld%c", &data[(i * total_columns) + j],
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(44): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%ld%c", &data[(i * total_columns) + j],
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(49): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%lld", &data[(i * total_columns) + j]);
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(51): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%ld", &data[(i * total_columns) + j]);
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(41): warning #1650-D: result of call is not used
+                  fscanf(data_file, "%lld%c", &data[(i * total_columns) + j],
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(44): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%ld%c", &data[(i * total_columns) + j],
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(49): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%lld", &data[(i * total_columns) + j]);
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(51): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%ld", &data[(i * total_columns) + j]);
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(82): warning #177-D: variable "relation_columns" was declared but never referenced
+      int relation_columns = 2;
+          ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(83): warning #550-D: variable "time_point_begin" was set but never used
+      std::chrono::high_resolution_clock::time_point time_point_begin;
+                                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(84): warning #177-D: variable "time_point_end" was declared but never referenced
+      std::chrono::high_resolution_clock::time_point time_point_end;
+                                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(86): warning #177-D: variable "spent_time" was declared but never referenced
+      double spent_time;
+             ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(155): warning #177-D: variable "relation_columns" was declared but never referenced
+      int relation_columns = 2;
+          ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(156): warning #550-D: variable "time_point_begin" was set but never used
+      std::chrono::high_resolution_clock::time_point time_point_begin;
+                                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(157): warning #177-D: variable "time_point_end" was declared but never referenced
+      std::chrono::high_resolution_clock::time_point time_point_end;
+                                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu(159): warning #177-D: variable "spent_time" was declared but never referenced
+      double spent_time;
+             ^
+
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu: In function ‘column_type* get_relation_from_file(const char*, int, int, char, ColumnT)’:
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu:41:19: warning: format ‘%lld’ expects argument of type ‘long long int*’, but argument 3 has type ‘column_type*’ {aka ‘long unsigned int*’} [-Wformat=]
+   41 |                 fscanf(data_file, "%lld%c", &data[(i * total_columns) + j],
+      |                   ^~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                             |
+      |                             column_type* {aka long unsigned int*}
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu:49:19: warning: format ‘%lld’ expects argument of type ‘long long int*’, but argument 3 has type ‘column_type*’ {aka ‘long unsigned int*’} [-Wformat=]
+   49 |                     fscanf(data_file, "%lld", &data[(i * total_columns) + j]);
+      |                   ^ ~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           column_type* {aka long unsigned int*}
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu:41:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   41 |                 fscanf(data_file, "%lld%c", &data[(i * total_columns) + j],
+      |       ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu:44:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   44 |                     fscanf(data_file, "%ld%c", &data[(i * total_columns) + j],
+      |       ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu:49:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   49 |                     fscanf(data_file, "%lld", &data[(i * total_columns) + j]);
+      |       ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu:51:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   51 |                     fscanf(data_file, "%ld", &data[(i * total_columns) + j]);
+      |       ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

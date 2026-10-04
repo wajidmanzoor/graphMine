@@ -1,0 +1,197 @@
+{
+  "schema_version": "1.0.0",
+  "routing_contract_version": "expanded-37-v1",
+  "intent_signals": {
+    "personalized_pagerank_rwr": [
+      "personalized PageRank",
+      "random walk with restart",
+      "seed-relative node importance"
+    ],
+    "max_flow_min_cut": [
+      "maximum flow from source to sink",
+      "minimum capacity cut",
+      "throughput subject to edge capacities"
+    ],
+    "butterfly_counting_bipartite": [
+      "count complete 2 by 2 bipartite patterns",
+      "butterfly participation or alpha beta cores"
+    ],
+    "graph_edit_distance_mcs": [
+      "graph edit distance",
+      "maximum common subgraph"
+    ],
+    "network_alignment": [
+      "align two networks",
+      "find correspondences between graphs"
+    ],
+    "hop_constrained_cycle_path_enumeration": [
+      "enumerate paths or cycles within a hop limit"
+    ],
+    "group_steiner_tree": [
+      "minimum-cost tree connecting at least one member of each group"
+    ],
+    "influence_maximization": [
+      "choose seed nodes to maximize expected diffusion",
+      "independent cascade or linear threshold influence"
+    ],
+    "simrank_vertex_similarity": [
+      "SimRank similarity",
+      "similarity based on neighbors"
+    ],
+    "balanced_graph_partitioning": [
+      "balanced graph partition with small edge cut"
+    ],
+    "bipartite_matching_assignment": [
+      "minimum cost one-to-one assignment",
+      "maximum cardinality or weight bipartite matching"
+    ],
+    "signed_network_structural_balance": [
+      "signed network balance",
+      "minimum frustration partition"
+    ],
+    "transitive_closure_reachability": [
+      "all reachable ordered pairs",
+      "directed transitive closure",
+      "reachability queries or reusable index"
+    ],
+    "entity_resolution_blocking": [
+      "candidate pairs for entity resolution",
+      "duplicate record blocking"
+    ],
+    "connected_components": [
+      "weakly or strongly connected components",
+      "groups connected by paths"
+    ],
+    "graph_layout_force_directed": [
+      "force-directed layout",
+      "compute node coordinates for graph drawing"
+    ],
+    "null_model_significance_testing": [
+      "graph motif statistical significance against a null model",
+      "randomized graph ensemble z scores"
+    ]
+  },
+  "operations": {
+    "connected-components": {
+      "problem_id": "connected_components",
+      "backend_id": "ecl-scc",
+      "paper_id": "2023_eclscc",
+      "profile": "weak or strong exact connectivity",
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::ConnectedComponents",
+        "options_type": "graphmine::ConnectedComponentsOptions"
+      },
+      "validation": {
+        "workload_id": "expansion_connected-components",
+        "implementation": "ecl-scc",
+        "status": "validated_profile",
+        "note": "13/13 whole-partition oracle checks. Native facade additionally checks weak mode, canonical labels, isolated vertices, mixed external IDs, loops and duplicate arcs.",
+        "checks": {
+          "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+          "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+        },
+        "paper_artifacts": [
+          "2023_eclscc"
+        ]
+      }
+    },
+    "max-flow-min-cut": {
+      "problem_id": "max_flow_min_cut",
+      "backend_id": "ecl-maxflow",
+      "paper_id": "2025_ecl_maxflow",
+      "profile": "directed, integer edge capacities, total capacity <= 1e9; no vertex capacities",
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::MaxFlowMinCut",
+        "options_type": "graphmine::MaxFlowOptions"
+      },
+      "validation": {
+        "workload_id": "expansion_max-flow-min-cut",
+        "implementation": "ecl-maxflow",
+        "status": "validated_profile",
+        "note": "Raw artifact: 12/13, including an edgeless launch error. Promoted only with tested launch guards, sparse-degree fix, empty-input handling and flow/cut certification.",
+        "checks": {
+          "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+          "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+        },
+        "paper_artifacts": [
+          "2025_ecl_maxflow"
+        ]
+      }
+    },
+    "linear-assignment": {
+      "problem_id": "bipartite_matching_assignment",
+      "backend_id": "hungarian-cuda",
+      "paper_id": "2019_hungariangpu",
+      "profile": "complete square minimum-cost perfect assignment; <=64 per side; costs integer 0..999; declared sides",
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::LinearAssignment",
+        "options_type": "graphmine::LinearAssignmentOptions"
+      },
+      "validation": {
+        "workload_id": "expansion_linear-assignment",
+        "implementation": "hungarian-cuda",
+        "status": "validated_profile",
+        "note": "11/11 square integer minimum-cost assignment tests versus SciPy, including size 64. Only the bounded perfect-assignment profile is promoted.",
+        "checks": {
+          "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+          "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+        },
+        "paper_artifacts": [
+          "2019_hungariangpu"
+        ]
+      }
+    },
+    "transitive-closure": {
+      "problem_id": "transitive_closure_reachability",
+      "backend_id": "gdlog",
+      "paper_id": "2024_gdlog",
+      "profile": "directed full reflexive materialized closure; <=1024 vertices; build_index=false",
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::TransitiveClosure",
+        "options_type": "graphmine::ReachabilityOptions"
+      },
+      "validation": {
+        "workload_id": "expansion_transitive-closure",
+        "implementation": "gdlog",
+        "status": "validated_profile",
+        "note": "8/8 full pair-set checks. Native adapter also passes a 128-cycle (16,384 pairs), removing the diagnostic printer cap. SM89 is pinned after the inherited SM52 build failed.",
+        "checks": {
+          "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+          "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+        },
+        "paper_artifacts": [
+          "2024_gdlog"
+        ]
+      }
+    },
+    "butterfly-counting": {
+      "problem_id": "butterfly_counting_bipartite",
+      "backend_id": "graphminer",
+      "paper_id": "2022_g2miner_reuse",
+      "profile": "exact global count only; declared bipartite sides",
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::ButterflyCounting",
+        "options_type": "graphmine::ButterflyOptions"
+      },
+      "validation": {
+        "workload_id": "expansion_butterfly-counting",
+        "implementation": "graphminer",
+        "status": "validated_profile",
+        "note": "12/12 global counts using the existing native square kernel. New public facade enforces declared bipartite sides. Other problem modes remain unsupported.",
+        "checks": {
+          "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+          "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+        },
+        "paper_artifacts": [
+          "2022_g2miner_reuse"
+        ]
+      }
+    }
+  },
+  "screening_source": "validation/gpu_correctness_expansion/results/summary.json"
+}

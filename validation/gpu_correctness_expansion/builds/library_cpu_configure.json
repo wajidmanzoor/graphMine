@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cmake",
+    "-S",
+    "/home/wajid/projects/graphDatabaseAgent/library",
+    "-B",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/library-cpu",
+    "-DGRAPHMINE_ENABLE_CUDA_BACKENDS=OFF",
+    "-DGRAPHMINE_BUILD_EXAMPLES=OFF",
+    "-DCMAKE_BUILD_TYPE=Release"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.3648629691451788,
+  "exit_code": 0,
+  "log": "builds/library_cpu_configure.log",
+  "stdin_path": null,
+  "timeout": false
+}

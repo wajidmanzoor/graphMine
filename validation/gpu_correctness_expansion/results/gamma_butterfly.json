@@ -1,0 +1,252 @@
+{
+  "backend": "gamma_butterfly",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/single",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.7159476540982723,
+      "exit_code": 0,
+      "expected": 1,
+      "log": "runs/gamma_butterfly_single.log",
+      "name": "single",
+      "observed": 2,
+      "passed": false,
+      "raw_embeddings": 16,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/star",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6654934231191874,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/gamma_butterfly_star.log",
+      "name": "star",
+      "observed": 0,
+      "passed": true,
+      "raw_embeddings": 0,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/isolated",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 1.3201416656374931,
+      "exit_code": -11,
+      "expected": 0,
+      "log": "runs/gamma_butterfly_isolated.log",
+      "name": "isolated",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": null,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/complete",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6653554439544678,
+      "exit_code": 0,
+      "expected": 210,
+      "log": "runs/gamma_butterfly_complete.log",
+      "name": "complete",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": 1435,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/random_0",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6655603852123022,
+      "exit_code": 0,
+      "expected": 2,
+      "log": "runs/gamma_butterfly_random_0.log",
+      "name": "random_0",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": 41,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/random_1",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6657460555434227,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/gamma_butterfly_random_1.log",
+      "name": "random_1",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": 12,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/random_2",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6654367595911026,
+      "exit_code": 0,
+      "expected": 5,
+      "log": "runs/gamma_butterfly_random_2.log",
+      "name": "random_2",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": 63,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/random_3",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6657987665385008,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/gamma_butterfly_random_3.log",
+      "name": "random_3",
+      "observed": 2,
+      "passed": false,
+      "raw_embeddings": 16,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/random_4",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6656249240040779,
+      "exit_code": 0,
+      "expected": 1797,
+      "log": "runs/gamma_butterfly_random_4.log",
+      "name": "random_4",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": 9450,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/random_5",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6657932884991169,
+      "exit_code": 0,
+      "expected": 1452,
+      "log": "runs/gamma_butterfly_random_5.log",
+      "name": "random_5",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": 8323,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/random_6",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6655144765973091,
+      "exit_code": 0,
+      "expected": 1461,
+      "log": "runs/gamma_butterfly_random_6.log",
+      "name": "random_6",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": 8273,
+      "stdin_path": null,
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gamma_butterfly",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/random_7",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gamma_butterfly/square.query",
+        "0",
+        "debug"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.6656636949628592,
+      "exit_code": 0,
+      "expected": 1030,
+      "log": "runs/gamma_butterfly_random_7.log",
+      "name": "random_7",
+      "observed": null,
+      "passed": false,
+      "raw_embeddings": 7257,
+      "stdin_path": null,
+      "timeout": false
+    }
+  ],
+  "limitations": [
+    "Global count only. No explicit license detected."
+  ],
+  "passed": 1,
+  "seed": 20261004,
+  "status": "correctness_fail",
+  "total": 12
+}

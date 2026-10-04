@@ -1,0 +1,18 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "-D_n_=64",
+    "-D_range_=100",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/hungarian.cu",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/hungarian"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 1.2696281243115664,
+  "exit_code": 0,
+  "log": "builds/hungarian.log",
+  "timeout": false
+}

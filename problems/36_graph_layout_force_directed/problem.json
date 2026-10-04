@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_layout_force_directed",
+  "name": "Force-Directed Graph Layout",
+  "category": "predictive_and_unusual_structure_mining",
+  "problem_statement": "Given a graph, compute a position for every vertex in 2 or 3 dimensions under a declared force model, so that connected vertices are pulled together and all vertices repel each other, producing a drawing that visually reveals clusters and hubs.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected_projection", "weights": "optional_as_attractive_force_strength", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Project directed input to undirected for layout purposes.", "Remove self-loops; they contribute no attractive or repulsive force between distinct vertices.", "Collapse parallel edges by summing nonnegative weights; use unit weight when weight_mode=unweighted."]
+  },
+  "problem_inputs": [
+    {"name": "dimensions", "type": "enum", "required": false, "default": 2, "allowed_values": [2, 3], "description": "Dimensionality of the output coordinate space."},
+    {"name": "force_model", "type": "enum", "required": true, "allowed_values": ["force_atlas2", "fruchterman_reingold"], "description": "Exact force law defining attractive and repulsive potentials; layout quality is only well-defined relative to a declared model."},
+    {"name": "weight_mode", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "edge_weight"], "description": "Scale an edge's attractive force by its declared weight, or treat all edges uniformly."},
+    {"name": "iterations", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Fixed iteration budget; null means iterate until the force_model's own convergence criterion is met."},
+    {"name": "random_seed", "type": "integer_or_null", "required": false, "default": null, "description": "Seed for the stochastic initial layout and any randomized iteration order, for reproducibility."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "approximate", "allowed_values": ["converged", "approximate"], "description": "Whether the iteration's own movement/gradient tolerance was met, or a fixed iteration budget was used with the achieved energy disclosed."}
+  ],
+  "required_outputs": [
+    {"name": "vertex_positions", "type": "map<vertex_id,array<number>>", "description": "Coordinate vector of length dimensions for every vertex."},
+    {"name": "final_energy", "type": "number", "description": "Total energy of force_model (sum of pairwise repulsive and edge attractive potential) at vertex_positions."},
+    {"name": "converged", "type": "boolean", "description": "Whether the iteration met its stated movement/gradient tolerance."}
+  ],
+  "optional_outputs": [
+    {"name": "iterations_run", "type": "integer", "description": "Number of iterations actually performed."},
+    {"name": "energy_trace", "type": "array<number>", "description": "Energy value after each iteration, for diagnosing convergence."}
+  ],
+  "solution_semantics": {
+    "objective": "Minimize the declared force_model's total energy function over vertex_positions in the stated dimensions.",
+    "exactness": "This problem has no exact mode and no unique global optimum; solution_quality=converged requires meeting the iteration's own stated tolerance, and solution_quality=approximate permits a fixed iteration budget with final_energy disclosed.",
+    "duplicate_policy": "Not applicable; vertex_positions assigns exactly one coordinate vector per vertex.",
+    "ordering": "Not applicable."
+  },
+  "validation_rules": [
+    "Every vertex has a position vector of exactly dimensions real-valued coordinates.",
+    "final_energy recomputes from vertex_positions and the normalized graph under the declared force_model within numeric tolerance.",
+    "Given the same random_seed, parameters, and graph, two runs of the same implementation reproduce final_energy within tolerance.",
+    "Coincident vertex positions are permitted and are not treated as invalid."
+  ],
+  "edge_cases": [
+    "A single isolated vertex may be placed at an arbitrary position; it contributes no attractive force.",
+    "A graph with no edges reduces to pure mutual repulsion with no attractive term.",
+    "Disconnected components repel each other but have no attractive force pulling them together, so their relative placement is constrained only by repulsion.",
+    "iterations=0 returns the initial layout as-is, with converged=false unless the initial layout trivially satisfies the tolerance."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["final-energy recomputation under the declared force_model", "dimensional and completeness checks on vertex_positions", "run-to-run reproducibility under a fixed random_seed"],
+    "performance": ["end-to-end time", "time per iteration", "peak memory", "iterations to convergence", "vertices updated per second"]
+  }
+}

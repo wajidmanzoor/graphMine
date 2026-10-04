@@ -1,0 +1,8 @@
+rm -f .depend
+nvcc  -O3 -std=c++11 -D NO_FREETYPE -M ../../src/RPBarnesHutApproximator.cpp ../../src/RPCPUForceAtlas2.cpp ../../src/RPCommon.cpp ../../src/RPForceAtlas2.cpp ../../src/RPGraph.cpp ../../src/RPGraphLayout.cpp ../../src/RPLayoutAlgorithm.cpp ../../src/graph_viewer.cpp ../../lib/pngwriter/src/pngwriter.cc >> .depend
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+../../src/RPGraphLayout.cpp:26:10: fatal error: ../lib/pngwriter/src/pngwriter.h: No such file or directory
+   26 | #include "../lib/pngwriter/src/pngwriter.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make: *** [Makefile:61: .depend] Error 1

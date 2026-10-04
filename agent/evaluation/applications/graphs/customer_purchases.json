@@ -1,0 +1,81 @@
+{
+  "graph": {
+    "id": "customer-product-purchases",
+    "directed": false,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "domain": "recommendation_ecommerce",
+      "description": "Customers connect to products they purchased; vertex types identify the two sides."
+    }
+  },
+  "vertices": [
+    {
+      "id": "Alice",
+      "label": "Alice",
+      "type": "customer"
+    },
+    {
+      "id": "Bob",
+      "label": "Bob",
+      "type": "customer"
+    },
+    {
+      "id": "Carol",
+      "label": "Carol",
+      "type": "customer"
+    },
+    {
+      "id": "Coffee",
+      "label": "Coffee",
+      "type": "product"
+    },
+    {
+      "id": "Tea",
+      "label": "Tea",
+      "type": "product"
+    },
+    {
+      "id": "Cocoa",
+      "label": "Cocoa",
+      "type": "product"
+    }
+  ],
+  "edges": [
+    {
+      "id": "event-1",
+      "source": "Alice",
+      "target": "Coffee"
+    },
+    {
+      "id": "event-2",
+      "source": "Alice",
+      "target": "Tea"
+    },
+    {
+      "id": "event-3",
+      "source": "Bob",
+      "target": "Coffee"
+    },
+    {
+      "id": "event-4",
+      "source": "Bob",
+      "target": "Tea"
+    },
+    {
+      "id": "event-5",
+      "source": "Bob",
+      "target": "Cocoa"
+    },
+    {
+      "id": "event-6",
+      "source": "Carol",
+      "target": "Coffee"
+    },
+    {
+      "id": "event-7",
+      "source": "Carol",
+      "target": "Cocoa"
+    }
+  ]
+}

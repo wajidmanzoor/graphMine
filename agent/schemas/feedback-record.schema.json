@@ -1,0 +1,119 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "category": {
+      "default": "feedback",
+      "enum": [
+        "feedback",
+        "correction",
+        "rating",
+        "note"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "context": {
+      "additionalProperties": true,
+      "title": "Context",
+      "type": "object"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "expected_behavior": {
+      "anyOf": [
+        {
+          "maxLength": 20000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expected Behavior"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "job_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Job Id"
+    },
+    "rating": {
+      "anyOf": [
+        {
+          "maximum": 5,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rating"
+    },
+    "result_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Result Id"
+    },
+    "session_id": {
+      "title": "Session Id",
+      "type": "string"
+    },
+    "source": {
+      "default": "user",
+      "enum": [
+        "user",
+        "assistant_evaluation"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "turn_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Turn Id"
+    },
+    "what_went_wrong": {
+      "maxLength": 20000,
+      "minLength": 1,
+      "title": "What Went Wrong",
+      "type": "string"
+    }
+  },
+  "required": [
+    "what_went_wrong",
+    "session_id"
+  ],
+  "title": "FeedbackRecord",
+  "type": "object"
+}

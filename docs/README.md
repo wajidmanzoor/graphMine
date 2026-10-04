@@ -2,8 +2,8 @@
 
 This directory is a self-contained static GitHub Pages site. It uses plain
 HTML, CSS, and JavaScript and renders the algorithm catalog from the repository
-root `graphmine_catalog.json`. That catalog embeds all 20 local problem
-contracts and connects the 12 supported problems to validated operations.
+root `graphmine_catalog.json`. That catalog embeds all 37 local problem
+contracts and connects the 17 supported problems to validated operations.
 
 ## Preview locally
 
@@ -52,3 +52,8 @@ Set `DOXYGEN_EXECUTABLE=/path/to/doxygen` when Doxygen is not on `PATH`.
 Warnings emitted from preserved upstream comments do not change or patch the
 research implementation; the reference still exposes the parsed signatures
 and exact source.
+
+The [algorithm expansion guide](ALGORITHM_EXPANSION.md) documents current agent
+routing, executable profile limits, all new-family dispositions and evaluation
+status. Existing generated code-reference pages are the original release snapshot;
+the generator now also resolves the five added source references.

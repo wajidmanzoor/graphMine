@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+    "-v",
+    "2",
+    "-f",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/zero_capacities.dimacs",
+    "-a",
+    "0"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.26463672891259193,
+  "exit_code": 0,
+  "log": "runs/wbpr_zero_capacities_0.log",
+  "stdin_path": null,
+  "timeout": false
+}

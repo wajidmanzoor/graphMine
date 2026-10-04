@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/kpar",
+    "query",
+    "--gpu_idx",
+    "0",
+    "--dataset",
+    "cycle_64",
+    "--query_size",
+    "1",
+    "--epsilon",
+    "0.5",
+    "--k",
+    "4"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/kpar/run",
+  "elapsed_seconds": 0.26453823037445545,
+  "exit_code": 0,
+  "log": "runs/kpar_cycle_64_query.log",
+  "stdin_path": null,
+  "timeout": false
+}

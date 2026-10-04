@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "linear-assignment",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/reject_assignment_missing_side.json"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.00784735195338726,
+  "exit_code": 3,
+  "log": "runs/library_reject_assignment_missing_side.log",
+  "stdin_path": null,
+  "timeout": false
+}

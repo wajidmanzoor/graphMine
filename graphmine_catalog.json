@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0.0",
   "catalog_id": "graphmine_problem_first_catalog_v2",
-  "library_version": "0.1.0",
+  "library_version": "1.0.0",
   "purpose": "Problem-first context for mapping a user request to a formal graph problem, a validated GraphMine operation, a backend, parameters, and optional outputs.",
   "source_of_truth": {
     "problem_contracts": "Each problems/*/problem.json object is embedded exactly and remains authoritative for semantics, inputs, outputs, validation rules, and edge cases.",
@@ -9,18 +9,23 @@
     "validation_results": "validation/gpu_correctness/results/results.json",
     "backend_registry": "catalog/backend_registry.json",
     "artifact_sources": "catalog/artifact_sources.json",
+    "expansion_profiles": "catalog/expansion_profiles.json",
+    "expansion_screening": "validation/gpu_correctness_expansion/results/summary.json",
     "regeneration_command": "node tools/build_catalog.mjs"
   },
   "scope": {
-    "catalog_problem_count": 20,
-    "library_supported_problem_count": 12,
-    "library_unsupported_problem_count": 8,
-    "runnable_operation_count": 13,
-    "validated_backend_count": 26,
+    "catalog_problem_count": 37,
+    "library_supported_problem_count": 17,
+    "library_unsupported_problem_count": 20,
+    "runnable_operation_count": 18,
+    "validated_backend_count": 31,
     "passing_validation_workload_count": 24,
+    "validated_expansion_profile_count": 5,
     "operation_count_note": "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations."
   },
   "routing": {
+    "contract_version": "expanded-37-v1",
+    "model_policy": "Supply this catalog to the base router. The frozen legacy routing adapter was evaluated on the earlier 20-problem contract; do not silently extend its evaluation claims.",
     "workflow": [
       {
         "step": 1,
@@ -408,7 +413,7 @@
   },
   "validation": {
     "source": "validation/gpu_correctness/results/results.json",
-    "selection_rule": "Only implementations classified pass by validation/gpu_correctness/results/results.json are exposed.",
+    "selection_rule": "Baseline validated backends plus the explicitly bounded profiles passing validation/gpu_correctness_expansion/results/library_expansion.json. Broader problem specifications do not imply support for unlisted modes.",
     "classification_policy": {
       "artifact_mismatch": "The pinned linked source snapshot is not an implementation of the paper's claimed problem.",
       "build_blocked": "The pinned artifact cannot build because a required tool/dependency is unavailable.",
@@ -432,6 +437,129 @@
         "correctness_fail": 3,
         "partial_pass": 7,
         "pass": 24
+      }
+    },
+    "expansion_source": "validation/gpu_correctness_expansion/results/summary.json",
+    "expansion_profiles": {
+      "connected-components": {
+        "problem_id": "connected_components",
+        "backend_id": "ecl-scc",
+        "paper_id": "2023_eclscc",
+        "profile": "weak or strong exact connectivity",
+        "cpp": {
+          "header": "graphmine/problems/validated_expansion.hpp",
+          "class": "graphmine::ConnectedComponents",
+          "options_type": "graphmine::ConnectedComponentsOptions"
+        },
+        "validation": {
+          "workload_id": "expansion_connected-components",
+          "implementation": "ecl-scc",
+          "status": "validated_profile",
+          "note": "13/13 whole-partition oracle checks. Native facade additionally checks weak mode, canonical labels, isolated vertices, mixed external IDs, loops and duplicate arcs.",
+          "checks": {
+            "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+            "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+          },
+          "paper_artifacts": [
+            "2023_eclscc"
+          ]
+        }
+      },
+      "max-flow-min-cut": {
+        "problem_id": "max_flow_min_cut",
+        "backend_id": "ecl-maxflow",
+        "paper_id": "2025_ecl_maxflow",
+        "profile": "directed, integer edge capacities, total capacity <= 1e9; no vertex capacities",
+        "cpp": {
+          "header": "graphmine/problems/validated_expansion.hpp",
+          "class": "graphmine::MaxFlowMinCut",
+          "options_type": "graphmine::MaxFlowOptions"
+        },
+        "validation": {
+          "workload_id": "expansion_max-flow-min-cut",
+          "implementation": "ecl-maxflow",
+          "status": "validated_profile",
+          "note": "Raw artifact: 12/13, including an edgeless launch error. Promoted only with tested launch guards, sparse-degree fix, empty-input handling and flow/cut certification.",
+          "checks": {
+            "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+            "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+          },
+          "paper_artifacts": [
+            "2025_ecl_maxflow"
+          ]
+        }
+      },
+      "linear-assignment": {
+        "problem_id": "bipartite_matching_assignment",
+        "backend_id": "hungarian-cuda",
+        "paper_id": "2019_hungariangpu",
+        "profile": "complete square minimum-cost perfect assignment; <=64 per side; costs integer 0..999; declared sides",
+        "cpp": {
+          "header": "graphmine/problems/validated_expansion.hpp",
+          "class": "graphmine::LinearAssignment",
+          "options_type": "graphmine::LinearAssignmentOptions"
+        },
+        "validation": {
+          "workload_id": "expansion_linear-assignment",
+          "implementation": "hungarian-cuda",
+          "status": "validated_profile",
+          "note": "11/11 square integer minimum-cost assignment tests versus SciPy, including size 64. Only the bounded perfect-assignment profile is promoted.",
+          "checks": {
+            "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+            "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+          },
+          "paper_artifacts": [
+            "2019_hungariangpu"
+          ]
+        }
+      },
+      "transitive-closure": {
+        "problem_id": "transitive_closure_reachability",
+        "backend_id": "gdlog",
+        "paper_id": "2024_gdlog",
+        "profile": "directed full reflexive materialized closure; <=1024 vertices; build_index=false",
+        "cpp": {
+          "header": "graphmine/problems/validated_expansion.hpp",
+          "class": "graphmine::TransitiveClosure",
+          "options_type": "graphmine::ReachabilityOptions"
+        },
+        "validation": {
+          "workload_id": "expansion_transitive-closure",
+          "implementation": "gdlog",
+          "status": "validated_profile",
+          "note": "8/8 full pair-set checks. Native adapter also passes a 128-cycle (16,384 pairs), removing the diagnostic printer cap. SM89 is pinned after the inherited SM52 build failed.",
+          "checks": {
+            "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+            "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+          },
+          "paper_artifacts": [
+            "2024_gdlog"
+          ]
+        }
+      },
+      "butterfly-counting": {
+        "problem_id": "butterfly_counting_bipartite",
+        "backend_id": "graphminer",
+        "paper_id": "2022_g2miner_reuse",
+        "profile": "exact global count only; declared bipartite sides",
+        "cpp": {
+          "header": "graphmine/problems/validated_expansion.hpp",
+          "class": "graphmine::ButterflyCounting",
+          "options_type": "graphmine::ButterflyOptions"
+        },
+        "validation": {
+          "workload_id": "expansion_butterfly-counting",
+          "implementation": "graphminer",
+          "status": "validated_profile",
+          "note": "12/12 global counts using the existing native square kernel. New public facade enforces declared bipartite sides. Other problem modes remain unsupported.",
+          "checks": {
+            "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+            "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+          },
+          "paper_artifacts": [
+            "2022_g2miner_reuse"
+          ]
+        }
       }
     }
   },
@@ -600,6 +728,135 @@
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/19"
+    },
+    "personalized_pagerank_rwr": {
+      "name": "Personalized PageRank and Random Walk with Restart",
+      "category": "community_and_structural_analysis",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/20"
+    },
+    "max_flow_min_cut": {
+      "name": "Maximum Flow and Minimum s-t Cut",
+      "category": "predictive_and_unusual_structure_mining",
+      "library_status": "validated",
+      "operation_ids": [
+        "max-flow-min-cut"
+      ],
+      "problem_ref": "#/problems/21"
+    },
+    "butterfly_counting_bipartite": {
+      "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+      "category": "pattern_and_motif_mining",
+      "library_status": "validated",
+      "operation_ids": [
+        "butterfly-counting"
+      ],
+      "problem_ref": "#/problems/22"
+    },
+    "graph_edit_distance_mcs": {
+      "name": "Graph Edit Distance and Maximum Common Subgraph",
+      "category": "predictive_and_unusual_structure_mining",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/23"
+    },
+    "network_alignment": {
+      "name": "Pairwise Network Alignment",
+      "category": "predictive_and_unusual_structure_mining",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/24"
+    },
+    "hop_constrained_cycle_path_enumeration": {
+      "name": "Hop-Constrained Simple Path and Cycle Enumeration",
+      "category": "pattern_and_motif_mining",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/25"
+    },
+    "group_steiner_tree": {
+      "name": "Group Steiner Tree",
+      "category": "dense_structure_mining",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/26"
+    },
+    "influence_maximization": {
+      "name": "Influence Maximization under Diffusion Models",
+      "category": "predictive_and_unusual_structure_mining",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/27"
+    },
+    "simrank_vertex_similarity": {
+      "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+      "category": "community_and_structural_analysis",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/28"
+    },
+    "balanced_graph_partitioning": {
+      "name": "Balanced k-Way Graph Partitioning",
+      "category": "community_and_structural_analysis",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/29"
+    },
+    "bipartite_matching_assignment": {
+      "name": "Bipartite Matching and Linear Assignment",
+      "category": "predictive_and_unusual_structure_mining",
+      "library_status": "validated",
+      "operation_ids": [
+        "linear-assignment"
+      ],
+      "problem_ref": "#/problems/30"
+    },
+    "signed_network_structural_balance": {
+      "name": "Signed Network Structural Balance and Frustration Minimization",
+      "category": "community_and_structural_analysis",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/31"
+    },
+    "transitive_closure_reachability": {
+      "name": "Transitive Closure and Reachability Indexing",
+      "category": "pattern_and_motif_mining",
+      "library_status": "validated",
+      "operation_ids": [
+        "transitive-closure"
+      ],
+      "problem_ref": "#/problems/32"
+    },
+    "entity_resolution_blocking": {
+      "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
+      "category": "predictive_and_unusual_structure_mining",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/33"
+    },
+    "connected_components": {
+      "name": "Connected Components (Weakly and Strongly Connected)",
+      "category": "community_and_structural_analysis",
+      "library_status": "validated",
+      "operation_ids": [
+        "connected-components"
+      ],
+      "problem_ref": "#/problems/34"
+    },
+    "graph_layout_force_directed": {
+      "name": "Force-Directed Graph Layout",
+      "category": "predictive_and_unusual_structure_mining",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/35"
+    },
+    "null_model_significance_testing": {
+      "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+      "category": "pattern_and_motif_mining",
+      "library_status": "no_validated_backend",
+      "operation_ids": [],
+      "problem_ref": "#/problems/36"
     }
   },
   "operation_index": {
@@ -706,6 +963,41 @@
         "turbo-bc"
       ],
       "operation_ref": "#/operations/12"
+    },
+    "connected-components": {
+      "research_problem_id": "connected_components",
+      "backends": [
+        "ecl-scc"
+      ],
+      "operation_ref": "#/operations/13"
+    },
+    "max-flow-min-cut": {
+      "research_problem_id": "max_flow_min_cut",
+      "backends": [
+        "ecl-maxflow"
+      ],
+      "operation_ref": "#/operations/14"
+    },
+    "linear-assignment": {
+      "research_problem_id": "bipartite_matching_assignment",
+      "backends": [
+        "hungarian-cuda"
+      ],
+      "operation_ref": "#/operations/15"
+    },
+    "transitive-closure": {
+      "research_problem_id": "transitive_closure_reachability",
+      "backends": [
+        "gdlog"
+      ],
+      "operation_ref": "#/operations/16"
+    },
+    "butterfly-counting": {
+      "research_problem_id": "butterfly_counting_bipartite",
+      "backends": [
+        "graphminer"
+      ],
+      "operation_ref": "#/operations/17"
     }
   },
   "problems": [
@@ -5662,6 +5954,3393 @@
           ]
         }
       }
+    },
+    {
+      "source": "problems/21_personalized_pagerank_rwr/problem.json",
+      "intent_signals": [
+        "personalized PageRank",
+        "random walk with restart",
+        "seed-relative node importance"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2020_kpar: Returns five rows for k=4; the 64-cycle run also omits the highest-score source. Score tolerance alone is insufficient."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": "31acf04abb62d8829234379617bbdca6168cbe67",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/jmshi123/kPAR",
+            "status": "cloned"
+          },
+          "evidence": "results/kpar.json",
+          "metadata_path": "problems/21_personalized_pagerank_rwr/papers/2020_kpar/metadata.json",
+          "note": "Returns five rows for k=4; the 64-cycle run also omits the highest-score source. Score tolerance alone is insufficient.",
+          "paper_id": "2020_kpar",
+          "problem_dir": "21_personalized_pagerank_rwr",
+          "promoted_operation": null,
+          "screen_passed": 0,
+          "screen_total": 2,
+          "validation_status": "correctness_fail"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "personalized_pagerank_rwr",
+        "name": "Personalized PageRank and Random Walk with Restart",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed_or_undirected",
+            "weights": "optional_nonnegative",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Preserve direction unless undirected_projection is requested.",
+            "Remove self-loops unless self_loop_policy keeps them.",
+            "Collapse parallel edges by summing nonnegative weights; use unit weight when weight_mode=unweighted.",
+            "Handle dangling vertices (zero out-degree) per the declared dangling_policy."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "seed_vertices",
+            "type": "array<vertex_id>_or_map<vertex_id,number>",
+            "required": true,
+            "constraints": "nonempty; weights nonnegative and not all zero",
+            "description": "Restart distribution. A plain array means a uniform restart distribution over the listed vertices."
+          },
+          {
+            "name": "restart_probability",
+            "type": "number",
+            "required": false,
+            "default": 0.15,
+            "constraints": "0 < value < 1",
+            "description": "Probability of teleporting back to the seed distribution at each step (alpha)."
+          },
+          {
+            "name": "direction_mode",
+            "type": "enum",
+            "required": false,
+            "default": "outgoing",
+            "allowed_values": [
+              "outgoing",
+              "incoming",
+              "undirected_projection"
+            ],
+            "description": "Walk direction for directed input; incoming computes Personalized PageRank with respect to reverse edges."
+          },
+          {
+            "name": "weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "Use uniform or weighted transition probabilities out of each vertex."
+          },
+          {
+            "name": "dangling_policy",
+            "type": "enum",
+            "required": false,
+            "default": "redistribute_to_seeds",
+            "allowed_values": [
+              "redistribute_to_seeds",
+              "redistribute_uniformly",
+              "self_loop"
+            ],
+            "description": "How probability mass at zero-out-degree vertices is redistributed."
+          },
+          {
+            "name": "top_k",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Return only the highest-scoring vertices while retaining score-completeness metadata."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact_or_converged",
+            "allowed_values": [
+              "exact_or_converged",
+              "approximate"
+            ],
+            "description": "Whether power iteration to a convergence tolerance, or an approximate method (e.g. forward push, random walks) with disclosed error, is permitted."
+          },
+          {
+            "name": "convergence_tolerance",
+            "type": "number",
+            "required": false,
+            "default": 1e-9,
+            "constraints": "value > 0",
+            "description": "L1 residual threshold for declaring convergence in exact_or_converged mode."
+          },
+          {
+            "name": "exclude_seeds_from_output",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether seed vertices themselves are omitted from ranked output."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "ranked_vertices",
+            "type": "array<object>",
+            "description": "Vertex ID, PPR/RWR score, and rank ordered by descending score."
+          },
+          {
+            "name": "restart_probability_used",
+            "type": "number",
+            "description": "Resolved alpha actually used."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every eligible vertex was scored and ranking was not truncated by top_k."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "converged",
+            "type": "boolean",
+            "description": "Whether the iterative solver met convergence_tolerance."
+          },
+          {
+            "name": "iterations",
+            "type": "integer",
+            "description": "Iterations or pushes performed."
+          },
+          {
+            "name": "error_bound",
+            "type": "number",
+            "description": "Disclosed per-vertex or aggregate error bound for approximate mode."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Compute the stationary distribution of the restart random walk defined by seed_vertices, restart_probability, direction_mode, and weight_mode, then rank vertices by that probability.",
+          "exactness": "exact_or_converged requires the L1 residual below convergence_tolerance; approximate mode must disclose its error_bound.",
+          "duplicate_policy": "Each eligible vertex appears at most once.",
+          "ordering": "Descending score with a stable vertex-ID tie break."
+        },
+        "validation_rules": [
+          "Scores sum to 1 over all vertices (or within numerical tolerance) before any top_k truncation.",
+          "Scores are non-negative.",
+          "Every seed vertex exists in the normalized graph.",
+          "Recomputing scores from score_definition and the normalized transition matrix matches reported values within tolerance.",
+          "Dangling-vertex mass is redistributed exactly as declared by dangling_policy."
+        ],
+        "edge_cases": [
+          "A seed vertex with no outgoing edges under direction_mode still receives restart mass.",
+          "Seed weights that do not sum to one are normalized before use.",
+          "An isolated seed vertex in an otherwise edgeless graph places all mass on itself.",
+          "restart_probability close to 1 makes the result nearly identical to the seed distribution; close to 0 makes it close to global PageRank."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "L1/L2 score error versus a power-iteration oracle",
+            "rank agreement at top_k",
+            "mass-conservation check"
+          ],
+          "performance": [
+            "end-to-end time",
+            "compute time",
+            "peak memory",
+            "iterations or pushes",
+            "queries per second for repeated single-seed queries"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/22_max_flow_min_cut/problem.json",
+      "intent_signals": [
+        "maximum flow from source to sink",
+        "minimum capacity cut",
+        "throughput subject to edge capacities"
+      ],
+      "library_support": {
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "max-flow-min-cut"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "max-flow-min-cut",
+            "supported_profile": "directed, integer edge capacities, total capacity <= 1e9; no vertex capacities"
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/burtscher/ECL-MaxFlow",
+            "status": "cloned"
+          },
+          "evidence": "results/ecl_flow.json",
+          "metadata_path": "problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/metadata.json",
+          "note": "Raw artifact: 12/13, including an edgeless launch error. Promoted only with tested launch guards, sparse-degree fix, empty-input handling and flow/cut certification.",
+          "paper_id": "2025_ecl_maxflow",
+          "problem_dir": "22_max_flow_min_cut",
+          "promoted_operation": "max-flow-min-cut",
+          "promotion_evidence": "results/library_expansion.json",
+          "screen_passed": 12,
+          "screen_total": 13,
+          "validation_status": "validated_profile"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/22_max_flow_min_cut/papers/2025_generalized_maxflow_gpu/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2025_generalized_maxflow_gpu",
+          "problem_dir": "22_max_flow_min_cut",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": "6c03c5b950ca689d67a7ec5177f920ce4e43bf0a",
+            "error": null,
+            "license_file": "code/maxflow-bcsr2/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/NTUDDSNLab/WBPR",
+            "status": "cloned"
+          },
+          "evidence": "results/wbpr.json",
+          "metadata_path": "problems/22_max_flow_min_cut/papers/2025_wbpr/metadata.json",
+          "note": "12/12 scalar flow values; full flow/cut certificate not exported or validated. License in maxflow-bcsr2 does not establish license of the tested maxflow-cuda folder.",
+          "paper_id": "2025_wbpr",
+          "problem_dir": "22_max_flow_min_cut",
+          "promoted_operation": null,
+          "screen_passed": 12,
+          "screen_total": 12,
+          "validation_status": "partial_pass"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "max_flow_min_cut",
+        "name": "Maximum Flow and Minimum s-t Cut",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given a directed capacitated graph and designated source and sink vertices, compute a maximum feasible flow from source to sink and a minimum-capacity edge set whose removal disconnects source from sink.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed",
+            "weights": "required_nonnegative_as_capacity",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "optional"
+          },
+          "normalization": [
+            "Treat edge weight as capacity; reject negative capacity.",
+            "Collapse parallel edges between the same ordered pair by summing capacity.",
+            "Treat an undirected edge request as two opposite directed edges with equal capacity.",
+            "Remove self-loops; they never contribute to an s-t flow or cut."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "source",
+            "type": "vertex_id",
+            "required": true,
+            "description": "Flow source vertex."
+          },
+          {
+            "name": "sink",
+            "type": "vertex_id",
+            "required": true,
+            "constraints": "sink != source",
+            "description": "Flow sink vertex."
+          },
+          {
+            "name": "capacity_mode",
+            "type": "enum",
+            "required": false,
+            "default": "edge_weight",
+            "allowed_values": [
+              "edge_weight",
+              "unit_capacity"
+            ],
+            "description": "Use declared edge weights or treat every edge as unit capacity."
+          },
+          {
+            "name": "vertex_capacities",
+            "type": "map<vertex_id,number>_or_null",
+            "required": false,
+            "default": null,
+            "description": "Optional per-vertex capacity for vertex-connectivity-style cuts; null means edge-only capacities."
+          },
+          {
+            "name": "return_cut_side",
+            "type": "boolean",
+            "required": false,
+            "default": true,
+            "description": "Whether to return the source-side vertex partition induced by the minimum cut."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether an approximate max-flow value with a disclosed bound is permitted."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "max_flow_value",
+            "type": "number",
+            "description": "Value of the maximum feasible source-to-sink flow."
+          },
+          {
+            "name": "min_cut_value",
+            "type": "number",
+            "description": "Total capacity of the minimum s-t cut; equals max_flow_value by the max-flow min-cut theorem."
+          },
+          {
+            "name": "min_cut_edges",
+            "type": "array<edge_id>",
+            "description": "Edges crossing from the source side to the sink side of a minimum cut."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "flow_assignment",
+            "type": "map<edge_id,number>",
+            "description": "Feasible flow value on each edge satisfying capacity and conservation constraints."
+          },
+          {
+            "name": "source_side_vertices",
+            "type": "array<vertex_id>",
+            "description": "Vertices reachable from source in the residual graph at optimality."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified relative or additive gap for an approximate result."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Maximize total flow leaving source subject to capacity and conservation constraints; the minimum cut is any minimum-capacity edge set separating source from sink.",
+          "exactness": "Exact mode requires optimal=true and max_flow_value == min_cut_value within tolerance.",
+          "duplicate_policy": "Multiple minimum cuts may exist; return one unless alternates are explicitly requested.",
+          "ordering": "Not applicable; outputs are a value, an edge set, and optionally a flow assignment."
+        },
+        "validation_rules": [
+          "flow_assignment, when returned, satisfies 0 <= flow <= capacity on every edge and conservation at every non-terminal vertex.",
+          "min_cut_edges all cross from the source side to the sink side and their capacity sum equals min_cut_value.",
+          "max_flow_value equals min_cut_value within numeric tolerance.",
+          "Removing min_cut_edges leaves no directed path from source to sink."
+        ],
+        "edge_cases": [
+          "No directed path exists from source to sink: max_flow_value is zero and min_cut_edges is empty.",
+          "Source and sink are the same vertex is rejected as invalid input.",
+          "Disconnected or zero-capacity edges do not affect optimality but may affect returned flow_assignment sparsity.",
+          "Multiple minimum cuts of equal value may exist; any one is acceptable unless the caller requests the source-side-maximal or sink-side-maximal canonical cut."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "flow value agreement with exact oracle",
+            "capacity and conservation feasibility",
+            "cut-value equals flow-value",
+            "cut-edge separation check"
+          ],
+          "performance": [
+            "end-to-end time",
+            "solver time",
+            "peak memory",
+            "augmentations or relabel operations",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/23_butterfly_counting_bipartite/problem.json",
+      "intent_signals": [
+        "count complete 2 by 2 bipartite patterns",
+        "butterfly participation or alpha beta cores"
+      ],
+      "library_support": {
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "butterfly-counting"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "butterfly-counting",
+            "supported_profile": "exact global count only; declared bipartite sides"
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/chenxuhao/GraphMiner",
+            "status": "cloned"
+          },
+          "evidence": "results/graphminer_butterfly.json",
+          "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_g2miner_reuse/metadata.json",
+          "note": "12/12 global counts using the existing native square kernel. New public facade enforces declared bipartite sides. Other problem modes remain unsupported.",
+          "paper_id": "2022_g2miner_reuse",
+          "problem_dir": "23_butterfly_counting_bipartite",
+          "promoted_operation": "butterfly-counting",
+          "promotion_evidence": "results/library_expansion.json",
+          "screen_passed": 12,
+          "screen_total": 12,
+          "validation_status": "validated_profile"
+        },
+        {
+          "code": {
+            "commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+            "error": null,
+            "license_file": null,
+            "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+            "local_path": "code",
+            "source_url": "https://github.com/pkumod/GAMMA",
+            "status": "cloned"
+          },
+          "evidence": "results/gamma_butterfly.json",
+          "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/metadata.json",
+          "note": "Single K2,2 produces 16 embeddings instead of 8 injective embeddings; other fixtures mismatch or fail. Generic matcher is not a validated butterfly backend.",
+          "paper_id": "2022_gamma_reuse",
+          "problem_dir": "23_butterfly_counting_bipartite",
+          "promoted_operation": null,
+          "screen_passed": 1,
+          "screen_total": 12,
+          "validation_status": "correctness_fail"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_gbfc/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2022_gbfc",
+          "problem_dir": "23_butterfly_counting_bipartite",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2024_gbc_biclique/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2024_gbc_biclique",
+          "problem_dir": "23_butterfly_counting_bipartite",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "butterfly_counting_bipartite",
+        "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques, i.e. (2,2)-bicliques) globally and per vertex/edge, and optionally decompose the graph into (alpha,beta)-cores by butterfly-based degeneracy.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected_bipartite",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "required_side_label",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject edges whose endpoints share the same declared side.",
+            "Remove self-loops (impossible in valid bipartite input; reject if present).",
+            "Collapse parallel edges between the same pair to one edge.",
+            "Every vertex must have a side label in {left, right}; isolated vertices on either side are retained."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "default": "count",
+            "allowed_values": [
+              "count",
+              "per_vertex",
+              "per_edge",
+              "alpha_beta_core"
+            ],
+            "description": "Return a global count, per-vertex/per-edge participation counts, or a full (alpha,beta)-core decomposition."
+          },
+          {
+            "name": "alpha",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Left-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible alpha."
+          },
+          {
+            "name": "beta",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Right-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible beta."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether a sampling-based approximate butterfly count with a disclosed bound is permitted."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "butterfly_count",
+            "type": "integer",
+            "description": "Total number of distinct butterflies (unordered 2x2 complete bipartite subgraphs) in the graph."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether the count/decomposition covers the entire input graph without sampling truncation."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "per_vertex_butterfly_count",
+            "type": "map<vertex_id,integer>",
+            "description": "Butterflies each vertex participates in; present when mode=per_vertex."
+          },
+          {
+            "name": "per_edge_butterfly_count",
+            "type": "map<edge_id,integer>",
+            "description": "Butterflies each edge (as a wedge pair) participates in; present when mode=per_edge."
+          },
+          {
+            "name": "alpha_beta_core_assignment",
+            "type": "map<vertex_id,object>",
+            "description": "Per-vertex maximal (alpha,beta) coordinates; present when mode=alpha_beta_core."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified relative error bound for an approximate count."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Enumerate or count every 4-cycle formed by two left vertices and two right vertices that are all pairwise connected (a butterfly), with no induced-subgraph requirement beyond the four required edges.",
+          "exactness": "Exact mode requires every butterfly to be counted exactly once; approximate mode must disclose its bound.",
+          "duplicate_policy": "Each unordered set of 2 left + 2 right vertices forming a butterfly is counted once regardless of discovery order.",
+          "ordering": "Not applicable for global count; per_vertex and per_edge outputs are unordered maps."
+        },
+        "validation_rules": [
+          "butterfly_count recomputes from the normalized bipartite adjacency via independent wedge-based counting.",
+          "Sum of per_vertex_butterfly_count over one side, divided by 2, is internally consistent with butterfly_count.",
+          "alpha_beta_core_assignment vertices retain at least alpha (left) or beta (right) butterfly-degree within their assigned core.",
+          "No edge with same-side endpoints is present in the normalized graph."
+        ],
+        "edge_cases": [
+          "A graph with no 4-cycles has butterfly_count zero.",
+          "A complete bipartite graph K(m,n) has the closed-form C(m,2)*C(n,2) butterflies, usable as a correctness check.",
+          "Isolated vertices contribute zero to every count.",
+          "alpha=1,beta=1 core reduces to vertices with degree >= 1 on each side that share at least one butterfly."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "exact count agreement with brute-force wedge oracle on small/medium fixtures",
+            "per-vertex/per-edge sum consistency",
+            "core-assignment validity"
+          ],
+          "performance": [
+            "end-to-end time",
+            "wedge-construction time",
+            "peak memory",
+            "butterflies counted per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/24_graph_edit_distance_mcs/problem.json",
+      "intent_signals": [
+        "graph edit distance",
+        "maximum common subgraph"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2016_gpu_mcs_drug_discovery: No local executable GPU implementation to validate. 2026_fast_ged: javac is unavailable. No GED/MCS correctness claim."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/24_graph_edit_distance_mcs/papers/2016_gpu_mcs_drug_discovery/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2016_gpu_mcs_drug_discovery",
+          "problem_dir": "24_graph_edit_distance_mcs",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": "30a8274f60778cb3e5da2c07e3b58b21abda164f",
+            "error": null,
+            "license_file": "code/LICENSE.MIT",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://gitlab.jsc.fz-juelich.de/dabah2/fast-ged.git",
+            "status": "cloned"
+          },
+          "evidence": "builds/fast_ged.json",
+          "metadata_path": "problems/24_graph_edit_distance_mcs/papers/2026_fast_ged/metadata.json",
+          "note": "javac is unavailable. No GED/MCS correctness claim.",
+          "paper_id": "2026_fast_ged",
+          "problem_dir": "24_graph_edit_distance_mcs",
+          "promoted_operation": null,
+          "validation_status": "build_blocked"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "graph_edit_distance_mcs",
+        "name": "Graph Edit Distance and Maximum Common Subgraph",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given two graphs, compute either the minimum total cost of vertex/edge insertions, deletions, and substitutions transforming one graph into the other (graph edit distance), or a largest common induced or non-induced subgraph shared by both (maximum common subgraph).",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "graph_pair",
+          "requirements": {
+            "direction": "directed_or_undirected_matched_across_pair",
+            "weights": "ignored_unless_cost_definition_uses_them",
+            "timestamps": "ignored",
+            "vertex_attributes": "optional_as_labels",
+            "edge_attributes": "optional_as_labels"
+          },
+          "normalization": [
+            "Both graphs in the pair must use the same direction and label semantics.",
+            "Remove self-loops unless the cost/isomorphism definition explicitly covers them.",
+            "Collapse parallel edges per the declared multigraph policy; default is to reject multi-edges."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "task",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "graph_edit_distance",
+              "maximum_common_subgraph"
+            ],
+            "description": "Compute minimum edit cost or a largest common subgraph."
+          },
+          {
+            "name": "induced",
+            "type": "boolean",
+            "required": false,
+            "default": true,
+            "description": "For maximum_common_subgraph, whether the common subgraph must be vertex-induced in both graphs."
+          },
+          {
+            "name": "edit_costs",
+            "type": "object",
+            "required": false,
+            "default": {
+              "vertex_insertion": 1,
+              "vertex_deletion": 1,
+              "vertex_substitution": 1,
+              "edge_insertion": 1,
+              "edge_deletion": 1,
+              "edge_substitution": 1
+            },
+            "description": "Per-operation nonnegative costs used when task=graph_edit_distance."
+          },
+          {
+            "name": "label_match_policy",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "ignore_labels",
+              "custom_predicate"
+            ],
+            "description": "How vertex/edge labels affect substitution cost or common-subgraph eligibility."
+          },
+          {
+            "name": "time_budget_seconds",
+            "type": "number_or_null",
+            "required": false,
+            "default": null,
+            "description": "Optional wall-clock budget after which the best proven bound and incumbent solution are returned."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether a heuristic/approximate result with a disclosed bound is permitted."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "task_result",
+            "type": "object",
+            "description": "distance (number) for graph_edit_distance, or subgraph (vertex/edge sets with the correspondence mapping) for maximum_common_subgraph."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven within any stated time_budget_seconds."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "vertex_correspondence",
+            "type": "map<vertex_id,vertex_id_or_null>",
+            "description": "Mapping between the two graphs' vertices realizing the returned edit path or common subgraph; null marks an inserted/deleted vertex."
+          },
+          {
+            "name": "edit_path",
+            "type": "array<object>",
+            "description": "Ordered list of edit operations realizing graph_edit_distance."
+          },
+          {
+            "name": "lower_bound",
+            "type": "number",
+            "description": "Best proven bound when optimal=false due to a time budget."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified gap for an approximate result."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Minimize total edit_costs over a sequence of operations transforming graph A into graph B (graph_edit_distance), or maximize the vertex count of a common subgraph consistent with label_match_policy and induced (maximum_common_subgraph).",
+          "exactness": "Exact mode requires optimal=true; approximate/time-budgeted mode must disclose lower_bound or approximation_bound.",
+          "duplicate_policy": "Multiple optimal correspondences may exist; return one unless alternates are explicitly requested.",
+          "ordering": "edit_path, when returned, is ordered as an applicable operation sequence; vertex_correspondence is an unordered mapping."
+        },
+        "validation_rules": [
+          "Applying edit_path to graph A reproduces graph B exactly.",
+          "task_result.distance equals the sum of edit_costs over edit_path.",
+          "vertex_correspondence for maximum_common_subgraph is injective and every mapped edge exists in both graphs (and, if induced=true, non-edges correspond to non-edges).",
+          "Reported optimal=true matches independent verification against an exhaustive oracle on small fixtures."
+        ],
+        "edge_cases": [
+          "Identical graphs have graph_edit_distance zero and maximum_common_subgraph equal to the whole graph.",
+          "Disjoint label alphabets with label_match_policy=exact force every vertex substitution to use insertion+deletion cost.",
+          "One or both input graphs empty is a valid degenerate case with a well-defined distance or empty common subgraph.",
+          "A time_budget_seconds expiring before proof of optimality must still return a feasible incumbent with optimal=false."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "distance or subgraph-size agreement with exact oracle on small fixtures",
+            "edit-path/correspondence feasibility",
+            "optimality or gap validity"
+          ],
+          "performance": [
+            "end-to-end time",
+            "search-tree nodes explored",
+            "peak memory",
+            "time to first feasible incumbent"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/25_network_alignment/problem.json",
+      "intent_signals": [
+        "align two networks",
+        "find correspondences between graphs"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2015_hga_2n: No local executable GPU implementation to validate. 2023_cualign: No local executable GPU implementation to validate. 2024_gpu_local_network_alignment: No local executable GPU implementation to validate."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": null,
+            "error": "fatal: unable to access 'http://biocenter.shu.edu.cn/software/index.php/hga/': Failed to connect to biocenter.shu.edu.cn port 80 after 5 ms: Couldn't connect to server",
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": "http://biocenter.shu.edu.cn/software/index.php/hga",
+            "status": "clone_failed"
+          },
+          "metadata_path": "problems/25_network_alignment/papers/2015_hga_2n/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2015_hga_2n",
+          "problem_dir": "25_network_alignment",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/25_network_alignment/papers/2023_cualign/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2023_cualign",
+          "problem_dir": "25_network_alignment",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/25_network_alignment/papers/2024_gpu_local_network_alignment/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2024_gpu_local_network_alignment",
+          "problem_dir": "25_network_alignment",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "network_alignment",
+        "name": "Pairwise Network Alignment",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given two graphs and optional vertex-similarity priors, find a vertex mapping between them that maximizes conserved topology (and prior similarity, when supplied), either as a global one-to-one mapping or a local many-to-one set of high-scoring alignments.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "graph_pair",
+          "requirements": {
+            "direction": "undirected_or_directed_matched_across_pair",
+            "weights": "optional",
+            "timestamps": "ignored",
+            "vertex_attributes": "optional_as_similarity_prior",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Both graphs must use the same direction semantics.",
+            "Remove self-loops.",
+            "Collapse parallel edges to a single edge, summing weight when weight_mode=edge_weight."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "alignment_mode",
+            "type": "enum",
+            "required": false,
+            "default": "global_one_to_one",
+            "allowed_values": [
+              "global_one_to_one",
+              "local_many_to_one"
+            ],
+            "description": "Whether every vertex of the smaller graph must receive exactly one distinct match, or high-scoring local correspondences are reported independently."
+          },
+          {
+            "name": "node_similarity_prior",
+            "type": "map<vertex_id_pair,number>_or_null",
+            "required": false,
+            "default": null,
+            "description": "Optional external similarity (e.g. sequence or attribute similarity) between specific cross-graph vertex pairs."
+          },
+          {
+            "name": "topology_weight",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "constraints": "value >= 0",
+            "description": "Relative weight of topological conservation versus node_similarity_prior in the objective."
+          },
+          {
+            "name": "top_k",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "For local_many_to_one, maximum number of correspondences to return, ranked by score."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "approximate",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether a heuristic/approximate alignment with a disclosed objective value is permitted; exact is intractable beyond small graphs."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "vertex_mapping",
+            "type": "array<object>",
+            "description": "Pairs of (graph_a_vertex, graph_b_vertex, score) realizing the alignment."
+          },
+          {
+            "name": "objective_value",
+            "type": "number",
+            "description": "Total conserved-edge weight (edge correctness) plus weighted node_similarity_prior achieved by vertex_mapping."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every eligible vertex (global mode) or the full requested top_k (local mode) was produced."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "edge_correctness",
+            "type": "number",
+            "description": "Fraction of graph_a edges whose mapped endpoints are also connected in graph_b."
+          },
+          {
+            "name": "conserved_edges",
+            "type": "array<object>",
+            "description": "Edge pairs, one from each graph, whose endpoints correspond under vertex_mapping."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Disclosed bound or confidence measure for an approximate alignment."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Maximize topology_weight times conserved-edge weight plus the sum of node_similarity_prior over the chosen vertex_mapping, subject to alignment_mode's cardinality constraint.",
+          "exactness": "Exact mode requires optimal=true and is only expected to terminate on small graph pairs; approximate mode must disclose objective_value and, when known, approximation_bound.",
+          "duplicate_policy": "global_one_to_one maps each vertex at most once in each direction; local_many_to_one may map one graph_b vertex to multiple graph_a vertices across separate reported correspondences.",
+          "ordering": "vertex_mapping is ordered by descending per-pair score with a stable tie break."
+        },
+        "validation_rules": [
+          "global_one_to_one vertex_mapping is injective in both directions.",
+          "objective_value recomputes from vertex_mapping, conserved_edges, and node_similarity_prior within tolerance.",
+          "edge_correctness, when returned, equals conserved edge count divided by graph_a edge count.",
+          "Every vertex and edge referenced exists in its respective normalized graph."
+        ],
+        "edge_cases": [
+          "Graphs of unequal vertex count under global_one_to_one map every vertex of the smaller graph and leave the rest of the larger graph unmapped.",
+          "Two isomorphic graphs admit a mapping with edge_correctness 1.0.",
+          "Disconnected input graphs are valid; alignment may map vertices across different components.",
+          "Empty node_similarity_prior degenerates to a purely topological alignment objective."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "edge-correctness recomputation",
+            "mapping cardinality constraint satisfaction",
+            "objective-value agreement with declared scoring"
+          ],
+          "performance": [
+            "end-to-end time",
+            "compute time",
+            "peak memory",
+            "vertex pairs scored per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
+      "intent_signals": [
+        "enumerate paths or cycles within a hop limit"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2014_gpu_chordless_cycles: No local executable GPU implementation to validate. 2022_gpu_elementary_circuits: No local executable GPU implementation to validate."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/26_hop_constrained_cycle_path_enumeration/papers/2014_gpu_chordless_cycles/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2014_gpu_chordless_cycles",
+          "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/26_hop_constrained_cycle_path_enumeration/papers/2022_gpu_elementary_circuits/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2022_gpu_elementary_circuits",
+          "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "hop_constrained_cycle_path_enumeration",
+        "name": "Hop-Constrained Simple Path and Cycle Enumeration",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Given a directed graph and a hop bound k, enumerate every simple (vertex-disjoint except endpoints) s-t path with at most k edges, or every simple cycle through a given vertex or edge with at most k edges.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed",
+            "weights": "ignored_unless_requested",
+            "timestamps": "optional_for_temporal_ordering_variant",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Remove self-loops; they cannot appear in a simple path or simple cycle of length >= 2.",
+            "Collapse parallel directed edges between the same ordered pair to one edge unless multiplicity is explicitly requested.",
+            "Reject undirected input unless an explicit directed projection (both directions) is requested."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "task",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "s_t_path",
+              "cycle_through_vertex",
+              "cycle_through_edge",
+              "all_cycles"
+            ],
+            "description": "Enumerate bounded-hop simple paths between two vertices, simple cycles through a specific vertex or edge, or every simple cycle up to the hop bound."
+          },
+          {
+            "name": "source",
+            "type": "vertex_id_or_null",
+            "required": false,
+            "default": null,
+            "description": "Required for s_t_path; the path/cycle start vertex for cycle_through_vertex."
+          },
+          {
+            "name": "target",
+            "type": "vertex_id_or_null",
+            "required": false,
+            "default": null,
+            "description": "Required for s_t_path; ignored otherwise."
+          },
+          {
+            "name": "anchor_edge",
+            "type": "edge_id_or_null",
+            "required": false,
+            "default": null,
+            "description": "Required for cycle_through_edge."
+          },
+          {
+            "name": "max_hops",
+            "type": "integer",
+            "required": true,
+            "constraints": "value >= 1",
+            "description": "Maximum number of edges permitted in a returned path or cycle."
+          },
+          {
+            "name": "result_limit",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Maximum number of paths/cycles to return; null means return all, bounded by max_hops and the graph."
+          },
+          {
+            "name": "chronological_order_required",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "When true and edges carry timestamps, require strictly increasing timestamps along the path/cycle."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "paths_or_cycles",
+            "type": "array<array<edge_id>>",
+            "description": "Each result as an ordered edge sequence forming a simple path or simple cycle within max_hops."
+          },
+          {
+            "name": "result_count",
+            "type": "integer",
+            "description": "Number of paths/cycles returned."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every qualifying path/cycle was found, or result_limit truncated the search."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "vertex_sequences",
+            "type": "array<array<vertex_id>>",
+            "description": "Vertex sequence corresponding to each returned edge sequence."
+          },
+          {
+            "name": "shortest_length_found",
+            "type": "integer",
+            "description": "Minimum hop count among returned results."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Enumerate every simple path or cycle meeting the task definition and max_hops without omission, up to result_limit and chronological_order_required.",
+          "exactness": "complete=true requires no qualifying path/cycle within scope was omitted; complete=false is only acceptable when result_limit truncated output.",
+          "duplicate_policy": "Each distinct edge sequence is returned once; a cycle and its distinct rotations starting at different edges are considered the same cycle and returned once using a canonical start edge.",
+          "ordering": "paths_or_cycles have no required global ordering unless result_limit is set, in which case shorter paths/cycles are prioritized before truncation."
+        },
+        "validation_rules": [
+          "Every returned sequence is a valid walk in the normalized graph with no repeated vertex (except the shared start/end vertex of a cycle).",
+          "Every returned sequence has at most max_hops edges.",
+          "s_t_path results start at source and end at target.",
+          "cycle_through_vertex and cycle_through_edge results include the specified vertex or edge.",
+          "chronological_order_required=true results have strictly increasing edge timestamps."
+        ],
+        "edge_cases": [
+          "source equals target is invalid for s_t_path but is exactly the cycle_through_vertex case.",
+          "max_hops smaller than the shortest qualifying path/cycle yields an empty, complete result.",
+          "A vertex or edge with no incident cycle returns an empty, complete result for the cycle tasks.",
+          "Self-loops and multi-edges, once normalized away, never appear in output sequences."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "exhaustive agreement with brute-force DFS enumeration on small/medium fixtures",
+            "no duplicate or invalid sequence",
+            "hop-bound and chronological-order compliance"
+          ],
+          "performance": [
+            "end-to-end time",
+            "search time",
+            "peak memory",
+            "paths/cycles enumerated per second",
+            "pruned branches per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/27_group_steiner_tree/problem.json",
+      "intent_signals": [
+        "minimum-cost tree connecting at least one member of each group"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2021_gpusteiner_kmb: 8/8 singleton-group tree fixtures: cost and complete returned edge set checked. General group Steiner and approximation guarantees unverified. 2022_gpu_vlsi_gst: 2/2 singleton-group path costs. General group coverage and certificate checks remain missing; no explicit license detected. 2025_gpu4gst: Both 8- and 64-vertex path queries time out after 20 seconds, even after selecting the available GPU. No returned tree witness; no explicit license detected."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": "61e2c94def74d84d4d79d59c7499218ab75d720e",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/mrprajesh/gpuSteiner",
+            "status": "cloned"
+          },
+          "evidence": "results/gpusteiner.json",
+          "metadata_path": "problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/metadata.json",
+          "note": "8/8 singleton-group tree fixtures: cost and complete returned edge set checked. General group Steiner and approximation guarantees unverified.",
+          "paper_id": "2021_gpusteiner_kmb",
+          "problem_dir": "27_group_steiner_tree",
+          "promoted_operation": null,
+          "screen_passed": 8,
+          "screen_total": 8,
+          "validation_status": "partial_pass"
+        },
+        {
+          "code": {
+            "commit": "f3da24f2621b9dcde89f71f224e4ca49c5e5d4bc",
+            "error": null,
+            "license_file": null,
+            "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+            "local_path": "code",
+            "source_url": "https://github.com/yosephbasileal/group-steiner-vlsi-routing-gpu",
+            "status": "cloned"
+          },
+          "evidence": "results/gst_vlsi.json",
+          "metadata_path": "problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/metadata.json",
+          "note": "2/2 singleton-group path costs. General group coverage and certificate checks remain missing; no explicit license detected.",
+          "paper_id": "2022_gpu_vlsi_gst",
+          "problem_dir": "27_group_steiner_tree",
+          "promoted_operation": null,
+          "screen_passed": 2,
+          "screen_total": 2,
+          "validation_status": "partial_pass"
+        },
+        {
+          "code": {
+            "commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+            "error": null,
+            "license_file": null,
+            "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+            "local_path": "code",
+            "source_url": "https://github.com/toziki/GPU4GST-sigmod",
+            "status": "cloned"
+          },
+          "evidence": "results/gpu4gst.json",
+          "metadata_path": "problems/27_group_steiner_tree/papers/2025_gpu4gst/metadata.json",
+          "note": "Both 8- and 64-vertex path queries time out after 20 seconds, even after selecting the available GPU. No returned tree witness; no explicit license detected.",
+          "paper_id": "2025_gpu4gst",
+          "problem_dir": "27_group_steiner_tree",
+          "promoted_operation": null,
+          "screen_passed": 0,
+          "screen_total": 2,
+          "validation_status": "correctness_fail"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "group_steiner_tree",
+        "name": "Group Steiner Tree",
+        "category": "dense_structure_mining",
+        "problem_statement": "Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "required_nonnegative",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges by keeping the minimum nonnegative weight.",
+            "Reject negative edge weights."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "groups",
+            "type": "array<array<vertex_id>>",
+            "required": true,
+            "constraints": "at least one group; every group nonempty; groups may overlap and may share vertices with each other",
+            "description": "Each group must contribute at least one vertex to the returned tree."
+          },
+          {
+            "name": "required_vertices",
+            "type": "array<vertex_id>_or_null",
+            "required": false,
+            "default": null,
+            "description": "Optional vertices (e.g. single-terminal requirements) that must appear in the tree regardless of group membership; equivalent to singleton groups."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether a certified-approximation result (e.g. a 2-approximation) with a disclosed ratio is permitted instead of an exact minimum."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "tree_edges",
+            "type": "array<edge_id>",
+            "description": "Edges forming the returned connected subtree."
+          },
+          {
+            "name": "tree_weight",
+            "type": "number",
+            "description": "Sum of weights of tree_edges."
+          },
+          {
+            "name": "selected_vertices",
+            "type": "array<vertex_id>",
+            "description": "Vertices spanned by tree_edges, including at least one representative per group."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "group_representatives",
+            "type": "map<integer,vertex_id>",
+            "description": "The specific vertex chosen to satisfy each group index, when a group has multiple qualifying vertices in the tree."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified worst-case ratio to optimal for an approximate result."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Minimize tree_weight over connected subtrees of the normalized graph that contain at least one vertex from every group in groups and every vertex in required_vertices.",
+          "exactness": "Exact mode requires optimal=true; approximate mode must disclose approximation_bound.",
+          "duplicate_policy": "Multiple minimum-weight trees may exist; return one unless alternates are explicitly requested.",
+          "ordering": "tree_edges and selected_vertices are unordered sets."
+        },
+        "validation_rules": [
+          "tree_edges forms a single connected acyclic subgraph (a tree) in the normalized graph.",
+          "Every group in groups has at least one vertex in selected_vertices.",
+          "Every vertex in required_vertices is in selected_vertices.",
+          "tree_weight equals the sum of tree_edges weights.",
+          "Reported optimal=true matches independent verification against an exhaustive oracle on small fixtures."
+        ],
+        "edge_cases": [
+          "A single group containing the whole vertex set reduces to the cheapest single vertex, with an empty tree_edges and tree_weight zero.",
+          "Groups that already share a common vertex may be satisfied by a single-vertex tree.",
+          "Disconnected graphs where some group is entirely unreachable from another group make the instance infeasible; this must be reported rather than silently returning a partial tree.",
+          "Overlapping groups may be satisfied by the same vertex without double-selecting it."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "tree-weight agreement with exact oracle on small/medium fixtures",
+            "connectivity and acyclicity check",
+            "group-coverage completeness"
+          ],
+          "performance": [
+            "end-to-end time",
+            "search time",
+            "peak memory",
+            "groups processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/28_influence_maximization/problem.json",
+      "intent_signals": [
+        "choose seed nodes to maximize expected diffusion",
+        "independent cascade or linear threshold influence"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2020_curipples: CMake cannot find spdlog; dependency set is not installed. No algorithm correctness claim. 2021_gim: 18/18 probability-one IC screens meet the predeclared 0.63 quality threshold. General probabilities, LT semantics and failure bounds remain unvalidated. 2021_superfuser: 17/18 probability-one screens meet the 0.63 target. One 64-chain run selects vertex 25 (spread 39/64, below the test threshold). This is a failed quality screen, not a proof that every heuristic run is invalid. 2024_difuser: No local executable GPU implementation to validate."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": "82b20dc261ea8d097ecd31c2d2ad07c218abc488",
+            "error": null,
+            "license_file": "code/LICENSE.rst",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/pnnl/ripples",
+            "status": "cloned"
+          },
+          "evidence": "builds/curipples_configure.json",
+          "metadata_path": "problems/28_influence_maximization/papers/2020_curipples/metadata.json",
+          "note": "CMake cannot find spdlog; dependency set is not installed. No algorithm correctness claim.",
+          "paper_id": "2020_curipples",
+          "problem_dir": "28_influence_maximization",
+          "promoted_operation": null,
+          "validation_status": "build_blocked"
+        },
+        {
+          "code": {
+            "commit": "d84b81a47606aa7912a8d1a96770568f92f5c98d",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/LIS-Laboratory/gim",
+            "status": "cloned"
+          },
+          "evidence": "results/gim.json",
+          "metadata_path": "problems/28_influence_maximization/papers/2021_gim/metadata.json",
+          "note": "18/18 probability-one IC screens meet the predeclared 0.63 quality threshold. General probabilities, LT semantics and failure bounds remain unvalidated.",
+          "paper_id": "2021_gim",
+          "problem_dir": "28_influence_maximization",
+          "promoted_operation": null,
+          "screen_passed": 18,
+          "screen_total": 18,
+          "validation_status": "partial_pass"
+        },
+        {
+          "code": {
+            "commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+            "error": null,
+            "license_file": null,
+            "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+            "local_path": "code",
+            "source_url": "https://github.com/ggokturk/infuser",
+            "status": "cloned"
+          },
+          "evidence": "results/superfuser.json",
+          "metadata_path": "problems/28_influence_maximization/papers/2021_superfuser/metadata.json",
+          "note": "17/18 probability-one screens meet the 0.63 target. One 64-chain run selects vertex 25 (spread 39/64, below the test threshold). This is a failed quality screen, not a proof that every heuristic run is invalid.",
+          "paper_id": "2021_superfuser",
+          "problem_dir": "28_influence_maximization",
+          "promoted_operation": null,
+          "screen_passed": 17,
+          "screen_total": 18,
+          "validation_status": "correctness_fail"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/28_influence_maximization/papers/2024_difuser/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2024_difuser",
+          "problem_dir": "28_influence_maximization",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "influence_maximization",
+        "name": "Influence Maximization under Diffusion Models",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed",
+            "weights": "required_as_influence_probability_or_threshold_input",
+            "timestamps": "ignored",
+            "vertex_attributes": "optional_as_threshold",
+            "edge_attributes": "optional"
+          },
+          "normalization": [
+            "Treat edge weight as the independent-cascade activation probability, or as linear-threshold edge weight depending on diffusion_model.",
+            "Reject edge weight outside [0,1] for independent_cascade.",
+            "Collapse parallel edges per diffusion_model's combination rule (declared explicitly, since probabilities do not sum like capacities).",
+            "Remove self-loops; they do not affect diffusion."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "diffusion_model",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "independent_cascade",
+              "linear_threshold"
+            ],
+            "description": "Stochastic process governing how activation spreads from seeds."
+          },
+          {
+            "name": "seed_set_size",
+            "type": "integer",
+            "required": true,
+            "constraints": "value >= 1",
+            "description": "Number of seed vertices to select (the budget k)."
+          },
+          {
+            "name": "vertex_thresholds",
+            "type": "map<vertex_id,number>_or_null",
+            "required": false,
+            "default": null,
+            "description": "Per-vertex activation thresholds for linear_threshold; null means thresholds are drawn uniformly at random per the model's standard definition."
+          },
+          {
+            "name": "estimation_method",
+            "type": "enum",
+            "required": false,
+            "default": "reverse_influence_sampling",
+            "allowed_values": [
+              "reverse_influence_sampling",
+              "monte_carlo_simulation"
+            ],
+            "description": "Technique used to estimate expected spread while selecting seeds."
+          },
+          {
+            "name": "approximation_guarantee",
+            "type": "number",
+            "required": false,
+            "default": 0.63,
+            "constraints": "0 < value <= 1",
+            "description": "Target multiplicative approximation ratio to the optimal expected spread (e.g. 1 - 1/e for the standard greedy guarantee)."
+          },
+          {
+            "name": "failure_probability",
+            "type": "number",
+            "required": false,
+            "default": 0.001,
+            "constraints": "0 < value < 1",
+            "description": "Allowed probability that the returned seed set fails to meet approximation_guarantee, under the sampling method's own randomness."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "seed_set",
+            "type": "array<vertex_id>",
+            "description": "Selected seed vertices, with cardinality equal to seed_set_size."
+          },
+          {
+            "name": "expected_spread",
+            "type": "number",
+            "description": "Estimated expected number of activated vertices when diffusion starts from seed_set."
+          },
+          {
+            "name": "guarantee_met",
+            "type": "boolean",
+            "description": "Whether the returned seed_set is certified to meet approximation_guarantee under failure_probability."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "marginal_gains",
+            "type": "array<number>",
+            "description": "Estimated marginal expected-spread gain contributed by each seed, in selection order."
+          },
+          {
+            "name": "sample_count",
+            "type": "integer",
+            "description": "Number of reverse-reachable sets or Monte Carlo simulations used to produce the estimate."
+          },
+          {
+            "name": "confidence_interval",
+            "type": "object",
+            "description": "Statistical interval around expected_spread for the estimation method used."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Choose seed_set of size seed_set_size maximizing expected_spread under diffusion_model, where expected_spread is the expectation over the model's randomness of the number of eventually-activated vertices.",
+          "exactness": "Exact computation of expected_spread is #P-hard in general; guarantee_met=true requires the disclosed approximation_guarantee and failure_probability to hold under the estimation_method's established theoretical bounds.",
+          "duplicate_policy": "seed_set contains each vertex at most once.",
+          "ordering": "seed_set has no required output ordering unless marginal_gains is returned, in which case order reflects the greedy selection sequence."
+        },
+        "validation_rules": [
+          "seed_set has exactly seed_set_size distinct vertices that exist in the graph.",
+          "expected_spread is non-negative and at most the total vertex count.",
+          "Re-estimating expected_spread for the returned seed_set via independent simulation falls within confidence_interval or a stated tolerance.",
+          "vertex_thresholds, when supplied, are all within [0,1] for linear_threshold."
+        ],
+        "edge_cases": [
+          "seed_set_size greater than or equal to the vertex count makes expected_spread equal to the vertex count.",
+          "A graph with no edges gives expected_spread equal to seed_set_size regardless of diffusion_model.",
+          "All edge probabilities zero under independent_cascade gives expected_spread equal to seed_set_size.",
+          "Disconnected components require seeds to be distributed to maximize total spread, not concentrated in one component."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "expected-spread estimate agreement with high-sample-count simulation oracle",
+            "cardinality and feasibility checks",
+            "guarantee validity under disclosed sampling parameters"
+          ],
+          "performance": [
+            "end-to-end time",
+            "sampling/simulation time",
+            "peak memory",
+            "reverse-reachable sets or simulations per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/29_simrank_vertex_similarity/problem.json",
+      "intent_signals": [
+        "SimRank similarity",
+        "similarity based on neighbors"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2023_clipsim: No local executable GPU implementation to validate."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/29_simrank_vertex_similarity/papers/2023_clipsim/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2023_clipsim",
+          "problem_dir": "29_simrank_vertex_similarity",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "simrank_vertex_similarity",
+        "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Compute a pairwise structural similarity score between vertices based on the recursive principle that two vertices are similar to the extent their in-neighbors (or neighbors) are similar, for a single source vertex, a query pair, or top-k over all vertices.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed_or_undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Preserve direction when similarity is defined over in-neighbors; project to undirected when undirected_projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges to a single edge."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "query_mode",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "single_pair",
+              "single_source_all",
+              "top_k_pairs"
+            ],
+            "description": "Score one specific pair, one vertex against every other vertex, or the highest-similarity pairs/vertices overall."
+          },
+          {
+            "name": "source_vertex",
+            "type": "vertex_id_or_null",
+            "required": false,
+            "default": null,
+            "description": "Required for single_source_all; the fixed vertex in single_pair's pair."
+          },
+          {
+            "name": "target_vertex",
+            "type": "vertex_id_or_null",
+            "required": false,
+            "default": null,
+            "description": "Required for single_pair."
+          },
+          {
+            "name": "decay_factor",
+            "type": "number",
+            "required": false,
+            "default": 0.8,
+            "constraints": "0 < value < 1",
+            "description": "SimRank decay constant C controlling how quickly similarity attenuates with path length."
+          },
+          {
+            "name": "direction_mode",
+            "type": "enum",
+            "required": false,
+            "default": "incoming",
+            "allowed_values": [
+              "incoming",
+              "undirected_projection"
+            ],
+            "description": "Whether similarity propagates over in-neighbors (classic SimRank) or an undirected projection."
+          },
+          {
+            "name": "top_k",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Result size limit for single_source_all or top_k_pairs."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "approximate",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether a sampling-based or truncated-iteration approximation with a disclosed error bound is permitted; exact fixed-point computation is expensive beyond small graphs."
+          },
+          {
+            "name": "convergence_tolerance",
+            "type": "number",
+            "required": false,
+            "default": 0.0001,
+            "constraints": "value > 0",
+            "description": "Maximum per-pair residual for declaring convergence in exact mode."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "similarity_scores",
+            "type": "array<object>",
+            "description": "Vertex pair and similarity score in [0,1], sized and ordered per query_mode."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every eligible pair/vertex was scored and output was not truncated beyond top_k."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "converged",
+            "type": "boolean",
+            "description": "Whether the iterative computation met convergence_tolerance."
+          },
+          {
+            "name": "iterations",
+            "type": "integer",
+            "description": "Fixed-point iterations or sampled random walks performed."
+          },
+          {
+            "name": "error_bound",
+            "type": "number",
+            "description": "Disclosed bound on approximation error for approximate mode."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Compute the SimRank fixed point sim(a,b) = (decay_factor / (|In(a)||In(b)|)) * sum over in-neighbor pairs of sim(i,j), with sim(a,a) = 1 for every vertex a, under direction_mode.",
+          "exactness": "Exact mode requires every reported score within convergence_tolerance of the fixed point; approximate mode must disclose error_bound.",
+          "duplicate_policy": "Each unordered vertex pair is scored once; sim(a,b) == sim(b,a).",
+          "ordering": "single_source_all and top_k_pairs are ordered by descending score with a stable vertex-ID tie break; single_pair returns one score."
+        },
+        "validation_rules": [
+          "Every similarity score is in [0,1].",
+          "sim(v,v) == 1 for every scored vertex v.",
+          "Scores are symmetric: sim(a,b) reported equals sim(b,a) if both are queried.",
+          "Recomputing scores via direct fixed-point iteration on small fixtures matches reported values within tolerance."
+        ],
+        "edge_cases": [
+          "A vertex with no in-neighbors has similarity zero to every other vertex except itself.",
+          "Two vertices with identical in-neighbor sets converge toward similarity close to 1 as iterations increase.",
+          "Disconnected components yield similarity zero across components (other than self-similarity).",
+          "decay_factor near zero makes all off-diagonal similarities near zero; near one slows convergence sharply."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "score error versus an exact fixed-point oracle on small/medium fixtures",
+            "symmetry and self-similarity checks",
+            "rank agreement at top_k"
+          ],
+          "performance": [
+            "end-to-end time",
+            "compute time",
+            "peak memory",
+            "iterations or random walks",
+            "pairs scored per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/30_balanced_graph_partitioning/problem.json",
+      "intent_signals": [
+        "balanced graph partition with small edge cut"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2024_gkway: No local executable GPU implementation to validate. 2024_hyperg: No local executable GPU implementation to validate. 2025_igkway: No local executable GPU implementation to validate."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/30_balanced_graph_partitioning/papers/2024_gkway/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2024_gkway",
+          "problem_dir": "30_balanced_graph_partitioning",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/30_balanced_graph_partitioning/papers/2024_hyperg/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2024_hyperg",
+          "problem_dir": "30_balanced_graph_partitioning",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/30_balanced_graph_partitioning/papers/2025_igkway/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2025_igkway",
+          "problem_dir": "30_balanced_graph_partitioning",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "balanced_graph_partitioning",
+        "name": "Balanced k-Way Graph Partitioning",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Given an undirected graph and a target part count k, assign every vertex to exactly one of k parts of approximately equal size so that the total weight of edges crossing between parts is minimized.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "optional_nonnegative",
+            "timestamps": "ignored",
+            "vertex_attributes": "optional_as_balance_weight",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops; they never cross a partition boundary.",
+            "Collapse parallel edges by summing nonnegative weights; use unit weight when edge_weight_mode=unweighted."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "num_parts",
+            "type": "integer",
+            "required": true,
+            "constraints": "value >= 2 and value <= vertex_count",
+            "description": "Target number k of parts."
+          },
+          {
+            "name": "balance_mode",
+            "type": "enum",
+            "required": false,
+            "default": "vertex_count",
+            "allowed_values": [
+              "vertex_count",
+              "vertex_weight"
+            ],
+            "description": "Whether a part's size is measured by vertex count or by the sum of declared vertex weights."
+          },
+          {
+            "name": "vertex_weights",
+            "type": "map<vertex_id,number>_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "required and nonnegative when balance_mode=vertex_weight",
+            "description": "Per-vertex balance weight."
+          },
+          {
+            "name": "imbalance_tolerance",
+            "type": "number",
+            "required": false,
+            "default": 0.03,
+            "constraints": "value >= 0",
+            "description": "Maximum allowed fractional deviation of any part's size from the ideal average size (e.g. 0.03 permits up to 3% imbalance)."
+          },
+          {
+            "name": "edge_weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "Use unit edge cost or declared nonnegative edge weights for the cut objective."
+          },
+          {
+            "name": "objective",
+            "type": "enum",
+            "required": false,
+            "default": "edge_cut",
+            "allowed_values": [
+              "edge_cut",
+              "normalized_cut"
+            ],
+            "description": "Minimize total crossing edge weight, or total crossing edge weight normalized by part size (conductance-style objective)."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "approximate",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Balanced partitioning is NP-hard; approximate (heuristic, multilevel) solutions are the norm beyond tiny graphs."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "partition_assignment",
+            "type": "map<vertex_id,integer>",
+            "description": "Part index in [0, num_parts) assigned to every vertex."
+          },
+          {
+            "name": "objective_value",
+            "type": "number",
+            "description": "Achieved value of the selected objective (edge_cut or normalized_cut)."
+          },
+          {
+            "name": "part_sizes",
+            "type": "array<number>",
+            "description": "Size of each part under balance_mode, indexed by part number."
+          },
+          {
+            "name": "balanced",
+            "type": "boolean",
+            "description": "Whether every part's size is within imbalance_tolerance of the ideal average."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "imbalance_ratio",
+            "type": "number",
+            "description": "Maximum achieved fractional deviation of any part's size from the ideal average."
+          },
+          {
+            "name": "cut_edges",
+            "type": "array<edge_id>",
+            "description": "Edges whose endpoints fall in different parts."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Disclosed bound or gap-to-best-known for an approximate result, when available."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Minimize objective_value over partition_assignment subject to every part's balance_mode size being within imbalance_tolerance of the ideal average size (total size divided by num_parts).",
+          "exactness": "Exact mode requires optimal=true and is only expected to terminate on small graphs; approximate mode must disclose imbalance_ratio and, when known, approximation_bound.",
+          "duplicate_policy": "Each vertex is assigned to exactly one part.",
+          "ordering": "Part indices are an arbitrary stable labeling, not a ranking."
+        },
+        "validation_rules": [
+          "Every vertex appears in partition_assignment with exactly one part index in [0, num_parts).",
+          "part_sizes recomputes exactly from partition_assignment and balance_mode.",
+          "objective_value recomputes exactly from partition_assignment, cut_edges, and the normalized graph.",
+          "balanced=true only when every entry of part_sizes is within imbalance_tolerance of the ideal average."
+        ],
+        "edge_cases": [
+          "num_parts equal to vertex_count makes every part a single vertex with objective_value equal to the total edge weight.",
+          "num_parts == 1 is rejected; a single-part result is trivial and not a meaningful partitioning request.",
+          "A connected component much larger than the ideal part size forces either splitting that component or accepting it cannot be perfectly balanced within imbalance_tolerance; the latter must be reported via balanced=false rather than silently relaxed.",
+          "Isolated vertices may be assigned to any part to help satisfy balance without affecting objective_value."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "objective-value recomputation",
+            "balance-constraint satisfaction",
+            "assignment completeness (every vertex assigned exactly once)"
+          ],
+          "performance": [
+            "end-to-end time",
+            "coarsening time",
+            "refinement time",
+            "peak memory",
+            "vertices processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/31_bipartite_matching_assignment/problem.json",
+      "intent_signals": [
+        "minimum cost one-to-one assignment",
+        "maximum cardinality or weight bipartite matching"
+      ],
+      "library_support": {
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "linear-assignment"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "linear-assignment",
+            "supported_profile": "complete square minimum-cost perfect assignment; <=64 per side; costs integer 0..999; declared sides"
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": null,
+            "error": "fatal: repository 'http://tda.gatech.edu/software/matchmaker2/index.html/' not found",
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": "http://tda.gatech.edu/software/matchmaker2/index.html",
+            "status": "clone_failed"
+          },
+          "metadata_path": "problems/31_bipartite_matching_assignment/papers/2013_deveci_mcm_gpu/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2013_deveci_mcm_gpu",
+          "problem_dir": "31_bipartite_matching_assignment",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+            "error": null,
+            "license_file": "code/LICENSE.txt",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/paclopes/HungarianGPU",
+            "status": "cloned"
+          },
+          "evidence": "results/hungarian.json",
+          "metadata_path": "problems/31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json",
+          "note": "11/11 square integer minimum-cost assignment tests versus SciPy, including size 64. Only the bounded perfect-assignment profile is promoted.",
+          "paper_id": "2019_hungariangpu",
+          "problem_dir": "31_bipartite_matching_assignment",
+          "promoted_operation": "linear-assignment",
+          "promotion_evidence": "results/library_expansion.json",
+          "screen_passed": 11,
+          "screen_total": 11,
+          "validation_status": "validated_profile"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "bipartite_matching_assignment",
+        "name": "Bipartite Matching and Linear Assignment",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given a bipartite graph, find a matching (a set of edges with no shared endpoints) that is optimal under a declared objective: maximum cardinality, maximum total weight, or minimum total cost.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected_bipartite",
+            "weights": "required_for_weighted_objectives",
+            "timestamps": "ignored",
+            "vertex_attributes": "required_side_label",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject edges whose endpoints share the same declared side.",
+            "Reject self-loops (impossible in valid bipartite input).",
+            "Collapse parallel edges between the same pair by keeping the single best-objective weight."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "objective",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "maximum_cardinality",
+              "maximum_weight",
+              "minimum_cost"
+            ],
+            "description": "Maximize the number of matched pairs, maximize total matched weight, or minimize total matched cost."
+          },
+          {
+            "name": "weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "maximum_cardinality always behaves as unweighted; maximum_weight and minimum_cost require edge_weight."
+          },
+          {
+            "name": "perfect_matching_required",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether every vertex on the smaller side (or both sides, if equal size) must be covered by the returned matching; infeasibility must be reported explicitly rather than returning a partial match."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "This problem is polynomial-time solvable; exact is the default, with approximate permitted only for very large instances with a disclosed bound."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "matching_edges",
+            "type": "array<edge_id>",
+            "description": "Selected edges forming the matching; no two share a vertex."
+          },
+          {
+            "name": "matching_size",
+            "type": "integer",
+            "description": "Number of matched pairs, equal to |matching_edges|."
+          },
+          {
+            "name": "objective_value",
+            "type": "number",
+            "description": "Total weight/cost of matching_edges under the declared objective (equal to matching_size for maximum_cardinality)."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "unmatched_left_vertices",
+            "type": "array<vertex_id>",
+            "description": "Left-side vertices not covered by matching_edges."
+          },
+          {
+            "name": "unmatched_right_vertices",
+            "type": "array<vertex_id>",
+            "description": "Right-side vertices not covered by matching_edges."
+          },
+          {
+            "name": "feasible",
+            "type": "boolean",
+            "description": "Whether a perfect matching exists, when perfect_matching_required=true."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified relative error bound for an approximate result."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Select a matching optimal under the declared objective: maximize |matching_edges| for maximum_cardinality, maximize total weight for maximum_weight, or minimize total weight for minimum_cost.",
+          "exactness": "Exact mode requires optimal=true; this problem admits polynomial-time exact algorithms (augmenting paths, Hungarian algorithm), so approximate mode is only for extreme scale and must disclose approximation_bound.",
+          "duplicate_policy": "Each vertex appears in at most one entry of matching_edges.",
+          "ordering": "matching_edges is an unordered set."
+        },
+        "validation_rules": [
+          "matching_edges forms a valid matching (no two edges share an endpoint) in the normalized bipartite graph.",
+          "matching_size equals |matching_edges|.",
+          "objective_value recomputes exactly as the sum of matched edge weights (or equals matching_size for maximum_cardinality).",
+          "perfect_matching_required=true with feasible=true implies every vertex on the smaller (or both, if equal) side is covered; feasible=false must correspond to a provably infeasible instance."
+        ],
+        "edge_cases": [
+          "An edgeless graph has matching_size zero and empty matching_edges.",
+          "A graph admitting a perfect matching must return one when perfect_matching_required=true.",
+          "Maximum matching size is bounded above by the smaller side's vertex count.",
+          "Negative weights under minimum_cost are valid input and must not be clamped to zero."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "matching validity (no shared endpoints)",
+            "optimality agreement with an exact oracle (e.g. Hopcroft-Karp or Hungarian algorithm) on small/medium fixtures",
+            "objective-value recomputation",
+            "feasibility correctness for perfect_matching_required"
+          ],
+          "performance": [
+            "end-to-end time",
+            "solver time",
+            "peak memory",
+            "augmenting paths or auction rounds performed"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/32_signed_network_structural_balance/problem.json",
+      "intent_signals": [
+        "signed network balance",
+        "minimum frustration partition"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2021_graphbplus: Three execution smoke checks succeeded. Output is edge/tree sampling statistics rather than the required minimum-frustration partition and certificate. Mathematical correctness is not certified. 2026_ecl_sgb: Three execution smoke checks succeeded. Output is edge/tree sampling statistics rather than the required minimum-frustration partition and certificate. Mathematical correctness is not certified."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": "85dc76604835484d9cbc0f12b243c9c290737e75",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/burtscher/graphBplus",
+            "status": "cloned"
+          },
+          "evidence": "results/graphbplus.json",
+          "metadata_path": "problems/32_signed_network_structural_balance/papers/2021_graphbplus/metadata.json",
+          "note": "Three execution smoke checks succeeded. Output is edge/tree sampling statistics rather than the required minimum-frustration partition and certificate. Mathematical correctness is not certified.",
+          "paper_id": "2021_graphbplus",
+          "problem_dir": "32_signed_network_structural_balance",
+          "promoted_operation": null,
+          "screen_passed": 3,
+          "screen_total": 3,
+          "validation_status": "artifact_mismatch"
+        },
+        {
+          "code": {
+            "commit": "230b2e8b7e82a39e7e627424a77ae724f7f8a92c",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/burtscher/ECL-SGB",
+            "status": "cloned"
+          },
+          "evidence": "results/ecl_sgb.json",
+          "metadata_path": "problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/metadata.json",
+          "note": "Three execution smoke checks succeeded. Output is edge/tree sampling statistics rather than the required minimum-frustration partition and certificate. Mathematical correctness is not certified.",
+          "paper_id": "2026_ecl_sgb",
+          "problem_dir": "32_signed_network_structural_balance",
+          "promoted_operation": null,
+          "screen_passed": 3,
+          "screen_total": 3,
+          "validation_status": "artifact_mismatch"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "signed_network_structural_balance",
+        "name": "Signed Network Structural Balance and Frustration Minimization",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Given a graph whose edges are each labeled positive or negative, determine whether it is structurally balanced (partitionable into two factions so every positive edge stays within a faction and every negative edge crosses factions), and when it is not, find a two-faction assignment minimizing the total weight of frustrated edges.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "optional_nonnegative_as_frustration_cost",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "required_sign_label"
+          },
+          "normalization": [
+            "Every edge's type field must be exactly 'positive' or 'negative'; reject edges with any other or missing type.",
+            "Remove self-loops; a self-loop cannot be frustrated or unfrustrated under this definition.",
+            "Collapse parallel edges between the same pair only when they agree in sign; reject contradictory parallel signed edges between the same pair unless an explicit resolution policy is supplied."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "task",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "balance_check",
+              "frustration_minimization"
+            ],
+            "description": "Test exact structural balance via the cycle-based criterion, or find a minimum-frustration two-faction assignment."
+          },
+          {
+            "name": "weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "Count frustrated edges or sum their declared nonnegative weights."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "approximate",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "balance_check is always solved exactly in linear time; frustration_minimization is NP-hard in general and approximate mode must disclose a bound."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "balanced",
+            "type": "boolean",
+            "description": "Whether the graph is structurally balanced, i.e. the minimum achievable frustrated weight is zero."
+          },
+          {
+            "name": "faction_assignment",
+            "type": "map<vertex_id,enum[A,B]>",
+            "description": "Two-faction partition of every vertex realizing the reported frustrated_weight."
+          },
+          {
+            "name": "frustrated_weight",
+            "type": "number",
+            "description": "Total weight (or count, under weight_mode=unweighted) of frustrated edges under faction_assignment: positive edges crossing factions plus negative edges within a faction."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven for the requested task."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "frustrated_edges",
+            "type": "array<edge_id>",
+            "description": "Edges violating faction_assignment under the sign rule."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified bound or gap-to-best-known for an approximate frustration_minimization result."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Find faction_assignment minimizing frustrated_weight, where a positive edge is frustrated if its endpoints are in different factions and a negative edge is frustrated if its endpoints are in the same faction; balanced=true exactly when the achieved minimum frustrated_weight is zero.",
+          "exactness": "balance_check always returns optimal=true via the linear-time cycle-based (parity-propagation) test; frustration_minimization is NP-hard in general, so approximate mode must disclose approximation_bound.",
+          "duplicate_policy": "Each vertex is assigned to exactly one of the two factions (A or B).",
+          "ordering": "faction_assignment is an unordered partition; the A/B labels are arbitrary beyond grouping and may be swapped per connected component."
+        },
+        "validation_rules": [
+          "Every edge's type in the normalized graph is exactly 'positive' or 'negative'.",
+          "frustrated_weight recomputes exactly from faction_assignment, edge signs, and (if weight_mode=edge_weight) edge weights.",
+          "balanced=true is independently verifiable via the standard cycle criterion: every cycle has an even number of negative edges.",
+          "balance_check always returns optimal=true."
+        ],
+        "edge_cases": [
+          "An all-positive graph is trivially balanced by placing each connected component entirely in one faction.",
+          "A single negative edge between two otherwise-isolated vertices is trivially balanced by placing its endpoints in different factions.",
+          "Disconnected graphs: each connected component's faction assignment, and which label is 'A' vs 'B', is independent of other components.",
+          "A graph containing an odd negative cycle cannot be balanced; frustration_minimization must still return a feasible assignment with frustrated_weight > 0."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "balance-test agreement with the cycle-based oracle on small/medium fixtures",
+            "frustrated-weight recomputation",
+            "faction-assignment completeness (every vertex assigned exactly once)"
+          ],
+          "performance": [
+            "end-to-end time",
+            "compute time",
+            "peak memory",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/33_transitive_closure_reachability/problem.json",
+      "intent_signals": [
+        "all reachable ordered pairs",
+        "directed transitive closure",
+        "reachability queries or reusable index"
+      ],
+      "library_support": {
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "transitive-closure"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "transitive-closure",
+            "supported_profile": "directed full reflexive materialized closure; <=1024 vertices; build_index=false"
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/33_transitive_closure_reachability/papers/2021_atc/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2021_atc",
+          "problem_dir": "33_transitive_closure_reachability",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/harp-lab/gdlog",
+            "status": "cloned"
+          },
+          "evidence": "results/gdlog_tc.json",
+          "metadata_path": "problems/33_transitive_closure_reachability/papers/2024_gdlog/metadata.json",
+          "note": "8/8 full pair-set checks. Native adapter also passes a 128-cycle (16,384 pairs), removing the diagnostic printer cap. SM89 is pinned after the inherited SM52 build failed.",
+          "paper_id": "2024_gdlog",
+          "problem_dir": "33_transitive_closure_reachability",
+          "promoted_operation": "transitive-closure",
+          "promotion_evidence": "results/library_expansion.json",
+          "screen_passed": 8,
+          "screen_total": 8,
+          "validation_status": "validated_profile"
+        },
+        {
+          "code": {
+            "commit": null,
+            "error": null,
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": null,
+            "status": "not_available"
+          },
+          "metadata_path": "problems/33_transitive_closure_reachability/papers/2026_curpq/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2026_curpq",
+          "problem_dir": "33_transitive_closure_reachability",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "transitive_closure_reachability",
+        "name": "Transitive Closure and Reachability Indexing",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Given a directed graph, determine for queried vertex pairs whether the target is reachable from the source via a directed path, and optionally materialize or index full reachability to answer many such queries efficiently.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Collapse parallel directed edges between the same ordered pair to one edge.",
+            "Retain self-loops only insofar as every vertex already reaches itself by the reflexive convention; a self-loop does not change any reachability result.",
+            "Reject undirected input unless an explicit directed projection (both directions) is requested."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "query_mode",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "single_pair",
+              "batch_pairs",
+              "full_transitive_closure"
+            ],
+            "description": "Answer one (source,target) pair, a batch of pairs, or characterize reachability for every ordered pair."
+          },
+          {
+            "name": "query_pairs",
+            "type": "array<object>_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "required and nonempty for single_pair (exactly one entry) and batch_pairs",
+            "description": "List of {source, target} pairs to answer."
+          },
+          {
+            "name": "build_index",
+            "type": "boolean",
+            "required": false,
+            "default": true,
+            "description": "Whether to construct a reusable reachability index amortizing cost across future queries, versus a one-off traversal per query."
+          },
+          {
+            "name": "enumerate_closure_edges",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "For full_transitive_closure, whether to return every reachable (source,target) pair explicitly; only feasible when the result is small."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "reachability_results",
+            "type": "array<object>",
+            "description": "For single_pair/batch_pairs: {source, target, reachable} per queried pair, in query_pairs order."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every requested query (or, for full_transitive_closure, every ordered pair) was correctly resolved."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "reachable_pair_count",
+            "type": "integer",
+            "description": "Total number of reachable ordered pairs (including reflexive pairs); present for full_transitive_closure."
+          },
+          {
+            "name": "transitive_closure_edges",
+            "type": "array<object>",
+            "description": "Explicit list of all reachable (source,target) pairs; returned only when enumerate_closure_edges=true and the result size is tractable."
+          },
+          {
+            "name": "index_descriptor",
+            "type": "object",
+            "description": "Opaque reference/metadata for a built reachability index, reusable by later single_pair/batch_pairs queries without rebuilding."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "For each queried pair, determine whether target is reachable from source via a directed path of length >= 0 in the normalized graph (a vertex always reaches itself); full_transitive_closure characterizes this for every ordered pair.",
+          "exactness": "Reachability is always answered exactly; no approximate mode is defined for this problem.",
+          "duplicate_policy": "A repeated pair in query_pairs returns a consistent, identical result each time.",
+          "ordering": "reachability_results preserves the order of query_pairs."
+        },
+        "validation_rules": [
+          "Every reachable=true result is witnessed by at least one directed walk from source to target in the normalized graph.",
+          "Every reachable=false result has no directed walk from source to target, verifiable by exhaustive BFS/DFS on small/medium fixtures.",
+          "Every vertex is reachable from itself (reflexive case).",
+          "transitive_closure_edges, when returned, is consistent with reachable_pair_count."
+        ],
+        "edge_cases": [
+          "source equals target returns reachable=true by the reflexive convention regardless of self-loops.",
+          "An edgeless graph has every non-reflexive pair unreachable.",
+          "Every pair of vertices within the same strongly connected component is mutually reachable.",
+          "full_transitive_closure on a graph where the closure is too large to enumerate must omit transitive_closure_edges and still return a correct reachable_pair_count with complete=true."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "reachability agreement with exhaustive BFS/DFS oracle on small/medium fixtures",
+            "reflexive-case compliance",
+            "closure-edge-count consistency with transitive_closure_edges when both are returned"
+          ],
+          "performance": [
+            "end-to-end time",
+            "index build time",
+            "amortized query time after index build",
+            "peak memory",
+            "queries answered per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/34_entity_resolution_blocking/problem.json",
+      "intent_signals": [
+        "candidate pairs for entity resolution",
+        "duplicate record blocking"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2025_hyperblocker: CMake cannot find gflags; required dependency/submodule tree is incomplete. No entity-resolution correctness claim."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": "8f50c31e0a5b796624b9c709e623e503c8aee968",
+            "error": null,
+            "license_file": null,
+            "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+            "local_path": "code",
+            "source_url": "https://github.com/hsiaoko/HyperBlocker",
+            "status": "cloned"
+          },
+          "evidence": "builds/hyperblocker_configure.json",
+          "metadata_path": "problems/34_entity_resolution_blocking/papers/2025_hyperblocker/metadata.json",
+          "note": "CMake cannot find gflags; required dependency/submodule tree is incomplete. No entity-resolution correctness claim.",
+          "paper_id": "2025_hyperblocker",
+          "problem_dir": "34_entity_resolution_blocking",
+          "promoted_operation": null,
+          "validation_status": "build_blocked"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "entity_resolution_blocking",
+        "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given a collection of candidate entity records and one or more declared blocking rules over record attributes, generate the reduced set of candidate record pairs worth comparing, and optionally confirm matches and merge them into resolved-entity clusters.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "ignored",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "required_record_fields",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Treat every vertex as one candidate record; its attributes map holds the record's fields used by blocking_rules.",
+            "Input edges, if present, are treated only as known-coreference hints and are not required; a purely edgeless vertex collection is valid input.",
+            "Reject vertices missing any attribute field referenced by blocking_rules unless the rule declares that field optional."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "task",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "blocking",
+              "resolution"
+            ],
+            "description": "Generate candidate pairs only, or additionally confirm matches and merge them into resolved entity clusters."
+          },
+          {
+            "name": "blocking_rules",
+            "type": "array<declarative_rule>",
+            "required": true,
+            "constraints": "nonempty",
+            "description": "Declarative predicates over a pair of records' attributes (e.g. field equality, bounded edit distance, shared token) whose disjunction defines candidacy."
+          },
+          {
+            "name": "match_decision_rule",
+            "type": "object_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "required when task=resolution",
+            "description": "Declarative rule or trained-model reference confirming whether a candidate pair is a true match."
+          },
+          {
+            "name": "clustering_policy",
+            "type": "enum",
+            "required": false,
+            "default": "connected_components",
+            "allowed_values": [
+              "connected_components",
+              "correlation_clustering"
+            ],
+            "description": "How confirmed match pairs are merged into final resolved-entity clusters when task=resolution."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "blocking is always exact given blocking_rules; correlation_clustering under resolution is NP-hard and approximate mode must disclose a bound."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "candidate_pairs",
+            "type": "array<object>",
+            "description": "Vertex pairs satisfying at least one blocking rule, each tagged with the satisfying rule id."
+          },
+          {
+            "name": "reduction_ratio",
+            "type": "number",
+            "description": "Fraction of the full pairwise comparison space (n*(n-1)/2) avoided by restricting to candidate_pairs."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every pair satisfying any blocking rule was found."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "resolved_entity_id",
+            "type": "map<vertex_id,entity_cluster_id>",
+            "description": "Final entity cluster per record; present when task=resolution."
+          },
+          {
+            "name": "match_decision",
+            "type": "map<pair_id,boolean>",
+            "description": "Whether each candidate pair was confirmed a true match; present when task=resolution."
+          },
+          {
+            "name": "evaluation_against_labels",
+            "type": "object",
+            "description": "Precision/recall of candidate_pairs or resolved_entity_id against trusted duplicate labels, when available."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Produce candidate_pairs covering every pair satisfying blocking_rules while minimizing comparisons (maximizing reduction_ratio at full recall relative to the rules); for task=resolution, additionally confirm matches via match_decision_rule and merge confirmed pairs into resolved_entity_id per clustering_policy.",
+          "exactness": "blocking is exact and deterministic given blocking_rules; resolution's connected_components clustering is exact given match_decision, while correlation_clustering is NP-hard in general and approximate mode must disclose a bound.",
+          "duplicate_policy": "Each unordered vertex pair appears at most once in candidate_pairs even if multiple rules match it.",
+          "ordering": "candidate_pairs and resolved_entity_id are unordered."
+        },
+        "validation_rules": [
+          "Every pair in candidate_pairs satisfies at least one rule in blocking_rules when recomputed from the normalized vertex attributes.",
+          "No pair satisfying a blocking rule is missing from candidate_pairs (full recall relative to the declared rules).",
+          "reduction_ratio equals 1 minus |candidate_pairs| divided by n*(n-1)/2.",
+          "resolved_entity_id, when returned, assigns every vertex to exactly one cluster, and every pair with match_decision=true shares a cluster."
+        ],
+        "edge_cases": [
+          "A record matching no rule with any other record forms its own singleton candidate set and, under resolution, its own singleton resolved entity.",
+          "Conflicting match decisions (A matches B, B matches C, but A does not match C) under clustering_policy=connected_components are resolved by transitive merging; correlation_clustering may instead keep them separate at some frustration cost.",
+          "An empty blocking_rules array is rejected as invalid input.",
+          "A fully connected candidate graph (every pair blocks) is valid but yields reduction_ratio zero."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "recall of true-duplicate pairs within candidate_pairs relative to the declared rules (and trusted labels when available)",
+            "rule-satisfaction recomputation",
+            "resolved_entity_id cluster consistency with match_decision"
+          ],
+          "performance": [
+            "end-to-end time",
+            "rule-evaluation time",
+            "peak memory",
+            "comparisons evaluated per second",
+            "reduction_ratio achieved"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/35_connected_components/problem.json",
+      "intent_signals": [
+        "weakly or strongly connected components",
+        "groups connected by paths"
+      ],
+      "library_support": {
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "connected-components"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "connected-components",
+            "supported_profile": "weak or strong exact connectivity"
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": null,
+            "error": "fatal: repository 'https://cs.txstate.edu/~burtscher/research/ECL-CC/' not found",
+            "license_file": null,
+            "license_note": null,
+            "local_path": null,
+            "source_url": "https://cs.txstate.edu/~burtscher/research/ECL-CC/",
+            "status": "clone_failed"
+          },
+          "metadata_path": "problems/35_connected_components/papers/2018_eclcc/metadata.json",
+          "note": "No local executable GPU implementation to validate.",
+          "paper_id": "2018_eclcc",
+          "problem_dir": "35_connected_components",
+          "promoted_operation": null,
+          "validation_status": "no_local_code"
+        },
+        {
+          "code": {
+            "commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+            "error": null,
+            "license_file": "code/LICENSE",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/burtscher/ECL-SCC",
+            "status": "cloned"
+          },
+          "evidence": "results/ecl_scc.json",
+          "metadata_path": "problems/35_connected_components/papers/2023_eclscc/metadata.json",
+          "note": "13/13 whole-partition oracle checks. Native facade additionally checks weak mode, canonical labels, isolated vertices, mixed external IDs, loops and duplicate arcs.",
+          "paper_id": "2023_eclscc",
+          "problem_dir": "35_connected_components",
+          "promoted_operation": "connected-components",
+          "promotion_evidence": "results/library_expansion.json",
+          "screen_passed": 13,
+          "screen_total": 13,
+          "validation_status": "validated_profile"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "connected_components",
+        "name": "Connected Components (Weakly and Strongly Connected)",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed_or_undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Remove self-loops; they never change component membership.",
+            "Collapse parallel edges between the same pair to one edge.",
+            "When connectivity_mode=weakly_connected, treat every edge as undirected regardless of input direction."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "connectivity_mode",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "weakly_connected",
+              "strongly_connected"
+            ],
+            "description": "Weak connectivity ignores edge direction; strong connectivity requires a directed path in both directions and is only meaningful (and may differ from weak) on a directed graph."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "component_assignment",
+            "type": "map<vertex_id,integer>",
+            "description": "Component index assigned to every vertex."
+          },
+          {
+            "name": "component_count",
+            "type": "integer",
+            "description": "Number of distinct components."
+          },
+          {
+            "name": "component_sizes",
+            "type": "array<integer>",
+            "description": "Vertex count of each component, indexed by component number."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "largest_component_id",
+            "type": "integer",
+            "description": "Component number with the most vertices."
+          },
+          {
+            "name": "largest_component_size",
+            "type": "integer",
+            "description": "Vertex count of the largest component."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Assign every vertex a component_assignment such that two vertices share a component index if and only if they are connected under connectivity_mode, and components are maximal.",
+          "exactness": "This problem is always solved exactly; component identity is a decidable equivalence relation with no approximate mode.",
+          "duplicate_policy": "Each vertex belongs to exactly one component.",
+          "ordering": "Component indices are canonically numbered by ascending smallest-member vertex ID, so results are directly comparable across independent runs or implementations."
+        },
+        "validation_rules": [
+          "Two vertices share a component_assignment value if and only if they are connected under connectivity_mode in the normalized graph.",
+          "component_count equals the number of distinct values in component_assignment.",
+          "component_sizes[i] equals the number of vertices assigned to component i, and the entries sum to the total vertex count.",
+          "Component numbering follows the ascending-smallest-member-vertex-ID convention."
+        ],
+        "edge_cases": [
+          "An isolated vertex forms its own singleton component.",
+          "An edgeless graph has every vertex in its own singleton component, so component_count equals the vertex count.",
+          "connectivity_mode=strongly_connected on a graph requested as an undirected projection degenerates to the same result as weakly_connected.",
+          "A self-loop does not merge a vertex with any other vertex."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "component-assignment agreement with an exhaustive BFS/DFS (weak) or Tarjan/Kosaraju (strong) oracle on small/medium fixtures",
+            "component-count and size consistency",
+            "canonical-numbering compliance"
+          ],
+          "performance": [
+            "end-to-end time",
+            "compute time",
+            "peak memory",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/36_graph_layout_force_directed/problem.json",
+      "intent_signals": [
+        "force-directed layout",
+        "compute node coordinates for graph drawing"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "2017_gpugraphlayout: Build cannot find the pngwriter submodule header. No layout correctness claim."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [
+        {
+          "code": {
+            "commit": "9da3af0b7ae72dbfb04b2a7b6eaf28f4d9c13344",
+            "error": null,
+            "license_file": "code/COPYING",
+            "license_note": null,
+            "local_path": "code",
+            "source_url": "https://github.com/govertb/GPUGraphLayout",
+            "status": "cloned"
+          },
+          "evidence": "builds/gpu_layout.json",
+          "metadata_path": "problems/36_graph_layout_force_directed/papers/2017_gpugraphlayout/metadata.json",
+          "note": "Build cannot find the pngwriter submodule header. No layout correctness claim.",
+          "paper_id": "2017_gpugraphlayout",
+          "problem_dir": "36_graph_layout_force_directed",
+          "promoted_operation": null,
+          "validation_status": "build_blocked"
+        }
+      ],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "graph_layout_force_directed",
+        "name": "Force-Directed Graph Layout",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given a graph, compute a position for every vertex in 2 or 3 dimensions under a declared force model, so that connected vertices are pulled together and all vertices repel each other, producing a drawing that visually reveals clusters and hubs.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected_projection",
+            "weights": "optional_as_attractive_force_strength",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Project directed input to undirected for layout purposes.",
+            "Remove self-loops; they contribute no attractive or repulsive force between distinct vertices.",
+            "Collapse parallel edges by summing nonnegative weights; use unit weight when weight_mode=unweighted."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "dimensions",
+            "type": "enum",
+            "required": false,
+            "default": 2,
+            "allowed_values": [
+              2,
+              3
+            ],
+            "description": "Dimensionality of the output coordinate space."
+          },
+          {
+            "name": "force_model",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "force_atlas2",
+              "fruchterman_reingold"
+            ],
+            "description": "Exact force law defining attractive and repulsive potentials; layout quality is only well-defined relative to a declared model."
+          },
+          {
+            "name": "weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "Scale an edge's attractive force by its declared weight, or treat all edges uniformly."
+          },
+          {
+            "name": "iterations",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Fixed iteration budget; null means iterate until the force_model's own convergence criterion is met."
+          },
+          {
+            "name": "random_seed",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "description": "Seed for the stochastic initial layout and any randomized iteration order, for reproducibility."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "approximate",
+            "allowed_values": [
+              "converged",
+              "approximate"
+            ],
+            "description": "Whether the iteration's own movement/gradient tolerance was met, or a fixed iteration budget was used with the achieved energy disclosed."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "vertex_positions",
+            "type": "map<vertex_id,array<number>>",
+            "description": "Coordinate vector of length dimensions for every vertex."
+          },
+          {
+            "name": "final_energy",
+            "type": "number",
+            "description": "Total energy of force_model (sum of pairwise repulsive and edge attractive potential) at vertex_positions."
+          },
+          {
+            "name": "converged",
+            "type": "boolean",
+            "description": "Whether the iteration met its stated movement/gradient tolerance."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "iterations_run",
+            "type": "integer",
+            "description": "Number of iterations actually performed."
+          },
+          {
+            "name": "energy_trace",
+            "type": "array<number>",
+            "description": "Energy value after each iteration, for diagnosing convergence."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Minimize the declared force_model's total energy function over vertex_positions in the stated dimensions.",
+          "exactness": "This problem has no exact mode and no unique global optimum; solution_quality=converged requires meeting the iteration's own stated tolerance, and solution_quality=approximate permits a fixed iteration budget with final_energy disclosed.",
+          "duplicate_policy": "Not applicable; vertex_positions assigns exactly one coordinate vector per vertex.",
+          "ordering": "Not applicable."
+        },
+        "validation_rules": [
+          "Every vertex has a position vector of exactly dimensions real-valued coordinates.",
+          "final_energy recomputes from vertex_positions and the normalized graph under the declared force_model within numeric tolerance.",
+          "Given the same random_seed, parameters, and graph, two runs of the same implementation reproduce final_energy within tolerance.",
+          "Coincident vertex positions are permitted and are not treated as invalid."
+        ],
+        "edge_cases": [
+          "A single isolated vertex may be placed at an arbitrary position; it contributes no attractive force.",
+          "A graph with no edges reduces to pure mutual repulsion with no attractive term.",
+          "Disconnected components repel each other but have no attractive force pulling them together, so their relative placement is constrained only by repulsion.",
+          "iterations=0 returns the initial layout as-is, with converged=false unless the initial layout trivially satisfies the tolerance."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "final-energy recomputation under the declared force_model",
+            "dimensional and completeness checks on vertex_positions",
+            "run-to-run reproducibility under a fixed random_seed"
+          ],
+          "performance": [
+            "end-to-end time",
+            "time per iteration",
+            "peak memory",
+            "iterations to convergence",
+            "vertices updated per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/37_null_model_significance_testing/problem.json",
+      "intent_signals": [
+        "graph motif statistical significance against a null model",
+        "randomized graph ensemble z scores"
+      ],
+      "library_support": {
+        "available": false,
+        "status": "no_validated_backend",
+        "operation_ids": [],
+        "validated_backend_count": 0,
+        "reason": "No local paper/code artifact is cataloged for this definition, so there is no implementation to validate or execute."
+      },
+      "validation_workloads": [],
+      "expansion_screening": [],
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "null_model_significance_testing",
+        "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Given an observed graph and a declared structural statistic, determine how unusual the statistic's observed value is by comparing it against its distribution over an ensemble of randomized graphs sampled from a declared null model, typically one preserving the degree sequence.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed_or_undirected",
+            "weights": "ignored_unless_null_model_preserves_them",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Remove self-loops unless the declared null_model explicitly permits them.",
+            "Collapse parallel edges to a single edge unless the null_model explicitly preserves multi-edges.",
+            "Preserve exact per-vertex degree (or in/out-degree for directed graphs) as the invariant held fixed by degree_preserving_configuration."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "null_model",
+            "type": "enum",
+            "required": false,
+            "default": "degree_preserving_configuration",
+            "allowed_values": [
+              "degree_preserving_configuration",
+              "erdos_renyi"
+            ],
+            "description": "Randomization family: preserve the exact degree sequence, or sample a uniform random graph with the same vertex and edge count."
+          },
+          {
+            "name": "statistic_definition",
+            "type": "object",
+            "required": true,
+            "description": "Declarative reference to the structural statistic being tested (e.g. triangle count, a specific clique/motif count, modularity of a given partition, density)."
+          },
+          {
+            "name": "observed_value",
+            "type": "number_or_null",
+            "required": false,
+            "default": null,
+            "description": "The statistic's value on the real input graph; null means compute it directly from the graph using statistic_definition."
+          },
+          {
+            "name": "sample_count",
+            "type": "integer",
+            "required": true,
+            "constraints": "value >= 1",
+            "description": "Number of randomized graphs to generate for the null distribution."
+          },
+          {
+            "name": "random_seed",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "description": "Seed for reproducible randomization."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "observed_value",
+            "type": "number",
+            "description": "Resolved observed statistic value (echoed input or computed from the graph)."
+          },
+          {
+            "name": "null_distribution_summary",
+            "type": "object",
+            "description": "Mean, standard deviation, minimum, and maximum of the statistic over the sample_count randomized graphs."
+          },
+          {
+            "name": "z_score",
+            "type": "number_or_null",
+            "description": "(observed_value - null_mean) / null_std; null when null_std is zero."
+          },
+          {
+            "name": "empirical_p_value",
+            "type": "number",
+            "description": "Fraction of randomized samples whose statistic is at least as extreme as observed_value."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether all sample_count randomizations were successfully generated and evaluated."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "null_distribution_samples",
+            "type": "array<number>",
+            "description": "Raw per-sample statistic values, when the sample count is small enough to return in full."
+          },
+          {
+            "name": "randomization_diagnostics",
+            "type": "object",
+            "description": "Acceptance rate, mixing, or other diagnostics for an MCMC-based null model."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Generate sample_count graphs drawn from null_model, each exactly satisfying its declared invariant, evaluate statistic_definition on each, and report observed_value's z_score and empirical_p_value relative to that null distribution.",
+          "exactness": "Every randomized sample must exactly satisfy null_model's invariant; the null_distribution_summary, z_score, and empirical_p_value are statistical estimates whose precision improves with sample_count, not exact quantities.",
+          "duplicate_policy": "Not applicable.",
+          "ordering": "Not applicable."
+        },
+        "validation_rules": [
+          "Every randomized sample underlying null_distribution_summary satisfies null_model's declared invariant exactly (e.g. an identical degree sequence, vertex count, and edge count to the input graph for degree_preserving_configuration).",
+          "z_score recomputes exactly from observed_value and null_distribution_summary's mean and standard deviation.",
+          "empirical_p_value recomputes exactly as the fraction of null_distribution_samples at least as extreme as observed_value, when samples are returned.",
+          "complete=true only when all sample_count randomizations succeeded and were evaluated."
+        ],
+        "edge_cases": [
+          "A graph whose degree sequence admits only one simple realization yields a null distribution with zero variance; z_score is reported as null rather than divided by zero.",
+          "sample_count=1 yields a valid but very high-variance estimate of the null distribution.",
+          "A statistic_definition invariant under the chosen null_model by construction (e.g. vertex count) trivially yields z_score zero.",
+          "Isolated (zero-degree) vertices remain isolated in every randomized sample under degree_preserving_configuration."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "invariant-preservation check on every randomized sample",
+            "z-score and p-value recomputation",
+            "null-distribution-summary consistency with returned samples"
+          ],
+          "performance": [
+            "end-to-end time",
+            "time per randomized sample generated",
+            "peak memory",
+            "samples generated per second"
+          ]
+        }
+      }
     }
   ],
   "operations": [
@@ -9178,6 +12857,460 @@
           ]
         }
       ]
+    },
+    {
+      "id": "connected-components",
+      "research_problem_id": "connected_components",
+      "cpp_class": "graphmine::ConnectedComponents",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "ecl-scc"
+      ],
+      "command": "graphmine run connected-components --graph GRAPH.json --connectivity-mode weakly_connected|strongly_connected [--backend ecl-scc] [--timeout-seconds N]",
+      "parameters": [
+        "--connectivity-mode weakly_connected|strongly_connected",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "component_assignment",
+        "component_count",
+        "component_sizes"
+      ],
+      "validated_profile": "weak or strong exact connectivity",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md",
+      "problem_contract_ref": "#/problems/34",
+      "problem_inputs": [
+        "connectivity_mode"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::ConnectedComponents",
+        "options_type": "graphmine::ConnectedComponentsOptions",
+        "cmake_component": "GraphMine::validated_expansion",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run connected-components --graph GRAPH.json --connectivity-mode weakly_connected|strongly_connected [--backend ecl-scc] [--timeout-seconds N]",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--connectivity-mode weakly_connected|strongly_connected",
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "ecl-scc",
+          "display_name": "ECL-SCC 1.0",
+          "problem": "connected_components",
+          "source_commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+          "validated": true,
+          "capabilities": [
+            "exact weak/strong components; loops removed; parallel edges collapsed",
+            "at most 1M vertices/10M input edges; isolated CUDA worker"
+          ],
+          "validation": {
+            "workload_id": "expansion_connected-components",
+            "implementation": "ecl-scc",
+            "status": "validated_profile",
+            "note": "13/13 whole-partition oracle checks. Native facade additionally checks weak mode, canonical labels, isolated vertices, mixed external IDs, loops and duplicate arcs.",
+            "checks": {
+              "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+              "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "connected_components",
+              "paper_id": "2023_eclscc",
+              "title": "A GPU Algorithm for Detecting Strongly Connected Components",
+              "year": 2023,
+              "venue": "ACM ICS 2023",
+              "publication_url": "https://doi.org/10.1145/3581784.3607071",
+              "code_url": "https://github.com/burtscher/ECL-SCC",
+              "code_commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+              "license_file": "library/src/backends/expansion/upstream/ecl_scc/LICENSE",
+              "license_note": null,
+              "metadata_path": "problems/35_connected_components/papers/2023_eclscc/metadata.json",
+              "vendored_code_root": "library/src/backends/expansion/upstream/ecl_scc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "max-flow-min-cut",
+      "research_problem_id": "max_flow_min_cut",
+      "cpp_class": "graphmine::MaxFlowMinCut",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "ecl-maxflow"
+      ],
+      "command": "graphmine run max-flow-min-cut --graph GRAPH.json --source ID --sink ID [--unit-capacity] [--backend ecl-maxflow] [--timeout-seconds N]",
+      "parameters": [
+        "--source ID",
+        "--sink ID",
+        "--unit-capacity",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "max_flow_value",
+        "min_cut_value",
+        "min_cut_edges",
+        "optimal"
+      ],
+      "validated_profile": "directed, integer edge capacities, total capacity <= 1e9; no vertex capacities",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md",
+      "problem_contract_ref": "#/problems/21",
+      "problem_inputs": [
+        "source",
+        "sink",
+        "capacity_mode",
+        "vertex_capacities",
+        "return_cut_side",
+        "solution_quality"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::MaxFlowMinCut",
+        "options_type": "graphmine::MaxFlowOptions",
+        "cmake_component": "GraphMine::validated_expansion",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run max-flow-min-cut --graph GRAPH.json --source ID --sink ID [--unit-capacity] [--backend ecl-maxflow] [--timeout-seconds N]",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--source ID",
+          "--sink ID",
+          "--unit-capacity",
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "ecl-maxflow",
+          "display_name": "ECL-MaxFlow",
+          "problem": "max_flow_min_cut",
+          "source_commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+          "validated": true,
+          "capabilities": [
+            "directed edge capacities: nonnegative integers; unit_capacity supported",
+            "total capacity <= 1e9; no vertex capacities; exact flow/cut certificate",
+            "parallel capacities summed; original edge flows restored; bounded worker"
+          ],
+          "validation": {
+            "workload_id": "expansion_max-flow-min-cut",
+            "implementation": "ecl-maxflow",
+            "status": "validated_profile",
+            "note": "Raw artifact: 12/13, including an edgeless launch error. Promoted only with tested launch guards, sparse-degree fix, empty-input handling and flow/cut certification.",
+            "checks": {
+              "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+              "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "max_flow_min_cut",
+              "paper_id": "2025_ecl_maxflow",
+              "title": "An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs",
+              "year": 2025,
+              "venue": "IPCCC 2025",
+              "publication_url": "https://userweb.cs.txstate.edu/~mb92/papers/ipccc25a.pdf",
+              "code_url": "https://github.com/burtscher/ECL-MaxFlow",
+              "code_commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+              "license_file": "library/src/backends/expansion/upstream/ecl_flow/LICENSE",
+              "license_note": null,
+              "metadata_path": "problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/metadata.json",
+              "vendored_code_root": "library/src/backends/expansion/upstream/ecl_flow"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "linear-assignment",
+      "research_problem_id": "bipartite_matching_assignment",
+      "cpp_class": "graphmine::LinearAssignment",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "hungarian-cuda"
+      ],
+      "command": "graphmine run linear-assignment --graph GRAPH.json [--backend hungarian-cuda] [--timeout-seconds N] (complete square minimum-cost perfect assignment, <=64 per side, integer costs 0..999)",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "matching_edges",
+        "matching_size",
+        "objective_value",
+        "optimal"
+      ],
+      "validated_profile": "complete square minimum-cost perfect assignment; <=64 per side; costs integer 0..999; declared sides",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md",
+      "problem_contract_ref": "#/problems/30",
+      "problem_inputs": [
+        "objective",
+        "weight_mode",
+        "perfect_matching_required",
+        "solution_quality"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::LinearAssignment",
+        "options_type": "graphmine::LinearAssignmentOptions",
+        "cmake_component": "GraphMine::validated_expansion",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run linear-assignment --graph GRAPH.json [--backend hungarian-cuda] [--timeout-seconds N] (complete square minimum-cost perfect assignment, <=64 per side, integer costs 0..999)",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "hungarian-cuda",
+          "display_name": "HungarianCUDA",
+          "problem": "bipartite_matching_assignment",
+          "source_commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+          "validated": true,
+          "capabilities": [
+            "minimum-cost perfect assignment only; complete square graph; at most 64 per side",
+            "integer costs [0,999]; attributes.side = left|right; no general matching modes"
+          ],
+          "validation": {
+            "workload_id": "expansion_linear-assignment",
+            "implementation": "hungarian-cuda",
+            "status": "validated_profile",
+            "note": "11/11 square integer minimum-cost assignment tests versus SciPy, including size 64. Only the bounded perfect-assignment profile is promoted.",
+            "checks": {
+              "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+              "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "bipartite_matching_assignment",
+              "paper_id": "2019_hungariangpu",
+              "title": "Fast block distributed CUDA implementation of the Hungarian algorithm",
+              "year": 2019,
+              "venue": "Journal of Parallel and Distributed Computing",
+              "publication_url": "https://github.com/paclopes/HungarianGPU",
+              "code_url": "https://github.com/paclopes/HungarianGPU",
+              "code_commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+              "license_file": "library/src/backends/expansion/upstream/hungarian/LICENSE.txt",
+              "license_note": null,
+              "metadata_path": "problems/31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json",
+              "vendored_code_root": "library/src/backends/expansion/upstream/hungarian"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transitive-closure",
+      "research_problem_id": "transitive_closure_reachability",
+      "cpp_class": "graphmine::TransitiveClosure",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "gdlog"
+      ],
+      "command": "graphmine run transitive-closure --graph GRAPH.json [--backend gdlog] [--timeout-seconds N] (reflexive closure; <=1024 vertices)",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "reachability_results",
+        "complete",
+        "reachable_pair_count",
+        "transitive_closure_edges"
+      ],
+      "validated_profile": "directed full reflexive materialized closure; <=1024 vertices; build_index=false",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md",
+      "problem_contract_ref": "#/problems/32",
+      "problem_inputs": [
+        "query_mode",
+        "query_pairs",
+        "build_index",
+        "enumerate_closure_edges"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::TransitiveClosure",
+        "options_type": "graphmine::ReachabilityOptions",
+        "cmake_component": "GraphMine::validated_expansion",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run transitive-closure --graph GRAPH.json [--backend gdlog] [--timeout-seconds N] (reflexive closure; <=1024 vertices)",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "gdlog",
+          "display_name": "GDlog",
+          "problem": "transitive_closure_reachability",
+          "source_commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+          "validated": true,
+          "capabilities": [
+            "exact reflexive transitive closure; directed input; loops/duplicates normalized",
+            "complete pair materialization, at most 1024 vertices; no persistent reachability index"
+          ],
+          "validation": {
+            "workload_id": "expansion_transitive-closure",
+            "implementation": "gdlog",
+            "status": "validated_profile",
+            "note": "8/8 full pair-set checks. Native adapter also passes a 128-cycle (16,384 pairs), removing the diagnostic printer cap. SM89 is pinned after the inherited SM52 build failed.",
+            "checks": {
+              "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+              "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "transitive_closure_reachability",
+              "paper_id": "2024_gdlog",
+              "title": "Optimizing Datalog for the GPU",
+              "year": 2024,
+              "venue": "ACM PPoPP 2025",
+              "publication_url": "https://doi.org/10.1145/3669940.3707274",
+              "code_url": "https://github.com/harp-lab/gdlog",
+              "code_commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+              "license_file": "library/src/backends/expansion/upstream/gdlog/LICENSE",
+              "license_note": null,
+              "metadata_path": "problems/33_transitive_closure_reachability/papers/2024_gdlog/metadata.json",
+              "vendored_code_root": "library/src/backends/expansion/upstream/gdlog"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "butterfly-counting",
+      "research_problem_id": "butterfly_counting_bipartite",
+      "cpp_class": "graphmine::ButterflyCounting",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "graphminer"
+      ],
+      "command": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",
+      "parameters": [],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "butterfly_count",
+        "complete"
+      ],
+      "validated_profile": "exact global count only; declared bipartite sides",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md",
+      "problem_contract_ref": "#/problems/22",
+      "problem_inputs": [
+        "mode",
+        "alpha",
+        "beta",
+        "solution_quality"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/validated_expansion.hpp",
+        "class": "graphmine::ButterflyCounting",
+        "options_type": "graphmine::ButterflyOptions",
+        "cmake_component": "GraphMine::validated_expansion",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",
+        "required_auxiliary_inputs": [],
+        "parameters": [],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "graphminer",
+          "display_name": "GraphMiner/G2Miner",
+          "problem": "butterfly_counting_bipartite",
+          "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+          "validated": true,
+          "capabilities": [
+            "exact global butterfly count on checked bipartite topology",
+            "reuses existing GraphMiner square kernel; no alpha/beta core or listing modes"
+          ],
+          "validation": {
+            "workload_id": "expansion_butterfly-counting",
+            "implementation": "graphminer",
+            "status": "validated_profile",
+            "note": "12/12 global counts using the existing native square kernel. New public facade enforces declared bipartite sides. Other problem modes remain unsupported.",
+            "checks": {
+              "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
+              "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "butterfly_counting_bipartite",
+              "paper_id": "2022_g2miner_reuse",
+              "title": "G2Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework",
+              "year": 2022,
+              "venue": "USENIX OSDI 2022",
+              "publication_url": "https://www.usenix.org/conference/osdi22/presentation/chen",
+              "code_url": "https://github.com/chenxuhao/GraphMiner",
+              "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+              "license_file": "problems/11_graph_motif_counting/papers/2022_g2miner/code/LICENSE",
+              "license_note": null,
+              "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_g2miner_reuse/metadata.json",
+              "vendored_code_root": "problems/11_graph_motif_counting/papers/2022_g2miner/code"
+            }
+          ]
+        }
+      ]
     }
   ],
   "artifacts": [
@@ -9468,6 +13601,76 @@
       "code_commit": "7da15bf9aded217c8bff9fdc4c7b52a6b1e25947",
       "license_file": null,
       "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution."
+    },
+    {
+      "problem_id": "max_flow_min_cut",
+      "paper_id": "2025_ecl_maxflow",
+      "title": "An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs",
+      "year": 2025,
+      "venue": "IPCCC 2025",
+      "publication_url": "https://userweb.cs.txstate.edu/~mb92/papers/ipccc25a.pdf",
+      "code_url": "https://github.com/burtscher/ECL-MaxFlow",
+      "code_commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+      "license_file": "library/src/backends/expansion/upstream/ecl_flow/LICENSE",
+      "license_note": null,
+      "metadata_path": "problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/metadata.json",
+      "vendored_code_root": "library/src/backends/expansion/upstream/ecl_flow"
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "paper_id": "2022_g2miner_reuse",
+      "title": "G2Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework",
+      "year": 2022,
+      "venue": "USENIX OSDI 2022",
+      "publication_url": "https://www.usenix.org/conference/osdi22/presentation/chen",
+      "code_url": "https://github.com/chenxuhao/GraphMiner",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "license_file": "problems/11_graph_motif_counting/papers/2022_g2miner/code/LICENSE",
+      "license_note": null,
+      "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_g2miner_reuse/metadata.json",
+      "vendored_code_root": "problems/11_graph_motif_counting/papers/2022_g2miner/code"
+    },
+    {
+      "problem_id": "bipartite_matching_assignment",
+      "paper_id": "2019_hungariangpu",
+      "title": "Fast block distributed CUDA implementation of the Hungarian algorithm",
+      "year": 2019,
+      "venue": "Journal of Parallel and Distributed Computing",
+      "publication_url": "https://github.com/paclopes/HungarianGPU",
+      "code_url": "https://github.com/paclopes/HungarianGPU",
+      "code_commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+      "license_file": "library/src/backends/expansion/upstream/hungarian/LICENSE.txt",
+      "license_note": null,
+      "metadata_path": "problems/31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json",
+      "vendored_code_root": "library/src/backends/expansion/upstream/hungarian"
+    },
+    {
+      "problem_id": "transitive_closure_reachability",
+      "paper_id": "2024_gdlog",
+      "title": "Optimizing Datalog for the GPU",
+      "year": 2024,
+      "venue": "ACM PPoPP 2025",
+      "publication_url": "https://doi.org/10.1145/3669940.3707274",
+      "code_url": "https://github.com/harp-lab/gdlog",
+      "code_commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+      "license_file": "library/src/backends/expansion/upstream/gdlog/LICENSE",
+      "license_note": null,
+      "metadata_path": "problems/33_transitive_closure_reachability/papers/2024_gdlog/metadata.json",
+      "vendored_code_root": "library/src/backends/expansion/upstream/gdlog"
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2023_eclscc",
+      "title": "A GPU Algorithm for Detecting Strongly Connected Components",
+      "year": 2023,
+      "venue": "ACM ICS 2023",
+      "publication_url": "https://doi.org/10.1145/3581784.3607071",
+      "code_url": "https://github.com/burtscher/ECL-SCC",
+      "code_commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+      "license_file": "library/src/backends/expansion/upstream/ecl_scc/LICENSE",
+      "license_note": null,
+      "metadata_path": "problems/35_connected_components/papers/2023_eclscc/metadata.json",
+      "vendored_code_root": "library/src/backends/expansion/upstream/ecl_scc"
     }
   ]
 }

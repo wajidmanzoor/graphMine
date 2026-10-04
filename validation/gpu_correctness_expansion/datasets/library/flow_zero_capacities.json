@@ -1,0 +1,48 @@
+{
+  "edges": [
+    {
+      "id": 0,
+      "source": 0,
+      "target": 1,
+      "weight": 0
+    },
+    {
+      "id": 1,
+      "source": 1,
+      "target": 3,
+      "weight": 8
+    },
+    {
+      "id": 2,
+      "source": 0,
+      "target": 2,
+      "weight": 3
+    },
+    {
+      "id": 3,
+      "source": 2,
+      "target": 3,
+      "weight": 0
+    }
+  ],
+  "graph": {
+    "allows_parallel_edges": false,
+    "allows_self_loops": false,
+    "directed": true,
+    "id": "validation"
+  },
+  "vertices": [
+    {
+      "id": 0
+    },
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gdlog_tc",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gdlog_tc/dag.tsv",
+    "1"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.2646865900605917,
+  "exit_code": 0,
+  "log": "runs/gdlog_tc_dag.log",
+  "timeout": false
+}

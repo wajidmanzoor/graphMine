@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/wbpr/maxflow",
+    "-v",
+    "2",
+    "-f",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/wbpr/empty_edges.dimacs",
+    "-a",
+    "1"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.2646942939609289,
+  "exit_code": 0,
+  "log": "runs/wbpr_empty_edges_1.log",
+  "stdin_path": null,
+  "timeout": false
+}

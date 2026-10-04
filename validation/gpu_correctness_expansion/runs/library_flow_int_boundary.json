@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "max-flow-min-cut",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/flow_int_boundary.json",
+    "--source",
+    "2",
+    "--sink",
+    "0"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.2644030563533306,
+  "exit_code": 0,
+  "log": "runs/library_flow_int_boundary.log",
+  "stdin_path": null,
+  "timeout": false
+}

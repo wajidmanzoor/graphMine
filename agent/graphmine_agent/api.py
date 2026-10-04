@@ -4,6 +4,9 @@ import asyncio
 import base64
 import binascii
 import hmac
+import json
+import tempfile
+import zipfile
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
@@ -26,15 +29,17 @@ from fastapi import (
     status,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
+from . import __version__
 from .agent_service import AgentService
 from .catalog import Catalog, CatalogError
 from .config import Settings
 from .database import Database, RecordNotFound
-from .execution import GraphMineRunner
+from .execution import ExecutionError, GraphMineRunner
 from .graph_store import GraphStore, UploadError
+from .history import HistoryStore
 from .jobs import EventBus, JobManager
 from .llm import LLMError
 from .models import (
@@ -43,6 +48,8 @@ from .models import (
     ConversationEvent,
     DomainProfile,
     ExecutionPlan,
+    FeedbackCreate,
+    FeedbackRecord,
     FileInfo,
     FileRole,
     InterpretRequest,
@@ -55,6 +62,7 @@ from .models import (
     SessionRecord,
 )
 from .planning import PlanValidationError, PlanValidator
+from .reporting import render_report
 from .results import query_path
 
 
@@ -75,7 +83,7 @@ def build_runtime(settings: Settings) -> Runtime:
     settings.data_root.mkdir(parents=True, exist_ok=True)
     settings.workspaces_root.mkdir(parents=True, exist_ok=True)
     catalog = Catalog(settings)
-    database = Database(settings.database_path)
+    database = Database(settings.database_path, HistoryStore(settings.history_root))
     graph_store = GraphStore(settings, database)
     validator = PlanValidator(catalog)
     runner = GraphMineRunner(settings, catalog, graph_store, validator)
@@ -166,12 +174,8 @@ async def _read_upload(upload: UploadFile, limit: int) -> bytes:
 
 
 def _compiled_backends(runtime: Runtime, operation_id: str) -> set[str] | None:
-    capability = runtime.runner.capabilities
-    return (
-        runtime.runner.compiled_backends_for(operation_id)
-        if capability.binary_available
-        else None
-    )
+    runtime.runner.require_ready()
+    return runtime.runner.compiled_backends_for(operation_id)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -191,7 +195,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title="GraphMine Agent API",
-        version="0.1.0",
+        version=__version__,
         description=(
             "Private-LAN orchestration API for validated GraphMine GPU algorithms, "
             "domain-aware planning, interpretation, and interactive visualizations."
@@ -212,7 +216,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     ) -> JSONResponse:
         return JSONResponse(
             status_code=404,
-            content={"error": {"code": "not_found", "message": str(error).strip("'")}},
+            content={
+                "error": {"code": "not_found", "message": str(error).strip("'")},
+                "turn_id": getattr(error, "history_turn_id", None),
+            },
         )
 
     @app.exception_handler(PlanValidationError)
@@ -222,11 +229,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return JSONResponse(
             status_code=422,
             content={
+                "turn_id": getattr(error, "history_turn_id", None),
                 "error": {
                     "code": "invalid_execution_plan",
                     "message": str(error),
                     "details": error.errors,
-                }
+                },
             },
         )
 
@@ -234,7 +242,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def value_error_handler(_request: Request, error: Exception) -> JSONResponse:
         return JSONResponse(
             status_code=422,
-            content={"error": {"code": "invalid_request", "message": str(error)}},
+            content={
+                "error": {"code": "invalid_request", "message": str(error)},
+                "turn_id": getattr(error, "history_turn_id", None),
+            },
         )
 
     @app.exception_handler(CatalogError)
@@ -243,14 +254,32 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     ) -> JSONResponse:
         return JSONResponse(
             status_code=422,
-            content={"error": {"code": "catalog_error", "message": str(error)}},
+            content={
+                "error": {"code": "catalog_error", "message": str(error)},
+                "turn_id": getattr(error, "history_turn_id", None),
+            },
         )
 
     @app.exception_handler(LLMError)
     async def llm_error_handler(_request: Request, error: LLMError) -> JSONResponse:
         return JSONResponse(
             status_code=503,
-            content={"error": {"code": "llm_unavailable", "message": str(error)}},
+            content={
+                "error": {"code": "llm_unavailable", "message": str(error)},
+                "turn_id": getattr(error, "history_turn_id", None),
+            },
+        )
+
+    @app.exception_handler(ExecutionError)
+    async def execution_error_handler(
+        _request: Request, error: ExecutionError
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": {"code": error.code, "message": str(error)},
+                "turn_id": getattr(error, "history_turn_id", None),
+            },
         )
 
     router = APIRouter(prefix="/api", dependencies=[Depends(_authorization)])
@@ -260,8 +289,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         runtime = _runtime(request)
         capability = runtime.runner.capabilities
         llm_available = await runtime.agent.model.available()
-        ready = capability.binary_available and not capability.error and llm_available
+        ready = (
+            capability.binary_available
+            and not capability.error
+            and capability.library_version == __version__
+            and llm_available
+        )
         return {
+            "version": __version__,
+            "deployment": runtime.agent.deployment_info(),
             "status": "ready" if ready else "degraded",
             "llm": {
                 "enabled": runtime.settings.llm_enabled,
@@ -271,6 +307,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "gpu_uuid": runtime.settings.llm_gpu_uuid,
             },
             "graphmine": capability.model_dump(mode="json"),
+        }
+
+    @router.get("/metrics")
+    async def metrics(request: Request) -> dict[str, Any]:
+        runtime = _runtime(request)
+        return {
+            "version": __version__,
+            "database": runtime.database.statistics(),
+            "worker": runtime.jobs.statistics(),
         }
 
     @router.get("/domains", response_model=list[DomainProfile])
@@ -308,7 +353,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         runtime = _runtime(request)
         runtime.catalog.domain(body.domain_id)
         return runtime.database.create_session(
-            SessionRecord(title=body.title, domain_id=body.domain_id)
+            SessionRecord(
+                title=body.title,
+                domain_id=body.domain_id,
+                participant_id=body.participant_id,
+            )
         )
 
     @router.get("/sessions", response_model=list[SessionRecord])
@@ -321,6 +370,106 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def get_session(session_id: str, request: Request) -> SessionRecord:
         return _runtime(request).database.get_session(session_id)
 
+    @router.get("/sessions/{session_id}/workspace")
+    async def session_workspace(session_id: str, request: Request):
+        runtime = _runtime(request)
+        database = runtime.database
+        session = database.get_session(session_id)
+        jobs = database.list_jobs(session_id)
+        return {
+            "session": session,
+            "messages": database.conversation_transcript(session_id),
+            "files": [
+                FileInfo.from_stored(item) for item in database.list_files(session_id)
+            ],
+            "jobs": jobs,
+            "events": database.events(session_id),
+            "feedback_count": len(database.feedback(session_id)),
+            "deployment": runtime.agent.deployment_info(),
+        }
+
+    @router.get("/sessions/{session_id}/feedback/export")
+    async def export_feedback(session_id: str, request: Request):
+        database = _runtime(request).database
+        records = database.feedback(session_id)
+        rows = [
+            {
+                "schema_version": "graphmine-feedback-v1",
+                "review_status": "unreviewed",
+                "automatically_used_for_training": False,
+                "annotation": item.model_dump(mode="json"),
+            }
+            for item in records
+        ]
+        return Response(
+            "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
+            media_type="application/x-ndjson",
+            headers={
+                "Content-Disposition": f'attachment; filename="{session_id}-feedback.jsonl"'
+            },
+        )
+
+    @router.get("/sessions/{session_id}/reasoning")
+    async def model_reasoning(session_id: str, request: Request):
+        database = _runtime(request).database
+        database.get_session(session_id)
+        return database.history.model_reasoning(session_id)
+
+    @router.post(
+        "/sessions/{session_id}/feedback",
+        response_model=FeedbackRecord,
+        status_code=201,
+    )
+    async def add_feedback(
+        session_id: str, body: FeedbackCreate, request: Request
+    ) -> FeedbackRecord:
+        return _runtime(request).database.add_feedback(session_id, body)
+
+    @router.get("/sessions/{session_id}/feedback", response_model=list[FeedbackRecord])
+    async def feedback(session_id: str, request: Request) -> list[FeedbackRecord]:
+        return _runtime(request).database.feedback(session_id)
+
+    @router.get("/sessions/{session_id}/history")
+    async def history(session_id: str, request: Request) -> dict[str, Any]:
+        database = _runtime(request).database
+        database.get_session(session_id)
+        return database.history.manifest(session_id)
+
+    @router.get("/sessions/{session_id}/history/archive")
+    async def history_archive(session_id: str, request: Request) -> StreamingResponse:
+        database = _runtime(request).database
+        database.get_session(session_id)
+        history = database.history
+        history.snapshot(
+            session_id,
+            "conversation.json",
+            database.conversation_transcript(session_id),
+        )
+        history.snapshot(session_id, "session.json", database.get_session(session_id))
+
+        def chunks():
+            with tempfile.TemporaryFile() as archive:
+                with zipfile.ZipFile(
+                    archive, "w", compression=zipfile.ZIP_DEFLATED
+                ) as bundle:
+                    for item in history.manifest(session_id)["files"]:
+                        relative = item["path"]
+                        bundle.write(
+                            history.session_path(session_id) / relative,
+                            f"{session_id}/{relative}",
+                        )
+                archive.seek(0)
+                while chunk := archive.read(1024 * 1024):
+                    yield chunk
+
+        return StreamingResponse(
+            chunks(),
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f'attachment; filename="{session_id}.zip"',
+            },
+        )
+
     @router.post(
         "/sessions/{session_id}/files", response_model=FileInfo, status_code=201
     )
@@ -330,6 +479,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         file: Annotated[UploadFile, File()],
         role: Annotated[FileRole, Form()] = FileRole.graph,
         directed: Annotated[bool, Form()] = False,
+        source_column: Annotated[str | None, Form()] = None,
+        target_column: Annotated[str | None, Form()] = None,
+        timestamp_unit: Annotated[str | None, Form()] = None,
     ) -> FileInfo:
         runtime = _runtime(request)
         runtime.database.get_session(session_id)
@@ -342,6 +494,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 content=content,
                 media_type=file.content_type,
                 directed=directed,
+                source_column=source_column,
+                target_column=target_column,
+                timestamp_unit=timestamp_unit,
             )
         )
 
@@ -418,7 +573,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         limit: int = Query(100, ge=1, le=10_000),
     ) -> Any:
         result = _runtime(request).database.get_result(result_id)
-        return query_path(result.payload, path, offset=offset, limit=limit)
+        return query_path(
+            {**result.payload, "answer": result.answer},
+            path,
+            offset=offset,
+            limit=limit,
+        )
+
+    @router.get("/results/{result_id}/report", response_class=HTMLResponse)
+    async def download_answer(result_id: str, request: Request) -> HTMLResponse:
+        result = _runtime(request).database.get_result(result_id)
+        return HTMLResponse(
+            render_report(result),
+            headers={
+                "Content-Disposition": f'attachment; filename="{result.id}.html"',
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
 
     @router.post("/results/{result_id}/interpret", response_model=ResultRecord)
     async def interpret_result(

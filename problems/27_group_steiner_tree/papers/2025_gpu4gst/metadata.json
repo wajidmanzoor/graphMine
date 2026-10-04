@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_gpu4gst",
+  "title": "Fast Optimal Group Steiner Tree Search using GPUs",
+  "year": 2025,
+  "venue": "Proc. ACM Manag. Data (SIGMOD) 3(6), article 327",
+  "doi": "10.1145/3769792",
+  "publication_url": "https://dl.acm.org/doi/10.1145/3769792",
+  "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3769792",
+  "code_url": "https://github.com/toziki/GPU4GST-sigmod",
+  "semantic_fit": "exact",
+  "gpu_scope": "First GPU algorithm for finding provably optimal Group Steiner Trees on general edge-weighted graphs.",
+  "notes": "Newest and most directly matching verified GPU work for this problem; authors state source code and datasets are publicly released.",
+  "problem_id": "group_steiner_tree",
+  "problem_dir": "27_group_steiner_tree",
+  "research_cutoff": "2026-09-30"
+}

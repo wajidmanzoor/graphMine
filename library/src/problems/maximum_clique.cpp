@@ -245,12 +245,11 @@ ExecutionResult<MaximumCliqueOutput> MaximumClique::run(
         provenance, std::move(warnings));
   }
 
-  auto certified_upper = greedy_coloring_upper_bound(normalized.csr);
-  if (backend.relaxation_upper_size >= backend.clique.size() &&
-      backend.relaxation_upper_size != 0U) {
-    certified_upper =
-        std::min(certified_upper, backend.relaxation_upper_size);
-  }
+  // CUDA-MS's returned relaxation mask is not a certified global upper
+  // bound. On the seeded nine-vertex regression it has size three although
+  // vertices 2, 4, 6, 7 form a four-clique. Only a proper coloring provides
+  // the common upper bound; a local relaxation must never certify optimality.
+  const auto certified_upper = greedy_coloring_upper_bound(normalized.csr);
   if (backend.clique.size() > certified_upper) {
     return ExecutionResult<MaximumCliqueOutput>::failure(
         {StatusCode::internal_error,

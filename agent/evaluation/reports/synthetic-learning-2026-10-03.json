@@ -1,0 +1,525 @@
+{
+  "schema_version": "1.0.0",
+  "created_at": "2026-10-03T01:45:39.544972+00:00",
+  "scope": "One bounded synthetic pilot. Reference/native checks are separate from language understanding and human usability. No model weights changed, and no external teacher calls were made.",
+  "corpus": {
+    "manifest_path": ".graphmine-learning/corpus-v1/manifest.json",
+    "manifest_sha256": "abf46fbc14780ea80372ef2086754c120aca7f8b5d09eb37f446973261ea918b",
+    "seed": 314159,
+    "generator": "synthetic-v1",
+    "graphs": 24,
+    "questions": 114,
+    "split_counts": {
+      "train": 54,
+      "validation": 22,
+      "test": 38
+    },
+    "domains": {
+      "social_networks": 24,
+      "bioinformatics": 24,
+      "fraud_detection": 24,
+      "communications_infrastructure": 24,
+      "recommendation_ecommerce": 6,
+      "cybersecurity": 12
+    },
+    "operations": [
+      "betweenness-centrality",
+      "community-detection",
+      "k-core",
+      "maximal-bicliques",
+      "maximal-cliques",
+      "maximum-clique",
+      "temporal-motif-mining"
+    ],
+    "split_policy": "Disjoint generator families; exact topology-isomorphism rejection across all graphs; all questions for a graph stay together."
+  },
+  "native_replays": [
+    {
+      "version": "v1",
+      "report_path": ".graphmine-learning/native-v1.json",
+      "report_sha256": "65a317bc3c0d70074b89cf4d11247df09a0bf21628736062e93bb0138c3dc801",
+      "passed": 113,
+      "total": 114,
+      "binary_sha256": null,
+      "adapter_source_sha256": null,
+      "checker_sha256": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7",
+      "failures": [
+        {
+          "id": "random-01-q01",
+          "issues": [
+            "Maximum size/optimality differs"
+          ]
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "report_path": ".graphmine-learning/native-v2.json",
+      "report_sha256": "c22c2aa6c7cd6b04e8431a73ac06face9eff9cb796854e7347c3079c5f90fbaa",
+      "passed": 113,
+      "total": 114,
+      "binary_sha256": "8bbc3f0929766601aa1f0f437b271a029d3618c122c70a24a3b2aade5a138ea0",
+      "adapter_source_sha256": {
+        "execution.py": "351e4bbfc26bbbf006ea10c06172106d5235cbb005064118cbdd57a2d94da6ff",
+        "selector.py": "101f26766359b6302478615e1e1f8993880d8809e678a4cd8641a90b457667c4",
+        "planning.py": "254c44e43a38045dff9d2e06f78d60ff9ebe2e2dc7d817371c5a2fd41d786801",
+        "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0"
+      },
+      "checker_sha256": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7",
+      "failures": [
+        {
+          "id": "cycle_chords-01-q01",
+          "issues": [
+            "ExecutionError: GraphMine did not create result.json"
+          ]
+        }
+      ]
+    },
+    {
+      "version": "v3",
+      "report_path": ".graphmine-learning/native-v3.json",
+      "report_sha256": "339425091a9811f9d47ec3b2dc9964170d78431672d8b2382023c849166ab6c6",
+      "passed": 114,
+      "total": 114,
+      "binary_sha256": "8bbc3f0929766601aa1f0f437b271a029d3618c122c70a24a3b2aade5a138ea0",
+      "adapter_source_sha256": {
+        "execution.py": "68bb3ea000cd33f852715fec0d815ab9a1b0b329cad044b1b86b711ad56d1093",
+        "selector.py": "e854b4bc63f089b70997fefb00cfa0958811f73130a2a5682bd4cb5708b4bdd9",
+        "planning.py": "254c44e43a38045dff9d2e06f78d60ff9ebe2e2dc7d817371c5a2fd41d786801",
+        "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0"
+      },
+      "checker_sha256": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7",
+      "failures": []
+    }
+  ],
+  "native_regressions": [
+    {
+      "example": "random-01-q01",
+      "backend": "cuda-ms",
+      "observed": "Returned a 3-clique, optimal=true and upper_bound=3 on three direct reproductions; the oracle and two alternative backends found a 4-clique.",
+      "action": "Removed relaxation-mask bound from certification, added a native regression, and excluded the backend from agent selection."
+    },
+    {
+      "example": "cycle_chords-01-q01",
+      "backend": "maximum-clique-on-gpu",
+      "observed": "Aborted with exit -6; no result.json. Reproduced independently.",
+      "action": "Excluded from agent selection pending adapter repair. GPUMaximumClique returns the correct 3-clique."
+    }
+  ],
+  "live_baseline": {
+    "report_path": ".graphmine-learning/live-heldout-v1.json",
+    "report_sha256": "ad90934c96f0d07cabf7264c07b3a1cb9af6e069541cfc6223e8a532f2d0e311",
+    "model": "Qwen/Qwen3.8-27B-FP8",
+    "inference_profile": {
+      "llm_route_reasoning_effort": "none",
+      "llm_plan_reasoning_effort": "none",
+      "llm_analyst_reasoning_effort": "medium",
+      "llm_route_max_tokens": 768,
+      "llm_plan_max_tokens": 3072,
+      "llm_analyst_max_tokens": 3072
+    },
+    "started_at": "2026-10-03T01:31:47.233318+00:00",
+    "finished_at": "2026-10-03T01:43:47.605503+00:00",
+    "agent_source_sha256": {
+      "agent_service.py": "f850ebd137df08b5788909c1af887b4bb3ea31f7c476e86dc8ed578075d4c4fb",
+      "llm.py": "937006b7466f1bf2713327fcede672d584f59394754a5d5c6bc92ee01d8ac3b9",
+      "planning.py": "254c44e43a38045dff9d2e06f78d60ff9ebe2e2dc7d817371c5a2fd41d786801",
+      "answers.py": "f04eb3d4fa4a7e79112e0b9371ef96b54ab3b49d83d5b376dee0dcb335e858a5",
+      "visualization.py": "801b4a6a6c289e88d5d5970afe68156f53ac190402832f0523c2f8b1ac15eff4",
+      "selector.py": "101f26766359b6302478615e1e1f8993880d8809e678a4cd8641a90b457667c4"
+    },
+    "total": 38,
+    "passed": 35,
+    "executed": 28,
+    "executed_passed": 28,
+    "nonexecution_questions": 10,
+    "unsafe_executions": 0,
+    "latency_seconds": {
+      "minimum": 8.75452016480267,
+      "median": 20.745708910748363,
+      "maximum": 25.99850590340793
+    },
+    "failures": [
+      {
+        "id": "barbell-00-q07",
+        "query": "Rank these coworkers by shortest routes, using each relationship's monetary cost as the route length.",
+        "issues": [
+          "Expected unsupported, received needs_information"
+        ],
+        "feedback_id": "feedback_7f2ec0f8c338485ea8ea86fb37d1cebd",
+        "planning_status": "needs_information",
+        "message": "The request asks for shortest paths weighted by a monetary cost, but the uploaded coworker graph has no edge weights (has_weights=false) and no cost attribute. No current native operation uses edge weights as costs, and inventing a weight from 'year' would be incorrect. The intent is unsupported on this dataset. Missing: The graph has no edge weights or monetary-cost attribute; only 'year' and 'source_system' exist on relationships."
+      },
+      {
+        "id": "branching-00-q07",
+        "query": "Rank these accounts by shortest routes, using each relationship's monetary cost as the route length.",
+        "issues": [
+          "Expected unsupported, received needs_information"
+        ],
+        "feedback_id": "feedback_8fcc76df0e984371be4a975604300b10",
+        "planning_status": "needs_information",
+        "message": "The request asks for shortest paths using monetary edge costs, but the graph has no weights (has_weights=false) and no monetary attribute on edges. No validated backend supports weighted shortest-path ranking, and the required cost data is absent. Missing: The graph has no edge weights or monetary cost attributes; only year and source_system are present."
+      },
+      {
+        "id": "branching-01-q07",
+        "query": "Rank these devices by shortest routes, using each relationship's monetary cost as the route length.",
+        "issues": [
+          "Expected unsupported, received needs_information"
+        ],
+        "feedback_id": "feedback_09cf884f36884904b08a2c6ab161ba9c",
+        "planning_status": "needs_information",
+        "message": "The request asks for shortest paths using monetary edge costs, but the graph is unweighted and contains no cost attribute. No validated backend supports weighted shortest-path ranking, and the required cost data is absent. Missing: The graph has no edge weights or monetary cost attributes; only 'year' and 'source_system' exist on relationships."
+      }
+    ],
+    "source_boundary": "This isolated live replay began after the first backend exclusion, before the later cycle-crash exclusion. Its maximum-clique calls used Maximum-Clique-on-GPU and passed the oracles. The final native-v3 sweep separately checks all examples under the final GPUMaximumClique selection. The LLM and prompts were not changed in response to held-out failures."
+  },
+  "candidates": {
+    "directory": ".graphmine-learning/route-candidates-v1",
+    "export_provenance_sha256": "6f43bcf8baceab9d9d432c9d4b10d4a3443ef41bcb23df8d0d4e6647aded540e",
+    "split_counts": {
+      "train": 54,
+      "validation": 22
+    },
+    "test_examples_exported": 0,
+    "stage": "RouteDecision",
+    "source": "seeded semantic templates plus independent references, not teacher distillation",
+    "training_started": false,
+    "quarantined_teacher_proposals": 13,
+    "local_teacher_calls": 5,
+    "teacher_model": "Qwen/Qwen3.8-27B-FP8"
+  },
+  "feedback": {
+    "native_records": 2,
+    "native_record_path": ".graphmine-learning/native-feedback.json",
+    "live_failure_records": 3
+  },
+  "regression_tests": {
+    "python": {
+      "passed": 104
+    },
+    "browser": {
+      "passed": 2,
+      "native_and_llm": "test doubles"
+    },
+    "native_ctest": {
+      "passed": 18,
+      "disabled": 3
+    },
+    "lint": "passed",
+    "diff_check": "passed"
+  },
+  "semantic_review_phase": {
+    "finished_at": "2026-10-03T02:46:13.230104+00:00",
+    "scope": "Development semantic-review pilot, not general model accuracy, teacher selection, or fine-tuning. Only seeded synthetic data was used. Production prompts and weights were unchanged.",
+    "calibration": {
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "initial_passed": 4,
+      "revised_passed": 9,
+      "total": 14,
+      "reviewer_qualified": false,
+      "reviewer_contract_sha256": "9b504d354e428172a963b0026ceb548194f4be6628d60bee13287f898f0cb453",
+      "controls_sha256": "5ea472100fd3c323e4329c4a839a9b3bc53c9ad50011aab95014842f1b1507d9",
+      "split_policy": "Training/validation controls only; explicitly used for prompt development, not fresh held-out accuracy.",
+      "failures": [
+        {
+          "id": "control-random-00-q07",
+          "issues": [
+            "ambiguity: expected [], extracted [\"The question requests using 'monetary cost' as route length, but the provided graph context only lists 'year' and 'source_system' as edge attributes. No monetary cost attribute is defined or present in the schema.\"]",
+            "No grounded question span for ambiguity"
+          ]
+        },
+        {
+          "id": "control-retail_random-00-q00",
+          "issues": [
+            "minimum_group_size: expected None, extracted 2",
+            "No grounded question span for minimum_group_size"
+          ]
+        },
+        {
+          "id": "control-events_forward-00-q00",
+          "issues": [
+            "No grounded question span for ordered_pattern_edges"
+          ]
+        },
+        {
+          "id": "control-events_forward-00-q01",
+          "issues": [
+            "filters: expected [], extracted [{'target': 'edges', 'field': 'timestamp', 'operator': 'lt', 'value': 20}]",
+            "time_window: expected 20.0, extracted None",
+            "No grounded question span for ordered_pattern_edges"
+          ]
+        },
+        {
+          "id": "control-millisecond-window",
+          "issues": [
+            "ambiguity: expected [], extracted [\"The question specifies a time window of 20 milliseconds, but the graph context defines the timestamp unit as seconds. It is unclear whether the user intends to filter based on the raw integer values (treating them as milliseconds) or if a unit conversion is required, and whether the '20 milliseconds' constraint applies to the difference between the first and last event timestamps in the sequence.\"]",
+            "No grounded question span for ambiguity",
+            "No grounded question span for ordered_pattern_edges"
+          ]
+        }
+      ]
+    },
+    "proposals": {
+      "total": 13,
+      "screening_passed": 2,
+      "live_replayed": 2,
+      "live_passed": 2,
+      "accepted": 0,
+      "distinct_reviewer": false,
+      "exported_rows": 0,
+      "quarantine": 13,
+      "candidates": [
+        {
+          "id": "proposal-f59d3c355c53b3a9",
+          "query": "Show the names of all maximal sets of three or more employees where every single pair in the set has worked on a project together.",
+          "screening_passed": false,
+          "wording_issues": [
+            "Introduces graph-mining terminology into a novice-facing question"
+          ],
+          "semantic_issues": [],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-ece26b30d871fc1c",
+          "query": "Identify the largest possible groups of at least three coworkers such that each person in the group has collaborated with every other person. Do not include any group that is a subset of a bigger group meeting these conditions, and list the names.",
+          "screening_passed": false,
+          "wording_issues": [
+            "Largest/maximum wording can change an unextendable-group request"
+          ],
+          "semantic_issues": [
+            "Evidence for goal is not a verbatim question span",
+            "No grounded question span for goal"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-600c9c67bd48bf8c",
+          "query": "Find every complete cluster of 3 or more people who have all worked together in pairs. Exclude any smaller group that fits inside a larger one, and display the names of the people in these groups.",
+          "screening_passed": false,
+          "wording_issues": [],
+          "semantic_issues": [
+            "Evidence for goal is not a verbatim question span",
+            "No grounded question span for goal"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-3e36f2ef85663931",
+          "query": "Show the names of all sets of three or more accounts where each account has exchanged payments with every other account in the set, but only if the set is not a subset of a larger group with the same property.",
+          "screening_passed": true,
+          "wording_issues": [],
+          "semantic_issues": [],
+          "replay_passed": true,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": "session_f9312efc08a646dd87f18f0d39619172",
+          "turn_id": "turn_955ec6121f114e8dbb3b8c75eba0c8d6"
+        },
+        {
+          "id": "proposal-cd9b33638c58d9e2",
+          "query": "Identify the names of the largest groups of accounts (minimum size 3) where every member has made a payment exchange with every other member, excluding any group that fits inside a bigger group meeting these criteria.",
+          "screening_passed": false,
+          "wording_issues": [
+            "Largest/maximum wording can change an unextendable-group request"
+          ],
+          "semantic_issues": [
+            "Evidence for goal is not a verbatim question span",
+            "No grounded question span for goal"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-c512725a0bb62428",
+          "query": "Which accounts form complete exchange circles of at least 3 people, where everyone in the circle has paid everyone else? List the names of these circles only if they are not contained within a larger circle of the same type.",
+          "screening_passed": true,
+          "wording_issues": [],
+          "semantic_issues": [],
+          "replay_passed": true,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": "session_4b6ca368e27a4dd09d33528e29d677f5",
+          "turn_id": "turn_88fc468cb7174de1a5702dee1ded4ca7"
+        },
+        {
+          "id": "proposal-80ba90fe07647092",
+          "query": "Find all sets of at least three employees where each pair has worked on a project together. Only include the largest possible groups (excluding any group that is a subset of a bigger one) and list the names of the members.",
+          "screening_passed": false,
+          "wording_issues": [
+            "Largest/maximum wording can change an unextendable-group request"
+          ],
+          "semantic_issues": [
+            "Evidence for goal is not a verbatim question span",
+            "No grounded question span for goal"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-6f6605aabe053210",
+          "query": "Identify every maximal group of coworkers of size 3 or more such that all members have collaborated on a project with each other. Exclude any group that can be expanded into a larger group with the same property, and provide the names of the people in these groups.",
+          "screening_passed": false,
+          "wording_issues": [
+            "Introduces graph-mining terminology into a novice-facing question"
+          ],
+          "semantic_issues": [],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-bf753c0df0026f10",
+          "query": "Find all unique groups of two or more customers who have each purchased the exact same collection of at least two products. Ensure that no additional customer could be added to any of these groups while still sharing that exact product set, and list the customer names separately from the product names.",
+          "screening_passed": false,
+          "wording_issues": [],
+          "semantic_issues": [
+            "minimum_group_size: expected None, extracted 2",
+            "No grounded question span for minimum_group_size"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-5483857e428516c2",
+          "query": "Identify every maximal set of customers (minimum size 2) where all members bought the identical set of at least two items. The group must be complete, meaning you cannot include any other customer who also bought that specific set of items. Please output the list of customer names and the list of product names for each such group.",
+          "screening_passed": false,
+          "wording_issues": [
+            "Introduces graph-mining terminology into a novice-facing question"
+          ],
+          "semantic_issues": [
+            "minimum_group_size: expected None, extracted 2",
+            "No grounded question span for minimum_group_size"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-09e5ea41eb6ea4a5",
+          "query": "Identify the ordered sequence of connection events where Host A connects to Host B, followed by Host B to Host C, and finally Host A to Host C. Ensure all three hosts involved are distinct and the total time span from the first to the last event is 20 seconds or less. Provide the hosts and event IDs in the order they occur.",
+          "screening_passed": false,
+          "wording_issues": [],
+          "semantic_issues": [
+            "filters: expected [], extracted [{'target': 'edges', 'field': 'timestamp', 'operator': 'lte', 'value': 20}]",
+            "No grounded question span for filters",
+            "No grounded question span for ordered_pattern_edges"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-086e84c4cce62ae3",
+          "query": "Locate a chain of three connection events: first from Host A to Host B, second from Host B to Host C, and third from Host A to Host C. The three hosts must be different from each other, and the duration between the earliest and latest event in this chain must not exceed 20 seconds. List the hosts and their corresponding event IDs in chronological order.",
+          "screening_passed": false,
+          "wording_issues": [],
+          "semantic_issues": [
+            "No grounded question span for ordered_pattern_edges"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        },
+        {
+          "id": "proposal-783e0f48dd254510",
+          "query": "Find an ordered set of three connection events involving three unique hosts: an event from Host A to Host B, an event from Host B to Host C, and an event from Host A to Host C. The time difference between the first and the last event in this sequence must be within 20 seconds. Return the list of hosts and event IDs in the correct sequence.",
+          "screening_passed": false,
+          "wording_issues": [],
+          "semantic_issues": [
+            "No grounded question span for ordered_pattern_edges"
+          ],
+          "replay_passed": null,
+          "replay_issues": [],
+          "training_eligible": false,
+          "session_id": null,
+          "turn_id": null
+        }
+      ]
+    },
+    "training_started": false,
+    "external_calls_sent": 0,
+    "regression_tests": {
+      "python_passed": 137,
+      "new_semantic_workflow_tests": 33,
+      "lint": "passed",
+      "diff_check": "passed"
+    },
+    "artifacts": [
+      {
+        "path": ".graphmine-learning/local-calibration-v1/comparison.json",
+        "sha256": "c732988f8b1756918ae1eb278c4f3c2e7fb89041a16e0722ff5c3b838ae8d53a"
+      },
+      {
+        "path": ".graphmine-learning/local-calibration-v2/comparison.json",
+        "sha256": "8dca8d75fa5dc836d4c2241aa81aa60d6ed71738b5cb2b19edd77916bc1aa406"
+      },
+      {
+        "path": ".graphmine-learning/semantic-review-v1/review.json",
+        "sha256": "472ac52dc25162cb2923c1438bda8cf51a10ffe3ce6e0c96d3a627082ec7d6dc"
+      },
+      {
+        "path": ".graphmine-learning/reviewed-candidates-v1/provenance.json",
+        "sha256": "1174c50778ed6ab4512c3c5b6f3273443bb50921057e4f8ef9dc15bb991df722"
+      },
+      {
+        "path": ".graphmine-learning/teacher-comparison-plan-v2/comparison.json",
+        "sha256": "ca5b783fadf0d1190d2b432a340b19dbecf71c9e18f1f0fbd4c63bbdfffd779f"
+      },
+      {
+        "path": ".graphmine-learning/teacher-sol-plan-v1/comparison.json",
+        "sha256": "2e2af7d68ba61757cd588e085cf1c31ab13e601d4d2c534f8c89400b6ea28d20"
+      },
+      {
+        "path": ".graphmine-learning/teacher-proposal-plan-v1/candidates.json",
+        "sha256": "21e98e6227abe899185444e22173f1cf9f7e081aaca37bb66c0afd89bf2efed1"
+      }
+    ],
+    "teacher_plan": {
+      "selection": "Provisional only: GPT-6.1 Sol first pilot; GPT-6 Astra candidate reviewer. No task-specific external comparison has run.",
+      "api_access": "OPENAI_API_KEY not configured; availability unverified. Paid inference requires explicit authorization.",
+      "rates_source": "https://developers.openai.com/api/docs/models/compare",
+      "pricing_checked_at": "2026-10-03",
+      "comparison_output_token_limit": 2048,
+      "both_models_reserved_usd": 5.664336,
+      "sol_only_reserved_usd": 0.944056,
+      "sol_five_proposal_calls_reserved_usd": 0.310856,
+      "budget_policy": "Per-invocation conservative reservations, not provider billing guarantees. The full comparison is refused at US$5 before any call. No retries or redirects; all synthetic proposals remain quarantined until independently gated."
+    }
+  },
+  "remaining_work": [
+    "Normalize safe refusal status when both an algorithm capability and missing data prevent execution.",
+    "Repair quarantined native backends and broaden independent graph coverage.",
+    "Run the implemented semantic-review gates with a qualified distinct reviewer; the local model failed calibration, so all 13 paraphrases remain quarantined.",
+    "Add multi-turn, messy real-domain wording, adversarial records, large-graph and repeated-trial evaluations.",
+    "Choose a stronger teacher, data-use rules and generation budget, then compare a small adaptation experiment with a fresh untouched held-out suite."
+  ]
+}

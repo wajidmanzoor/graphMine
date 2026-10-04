@@ -1,0 +1,54 @@
+{
+  "backend": "gpu4gst",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpu4gst_device0",
+        "unused",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/8/",
+        "graph",
+        "2",
+        "0",
+        "0"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 20.0812911670655,
+      "exit_code": 124,
+      "expected": 7,
+      "log": "runs/gpu4gst_8.log",
+      "name": "path_8",
+      "observed": null,
+      "passed": false,
+      "stdin_path": null,
+      "timeout": true
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpu4gst_device0",
+        "unused",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/64/",
+        "graph",
+        "2",
+        "0",
+        "0"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 20.078551594167948,
+      "exit_code": 124,
+      "expected": 63,
+      "log": "runs/gpu4gst_64.log",
+      "name": "path_64",
+      "observed": null,
+      "passed": false,
+      "stdin_path": null,
+      "timeout": true
+    }
+  ],
+  "limitations": [
+    "Scalar cost only on two singleton groups; executable returns no tree/edge witness. General group constraints and exactness not certified. No explicit license detected."
+  ],
+  "passed": 0,
+  "seed": 20261004,
+  "status": "correctness_fail",
+  "total": 2
+}

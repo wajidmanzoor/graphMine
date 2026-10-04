@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/bin/graphmine",
+    "run",
+    "max-flow-min-cut",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/library/flow_small.json",
+    "--worker-directory",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/gpu/libexec/graphmine",
+    "--source",
+    "0",
+    "--sink",
+    "5"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.26459874399006367,
+  "exit_code": 0,
+  "log": "runs/installed_flow.log",
+  "stdin_path": null,
+  "timeout": false
+}

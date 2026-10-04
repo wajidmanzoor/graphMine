@@ -1,0 +1,17 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "-Xcompiler=-fopenmp,-mavx2",
+    "/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_superfuser/code/src/gpu.cu",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 7.533027462661266,
+  "exit_code": 0,
+  "log": "builds/superfuser.log",
+  "timeout": false
+}

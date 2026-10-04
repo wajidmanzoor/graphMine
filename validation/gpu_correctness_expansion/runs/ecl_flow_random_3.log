@@ -1,0 +1,34 @@
+ECL-Maxflow
+Copyright 2025 Avery VanAusdal and Martin Burtscher
+input graph: 12 nodes and 50 edges
+input: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_flow/random_3.egr
+nodes: 12
+edges: 50
+source: 0
+sink:   11
+runs: 1
+GPU: NVIDIA RTX 6000 Ada Generation with 142 SMs and 1536 mTpSM (2505.0 MHz and 10001.0 MHz)
+source info: 7 in-edges, 6 out-edges
+sink max capacity: 49 across 3 in-edges
+header total init time: 0.001116s (including building rcsr: 0.000006s)
+Global relabeling frequency: 100
+initial global relabel from sink: 4 iters in 0.000074s
+---Phase 1 complete, minimum cut found in 0.001659s ---
+	iterations: 59
+	push-relabel kernel time: 0.001403s
+	global relabeled 0 times in 0.000000s
+	avg percent of graph in BFS WL: -nan% over 0 total BFS iters
+---Phase 2 starts, returning excess flow from 2 active nodes to source---
+initial global relabel from source on iter 59: 3 iters in 0.000057s
+---Phase 2 complete, full flow state found in 0.000246s ---
+	iterations: 6
+	push-relabel kernel time: 0.000147s
+	global relabeled 1 times in 0.000057s
+	avg percent of graph in BFS WL: 27.78% over 3 total BFS iters
+runtime: 0.002018s
+Maximum flow from nodes 0 to 11: 49
+Verified valid final flow state, no excess nodes remaining, and same absolute excess in source and sink.
+
+median runtime: 0.002018s
+Throughput: 0.000025 gigaedges/s
+VALIDATION_FLOW 19 6 4 0 15 5 0 9 0 0 17 0 6 0 0 0 0 0 5 18 7 0 9 14 0 0 19 0 0 11 0 16 0 18 0 0 0 0 0 0 0 28 0 1 21 0 0 0 0 0

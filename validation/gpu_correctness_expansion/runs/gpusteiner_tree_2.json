@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+    "16",
+    "-v"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.264815129339695,
+  "exit_code": 0,
+  "log": "runs/gpusteiner_tree_2.log",
+  "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/tree_2.txt",
+  "timeout": false
+}

@@ -1,0 +1,233 @@
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- kokkos_launch_compiler is enabled globally. C++ compiler commands with -DKOKKOS_DEPENDENCE will be redirected to the appropriate compiler for Kokkos
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Configuring done (0.2s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/wajid/projects/graphDatabaseAgent/library/build
+[  2%] Building CUDA object CMakeFiles/graphmine_worker_ecl_scc.dir/expansion-generated/ecl_scc.cu.o
+[  2%] Built target graphmine_core
+[  3%] Building CUDA object CMakeFiles/graphmine_worker_ecl_flow.dir/expansion-generated/ecl_flow.cu.o
+[  4%] Building CUDA object CMakeFiles/graphmine_worker_hungarian.dir/expansion-generated/hungarian.cu.o
+[  5%] Building CUDA object CMakeFiles/graphmine_worker_gdlog_tc.dir/expansion-generated/gdlog_tc.cu.o
+In file included from /home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/hungarian.cu:41:
+/usr/include/device_functions.h:54:2: warning: #warning "device_functions.h is an internal header file and must not be used directly.  This file will be removed in a future CUDA release.  Please use cuda_runtime_api.h or cuda_runtime.h instead." [-Wcpp]
+   54 | #warning "device_functions.h is an internal header file and must not be used directly.  This file will be removed in a future CUDA release.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+      |  ^~~~~~~
+In file included from /home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/hungarian.cu:41:
+/usr/include/device_functions.h:54:2: warning: #warning "device_functions.h is an internal header file and must not be used directly.  This file will be removed in a future CUDA release.  Please use cuda_runtime_api.h or cuda_runtime.h instead." [-Wcpp]
+   54 | #warning "device_functions.h is an internal header file and must not be used directly.  This file will be removed in a future CUDA release.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+      |  ^~~~~~~
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/hungarian.cu(896): warning #940-D: missing return statement at end of non-void function "upstream_main"
+  }
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/hungarian.cu(896): warning #940-D: missing return statement at end of non-void function "upstream_main"
+  }
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+[  5%] Linking CUDA executable workers/graphmine-worker-ecl-scc
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/hungarian.cu: In function ‘int upstream_main()’:
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/hungarian.cu:896:1: warning: control reaches end of non-void function [-Wreturn-type]
+  896 | }
+      | ^
+[  5%] Built target graphmine_worker_ecl_scc
+[  8%] Built target graphmine_backend_mce_gpu
+[ 10%] Built target graphmine_backend_g2_aimd
+[ 15%] Built target graphmine_backend_rdmce
+[ 18%] Built target graphmine_backend_kcoregpu
+[ 23%] Built target graphmine_backend_cuda_ms
+[ 23%] Building CUDA object CMakeFiles/graphmine_worker_gdlog_tc.dir/src/backends/expansion/upstream/gdlog/src/acopy.cu.o
+[ 24%] Linking CUDA executable workers/graphmine-worker-hungarian-cuda
+[ 24%] Built target graphmine_worker_hungarian
+[ 27%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 31%] Built target graphmine_backend_gpu_maximum_clique
+[ 32%] Building CUDA object CMakeFiles/graphmine_worker_gdlog_tc.dir/src/backends/expansion/upstream/gdlog/src/copy.cu.o
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(41): warning #1650-D: result of call is not used
+                  fscanf(data_file, "%lld%c", &data[(i * total_columns) + j],
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(44): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%ld%c", &data[(i * total_columns) + j],
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(49): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%lld", &data[(i * total_columns) + j]);
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(51): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%ld", &data[(i * total_columns) + j]);
+                      ^
+
+[ 32%] Linking CUDA executable workers/graphmine-worker-ecl-maxflow
+[ 32%] Built target graphmine_worker_ecl_flow
+[ 34%] Built target graphmine_backend_tot
+[ 35%] Built target graphmine_backend_wetric
+[ 37%] Built target graphmine_backend_edtc
+[ 40%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 42%] Built target graphmine_backend_gamma_kclique
+[ 42%] Building CUDA object CMakeFiles/graphmine_worker_gdlog_tc.dir/src/backends/expansion/upstream/gdlog/src/join.cu.o
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(41): warning #1650-D: result of call is not used
+                  fscanf(data_file, "%lld%c", &data[(i * total_columns) + j],
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(44): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%ld%c", &data[(i * total_columns) + j],
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(49): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%lld", &data[(i * total_columns) + j]);
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(51): warning #1650-D: result of call is not used
+                      fscanf(data_file, "%ld", &data[(i * total_columns) + j]);
+                      ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(98): warning #177-D: variable "relation_columns" was declared but never referenced
+      int relation_columns = 2;
+          ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(99): warning #550-D: variable "time_point_begin" was set but never used
+      std::chrono::high_resolution_clock::time_point time_point_begin;
+                                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(100): warning #177-D: variable "time_point_end" was declared but never referenced
+      std::chrono::high_resolution_clock::time_point time_point_end;
+                                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(102): warning #177-D: variable "spent_time" was declared but never referenced
+      double spent_time;
+             ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(171): warning #177-D: variable "relation_columns" was declared but never referenced
+      int relation_columns = 2;
+          ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(172): warning #550-D: variable "time_point_begin" was set but never used
+      std::chrono::high_resolution_clock::time_point time_point_begin;
+                                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(173): warning #177-D: variable "time_point_end" was declared but never referenced
+      std::chrono::high_resolution_clock::time_point time_point_end;
+                                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu(175): warning #177-D: variable "spent_time" was declared but never referenced
+      double spent_time;
+             ^
+
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu: In function ‘column_type* get_relation_from_file(const char*, int, int, char, ColumnT)’:
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu:41:19: warning: format ‘%lld’ expects argument of type ‘long long int*’, but argument 3 has type ‘column_type*’ {aka ‘long unsigned int*’} [-Wformat=]
+   41 |                 fscanf(data_file, "%lld%c", &data[(i * total_columns) + j],
+      |                   ^~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                             |
+      |                             column_type* {aka long unsigned int*}
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu:49:19: warning: format ‘%lld’ expects argument of type ‘long long int*’, but argument 3 has type ‘column_type*’ {aka ‘long unsigned int*’} [-Wformat=]
+   49 |                     fscanf(data_file, "%lld", &data[(i * total_columns) + j]);
+      |                   ^ ~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                           |
+      |                           column_type* {aka long unsigned int*}
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu:41:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   41 |                 fscanf(data_file, "%lld%c", &data[(i * total_columns) + j],
+      |       ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu:44:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   44 |                     fscanf(data_file, "%ld%c", &data[(i * total_columns) + j],
+      |       ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu:49:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   49 |                     fscanf(data_file, "%lld", &data[(i * total_columns) + j]);
+      |       ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/library/build/expansion-generated/gdlog_tc.cu:51:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   51 |                     fscanf(data_file, "%ld", &data[(i * total_columns) + j]);
+      |       ^             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[ 43%] Building CUDA object CMakeFiles/graphmine_worker_gdlog_tc.dir/src/backends/expansion/upstream/gdlog/src/lie.cu.o
+[ 43%] Building CUDA object CMakeFiles/graphmine_worker_gdlog_tc.dir/src/backends/expansion/upstream/gdlog/src/print.cu.o
+[ 44%] Building CUDA object CMakeFiles/graphmine_worker_gdlog_tc.dir/src/backends/expansion/upstream/gdlog/src/relation.cu.o
+/home/wajid/projects/graphDatabaseAgent/library/src/backends/expansion/upstream/gdlog/src/lie.cu(31): warning #177-D: variable "rebuild_time" was declared but never referenced
+      float rebuild_time = 0;
+            ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/library/src/backends/expansion/upstream/gdlog/src/lie.cu(32): warning #177-D: variable "flatten_time" was declared but never referenced
+      float flatten_time = 0;
+            ^
+
+/home/wajid/projects/graphDatabaseAgent/library/src/backends/expansion/upstream/gdlog/src/lie.cu(35): warning #177-D: variable "flatten_full_time" was declared but never referenced
+      float flatten_full_time = 0;
+            ^
+
+/home/wajid/projects/graphDatabaseAgent/library/src/backends/expansion/upstream/gdlog/src/lie.cu(38): warning #177-D: variable "join_get_size_time" was declared but never referenced
+      float join_get_size_time = 0;
+            ^
+
+/home/wajid/projects/graphDatabaseAgent/library/src/backends/expansion/upstream/gdlog/src/lie.cu(39): warning #177-D: variable "join_get_result_time" was declared but never referenced
+      float join_get_result_time = 0;
+            ^
+
+/home/wajid/projects/graphDatabaseAgent/library/src/backends/expansion/upstream/gdlog/src/lie.cu(40): warning #177-D: variable "rebuild_newt_time" was declared but never referenced
+      float rebuild_newt_time = 0;
+            ^
+
+[ 44%] Building CUDA object CMakeFiles/graphmine_worker_gdlog_tc.dir/src/backends/expansion/upstream/gdlog/src/tuple.cu.o
+[ 47%] Built target graphmine_backend_turbobc
+[ 48%] Built target graphmine_backend_cumbe
+[ 49%] Built target graphmine_backend_cuqc
+[ 52%] Built target graphmine_backend_gmatch
+[ 55%] Built target graphmine_backend_everest
+[ 56%] Built target graphmine_backend_mayura
+[ 60%] Built target graphmine_backend_gleiden
+[ 63%] Built target graphmine_backend_pggc
+[ 64%] Built target graphmine_maximal_cliques
+[ 68%] Built target graphmine_backend_graphminer_motif
+[ 76%] Built target graphmine_backend_graphset_motif
+[ 81%] Built target graphmine_backend_dumato_motif
+[ 82%] Built target graphmine_k_core
+[ 83%] Built target graphmine_maximum_clique
+[ 84%] Built target graphmine_triangle_counting
+[ 85%] Built target graphmine_dynamic_triangle_counting
+[ 88%] Built target graphmine_k_cliques
+[ 89%] Built target graphmine_betweenness_centrality
+[ 90%] Built target graphmine_maximal_bicliques
+[ 91%] Built target graphmine_quasi_cliques
+[ 92%] Built target graphmine_subgraph_isomorphism
+[ 94%] Built target graphmine_temporal_motif_mining
+[ 95%] Built target graphmine_community_detection
+[ 96%] Built target graphmine_graph_motifs
+[ 97%] Linking CUDA device code CMakeFiles/graphmine_worker_gdlog_tc.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 97%] Linking CUDA executable workers/graphmine-worker-gdlog
+[ 97%] Built target graphmine_worker_gdlog_tc
+[ 98%] Built target graphmine_validated_expansion
+[100%] Built target graphmine_cli

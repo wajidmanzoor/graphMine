@@ -1,0 +1,108 @@
+{
+  "edges": [
+    {
+      "id": 0,
+      "source": 0,
+      "target": 7
+    },
+    {
+      "id": 1,
+      "source": 0,
+      "target": 9
+    },
+    {
+      "id": 2,
+      "source": 0,
+      "target": 10
+    },
+    {
+      "id": 3,
+      "source": 1,
+      "target": 10
+    },
+    {
+      "id": 4,
+      "source": 1,
+      "target": 11
+    },
+    {
+      "id": 5,
+      "source": 2,
+      "target": 5
+    },
+    {
+      "id": 6,
+      "source": 2,
+      "target": 9
+    },
+    {
+      "id": 7,
+      "source": 3,
+      "target": 5
+    },
+    {
+      "id": 8,
+      "source": 3,
+      "target": 11
+    },
+    {
+      "id": 9,
+      "source": 4,
+      "target": 6
+    },
+    {
+      "id": 10,
+      "source": 4,
+      "target": 8
+    },
+    {
+      "id": 11,
+      "source": 4,
+      "target": 11
+    }
+  ],
+  "graph": {
+    "allows_parallel_edges": false,
+    "allows_self_loops": false,
+    "directed": false,
+    "id": "validation"
+  },
+  "vertices": [
+    {
+      "id": 0
+    },
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    },
+    {
+      "id": 4
+    },
+    {
+      "id": 5
+    },
+    {
+      "id": 6
+    },
+    {
+      "id": 7
+    },
+    {
+      "id": 8
+    },
+    {
+      "id": 9
+    },
+    {
+      "id": 10
+    },
+    {
+      "id": 11
+    }
+  ]
+}

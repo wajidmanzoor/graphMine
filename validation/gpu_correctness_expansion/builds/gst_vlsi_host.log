@@ -1,0 +1,55 @@
+In file included from /home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/main.c:30:
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file.h: In function ‘readFile’:
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file.h:6:3: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+    6 |   scanf("%d %d", V, E);
+      |   ^~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file.h:26:5: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   26 |     scanf("%d %d %d", &v1, &v2, &w);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file.h:36:3: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   36 |   scanf("%d",numTer);
+      |   ^~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file.h:41:5: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   41 |     scanf("%d", &v);
+      |     ^~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file.h:46:3: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   46 |   scanf("%d", numGroups);
+      |   ^~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file.h:58:5: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   58 |     scanf("%d",&currSize);
+      |     ^~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file.h:62:7: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   62 |       scanf("%d", &v);
+      |       ^~~~~~~~~~~~~~~
+In file included from /home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/main.c:31:
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h: In function ‘readFile2’:
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:15:3: warning: ignoring return value of ‘fscanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   15 |   fscanf(stdin,"%s %d",buffer,V); //read # of Nodes
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:16:3: warning: ignoring return value of ‘fscanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   16 |   fscanf(stdin,"%s %d",buffer,E); //read # of edges
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:37:5: warning: ignoring return value of ‘fscanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   37 |     fscanf(stdin,"%s %d %d %d", buffer, &v1, &v2, &w);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:53:3: warning: ignoring return value of ‘fscanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   53 |   fscanf(stdin,"%s %d",buffer,numTer); //read # of terminals
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:56:3: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   56 |   scanf("%d",numTer);
+      |   ^~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:61:5: warning: ignoring return value of ‘fscanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   61 |     fscanf(stdin, "%s %d", buffer, &v);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:81:5: warning: ignoring return value of ‘fscanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   81 |     fscanf(stdin,"%s %d",buffer,numGroups); //read # of groups
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:85:7: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   85 |       scanf("%d",&currSize);
+      |       ^~~~~~~~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:89:9: warning: ignoring return value of ‘scanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   89 |         scanf("%d", &v);
+      |         ^~~~~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/read-file2.h:114:5: warning: ignoring return value of ‘fscanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  114 |     fscanf(stdin,"%s %d %d %d", buffer, &v1, &x, &y);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

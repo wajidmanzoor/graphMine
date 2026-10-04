@@ -1,0 +1,15 @@
+{
+  "command": [
+    "cmake",
+    "--build",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/gdlog",
+    "--target",
+    "TC",
+    "-j2"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 27.174072220921516,
+  "exit_code": 0,
+  "log": "builds/gdlog_build.log",
+  "timeout": false
+}

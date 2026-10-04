@@ -1,0 +1,468 @@
+{
+  "backend": "superfuser",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/star_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26451864652335644,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_star_8_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_8_0",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/star_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26455733366310596,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_star_8_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_8_1",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/star_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2645870503038168,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_star_8_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_8_2",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/chain_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2647012621164322,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_chain_8_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_8_0",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/chain_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2650349345058203,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_chain_8_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_8_1",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/chain_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2646889816969633,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_chain_8_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_8_2",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "2",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/two_stars_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26457981765270233,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_two_stars_8_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_8_0",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        4,
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "2",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/two_stars_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26521255262196064,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_two_stars_8_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_8_1",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        4,
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "2",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/two_stars_8.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26492155343294144,
+      "exit_code": 0,
+      "expected_optimum": 8,
+      "log": "runs/superfuser_two_stars_8_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_8_2",
+      "observed_exact_spread": 8,
+      "passed": true,
+      "seeds": [
+        4,
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/star_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26476019993424416,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_star_64_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_64_0",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/star_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.21458420902490616,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_star_64_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_64_1",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/star_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26454850286245346,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_star_64_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "star_64_2",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/chain_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2644410487264395,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_chain_64_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_64_0",
+      "observed_exact_spread": 59,
+      "passed": true,
+      "seeds": [
+        5
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/chain_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.264598635956645,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_chain_64_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_64_1",
+      "observed_exact_spread": 39,
+      "passed": false,
+      "seeds": [
+        25
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "1",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/chain_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2645813897252083,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_chain_64_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "chain_64_2",
+      "observed_exact_spread": 41,
+      "passed": true,
+      "seeds": [
+        23
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "2",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/two_stars_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26451531052589417,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_two_stars_64_0.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_64_0",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0,
+        32
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "2",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/two_stars_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26463216356933117,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_two_stars_64_1.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_64_1",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0,
+        32
+      ],
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+        "-g",
+        "1",
+        "-K",
+        "2",
+        "-R",
+        "256",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/two_stars_64.txt"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2646349798887968,
+      "exit_code": 0,
+      "expected_optimum": 64,
+      "log": "runs/superfuser_two_stars_64_2.log",
+      "minimum_quality_ratio": 0.63,
+      "name": "two_stars_64_2",
+      "observed_exact_spread": 64,
+      "passed": true,
+      "seeds": [
+        0,
+        32
+      ],
+      "timeout": false
+    }
+  ],
+  "limitations": [
+    "Deterministic probability-one independent-cascade fixtures only. General probabilities, linear-threshold behavior, spread-estimator calibration and the requested failure probability are not certified."
+  ],
+  "passed": 17,
+  "seed": 20261004,
+  "status": "correctness_fail",
+  "total": 18
+}

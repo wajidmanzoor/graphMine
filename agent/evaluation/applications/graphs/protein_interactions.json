@@ -1,0 +1,98 @@
+{
+  "graph": {
+    "id": "protein-interactions",
+    "directed": false,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "domain": "bioinformatics",
+      "description": "Synthetic physical protein interactions. No disease or experimental confidence annotations are available."
+    }
+  },
+  "vertices": [
+    {
+      "id": "TP53",
+      "label": "TP53"
+    },
+    {
+      "id": "MDM2",
+      "label": "MDM2"
+    },
+    {
+      "id": "ATM",
+      "label": "ATM"
+    },
+    {
+      "id": "CHEK2",
+      "label": "CHEK2"
+    },
+    {
+      "id": "BRCA1",
+      "label": "BRCA1"
+    },
+    {
+      "id": "RAD51",
+      "label": "RAD51"
+    },
+    {
+      "id": "HSP90",
+      "label": "HSP90"
+    },
+    {
+      "id": "ISOLATED",
+      "label": "ISOLATED"
+    }
+  ],
+  "edges": [
+    {
+      "id": "event-1",
+      "source": "TP53",
+      "target": "MDM2"
+    },
+    {
+      "id": "event-2",
+      "source": "TP53",
+      "target": "ATM"
+    },
+    {
+      "id": "event-3",
+      "source": "TP53",
+      "target": "CHEK2"
+    },
+    {
+      "id": "event-4",
+      "source": "MDM2",
+      "target": "ATM"
+    },
+    {
+      "id": "event-5",
+      "source": "MDM2",
+      "target": "CHEK2"
+    },
+    {
+      "id": "event-6",
+      "source": "ATM",
+      "target": "CHEK2"
+    },
+    {
+      "id": "event-7",
+      "source": "ATM",
+      "target": "BRCA1"
+    },
+    {
+      "id": "event-8",
+      "source": "ATM",
+      "target": "RAD51"
+    },
+    {
+      "id": "event-9",
+      "source": "BRCA1",
+      "target": "RAD51"
+    },
+    {
+      "id": "event-10",
+      "source": "MDM2",
+      "target": "HSP90"
+    }
+  ]
+}

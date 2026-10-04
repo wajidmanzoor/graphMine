@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpu4gst_device0",
+    "unused",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/8/",
+    "graph",
+    "2",
+    "0",
+    "0"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 20.0812911670655,
+  "exit_code": 124,
+  "log": "runs/gpu4gst_8.log",
+  "stdin_path": null,
+  "timeout": true
+}

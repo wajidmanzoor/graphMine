@@ -1,0 +1,16 @@
+{
+  "case_id": "collaboration_change_measure",
+  "resume_case": "collaboration_followup",
+  "query": "Which coworkers sit on the most shortest collaboration routes between other coworkers? Rank all their names by that measure.",
+  "expected": {
+    "behavior": "execute",
+    "operations": ["betweenness-centrality"],
+    "checks": [
+      {"path": "output.ranking.0.vertex", "kind": "equals", "value": "Divya"},
+      {"path": "output.ranking.0.score", "kind": "equals", "value": 18},
+      {"path": "output.ranking.1.vertex", "kind": "equals", "value": "Eli"},
+      {"path": "output.ranking.1.score", "kind": "equals", "value": 16}
+    ],
+    "user_expectation": "Recognize that the question now asks for a different structural measure. Compute the ranking with Divya first, Eli second and the other five coworkers at zero; do not invent who the bridge endpoints are from triangle membership alone."
+  }
+}

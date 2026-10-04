@@ -1,9 +1,18 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from graphmine_agent.database import Database
 from graphmine_agent.graph_store import GraphStore, UploadError
-from graphmine_agent.models import FileRole, SessionRecord
+from graphmine_agent.models import (
+    ConversationEvent,
+    ExecutionPlan,
+    FileRole,
+    JobRecord,
+    JobStatus,
+    SessionRecord,
+)
 
 
 def test_canonical_graph_is_validated_and_described(
@@ -72,3 +81,79 @@ def test_invalid_graph_does_not_enter_database(
             content=b'{"graph":{"id":"x","directed":false,"allows_self_loops":false,"allows_parallel_edges":false},"vertices":[{"id":1}],"edges":[{"id":0,"source":1,"target":2}]}',
         )
     assert database.list_files(session.id) == []
+
+
+def test_upload_filename_cannot_escape_session_workspace(
+    graph_store: GraphStore, session: SessionRecord, triangle_graph: bytes
+) -> None:
+    record = graph_store.ingest(
+        session_id=session.id,
+        role=FileRole.graph,
+        filename="../../outside.json",
+        content=triangle_graph,
+    )
+    source = Path(record.source_path).resolve()
+    allowed = (graph_store.settings.data_root / "sessions" / session.id).resolve()
+    assert source.name == "outside.json"
+    assert allowed in source.parents
+    assert not (graph_store.settings.data_root / "outside.json").exists()
+
+
+def test_upload_limit_is_enforced_before_persistence(
+    graph_store: GraphStore, database: Database, session: SessionRecord
+) -> None:
+    with pytest.raises(UploadError, match="upload exceeds"):
+        graph_store.ingest(
+            session_id=session.id,
+            role=FileRole.attachment,
+            filename="large.bin",
+            content=b"x" * (graph_store.settings.max_upload_bytes + 1),
+        )
+    assert database.list_files(session.id) == []
+
+
+def test_restart_fails_only_interrupted_jobs_and_preserves_queued(
+    database: Database, session: SessionRecord
+) -> None:
+    plan = ExecutionPlan(
+        session_id=session.id,
+        graph_id="file-placeholder",
+        problem_id="maximal_clique_enumeration",
+        operation_id="maximal-cliques",
+    )
+    running = database.save_job(
+        JobRecord(session_id=session.id, plan=plan, status=JobStatus.running)
+    )
+    interpreting = database.save_job(
+        JobRecord(session_id=session.id, plan=plan, status=JobStatus.interpreting)
+    )
+    queued = database.save_job(JobRecord(session_id=session.id, plan=plan))
+
+    assert database.mark_interrupted_jobs_failed() == 2
+    for job_id in (running.id, interpreting.id):
+        recovered = database.get_job(job_id)
+        assert recovered.status == JobStatus.failed
+        assert recovered.error == {
+            "code": "server_restarted",
+            "message": "the agent server restarted while this job was active",
+        }
+    assert database.get_job(queued.id).status == JobStatus.queued
+
+
+def test_event_replay_is_ordered_and_respects_cursor(
+    database: Database, session: SessionRecord
+) -> None:
+    first = database.add_event(
+        ConversationEvent(session_id=session.id, type="job.queued")
+    )
+    second = database.add_event(
+        ConversationEvent(session_id=session.id, type="job.running")
+    )
+    assert [item.type for item in database.events(session.id)] == [
+        "job.queued",
+        "job.running",
+    ]
+    assert [item.type for item in database.events(session.id, first.sequence or 0)] == [
+        "job.running"
+    ]
+    assert second.sequence and first.sequence and second.sequence > first.sequence

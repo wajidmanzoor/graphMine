@@ -1,0 +1,16 @@
+{
+  "command": [
+    "cmake",
+    "-S",
+    "/home/wajid/projects/graphDatabaseAgent/problems/34_entity_resolution_blocking/papers/2025_hyperblocker/code",
+    "-B",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/hyperblocker",
+    "-DCMAKE_CUDA_ARCHITECTURES=89",
+    "-DTEST=OFF"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 1.623325826600194,
+  "exit_code": 1,
+  "log": "builds/hyperblocker_configure.log",
+  "timeout": false
+}

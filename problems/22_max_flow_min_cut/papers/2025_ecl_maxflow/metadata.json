@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_ecl_maxflow",
+  "title": "An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs",
+  "year": 2025,
+  "venue": "IPCCC 2025",
+  "doi": null,
+  "publication_url": "https://userweb.cs.txstate.edu/~mb92/papers/ipccc25a.pdf",
+  "pdf_url": "https://userweb.cs.txstate.edu/~mb92/papers/ipccc25a.pdf",
+  "code_url": "https://github.com/burtscher/ECL-MaxFlow",
+  "semantic_fit": "exact",
+  "gpu_scope": "ECL-MaxFlow: GPU push-relabel maximum-flow solver with fast global relabeling and worklist-based load balancing.",
+  "notes": "From the ECL (Efficient Computation Lab, Texas State) group with a track record of maintained, documented GPU graph codes.",
+  "problem_id": "max_flow_min_cut",
+  "problem_dir": "22_max_flow_min_cut",
+  "research_cutoff": "2026-09-30"
+}

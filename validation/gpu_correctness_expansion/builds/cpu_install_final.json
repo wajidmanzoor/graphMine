@@ -1,0 +1,15 @@
+{
+  "command": [
+    "cmake",
+    "--install",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/library-cpu",
+    "--prefix",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/install/cpu"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.015846889466047287,
+  "exit_code": 0,
+  "log": "builds/cpu_install_final.log",
+  "stdin_path": null,
+  "timeout": false
+}

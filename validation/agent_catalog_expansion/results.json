@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-04T16:37:02.913077+00:00",
+  "catalog_scope": {
+    "catalog_problem_count": 37,
+    "library_supported_problem_count": 17,
+    "library_unsupported_problem_count": 20,
+    "runnable_operation_count": 18,
+    "validated_backend_count": 31,
+    "passing_validation_workload_count": 24,
+    "validated_expansion_profile_count": 5,
+    "operation_count_note": "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations."
+  },
+  "runtime": {
+    "library_version": "1.0.0",
+    "operation_count": 18,
+    "validated_backend_count": 31,
+    "compiled_backend_count": 31
+  },
+  "checks": {
+    "agent_regressions": {
+      "passed": 337,
+      "total": 337,
+      "log": "agent-tests.log",
+      "includes": "42 expansion checks, including five real GPU operations through the API and worker cancellation; language model decisions are offline/mocked, not a natural-language accuracy measurement"
+    },
+    "native_public_api": {
+      "passed": 99,
+      "total": 99,
+      "evidence": "../gpu_correctness_expansion/results/library_expansion.json"
+    },
+    "native_ctest": {
+      "passed": 22,
+      "total": 22,
+      "log": "native-ctest.log"
+    },
+    "cuda_disabled_ctest": {
+      "passed": 5,
+      "total": 5,
+      "log": "cpu-only-tests.log"
+    },
+    "catalog_regeneration_idempotent": true,
+    "original_13_operation_contracts_preserved": true,
+    "vendored_hashes_verified": true
+  },
+  "routing": {
+    "contract_version": "expanded-37-v1",
+    "expanded_router": "base_model",
+    "legacy_adapter_prompt_sha256": "689c94ceb762736604a20faf31dc13359b0e2da46da965db8b3ddcfc08470e32",
+    "new_held_out_cases": 66,
+    "live_evaluation_status": "not_run_local_model_endpoint_unavailable",
+    "training_performed": false,
+    "deployment_performed": false
+  },
+  "input_sha256": {
+    "graphmine_catalog.json": "a2b280334a7dbe1fc7040f9c0725479ebdfb395cf9bbcc77a84382269bfdb845",
+    "graphmine_manifest.json": "c66a3165e9afbfae8b604453b1086db911c169738006bc3bcc9756fb6c5d0d32",
+    "catalog/expansion_profiles.json": "52cdd17468d6d3ab57ecf679c369ab96aa34371b6ca4df4bcb0043afb6800be7",
+    "agent/program_instructions.json": "fae4de3522c0b706246457f9c307e367091007c907462fa242c954e46b5909de",
+    "agent/evaluation/expansion_query_cases.json": "ea4d4678c7bb4dce642e2b4555ab53dca9822fa9515328dce3ee8c21e55ebb4a",
+    "agent/evaluation/legacy_catalog_scope.json": "dba351ff8732deeefb8718707a52b6458b6567ee329eb511f9817199b8247ce6",
+    "agent/evaluation/v1_query_cases.json": "11b3bb847f13142cc24ad34e38f2608881c9f9cecc61d6b3e159af4560928640",
+    "agent/evaluation/domain_query_cases.json": "f45f8d4dbe3d7aaf6a4a8c664f158042351a2352b128f26f18a39b0d95dc9e04",
+    "agent/graphmine_agent/planning.py": "c63352ca432f1366a84d03c4b719039acf80d9e9e7a6611170243cf62fd78ed3",
+    "agent/graphmine_agent/reporting.py": "6a67ba6bb320443ab837039624052be594082421750308eef7f098a9819106a6",
+    "agent/graphmine_agent/presentation.py": "ac88977abe3b657243c2567dc47be160a55a150152edd2ab8bd1d700f2347778",
+    "agent/graphmine_agent/visualization.py": "0ae31394caf9518d8004d513a3b2e2c4317ab08f937add922554db8542f7939d",
+    "agent/graphmine_agent/smoke.py": "f00c6794494ccd502b3475bc7013e35689178a17d9ac18b85b86844f53ac7f14",
+    "agent/graphmine_agent/api.py": "20ac7cbb85ca13fdb0b14c1235ca540c47f1befb7a2683c875f839ebc2b1b6f2",
+    "agent/graphmine_agent/benchmarking.py": "ba5c66d9b97554d6153d5aaf0b6b297a9302f1e888253fcf3851aa4ac4b6abe0",
+    "agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "agent/graphmine_agent/evaluation.py": "76aa2a3693626f38df228c8268d3fb61d1380b873eac3b4d599eccdbfcd6017b",
+    "agent/graphmine_agent/jobs.py": "049a7eb9f18ca63ee229c58e0f79a3915f6947bc9cb438162c2726e9c1642193",
+    "agent/graphmine_agent/history.py": "b17c8f3253cddca2496269955341a7520e1caa17a9d32d97fb2dbbd1139a0c06",
+    "agent/graphmine_agent/config.py": "62e211cf7e0584d858f804cf3e557fc17fa188e2562075dac63032f7bc6d01ca",
+    "agent/graphmine_agent/commands.py": "213ab9d2148c78196752a53baa0e7518aa28cf8629140558a6eb46b425fc9f7e",
+    "agent/graphmine_agent/llm.py": "6d4d86d6ad1c80a2b5511e33c78e8788f2f1aab62aa1ec3901936fa99b9d321c",
+    "agent/graphmine_agent/adapter_server.py": "c6c99b33ab122febd2cc60de839949c34f11a2071dd80177fa5c1ae30093a9c0",
+    "agent/graphmine_agent/catalog.py": "1946a9134f7457dde6a16e6d234037302bac44e4273a2ce53d7c3300be938fb7",
+    "agent/graphmine_agent/profiles.py": "d4752e1956b96a2af6a07878ff84ef38efdbc413958fc7b5738ab60ba7a7d1d5",
+    "agent/graphmine_agent/answers.py": "e744bab751a5b5071f737c9f7e8308fdef07a5c2b53c06865ad9db5317abb1d1",
+    "agent/graphmine_agent/graph_store.py": "553bff60b714eb7ce9aac94fbc1a32e8a3794258359a9ac5595abc52a3686785",
+    "agent/graphmine_agent/selector.py": "e854b4bc63f089b70997fefb00cfa0958811f73130a2a5682bd4cb5708b4bdd9",
+    "agent/graphmine_agent/cli.py": "2930fd1c264ced34a594e70d85abdcdae5864cf2afc26be2ccc129f077cd9e38",
+    "agent/graphmine_agent/models.py": "bb8d256792e65f089df277ddf04940287c2d0c8c8e22fbf47ca11f7291e4fba5",
+    "agent/graphmine_agent/results.py": "28f0acb4135b5c541647a1a2984eb54e16e18094f48b1d12099d4361c52e5a50",
+    "agent/graphmine_agent/database.py": "8b1ca325e718867bdb17405c2486e2bec54ea7e029d5259520fa341b3d113e69",
+    "agent/graphmine_agent/graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+    "agent/graphmine_agent/agent_service.py": "ac2d43861a2a0eae25128607152f80099e6c7997eee219a70a0ef538b7597c20",
+    "agent/graphmine_agent/usability.py": "23f31bb2e0d39ce626ec30e44c47f8b19f47614a44c9db4d8f4a512838db80a5",
+    "agent/graphmine_agent/terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+    "agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "agent/graphmine_agent/execution.py": "2a4a30d6513aae9126167ee8e98a9089359297425be918d68ecba9e7baf5b0af",
+    "agent/tests/test_expansion_contracts.py": "42245c2c427a45fc548f92d77656fa936152e3213b995534b531c530e6765ac1",
+    "library/src/problems/validated_expansion.cpp": "b72d21153d2acdfe3c3abdf34d41897c8c2b0c5056ff4ef3e9d60e338ad6147d",
+    "library/include/graphmine/problems/validated_expansion.hpp": "f237775773f1775cd24bdb809a68b5888442dfd20db02050437a1008f014c76b",
+    "library/src/backends/expansion/upstream/PROVENANCE.json": "3357d3b1d28f9872829e7e16cde6c0364d2d896d2b2108484f55ab9054dc9b63"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "max-flow-min-cut",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/reject_flow_negative.json",
+    "--source",
+    "0",
+    "--sink",
+    "1"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.008314976468682289,
+  "exit_code": 3,
+  "log": "runs/library_reject_flow_negative.log",
+  "stdin_path": null,
+  "timeout": false
+}

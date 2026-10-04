@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "personalized_pagerank_rwr",
+  "name": "Personalized PageRank and Random Walk with Restart",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed_or_undirected", "weights": "optional_nonnegative", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Preserve direction unless undirected_projection is requested.", "Remove self-loops unless self_loop_policy keeps them.", "Collapse parallel edges by summing nonnegative weights; use unit weight when weight_mode=unweighted.", "Handle dangling vertices (zero out-degree) per the declared dangling_policy."]
+  },
+  "problem_inputs": [
+    {"name": "seed_vertices", "type": "array<vertex_id>_or_map<vertex_id,number>", "required": true, "constraints": "nonempty; weights nonnegative and not all zero", "description": "Restart distribution. A plain array means a uniform restart distribution over the listed vertices."},
+    {"name": "restart_probability", "type": "number", "required": false, "default": 0.15, "constraints": "0 < value < 1", "description": "Probability of teleporting back to the seed distribution at each step (alpha)."},
+    {"name": "direction_mode", "type": "enum", "required": false, "default": "outgoing", "allowed_values": ["outgoing", "incoming", "undirected_projection"], "description": "Walk direction for directed input; incoming computes Personalized PageRank with respect to reverse edges."},
+    {"name": "weight_mode", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "edge_weight"], "description": "Use uniform or weighted transition probabilities out of each vertex."},
+    {"name": "dangling_policy", "type": "enum", "required": false, "default": "redistribute_to_seeds", "allowed_values": ["redistribute_to_seeds", "redistribute_uniformly", "self_loop"], "description": "How probability mass at zero-out-degree vertices is redistributed."},
+    {"name": "top_k", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Return only the highest-scoring vertices while retaining score-completeness metadata."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact_or_converged", "allowed_values": ["exact_or_converged", "approximate"], "description": "Whether power iteration to a convergence tolerance, or an approximate method (e.g. forward push, random walks) with disclosed error, is permitted."},
+    {"name": "convergence_tolerance", "type": "number", "required": false, "default": 1e-9, "constraints": "value > 0", "description": "L1 residual threshold for declaring convergence in exact_or_converged mode."},
+    {"name": "exclude_seeds_from_output", "type": "boolean", "required": false, "default": false, "description": "Whether seed vertices themselves are omitted from ranked output."}
+  ],
+  "required_outputs": [
+    {"name": "ranked_vertices", "type": "array<object>", "description": "Vertex ID, PPR/RWR score, and rank ordered by descending score."},
+    {"name": "restart_probability_used", "type": "number", "description": "Resolved alpha actually used."},
+    {"name": "complete", "type": "boolean", "description": "Whether every eligible vertex was scored and ranking was not truncated by top_k."}
+  ],
+  "optional_outputs": [
+    {"name": "converged", "type": "boolean", "description": "Whether the iterative solver met convergence_tolerance."},
+    {"name": "iterations", "type": "integer", "description": "Iterations or pushes performed."},
+    {"name": "error_bound", "type": "number", "description": "Disclosed per-vertex or aggregate error bound for approximate mode."}
+  ],
+  "solution_semantics": {
+    "objective": "Compute the stationary distribution of the restart random walk defined by seed_vertices, restart_probability, direction_mode, and weight_mode, then rank vertices by that probability.",
+    "exactness": "exact_or_converged requires the L1 residual below convergence_tolerance; approximate mode must disclose its error_bound.",
+    "duplicate_policy": "Each eligible vertex appears at most once.",
+    "ordering": "Descending score with a stable vertex-ID tie break."
+  },
+  "validation_rules": [
+    "Scores sum to 1 over all vertices (or within numerical tolerance) before any top_k truncation.",
+    "Scores are non-negative.",
+    "Every seed vertex exists in the normalized graph.",
+    "Recomputing scores from score_definition and the normalized transition matrix matches reported values within tolerance.",
+    "Dangling-vertex mass is redistributed exactly as declared by dangling_policy."
+  ],
+  "edge_cases": [
+    "A seed vertex with no outgoing edges under direction_mode still receives restart mass.",
+    "Seed weights that do not sum to one are normalized before use.",
+    "An isolated seed vertex in an otherwise edgeless graph places all mass on itself.",
+    "restart_probability close to 1 makes the result nearly identical to the seed distribution; close to 0 makes it close to global PageRank."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["L1/L2 score error versus a power-iteration oracle", "rank agreement at top_k", "mass-conservation check"],
+    "performance": ["end-to-end time", "compute time", "peak memory", "iterations or pushes", "queries per second for repeated single-seed queries"]
+  }
+}

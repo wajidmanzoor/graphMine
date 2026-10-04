@@ -1,0 +1,32 @@
+GraphMine research note
+
+Files
+  graphmine.tex           Editable, self-contained LaTeX source.
+  graphmine.pdf           Compiled reading copy.
+  evidence_manifest.json Source/report hashes and selected recorded facts.
+
+Read the PDF directly. To edit online, upload graphmine.tex to Overleaf and
+select it as the main document. Figures and references are included in the
+source; no external image or bibliography files are required.
+
+To compile locally with an installed TeX distribution:
+  cd /home/wajid/projects/graphDatabaseAgent/graphMine-repo/docs/research-note
+  latexmk -pdf graphmine.tex
+
+Alternatives:
+  tectonic graphmine.tex
+or run twice:
+  pdflatex -interaction=nonstopmode -halt-on-error graphmine.tex
+
+The delivered PDF was built with portable Tectonic 0.17.0. The temporary compiler
+and its package cache were kept under /tmp/graphmine-paper-tools, outside the
+application environments. That temporary location is not a permanent dependency.
+
+Building this document does not start the application, a model server, training,
+or an evaluation run. Existing application restart instructions are in the
+paper's appendix and ../../deploy/README.md.
+
+The note distinguishes recorded implementation and experiments from proposed
+future work. Its evidence manifest indexes selected local files; it does not
+rerun or independently certify the experiments. No private access token or
+user conversation is included.

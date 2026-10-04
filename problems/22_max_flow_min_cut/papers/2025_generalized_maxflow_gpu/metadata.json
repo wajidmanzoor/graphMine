@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_generalized_maxflow_gpu",
+  "title": "Novel GPU-Based Method for the Generalized Maximum Flow Problem",
+  "year": 2025,
+  "venue": "Computation (MDPI) 13(2):40",
+  "doi": "10.3390/computation13020040",
+  "publication_url": "https://www.mdpi.com/2079-3197/13/2/40",
+  "pdf_url": "https://www.mdpi.com/2079-3197/13/2/40/pdf",
+  "code_url": null,
+  "semantic_fit": "variant",
+  "gpu_scope": "GPU-parallelized generalized (gain/loss-factor) maximum-flow algorithm; the plain-capacity case is a special case of this objective.",
+  "notes": "Open-access MDPI article; no public code repository was located during this pass.",
+  "problem_id": "max_flow_min_cut",
+  "problem_dir": "22_max_flow_min_cut",
+  "research_cutoff": "2026-09-30"
+}

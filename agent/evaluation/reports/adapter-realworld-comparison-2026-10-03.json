@@ -1,0 +1,235 @@
+{
+  "version": "adapter-application-comparison-v1",
+  "created_at": "2026-10-03T21:14:35.590498+00:00",
+  "complete": true,
+  "contract": {
+    "wrapper_source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+    "mode": "real-world-evaluation-v3",
+    "corpus_sha256": "f3c4573b4227df6f83ceed58de708effad74f471e39305160259cb662b81b375",
+    "cases_sha256": "f13003a11dec59a2e81c3157d1c0100d0ef5f969f0bd2cdb768f37c1501e886f",
+    "repeats": 1,
+    "source_sha256": null,
+    "protocol_sha256": "ea4b9c4526aea7537951550ced645f1290abec27a35f86fee66fe0f46ca8949e",
+    "replay_contract_sha256": "6d5ea1f2928e68220f67c9663089dfae7a5f5f015455c0ba6db2d1d3c423939c",
+    "inference_profile": {
+      "llm_route_reasoning_effort": "none",
+      "llm_plan_reasoning_effort": "medium",
+      "llm_analyst_reasoning_effort": "medium"
+    },
+    "suite_plan_sha256": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+    "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+    "routing_only": true,
+    "route_context_budget": 16384,
+    "route_completion_budget": 2400,
+    "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+    "llm_plan_reasoning_effort": "medium",
+    "llm_analyst_reasoning_effort": "medium",
+    "final_holdout": false
+  },
+  "by_arm": {
+    "base_nf4": {
+      "passed": 22,
+      "total": 22,
+      "workflows_passed": 16,
+      "workflows_total": 16,
+      "median_turn_seconds": 51.450048386119306,
+      "maximum_turn_seconds": 74.6390760987997,
+      "recorded_route_completion_budget": 2400,
+      "failures": []
+    },
+    "adapter_nf4": {
+      "passed": 20,
+      "total": 22,
+      "workflows_passed": 14,
+      "workflows_total": 16,
+      "median_turn_seconds": 60.188012551516294,
+      "maximum_turn_seconds": 74.06688776984811,
+      "recorded_route_completion_budget": 2400,
+      "failures": [
+        {
+          "identity": [
+            "sociopatterns-workplace-empty-result",
+            1,
+            1
+          ],
+          "query": "In the anonymous workplace contact sample, which groups of at least three participants have a direct connection between every pair, using only relationships with recorded contact_intervals equal to 0? List every such group that cannot be expanded by adding another participant while keeping every pair directly connected, and include each member’s anonymous participant label and department.",
+          "issues": [
+            "Requested attribute scope changed"
+          ],
+          "turn_id": "turn_39b4be2569ef40ecadaa3d4e21154e21",
+          "stages": {
+            "requests": [
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_e96c0d6c5d3a4f54b89040b821343fca/events/20261003T205620.776853Z_event_5db05dbc83eb4b6db587e52e74160558.json",
+                "sha256": "dbd090aec9d3d16b4700ce1e41d69dfd08f016bb9168e43d9b7e06514e76f9f6",
+                "schema": "RouteDecision"
+              },
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_e96c0d6c5d3a4f54b89040b821343fca/events/20261003T205649.580655Z_event_e0ca1db4a6b040d3a129db4cddf1e44e.json",
+                "sha256": "cf7e2ab1fcd70753f77ddcc28520fc330fd6b44ac0211e5419374e2ff33d09c3",
+                "schema": "PlanDraft"
+              },
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_e96c0d6c5d3a4f54b89040b821343fca/events/20261003T205728.126510Z_event_bec32f8937ac4c2388ae696fd5ea441a.json",
+                "sha256": "f057489b879f5298d6fc9c8316a67db74cb88bd1950b68f842693cd99f82871c",
+                "schema": "GroundedNarrative"
+              }
+            ],
+            "routing_call_recorded": true,
+            "note": "Stage participation is evidence for investigation, not automatic attribution of the failure to that stage. Empty history is missing evidence."
+          }
+        },
+        {
+          "identity": [
+            "string-ecoli-empty-result",
+            1,
+            1
+          ],
+          "query": "For organizing follow-up experiments, can you list every group of at least three proteins in the supplied E. coli association sample where every pair is directly connected and no additional protein can be added while keeping every pair connected? Use only relationships whose recorded score equals 0, and identify the proteins by gene name and original STRING identifier. Treat these associations as associations, not proof of binding or causation.",
+          "issues": [
+            "Requested attribute scope changed"
+          ],
+          "turn_id": "turn_b526d3093fef471baa097f6015520e65",
+          "stages": {
+            "requests": [
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_a23389b8afc84c8aba347355880be2da/events/20261003T210709.888260Z_event_adb770ba2bbc4302a54854637b69f7b5.json",
+                "sha256": "9285d2073808744998f58b189b3fdc1f99d8931ff0f0a7b47d0cf64826d34c15",
+                "schema": "RouteDecision"
+              },
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_a23389b8afc84c8aba347355880be2da/events/20261003T210741.087307Z_event_c7091887a2ee4585ad1c600e8c148763.json",
+                "sha256": "b19250cd328cb5036928eb720585bc07ff0dd38f23c5d9d28ee93488f2014088",
+                "schema": "PlanDraft"
+              },
+              {
+                "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4-runtime/history/session_a23389b8afc84c8aba347355880be2da/events/20261003T210808.510362Z_event_4f7c13765c1b48e5be78e6bae7b273d3.json",
+                "sha256": "0f08a9a20801a6b88515c2acbd68f249b96fc57d7894dcc33b5d05d1bb5c9f33",
+                "schema": "GroundedNarrative"
+              }
+            ],
+            "routing_call_recorded": true,
+            "note": "Stage participation is evidence for investigation, not automatic attribution of the failure to that stage. Empty history is missing evidence."
+          }
+        }
+      ]
+    }
+  },
+  "paired_nf4": {
+    "both_pass": 20,
+    "regressed": 2
+  },
+  "improvements": [],
+  "regressions": [
+    [
+      "sociopatterns-workplace-empty-result",
+      1,
+      1
+    ],
+    [
+      "string-ecoli-empty-result",
+      1,
+      1
+    ]
+  ],
+  "protocols": {
+    "base_nf4": {
+      "suite_plan_sha256": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+      "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+      "source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+      "arms": [
+        "base_nf4",
+        "adapter_nf4"
+      ],
+      "repeats": 1,
+      "route_context_budget": 16384,
+      "route_completion_budget": 2400,
+      "routing_only": true,
+      "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+      "llm_plan_reasoning_effort": "medium",
+      "llm_analyst_reasoning_effort": "medium",
+      "native_gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "local_route_environment": {
+        "gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "base_checkpoint_files_verified": true,
+        "packages": {
+          "torch": "2.13.0",
+          "transformers": "5.18.0",
+          "peft": "0.21.2",
+          "bitsandbytes": "0.50.2",
+          "accelerate": "1.15.0",
+          "datasets": "5.0.1",
+          "flash-linear-attention": "0.5.2",
+          "xgrammar": "0.2.8",
+          "apache-tvm-ffi": "0.1.14.post1"
+        },
+        "quantization": "NF4 double quantization, BF16 computation, same frozen weights for both arms",
+        "loading": {
+          "missing_keys": [],
+          "unexpected_keys": [],
+          "mismatched_keys": [],
+          "error_msgs": []
+        }
+      },
+      "scope": "Complete application development workflows. GPU placement is recorded; no concurrency/throughput or novice-usability claim.",
+      "real_corpus": ".graphmine-learning/real-world-corpus-v5",
+      "questions": ".graphmine-learning/real-world-questions-v3/questions.json",
+      "final_holdout": false,
+      "deployment_changed": false
+    },
+    "adapter_nf4": {
+      "suite_plan_sha256": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+      "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+      "source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+      "arms": [
+        "base_nf4",
+        "adapter_nf4"
+      ],
+      "repeats": 1,
+      "route_context_budget": 16384,
+      "route_completion_budget": 2400,
+      "routing_only": true,
+      "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+      "llm_plan_reasoning_effort": "medium",
+      "llm_analyst_reasoning_effort": "medium",
+      "native_gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "local_route_environment": {
+        "gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "base_checkpoint_files_verified": true,
+        "packages": {
+          "torch": "2.13.0",
+          "transformers": "5.18.0",
+          "peft": "0.21.2",
+          "bitsandbytes": "0.50.2",
+          "accelerate": "1.15.0",
+          "datasets": "5.0.1",
+          "flash-linear-attention": "0.5.2",
+          "xgrammar": "0.2.8",
+          "apache-tvm-ffi": "0.1.14.post1"
+        },
+        "quantization": "NF4 double quantization, BF16 computation, same frozen weights for both arms",
+        "loading": {
+          "missing_keys": [],
+          "unexpected_keys": [],
+          "mismatched_keys": [],
+          "error_msgs": []
+        }
+      },
+      "scope": "Complete application development workflows. GPU placement is recorded; no concurrency/throughput or novice-usability claim.",
+      "real_corpus": ".graphmine-learning/real-world-corpus-v5",
+      "questions": ".graphmine-learning/real-world-questions-v3/questions.json",
+      "final_holdout": false,
+      "deployment_changed": false
+    }
+  },
+  "evidence_sha256": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/base_nf4.json": "6de73d1045b1113dea6658eb59a723f8308d71bc58c4d59bbf7d4d24566a4e32",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/protocol.json": "48f42e27d115c513430eda5733316c9a212f5a33c56081fbe31a9d8d876a8a80",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/status.json": "bc0094c6fd9290d70ed01a4c2487721bcf84366510a70392a6bc45112761033a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4.json": "6cac5874651bdbc0293624b7e1b0505a042306ca720693d8d8011ad66c002ce7"
+  },
+  "review_source_sha256": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+  "caution": "Preserves the original workflow grades; no regeneration or post-hoc regrading. Stage participation alone does not establish causality. Turn times include every model stage and native work; the serving FP8 reference can have different GPU sharing and precision. A development comparison does not establish untouched general accuracy or novice usability.",
+  "deployment_changed": false,
+  "review_source_snapshot": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/evaluation/reports/adapter-realworld-comparison-2026-10-03-review-source.py"
+}

@@ -12,7 +12,12 @@ from .catalog import Catalog
 from .config import Settings
 from .llm import LLMError, OpenAICompatibleModel, RuleBasedModel
 from .models import ExecutionPlan, LLMMode, RouteDecision
-from .planning import PlanValidationError, PlanValidator, normalize_route
+from .planning import (
+    PlanValidationError,
+    PlanValidator,
+    bind_unique_required_auxiliary_inputs,
+    normalize_route,
+)
 
 
 async def evaluate_routing(
@@ -20,6 +25,7 @@ async def evaluate_routing(
     cases_path: Path,
     *,
     split: str = "held_out_evaluation",
+    concurrency: int = 8,
     case_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     catalog = Catalog(settings)
@@ -32,9 +38,10 @@ async def evaluate_routing(
     model = (
         OpenAICompatibleModel(settings) if settings.llm_enabled else RuleBasedModel()
     )
-    details: list[dict[str, Any]] = []
-    try:
-        for case in cases:
+    semaphore = asyncio.Semaphore(max(1, concurrency))
+
+    async def evaluate_case(case: dict[str, Any]) -> dict[str, Any]:
+        async with semaphore:
             domain = catalog.domain(case["domain_id"])
             expected = case["expected"]
             started = time.monotonic()
@@ -68,25 +75,26 @@ async def evaluate_routing(
                 passed = False
                 observed = None
                 error_message = str(error)
-            details.append(
-                {
-                    "id": case["id"],
-                    "domain_id": domain.id,
-                    "passed": passed,
-                    "expected": {
-                        key: expected[key]
-                        for key in ("problem_id", "operation_id", "supported")
-                    },
-                    "observed": observed,
-                    "raw_observed": (
-                        raw_decision.model_dump(mode="json")
-                        if raw_decision is not None
-                        else None
-                    ),
-                    "latency_seconds": round(time.monotonic() - started, 3),
-                    "error": error_message,
-                }
-            )
+            return {
+                "id": case["id"],
+                "domain_id": domain.id,
+                "passed": passed,
+                "expected": {
+                    key: expected[key]
+                    for key in ("problem_id", "operation_id", "supported")
+                },
+                "observed": observed,
+                "raw_observed": (
+                    raw_decision.model_dump(mode="json")
+                    if raw_decision is not None
+                    else None
+                ),
+                "latency_seconds": round(time.monotonic() - started, 3),
+                "error": error_message,
+            }
+
+    try:
+        details = list(await asyncio.gather(*(evaluate_case(case) for case in cases)))
     finally:
         await model.close()
     passed_count = sum(item["passed"] for item in details)
@@ -105,6 +113,7 @@ async def evaluate_routing(
             "max_completion_tokens": settings.llm_route_max_tokens,
             "temperature": 0.0,
             "seed": 0,
+            "concurrency": max(1, concurrency),
         },
         "split": split,
         "passed": passed_count,
@@ -120,10 +129,17 @@ def run_evaluation(
     cases_path: Path,
     *,
     split: str,
+    concurrency: int = 8,
     case_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     return asyncio.run(
-        evaluate_routing(settings, cases_path, split=split, case_ids=case_ids)
+        evaluate_routing(
+            settings,
+            cases_path,
+            split=split,
+            concurrency=concurrency,
+            case_ids=case_ids,
+        )
     )
 
 
@@ -226,18 +242,19 @@ async def evaluate_planning(
                     schema=ExecutionPlan,
                     user_payload=payload,
                 )
-                normalized = validator.validate(
-                    raw_plan.model_copy(
-                        update={
-                            "session_id": "session_evaluation",
-                            "graph_id": "file_graph",
-                            "problem_id": expected["problem_id"],
-                            "operation_id": operation.id,
-                            "allow_directed_projection": False,
-                        }
-                    ),
-                    for_execution=False,
+                candidate = raw_plan.model_copy(
+                    update={
+                        "session_id": "session_evaluation",
+                        "graph_id": "file_graph",
+                        "problem_id": expected["problem_id"],
+                        "operation_id": operation.id,
+                        "allow_directed_projection": False,
+                    }
                 )
+                candidate = bind_unique_required_auxiliary_inputs(
+                    candidate, operation, available_files
+                )
+                normalized = validator.validate(candidate, for_execution=False)
                 expected_parameters = expected.get("parameters", {})
                 parameters_match = all(
                     normalized.parameters.get(name) == value

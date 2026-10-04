@@ -32,3 +32,15 @@ Each artifact remains subject to its original copyright and license terms. A lin
 | `triangle_counting_listing` | Exact Triangle Counting for Dynamic Graphs on GPU | [repository](https://github.com/WXZ0v0/EDTC) | `7da15bf9aded` | No explicit license detected |
 
 The validation record and exact source provenance are also embedded in [`graphmine_catalog.json`](graphmine_catalog.json).
+
+## Validated expansion profiles
+
+The imported worker sources are pinned in [PROVENANCE.json](library/src/backends/expansion/upstream/PROVENANCE.json). Adaptations are generated during CMake configuration and do not edit the preserved upstream files. Butterfly counting reuses the existing GraphMiner kernel.
+
+| Profile | Artifact | Pinned commit | Preserved license |
+|---|---|---|---|
+| `connected-components` | [A GPU Algorithm for Detecting Strongly Connected Components](https://github.com/burtscher/ECL-SCC) | `8e67732687d06f75cdd602f36e1fe54429ba4f99` | [License](library/src/backends/expansion/upstream/ecl_scc/LICENSE) |
+| `max-flow-min-cut` | [An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs](https://github.com/burtscher/ECL-MaxFlow) | `2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70` | [License](library/src/backends/expansion/upstream/ecl_flow/LICENSE) |
+| `linear-assignment` | [Fast block distributed CUDA implementation of the Hungarian algorithm](https://github.com/paclopes/HungarianGPU) | `ef841797c7b5ad9b04527d2fafc7604229c8a941` | [License](library/src/backends/expansion/upstream/hungarian/LICENSE.txt) |
+| `transitive-closure` | [Optimizing Datalog for the GPU](https://github.com/harp-lab/gdlog) | `65a6ee960ced8d04bc725ccdfa68f004f8479226` | [License](library/src/backends/expansion/upstream/gdlog/LICENSE) |
+| `butterfly-counting` | [G2Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework](https://github.com/chenxuhao/GraphMiner) | `2a76e3f612e40e46a821d603ca11d10fcbc63ddd` | [License](problems/11_graph_motif_counting/papers/2022_g2miner/code/LICENSE) |

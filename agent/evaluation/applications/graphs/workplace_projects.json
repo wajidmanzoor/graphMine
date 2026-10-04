@@ -1,0 +1,193 @@
+{
+  "graph": {
+    "id": "workplace-projects",
+    "directed": false,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "domain": "social_networks",
+      "description": "Fictional employees. A connection records at least one joint project; department and role are descriptive attributes. Collaboration year is an edge attribute."
+    }
+  },
+  "vertices": [
+    {
+      "id": "employee-1",
+      "label": "Ava Patel",
+      "type": "employee",
+      "attributes": {
+        "department": "Product",
+        "role": "Engineer",
+        "tenure_years": 1,
+        "office": "Boston"
+      }
+    },
+    {
+      "id": "employee-2",
+      "label": "Ben Ortiz",
+      "type": "employee",
+      "attributes": {
+        "department": "Product",
+        "role": "Designer",
+        "tenure_years": 2,
+        "office": "Boston"
+      }
+    },
+    {
+      "id": "employee-3",
+      "label": "Chen Li",
+      "type": "employee",
+      "attributes": {
+        "department": "Product",
+        "role": "Engineer",
+        "tenure_years": 3,
+        "office": "Boston"
+      }
+    },
+    {
+      "id": "employee-4",
+      "label": "Divya Shah",
+      "type": "employee",
+      "attributes": {
+        "department": "Product",
+        "role": "Tech lead",
+        "tenure_years": 4,
+        "office": "Boston"
+      }
+    },
+    {
+      "id": "employee-5",
+      "label": "Eli Brown",
+      "type": "employee",
+      "attributes": {
+        "department": "Operations",
+        "role": "Coordinator",
+        "tenure_years": 5,
+        "office": "Austin"
+      }
+    },
+    {
+      "id": "employee-6",
+      "label": "Fatima Noor",
+      "type": "employee",
+      "attributes": {
+        "department": "Operations",
+        "role": "Analyst",
+        "tenure_years": 6,
+        "office": "Austin"
+      }
+    },
+    {
+      "id": "employee-7",
+      "label": "Gus Reed",
+      "type": "employee",
+      "attributes": {
+        "department": "Operations",
+        "role": "Specialist",
+        "tenure_years": 7,
+        "office": "Austin"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "project-1",
+      "source": "employee-1",
+      "target": "employee-2",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 2
+      }
+    },
+    {
+      "id": "project-2",
+      "source": "employee-1",
+      "target": "employee-3",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 3
+      }
+    },
+    {
+      "id": "project-3",
+      "source": "employee-1",
+      "target": "employee-4",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 4
+      }
+    },
+    {
+      "id": "project-4",
+      "source": "employee-2",
+      "target": "employee-3",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 5
+      }
+    },
+    {
+      "id": "project-5",
+      "source": "employee-2",
+      "target": "employee-4",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 6
+      }
+    },
+    {
+      "id": "project-6",
+      "source": "employee-3",
+      "target": "employee-4",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 2
+      }
+    },
+    {
+      "id": "project-7",
+      "source": "employee-5",
+      "target": "employee-6",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 3
+      }
+    },
+    {
+      "id": "project-8",
+      "source": "employee-5",
+      "target": "employee-7",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 4
+      }
+    },
+    {
+      "id": "project-9",
+      "source": "employee-6",
+      "target": "employee-7",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2026,
+        "shared_projects": 5
+      }
+    },
+    {
+      "id": "project-10",
+      "source": "employee-4",
+      "target": "employee-5",
+      "type": "collaboration",
+      "attributes": {
+        "year": 2025,
+        "shared_projects": 6
+      }
+    }
+  ]
+}

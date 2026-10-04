@@ -1,0 +1,16 @@
+{
+  "paper_id": "2022_g2miner_reuse",
+  "title": "G2Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework",
+  "year": 2022,
+  "venue": "USENIX OSDI 2022",
+  "doi": null,
+  "publication_url": "https://www.usenix.org/conference/osdi22/presentation/chen",
+  "pdf_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
+  "code_url": "https://github.com/chenxuhao/GraphMiner",
+  "semantic_fit": "general_framework",
+  "gpu_scope": "General GPU graph-pattern-mining framework supporting arbitrary small patterns including 4-cycles.",
+  "notes": "Already validated and cloned for problem 03 (k_clique_counting_enumeration); reused here as a framework lead. Its butterfly-specific pattern configuration has not yet been independently validated.",
+  "problem_id": "butterfly_counting_bipartite",
+  "problem_dir": "23_butterfly_counting_bipartite",
+  "research_cutoff": "2026-09-30"
+}

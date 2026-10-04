@@ -1,0 +1,36 @@
+========= COMPUTE-SANITIZER
+ECL-Maxflow
+Copyright 2025 Avery VanAusdal and Martin Burtscher
+input graph: 6 nodes and 10 edges
+input: /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_flow/small.egr
+nodes: 6
+edges: 10
+source: 0
+sink:   5
+runs: 1
+GPU: NVIDIA RTX 6000 Ada Generation with 142 SMs and 1536 mTpSM (2505.0 MHz and 10001.0 MHz)
+source info: 0 in-edges, 2 out-edges
+sink max capacity: 24 across 2 in-edges
+header total init time: 0.002938s (including building rcsr: 0.000008s)
+Global relabeling frequency: 100
+initial global relabel from sink: 3 iters in 0.003153s
+---Phase 1 complete, minimum cut found in 0.002251s ---
+	iterations: 10
+	push-relabel kernel time: 0.002188s
+	global relabeled 0 times in 0.000000s
+	avg percent of graph in BFS WL: -nan% over 0 total BFS iters
+---Phase 2 starts, returning excess flow from 2 active nodes to source---
+initial global relabel from source on iter 10: 3 iters in 0.000362s
+---Phase 2 complete, full flow state found in 0.000782s ---
+	iterations: 2
+	push-relabel kernel time: 0.000280s
+	global relabeled 1 times in 0.000362s
+	avg percent of graph in BFS WL: 27.78% over 3 total BFS iters
+runtime: 0.007393s
+Maximum flow from nodes 0 to 5: 23
+Verified valid final flow state, no excess nodes remaining, and same absolute excess in source and sink.
+
+median runtime: 0.007393s
+Throughput: 0.000001 gigaedges/s
+GRAPHMINE_FLOW 12 11 4 12 4 11 0 19 7 4
+========= ERROR SUMMARY: 0 errors

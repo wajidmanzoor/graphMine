@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/consumer/build/consumer"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.003715556114912033,
+  "exit_code": 0,
+  "log": "runs/consumer_run.log",
+  "stdin_path": null,
+  "timeout": false
+}

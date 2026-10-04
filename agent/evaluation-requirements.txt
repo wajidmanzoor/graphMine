@@ -1,0 +1,4 @@
+# Add to the isolated training environment; keep serving vLLM unchanged.
+-r training-requirements.txt
+xgrammar==0.2.8
+apache-tvm-ffi==0.1.14.post1

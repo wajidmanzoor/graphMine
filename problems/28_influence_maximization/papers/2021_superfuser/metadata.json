@@ -1,0 +1,16 @@
+{
+  "paper_id": "2021_superfuser",
+  "title": "Fast and Parallel Influence Maximization using Fused Sampling and Memory Access Regularization",
+  "year": 2021,
+  "venue": "IEEE Transactions on Parallel and Distributed Systems",
+  "doi": null,
+  "publication_url": "https://github.com/ggokturk/infuser",
+  "pdf_url": null,
+  "code_url": "https://github.com/ggokturk/infuser",
+  "semantic_fit": "exact",
+  "gpu_scope": "SuperFuseR: GPU-specialized sketch-based influence maximization kernel within the InFuseR/HyperFuser/SuperFuseR family.",
+  "notes": "Distinct from the 2024 DiFuseR paper by the same research lineage; do not conflate the two when citing.",
+  "problem_id": "influence_maximization",
+  "problem_dir": "28_influence_maximization",
+  "research_cutoff": "2026-09-30"
+}

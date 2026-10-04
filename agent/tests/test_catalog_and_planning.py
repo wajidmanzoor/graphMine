@@ -9,7 +9,15 @@ from graphmine_agent.models import ExecutionPlan, RouteDecision
 from graphmine_agent.planning import (
     PlanValidationError,
     PlanValidator,
+    bind_unique_required_auxiliary_inputs,
     normalize_route,
+)
+
+
+LEGACY_SCOPE = json.loads(
+    (
+        Path(__file__).resolve().parents[1] / "evaluation" / "legacy_catalog_scope.json"
+    ).read_text()
 )
 
 
@@ -30,8 +38,8 @@ def value_for(specification: dict) -> object:
 def test_catalog_has_full_problem_operation_and_domain_context(
     catalog: Catalog,
 ) -> None:
-    assert len(catalog.problems) == 20
-    assert len(catalog.instructions) == 13
+    assert len(catalog.problems) == 37
+    assert len(catalog.instructions) == 18
     assert len(catalog.domains) == 9
     assert catalog.domain("fraud_detection").name == "Fraud and financial crime"
     assert all(
@@ -59,11 +67,42 @@ def test_query_corpus_separates_training_seeds_and_held_out_domain_cases(
         selected = [item for item in cases if item["split"] == split]
         assert {item["domain_id"] for item in selected} == set(catalog.domains)
         assert {item["expected"]["operation_id"] for item in selected} == set(
-            catalog.instructions
+            LEGACY_SCOPE["operation_ids"]
         )
         for item in selected:
             operation = catalog.operation(item["expected"]["operation_id"])
             assert operation.problem_id == item["expected"]["problem_id"]
+
+
+def test_v1_evaluation_matrix_covers_every_domain_operation_and_safety_route(
+    catalog: Catalog,
+) -> None:
+    path = Path(__file__).resolve().parents[1] / "evaluation" / "v1_query_cases.json"
+    cases = json.loads(path.read_text(encoding="utf-8"))["cases"]
+    matrix = [item for item in cases if item["split"] == "v1_matrix_evaluation"]
+    safety = [item for item in cases if item["split"] == "v1_routing_safety_evaluation"]
+    assert (
+        len(matrix) == len(catalog.domains) * len(LEGACY_SCOPE["operation_ids"]) == 117
+    )
+    assert {
+        (item["domain_id"], item["expected"]["operation_id"]) for item in matrix
+    } == {
+        (domain_id, operation_id)
+        for domain_id in catalog.domains
+        for operation_id in LEGACY_SCOPE["operation_ids"]
+    }
+    unsupported = {
+        problem_id
+        for problem_id, problem in catalog.problems.items()
+        if problem_id in LEGACY_SCOPE["problem_ids"]
+        and problem["library_support"]["status"] != "validated"
+    }
+    assert unsupported <= {
+        item["expected"]["problem_id"]
+        for item in safety
+        if item["expected"]["problem_id"] is not None
+    }
+    assert sum(item["expected"]["problem_id"] is None for item in safety) == 4
 
 
 def test_every_operation_can_form_a_semantically_complete_plan(
@@ -73,7 +112,9 @@ def test_every_operation_can_form_a_semantically_complete_plan(
     for operation_id in catalog.instructions:
         operation = catalog.operation(operation_id)
         parameters = {
-            name: value_for(spec)
+            name: (0 if name == "source" else 1)
+            if spec["type"] == "vertex_id"
+            else value_for(spec)
             for name, spec in operation.instruction["parameters"].items()
             if spec.get("required")
         }
@@ -138,6 +179,36 @@ def test_missing_required_input_is_reported_before_execution(catalog: Catalog) -
         validator.validate(plan, for_execution=True)
 
 
+def test_unique_required_auxiliary_file_is_bound_without_overriding_user_choice(
+    catalog: Catalog,
+) -> None:
+    operation = catalog.operation("subgraph-isomorphism")
+    plan = ExecutionPlan(
+        session_id="session",
+        graph_id="graph",
+        problem_id=operation.problem_id,
+        operation_id=operation.id,
+    )
+    files = [
+        {"id": "graph", "role": "graph"},
+        {"id": "query", "role": "query_graph"},
+    ]
+    inferred = bind_unique_required_auxiliary_inputs(plan, operation, files)
+    assert inferred.auxiliary_inputs == {"query_graph": ["query"]}
+
+    protected = bind_unique_required_auxiliary_inputs(
+        plan, operation, files, protected_names={"query_graph"}
+    )
+    assert protected.auxiliary_inputs == {}
+
+    ambiguous = bind_unique_required_auxiliary_inputs(
+        plan,
+        operation,
+        files + [{"id": "query-2", "role": "query_graph"}],
+    )
+    assert ambiguous.auxiliary_inputs == {}
+
+
 def test_unknown_parameter_cannot_become_a_command_argument(catalog: Catalog) -> None:
     validator = PlanValidator(catalog)
     plan = ExecutionPlan(
@@ -164,7 +235,7 @@ def test_null_parameter_means_cli_flag_is_absent(catalog: Catalog) -> None:
     assert normalized.parameters == {"minimum_clique_size": 1}
 
 
-def test_route_support_is_derived_from_authoritative_catalog(
+def test_catalog_support_cannot_override_an_intent_refusal(
     catalog: Catalog,
 ) -> None:
     normalized = normalize_route(
@@ -177,4 +248,5 @@ def test_route_support_is_derived_from_authoritative_catalog(
             explanation="Selected the matching formal problem.",
         ),
     )
-    assert normalized.supported is True
+    assert normalized.supported is False
+    assert normalized.operation_id is None

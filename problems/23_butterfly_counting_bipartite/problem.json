@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "butterfly_counting_bipartite",
+  "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques, i.e. (2,2)-bicliques) globally and per vertex/edge, and optionally decompose the graph into (alpha,beta)-cores by butterfly-based degeneracy.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected_bipartite", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "required_side_label", "edge_attributes": "ignored"},
+    "normalization": ["Reject edges whose endpoints share the same declared side.", "Remove self-loops (impossible in valid bipartite input; reject if present).", "Collapse parallel edges between the same pair to one edge.", "Every vertex must have a side label in {left, right}; isolated vertices on either side are retained."]
+  },
+  "problem_inputs": [
+    {"name": "mode", "type": "enum", "required": false, "default": "count", "allowed_values": ["count", "per_vertex", "per_edge", "alpha_beta_core"], "description": "Return a global count, per-vertex/per-edge participation counts, or a full (alpha,beta)-core decomposition."},
+    {"name": "alpha", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Left-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible alpha."},
+    {"name": "beta", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Right-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible beta."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "exact", "allowed_values": ["exact", "approximate"], "description": "Whether a sampling-based approximate butterfly count with a disclosed bound is permitted."}
+  ],
+  "required_outputs": [
+    {"name": "butterfly_count", "type": "integer", "description": "Total number of distinct butterflies (unordered 2x2 complete bipartite subgraphs) in the graph."},
+    {"name": "complete", "type": "boolean", "description": "Whether the count/decomposition covers the entire input graph without sampling truncation."}
+  ],
+  "optional_outputs": [
+    {"name": "per_vertex_butterfly_count", "type": "map<vertex_id,integer>", "description": "Butterflies each vertex participates in; present when mode=per_vertex."},
+    {"name": "per_edge_butterfly_count", "type": "map<edge_id,integer>", "description": "Butterflies each edge (as a wedge pair) participates in; present when mode=per_edge."},
+    {"name": "alpha_beta_core_assignment", "type": "map<vertex_id,object>", "description": "Per-vertex maximal (alpha,beta) coordinates; present when mode=alpha_beta_core."},
+    {"name": "approximation_bound", "type": "number", "description": "Certified relative error bound for an approximate count."}
+  ],
+  "solution_semantics": {
+    "objective": "Enumerate or count every 4-cycle formed by two left vertices and two right vertices that are all pairwise connected (a butterfly), with no induced-subgraph requirement beyond the four required edges.",
+    "exactness": "Exact mode requires every butterfly to be counted exactly once; approximate mode must disclose its bound.",
+    "duplicate_policy": "Each unordered set of 2 left + 2 right vertices forming a butterfly is counted once regardless of discovery order.",
+    "ordering": "Not applicable for global count; per_vertex and per_edge outputs are unordered maps."
+  },
+  "validation_rules": [
+    "butterfly_count recomputes from the normalized bipartite adjacency via independent wedge-based counting.",
+    "Sum of per_vertex_butterfly_count over one side, divided by 2, is internally consistent with butterfly_count.",
+    "alpha_beta_core_assignment vertices retain at least alpha (left) or beta (right) butterfly-degree within their assigned core.",
+    "No edge with same-side endpoints is present in the normalized graph."
+  ],
+  "edge_cases": [
+    "A graph with no 4-cycles has butterfly_count zero.",
+    "A complete bipartite graph K(m,n) has the closed-form C(m,2)*C(n,2) butterflies, usable as a correctness check.",
+    "Isolated vertices contribute zero to every count.",
+    "alpha=1,beta=1 core reduces to vertices with degree >= 1 on each side that share at least one butterfly."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["exact count agreement with brute-force wedge oracle on small/medium fixtures", "per-vertex/per-edge sum consistency", "core-assignment validity"],
+    "performance": ["end-to-end time", "wedge-construction time", "peak memory", "butterflies counted per second"]
+  }
+}

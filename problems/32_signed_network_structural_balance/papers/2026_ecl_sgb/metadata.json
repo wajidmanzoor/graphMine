@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_ecl_sgb",
+  "title": "Signed Graph Balancing in Linear Time",
+  "year": 2026,
+  "venue": "ACM GPGPU 2026 (18th Workshop on General Purpose Processing Using GPU)",
+  "doi": "10.1145/3818671.3818675",
+  "publication_url": "https://doi.org/10.1145/3818671.3818675",
+  "pdf_url": null,
+  "code_url": "https://github.com/burtscher/ECL-SGB",
+  "semantic_fit": "exact",
+  "gpu_scope": "ECL-SGB: linear-time CUDA algorithm balancing fundamental cycles of a signed graph without per-cycle traversal; 11.9x/13.6x speedup on RTX 4090/A100.",
+  "notes": "From the same ECL (Texas State) lab behind ECL-MaxFlow already validated in this catalog; newest and most directly matching artifact for this problem.",
+  "problem_id": "signed_network_structural_balance",
+  "problem_dir": "32_signed_network_structural_balance",
+  "research_cutoff": "2026-09-30"
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/superfuser",
+    "-g",
+    "1",
+    "-K",
+    "1",
+    "-R",
+    "256",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/superfuser/star_8.txt"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.26451864652335644,
+  "exit_code": 0,
+  "log": "runs/superfuser_star_8_0.log",
+  "timeout": false
+}

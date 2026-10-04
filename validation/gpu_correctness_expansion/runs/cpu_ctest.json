@@ -1,0 +1,14 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/library-cpu",
+    "--output-on-failure"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.03293684124946594,
+  "exit_code": 0,
+  "log": "runs/cpu_ctest.log",
+  "stdin_path": null,
+  "timeout": false
+}

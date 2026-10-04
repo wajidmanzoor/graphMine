@@ -1,0 +1,657 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-01T17:14:01.816609+00:00",
+  "cases_sha256": "11b3bb847f13142cc24ad34e38f2608881c9f9cecc61d6b3e159af4560928640",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "routing_configuration": {
+    "reasoning_effort": "none",
+    "max_completion_tokens": 768,
+    "temperature": 0.0,
+    "seed": 0,
+    "concurrency": 8
+  },
+  "split": "v1_routing_safety_evaluation",
+  "passed": 20,
+  "total": 20,
+  "accuracy": 1.0,
+  "by_domain": {
+    "general": {
+      "passed": 3,
+      "total": 3
+    },
+    "fraud_detection": {
+      "passed": 3,
+      "total": 3
+    },
+    "bioinformatics": {
+      "passed": 3,
+      "total": 3
+    },
+    "cybersecurity": {
+      "passed": 2,
+      "total": 2
+    },
+    "social_networks": {
+      "passed": 2,
+      "total": 2
+    },
+    "recommendation_ecommerce": {
+      "passed": 2,
+      "total": 2
+    },
+    "knowledge_graphs": {
+      "passed": 2,
+      "total": 2
+    },
+    "communications_infrastructure": {
+      "passed": 1,
+      "total": 1
+    },
+    "transportation_mobility": {
+      "passed": 2,
+      "total": 2
+    }
+  },
+  "cases": [
+    {
+      "id": "v1-unsupported-densest_subgraph-1",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "densest_subgraph",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "densest_subgraph",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the subgraph with maximum edge density, which maps directly to the formal problem 'densest_subgraph'. The routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "densest_subgraph",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the subgraph with maximum edge density, which maps directly to the formal problem 'densest_subgraph'. The routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "latency_seconds": 31.074,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-densest_subgraph-2",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "densest_subgraph",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "densest_subgraph",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the subgraph with maximum edge density, which maps directly to the formal problem 'densest_subgraph'. The routing context indicates this problem has no validated backend, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "densest_subgraph",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the subgraph with maximum edge density, which maps directly to the formal problem 'densest_subgraph'. The routing context indicates this problem has no validated backend, so it is unsupported."
+      },
+      "latency_seconds": 26.071,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-densest_k_subgraph-1",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "densest_k_subgraph",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "densest_k_subgraph",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the densest subgraph containing exactly 25 vertices, which maps directly to the formal problem 'densest_k_subgraph'. The routing context indicates this problem has no validated backend, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "densest_k_subgraph",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the densest subgraph containing exactly 25 vertices, which maps directly to the formal problem 'densest_k_subgraph'. The routing context indicates this problem has no validated backend, so it is unsupported."
+      },
+      "latency_seconds": 30.46,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-densest_k_subgraph-2",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "densest_k_subgraph",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "densest_k_subgraph",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the densest subgraph containing exactly 25 vertices, which maps directly to the formal problem 'densest_k_subgraph'. The routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "densest_k_subgraph",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for the densest subgraph containing exactly 25 vertices, which maps directly to the formal problem 'densest_k_subgraph'. The routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "latency_seconds": 32.914,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-k_truss_decomposition-1",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_truss_decomposition",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "k_truss_decomposition",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-truss decomposition. The routing context identifies this as a formal problem but indicates no validated backend is available, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "k_truss_decomposition",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-truss decomposition. The routing context identifies this as a formal problem but indicates no validated backend is available, so it is unsupported."
+      },
+      "latency_seconds": 24.587,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-k_truss_decomposition-2",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "k_truss_decomposition",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "k_truss_decomposition",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-truss decomposition. The routing context identifies this as a formal problem but indicates no validated backend is available, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "k_truss_decomposition",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 1.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for k-truss decomposition. The routing context identifies this as a formal problem but indicates no validated backend is available, so it is unsupported."
+      },
+      "latency_seconds": 28.471,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-graphlet_counting-1",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "graphlet_counting",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "graphlet_counting",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced graphlet orbits up to size five, which maps directly to the formal problem 'graphlet_counting'. The routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "graphlet_counting",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced graphlet orbits up to size five, which maps directly to the formal problem 'graphlet_counting'. The routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "latency_seconds": 34.805,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-graphlet_counting-2",
+      "domain_id": "communications_infrastructure",
+      "passed": true,
+      "expected": {
+        "problem_id": "graphlet_counting",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "graphlet_counting",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced graphlet orbits up to size five, which maps directly to the formal problem 'graphlet_counting'. The routing context indicates that this problem has no validated backend available in GraphMine, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "graphlet_counting",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to count induced graphlet orbits up to size five, which maps directly to the formal problem 'graphlet_counting'. The routing context indicates that this problem has no validated backend available in GraphMine, so it is unsupported."
+      },
+      "latency_seconds": 38.179,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-frequent_subgraph_mining-1",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": "frequent_subgraph_mining",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "frequent_subgraph_mining",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine frequent subgraphs across a graph collection, which maps directly to the formal problem 'frequent_subgraph_mining'. This problem is currently unsupported in GraphMine because no validated backend exists for it."
+      },
+      "raw_observed": {
+        "problem_id": "frequent_subgraph_mining",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine frequent subgraphs across a graph collection, which maps directly to the formal problem 'frequent_subgraph_mining'. This problem is currently unsupported in GraphMine because no validated backend exists for it."
+      },
+      "latency_seconds": 20.132,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-frequent_subgraph_mining-2",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": "frequent_subgraph_mining",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "frequent_subgraph_mining",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine frequent subgraphs across a graph collection, which maps directly to the formal problem 'frequent_subgraph_mining'. However, the routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "frequent_subgraph_mining",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to mine frequent subgraphs across a graph collection, which maps directly to the formal problem 'frequent_subgraph_mining'. However, the routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "latency_seconds": 22.57,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-overlapping_community_detection-1",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": "overlapping_community_detection",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "overlapping_community_detection",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for overlapping communities using exact k-clique percolation. This maps directly to the formal problem 'overlapping_community_detection'. However, the routing context indicates that no validated backend exists for this specific problem, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "overlapping_community_detection",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for overlapping communities using exact k-clique percolation. This maps directly to the formal problem 'overlapping_community_detection'. However, the routing context indicates that no validated backend exists for this specific problem, so it is unsupported."
+      },
+      "latency_seconds": 21.664,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-overlapping_community_detection-2",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": "overlapping_community_detection",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "overlapping_community_detection",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for overlapping communities using exact k-clique percolation. This maps directly to the formal problem 'overlapping_community_detection'. However, the routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "overlapping_community_detection",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks for overlapping communities using exact k-clique percolation. This maps directly to the formal problem 'overlapping_community_detection'. However, the routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "latency_seconds": 22.03,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-link_prediction-1",
+      "domain_id": "cybersecurity",
+      "passed": true,
+      "expected": {
+        "problem_id": "link_prediction",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "link_prediction",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to predict and rank missing edges maps directly to the formal problem 'link_prediction'. However, the routing context indicates that no validated backend exists for this operation, so it is currently unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "link_prediction",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request to predict and rank missing edges maps directly to the formal problem 'link_prediction'. However, the routing context indicates that no validated backend exists for this operation, so it is currently unsupported."
+      },
+      "latency_seconds": 15.129,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-link_prediction-2",
+      "domain_id": "social_networks",
+      "passed": true,
+      "expected": {
+        "problem_id": "link_prediction",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "link_prediction",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to predict and rank missing edges, which maps directly to the formal problem 'link_prediction'. However, the routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "link_prediction",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.98,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to predict and rank missing edges, which maps directly to the formal problem 'link_prediction'. However, the routing context indicates that no validated backend exists for this problem, so it is unsupported."
+      },
+      "latency_seconds": 15.807,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-graph_anomaly_detection-1",
+      "domain_id": "recommendation_ecommerce",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_anomaly_detection",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "graph_anomaly_detection",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to detect anomalous vertices and suspicious subgraphs, which maps directly to the formal problem 'graph_anomaly_detection'. However, the routing context indicates that this problem has no validated backend available in GraphMine, making it unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "graph_anomaly_detection",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to detect anomalous vertices and suspicious subgraphs, which maps directly to the formal problem 'graph_anomaly_detection'. However, the routing context indicates that this problem has no validated backend available in GraphMine, making it unsupported."
+      },
+      "latency_seconds": 17.974,
+      "error": null
+    },
+    {
+      "id": "v1-unsupported-graph_anomaly_detection-2",
+      "domain_id": "knowledge_graphs",
+      "passed": true,
+      "expected": {
+        "problem_id": "graph_anomaly_detection",
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": "graph_anomaly_detection",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to detect anomalous vertices and suspicious subgraphs, which maps directly to the formal problem 'graph_anomaly_detection'. However, the routing context indicates that this problem has no validated backend available in GraphMine, making it unsupported."
+      },
+      "raw_observed": {
+        "problem_id": "graph_anomaly_detection",
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.95,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request explicitly asks to detect anomalous vertices and suspicious subgraphs, which maps directly to the formal problem 'graph_anomaly_detection'. However, the routing context indicates that this problem has no validated backend available in GraphMine, making it unsupported."
+      },
+      "latency_seconds": 14.812,
+      "error": null
+    },
+    {
+      "id": "v1-ambiguous-1",
+      "domain_id": "general",
+      "passed": true,
+      "expected": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.2,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request 'Find the important groups' is ambiguous. It could refer to community detection, maximal clique enumeration, k-core decomposition, or densest subgraph mining. No specific formal problem or parameters are provided to disambiguate."
+      },
+      "raw_observed": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.2,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request 'Find the important groups' is ambiguous. It could refer to community detection, maximal clique enumeration, k-core decomposition, or densest subgraph mining. No specific formal problem or parameters are provided to disambiguate."
+      },
+      "latency_seconds": 11.248,
+      "error": null
+    },
+    {
+      "id": "v1-ambiguous-2",
+      "domain_id": "fraud_detection",
+      "passed": true,
+      "expected": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.1,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request is too vague to map to a specific formal graph problem. 'Interesting' could refer to anomalies, communities, cliques, or other patterns, but no specific structural or statistical property is defined."
+      },
+      "raw_observed": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.1,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request is too vague to map to a specific formal graph problem. 'Interesting' could refer to anomalies, communities, cliques, or other patterns, but no specific structural or statistical property is defined."
+      },
+      "latency_seconds": 9.648,
+      "error": null
+    },
+    {
+      "id": "v1-ambiguous-3",
+      "domain_id": "bioinformatics",
+      "passed": true,
+      "expected": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request 'Analyze the relevant protein structure' is too vague to map to a specific formal graph problem. It lacks a concrete task such as finding cliques, communities, or centrality scores, making the intent ambiguous."
+      },
+      "raw_observed": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request 'Analyze the relevant protein structure' is too vague to map to a specific formal graph problem. It lacks a concrete task such as finding cliques, communities, or centrality scores, making the intent ambiguous."
+      },
+      "latency_seconds": 7.535,
+      "error": null
+    },
+    {
+      "id": "v1-ambiguous-4",
+      "domain_id": "transportation_mobility",
+      "passed": true,
+      "expected": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false
+      },
+      "observed": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request is ambiguous. 'Matters most' is subjective and does not specify a formal graph problem, metric, or objective (e.g., centrality, community detection, or anomaly detection). No specific intent signals are present to map to a validated operation."
+      },
+      "raw_observed": {
+        "problem_id": null,
+        "operation_id": null,
+        "supported": false,
+        "confidence": 0.0,
+        "ambiguity": [],
+        "missing_information": [],
+        "explanation": "The request is ambiguous. 'Matters most' is subjective and does not specify a formal graph problem, metric, or objective (e.g., centrality, community detection, or anomaly detection). No specific intent signals are present to map to a validated operation."
+      },
+      "latency_seconds": 9.198,
+      "error": null
+    }
+  ]
+}

@@ -5,7 +5,13 @@
       "id": "general",
       "name": "General graph analysis",
       "description": "Domain-neutral graph terminology for exploratory and algorithm-focused requests.",
-      "common_entities": ["vertex", "edge", "group", "path", "pattern"],
+      "common_entities": [
+        "vertex",
+        "edge",
+        "group",
+        "path",
+        "pattern"
+      ],
       "common_questions": [
         "Which vertices are structurally important?",
         "Which dense groups or recurring patterns occur?",
@@ -31,15 +37,44 @@
         "overlapping_community_detection",
         "centrality_influential_node_mining",
         "link_prediction",
-        "graph_anomaly_detection"
+        "graph_anomaly_detection",
+        "personalized_pagerank_rwr",
+        "max_flow_min_cut",
+        "butterfly_counting_bipartite",
+        "graph_edit_distance_mcs",
+        "network_alignment",
+        "hop_constrained_cycle_path_enumeration",
+        "group_steiner_tree",
+        "influence_maximization",
+        "simrank_vertex_similarity",
+        "balanced_graph_partitioning",
+        "bipartite_matching_assignment",
+        "signed_network_structural_balance",
+        "transitive_closure_reachability",
+        "entity_resolution_blocking",
+        "connected_components",
+        "graph_layout_force_directed",
+        "null_model_significance_testing"
       ],
-      "visualization_priorities": ["network", "table", "bar", "histogram"]
+      "visualization_priorities": [
+        "network",
+        "table",
+        "bar",
+        "histogram"
+      ]
     },
     {
       "id": "fraud_detection",
       "name": "Fraud and financial crime",
       "description": "Transaction, account, merchant, device, and ownership networks used to inspect coordinated or suspicious behavior.",
-      "common_entities": ["account", "transaction", "merchant", "device", "beneficiary", "customer"],
+      "common_entities": [
+        "account",
+        "transaction",
+        "merchant",
+        "device",
+        "beneficiary",
+        "customer"
+      ],
       "common_questions": [
         "Find tightly connected transaction rings.",
         "Identify influential bridge accounts.",
@@ -56,15 +91,33 @@
         "community_detection",
         "centrality_influential_node_mining",
         "link_prediction",
-        "graph_anomaly_detection"
+        "graph_anomaly_detection",
+        "connected_components",
+        "transitive_closure_reachability",
+        "max_flow_min_cut",
+        "butterfly_counting_bipartite",
+        "entity_resolution_blocking",
+        "signed_network_structural_balance"
       ],
-      "visualization_priorities": ["network", "timeline", "table", "bar"]
+      "visualization_priorities": [
+        "network",
+        "timeline",
+        "table",
+        "bar"
+      ]
     },
     {
       "id": "bioinformatics",
       "name": "Bioinformatics",
       "description": "Protein interaction, gene regulation, molecular, pathway, and biological association networks.",
-      "common_entities": ["gene", "protein", "interaction", "pathway", "molecule", "phenotype"],
+      "common_entities": [
+        "gene",
+        "protein",
+        "interaction",
+        "pathway",
+        "molecule",
+        "phenotype"
+      ],
       "common_questions": [
         "Find protein complexes and dense interaction modules.",
         "Count recurring regulatory motifs.",
@@ -82,15 +135,29 @@
         "frequent_subgraph_mining",
         "community_detection",
         "overlapping_community_detection",
-        "centrality_influential_node_mining"
+        "centrality_influential_node_mining",
+        "connected_components",
+        "transitive_closure_reachability"
       ],
-      "visualization_priorities": ["network", "heatmap", "bar", "table"]
+      "visualization_priorities": [
+        "network",
+        "heatmap",
+        "bar",
+        "table"
+      ]
     },
     {
       "id": "cybersecurity",
       "name": "Cybersecurity",
       "description": "Host, identity, process, event, communication, and attack-path graphs.",
-      "common_entities": ["host", "identity", "process", "event", "connection", "attack technique"],
+      "common_entities": [
+        "host",
+        "identity",
+        "process",
+        "event",
+        "connection",
+        "attack technique"
+      ],
       "common_questions": [
         "Find known attack subgraphs.",
         "Identify central hosts or identities.",
@@ -106,15 +173,29 @@
         "community_detection",
         "centrality_influential_node_mining",
         "link_prediction",
-        "graph_anomaly_detection"
+        "graph_anomaly_detection",
+        "connected_components",
+        "transitive_closure_reachability"
       ],
-      "visualization_priorities": ["timeline", "network", "table", "heatmap"]
+      "visualization_priorities": [
+        "timeline",
+        "network",
+        "table",
+        "heatmap"
+      ]
     },
     {
       "id": "social_networks",
       "name": "Social and collaboration networks",
       "description": "Follower, friendship, messaging, coauthor, and organizational collaboration graphs.",
-      "common_entities": ["person", "account", "group", "message", "collaboration", "organization"],
+      "common_entities": [
+        "person",
+        "account",
+        "group",
+        "message",
+        "collaboration",
+        "organization"
+      ],
       "common_questions": [
         "Find communities and influential members.",
         "Find maximal or maximum friendship groups.",
@@ -133,15 +214,33 @@
         "community_detection",
         "overlapping_community_detection",
         "centrality_influential_node_mining",
-        "link_prediction"
+        "link_prediction",
+        "connected_components",
+        "transitive_closure_reachability",
+        "personalized_pagerank_rwr",
+        "influence_maximization",
+        "simrank_vertex_similarity",
+        "signed_network_structural_balance"
       ],
-      "visualization_priorities": ["network", "bar", "histogram", "timeline"]
+      "visualization_priorities": [
+        "network",
+        "bar",
+        "histogram",
+        "timeline"
+      ]
     },
     {
       "id": "recommendation_ecommerce",
       "name": "Recommendation and e-commerce",
       "description": "User-item, customer-product, session, merchant, and co-purchase graphs.",
-      "common_entities": ["user", "item", "product", "merchant", "purchase", "session"],
+      "common_entities": [
+        "user",
+        "item",
+        "product",
+        "merchant",
+        "purchase",
+        "session"
+      ],
       "common_questions": [
         "Find dense user-item bicliques.",
         "Find product communities and co-purchase motifs.",
@@ -156,15 +255,29 @@
         "community_detection",
         "centrality_influential_node_mining",
         "link_prediction",
-        "graph_anomaly_detection"
+        "graph_anomaly_detection",
+        "connected_components",
+        "transitive_closure_reachability"
       ],
-      "visualization_priorities": ["heatmap", "network", "bar", "table"]
+      "visualization_priorities": [
+        "heatmap",
+        "network",
+        "bar",
+        "table"
+      ]
     },
     {
       "id": "knowledge_graphs",
       "name": "Knowledge graphs",
       "description": "Entity-relation graphs used for pattern matching, structural discovery, and entity analysis.",
-      "common_entities": ["entity", "relation", "concept", "type", "fact", "query pattern"],
+      "common_entities": [
+        "entity",
+        "relation",
+        "concept",
+        "type",
+        "fact",
+        "query pattern"
+      ],
       "common_questions": [
         "Match this entity-relation query graph.",
         "Find repeated relation motifs.",
@@ -178,15 +291,29 @@
         "frequent_subgraph_mining",
         "centrality_influential_node_mining",
         "link_prediction",
-        "graph_anomaly_detection"
+        "graph_anomaly_detection",
+        "connected_components",
+        "transitive_closure_reachability"
       ],
-      "visualization_priorities": ["network", "table", "bar", "heatmap"]
+      "visualization_priorities": [
+        "network",
+        "table",
+        "bar",
+        "heatmap"
+      ]
     },
     {
       "id": "communications_infrastructure",
       "name": "Communications and infrastructure",
       "description": "Computer, telecom, utility, dependency, and physical infrastructure networks.",
-      "common_entities": ["router", "host", "tower", "station", "link", "dependency"],
+      "common_entities": [
+        "router",
+        "host",
+        "tower",
+        "station",
+        "link",
+        "dependency"
+      ],
       "common_questions": [
         "Identify core infrastructure and critical vertices.",
         "Find resilient dense regions.",
@@ -201,15 +328,32 @@
         "subgraph_isomorphism",
         "community_detection",
         "centrality_influential_node_mining",
-        "graph_anomaly_detection"
+        "graph_anomaly_detection",
+        "connected_components",
+        "transitive_closure_reachability",
+        "max_flow_min_cut",
+        "group_steiner_tree",
+        "balanced_graph_partitioning"
       ],
-      "visualization_priorities": ["network", "heatmap", "bar", "table"]
+      "visualization_priorities": [
+        "network",
+        "heatmap",
+        "bar",
+        "table"
+      ]
     },
     {
       "id": "transportation_mobility",
       "name": "Transportation and mobility",
       "description": "Road, transit, trip, movement, and location-interaction graphs.",
-      "common_entities": ["location", "station", "route", "trip", "vehicle", "movement event"],
+      "common_entities": [
+        "location",
+        "station",
+        "route",
+        "trip",
+        "vehicle",
+        "movement event"
+      ],
       "common_questions": [
         "Identify central stations or locations.",
         "Find travel communities.",
@@ -222,9 +366,16 @@
         "community_detection",
         "centrality_influential_node_mining",
         "link_prediction",
-        "graph_anomaly_detection"
+        "graph_anomaly_detection",
+        "connected_components",
+        "transitive_closure_reachability"
       ],
-      "visualization_priorities": ["timeline", "network", "heatmap", "line"]
+      "visualization_priorities": [
+        "timeline",
+        "network",
+        "heatmap",
+        "line"
+      ]
     }
   ]
 }

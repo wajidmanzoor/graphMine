@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_hyperg",
+  "title": "HyperG: Multilevel GPU-Accelerated k-way Hypergraph Partitioner",
+  "year": 2024,
+  "venue": "ACM/IEEE ICCAD 2024",
+  "doi": "10.1145/3658617.3697551",
+  "publication_url": "https://doi.org/10.1145/3658617.3697551",
+  "pdf_url": null,
+  "code_url": null,
+  "semantic_fit": "variant",
+  "gpu_scope": "Multilevel GPU k-way partitioner for hypergraphs rather than plain graphs; same research lineage as G-kway.",
+  "notes": "Hypergraph input model is a generalization beyond this problem's plain-graph scope; no public code repository was located during this pass.",
+  "problem_id": "balanced_graph_partitioning",
+  "problem_dir": "30_balanced_graph_partitioning",
+  "research_cutoff": "2026-09-30"
+}

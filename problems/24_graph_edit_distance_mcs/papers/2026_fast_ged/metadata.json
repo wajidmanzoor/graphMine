@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_fast_ged",
+  "title": "Efficient Accelerated Graph Edit Distance Computation on GPU",
+  "year": 2026,
+  "venue": "ICCS 2026",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2605.00830",
+  "pdf_url": "https://arxiv.org/pdf/2605.00830",
+  "code_url": "https://gitlab.jsc.fz-juelich.de/dabah2/fast-ged.git",
+  "semantic_fit": "exact",
+  "gpu_scope": "FAST-GED: GPU branch-and-bound GED search exploring the edit-path tree breadth-first with GPU ranking/pruning kernels.",
+  "notes": "Official repository is hosted on the Juelich Supercomputing Centre GitLab, not GitHub.",
+  "problem_id": "graph_edit_distance_mcs",
+  "problem_dir": "24_graph_edit_distance_mcs",
+  "research_cutoff": "2026-09-30"
+}

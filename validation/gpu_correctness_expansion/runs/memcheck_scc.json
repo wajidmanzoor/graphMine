@@ -1,0 +1,17 @@
+{
+  "command": [
+    "compute-sanitizer",
+    "--tool",
+    "memcheck",
+    "--error-exitcode",
+    "86",
+    "/home/wajid/projects/graphDatabaseAgent/library/build/workers/graphmine-worker-ecl-scc",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/ecl_scc/small.egr"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.5669573247432709,
+  "exit_code": 0,
+  "log": "runs/memcheck_scc.log",
+  "stdin_path": null,
+  "timeout": false
+}

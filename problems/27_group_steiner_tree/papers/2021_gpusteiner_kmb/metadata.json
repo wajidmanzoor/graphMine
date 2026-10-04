@@ -1,0 +1,16 @@
+{
+  "paper_id": "2021_gpusteiner_kmb",
+  "title": "Accelerating Computation of Steiner Trees on GPUs",
+  "year": 2021,
+  "venue": "International Journal of Parallel Programming",
+  "doi": "10.1007/s10766-021-00723-0",
+  "publication_url": "https://doi.org/10.1007/s10766-021-00723-0",
+  "pdf_url": null,
+  "code_url": "https://github.com/mrprajesh/gpuSteiner",
+  "semantic_fit": "variant",
+  "gpu_scope": "GPU-parallelized KMB 2-approximation algorithm for the classic (single-group-per-terminal) Steiner Tree Problem in Graphs.",
+  "notes": "Regular Steiner tree is the special case of group Steiner tree where every group is a singleton; a reproducibility artifact is also archived at https://zenodo.org/records/4477087.",
+  "problem_id": "group_steiner_tree",
+  "problem_dir": "27_group_steiner_tree",
+  "research_cutoff": "2026-09-30"
+}

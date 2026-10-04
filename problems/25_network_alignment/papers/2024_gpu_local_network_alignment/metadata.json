@@ -1,0 +1,16 @@
+{
+  "paper_id": "2024_gpu_local_network_alignment",
+  "title": "A GPU-based method for network alignment",
+  "year": 2024,
+  "venue": "IEEE",
+  "doi": null,
+  "publication_url": "https://ieeexplore.ieee.org/document/10822748/",
+  "pdf_url": null,
+  "code_url": null,
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU-accelerated greedy pairwise local network alignment via large-scale node-similarity-matrix computation.",
+  "notes": "Publisher page only; no open PDF or public code repository was located during this pass.",
+  "problem_id": "network_alignment",
+  "problem_dir": "25_network_alignment",
+  "research_cutoff": "2026-09-30"
+}

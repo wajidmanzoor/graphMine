@@ -1,0 +1,151 @@
+{
+  "phase": "completed",
+  "started_at": "2026-10-03T20:30:33.099581+00:00",
+  "source_sha256": "87e6e5413de414c38739f54914f36e218a8572f11a92fa345331d518bcb0e375",
+  "suite_sha256": "b90978bb034b098254b29be3dd2e4a5416a26782a87247c01fa12875576b977b",
+  "scope": "Plan-only supplied-file gate check using saved adapter routing responses and live unchanged FP8 planning. No fresh adapter predictions, native execution, or model-accuracy claim.",
+  "holdout_consumed": false,
+  "rows": [
+    {
+      "id": "retention-v1-general-graph-motifs",
+      "passed_supplied_input_gate": true,
+      "graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "auxiliary_sha256": "85b30ca621d49aecad05c18220883c56be120dfc9c27c5b121e8667b791c5da4",
+      "auxiliary_file_id": "file_9894fad7b2524e619ade54917d830cc3",
+      "route_source_sha256": "7138e1c7c62c611d935595532f6ebb781eba43b40860b119af89f524b5433b45",
+      "routing_payload_has_file_inventory": false,
+      "replayed_route_calls": 1,
+      "job_ids": [],
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-auxiliary-positive-v2/retention-v1-general-graph-motifs/history/session_fdcd57487a984927aaec15107a0ebebc",
+      "outcome": {
+        "query": "Count induced occurrences of the attached motif and include per-vertex participation.",
+        "response": {
+          "mode": "planner",
+          "message": "The analysis is ready (1 step).",
+          "planning_status": "ready",
+          "plan": {
+            "schema_version": "1.0.0",
+            "session_id": "session_fdcd57487a984927aaec15107a0ebebc",
+            "graph_id": "file_ac4f6b6574ba41128b619c8c7fa12f51",
+            "problem_id": "graph_motif_counting",
+            "operation_id": "graph-motifs",
+            "backend_id": "auto",
+            "parameters": {
+              "induced": true,
+              "occurrence_identity": "unique-vertex-set-and-mapping-class"
+            },
+            "optional_outputs": [
+              "per_vertex_participation"
+            ],
+            "auxiliary_inputs": {
+              "motifs": [
+                "file_9894fad7b2524e619ade54917d830cc3"
+              ]
+            },
+            "allow_directed_projection": false,
+            "collect_statistics": true,
+            "missing_inputs": [],
+            "rationale": "Induced 3-vertex motif on undirected graph; per-vertex participation requested. Server selects a compatible induced-capable backend.",
+            "application_intent": {
+              "objective": "Count induced occurrences of the attached motif and include per-vertex participation.",
+              "entity_type": "employee",
+              "relationship_meaning": "worked on a project together",
+              "filters": [],
+              "filter_mode": "replace",
+              "requires_edge_weights": false,
+              "weight_attribute": null,
+              "weight_usage": null,
+              "requires_direction": false,
+              "pattern_vertex_count": null,
+              "pattern_edges": [],
+              "time_unit": "unspecified",
+              "time_window": null,
+              "assumptions": []
+            }
+          },
+          "interpretation": null,
+          "interpretation_source": null,
+          "job_id": null,
+          "result_id": null,
+          "turn_id": "turn_f576c1443f1d4520a2a5c41ce1e337e1",
+          "feedback_id": null,
+          "job_ids": []
+        }
+      }
+    },
+    {
+      "id": "retention-v1-general-subgraph-isomorphism",
+      "passed_supplied_input_gate": true,
+      "graph_sha256": "b7420b659cb8b122ba93bf5bb9c900cf840206dcafcd4dc13b66e25e3a591e96",
+      "auxiliary_sha256": "85b30ca621d49aecad05c18220883c56be120dfc9c27c5b121e8667b791c5da4",
+      "auxiliary_file_id": "file_84746a6b79794cd8a0cae3c38fd9fa16",
+      "route_source_sha256": "90715d75c54c8e9e464c046981d4e1b78eb5c832d7f8b762cd4f60e28be86cb1",
+      "routing_payload_has_file_inventory": false,
+      "replayed_route_calls": 1,
+      "job_ids": [],
+      "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-auxiliary-positive-v2/retention-v1-general-subgraph-isomorphism/history/session_74a2766e5c7c459b897d58a98fe8c85b",
+      "outcome": {
+        "query": "Count label-respecting embeddings of the attached query graph and include the embeddings.",
+        "response": {
+          "mode": "planner",
+          "message": "The analysis is ready (1 step).",
+          "planning_status": "ready",
+          "plan": {
+            "schema_version": "1.0.0",
+            "session_id": "session_74a2766e5c7c459b897d58a98fe8c85b",
+            "graph_id": "file_335b07e9966e42b893be1923d150fcc9",
+            "problem_id": "subgraph_isomorphism",
+            "operation_id": "subgraph-isomorphism",
+            "backend_id": "auto",
+            "parameters": {
+              "ignore_vertex_labels": false,
+              "initial_match_capacity": 1000000,
+              "result_limit": 1000
+            },
+            "optional_outputs": [
+              "embeddings"
+            ],
+            "auxiliary_inputs": {
+              "query_graph": [
+                "file_84746a6b79794cd8a0cae3c38fd9fa16"
+              ]
+            },
+            "allow_directed_projection": false,
+            "collect_statistics": true,
+            "missing_inputs": [],
+            "rationale": "Label-respecting (ignore_vertex_labels=false) subgraph isomorphism with the attached 3-vertex query; embeddings output requested; result_limit 1000 exceeds the 210 max injective mappings on 7 vertices.",
+            "application_intent": {
+              "objective": "Count label-respecting embeddings of the attached query graph and include the embeddings.",
+              "entity_type": "employee",
+              "relationship_meaning": "worked on a project together",
+              "filters": [],
+              "filter_mode": "replace",
+              "requires_edge_weights": false,
+              "weight_attribute": null,
+              "weight_usage": null,
+              "requires_direction": false,
+              "pattern_vertex_count": null,
+              "pattern_edges": [],
+              "time_unit": "unspecified",
+              "time_window": null,
+              "assumptions": []
+            }
+          },
+          "interpretation": null,
+          "interpretation_source": null,
+          "job_id": null,
+          "result_id": null,
+          "turn_id": "turn_c301bfb82bd34058aedf8ec3e78d04da",
+          "feedback_id": null,
+          "job_ids": []
+        }
+      }
+    }
+  ],
+  "earlier_completed_updates_case": {
+    "path": "agent/evaluation/reports/adapter-auxiliary-positive-2026-10-03.json",
+    "sha256": "47cae06d0682ba0c9e8ec50845fcdd5dbe865db5ce5af6affb6e350605864024"
+  },
+  "fixture_correction": "Removed unsupported root schema_version before motif/query-graph upload; the earlier model-successful updates case is preserved and not rerun.",
+  "finished_at": "2026-10-03T20:31:51.579207+00:00"
+}

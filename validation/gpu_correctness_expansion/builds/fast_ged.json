@@ -1,0 +1,13 @@
+{
+  "command": [
+    "make",
+    "-j2",
+    "compile_java"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/fast_ged",
+  "elapsed_seconds": 0.008810184895992279,
+  "exit_code": 2,
+  "log": "builds/fast_ged.log",
+  "stdin_path": null,
+  "timeout": false
+}

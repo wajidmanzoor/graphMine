@@ -1,0 +1,84 @@
+{
+  "graph": {
+    "id": "office-router-links",
+    "directed": false,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "domain": "communications_infrastructure",
+      "description": "Physical bidirectional links. No measured traffic, capacities, or failure probabilities."
+    }
+  },
+  "vertices": [
+    {
+      "id": "gateway-01",
+      "label": "gateway-01"
+    },
+    {
+      "id": "east-router",
+      "label": "east-router"
+    },
+    {
+      "id": "east-printer",
+      "label": "east-printer"
+    },
+    {
+      "id": "east-workstation",
+      "label": "east-workstation"
+    },
+    {
+      "id": "west-router",
+      "label": "west-router"
+    },
+    {
+      "id": "west-printer",
+      "label": "west-printer"
+    },
+    {
+      "id": "west-workstation",
+      "label": "west-workstation"
+    }
+  ],
+  "edges": [
+    {
+      "id": "event-1",
+      "source": "east-router",
+      "target": "east-printer"
+    },
+    {
+      "id": "event-2",
+      "source": "east-router",
+      "target": "east-workstation"
+    },
+    {
+      "id": "event-3",
+      "source": "east-printer",
+      "target": "east-workstation"
+    },
+    {
+      "id": "event-4",
+      "source": "west-router",
+      "target": "west-printer"
+    },
+    {
+      "id": "event-5",
+      "source": "west-router",
+      "target": "west-workstation"
+    },
+    {
+      "id": "event-6",
+      "source": "west-printer",
+      "target": "west-workstation"
+    },
+    {
+      "id": "event-7",
+      "source": "east-router",
+      "target": "gateway-01"
+    },
+    {
+      "id": "event-8",
+      "source": "gateway-01",
+      "target": "west-router"
+    }
+  ]
+}

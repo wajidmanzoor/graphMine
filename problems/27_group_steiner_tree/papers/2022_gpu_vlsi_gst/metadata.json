@@ -1,0 +1,16 @@
+{
+  "paper_id": "2022_gpu_vlsi_gst",
+  "title": "GPU-Accelerated VLSI Routing using Group Steiner Trees",
+  "year": 2022,
+  "venue": "Journal of Computational Science Education",
+  "doi": null,
+  "publication_url": "https://jocse.org/articles/8/1/4/",
+  "pdf_url": "https://jocse.org/downloads/jocse-8-1-4.pdf",
+  "code_url": "https://github.com/yosephbasileal/group-steiner-vlsi-routing-gpu",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA-aware MPI approximate Group Steiner Tree computation specialized to grid-structured VLSI routing graphs.",
+  "notes": "Grid/VLSI-specific graph structure rather than general sparse graphs; validate against general-graph fixtures before treating as a direct match.",
+  "problem_id": "group_steiner_tree",
+  "problem_dir": "27_group_steiner_tree",
+  "research_cutoff": "2026-09-30"
+}

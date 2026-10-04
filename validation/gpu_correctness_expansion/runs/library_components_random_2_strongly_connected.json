@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+    "run",
+    "connected-components",
+    "--graph",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/gpu_correctness_expansion/datasets/library/components_random_2_strongly_connected.json",
+    "--connectivity-mode",
+    "strongly_connected"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo",
+  "elapsed_seconds": 0.264434901997447,
+  "exit_code": 0,
+  "log": "runs/library_components_random_2_strongly_connected.log",
+  "stdin_path": null,
+  "timeout": false
+}

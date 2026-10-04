@@ -1,0 +1,16 @@
+{
+  "paper_id": "2020_kpar",
+  "title": "Realtime Top-k Personalized PageRank over Large Graphs on GPUs",
+  "year": 2020,
+  "venue": "PVLDB 13(1)",
+  "doi": "10.14778/3357377.3357379",
+  "publication_url": "https://vldb.org/pvldb/vol13/p15-shi.pdf",
+  "pdf_url": "https://vldb.org/pvldb/vol13/p15-shi.pdf",
+  "code_url": "https://github.com/jmshi123/kPAR",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU top-k single-source Personalized PageRank via adaptive forward push and inverted random walks.",
+  "notes": "Official author repository; code is released as kPAR.zip under GitHub Releases rather than tracked in the default branch, so a shallow git clone may only capture build scripts.",
+  "problem_id": "personalized_pagerank_rwr",
+  "problem_dir": "21_personalized_pagerank_rwr",
+  "research_cutoff": "2026-09-30"
+}

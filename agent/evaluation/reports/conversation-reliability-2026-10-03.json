@@ -1,0 +1,526 @@
+{
+  "schema_version": "1.0.0",
+  "created_at": "2026-10-03T03:54:27.959Z",
+  "scope": "Bounded development conversation regressions with local Qwen and real native analyses. These cases were inspected during bug fixing; not untouched held-out accuracy, a human usability assessment or training data.",
+  "corpus": {
+    "manifest_path": ".graphmine-learning/conversation-corpus-v1/manifest.json",
+    "manifest_sha256": "b793622e7c9f5f39bfafcb850e450230c9c0abf7395f5f9159b77c6a3fc4ae90",
+    "generator": "synthetic-v1",
+    "seed": 271828,
+    "graphs": 24,
+    "source_questions": 114,
+    "workflow_count": 6,
+    "turns_per_replay": 21,
+    "cases_sha256": "43d3a369dd4fa954828b14457fc3ce65d1244368515d04197597ecf01218538d",
+    "domains": [
+      "workplace collaboration",
+      "protein interactions",
+      "account relationships",
+      "customer/product purchases",
+      "security events",
+      "device infrastructure"
+    ],
+    "split_boundary": "Only non-test examples were used; new seed but existing training/validation topology families. No untouched test-family claim.",
+    "device_threshold_note": "On this seed the first and second device turns both request three remaining partners. They check continuation/reuse, not a changed threshold; the third turn adds a year filter."
+  },
+  "changes": [
+    "Server-owned capability limitations outrank missing input requests; unsupported costs/strengths, direction or event patterns cannot silently become executable.",
+    "Uncertain follow-up action classification reaches the full planner with the original user question.",
+    "Prior parameters and requested outputs are included explicitly; only the latest unresolved request on the same graph is pending context.",
+    "Compact one-line JSON/no-padding instruction restored for TurnDecision.",
+    "Local evaluate-workflows and read-only recheck-workflows commands, isolated sessions, source hashes, independent output checks and linked failure feedback."
+  ],
+  "runs": [
+    {
+      "label": "baseline_rechecked",
+      "report_path": ".graphmine-learning/conversation-baseline-recheck-v1.json",
+      "report_sha256": "b010e01906c5e5e606d154bad75fd433143a6c7a817b6958d44d41ffbb0c6b3f",
+      "mode": "conversation-regressions-v1-recheck",
+      "started_at": "2026-10-03T03:15:53.353564+00:00",
+      "finished_at": "2026-10-03T03:25:29.427833+00:00",
+      "rechecked_at": "2026-10-03T03:36:46.291000+00:00",
+      "original_report": {
+        "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-baseline-v1.json",
+        "sha256": "c4fcd34b179d144b9290745c0f430c20e3037c02795d90f584e3ae31a0f05e16"
+      },
+      "total": 21,
+      "passed": 19,
+      "workflows_passed": 4,
+      "repeats": 1,
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "inference_profile": {
+        "llm_route_reasoning_effort": "none",
+        "llm_plan_reasoning_effort": "none",
+        "llm_analyst_reasoning_effort": "medium",
+        "llm_route_max_tokens": 768,
+        "llm_plan_max_tokens": 3072,
+        "llm_analyst_max_tokens": 3072
+      },
+      "corpus_sha256": "b793622e7c9f5f39bfafcb850e450230c9c0abf7395f5f9159b77c6a3fc4ae90",
+      "cases_sha256": "43d3a369dd4fa954828b14457fc3ce65d1244368515d04197597ecf01218538d",
+      "source_sha256": {
+        "agent_service.py": "f850ebd137df08b5788909c1af887b4bb3ea31f7c476e86dc8ed578075d4c4fb",
+        "planning.py": "254c44e43a38045dff9d2e06f78d60ff9ebe2e2dc7d817371c5a2fd41d786801",
+        "llm.py": "937006b7466f1bf2713327fcede672d584f59394754a5d5c6bc92ee01d8ac3b9",
+        "models.py": "484c05ad2d557e0959996fc6b5dcb453896702fc7f79ffda1b471507365a0905",
+        "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+        "answers.py": "f04eb3d4fa4a7e79112e0b9371ef96b54ab3b49d83d5b376dee0dcb335e858a5",
+        "visualization.py": "801b4a6a6c289e88d5d5970afe68156f53ac190402832f0523c2f8b1ac15eff4",
+        "terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+        "learning/workflows.py": "72ac71b9861b042ff533edf5b1dae6c2a627dcf8bee0b85dc86b947fea34f50c",
+        "learning/pipeline.py": "a11fff5c2b9c5dca7faf814217b65a43d97dd889e0204910f8dc6958141292c2",
+        "learning/oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+      },
+      "grading_source_sha256": {
+        "workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+        "pipeline.py": "a11fff5c2b9c5dca7faf814217b65a43d97dd889e0204910f8dc6958141292c2",
+        "oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+      },
+      "new_jobs": 17,
+      "reused_answers": 0,
+      "latency_seconds": {
+        "minimum": 5.872005918994546,
+        "median": 27.64203729480505,
+        "maximum": 68.56135246157646
+      },
+      "workflows": [
+        {
+          "id": "scope-corrections",
+          "repetition": 1,
+          "session_id": "session_153da784a7c148bd960844bb036e046e",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-baseline-runtime-v1/history/session_153da784a7c148bd960844bb036e046e",
+          "total": 5,
+          "passed": 4
+        },
+        {
+          "id": "group-quantifiers",
+          "repetition": 1,
+          "session_id": "session_58773bbde12340cda8eedb1cec5d5166",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-baseline-runtime-v1/history/session_58773bbde12340cda8eedb1cec5d5166",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "id": "clarification-and-refusal",
+          "repetition": 1,
+          "session_id": "session_cad23676f76a4ca8840bcb9b68837602",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-baseline-runtime-v1/history/session_cad23676f76a4ca8840bcb9b68837602",
+          "total": 3,
+          "passed": 2
+        },
+        {
+          "id": "customer-bundles",
+          "repetition": 1,
+          "session_id": "session_95052e2329334104ae6cf7d50b588d88",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-baseline-runtime-v1/history/session_95052e2329334104ae6cf7d50b588d88",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "id": "event-window",
+          "repetition": 1,
+          "session_id": "session_e1fc2517c3a540ee93e3131c7dd12016",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-baseline-runtime-v1/history/session_e1fc2517c3a540ee93e3131c7dd12016",
+          "total": 4,
+          "passed": 4
+        },
+        {
+          "id": "partner-threshold",
+          "repetition": 1,
+          "session_id": "session_7db9af023ce24b75941fc853e81f40fc",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-baseline-runtime-v1/history/session_7db9af023ce24b75941fc853e81f40fc",
+          "total": 3,
+          "passed": 3
+        }
+      ],
+      "failures": [
+        {
+          "workflow": "scope-corrections",
+          "index": 4,
+          "query": "Rank these coworkers by shortest routes, using each relationship's monetary cost as the route length.",
+          "issues": [
+            "Expected unsupported, received needs_information"
+          ],
+          "feedback_id": "feedback_bdfa2e4fd495485dabbe8928aab1bbde"
+        },
+        {
+          "workflow": "clarification-and-refusal",
+          "index": 3,
+          "query": "Rank these accounts by shortest routes, using each relationship's monetary cost as the route length.",
+          "issues": [
+            "Expected unsupported, received needs_information"
+          ],
+          "feedback_id": "feedback_b42e4330de8246ed9b7fc0f9ea1c88ae"
+        }
+      ],
+      "event_window_correction_seconds": 68.56135246157646
+    },
+    {
+      "label": "updated_rechecked",
+      "report_path": ".graphmine-learning/conversation-improved-recheck-v1.json",
+      "report_sha256": "0c5d42fbcff12791a354a36fbe7145c5d789c576fce7b804237d7ac6235bd028",
+      "mode": "conversation-regressions-v1-recheck",
+      "started_at": "2026-10-03T03:26:34.368201+00:00",
+      "finished_at": "2026-10-03T03:35:54.486116+00:00",
+      "rechecked_at": "2026-10-03T03:36:46.694268+00:00",
+      "original_report": {
+        "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-improved-v1.json",
+        "sha256": "aea98749b6daf46fc26570e99d4f99ee2578df260849a0475a265c63423ea7b0"
+      },
+      "total": 21,
+      "passed": 21,
+      "workflows_passed": 6,
+      "repeats": 1,
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "inference_profile": {
+        "llm_route_reasoning_effort": "none",
+        "llm_plan_reasoning_effort": "none",
+        "llm_analyst_reasoning_effort": "medium",
+        "llm_route_max_tokens": 768,
+        "llm_plan_max_tokens": 3072,
+        "llm_analyst_max_tokens": 3072
+      },
+      "corpus_sha256": "b793622e7c9f5f39bfafcb850e450230c9c0abf7395f5f9159b77c6a3fc4ae90",
+      "cases_sha256": "43d3a369dd4fa954828b14457fc3ce65d1244368515d04197597ecf01218538d",
+      "source_sha256": {
+        "agent_service.py": "9abf11076edf5b3e561a0874c7a83f8cca40274b8155c0297588c3f842cb40b7",
+        "planning.py": "bdc87a1e422dab4af3c3e77f562697b857f9e5e7ce23efa1e71f6cafcc8a23de",
+        "llm.py": "937006b7466f1bf2713327fcede672d584f59394754a5d5c6bc92ee01d8ac3b9",
+        "models.py": "484c05ad2d557e0959996fc6b5dcb453896702fc7f79ffda1b471507365a0905",
+        "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+        "answers.py": "f04eb3d4fa4a7e79112e0b9371ef96b54ab3b49d83d5b376dee0dcb335e858a5",
+        "visualization.py": "801b4a6a6c289e88d5d5970afe68156f53ac190402832f0523c2f8b1ac15eff4",
+        "terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+        "learning/workflows.py": "72ac71b9861b042ff533edf5b1dae6c2a627dcf8bee0b85dc86b947fea34f50c",
+        "learning/pipeline.py": "a11fff5c2b9c5dca7faf814217b65a43d97dd889e0204910f8dc6958141292c2",
+        "learning/oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+      },
+      "grading_source_sha256": {
+        "workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+        "pipeline.py": "a11fff5c2b9c5dca7faf814217b65a43d97dd889e0204910f8dc6958141292c2",
+        "oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+      },
+      "new_jobs": 15,
+      "reused_answers": 2,
+      "latency_seconds": {
+        "minimum": 10.031510327011347,
+        "median": 23.921355310827494,
+        "maximum": 68.7669345382601
+      },
+      "workflows": [
+        {
+          "id": "scope-corrections",
+          "repetition": 1,
+          "session_id": "session_7ba81ce3642342bd9d3abd6b61f427e6",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-improved-runtime-v1/history/session_7ba81ce3642342bd9d3abd6b61f427e6",
+          "total": 5,
+          "passed": 5
+        },
+        {
+          "id": "group-quantifiers",
+          "repetition": 1,
+          "session_id": "session_c089a8aab34b482dadb81cdd238e9d8d",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-improved-runtime-v1/history/session_c089a8aab34b482dadb81cdd238e9d8d",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "id": "clarification-and-refusal",
+          "repetition": 1,
+          "session_id": "session_0c4d3dcf2ecc43fb9ead69b327db4cd9",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-improved-runtime-v1/history/session_0c4d3dcf2ecc43fb9ead69b327db4cd9",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "id": "customer-bundles",
+          "repetition": 1,
+          "session_id": "session_49f1d5b9a93549fc8357139e2bf4cd19",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-improved-runtime-v1/history/session_49f1d5b9a93549fc8357139e2bf4cd19",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "id": "event-window",
+          "repetition": 1,
+          "session_id": "session_348c28e1d03c40ed9e5774a9990732f4",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-improved-runtime-v1/history/session_348c28e1d03c40ed9e5774a9990732f4",
+          "total": 4,
+          "passed": 4
+        },
+        {
+          "id": "partner-threshold",
+          "repetition": 1,
+          "session_id": "session_a6b96a7697514a62bc14ce453ba888ab",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-improved-runtime-v1/history/session_a6b96a7697514a62bc14ce453ba888ab",
+          "total": 3,
+          "passed": 3
+        }
+      ],
+      "failures": [],
+      "event_window_correction_seconds": 68.7669345382601
+    },
+    {
+      "label": "final_live",
+      "report_path": ".graphmine-learning/conversation-final-v1.json",
+      "report_sha256": "ccf81331aa362db2438f400ef2057488514eb33aed8b3c9f074f241224f44113",
+      "mode": "conversation-regressions-v1",
+      "started_at": "2026-10-03T03:36:47.048026+00:00",
+      "finished_at": "2026-10-03T03:45:54.534437+00:00",
+      "rechecked_at": null,
+      "original_report": null,
+      "total": 21,
+      "passed": 21,
+      "workflows_passed": 6,
+      "repeats": 1,
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "inference_profile": {
+        "llm_route_reasoning_effort": "none",
+        "llm_plan_reasoning_effort": "none",
+        "llm_analyst_reasoning_effort": "medium",
+        "llm_route_max_tokens": 768,
+        "llm_plan_max_tokens": 3072,
+        "llm_analyst_max_tokens": 3072
+      },
+      "corpus_sha256": "b793622e7c9f5f39bfafcb850e450230c9c0abf7395f5f9159b77c6a3fc4ae90",
+      "cases_sha256": "43d3a369dd4fa954828b14457fc3ce65d1244368515d04197597ecf01218538d",
+      "source_sha256": {
+        "agent_service.py": "9abf11076edf5b3e561a0874c7a83f8cca40274b8155c0297588c3f842cb40b7",
+        "planning.py": "bdc87a1e422dab4af3c3e77f562697b857f9e5e7ce23efa1e71f6cafcc8a23de",
+        "llm.py": "4a9559e972619c38c8156071820e8ef0dca9be3ea61f1b46360ec8ac350263c2",
+        "models.py": "484c05ad2d557e0959996fc6b5dcb453896702fc7f79ffda1b471507365a0905",
+        "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+        "answers.py": "f04eb3d4fa4a7e79112e0b9371ef96b54ab3b49d83d5b376dee0dcb335e858a5",
+        "visualization.py": "801b4a6a6c289e88d5d5970afe68156f53ac190402832f0523c2f8b1ac15eff4",
+        "terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+        "learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+        "learning/pipeline.py": "a11fff5c2b9c5dca7faf814217b65a43d97dd889e0204910f8dc6958141292c2",
+        "learning/oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+      },
+      "grading_source_sha256": null,
+      "new_jobs": 16,
+      "reused_answers": 1,
+      "latency_seconds": {
+        "minimum": 10.023451736196876,
+        "median": 25.080928429961205,
+        "maximum": 38.37324686162174
+      },
+      "workflows": [
+        {
+          "id": "scope-corrections",
+          "repetition": 1,
+          "session_id": "session_83b51296a717463289f6e568dcd10d13",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-final-runtime-v1/history/session_83b51296a717463289f6e568dcd10d13",
+          "total": 5,
+          "passed": 5
+        },
+        {
+          "id": "group-quantifiers",
+          "repetition": 1,
+          "session_id": "session_cacc58f1251c4aa7bc847c64d419172e",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-final-runtime-v1/history/session_cacc58f1251c4aa7bc847c64d419172e",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "id": "clarification-and-refusal",
+          "repetition": 1,
+          "session_id": "session_80c4323f368a408cb7e18ed3b83602d6",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-final-runtime-v1/history/session_80c4323f368a408cb7e18ed3b83602d6",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "id": "customer-bundles",
+          "repetition": 1,
+          "session_id": "session_eb4dd6188c584cbb8c2010b65d8a4384",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-final-runtime-v1/history/session_eb4dd6188c584cbb8c2010b65d8a4384",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "id": "event-window",
+          "repetition": 1,
+          "session_id": "session_c0c9494e23674dabb7d3454192d9a2ca",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-final-runtime-v1/history/session_c0c9494e23674dabb7d3454192d9a2ca",
+          "total": 4,
+          "passed": 4
+        },
+        {
+          "id": "partner-threshold",
+          "repetition": 1,
+          "session_id": "session_d8bc896459d4487099d540a28483021b",
+          "history_path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/conversation-final-runtime-v1/history/session_d8bc896459d4487099d540a28483021b",
+          "total": 3,
+          "passed": 3
+        }
+      ],
+      "failures": [],
+      "event_window_correction_seconds": 31.209955794736743
+    }
+  ],
+  "grading_correction": {
+    "raw_updated_report": {
+      "path": ".graphmine-learning/conversation-improved-v1.json",
+      "sha256": "aea98749b6daf46fc26570e99d4f99ee2578df260849a0475a265c63423ea7b0",
+      "passed": 19,
+      "total": 21
+    },
+    "corrected_updated_passed": 21,
+    "affected_turns": [
+      {
+        "workflow": "scope-corrections",
+        "index": 5
+      },
+      {
+        "workflow": "partner-threshold",
+        "index": 2
+      }
+    ],
+    "explanation": "The initial evaluator incorrectly required a new job for valid cached answers. Regrading binds reused results to completed jobs in the same session, exact source graph bytes, matching parameters/filters and independent native answer checks. The baseline remains 19/21 under the same corrected grader.",
+    "original_reports_and_feedback_preserved": true,
+    "automated_feedback_is_not_automatically_a_training_label": true
+  },
+  "latency_observation": {
+    "question": "Use a five-second window instead, with the same sequence and three distinct hosts.",
+    "before_total_seconds": 68.7669345382601,
+    "final_total_seconds": 31.209955794736743,
+    "before_classifier": {
+      "first_call_seconds": 35.99825197272003,
+      "completion_tokens": 1000,
+      "finish_reason": "length",
+      "repair_seconds": 5.539547387510538
+    },
+    "final_classifier": {
+      "first_call_seconds": 5.489274941384792,
+      "completion_tokens": 95,
+      "finish_reason": "stop",
+      "repair_required": false
+    },
+    "limit": "One observed padding/repair failure and one final replay, not a general latency or production-profile benchmark."
+  },
+  "verification": {
+    "python": {
+      "command": ".venv/bin/pytest -q agent/tests",
+      "passed": 167,
+      "seconds": 13.92,
+      "warnings": 1,
+      "warning": "Existing Starlette TestClient httpx deprecation"
+    },
+    "browser": {
+      "command": ".venv/bin/pytest -q agent/browser_tests",
+      "passed": 2,
+      "seconds": 28.59,
+      "model_and_native_test_doubles": true
+    },
+    "targeted_ruff_check": "passed",
+    "targeted_ruff_format_check": "8 files already formatted",
+    "git_diff_check": "passed",
+    "final_live": {
+      "turns": 21,
+      "passed": 21,
+      "workflows": 6,
+      "new_native_jobs": 16,
+      "verified_reused_answers": 1,
+      "non_executable_turns": 4,
+      "unsafe_substitute_jobs": 0
+    }
+  },
+  "deployment": {
+    "evidence_path": ".graphmine-learning/conversation-deployment-v1.json",
+    "evidence_sha256": "26f497600badf968d466efb48587ea8881af83afe1acc1de47f9a796bcd6dd46",
+    "restarted_at": "2026-10-03T03:50:45.452346+00:00",
+    "api_port": 18000,
+    "old_api_pid": 3908966,
+    "new_api_pid": 3935693,
+    "model_pid": 3498391,
+    "model_process_unchanged": true,
+    "backup": ".graphmine-v1/backups/before-conversation-phase-20261003T034912Z.sqlite3",
+    "backup_sha256": "528cb12d186415e87090b59e39e2e3e1715cadb70e4417d5a6f05c0e5d121f09",
+    "database_fingerprint": {
+      "integrity": "ok",
+      "content_sha256": "e6fd17c1a90d794e7a1b8fb7fb391fea2d0bfef54176f4ec3e409506fb33f418"
+    },
+    "database_content_unchanged": true,
+    "database_statistics": {
+      "sessions": 6,
+      "files": 5,
+      "jobs": 5,
+      "results": 3,
+      "messages": 23,
+      "events": 18,
+      "feedback": 0,
+      "jobs_by_status": {
+        "queued": 0,
+        "running": 0,
+        "interpreting": 0,
+        "completed": 3,
+        "failed": 2,
+        "cancelled": 0
+      }
+    },
+    "health": {
+      "status": "ready",
+      "llm_available": true,
+      "version": "1.0.0"
+    },
+    "deployed_profile": {
+      "llm_route_reasoning_effort": "none",
+      "llm_plan_reasoning_effort": "medium",
+      "llm_analyst_reasoning_effort": "medium"
+    },
+    "source_sha256": {
+      "agent_service.py": "9abf11076edf5b3e561a0874c7a83f8cca40274b8155c0297588c3f842cb40b7",
+      "planning.py": "bdc87a1e422dab4af3c3e77f562697b857f9e5e7ce23efa1e71f6cafcc8a23de",
+      "llm.py": "4a9559e972619c38c8156071820e8ef0dca9be3ea61f1b46360ec8ac350263c2"
+    },
+    "shutdown": "SIGTERM with no queued/running/interpreting jobs; active browser background connection delayed graceful shutdown beyond the first 10-second poll. Confirmed application shutdown complete, then respawned the API pane. No force kill.",
+    "timing_boundary": "Replay planning reasoning effort was none; the deployed API retains medium. No inference-profile change was deployed."
+  },
+  "remaining_work": [
+    "Typed executable follow-up suggestions using domain vocabulary and current scope; observed suggestions can still be technical or mention a stale year.",
+    "Domain-user evaluation of explanations and answer-focused visualization usefulness; deterministic correctness is not usability.",
+    "Fresh untouched application/workflow families, repeated trials and adversarial constraints before a model comparison.",
+    "Repair/re-audit the two quarantined native adapters before restoring them; exclusions remain in place.",
+    "Dependent analysis steps, larger graphs, resource limits and concurrent-use tests.",
+    "Explicitly approved and budgeted stronger-teacher pilot with secure API access; recheck semantic candidates against current source before export."
+  ],
+  "training": {
+    "external_teacher_calls": 0,
+    "weights_updated": false,
+    "training_jobs_started": 0,
+    "api_key_available": false,
+    "reviewed_candidates_still_quarantined": true
+  },
+  "methodology_reference": "https://developers.openai.com/api/docs/guides/evaluation-best-practices",
+  "artifacts": [
+    {
+      "path": ".graphmine-learning/conversation-baseline-v1.json",
+      "sha256": "c4fcd34b179d144b9290745c0f430c20e3037c02795d90f584e3ae31a0f05e16"
+    },
+    {
+      "path": ".graphmine-learning/conversation-improved-v1.json",
+      "sha256": "aea98749b6daf46fc26570e99d4f99ee2578df260849a0475a265c63423ea7b0"
+    },
+    {
+      "path": ".graphmine-learning/conversation-baseline-recheck-v1.json",
+      "sha256": "b010e01906c5e5e606d154bad75fd433143a6c7a817b6958d44d41ffbb0c6b3f"
+    },
+    {
+      "path": ".graphmine-learning/conversation-improved-recheck-v1.json",
+      "sha256": "0c5d42fbcff12791a354a36fbe7145c5d789c576fce7b804237d7ac6235bd028"
+    },
+    {
+      "path": ".graphmine-learning/conversation-final-v1.json",
+      "sha256": "ccf81331aa362db2438f400ef2057488514eb33aed8b3c9f074f241224f44113"
+    },
+    {
+      "path": ".graphmine-learning/conversation-corpus-v1/manifest.json",
+      "sha256": "b793622e7c9f5f39bfafcb850e450230c9c0abf7395f5f9159b77c6a3fc4ae90"
+    },
+    {
+      "path": ".graphmine-learning/conversation-deployment-v1.json",
+      "sha256": "26f497600badf968d466efb48587ea8881af83afe1acc1de47f9a796bcd6dd46"
+    }
+  ]
+}

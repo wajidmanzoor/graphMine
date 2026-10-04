@@ -1,0 +1,18 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++20",
+    "-rdc=true",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/adapted/gdlog_tc.cu",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/gdlog/libgpu_ra.a",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gdlog_tc"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 4.78013476356864,
+  "exit_code": 0,
+  "log": "builds/gdlog_instrumented.log",
+  "timeout": false
+}

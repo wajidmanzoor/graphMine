@@ -1,0 +1,16 @@
+{
+  "paper_id": "2019_hungariangpu",
+  "title": "Fast block distributed CUDA implementation of the Hungarian algorithm",
+  "year": 2019,
+  "venue": "Journal of Parallel and Distributed Computing",
+  "doi": null,
+  "publication_url": "https://github.com/paclopes/HungarianGPU",
+  "pdf_url": null,
+  "code_url": "https://github.com/paclopes/HungarianGPU",
+  "semantic_fit": "exact",
+  "gpu_scope": "Block-distributed CUDA implementation of the Hungarian algorithm solving the linear (minimum-cost/maximum-weight) assignment problem.",
+  "notes": "Confirmed genuine CUDA source (HungarianCUDA.cu) and MIT license by direct inspection; the journal publication's own DOI/page was not independently verified open-access, so publication_url points to the repository's own citation instead of a possibly paywalled venue link.",
+  "problem_id": "bipartite_matching_assignment",
+  "problem_dir": "31_bipartite_matching_assignment",
+  "research_cutoff": "2026-09-30"
+}

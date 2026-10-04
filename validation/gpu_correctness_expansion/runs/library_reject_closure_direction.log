@@ -1,0 +1,1 @@
+{"ok":false,"provenance":{"problem":"transitive_closure_reachability","backend":"gdlog","backend_version":"GDlog","source_commit":"65a6ee960ced8d04bc725ccdfa68f004f8479226","execution_path":"isolated upstream CUDA relational fixpoint; reflexive closure"},"warnings":[],"error":{"code":"unsupported","message":"transitive closure requires directed input"}}

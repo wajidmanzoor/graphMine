@@ -1,0 +1,24 @@
+{
+  "edges": [
+    {
+      "id": 0,
+      "source": 0,
+      "target": 1,
+      "weight": 1000000001
+    }
+  ],
+  "graph": {
+    "allows_parallel_edges": false,
+    "allows_self_loops": false,
+    "directed": true,
+    "id": "validation"
+  },
+  "vertices": [
+    {
+      "id": 0
+    },
+    {
+      "id": 1
+    }
+  ]
+}

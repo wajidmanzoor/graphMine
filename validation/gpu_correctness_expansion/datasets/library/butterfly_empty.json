@@ -1,0 +1,10 @@
+{
+  "edges": [],
+  "graph": {
+    "allows_parallel_edges": false,
+    "allows_self_loops": false,
+    "directed": false,
+    "id": "validation"
+  },
+  "vertices": []
+}

@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0.0",
+  "suite": "graphmine-v1-correctness-gated-smoke",
+  "cases": [
+    {
+      "id": "maximal-cliques-triangle",
+      "operation_id": "maximal-cliques",
+      "graph": "library/examples/data/triangle.json",
+      "backends": ["mce-gpu", "g2-aimd", "rdmce"],
+      "arguments": ["--include-total-count"],
+      "expected": {
+        "output.returned_count": 1,
+        "output.total_count": 1,
+        "output.complete": true
+      }
+    },
+    {
+      "id": "maximum-clique-triangle",
+      "operation_id": "maximum-clique",
+      "graph": "library/examples/data/triangle.json",
+      "backends": ["cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu"],
+      "expected": {
+        "output.maximum_size": 3,
+        "output.optimal": true
+      }
+    },
+    {
+      "id": "k-cliques-triangle",
+      "operation_id": "k-cliques",
+      "graph": "library/examples/data/triangle.json",
+      "backends": ["kcgpu", "graphset", "gamma"],
+      "arguments": ["--k", 3],
+      "expected": {
+        "output.count": 1,
+        "output.complete": true
+      }
+    },
+    {
+      "id": "quasi-cliques-triangle",
+      "operation_id": "quasi-cliques",
+      "graph": "library/examples/data/triangle.json",
+      "backends": ["cuqc"],
+      "arguments": ["--minimum-degree-ratio", 0.5, "--minimum-size", 2, "--include-total-count"],
+      "expected": {
+        "output.returned_count": 1,
+        "output.total_count": 1
+      }
+    },
+    {
+      "id": "k-core-triangle",
+      "operation_id": "k-core",
+      "graph": "library/examples/data/triangle.json",
+      "backends": ["kcore-gpu"],
+      "arguments": ["--requested-k", 2, "--include-requested-core-vertices"],
+      "expected": {
+        "output.degeneracy": 2
+      }
+    },
+    {
+      "id": "maximal-bicliques-small",
+      "operation_id": "maximal-bicliques",
+      "graph": "library/examples/data/bipartite_small.json",
+      "backends": ["cumbe"],
+      "arguments": ["--left-partition", "library/examples/data/left_partition.json", "--include-total-count"],
+      "expected": {
+        "output.returned_count": 7,
+        "output.total_count": 7
+      }
+    },
+    {
+      "id": "triangle-counting-triangle",
+      "operation_id": "triangle-counting",
+      "graph": "library/examples/data/triangle.json",
+      "backends": ["tot", "wetric"],
+      "arguments": ["--list-instances"],
+      "expected": {
+        "output.global_triangle_count": 1,
+        "output.instances_complete": true
+      }
+    },
+    {
+      "id": "dynamic-triangle-counting-small",
+      "operation_id": "dynamic-triangle-counting",
+      "graph": "library/examples/data/validation_small.json",
+      "backends": ["edtc"],
+      "arguments": ["--updates", "library/examples/data/triangle_updates.json", "--include-global-counts"],
+      "expected": {
+        "output.deleted_triangle_count": 3,
+        "output.inserted_triangle_count": 1,
+        "output.net_triangle_change": -2,
+        "output.final_global_triangle_count": 11
+      }
+    },
+    {
+      "id": "graph-motifs-induced-small",
+      "operation_id": "graph-motifs",
+      "graph": "library/examples/data/validation_small.json",
+      "backends": ["graphminer", "dumato"],
+      "arguments": ["--motif", "library/examples/data/triangle.json", "--induced"],
+      "expected": {
+        "output.motifs.0.count": 13,
+        "output.motifs.0.instances_complete": true
+      }
+    },
+    {
+      "id": "graph-motifs-noninduced-small",
+      "operation_id": "graph-motifs",
+      "graph": "library/examples/data/validation_small.json",
+      "backends": ["graphset"],
+      "arguments": ["--motif", "library/examples/data/triangle.json"],
+      "expected": {
+        "output.motifs.0.count": 13,
+        "output.motifs.0.instances_complete": true
+      }
+    },
+    {
+      "id": "subgraph-isomorphism-small",
+      "operation_id": "subgraph-isomorphism",
+      "graph": "library/examples/data/validation_small.json",
+      "backends": ["gmatch"],
+      "arguments": ["--query-graph", "library/examples/data/triangle.json"],
+      "expected": {
+        "output.count": 78
+      }
+    },
+    {
+      "id": "temporal-motif-small",
+      "operation_id": "temporal-motif-mining",
+      "graph": "library/examples/data/temporal_small.json",
+      "backends": ["everest", "mayura"],
+      "arguments": ["--max-time-span", 10],
+      "expected": {
+        "output.count": 3,
+        "output.instances_complete": true
+      }
+    },
+    {
+      "id": "community-detection-small",
+      "operation_id": "community-detection",
+      "graph": "library/examples/data/validation_small.json",
+      "backends": ["gleiden"],
+      "arguments": ["--include-communities"],
+      "expected": {
+        "output.community_count": 3
+      }
+    },
+    {
+      "id": "betweenness-centrality-triangle",
+      "operation_id": "betweenness-centrality",
+      "graph": "library/examples/data/triangle.json",
+      "backends": ["turbo-bc"],
+      "arguments": ["--include-maximum"],
+      "expected": {
+        "output.maximum.score": 0
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,5 @@
+In file included from /home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_gim/code/IM.cu:2:
+/home/wajid/projects/graphDatabaseAgent/problems/28_influence_maximization/papers/2021_gim/code/IM.h:13:10: fatal error: ./cub-1.8.0/cub/cub.cuh: No such file or directory
+   13 | #include "./cub-1.8.0/cub/cub.cuh"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.

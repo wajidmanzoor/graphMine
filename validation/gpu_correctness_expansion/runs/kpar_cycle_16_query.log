@@ -1,0 +1,8 @@
+[0;32m--------------start------------2026-10-04 11:41:01[0m
+[0;32margs:query --gpu_idx 0 --dataset cycle_16 --query_size 1 --epsilon 0.5 --k 4 [0m
+action: query
+set GPU 0
+loaded graph n: 16 m: 16
+loaded queries from ../data/cycle_16/queries.txt
+loaded index from ../data/cycle_16/kpar_index.txt
+k=4: 0.493024 ms

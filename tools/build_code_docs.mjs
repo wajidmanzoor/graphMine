@@ -28,6 +28,11 @@ const logoPath = path.join(repositoryRoot, "tools/code_docs/graphmine-mark.svg")
 // generated experiment variants, and generic third-party packages that are
 // not part of the selected algorithm path.
 const artifactInputs = {
+  "2023_eclscc": ["source"],
+  "2025_ecl_maxflow": ["src", "lib"],
+  "2019_hungariangpu": ["HungarianCUDA.cu"],
+  "2024_gdlog": ["include", "src"],
+  "2022_g2miner_reuse": ["include", "src/common", "src/motif"],
   "2021_turbobc": ["TurboBC"],
   "2026_gleiden": ["."],
   "2026_multilevel_graph_clustering": ["interface", "src"],
@@ -530,7 +535,7 @@ try {
     const selectedInputs = artifactInputs[artifact.paper_id];
     if (!selectedInputs) throw new Error(`Missing input rule for ${artifact.paper_id}`);
 
-    const codeRoot = path.join(
+    const codeRoot = artifact.vendored_code_root ? path.resolve(repositoryRoot, artifact.vendored_code_root) : path.join(
       problem.directory,
       "papers",
       artifact.paper_id,

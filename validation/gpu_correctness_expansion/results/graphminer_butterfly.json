@@ -1,0 +1,396 @@
+{
+  "backend": "graphminer_butterfly",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/single.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/single.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26450210995972157,
+      "exit_code": 0,
+      "expected": 1,
+      "log": "runs/graphminer_butterfly_single.log",
+      "name": "single",
+      "observed": 1,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/star.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/star.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2645424250513315,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/graphminer_butterfly_star.log",
+      "name": "star",
+      "observed": 0,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/isolated.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/isolated.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26459050364792347,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/graphminer_butterfly_isolated.log",
+      "name": "isolated",
+      "observed": 0,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/complete.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/complete.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26417806185781956,
+      "exit_code": 0,
+      "expected": 210,
+      "log": "runs/graphminer_butterfly_complete.log",
+      "name": "complete",
+      "observed": 210,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_0.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_0.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.21435593627393246,
+      "exit_code": 0,
+      "expected": 2,
+      "log": "runs/graphminer_butterfly_random_0.log",
+      "name": "random_0",
+      "observed": 2,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_1.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_1.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26452408358454704,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/graphminer_butterfly_random_1.log",
+      "name": "random_1",
+      "observed": 0,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_2.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_2.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2646446358412504,
+      "exit_code": 0,
+      "expected": 5,
+      "log": "runs/graphminer_butterfly_random_2.log",
+      "name": "random_2",
+      "observed": 5,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_3.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_3.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2645434644073248,
+      "exit_code": 0,
+      "expected": 0,
+      "log": "runs/graphminer_butterfly_random_3.log",
+      "name": "random_3",
+      "observed": 0,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_4.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_4.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2644639015197754,
+      "exit_code": 0,
+      "expected": 1797,
+      "log": "runs/graphminer_butterfly_random_4.log",
+      "name": "random_4",
+      "observed": 1797,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_5.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_5.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26447934471070766,
+      "exit_code": 0,
+      "expected": 1452,
+      "log": "runs/graphminer_butterfly_random_5.log",
+      "name": "random_5",
+      "observed": 1452,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_6.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_6.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2642987631261349,
+      "exit_code": 0,
+      "expected": 1461,
+      "log": "runs/graphminer_butterfly_random_6.log",
+      "name": "random_6",
+      "observed": 1461,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+        "run",
+        "graph-motifs",
+        "--graph",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_7.json",
+        "--motif",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/square.json",
+        "--backend",
+        "graphminer",
+        "--induced",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/graphminer_butterfly/random_7.result.json"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2644627206027508,
+      "exit_code": 0,
+      "expected": 1030,
+      "log": "runs/graphminer_butterfly_random_7.log",
+      "name": "random_7",
+      "observed": 1030,
+      "passed": true,
+      "provenance": {
+        "backend": "graphminer",
+        "backend_version": "GraphMiner/G2Miner artifact",
+        "execution_path": "original GPU motif vector + canonical motif classifier",
+        "problem": "graph_motif_counting",
+        "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
+      },
+      "timeout": false
+    }
+  ],
+  "limitations": [
+    "Global exact butterfly count only; alpha/beta-core and participation modes are not validated by this suite."
+  ],
+  "passed": 12,
+  "seed": 20261004,
+  "status": "partial_pass",
+  "total": 12
+}

@@ -1,0 +1,700 @@
+{
+  "backend": "gpusteiner",
+  "cases": [
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+        "16",
+        "-v"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26454479433596134,
+      "exit_code": 0,
+      "expected": 5,
+      "expected_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "feasible": true,
+      "log": "runs/gpusteiner_path.log",
+      "name": "path",
+      "observed": 5,
+      "observed_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "passed": true,
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/path.txt",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+        "16",
+        "-v"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2645521443337202,
+      "exit_code": 0,
+      "expected": 11,
+      "expected_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          7
+        ]
+      ],
+      "feasible": true,
+      "log": "runs/gpusteiner_star.log",
+      "name": "star",
+      "observed": 11,
+      "observed_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          7
+        ]
+      ],
+      "passed": true,
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/star.txt",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+        "16",
+        "-v"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26460477337241173,
+      "exit_code": 0,
+      "expected": 23,
+      "expected_edges": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          8
+        ]
+      ],
+      "feasible": true,
+      "log": "runs/gpusteiner_tree_0.log",
+      "name": "tree_0",
+      "observed": 23,
+      "observed_edges": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          8
+        ]
+      ],
+      "passed": true,
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/tree_0.txt",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+        "16",
+        "-v"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26462410017848015,
+      "exit_code": 0,
+      "expected": 18,
+      "expected_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "feasible": true,
+      "log": "runs/gpusteiner_tree_1.log",
+      "name": "tree_1",
+      "observed": 18,
+      "observed_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "passed": true,
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/tree_1.txt",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+        "16",
+        "-v"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.264815129339695,
+      "exit_code": 0,
+      "expected": 26,
+      "expected_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "feasible": true,
+      "log": "runs/gpusteiner_tree_2.log",
+      "name": "tree_2",
+      "observed": 26,
+      "observed_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "passed": true,
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/tree_2.txt",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+        "16",
+        "-v"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.2643867377191782,
+      "exit_code": 0,
+      "expected": 74,
+      "expected_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          16
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          18
+        ],
+        [
+          3,
+          98
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          12
+        ],
+        [
+          12,
+          31
+        ],
+        [
+          16,
+          20
+        ],
+        [
+          18,
+          51
+        ],
+        [
+          20,
+          22
+        ],
+        [
+          22,
+          35
+        ],
+        [
+          31,
+          110
+        ],
+        [
+          35,
+          64
+        ],
+        [
+          98,
+          99
+        ]
+      ],
+      "feasible": true,
+      "log": "runs/gpusteiner_tree_3.log",
+      "name": "tree_3",
+      "observed": 74,
+      "observed_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          16
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          18
+        ],
+        [
+          3,
+          98
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          12
+        ],
+        [
+          12,
+          31
+        ],
+        [
+          16,
+          20
+        ],
+        [
+          18,
+          51
+        ],
+        [
+          20,
+          22
+        ],
+        [
+          22,
+          35
+        ],
+        [
+          31,
+          110
+        ],
+        [
+          35,
+          64
+        ],
+        [
+          98,
+          99
+        ]
+      ],
+      "passed": true,
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/tree_3.txt",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+        "16",
+        "-v"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26457573287189007,
+      "exit_code": 0,
+      "expected": 66,
+      "expected_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          17
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          18
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          7,
+          75
+        ],
+        [
+          17,
+          69
+        ],
+        [
+          18,
+          53
+        ],
+        [
+          18,
+          65
+        ],
+        [
+          65,
+          68
+        ],
+        [
+          68,
+          76
+        ],
+        [
+          75,
+          88
+        ]
+      ],
+      "feasible": true,
+      "log": "runs/gpusteiner_tree_4.log",
+      "name": "tree_4",
+      "observed": 66,
+      "observed_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          17
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          18
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          7,
+          75
+        ],
+        [
+          17,
+          69
+        ],
+        [
+          18,
+          53
+        ],
+        [
+          18,
+          65
+        ],
+        [
+          65,
+          68
+        ],
+        [
+          68,
+          76
+        ],
+        [
+          75,
+          88
+        ]
+      ],
+      "passed": true,
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/tree_4.txt",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/gpusteiner",
+        "16",
+        "-v"
+      ],
+      "cwd": "/home/wajid/projects/graphDatabaseAgent",
+      "elapsed_seconds": 0.26445919275283813,
+      "exit_code": 0,
+      "expected": 71,
+      "expected_edges": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          7,
+          13
+        ],
+        [
+          8,
+          54
+        ],
+        [
+          10,
+          16
+        ],
+        [
+          13,
+          15
+        ],
+        [
+          15,
+          44
+        ],
+        [
+          16,
+          117
+        ],
+        [
+          44,
+          124
+        ]
+      ],
+      "feasible": true,
+      "log": "runs/gpusteiner_tree_5.log",
+      "name": "tree_5",
+      "observed": 71,
+      "observed_edges": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          7,
+          13
+        ],
+        [
+          8,
+          54
+        ],
+        [
+          10,
+          16
+        ],
+        [
+          13,
+          15
+        ],
+        [
+          15,
+          44
+        ],
+        [
+          16,
+          117
+        ],
+        [
+          44,
+          124
+        ]
+      ],
+      "passed": true,
+      "stdin_path": "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpusteiner/tree_5.txt",
+      "timeout": false
+    }
+  ],
+  "limitations": [
+    "Only ordinary Steiner trees (singleton groups), on tree inputs. General group constraints and approximation certificates are unsupported by this executable."
+  ],
+  "passed": 8,
+  "seed": 20261004,
+  "status": "partial_pass",
+  "total": 8
+}

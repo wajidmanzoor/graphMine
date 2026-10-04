@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "signed_network_structural_balance",
+  "name": "Signed Network Structural Balance and Frustration Minimization",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Given a graph whose edges are each labeled positive or negative, determine whether it is structurally balanced (partitionable into two factions so every positive edge stays within a faction and every negative edge crosses factions), and when it is not, find a two-faction assignment minimizing the total weight of frustrated edges.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "undirected", "weights": "optional_nonnegative_as_frustration_cost", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "required_sign_label"},
+    "normalization": ["Every edge's type field must be exactly 'positive' or 'negative'; reject edges with any other or missing type.", "Remove self-loops; a self-loop cannot be frustrated or unfrustrated under this definition.", "Collapse parallel edges between the same pair only when they agree in sign; reject contradictory parallel signed edges between the same pair unless an explicit resolution policy is supplied."]
+  },
+  "problem_inputs": [
+    {"name": "task", "type": "enum", "required": true, "allowed_values": ["balance_check", "frustration_minimization"], "description": "Test exact structural balance via the cycle-based criterion, or find a minimum-frustration two-faction assignment."},
+    {"name": "weight_mode", "type": "enum", "required": false, "default": "unweighted", "allowed_values": ["unweighted", "edge_weight"], "description": "Count frustrated edges or sum their declared nonnegative weights."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "approximate", "allowed_values": ["exact", "approximate"], "description": "balance_check is always solved exactly in linear time; frustration_minimization is NP-hard in general and approximate mode must disclose a bound."}
+  ],
+  "required_outputs": [
+    {"name": "balanced", "type": "boolean", "description": "Whether the graph is structurally balanced, i.e. the minimum achievable frustrated weight is zero."},
+    {"name": "faction_assignment", "type": "map<vertex_id,enum[A,B]>", "description": "Two-faction partition of every vertex realizing the reported frustrated_weight."},
+    {"name": "frustrated_weight", "type": "number", "description": "Total weight (or count, under weight_mode=unweighted) of frustrated edges under faction_assignment: positive edges crossing factions plus negative edges within a faction."},
+    {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven for the requested task."}
+  ],
+  "optional_outputs": [
+    {"name": "frustrated_edges", "type": "array<edge_id>", "description": "Edges violating faction_assignment under the sign rule."},
+    {"name": "approximation_bound", "type": "number", "description": "Certified bound or gap-to-best-known for an approximate frustration_minimization result."}
+  ],
+  "solution_semantics": {
+    "objective": "Find faction_assignment minimizing frustrated_weight, where a positive edge is frustrated if its endpoints are in different factions and a negative edge is frustrated if its endpoints are in the same faction; balanced=true exactly when the achieved minimum frustrated_weight is zero.",
+    "exactness": "balance_check always returns optimal=true via the linear-time cycle-based (parity-propagation) test; frustration_minimization is NP-hard in general, so approximate mode must disclose approximation_bound.",
+    "duplicate_policy": "Each vertex is assigned to exactly one of the two factions (A or B).",
+    "ordering": "faction_assignment is an unordered partition; the A/B labels are arbitrary beyond grouping and may be swapped per connected component."
+  },
+  "validation_rules": [
+    "Every edge's type in the normalized graph is exactly 'positive' or 'negative'.",
+    "frustrated_weight recomputes exactly from faction_assignment, edge signs, and (if weight_mode=edge_weight) edge weights.",
+    "balanced=true is independently verifiable via the standard cycle criterion: every cycle has an even number of negative edges.",
+    "balance_check always returns optimal=true."
+  ],
+  "edge_cases": [
+    "An all-positive graph is trivially balanced by placing each connected component entirely in one faction.",
+    "A single negative edge between two otherwise-isolated vertices is trivially balanced by placing its endpoints in different factions.",
+    "Disconnected graphs: each connected component's faction assignment, and which label is 'A' vs 'B', is independent of other components.",
+    "A graph containing an odd negative cycle cannot be balanced; frustration_minimization must still return a feasible assignment with frustrated_weight > 0."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["balance-test agreement with the cycle-based oracle on small/medium fixtures", "frustrated-weight recomputation", "faction-assignment completeness (every vertex assigned exactly once)"],
+    "performance": ["end-to-end time", "compute time", "peak memory", "edges processed per second"]
+  }
+}

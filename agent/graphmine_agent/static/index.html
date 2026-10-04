@@ -13,7 +13,12 @@
       <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
       <span>Graph<span>Mine</span></span>
     </a>
+    <nav id="workspace-nav" class="workspace-nav hidden" aria-label="Workspace pages">
+      <a id="chat-page-link" href="#">Chat</a>
+      <a id="results-page-link" href="#">Results <span id="result-count">0</span></a>
+    </nav>
     <div class="top-actions">
+      <span id="model-version" class="model-version" title="The deployed version is saved with each request">Research pilot</span>
       <span id="server-status" class="status status-waiting">Connecting</span>
       <button id="settings-button" class="icon-button" title="Connection settings" aria-label="Connection settings">⚙</button>
     </div>
@@ -22,17 +27,19 @@
   <main>
     <section id="domain-view" class="domain-view">
       <div class="hero">
-        <p class="eyebrow">Intelligent GPU graph mining</p>
+        <p class="eyebrow">GraphMine · Research workspace</p>
         <h1>What kind of network are you exploring?</h1>
-        <p>Choose a domain first. It gives the analyst the right vocabulary and visual context; GraphMine’s formal algorithm definitions still control every computation.</p>
+        <p>Start with a question about your work. Explore the connections in your data, inspect the evidence, and tell us what could be better.</p>
+      </div>
+      <div class="pilot-notice">Research pilot: conversations, uploaded data, results and feedback are saved for review. Feedback is reviewed before any future training.</div>
+      <div class="session-setup">
+        <label class="session-title"><span>Session name (optional)</span><input id="session-title" maxlength="200" placeholder="e.g. Payment review — October"></label>
+        <label class="session-title"><span>Tester alias (optional)</span><input id="participant-id" maxlength="80" placeholder="e.g. reviewer-04"></label>
       </div>
       <div id="domain-grid" class="domain-grid" aria-live="polite">
         <div class="loading-card">Loading domains…</div>
       </div>
-      <label class="session-title">
-        <span>Optional research session name</span>
-        <input id="session-title" maxlength="200" placeholder="e.g. September transaction-ring study">
-      </label>
+      <section class="recent-section"><div class="section-heading"><h2>Continue a conversation</h2><button id="refresh-sessions" class="text-button">Refresh</button></div><div id="recent-sessions" class="recent-sessions"></div></section>
     </section>
 
     <section id="workspace-view" class="workspace hidden">
@@ -45,12 +52,12 @@
         </div>
 
         <div class="upload-panel">
-          <p class="eyebrow">Research files</p>
+          <p class="eyebrow">Your data</p>
           <label id="drop-zone" class="drop-zone">
             <input id="file-input" type="file" accept=".json,.txt,.csv" multiple>
             <span class="upload-icon">↑</span>
             <strong>Drop or choose files</strong>
-            <small>Canonical JSON or edge list</small>
+            <small>Relationship CSV or graph JSON</small>
           </label>
           <div class="upload-options">
             <label>Role
@@ -64,14 +71,28 @@
             </label>
             <label class="check"><input id="directed" type="checkbox"> Directed</label>
           </div>
+          <details class="csv-options"><summary>CSV columns and time units</summary>
+            <label>From column<input id="source-column" placeholder="source (auto)"></label>
+            <label>To column<input id="target-column" placeholder="target (auto)"></label>
+            <label>Timestamp unit<select id="timestamp-unit"><option value="">Not specified</option><option value="seconds">Seconds</option><option value="milliseconds">Milliseconds</option></select></label>
+            <p>Other CSV columns are preserved as connection attributes. Use source_label / target_label for names and source.department / target.department for record attributes.</p>
+          </details>
           <div id="file-list" class="file-list"></div>
+          <a class="text-button sample-download" href="/sample-team-connections.csv" download>Download example team data</a>
         </div>
 
         <div class="system-panel">
-          <p class="eyebrow">Compute</p>
+          <p class="eyebrow">Connection</p>
           <div class="system-row"><span>GraphMine</span><strong id="graphmine-state">Checking</strong></div>
           <div class="system-row"><span>Language model</span><strong id="llm-state">Checking</strong></div>
-          <div class="system-row"><span>Algorithms</span><strong>13 operations</strong></div>
+        </div>
+        <div class="session-tools">
+          <button id="feedback-button" class="secondary-button">Leave feedback</button>
+          <button id="commands-button" class="text-button">Commands & help</button>
+          <button id="export-session" class="text-button">Download session archive</button>
+          <button id="export-feedback" class="text-button">Export feedback for review</button>
+          <small id="feedback-count">0 saved annotations</small>
+          <p class="capture-note">This session is saved automatically. Feedback commands stay out of model prompts.</p>
         </div>
       </aside>
 
@@ -87,30 +108,51 @@
           <article class="message assistant">
             <div class="avatar">G</div>
             <div class="bubble">
-              <p>Upload a graph, then describe what you want to discover in domain language. I’ll map it to a validated graph problem, show the plan, run it on the dedicated GPU, and interpret the result.</p>
+              <p>Upload your relationship data and ask a question in your own words. I’ll check what the data can tell us, ask if something important is unclear, and show the relevant findings and connections.</p>
             </div>
           </article>
         </div>
         <form id="chat-form" class="composer">
-          <textarea id="chat-input" rows="2" maxlength="20000" placeholder="Ask GraphMine to analyze your graph…" required></textarea>
+          <textarea id="chat-input" rows="2" maxlength="20000" placeholder="Ask about your data, or type /feedback to leave a note…" required aria-label="Message or local command"></textarea>
           <div class="composer-row">
-            <label class="check"><input id="execute-toggle" type="checkbox" checked> Run validated plan automatically</label>
+            <label class="check"><input id="execute-toggle" type="checkbox" checked> Run analysis</label>
+            <label class="check"><input id="projection-toggle" type="checkbox"> Treat directed links as two-way</label>
             <button id="send-button" class="primary-button" type="submit">Send <span>→</span></button>
           </div>
+          <p class="composer-hint">Enter to send · Shift + Enter for a new line · /help for local commands</p>
         </form>
       </section>
 
+      <aside id="activity-column" class="activity-column" aria-label="Analysis activity">
+        <p class="eyebrow">Live activity</p><h2>How your answer is built</h2>
+        <p class="muted">Decision summaries, checks and execution updates from this session.</p>
+        <details id="model-reasoning-panel" class="model-reasoning-panel">
+          <summary>Model reasoning <span id="reasoning-count">0</span></summary>
+          <p>Qwen's recorded reasoning, when returned after a stage finishes. This is unverified model text; check the computed results separately.</p>
+          <div id="model-reasoning"><p class="muted">No reasoning text returned yet. Some stages run with thinking disabled.</p></div>
+        </details>
+        <div id="activity-empty" class="activity-empty">Ask a question to see the steps here.</div>
+        <ol id="activity-list" class="activity-list" aria-live="polite"></ol>
+      </aside>
+    </section>
+
+    <section id="results-view" class="results-page hidden" aria-label="Analysis results">
+      <div class="results-toolbar">
+        <div><p class="eyebrow">Evidence workspace</p><h1>Results & visualizations</h1><p id="results-session-title" class="muted"></p></div>
+        <div class="result-tools"><button id="back-to-chat" class="secondary-button">← Back to chat</button><button id="download-report" class="secondary-button">Download report</button><button id="result-feedback" class="primary-button">Review this answer</button></div>
+      </div>
+      <label class="result-picker">Saved analyses<select id="result-select" aria-label="Choose a saved analysis"><option value="">No results yet</option></select></label>
       <section id="insight-column" class="insight-column empty">
         <div id="empty-insights" class="empty-state">
           <div class="empty-graphic"><span></span><span></span><span></span></div>
-          <h2>Results will come alive here</h2>
-          <p>The analyst chooses a suitable interactive view after the GPU computation completes.</p>
+          <h2>Your evidence will appear here</h2>
+          <p>Upload data and ask a question in Chat. Completed analyses will be saved on this page.</p>
         </div>
         <div id="result-content" class="hidden">
           <div class="result-heading">
             <div>
               <p class="eyebrow">Analysis</p>
-              <h2 id="result-title">GPU result</h2>
+              <h2 id="result-title">Analysis result</h2>
             </div>
             <button id="raw-toggle" class="secondary-button">Raw JSON</button>
           </div>
@@ -132,7 +174,21 @@
     </form>
   </dialog>
 
+  <dialog id="feedback-dialog">
+    <form id="feedback-form" class="dialog-card">
+      <div class="dialog-heading"><h2>Review this answer</h2><button id="close-feedback" type="button" class="icon-button" aria-label="Close feedback">×</button></div>
+      <p id="feedback-target" class="muted">Saved with the conversation and model version. This does not call the model.</p>
+      <label>Type<select id="feedback-kind"><option value="feedback">Something could be better</option><option value="correction">Corrected answer</option><option value="rating">Rating</option><option value="note">Research note</option></select></label>
+      <label>Your note<textarea id="feedback-note" rows="4" maxlength="20000" required placeholder="What worked, what went wrong, or what did you expect?"></textarea></label>
+      <label>Expected answer (optional)<textarea id="feedback-expected" rows="3" maxlength="20000" placeholder="A correction or example of the answer you wanted"></textarea></label>
+      <label>Rating (optional)<select id="feedback-rating"><option value="">Not rated</option><option value="1">1 — Not useful</option><option value="2">2 — Needs major changes</option><option value="3">3 — Partly useful</option><option value="4">4 — Useful with small changes</option><option value="5">5 — Useful and correct</option></select></label>
+      <button id="save-feedback" class="primary-button" type="submit">Save feedback</button>
+      <p class="muted">Saved for human review; never used for training automatically.</p>
+    </form>
+  </dialog>
+
   <div id="toast" class="toast" role="status"></div>
+  <script src="/vendor/cytoscape.min.js" defer></script>
   <script src="/app.js" defer></script>
 </body>
 </html>

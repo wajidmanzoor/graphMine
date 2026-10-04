@@ -1,0 +1,18 @@
+{
+  "command": [
+    "compute-sanitizer",
+    "--tool",
+    "memcheck",
+    "--error-exitcode",
+    "86",
+    "/home/wajid/projects/graphDatabaseAgent/library/build/workers/graphmine-worker-gdlog",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gdlog_tc/dag.tsv",
+    "1"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.6660737078636885,
+  "exit_code": 0,
+  "log": "runs/memcheck_closure.log",
+  "stdin_path": null,
+  "timeout": false
+}

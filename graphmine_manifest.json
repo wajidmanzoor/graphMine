@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0.0",
   "manifest_id": "graphmine_validated_library_v1",
-  "library_version": "0.1.0",
+  "library_version": "1.0.0",
   "scope": {
-    "research_problem_count": 12,
-    "runnable_operation_count": 13,
-    "validated_backend_count": 26,
-    "selection_rule": "Only implementations classified pass by validation/gpu_correctness/results/results.json are exposed.",
+    "research_problem_count": 17,
+    "runnable_operation_count": 18,
+    "validated_backend_count": 31,
+    "selection_rule": "Baseline validated backends plus the explicitly bounded profiles passing validation/gpu_correctness_expansion/results/library_expansion.json. Broader problem specifications do not imply support for unlisted modes.",
     "operation_count_note": "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations."
   },
   "build_once_run_many": {
@@ -29,41 +29,137 @@
     "format": "canonical_edge_list_v1",
     "schema_file": "graph_input.schema.json",
     "repository_schema_source": "../../problems/graph_input.schema.json",
-    "root_required_fields": ["graph", "vertices", "edges"],
-    "graph_required_fields": ["id", "directed", "allows_self_loops", "allows_parallel_edges"],
-    "vertex_required_fields": ["id"],
-    "edge_required_fields": ["id", "source", "target"],
-    "external_id_types": ["signed_64_bit_integer", "nonempty_string"],
-    "optional_vertex_fields": ["label", "type", "attributes"],
-    "optional_edge_fields": ["weight", "timestamp", "type", "attributes"],
+    "root_required_fields": [
+      "graph",
+      "vertices",
+      "edges"
+    ],
+    "graph_required_fields": [
+      "id",
+      "directed",
+      "allows_self_loops",
+      "allows_parallel_edges"
+    ],
+    "vertex_required_fields": [
+      "id"
+    ],
+    "edge_required_fields": [
+      "id",
+      "source",
+      "target"
+    ],
+    "external_id_types": [
+      "signed_64_bit_integer",
+      "nonempty_string"
+    ],
+    "optional_vertex_fields": [
+      "label",
+      "type",
+      "attributes"
+    ],
+    "optional_edge_fields": [
+      "weight",
+      "timestamp",
+      "type",
+      "attributes"
+    ],
     "validation_command": "graphmine validate --graph GRAPH.json --pretty",
     "example": "../examples/data/triangle.json"
   },
   "common_cli": {
     "syntax": "graphmine run OPERATION --graph GRAPH.json [OPTIONS]",
     "options": [
-      {"flag": "--backend NAME", "default": "auto", "description": "Select a validated backend."},
-      {"flag": "--device ID[,ID...]", "default": "0", "description": "CUDA device IDs; current validated paths use the first ID unless their facade states otherwise."},
-      {"flag": "--allow-directed-projection", "default": false, "description": "Explicitly permit an undirected projection for an undirected operation."},
-      {"flag": "--no-statistics", "default": false, "description": "Omit execution statistics from result JSON."},
-      {"flag": "--output FILE", "default": "stdout", "description": "Write result JSON to a file; use - for stdout."},
-      {"flag": "--pretty", "default": false, "description": "Pretty-print result JSON."}
+      {
+        "flag": "--backend NAME",
+        "default": "auto",
+        "description": "Select a validated backend."
+      },
+      {
+        "flag": "--device ID[,ID...]",
+        "default": "0",
+        "description": "CUDA device IDs; current validated paths use the first ID unless their facade states otherwise."
+      },
+      {
+        "flag": "--allow-directed-projection",
+        "default": false,
+        "description": "Explicitly permit an undirected projection for an undirected operation."
+      },
+      {
+        "flag": "--no-statistics",
+        "default": false,
+        "description": "Omit execution statistics from result JSON."
+      },
+      {
+        "flag": "--output FILE",
+        "default": "stdout",
+        "description": "Write result JSON to a file; use - for stdout."
+      },
+      {
+        "flag": "--pretty",
+        "default": false,
+        "description": "Pretty-print result JSON."
+      }
     ],
     "result_envelope": {
-      "success": ["ok", "provenance", "warnings", "statistics", "output"],
-      "failure": ["ok", "provenance", "warnings", "error"],
-      "exit_codes": {"0": "success", "2": "invalid command/input", "3": "algorithm execution failure", "4": "unexpected internal failure"}
+      "success": [
+        "ok",
+        "provenance",
+        "warnings",
+        "statistics",
+        "output"
+      ],
+      "failure": [
+        "ok",
+        "provenance",
+        "warnings",
+        "error"
+      ],
+      "exit_codes": {
+        "0": "success",
+        "2": "invalid command/input",
+        "3": "algorithm execution failure",
+        "4": "unexpected internal failure"
+      }
     }
   },
   "auxiliary_input_formats": {
     "left_partition": {
-      "accepted": ["a JSON array of vertex IDs", "an object with a left_partition array"],
-      "example": {"left_partition": [0, 1, 2]}
+      "accepted": [
+        "a JSON array of vertex IDs",
+        "an object with a left_partition array"
+      ],
+      "example": {
+        "left_partition": [
+          0,
+          1,
+          2
+        ]
+      }
     },
     "triangle_updates": {
-      "accepted": ["a JSON array of update objects", "an object with an updates array"],
-      "fields": {"kind": "insert_edge or delete_edge", "source": "vertex ID", "target": "vertex ID"},
-      "example": {"updates": [{"kind": "delete_edge", "source": 0, "target": 1}, {"kind": "insert_edge", "source": 2, "target": 3}]},
+      "accepted": [
+        "a JSON array of update objects",
+        "an object with an updates array"
+      ],
+      "fields": {
+        "kind": "insert_edge or delete_edge",
+        "source": "vertex ID",
+        "target": "vertex ID"
+      },
+      "example": {
+        "updates": [
+          {
+            "kind": "delete_edge",
+            "source": 0,
+            "target": 1
+          },
+          {
+            "kind": "insert_edge",
+            "source": 2,
+            "target": 3
+          }
+        ]
+      },
       "batch_semantics": "EDTC applies every deletion before every insertion, matching the validated artifact."
     },
     "query_graph": "A second canonical_edge_list_v1 JSON graph passed with --query-graph.",
@@ -75,44 +171,97 @@
       "research_problem_id": "maximal_clique_enumeration",
       "cpp_class": "graphmine::MaximalCliques",
       "cmake_component": "GraphMine::maximal_cliques",
-      "backends": ["mce-gpu", "g2-aimd", "rdmce"],
+      "backends": [
+        "mce-gpu",
+        "g2-aimd",
+        "rdmce"
+      ],
       "command": "graphmine run maximal-cliques --graph GRAPH.json --backend rdmce --minimum-clique-size 3 --include-total-count --pretty",
-      "parameters": ["--minimum-clique-size N", "--result-limit N"],
-      "optional_output_flags": {"--include-total-count": "total_count"},
-      "required_outputs": ["cliques", "returned_count", "complete"]
+      "parameters": [
+        "--minimum-clique-size N",
+        "--result-limit N"
+      ],
+      "optional_output_flags": {
+        "--include-total-count": "total_count"
+      },
+      "required_outputs": [
+        "cliques",
+        "returned_count",
+        "complete"
+      ]
     },
     {
       "id": "maximum-clique",
       "research_problem_id": "maximum_clique",
       "cpp_class": "graphmine::MaximumClique",
       "cmake_component": "GraphMine::maximum_clique",
-      "backends": ["cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu"],
+      "backends": [
+        "cuda-ms",
+        "gpu-maximum-clique",
+        "maximum-clique-on-gpu"
+      ],
       "command": "graphmine run maximum-clique --graph GRAPH.json --backend cuda-ms --include-upper-bound --pretty",
-      "parameters": ["--return-all-ties", "--known-lower-bound N"],
-      "optional_output_flags": {"--include-upper-bound": "upper_bound"},
-      "required_outputs": ["maximum_size", "cliques", "optimal"]
+      "parameters": [
+        "--return-all-ties",
+        "--known-lower-bound N"
+      ],
+      "optional_output_flags": {
+        "--include-upper-bound": "upper_bound"
+      },
+      "required_outputs": [
+        "maximum_size",
+        "cliques",
+        "optimal"
+      ]
     },
     {
       "id": "k-cliques",
       "research_problem_id": "k_clique_counting_enumeration",
       "cpp_class": "graphmine::KCliques",
       "cmake_component": "GraphMine::k_cliques",
-      "backends": ["kcgpu", "graphset", "gamma"],
+      "backends": [
+        "kcgpu",
+        "graphset",
+        "gamma"
+      ],
       "command": "graphmine run k-cliques --graph GRAPH.json --k 4 --backend gamma --enumerate --result-limit 100 --pretty",
-      "parameters": ["--k N", "--enumerate", "--result-limit N"],
-      "optional_output_flags": {"--enumerate": "cliques", "--include-per-vertex-counts": "per_vertex_count"},
-      "required_outputs": ["count", "complete"]
+      "parameters": [
+        "--k N",
+        "--enumerate",
+        "--result-limit N"
+      ],
+      "optional_output_flags": {
+        "--enumerate": "cliques",
+        "--include-per-vertex-counts": "per_vertex_count"
+      },
+      "required_outputs": [
+        "count",
+        "complete"
+      ]
     },
     {
       "id": "quasi-cliques",
       "research_problem_id": "quasi_clique_mining",
       "cpp_class": "graphmine::QuasiCliques",
       "cmake_component": "GraphMine::quasi_cliques",
-      "backends": ["cuqc"],
+      "backends": [
+        "cuqc"
+      ],
       "command": "graphmine run quasi-cliques --graph GRAPH.json --minimum-degree-ratio 0.8 --minimum-size 4 --include-total-count --pretty",
-      "parameters": ["--minimum-degree-ratio R", "--minimum-size N", "--scheduling dynamic|static", "--result-limit N"],
-      "optional_output_flags": {"--include-total-count": "total_count"},
-      "required_outputs": ["quasi_cliques", "returned_count", "complete"],
+      "parameters": [
+        "--minimum-degree-ratio R",
+        "--minimum-size N",
+        "--scheduling dynamic|static",
+        "--result-limit N"
+      ],
+      "optional_output_flags": {
+        "--include-total-count": "total_count"
+      },
+      "required_outputs": [
+        "quasi_cliques",
+        "returned_count",
+        "complete"
+      ],
       "validated_profile": "Maximal gamma quasi-cliques supported by cuQC; the general problem spec's maximum_size and maximal_only choices are not exposed."
     },
     {
@@ -120,23 +269,48 @@
       "research_problem_id": "k_core_decomposition",
       "cpp_class": "graphmine::KCore",
       "cmake_component": "GraphMine::k_core",
-      "backends": ["kcore-gpu"],
+      "backends": [
+        "kcore-gpu"
+      ],
       "command": "graphmine run k-core --graph GRAPH.json --requested-k 3 --include-requested-core-vertices --include-requested-core-edges --pretty",
-      "parameters": ["--requested-k N"],
-      "optional_output_flags": {"--include-requested-core-vertices": "requested_core_vertices", "--include-requested-core-edges": "requested_core_edges", "--include-peeling-order": "peeling_order"},
-      "required_outputs": ["core_number_by_vertex", "degeneracy"]
+      "parameters": [
+        "--requested-k N"
+      ],
+      "optional_output_flags": {
+        "--include-requested-core-vertices": "requested_core_vertices",
+        "--include-requested-core-edges": "requested_core_edges",
+        "--include-peeling-order": "peeling_order"
+      },
+      "required_outputs": [
+        "core_number_by_vertex",
+        "degeneracy"
+      ]
     },
     {
       "id": "maximal-bicliques",
       "research_problem_id": "maximal_biclique_enumeration",
       "cpp_class": "graphmine::MaximalBicliques",
       "cmake_component": "GraphMine::maximal_bicliques",
-      "backends": ["cumbe"],
+      "backends": [
+        "cumbe"
+      ],
       "command": "graphmine run maximal-bicliques --graph GRAPH.json --left-partition LEFT.json --minimum-left-size 2 --minimum-right-size 2 --include-total-count --pretty",
-      "required_auxiliary_inputs": ["--left-partition LEFT.json"],
-      "parameters": ["--minimum-left-size N", "--minimum-right-size N", "--result-limit N"],
-      "optional_output_flags": {"--include-total-count": "total_count"},
-      "required_outputs": ["bicliques", "returned_count", "complete"],
+      "required_auxiliary_inputs": [
+        "--left-partition LEFT.json"
+      ],
+      "parameters": [
+        "--minimum-left-size N",
+        "--minimum-right-size N",
+        "--result-limit N"
+      ],
+      "optional_output_flags": {
+        "--include-total-count": "total_count"
+      },
+      "required_outputs": [
+        "bicliques",
+        "returned_count",
+        "complete"
+      ],
       "partition_rule": "Every graph vertex absent from left_partition belongs to the right partition."
     },
     {
@@ -144,52 +318,116 @@
       "research_problem_id": "triangle_counting_listing",
       "cpp_class": "graphmine::TriangleCounting",
       "cmake_component": "GraphMine::triangle_counting",
-      "backends": ["tot", "wetric"],
+      "backends": [
+        "tot",
+        "wetric"
+      ],
       "command": "graphmine run triangle-counting --graph GRAPH.json --backend tot --list-instances --include-per-vertex-counts --pretty",
-      "parameters": ["--result-limit N", "--wetric-spread N", "--wetric-adjacency-matrix-length N"],
-      "optional_output_flags": {"--list-instances": "triangles", "--include-per-vertex-counts": "per_vertex_count", "--include-per-edge-counts": "per_edge_count"},
-      "required_outputs": ["global_triangle_count", "instances_complete"]
+      "parameters": [
+        "--result-limit N",
+        "--wetric-spread N",
+        "--wetric-adjacency-matrix-length N"
+      ],
+      "optional_output_flags": {
+        "--list-instances": "triangles",
+        "--include-per-vertex-counts": "per_vertex_count",
+        "--include-per-edge-counts": "per_edge_count"
+      },
+      "required_outputs": [
+        "global_triangle_count",
+        "instances_complete"
+      ]
     },
     {
       "id": "dynamic-triangle-counting",
       "research_problem_id": "triangle_counting_listing",
       "cpp_class": "graphmine::DynamicTriangleCounting",
       "cmake_component": "GraphMine::dynamic_triangle_counting",
-      "backends": ["edtc"],
+      "backends": [
+        "edtc"
+      ],
       "command": "graphmine run dynamic-triangle-counting --graph GRAPH.json --updates UPDATES.json --include-global-counts --list-changed-instances --pretty",
-      "required_auxiliary_inputs": ["--updates UPDATES.json"],
-      "parameters": ["--result-limit N"],
-      "optional_output_flags": {"--include-global-counts": ["initial_global_triangle_count", "final_global_triangle_count"], "--list-changed-instances": ["deleted_triangles", "inserted_triangles"]},
-      "required_outputs": ["deleted_triangle_count", "inserted_triangle_count", "net_triangle_change", "changed_instances_complete"]
+      "required_auxiliary_inputs": [
+        "--updates UPDATES.json"
+      ],
+      "parameters": [
+        "--result-limit N"
+      ],
+      "optional_output_flags": {
+        "--include-global-counts": [
+          "initial_global_triangle_count",
+          "final_global_triangle_count"
+        ],
+        "--list-changed-instances": [
+          "deleted_triangles",
+          "inserted_triangles"
+        ]
+      },
+      "required_outputs": [
+        "deleted_triangle_count",
+        "inserted_triangle_count",
+        "net_triangle_change",
+        "changed_instances_complete"
+      ]
     },
     {
       "id": "graph-motifs",
       "research_problem_id": "graph_motif_counting",
       "cpp_class": "graphmine::GraphMotifs",
       "cmake_component": "GraphMine::graph_motifs",
-      "backends": ["graphminer", "graphset", "dumato"],
+      "backends": [
+        "graphminer",
+        "graphset",
+        "dumato"
+      ],
       "backend_constraints": {
         "graphminer": "undirected induced motifs of size 3 or 4",
         "graphset": "undirected non-induced motifs of size 3 or 4",
         "dumato": "undirected induced motifs of size 3 or 4"
       },
       "command": "graphmine run graph-motifs --graph DATA.json --motif MOTIF.json --backend graphminer --induced --include-instances --pretty",
-      "required_auxiliary_inputs": ["one or more --motif MOTIF.json"],
-      "parameters": ["--induced", "--occurrence-identity unique-vertex-set-and-mapping-class|all-embeddings", "--result-limit-per-motif N"],
-      "optional_output_flags": {"--include-instances": "instances", "--include-per-vertex-participation": "per_vertex_participation"},
-      "required_outputs": ["motifs[].motif_id", "motifs[].count", "motifs[].instances_complete"]
+      "required_auxiliary_inputs": [
+        "one or more --motif MOTIF.json"
+      ],
+      "parameters": [
+        "--induced",
+        "--occurrence-identity unique-vertex-set-and-mapping-class|all-embeddings",
+        "--result-limit-per-motif N"
+      ],
+      "optional_output_flags": {
+        "--include-instances": "instances",
+        "--include-per-vertex-participation": "per_vertex_participation"
+      },
+      "required_outputs": [
+        "motifs[].motif_id",
+        "motifs[].count",
+        "motifs[].instances_complete"
+      ]
     },
     {
       "id": "subgraph-isomorphism",
       "research_problem_id": "subgraph_isomorphism",
       "cpp_class": "graphmine::SubgraphIsomorphism",
       "cmake_component": "GraphMine::subgraph_isomorphism",
-      "backends": ["gmatch"],
+      "backends": [
+        "gmatch"
+      ],
       "command": "graphmine run subgraph-isomorphism --graph DATA.json --query-graph QUERY.json --include-embeddings --result-limit 100 --pretty",
-      "required_auxiliary_inputs": ["--query-graph QUERY.json"],
-      "parameters": ["--ignore-vertex-labels", "--initial-match-capacity N", "--result-limit N"],
-      "optional_output_flags": {"--include-embeddings": "embeddings"},
-      "required_outputs": ["count", "embeddings_complete"],
+      "required_auxiliary_inputs": [
+        "--query-graph QUERY.json"
+      ],
+      "parameters": [
+        "--ignore-vertex-labels",
+        "--initial-match-capacity N",
+        "--result-limit N"
+      ],
+      "optional_output_flags": {
+        "--include-embeddings": "embeddings"
+      },
+      "required_outputs": [
+        "count",
+        "embeddings_complete"
+      ],
       "validated_profile": "The gMatch adapter supports its validated non-induced structural/label matching profile; general declarative edge/vertex predicates are not exposed."
     },
     {
@@ -197,11 +435,22 @@
       "research_problem_id": "temporal_motif_mining",
       "cpp_class": "graphmine::TemporalMotifMining",
       "cmake_component": "GraphMine::temporal_motif_mining",
-      "backends": ["everest", "mayura"],
+      "backends": [
+        "everest",
+        "mayura"
+      ],
       "command": "graphmine run temporal-motif-mining --graph EVENTS.json --max-time-span 60 --backend everest --include-instances --pretty",
-      "parameters": ["--max-time-span INTEGER", "--result-limit N"],
-      "optional_output_flags": {"--include-instances": "instances"},
-      "required_outputs": ["count", "instances_complete"],
+      "parameters": [
+        "--max-time-span INTEGER",
+        "--result-limit N"
+      ],
+      "optional_output_flags": {
+        "--include-instances": "instances"
+      },
+      "required_outputs": [
+        "count",
+        "instances_complete"
+      ],
       "validated_profile": "Directed ordered feed-forward triangle A->B, B->C, A->C with distinct vertices, stable event ordering, integer timestamps, and an inclusive max_time_span window."
     },
     {
@@ -209,11 +458,23 @@
       "research_problem_id": "community_detection",
       "cpp_class": "graphmine::CommunityDetection",
       "cmake_component": "GraphMine::community_detection",
-      "backends": ["gleiden", "parallel-louvain", "parallel-leiden", "parallel-leiden-plus"],
+      "backends": [
+        "gleiden",
+        "parallel-louvain",
+        "parallel-leiden",
+        "parallel-leiden-plus"
+      ],
       "command": "graphmine run community-detection --graph GRAPH.json --backend parallel-leiden-plus --include-communities --include-edge-cut --pretty",
       "parameters": [],
-      "optional_output_flags": {"--include-communities": "communities", "--include-edge-cut": "edge_cut"},
-      "required_outputs": ["assignment_by_vertex", "community_count", "modularity"],
+      "optional_output_flags": {
+        "--include-communities": "communities",
+        "--include-edge-cut": "edge_cut"
+      },
+      "required_outputs": [
+        "assignment_by_vertex",
+        "community_count",
+        "modularity"
+      ],
       "validated_profile": "Unweighted undirected modularity heuristic. Resolution, weighted mode, CPM, and exact optimality are not exposed by the validated adapters."
     },
     {
@@ -221,26 +482,2188 @@
       "research_problem_id": "centrality_influential_node_mining",
       "cpp_class": "graphmine::BetweennessCentrality",
       "cmake_component": "GraphMine::betweenness_centrality",
-      "backends": ["turbo-bc"],
+      "backends": [
+        "turbo-bc"
+      ],
       "command": "graphmine run betweenness-centrality --graph GRAPH.json --include-normalized-scores --include-ranking --include-maximum --pretty",
       "parameters": [],
-      "optional_output_flags": {"--include-normalized-scores": "normalized_score_by_vertex", "--include-ranking": "ranking", "--include-maximum": "maximum"},
-      "required_outputs": ["score_by_vertex"],
+      "optional_output_flags": {
+        "--include-normalized-scores": "normalized_score_by_vertex",
+        "--include-ranking": "ranking",
+        "--include-maximum": "maximum"
+      },
+      "required_outputs": [
+        "score_by_vertex"
+      ],
       "validated_profile": "Exact unweighted undirected betweenness using TurboBC's ordered-pair, endpoint-excluding native quantity. Other centrality measures are not exposed."
+    },
+    {
+      "id": "connected-components",
+      "research_problem_id": "connected_components",
+      "cpp_class": "graphmine::ConnectedComponents",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "ecl-scc"
+      ],
+      "command": "graphmine run connected-components --graph GRAPH.json --connectivity-mode weakly_connected|strongly_connected [--backend ecl-scc] [--timeout-seconds N]",
+      "parameters": [
+        "--connectivity-mode weakly_connected|strongly_connected",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "component_assignment",
+        "component_count",
+        "component_sizes"
+      ],
+      "validated_profile": "weak or strong exact connectivity",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+    },
+    {
+      "id": "max-flow-min-cut",
+      "research_problem_id": "max_flow_min_cut",
+      "cpp_class": "graphmine::MaxFlowMinCut",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "ecl-maxflow"
+      ],
+      "command": "graphmine run max-flow-min-cut --graph GRAPH.json --source ID --sink ID [--unit-capacity] [--backend ecl-maxflow] [--timeout-seconds N]",
+      "parameters": [
+        "--source ID",
+        "--sink ID",
+        "--unit-capacity",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "max_flow_value",
+        "min_cut_value",
+        "min_cut_edges",
+        "optimal"
+      ],
+      "validated_profile": "directed, integer edge capacities, total capacity <= 1e9; no vertex capacities",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+    },
+    {
+      "id": "linear-assignment",
+      "research_problem_id": "bipartite_matching_assignment",
+      "cpp_class": "graphmine::LinearAssignment",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "hungarian-cuda"
+      ],
+      "command": "graphmine run linear-assignment --graph GRAPH.json [--backend hungarian-cuda] [--timeout-seconds N] (complete square minimum-cost perfect assignment, <=64 per side, integer costs 0..999)",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "matching_edges",
+        "matching_size",
+        "objective_value",
+        "optimal"
+      ],
+      "validated_profile": "complete square minimum-cost perfect assignment; <=64 per side; costs integer 0..999; declared sides",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+    },
+    {
+      "id": "transitive-closure",
+      "research_problem_id": "transitive_closure_reachability",
+      "cpp_class": "graphmine::TransitiveClosure",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "gdlog"
+      ],
+      "command": "graphmine run transitive-closure --graph GRAPH.json [--backend gdlog] [--timeout-seconds N] (reflexive closure; <=1024 vertices)",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "reachability_results",
+        "complete",
+        "reachable_pair_count",
+        "transitive_closure_edges"
+      ],
+      "validated_profile": "directed full reflexive materialized closure; <=1024 vertices; build_index=false",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+    },
+    {
+      "id": "butterfly-counting",
+      "research_problem_id": "butterfly_counting_bipartite",
+      "cpp_class": "graphmine::ButterflyCounting",
+      "cpp_header": "graphmine/problems/validated_expansion.hpp",
+      "cmake_component": "GraphMine::validated_expansion",
+      "backends": [
+        "graphminer"
+      ],
+      "command": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",
+      "parameters": [],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "butterfly_count",
+        "complete"
+      ],
+      "validated_profile": "exact global count only; declared bipartite sides",
+      "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
     }
   ],
   "included_problem_specs": [
-    {"source":"../../problems/01_maximal_clique_enumeration/problem.json","spec":{"schema_version":"1.0.0","problem_id":"maximal_clique_enumeration","name":"Maximal Clique Enumeration","category":"dense_structure_mining","problem_statement":"Given an undirected graph, enumerate every vertex set that forms a clique and is not a proper subset of another clique.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"undirected","weights":"ignored","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Reject directed input unless an explicit undirected projection is requested.","Remove self-loops.","Collapse parallel edges into one undirected edge."]},"problem_inputs":[{"name":"minimum_clique_size","type":"integer","required":false,"default":1,"constraints":"value >= 1","description":"Return only maximal cliques at least this large."},{"name":"result_limit","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 1","description":"Maximum materialized cliques; a finite value permits an incomplete result."}],"required_outputs":[{"name":"cliques","type":"array<array<vertex_id>>","description":"Each returned vertex set is a distinct maximal clique meeting the size constraint."},{"name":"returned_count","type":"integer","description":"Number of materialized cliques."},{"name":"complete","type":"boolean","description":"True only if all qualifying maximal cliques were enumerated."}],"optional_outputs":[{"name":"total_count","type":"integer","description":"Total qualifying clique count when enumeration completed or exact count-only continuation was performed."}],"solution_semantics":{"objective":"Enumerate all inclusion-maximal complete vertex sets satisfying minimum_clique_size.","exactness":"Every materialized set must be exact; complete=true requires exhaustive enumeration.","duplicate_policy":"The same vertex set may appear only once.","ordering":"No clique or vertex ordering is semantically required."},"validation_rules":["Every pair of distinct vertices in each result has an edge.","No outside vertex is adjacent to every vertex in a returned clique.","For complete=true, results equal a trusted exhaustive oracle on tractable graphs."],"edge_cases":["An empty graph returns no cliques.","An isolated vertex is a size-one maximal clique when minimum_clique_size <= 1.","A complete graph has exactly one maximal clique containing all vertices."],"evaluation_metrics":{"correctness":["set equality with oracle","duplicate count","invalid or non-maximal result count"],"performance":["end-to-end time","enumeration time","peak memory","cliques per second"]}}},
-    {"source":"../../problems/02_maximum_clique/problem.json","spec":{"schema_version":"1.0.0","problem_id":"maximum_clique","name":"Maximum Clique","category":"dense_structure_mining","problem_statement":"Given an undirected graph, find a clique with the largest possible number of vertices.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"undirected","weights":"ignored","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Reject directed input unless an explicit undirected projection is requested.","Remove self-loops.","Collapse parallel edges into one undirected edge."]},"problem_inputs":[{"name":"return_all_ties","type":"boolean","required":false,"default":false,"description":"Return every maximum clique rather than one representative."},{"name":"known_lower_bound","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 0","description":"A valid known lower bound on the optimal clique size."}],"required_outputs":[{"name":"maximum_size","type":"integer","description":"Cardinality of the best clique found."},{"name":"cliques","type":"array<array<vertex_id>>","description":"One maximum clique, or all tied maximum cliques when requested."},{"name":"optimal","type":"boolean","description":"Whether maximum_size has been proven globally optimal."}],"optional_outputs":[{"name":"upper_bound","type":"integer","description":"Best certified upper bound when optimal=false."}],"solution_semantics":{"objective":"Maximize the number of vertices in a complete induced vertex set.","exactness":"An exact completed result must have optimal=true; interrupted solvers may return a feasible clique and certified bound.","duplicate_policy":"Tied maximum cliques must be unique as vertex sets.","ordering":"No ordering is semantically required."},"validation_rules":["Every returned set is a clique.","Every returned clique has maximum_size vertices.","optimal=true is valid only when no larger clique exists."],"edge_cases":["An empty graph has maximum_size 0 and one empty solution conventionally represented by an empty clique list.","A nonempty edgeless graph has maximum_size 1.","A complete graph's unique maximum clique contains every vertex."],"evaluation_metrics":{"correctness":["objective agreement with exact oracle","clique feasibility","bound validity"],"performance":["time to best solution","time to proof","end-to-end time","peak memory"]}}},
-    {"source":"../../problems/03_k_clique_counting_enumeration/problem.json","spec":{"schema_version":"1.0.0","problem_id":"k_clique_counting_enumeration","name":"k-Clique Counting and Enumeration","category":"dense_structure_mining","problem_statement":"Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"undirected","weights":"ignored","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Reject directed input unless an explicit undirected projection is requested.","Remove self-loops.","Collapse parallel edges into one undirected edge."]},"problem_inputs":[{"name":"k","type":"integer","required":true,"constraints":"value >= 2","description":"Required number of vertices in each clique."},{"name":"mode","type":"enum","required":false,"default":"count","allowed_values":["count","enumerate"],"description":"Whether to count cliques or materialize their vertex sets."},{"name":"result_limit","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 1","description":"Maximum materialized instances in enumerate mode."}],"required_outputs":[{"name":"count","type":"integer","description":"Number of k-cliques found; it is the total only when complete=true."},{"name":"complete","type":"boolean","description":"Whether the count and enumeration cover all k-cliques."}],"optional_outputs":[{"name":"cliques","type":"array<array<vertex_id>>","description":"Distinct k-cliques when mode=enumerate."},{"name":"per_vertex_count","type":"map<vertex_id,integer>","description":"Number of k-cliques containing each vertex."}],"solution_semantics":{"objective":"Count or enumerate all size-k complete vertex sets.","exactness":"complete=true requires an exact exhaustive result.","duplicate_policy":"Each unordered vertex set is counted once.","ordering":"Vertex and result order are irrelevant."},"validation_rules":["Every enumerated set contains exactly k distinct vertices.","Every vertex pair in each result has an edge.","When complete=true, count matches the number of unique qualifying sets."],"edge_cases":["If k exceeds the vertex count, count is zero.","For k=2, every unique graph edge is a 2-clique.","A complete n-vertex graph contains n choose k k-cliques."],"evaluation_metrics":{"correctness":["count agreement with oracle","instance set equality","duplicate count"],"performance":["end-to-end time","counting or enumeration time","peak memory","cliques per second"]}}},
-    {"source":"../../problems/04_quasi_clique_mining/problem.json","spec":{"schema_version":"1.0.0","problem_id":"quasi_clique_mining","name":"Quasi-Clique Mining","category":"dense_structure_mining","problem_statement":"Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"undirected","weights":"ignored","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Reject directed input unless an explicit undirected projection is requested.","Remove self-loops.","Collapse parallel edges into one undirected edge."]},"problem_inputs":[{"name":"gamma","type":"number","required":true,"constraints":"0 < value <= 1","description":"Every selected vertex must have induced degree at least ceil(gamma * (|S|-1))."},{"name":"minimum_size","type":"integer","required":true,"constraints":"value >= 2","description":"Minimum vertices in a returned quasi-clique."},{"name":"maximum_size","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= minimum_size","description":"Optional upper bound on result size."},{"name":"maximal_only","type":"boolean","required":false,"default":true,"description":"Return only qualifying sets not contained in a larger qualifying set."}],"required_outputs":[{"name":"quasi_cliques","type":"array<object>","description":"Unique vertex sets with size, induced edge count, density, and minimum internal degree."},{"name":"complete","type":"boolean","description":"Whether every qualifying result was found."}],"optional_outputs":[{"name":"count","type":"integer","description":"Number of qualifying results."}],"solution_semantics":{"objective":"Enumerate induced vertex sets satisfying the gamma minimum-degree condition and size bounds.","exactness":"All reported sets must satisfy the threshold; complete=true means exhaustive enumeration.","duplicate_policy":"Each vertex set appears once.","ordering":"No ordering is required."},"validation_rules":["Recompute induced degree for every selected vertex.","Verify size bounds.","When maximal_only=true, no result is contained in a larger qualifying set."],"edge_cases":["gamma=1 reduces the condition to clique mining.","Disconnected sets normally fail for useful gamma values but connectivity is determined solely by the stated degree condition.","No result is returned when minimum_size exceeds the vertex count."],"evaluation_metrics":{"correctness":["result set equality with oracle","threshold violations","non-maximal result count"],"performance":["end-to-end time","search time","peak memory","candidates explored"]}}},
-    {"source":"../../problems/07_k_core_decomposition/problem.json","spec":{"schema_version":"1.0.0","problem_id":"k_core_decomposition","name":"k-Core Decomposition","category":"dense_structure_mining","problem_statement":"Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"undirected","weights":"ignored","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Reject directed input unless an explicit undirected projection is requested.","Remove self-loops.","Collapse parallel edges into one undirected edge."]},"problem_inputs":[{"name":"requested_k","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 0","description":"Optionally materialize the vertices and edges of one k-core in addition to the full decomposition."}],"required_outputs":[{"name":"core_number_by_vertex","type":"map<vertex_id,integer>","description":"Largest core order containing each vertex."},{"name":"degeneracy","type":"integer","description":"Maximum core number in the graph."}],"optional_outputs":[{"name":"requested_core_vertices","type":"array<vertex_id>","description":"Vertices whose core number is at least requested_k."},{"name":"requested_core_edges","type":"array<edge_id>","description":"Edges induced by requested_core_vertices."},{"name":"peeling_order","type":"array<vertex_id>","description":"A valid order in which vertices were removed."}],"solution_semantics":{"objective":"Compute the complete core decomposition and graph degeneracy.","exactness":"Core numbers and degeneracy are exact.","duplicate_policy":"Each input vertex has exactly one core number.","ordering":"Peeling order may vary while core numbers remain invariant."},"validation_rules":["Every vertex assigned core c belongs to the c-core.","No vertex belongs to a core with order greater than its reported core number.","The requested k-core equals vertices with core number at least k."],"edge_cases":["Isolated vertices have core number zero.","An empty graph has degeneracy zero and an empty map.","Every vertex in a complete n-vertex graph has core number n-1."],"evaluation_metrics":{"correctness":["per-vertex equality with oracle","degeneracy equality","requested-core validity"],"performance":["end-to-end time","decomposition time","peak memory","edges processed per second"]}}},
-    {"source":"../../problems/09_maximal_biclique_enumeration/problem.json","spec":{"schema_version":"1.0.0","problem_id":"maximal_biclique_enumeration","name":"Maximal Biclique Enumeration","category":"dense_structure_mining","problem_statement":"Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"undirected","weights":"ignored","timestamps":"ignored","vertex_attributes":"partition_information_required","edge_attributes":"ignored"},"normalization":["Reject directed input unless an explicit undirected projection is requested.","Remove self-loops and collapse parallel edges.","Reject any edge whose endpoints are in the same declared partition."]},"problem_inputs":[{"name":"left_partition","type":"array<vertex_id>","required":true,"description":"All vertices belonging to the left side."},{"name":"right_partition","type":"array<vertex_id>","required":true,"description":"All vertices belonging to the right side."},{"name":"minimum_left_size","type":"integer","required":false,"default":1,"constraints":"value >= 1","description":"Minimum selected vertices on the left."},{"name":"minimum_right_size","type":"integer","required":false,"default":1,"constraints":"value >= 1","description":"Minimum selected vertices on the right."},{"name":"result_limit","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 1","description":"Maximum materialized bicliques."}],"required_outputs":[{"name":"bicliques","type":"array<object>","description":"Distinct objects containing left_vertices and right_vertices."},{"name":"returned_count","type":"integer","description":"Number of materialized bicliques."},{"name":"complete","type":"boolean","description":"Whether every qualifying maximal biclique was enumerated."}],"optional_outputs":[{"name":"total_count","type":"integer","description":"Total qualifying bicliques when known exactly."}],"solution_semantics":{"objective":"Enumerate all inclusion-maximal pairs (L,R) with every possible cross-partition edge present.","exactness":"Every returned pair must be exact; complete=true requires exhaustive enumeration.","duplicate_policy":"Each pair of unordered vertex sets appears once.","ordering":"Order within or among bicliques is irrelevant."},"validation_rules":["Partitions are disjoint and cover every endpoint used.","Every left result vertex is adjacent to every right result vertex.","No additional vertex can extend either result side while preserving completeness."],"edge_cases":["A graph with no cross-partition edges has no nonempty bicliques.","An isolated vertex belongs to no biclique under the nonempty-side convention.","A complete bipartite input has one maximal biclique containing both full partitions."],"evaluation_metrics":{"correctness":["set equality with oracle","non-biclique result count","non-maximal or duplicate result count"],"performance":["end-to-end time","enumeration time","peak memory","bicliques per second"]}}},
-    {"source":"../../problems/10_triangle_counting_listing/problem.json","spec":{"schema_version":"1.0.0","problem_id":"triangle_counting_listing","name":"Triangle Counting and Listing","category":"pattern_and_motif_mining","problem_statement":"Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"undirected","weights":"ignored","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Reject directed input unless an explicit undirected projection is requested.","Remove self-loops.","Collapse parallel edges into one undirected edge."]},"problem_inputs":[{"name":"list_instances","type":"boolean","required":false,"default":false,"description":"Materialize triangle vertex triples."},{"name":"include_per_vertex_counts","type":"boolean","required":false,"default":false,"description":"Return triangle participation per vertex."},{"name":"include_per_edge_counts","type":"boolean","required":false,"default":false,"description":"Return triangle support per edge."},{"name":"result_limit","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 1","description":"Maximum listed instances; it does not permit truncating the global count."}],"required_outputs":[{"name":"global_triangle_count","type":"integer","description":"Exact number of distinct undirected triangles."},{"name":"instances_complete","type":"boolean","description":"Whether every triangle instance was listed when listing was requested."}],"optional_outputs":[{"name":"triangles","type":"array<array<vertex_id>>","description":"Unique three-vertex triangle instances."},{"name":"per_vertex_count","type":"map<vertex_id,integer>","description":"Triangles containing each vertex."},{"name":"per_edge_count","type":"map<edge_id,integer>","description":"Triangles containing each edge."}],"solution_semantics":{"objective":"Count every size-three clique exactly once and materialize requested secondary outputs.","exactness":"The global count and requested participation counts are exact.","duplicate_policy":"Each unordered triple is counted and listed once.","ordering":"No ordering is required."},"validation_rules":["Every listed triple contains three distinct pairwise-adjacent vertices.","The sum of per-vertex counts equals three times the global count.","The sum of per-edge counts equals three times the global count."],"edge_cases":["Graphs with fewer than three vertices have count zero.","A complete n-vertex graph contains n choose 3 triangles.","Isolated vertices have per-vertex count zero."],"evaluation_metrics":{"correctness":["global count equality","instance set equality","per-entity count equality"],"performance":["end-to-end time","counting time","listing time","peak memory","edges processed per second"]}}},
-    {"source":"../../problems/11_graph_motif_counting/problem.json","spec":{"schema_version":"1.0.0","problem_id":"graph_motif_counting","name":"Graph Motif Counting","category":"pattern_and_motif_mining","problem_statement":"Count occurrences of one or more supplied small structural patterns in a directed or undirected graph.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"must_match_each_motif","weights":"ignored","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Remove self-loops unless explicitly present in a future motif extension.","Collapse parallel edges with identical direction into one edge.","Preserve edge direction for directed motifs."]},"problem_inputs":[{"name":"motifs","type":"array<canonical_graph>","required":true,"constraints":"nonempty array of small connected patterns","description":"Motif definitions using the same canonical graph format."},{"name":"induced","type":"boolean","required":false,"default":false,"description":"Require each occurrence to contain exactly the motif edges among selected vertices."},{"name":"occurrence_identity","type":"enum","required":false,"default":"unique_vertex_set_and_mapping_class","allowed_values":["unique_vertex_set_and_mapping_class","all_embeddings"],"description":"Controls whether automorphism-equivalent embeddings are counted separately."},{"name":"list_instances","type":"boolean","required":false,"default":false,"description":"Materialize matching data-graph vertex mappings."},{"name":"result_limit_per_motif","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 1","description":"Maximum listed instances for each motif; counts remain exhaustive."}],"required_outputs":[{"name":"count_by_motif","type":"map<motif_id,integer>","description":"Exact occurrence count under the selected identity semantics."},{"name":"instances_complete_by_motif","type":"map<motif_id,boolean>","description":"Whether every requested instance was materialized."}],"optional_outputs":[{"name":"instances_by_motif","type":"map<motif_id,array<mapping>>","description":"Mappings from motif vertices to data-graph vertices."},{"name":"per_vertex_participation","type":"map<motif_id,map<vertex_id,integer>>","description":"Occurrence participation counts."}],"solution_semantics":{"objective":"Count subgraphs isomorphic to each motif under direction, inducedness, and occurrence-identity settings.","exactness":"Counts are exact; listing may be capped but must disclose completeness.","duplicate_policy":"Occurrences follow occurrence_identity and are otherwise unique.","ordering":"Result ordering is irrelevant; directed edge orientation is significant."},"validation_rules":["Every instance preserves motif adjacency and direction.","Induced instances contain no additional edges among mapped vertices.","Counts account for motif automorphisms according to occurrence_identity."],"edge_cases":["A motif larger than the data graph has count zero.","Isomorphic motif definitions may produce identical counts but remain separately identified.","Disconnected motif definitions are rejected in version 1."],"evaluation_metrics":{"correctness":["count agreement with exhaustive matcher","instance validity","automorphism overcount or undercount"],"performance":["end-to-end time","count time per motif","peak memory","occurrences processed per second"]}}},
-    {"source":"../../problems/13_subgraph_isomorphism/problem.json","spec":{"schema_version":"1.0.0","problem_id":"subgraph_isomorphism","name":"Subgraph Isomorphism and Pattern Matching","category":"pattern_and_motif_mining","problem_statement":"Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_data_graph_plus_query_graph","requirements":{"direction":"query_and_data_semantics_must_match","weights":"available_to_predicates","timestamps":"available_to_predicates","vertex_attributes":"available_to_predicates","edge_attributes":"available_to_predicates"},"normalization":["Preserve query and data edge direction.","Preserve parallel-edge identity when predicates distinguish edges.","Do not silently remove self-loops used by the query."]},"problem_inputs":[{"name":"query_graph","type":"canonical_graph","required":true,"description":"Pattern graph expressed using canonical_edge_list_v1."},{"name":"induced","type":"boolean","required":false,"default":false,"description":"Require mapped vertices to have no extra data edges beyond query edges."},{"name":"vertex_predicates","type":"array<attribute_predicate>","required":false,"default":[],"description":"Declarative constraints on mapped vertex type, label, or attributes."},{"name":"edge_predicates","type":"array<attribute_predicate>","required":false,"default":[],"description":"Declarative constraints on mapped edge type, weight, timestamp, or attributes."},{"name":"result_limit","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 1","description":"Maximum materialized mappings."}],"required_outputs":[{"name":"matches","type":"array<map<query_vertex_id,data_vertex_id>>","description":"Injective query-to-data vertex mappings."},{"name":"returned_count","type":"integer","description":"Number of materialized mappings."},{"name":"complete","type":"boolean","description":"Whether all qualifying mappings were found."}],"optional_outputs":[{"name":"total_count","type":"integer","description":"Exact number of mappings when known."}],"solution_semantics":{"objective":"Enumerate all injective mappings satisfying structural, directional, inducedness, and attribute constraints.","exactness":"Every returned mapping is exact; complete=true requires exhaustive matching.","duplicate_policy":"Distinct query-to-data mappings are distinct results, even when query automorphisms map to the same data vertex set.","ordering":"Mapping order is irrelevant."},"validation_rules":["Mappings are injective.","Every query edge has a matching data edge with correct direction and predicates.","Induced matches contain no prohibited extra mapped edges.","All vertex predicates hold."],"edge_cases":["A query larger than the data graph has no matches.","An empty query has one empty mapping by convention.","Query automorphisms may yield multiple mappings to one data vertex set."],"evaluation_metrics":{"correctness":["mapping set equality with oracle","invalid mapping count","duplicate mapping count"],"performance":["end-to-end time","matching time","peak memory","candidates explored","matches per second"]}}},
-    {"source":"../../problems/15_temporal_motif_mining/problem.json","spec":{"schema_version":"1.0.0","problem_id":"temporal_motif_mining","name":"Temporal Motif Mining","category":"pattern_and_motif_mining","problem_statement":"Count occurrences of a small ordered edge pattern whose matched events occur in the required order within a bounded time window.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"must_match_motif","weights":"ignored","timestamps":"required","vertex_attributes":"optional_for_predicates","edge_attributes":"optional_for_predicates"},"normalization":["Normalize all edge timestamps to UTC epoch seconds without changing order.","Preserve parallel temporal events as distinct edge IDs.","Preserve edge direction.","Reject missing or invalid timestamps."]},"problem_inputs":[{"name":"temporal_motif","type":"ordered_pattern","required":true,"description":"Small graph pattern whose edges have a required total or partial temporal order."},{"name":"maximum_duration_seconds","type":"number","required":true,"constraints":"value >= 0","description":"Maximum last-edge minus first-edge time for an occurrence."},{"name":"allow_equal_timestamps","type":"boolean","required":false,"default":false,"description":"Whether consecutively ordered motif edges may share a timestamp."},{"name":"temporal_induced","type":"boolean","required":false,"default":false,"description":"Reject occurrences with additional participating-vertex events inside the occurrence window."},{"name":"list_instances","type":"boolean","required":false,"default":false,"description":"Materialize matched edge-event sequences."},{"name":"result_limit","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 1","description":"Maximum listed instances; the total count remains exhaustive."}],"required_outputs":[{"name":"occurrence_count","type":"integer","description":"Exact number of temporal motif occurrences."},{"name":"instances_complete","type":"boolean","description":"Whether all instances were materialized when listing was requested."}],"optional_outputs":[{"name":"instances","type":"array<object>","description":"Matched vertices, ordered edge IDs, timestamps, and occurrence duration."},{"name":"per_vertex_participation","type":"map<vertex_id,integer>","description":"Occurrences involving each data vertex."}],"solution_semantics":{"objective":"Count structurally valid event sequences satisfying motif order, duration, equality, and temporal-inducedness semantics.","exactness":"The occurrence count is exact; listing may be capped.","duplicate_policy":"A distinct ordered tuple of edge-event IDs is a distinct occurrence.","ordering":"Temporal order is semantically significant."},"validation_rules":["Each instance preserves motif structure and direction.","Event timestamps satisfy the declared order.","Occurrence duration does not exceed maximum_duration_seconds.","No temporal-inducedness violation exists when enabled."],"edge_cases":["No events yields count zero.","Equal-timestamp events are rejected from strict order positions unless allowed.","Repeated edges between the same endpoints remain distinct events."],"evaluation_metrics":{"correctness":["count agreement with exhaustive temporal matcher","structural violations","ordering or window violations"],"performance":["end-to-end time","temporal matching time","peak memory","events processed per second"]}}},
-    {"source":"../../problems/16_community_detection/problem.json","spec":{"schema_version":"1.0.0","problem_id":"community_detection","name":"Disjoint Community Detection","category":"community_and_structural_analysis","problem_statement":"Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"undirected","weights":"optional_nonnegative","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Reject directed input unless an explicit undirected projection is requested.","Remove self-loops unless the selected quality definition explicitly retains them.","Collapse parallel edges by summing weights; use unit weights in unweighted mode."]},"problem_inputs":[{"name":"quality_function","type":"enum","required":false,"default":"modularity","allowed_values":["modularity","constant_potts_model"],"description":"Mathematical quality objective optimized by the partition."},{"name":"resolution","type":"number","required":false,"default":1.0,"constraints":"value > 0","description":"Resolution parameter controlling the preferred community scale."},{"name":"weight_mode","type":"enum","required":false,"default":"unweighted","allowed_values":["unweighted","edge_weight"],"description":"Use unit edge values or nonnegative input weights."},{"name":"solution_quality","type":"enum","required":false,"default":"heuristic","allowed_values":["exact","heuristic"],"description":"Whether global optimality is required or a locally optimized partition is acceptable."}],"required_outputs":[{"name":"community_by_vertex","type":"map<vertex_id,community_id>","description":"Exactly one community assignment for every input vertex."},{"name":"community_count","type":"integer","description":"Number of nonempty communities."},{"name":"quality_score","type":"number","description":"Recomputed selected objective value."},{"name":"optimal","type":"boolean","description":"Whether global optimality was proven."}],"optional_outputs":[{"name":"community_statistics","type":"map<community_id,object>","description":"Size, internal edge value, boundary edge value, and density."},{"name":"hierarchy","type":"array<map<vertex_id,community_id>>","description":"Intermediate or multilevel partitions when meaningful."}],"solution_semantics":{"objective":"Maximize the selected partition quality over disjoint, exhaustive vertex assignments.","exactness":"Heuristic mode returns a feasible partition without claiming a global optimum.","duplicate_policy":"Community identifiers are arbitrary; partitions equal up to identifier permutation are equivalent.","ordering":"No ordering is required."},"validation_rules":["Every vertex belongs to exactly one nonempty community.","No unknown vertex appears.","Recomputed quality equals quality_score within declared numeric tolerance."],"edge_cases":["An empty graph has no communities.","Isolated vertices must still receive exactly one assignment.","Multiple partitions may have the same quality score."],"evaluation_metrics":{"correctness":["partition validity","recomputed quality","objective gap when an exact oracle is available"],"performance":["end-to-end time","optimization time","peak memory","iterations","quality versus time"]}}},
-    {"source":"../../problems/18_centrality_influential_node_mining/problem.json","spec":{"schema_version":"1.0.0","problem_id":"centrality_influential_node_mining","name":"Centrality and Influential-Node Mining","category":"community_and_structural_analysis","problem_statement":"Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition.","graph_input":{"format":"canonical_edge_list_v1","schema_ref":"../graph_input.schema.json","cardinality":"single_graph","requirements":{"direction":"directed_or_undirected","weights":"optional_measure_dependent","timestamps":"ignored","vertex_attributes":"ignored","edge_attributes":"ignored"},"normalization":["Preserve direction when requested by the measure.","Remove self-loops unless the selected centrality definition includes them.","Collapse parallel edges according to the selected weight semantics."]},"problem_inputs":[{"name":"centrality_measure","type":"enum","required":true,"allowed_values":["degree","pagerank","betweenness","closeness","eigenvector","katz"],"description":"Mathematical definition used to score vertices."},{"name":"direction_mode","type":"enum","required":false,"default":"outgoing","allowed_values":["incoming","outgoing","both","undirected_projection"],"description":"How directed edges contribute where the measure supports direction."},{"name":"weight_semantics","type":"enum","required":false,"default":"unweighted","allowed_values":["unweighted","strength","distance"],"description":"Interpret edge weights as ignored, connection strength, or path distance."},{"name":"top_k","type":"integer_or_null","required":false,"default":null,"constraints":"null or value >= 1","description":"Optionally return only the highest-ranked vertices while retaining score-completeness metadata."},{"name":"measure_parameters","type":"object","required":false,"default":{},"description":"Definition-level values such as PageRank damping, Katz alpha and beta, normalization, or a restricted source set."},{"name":"solution_quality","type":"enum","required":false,"default":"exact_or_converged","allowed_values":["exact_or_converged","approximate"],"description":"Whether approximation or sampling is permitted for expensive measures."}],"required_outputs":[{"name":"ranked_vertices","type":"array<object>","description":"Vertex ID, score, and rank ordered by descending influence."},{"name":"score_definition","type":"object","description":"Resolved measure, direction, weight, normalization, and parameter semantics."},{"name":"complete","type":"boolean","description":"Whether every vertex was scored and ranking was not truncated."}],"optional_outputs":[{"name":"converged","type":"boolean","description":"Whether an iterative measure met its convergence criterion."},{"name":"error_or_sampling_bound","type":"number","description":"Known numerical or statistical bound for approximate scores."}],"solution_semantics":{"objective":"Score and rank vertices exactly according to the selected centrality definition and resolved parameters.","exactness":"Exactness is measure-specific; iterative and approximate methods must disclose convergence or bounds.","duplicate_policy":"Each scored vertex appears once.","ordering":"Descending score with a stable vertex-ID tie break for reproducibility."},"validation_rules":["Scores are recomputable from score_definition within numeric tolerance.","Every returned vertex exists in the graph.","Ranks are monotonic by score and ties follow the stated policy.","Weight values satisfy the chosen semantics."],"edge_cases":["Disconnected graphs require explicitly defined closeness behavior.","Dangling vertices require explicitly defined PageRank redistribution.","Tied scores are permitted.","An empty graph produces an empty ranking."],"evaluation_metrics":{"correctness":["score error versus reference","rank agreement","convergence or bound validity"],"performance":["end-to-end time","compute time","peak memory","iterations","edges processed per second"]}}}
+    {
+      "source": "../../problems/01_maximal_clique_enumeration/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "maximal_clique_enumeration",
+        "name": "Maximal Clique Enumeration",
+        "category": "dense_structure_mining",
+        "problem_statement": "Given an undirected graph, enumerate every vertex set that forms a clique and is not a proper subset of another clique.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges into one undirected edge."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "minimum_clique_size",
+            "type": "integer",
+            "required": false,
+            "default": 1,
+            "constraints": "value >= 1",
+            "description": "Return only maximal cliques at least this large."
+          },
+          {
+            "name": "result_limit",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Maximum materialized cliques; a finite value permits an incomplete result."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "cliques",
+            "type": "array<array<vertex_id>>",
+            "description": "Each returned vertex set is a distinct maximal clique meeting the size constraint."
+          },
+          {
+            "name": "returned_count",
+            "type": "integer",
+            "description": "Number of materialized cliques."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "True only if all qualifying maximal cliques were enumerated."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "total_count",
+            "type": "integer",
+            "description": "Total qualifying clique count when enumeration completed or exact count-only continuation was performed."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Enumerate all inclusion-maximal complete vertex sets satisfying minimum_clique_size.",
+          "exactness": "Every materialized set must be exact; complete=true requires exhaustive enumeration.",
+          "duplicate_policy": "The same vertex set may appear only once.",
+          "ordering": "No clique or vertex ordering is semantically required."
+        },
+        "validation_rules": [
+          "Every pair of distinct vertices in each result has an edge.",
+          "No outside vertex is adjacent to every vertex in a returned clique.",
+          "For complete=true, results equal a trusted exhaustive oracle on tractable graphs."
+        ],
+        "edge_cases": [
+          "An empty graph returns no cliques.",
+          "An isolated vertex is a size-one maximal clique when minimum_clique_size <= 1.",
+          "A complete graph has exactly one maximal clique containing all vertices."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "set equality with oracle",
+            "duplicate count",
+            "invalid or non-maximal result count"
+          ],
+          "performance": [
+            "end-to-end time",
+            "enumeration time",
+            "peak memory",
+            "cliques per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/02_maximum_clique/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "maximum_clique",
+        "name": "Maximum Clique",
+        "category": "dense_structure_mining",
+        "problem_statement": "Given an undirected graph, find a clique with the largest possible number of vertices.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges into one undirected edge."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "return_all_ties",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Return every maximum clique rather than one representative."
+          },
+          {
+            "name": "known_lower_bound",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 0",
+            "description": "A valid known lower bound on the optimal clique size."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "maximum_size",
+            "type": "integer",
+            "description": "Cardinality of the best clique found."
+          },
+          {
+            "name": "cliques",
+            "type": "array<array<vertex_id>>",
+            "description": "One maximum clique, or all tied maximum cliques when requested."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether maximum_size has been proven globally optimal."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "upper_bound",
+            "type": "integer",
+            "description": "Best certified upper bound when optimal=false."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Maximize the number of vertices in a complete induced vertex set.",
+          "exactness": "An exact completed result must have optimal=true; interrupted solvers may return a feasible clique and certified bound.",
+          "duplicate_policy": "Tied maximum cliques must be unique as vertex sets.",
+          "ordering": "No ordering is semantically required."
+        },
+        "validation_rules": [
+          "Every returned set is a clique.",
+          "Every returned clique has maximum_size vertices.",
+          "optimal=true is valid only when no larger clique exists."
+        ],
+        "edge_cases": [
+          "An empty graph has maximum_size 0 and one empty solution conventionally represented by an empty clique list.",
+          "A nonempty edgeless graph has maximum_size 1.",
+          "A complete graph's unique maximum clique contains every vertex."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "objective agreement with exact oracle",
+            "clique feasibility",
+            "bound validity"
+          ],
+          "performance": [
+            "time to best solution",
+            "time to proof",
+            "end-to-end time",
+            "peak memory"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/03_k_clique_counting_enumeration/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "k_clique_counting_enumeration",
+        "name": "k-Clique Counting and Enumeration",
+        "category": "dense_structure_mining",
+        "problem_statement": "Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges into one undirected edge."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "k",
+            "type": "integer",
+            "required": true,
+            "constraints": "value >= 2",
+            "description": "Required number of vertices in each clique."
+          },
+          {
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "default": "count",
+            "allowed_values": [
+              "count",
+              "enumerate"
+            ],
+            "description": "Whether to count cliques or materialize their vertex sets."
+          },
+          {
+            "name": "result_limit",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Maximum materialized instances in enumerate mode."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "count",
+            "type": "integer",
+            "description": "Number of k-cliques found; it is the total only when complete=true."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether the count and enumeration cover all k-cliques."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "cliques",
+            "type": "array<array<vertex_id>>",
+            "description": "Distinct k-cliques when mode=enumerate."
+          },
+          {
+            "name": "per_vertex_count",
+            "type": "map<vertex_id,integer>",
+            "description": "Number of k-cliques containing each vertex."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Count or enumerate all size-k complete vertex sets.",
+          "exactness": "complete=true requires an exact exhaustive result.",
+          "duplicate_policy": "Each unordered vertex set is counted once.",
+          "ordering": "Vertex and result order are irrelevant."
+        },
+        "validation_rules": [
+          "Every enumerated set contains exactly k distinct vertices.",
+          "Every vertex pair in each result has an edge.",
+          "When complete=true, count matches the number of unique qualifying sets."
+        ],
+        "edge_cases": [
+          "If k exceeds the vertex count, count is zero.",
+          "For k=2, every unique graph edge is a 2-clique.",
+          "A complete n-vertex graph contains n choose k k-cliques."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "count agreement with oracle",
+            "instance set equality",
+            "duplicate count"
+          ],
+          "performance": [
+            "end-to-end time",
+            "counting or enumeration time",
+            "peak memory",
+            "cliques per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/04_quasi_clique_mining/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "quasi_clique_mining",
+        "name": "Quasi-Clique Mining",
+        "category": "dense_structure_mining",
+        "problem_statement": "Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges into one undirected edge."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "gamma",
+            "type": "number",
+            "required": true,
+            "constraints": "0 < value <= 1",
+            "description": "Every selected vertex must have induced degree at least ceil(gamma * (|S|-1))."
+          },
+          {
+            "name": "minimum_size",
+            "type": "integer",
+            "required": true,
+            "constraints": "value >= 2",
+            "description": "Minimum vertices in a returned quasi-clique."
+          },
+          {
+            "name": "maximum_size",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= minimum_size",
+            "description": "Optional upper bound on result size."
+          },
+          {
+            "name": "maximal_only",
+            "type": "boolean",
+            "required": false,
+            "default": true,
+            "description": "Return only qualifying sets not contained in a larger qualifying set."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "quasi_cliques",
+            "type": "array<object>",
+            "description": "Unique vertex sets with size, induced edge count, density, and minimum internal degree."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every qualifying result was found."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "count",
+            "type": "integer",
+            "description": "Number of qualifying results."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Enumerate induced vertex sets satisfying the gamma minimum-degree condition and size bounds.",
+          "exactness": "All reported sets must satisfy the threshold; complete=true means exhaustive enumeration.",
+          "duplicate_policy": "Each vertex set appears once.",
+          "ordering": "No ordering is required."
+        },
+        "validation_rules": [
+          "Recompute induced degree for every selected vertex.",
+          "Verify size bounds.",
+          "When maximal_only=true, no result is contained in a larger qualifying set."
+        ],
+        "edge_cases": [
+          "gamma=1 reduces the condition to clique mining.",
+          "Disconnected sets normally fail for useful gamma values but connectivity is determined solely by the stated degree condition.",
+          "No result is returned when minimum_size exceeds the vertex count."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "result set equality with oracle",
+            "threshold violations",
+            "non-maximal result count"
+          ],
+          "performance": [
+            "end-to-end time",
+            "search time",
+            "peak memory",
+            "candidates explored"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/07_k_core_decomposition/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "k_core_decomposition",
+        "name": "k-Core Decomposition",
+        "category": "dense_structure_mining",
+        "problem_statement": "Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges into one undirected edge."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "requested_k",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 0",
+            "description": "Optionally materialize the vertices and edges of one k-core in addition to the full decomposition."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "core_number_by_vertex",
+            "type": "map<vertex_id,integer>",
+            "description": "Largest core order containing each vertex."
+          },
+          {
+            "name": "degeneracy",
+            "type": "integer",
+            "description": "Maximum core number in the graph."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "requested_core_vertices",
+            "type": "array<vertex_id>",
+            "description": "Vertices whose core number is at least requested_k."
+          },
+          {
+            "name": "requested_core_edges",
+            "type": "array<edge_id>",
+            "description": "Edges induced by requested_core_vertices."
+          },
+          {
+            "name": "peeling_order",
+            "type": "array<vertex_id>",
+            "description": "A valid order in which vertices were removed."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Compute the complete core decomposition and graph degeneracy.",
+          "exactness": "Core numbers and degeneracy are exact.",
+          "duplicate_policy": "Each input vertex has exactly one core number.",
+          "ordering": "Peeling order may vary while core numbers remain invariant."
+        },
+        "validation_rules": [
+          "Every vertex assigned core c belongs to the c-core.",
+          "No vertex belongs to a core with order greater than its reported core number.",
+          "The requested k-core equals vertices with core number at least k."
+        ],
+        "edge_cases": [
+          "Isolated vertices have core number zero.",
+          "An empty graph has degeneracy zero and an empty map.",
+          "Every vertex in a complete n-vertex graph has core number n-1."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "per-vertex equality with oracle",
+            "degeneracy equality",
+            "requested-core validity"
+          ],
+          "performance": [
+            "end-to-end time",
+            "decomposition time",
+            "peak memory",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/09_maximal_biclique_enumeration/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "maximal_biclique_enumeration",
+        "name": "Maximal Biclique Enumeration",
+        "category": "dense_structure_mining",
+        "problem_statement": "Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "partition_information_required",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops and collapse parallel edges.",
+            "Reject any edge whose endpoints are in the same declared partition."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "left_partition",
+            "type": "array<vertex_id>",
+            "required": true,
+            "description": "All vertices belonging to the left side."
+          },
+          {
+            "name": "right_partition",
+            "type": "array<vertex_id>",
+            "required": true,
+            "description": "All vertices belonging to the right side."
+          },
+          {
+            "name": "minimum_left_size",
+            "type": "integer",
+            "required": false,
+            "default": 1,
+            "constraints": "value >= 1",
+            "description": "Minimum selected vertices on the left."
+          },
+          {
+            "name": "minimum_right_size",
+            "type": "integer",
+            "required": false,
+            "default": 1,
+            "constraints": "value >= 1",
+            "description": "Minimum selected vertices on the right."
+          },
+          {
+            "name": "result_limit",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Maximum materialized bicliques."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "bicliques",
+            "type": "array<object>",
+            "description": "Distinct objects containing left_vertices and right_vertices."
+          },
+          {
+            "name": "returned_count",
+            "type": "integer",
+            "description": "Number of materialized bicliques."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every qualifying maximal biclique was enumerated."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "total_count",
+            "type": "integer",
+            "description": "Total qualifying bicliques when known exactly."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Enumerate all inclusion-maximal pairs (L,R) with every possible cross-partition edge present.",
+          "exactness": "Every returned pair must be exact; complete=true requires exhaustive enumeration.",
+          "duplicate_policy": "Each pair of unordered vertex sets appears once.",
+          "ordering": "Order within or among bicliques is irrelevant."
+        },
+        "validation_rules": [
+          "Partitions are disjoint and cover every endpoint used.",
+          "Every left result vertex is adjacent to every right result vertex.",
+          "No additional vertex can extend either result side while preserving completeness."
+        ],
+        "edge_cases": [
+          "A graph with no cross-partition edges has no nonempty bicliques.",
+          "An isolated vertex belongs to no biclique under the nonempty-side convention.",
+          "A complete bipartite input has one maximal biclique containing both full partitions."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "set equality with oracle",
+            "non-biclique result count",
+            "non-maximal or duplicate result count"
+          ],
+          "performance": [
+            "end-to-end time",
+            "enumeration time",
+            "peak memory",
+            "bicliques per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/10_triangle_counting_listing/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "triangle_counting_listing",
+        "name": "Triangle Counting and Listing",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges into one undirected edge."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "list_instances",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Materialize triangle vertex triples."
+          },
+          {
+            "name": "include_per_vertex_counts",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Return triangle participation per vertex."
+          },
+          {
+            "name": "include_per_edge_counts",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Return triangle support per edge."
+          },
+          {
+            "name": "result_limit",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Maximum listed instances; it does not permit truncating the global count."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "global_triangle_count",
+            "type": "integer",
+            "description": "Exact number of distinct undirected triangles."
+          },
+          {
+            "name": "instances_complete",
+            "type": "boolean",
+            "description": "Whether every triangle instance was listed when listing was requested."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "triangles",
+            "type": "array<array<vertex_id>>",
+            "description": "Unique three-vertex triangle instances."
+          },
+          {
+            "name": "per_vertex_count",
+            "type": "map<vertex_id,integer>",
+            "description": "Triangles containing each vertex."
+          },
+          {
+            "name": "per_edge_count",
+            "type": "map<edge_id,integer>",
+            "description": "Triangles containing each edge."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Count every size-three clique exactly once and materialize requested secondary outputs.",
+          "exactness": "The global count and requested participation counts are exact.",
+          "duplicate_policy": "Each unordered triple is counted and listed once.",
+          "ordering": "No ordering is required."
+        },
+        "validation_rules": [
+          "Every listed triple contains three distinct pairwise-adjacent vertices.",
+          "The sum of per-vertex counts equals three times the global count.",
+          "The sum of per-edge counts equals three times the global count."
+        ],
+        "edge_cases": [
+          "Graphs with fewer than three vertices have count zero.",
+          "A complete n-vertex graph contains n choose 3 triangles.",
+          "Isolated vertices have per-vertex count zero."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "global count equality",
+            "instance set equality",
+            "per-entity count equality"
+          ],
+          "performance": [
+            "end-to-end time",
+            "counting time",
+            "listing time",
+            "peak memory",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/11_graph_motif_counting/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "graph_motif_counting",
+        "name": "Graph Motif Counting",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Count occurrences of one or more supplied small structural patterns in a directed or undirected graph.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "must_match_each_motif",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Remove self-loops unless explicitly present in a future motif extension.",
+            "Collapse parallel edges with identical direction into one edge.",
+            "Preserve edge direction for directed motifs."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "motifs",
+            "type": "array<canonical_graph>",
+            "required": true,
+            "constraints": "nonempty array of small connected patterns",
+            "description": "Motif definitions using the same canonical graph format."
+          },
+          {
+            "name": "induced",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Require each occurrence to contain exactly the motif edges among selected vertices."
+          },
+          {
+            "name": "occurrence_identity",
+            "type": "enum",
+            "required": false,
+            "default": "unique_vertex_set_and_mapping_class",
+            "allowed_values": [
+              "unique_vertex_set_and_mapping_class",
+              "all_embeddings"
+            ],
+            "description": "Controls whether automorphism-equivalent embeddings are counted separately."
+          },
+          {
+            "name": "list_instances",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Materialize matching data-graph vertex mappings."
+          },
+          {
+            "name": "result_limit_per_motif",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Maximum listed instances for each motif; counts remain exhaustive."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "count_by_motif",
+            "type": "map<motif_id,integer>",
+            "description": "Exact occurrence count under the selected identity semantics."
+          },
+          {
+            "name": "instances_complete_by_motif",
+            "type": "map<motif_id,boolean>",
+            "description": "Whether every requested instance was materialized."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "instances_by_motif",
+            "type": "map<motif_id,array<mapping>>",
+            "description": "Mappings from motif vertices to data-graph vertices."
+          },
+          {
+            "name": "per_vertex_participation",
+            "type": "map<motif_id,map<vertex_id,integer>>",
+            "description": "Occurrence participation counts."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Count subgraphs isomorphic to each motif under direction, inducedness, and occurrence-identity settings.",
+          "exactness": "Counts are exact; listing may be capped but must disclose completeness.",
+          "duplicate_policy": "Occurrences follow occurrence_identity and are otherwise unique.",
+          "ordering": "Result ordering is irrelevant; directed edge orientation is significant."
+        },
+        "validation_rules": [
+          "Every instance preserves motif adjacency and direction.",
+          "Induced instances contain no additional edges among mapped vertices.",
+          "Counts account for motif automorphisms according to occurrence_identity."
+        ],
+        "edge_cases": [
+          "A motif larger than the data graph has count zero.",
+          "Isomorphic motif definitions may produce identical counts but remain separately identified.",
+          "Disconnected motif definitions are rejected in version 1."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "count agreement with exhaustive matcher",
+            "instance validity",
+            "automorphism overcount or undercount"
+          ],
+          "performance": [
+            "end-to-end time",
+            "count time per motif",
+            "peak memory",
+            "occurrences processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/13_subgraph_isomorphism/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "subgraph_isomorphism",
+        "name": "Subgraph Isomorphism and Pattern Matching",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_data_graph_plus_query_graph",
+          "requirements": {
+            "direction": "query_and_data_semantics_must_match",
+            "weights": "available_to_predicates",
+            "timestamps": "available_to_predicates",
+            "vertex_attributes": "available_to_predicates",
+            "edge_attributes": "available_to_predicates"
+          },
+          "normalization": [
+            "Preserve query and data edge direction.",
+            "Preserve parallel-edge identity when predicates distinguish edges.",
+            "Do not silently remove self-loops used by the query."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "query_graph",
+            "type": "canonical_graph",
+            "required": true,
+            "description": "Pattern graph expressed using canonical_edge_list_v1."
+          },
+          {
+            "name": "induced",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Require mapped vertices to have no extra data edges beyond query edges."
+          },
+          {
+            "name": "vertex_predicates",
+            "type": "array<attribute_predicate>",
+            "required": false,
+            "default": [],
+            "description": "Declarative constraints on mapped vertex type, label, or attributes."
+          },
+          {
+            "name": "edge_predicates",
+            "type": "array<attribute_predicate>",
+            "required": false,
+            "default": [],
+            "description": "Declarative constraints on mapped edge type, weight, timestamp, or attributes."
+          },
+          {
+            "name": "result_limit",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Maximum materialized mappings."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "matches",
+            "type": "array<map<query_vertex_id,data_vertex_id>>",
+            "description": "Injective query-to-data vertex mappings."
+          },
+          {
+            "name": "returned_count",
+            "type": "integer",
+            "description": "Number of materialized mappings."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether all qualifying mappings were found."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "total_count",
+            "type": "integer",
+            "description": "Exact number of mappings when known."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Enumerate all injective mappings satisfying structural, directional, inducedness, and attribute constraints.",
+          "exactness": "Every returned mapping is exact; complete=true requires exhaustive matching.",
+          "duplicate_policy": "Distinct query-to-data mappings are distinct results, even when query automorphisms map to the same data vertex set.",
+          "ordering": "Mapping order is irrelevant."
+        },
+        "validation_rules": [
+          "Mappings are injective.",
+          "Every query edge has a matching data edge with correct direction and predicates.",
+          "Induced matches contain no prohibited extra mapped edges.",
+          "All vertex predicates hold."
+        ],
+        "edge_cases": [
+          "A query larger than the data graph has no matches.",
+          "An empty query has one empty mapping by convention.",
+          "Query automorphisms may yield multiple mappings to one data vertex set."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "mapping set equality with oracle",
+            "invalid mapping count",
+            "duplicate mapping count"
+          ],
+          "performance": [
+            "end-to-end time",
+            "matching time",
+            "peak memory",
+            "candidates explored",
+            "matches per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/15_temporal_motif_mining/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "temporal_motif_mining",
+        "name": "Temporal Motif Mining",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Count occurrences of a small ordered edge pattern whose matched events occur in the required order within a bounded time window.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "must_match_motif",
+            "weights": "ignored",
+            "timestamps": "required",
+            "vertex_attributes": "optional_for_predicates",
+            "edge_attributes": "optional_for_predicates"
+          },
+          "normalization": [
+            "Normalize all edge timestamps to UTC epoch seconds without changing order.",
+            "Preserve parallel temporal events as distinct edge IDs.",
+            "Preserve edge direction.",
+            "Reject missing or invalid timestamps."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "temporal_motif",
+            "type": "ordered_pattern",
+            "required": true,
+            "description": "Small graph pattern whose edges have a required total or partial temporal order."
+          },
+          {
+            "name": "maximum_duration_seconds",
+            "type": "number",
+            "required": true,
+            "constraints": "value >= 0",
+            "description": "Maximum last-edge minus first-edge time for an occurrence."
+          },
+          {
+            "name": "allow_equal_timestamps",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether consecutively ordered motif edges may share a timestamp."
+          },
+          {
+            "name": "temporal_induced",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Reject occurrences with additional participating-vertex events inside the occurrence window."
+          },
+          {
+            "name": "list_instances",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Materialize matched edge-event sequences."
+          },
+          {
+            "name": "result_limit",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Maximum listed instances; the total count remains exhaustive."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "occurrence_count",
+            "type": "integer",
+            "description": "Exact number of temporal motif occurrences."
+          },
+          {
+            "name": "instances_complete",
+            "type": "boolean",
+            "description": "Whether all instances were materialized when listing was requested."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "instances",
+            "type": "array<object>",
+            "description": "Matched vertices, ordered edge IDs, timestamps, and occurrence duration."
+          },
+          {
+            "name": "per_vertex_participation",
+            "type": "map<vertex_id,integer>",
+            "description": "Occurrences involving each data vertex."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Count structurally valid event sequences satisfying motif order, duration, equality, and temporal-inducedness semantics.",
+          "exactness": "The occurrence count is exact; listing may be capped.",
+          "duplicate_policy": "A distinct ordered tuple of edge-event IDs is a distinct occurrence.",
+          "ordering": "Temporal order is semantically significant."
+        },
+        "validation_rules": [
+          "Each instance preserves motif structure and direction.",
+          "Event timestamps satisfy the declared order.",
+          "Occurrence duration does not exceed maximum_duration_seconds.",
+          "No temporal-inducedness violation exists when enabled."
+        ],
+        "edge_cases": [
+          "No events yields count zero.",
+          "Equal-timestamp events are rejected from strict order positions unless allowed.",
+          "Repeated edges between the same endpoints remain distinct events."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "count agreement with exhaustive temporal matcher",
+            "structural violations",
+            "ordering or window violations"
+          ],
+          "performance": [
+            "end-to-end time",
+            "temporal matching time",
+            "peak memory",
+            "events processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/16_community_detection/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "community_detection",
+        "name": "Disjoint Community Detection",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "optional_nonnegative",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops unless the selected quality definition explicitly retains them.",
+            "Collapse parallel edges by summing weights; use unit weights in unweighted mode."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "quality_function",
+            "type": "enum",
+            "required": false,
+            "default": "modularity",
+            "allowed_values": [
+              "modularity",
+              "constant_potts_model"
+            ],
+            "description": "Mathematical quality objective optimized by the partition."
+          },
+          {
+            "name": "resolution",
+            "type": "number",
+            "required": false,
+            "default": 1.0,
+            "constraints": "value > 0",
+            "description": "Resolution parameter controlling the preferred community scale."
+          },
+          {
+            "name": "weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "Use unit edge values or nonnegative input weights."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "heuristic",
+            "allowed_values": [
+              "exact",
+              "heuristic"
+            ],
+            "description": "Whether global optimality is required or a locally optimized partition is acceptable."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "community_by_vertex",
+            "type": "map<vertex_id,community_id>",
+            "description": "Exactly one community assignment for every input vertex."
+          },
+          {
+            "name": "community_count",
+            "type": "integer",
+            "description": "Number of nonempty communities."
+          },
+          {
+            "name": "quality_score",
+            "type": "number",
+            "description": "Recomputed selected objective value."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "community_statistics",
+            "type": "map<community_id,object>",
+            "description": "Size, internal edge value, boundary edge value, and density."
+          },
+          {
+            "name": "hierarchy",
+            "type": "array<map<vertex_id,community_id>>",
+            "description": "Intermediate or multilevel partitions when meaningful."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Maximize the selected partition quality over disjoint, exhaustive vertex assignments.",
+          "exactness": "Heuristic mode returns a feasible partition without claiming a global optimum.",
+          "duplicate_policy": "Community identifiers are arbitrary; partitions equal up to identifier permutation are equivalent.",
+          "ordering": "No ordering is required."
+        },
+        "validation_rules": [
+          "Every vertex belongs to exactly one nonempty community.",
+          "No unknown vertex appears.",
+          "Recomputed quality equals quality_score within declared numeric tolerance."
+        ],
+        "edge_cases": [
+          "An empty graph has no communities.",
+          "Isolated vertices must still receive exactly one assignment.",
+          "Multiple partitions may have the same quality score."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "partition validity",
+            "recomputed quality",
+            "objective gap when an exact oracle is available"
+          ],
+          "performance": [
+            "end-to-end time",
+            "optimization time",
+            "peak memory",
+            "iterations",
+            "quality versus time"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/18_centrality_influential_node_mining/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "centrality_influential_node_mining",
+        "name": "Centrality and Influential-Node Mining",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed_or_undirected",
+            "weights": "optional_measure_dependent",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Preserve direction when requested by the measure.",
+            "Remove self-loops unless the selected centrality definition includes them.",
+            "Collapse parallel edges according to the selected weight semantics."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "centrality_measure",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "degree",
+              "pagerank",
+              "betweenness",
+              "closeness",
+              "eigenvector",
+              "katz"
+            ],
+            "description": "Mathematical definition used to score vertices."
+          },
+          {
+            "name": "direction_mode",
+            "type": "enum",
+            "required": false,
+            "default": "outgoing",
+            "allowed_values": [
+              "incoming",
+              "outgoing",
+              "both",
+              "undirected_projection"
+            ],
+            "description": "How directed edges contribute where the measure supports direction."
+          },
+          {
+            "name": "weight_semantics",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "strength",
+              "distance"
+            ],
+            "description": "Interpret edge weights as ignored, connection strength, or path distance."
+          },
+          {
+            "name": "top_k",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Optionally return only the highest-ranked vertices while retaining score-completeness metadata."
+          },
+          {
+            "name": "measure_parameters",
+            "type": "object",
+            "required": false,
+            "default": {},
+            "description": "Definition-level values such as PageRank damping, Katz alpha and beta, normalization, or a restricted source set."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact_or_converged",
+            "allowed_values": [
+              "exact_or_converged",
+              "approximate"
+            ],
+            "description": "Whether approximation or sampling is permitted for expensive measures."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "ranked_vertices",
+            "type": "array<object>",
+            "description": "Vertex ID, score, and rank ordered by descending influence."
+          },
+          {
+            "name": "score_definition",
+            "type": "object",
+            "description": "Resolved measure, direction, weight, normalization, and parameter semantics."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every vertex was scored and ranking was not truncated."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "converged",
+            "type": "boolean",
+            "description": "Whether an iterative measure met its convergence criterion."
+          },
+          {
+            "name": "error_or_sampling_bound",
+            "type": "number",
+            "description": "Known numerical or statistical bound for approximate scores."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Score and rank vertices exactly according to the selected centrality definition and resolved parameters.",
+          "exactness": "Exactness is measure-specific; iterative and approximate methods must disclose convergence or bounds.",
+          "duplicate_policy": "Each scored vertex appears once.",
+          "ordering": "Descending score with a stable vertex-ID tie break for reproducibility."
+        },
+        "validation_rules": [
+          "Scores are recomputable from score_definition within numeric tolerance.",
+          "Every returned vertex exists in the graph.",
+          "Ranks are monotonic by score and ties follow the stated policy.",
+          "Weight values satisfy the chosen semantics."
+        ],
+        "edge_cases": [
+          "Disconnected graphs require explicitly defined closeness behavior.",
+          "Dangling vertices require explicitly defined PageRank redistribution.",
+          "Tied scores are permitted.",
+          "An empty graph produces an empty ranking."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "score error versus reference",
+            "rank agreement",
+            "convergence or bound validity"
+          ],
+          "performance": [
+            "end-to-end time",
+            "compute time",
+            "peak memory",
+            "iterations",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/35_connected_components/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "connected_components",
+        "name": "Connected Components (Weakly and Strongly Connected)",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed_or_undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Remove self-loops; they never change component membership.",
+            "Collapse parallel edges between the same pair to one edge.",
+            "When connectivity_mode=weakly_connected, treat every edge as undirected regardless of input direction."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "connectivity_mode",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "weakly_connected",
+              "strongly_connected"
+            ],
+            "description": "Weak connectivity ignores edge direction; strong connectivity requires a directed path in both directions and is only meaningful (and may differ from weak) on a directed graph."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "component_assignment",
+            "type": "map<vertex_id,integer>",
+            "description": "Component index assigned to every vertex."
+          },
+          {
+            "name": "component_count",
+            "type": "integer",
+            "description": "Number of distinct components."
+          },
+          {
+            "name": "component_sizes",
+            "type": "array<integer>",
+            "description": "Vertex count of each component, indexed by component number."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "largest_component_id",
+            "type": "integer",
+            "description": "Component number with the most vertices."
+          },
+          {
+            "name": "largest_component_size",
+            "type": "integer",
+            "description": "Vertex count of the largest component."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Assign every vertex a component_assignment such that two vertices share a component index if and only if they are connected under connectivity_mode, and components are maximal.",
+          "exactness": "This problem is always solved exactly; component identity is a decidable equivalence relation with no approximate mode.",
+          "duplicate_policy": "Each vertex belongs to exactly one component.",
+          "ordering": "Component indices are canonically numbered by ascending smallest-member vertex ID, so results are directly comparable across independent runs or implementations."
+        },
+        "validation_rules": [
+          "Two vertices share a component_assignment value if and only if they are connected under connectivity_mode in the normalized graph.",
+          "component_count equals the number of distinct values in component_assignment.",
+          "component_sizes[i] equals the number of vertices assigned to component i, and the entries sum to the total vertex count.",
+          "Component numbering follows the ascending-smallest-member-vertex-ID convention."
+        ],
+        "edge_cases": [
+          "An isolated vertex forms its own singleton component.",
+          "An edgeless graph has every vertex in its own singleton component, so component_count equals the vertex count.",
+          "connectivity_mode=strongly_connected on a graph requested as an undirected projection degenerates to the same result as weakly_connected.",
+          "A self-loop does not merge a vertex with any other vertex."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "component-assignment agreement with an exhaustive BFS/DFS (weak) or Tarjan/Kosaraju (strong) oracle on small/medium fixtures",
+            "component-count and size consistency",
+            "canonical-numbering compliance"
+          ],
+          "performance": [
+            "end-to-end time",
+            "compute time",
+            "peak memory",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/22_max_flow_min_cut/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "max_flow_min_cut",
+        "name": "Maximum Flow and Minimum s-t Cut",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given a directed capacitated graph and designated source and sink vertices, compute a maximum feasible flow from source to sink and a minimum-capacity edge set whose removal disconnects source from sink.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed",
+            "weights": "required_nonnegative_as_capacity",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "optional"
+          },
+          "normalization": [
+            "Treat edge weight as capacity; reject negative capacity.",
+            "Collapse parallel edges between the same ordered pair by summing capacity.",
+            "Treat an undirected edge request as two opposite directed edges with equal capacity.",
+            "Remove self-loops; they never contribute to an s-t flow or cut."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "source",
+            "type": "vertex_id",
+            "required": true,
+            "description": "Flow source vertex."
+          },
+          {
+            "name": "sink",
+            "type": "vertex_id",
+            "required": true,
+            "constraints": "sink != source",
+            "description": "Flow sink vertex."
+          },
+          {
+            "name": "capacity_mode",
+            "type": "enum",
+            "required": false,
+            "default": "edge_weight",
+            "allowed_values": [
+              "edge_weight",
+              "unit_capacity"
+            ],
+            "description": "Use declared edge weights or treat every edge as unit capacity."
+          },
+          {
+            "name": "vertex_capacities",
+            "type": "map<vertex_id,number>_or_null",
+            "required": false,
+            "default": null,
+            "description": "Optional per-vertex capacity for vertex-connectivity-style cuts; null means edge-only capacities."
+          },
+          {
+            "name": "return_cut_side",
+            "type": "boolean",
+            "required": false,
+            "default": true,
+            "description": "Whether to return the source-side vertex partition induced by the minimum cut."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether an approximate max-flow value with a disclosed bound is permitted."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "max_flow_value",
+            "type": "number",
+            "description": "Value of the maximum feasible source-to-sink flow."
+          },
+          {
+            "name": "min_cut_value",
+            "type": "number",
+            "description": "Total capacity of the minimum s-t cut; equals max_flow_value by the max-flow min-cut theorem."
+          },
+          {
+            "name": "min_cut_edges",
+            "type": "array<edge_id>",
+            "description": "Edges crossing from the source side to the sink side of a minimum cut."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "flow_assignment",
+            "type": "map<edge_id,number>",
+            "description": "Feasible flow value on each edge satisfying capacity and conservation constraints."
+          },
+          {
+            "name": "source_side_vertices",
+            "type": "array<vertex_id>",
+            "description": "Vertices reachable from source in the residual graph at optimality."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified relative or additive gap for an approximate result."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Maximize total flow leaving source subject to capacity and conservation constraints; the minimum cut is any minimum-capacity edge set separating source from sink.",
+          "exactness": "Exact mode requires optimal=true and max_flow_value == min_cut_value within tolerance.",
+          "duplicate_policy": "Multiple minimum cuts may exist; return one unless alternates are explicitly requested.",
+          "ordering": "Not applicable; outputs are a value, an edge set, and optionally a flow assignment."
+        },
+        "validation_rules": [
+          "flow_assignment, when returned, satisfies 0 <= flow <= capacity on every edge and conservation at every non-terminal vertex.",
+          "min_cut_edges all cross from the source side to the sink side and their capacity sum equals min_cut_value.",
+          "max_flow_value equals min_cut_value within numeric tolerance.",
+          "Removing min_cut_edges leaves no directed path from source to sink."
+        ],
+        "edge_cases": [
+          "No directed path exists from source to sink: max_flow_value is zero and min_cut_edges is empty.",
+          "Source and sink are the same vertex is rejected as invalid input.",
+          "Disconnected or zero-capacity edges do not affect optimality but may affect returned flow_assignment sparsity.",
+          "Multiple minimum cuts of equal value may exist; any one is acceptable unless the caller requests the source-side-maximal or sink-side-maximal canonical cut."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "flow value agreement with exact oracle",
+            "capacity and conservation feasibility",
+            "cut-value equals flow-value",
+            "cut-edge separation check"
+          ],
+          "performance": [
+            "end-to-end time",
+            "solver time",
+            "peak memory",
+            "augmentations or relabel operations",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/31_bipartite_matching_assignment/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "bipartite_matching_assignment",
+        "name": "Bipartite Matching and Linear Assignment",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given a bipartite graph, find a matching (a set of edges with no shared endpoints) that is optimal under a declared objective: maximum cardinality, maximum total weight, or minimum total cost.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected_bipartite",
+            "weights": "required_for_weighted_objectives",
+            "timestamps": "ignored",
+            "vertex_attributes": "required_side_label",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject edges whose endpoints share the same declared side.",
+            "Reject self-loops (impossible in valid bipartite input).",
+            "Collapse parallel edges between the same pair by keeping the single best-objective weight."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "objective",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "maximum_cardinality",
+              "maximum_weight",
+              "minimum_cost"
+            ],
+            "description": "Maximize the number of matched pairs, maximize total matched weight, or minimize total matched cost."
+          },
+          {
+            "name": "weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "maximum_cardinality always behaves as unweighted; maximum_weight and minimum_cost require edge_weight."
+          },
+          {
+            "name": "perfect_matching_required",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether every vertex on the smaller side (or both sides, if equal size) must be covered by the returned matching; infeasibility must be reported explicitly rather than returning a partial match."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "This problem is polynomial-time solvable; exact is the default, with approximate permitted only for very large instances with a disclosed bound."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "matching_edges",
+            "type": "array<edge_id>",
+            "description": "Selected edges forming the matching; no two share a vertex."
+          },
+          {
+            "name": "matching_size",
+            "type": "integer",
+            "description": "Number of matched pairs, equal to |matching_edges|."
+          },
+          {
+            "name": "objective_value",
+            "type": "number",
+            "description": "Total weight/cost of matching_edges under the declared objective (equal to matching_size for maximum_cardinality)."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "unmatched_left_vertices",
+            "type": "array<vertex_id>",
+            "description": "Left-side vertices not covered by matching_edges."
+          },
+          {
+            "name": "unmatched_right_vertices",
+            "type": "array<vertex_id>",
+            "description": "Right-side vertices not covered by matching_edges."
+          },
+          {
+            "name": "feasible",
+            "type": "boolean",
+            "description": "Whether a perfect matching exists, when perfect_matching_required=true."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified relative error bound for an approximate result."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Select a matching optimal under the declared objective: maximize |matching_edges| for maximum_cardinality, maximize total weight for maximum_weight, or minimize total weight for minimum_cost.",
+          "exactness": "Exact mode requires optimal=true; this problem admits polynomial-time exact algorithms (augmenting paths, Hungarian algorithm), so approximate mode is only for extreme scale and must disclose approximation_bound.",
+          "duplicate_policy": "Each vertex appears in at most one entry of matching_edges.",
+          "ordering": "matching_edges is an unordered set."
+        },
+        "validation_rules": [
+          "matching_edges forms a valid matching (no two edges share an endpoint) in the normalized bipartite graph.",
+          "matching_size equals |matching_edges|.",
+          "objective_value recomputes exactly as the sum of matched edge weights (or equals matching_size for maximum_cardinality).",
+          "perfect_matching_required=true with feasible=true implies every vertex on the smaller (or both, if equal) side is covered; feasible=false must correspond to a provably infeasible instance."
+        ],
+        "edge_cases": [
+          "An edgeless graph has matching_size zero and empty matching_edges.",
+          "A graph admitting a perfect matching must return one when perfect_matching_required=true.",
+          "Maximum matching size is bounded above by the smaller side's vertex count.",
+          "Negative weights under minimum_cost are valid input and must not be clamped to zero."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "matching validity (no shared endpoints)",
+            "optimality agreement with an exact oracle (e.g. Hopcroft-Karp or Hungarian algorithm) on small/medium fixtures",
+            "objective-value recomputation",
+            "feasibility correctness for perfect_matching_required"
+          ],
+          "performance": [
+            "end-to-end time",
+            "solver time",
+            "peak memory",
+            "augmenting paths or auction rounds performed"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/33_transitive_closure_reachability/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "transitive_closure_reachability",
+        "name": "Transitive Closure and Reachability Indexing",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Given a directed graph, determine for queried vertex pairs whether the target is reachable from the source via a directed path, and optionally materialize or index full reachability to answer many such queries efficiently.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Collapse parallel directed edges between the same ordered pair to one edge.",
+            "Retain self-loops only insofar as every vertex already reaches itself by the reflexive convention; a self-loop does not change any reachability result.",
+            "Reject undirected input unless an explicit directed projection (both directions) is requested."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "query_mode",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "single_pair",
+              "batch_pairs",
+              "full_transitive_closure"
+            ],
+            "description": "Answer one (source,target) pair, a batch of pairs, or characterize reachability for every ordered pair."
+          },
+          {
+            "name": "query_pairs",
+            "type": "array<object>_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "required and nonempty for single_pair (exactly one entry) and batch_pairs",
+            "description": "List of {source, target} pairs to answer."
+          },
+          {
+            "name": "build_index",
+            "type": "boolean",
+            "required": false,
+            "default": true,
+            "description": "Whether to construct a reusable reachability index amortizing cost across future queries, versus a one-off traversal per query."
+          },
+          {
+            "name": "enumerate_closure_edges",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "For full_transitive_closure, whether to return every reachable (source,target) pair explicitly; only feasible when the result is small."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "reachability_results",
+            "type": "array<object>",
+            "description": "For single_pair/batch_pairs: {source, target, reachable} per queried pair, in query_pairs order."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every requested query (or, for full_transitive_closure, every ordered pair) was correctly resolved."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "reachable_pair_count",
+            "type": "integer",
+            "description": "Total number of reachable ordered pairs (including reflexive pairs); present for full_transitive_closure."
+          },
+          {
+            "name": "transitive_closure_edges",
+            "type": "array<object>",
+            "description": "Explicit list of all reachable (source,target) pairs; returned only when enumerate_closure_edges=true and the result size is tractable."
+          },
+          {
+            "name": "index_descriptor",
+            "type": "object",
+            "description": "Opaque reference/metadata for a built reachability index, reusable by later single_pair/batch_pairs queries without rebuilding."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "For each queried pair, determine whether target is reachable from source via a directed path of length >= 0 in the normalized graph (a vertex always reaches itself); full_transitive_closure characterizes this for every ordered pair.",
+          "exactness": "Reachability is always answered exactly; no approximate mode is defined for this problem.",
+          "duplicate_policy": "A repeated pair in query_pairs returns a consistent, identical result each time.",
+          "ordering": "reachability_results preserves the order of query_pairs."
+        },
+        "validation_rules": [
+          "Every reachable=true result is witnessed by at least one directed walk from source to target in the normalized graph.",
+          "Every reachable=false result has no directed walk from source to target, verifiable by exhaustive BFS/DFS on small/medium fixtures.",
+          "Every vertex is reachable from itself (reflexive case).",
+          "transitive_closure_edges, when returned, is consistent with reachable_pair_count."
+        ],
+        "edge_cases": [
+          "source equals target returns reachable=true by the reflexive convention regardless of self-loops.",
+          "An edgeless graph has every non-reflexive pair unreachable.",
+          "Every pair of vertices within the same strongly connected component is mutually reachable.",
+          "full_transitive_closure on a graph where the closure is too large to enumerate must omit transitive_closure_edges and still return a correct reachable_pair_count with complete=true."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "reachability agreement with exhaustive BFS/DFS oracle on small/medium fixtures",
+            "reflexive-case compliance",
+            "closure-edge-count consistency with transitive_closure_edges when both are returned"
+          ],
+          "performance": [
+            "end-to-end time",
+            "index build time",
+            "amortized query time after index build",
+            "peak memory",
+            "queries answered per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "../../problems/23_butterfly_counting_bipartite/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "butterfly_counting_bipartite",
+        "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques, i.e. (2,2)-bicliques) globally and per vertex/edge, and optionally decompose the graph into (alpha,beta)-cores by butterfly-based degeneracy.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected_bipartite",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "required_side_label",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject edges whose endpoints share the same declared side.",
+            "Remove self-loops (impossible in valid bipartite input; reject if present).",
+            "Collapse parallel edges between the same pair to one edge.",
+            "Every vertex must have a side label in {left, right}; isolated vertices on either side are retained."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "default": "count",
+            "allowed_values": [
+              "count",
+              "per_vertex",
+              "per_edge",
+              "alpha_beta_core"
+            ],
+            "description": "Return a global count, per-vertex/per-edge participation counts, or a full (alpha,beta)-core decomposition."
+          },
+          {
+            "name": "alpha",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Left-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible alpha."
+          },
+          {
+            "name": "beta",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Right-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible beta."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether a sampling-based approximate butterfly count with a disclosed bound is permitted."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "butterfly_count",
+            "type": "integer",
+            "description": "Total number of distinct butterflies (unordered 2x2 complete bipartite subgraphs) in the graph."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether the count/decomposition covers the entire input graph without sampling truncation."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "per_vertex_butterfly_count",
+            "type": "map<vertex_id,integer>",
+            "description": "Butterflies each vertex participates in; present when mode=per_vertex."
+          },
+          {
+            "name": "per_edge_butterfly_count",
+            "type": "map<edge_id,integer>",
+            "description": "Butterflies each edge (as a wedge pair) participates in; present when mode=per_edge."
+          },
+          {
+            "name": "alpha_beta_core_assignment",
+            "type": "map<vertex_id,object>",
+            "description": "Per-vertex maximal (alpha,beta) coordinates; present when mode=alpha_beta_core."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified relative error bound for an approximate count."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Enumerate or count every 4-cycle formed by two left vertices and two right vertices that are all pairwise connected (a butterfly), with no induced-subgraph requirement beyond the four required edges.",
+          "exactness": "Exact mode requires every butterfly to be counted exactly once; approximate mode must disclose its bound.",
+          "duplicate_policy": "Each unordered set of 2 left + 2 right vertices forming a butterfly is counted once regardless of discovery order.",
+          "ordering": "Not applicable for global count; per_vertex and per_edge outputs are unordered maps."
+        },
+        "validation_rules": [
+          "butterfly_count recomputes from the normalized bipartite adjacency via independent wedge-based counting.",
+          "Sum of per_vertex_butterfly_count over one side, divided by 2, is internally consistent with butterfly_count.",
+          "alpha_beta_core_assignment vertices retain at least alpha (left) or beta (right) butterfly-degree within their assigned core.",
+          "No edge with same-side endpoints is present in the normalized graph."
+        ],
+        "edge_cases": [
+          "A graph with no 4-cycles has butterfly_count zero.",
+          "A complete bipartite graph K(m,n) has the closed-form C(m,2)*C(n,2) butterflies, usable as a correctness check.",
+          "Isolated vertices contribute zero to every count.",
+          "alpha=1,beta=1 core reduces to vertices with degree >= 1 on each side that share at least one butterfly."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "exact count agreement with brute-force wedge oracle on small/medium fixtures",
+            "per-vertex/per-edge sum consistency",
+            "core-assignment validity"
+          ],
+          "performance": [
+            "end-to-end time",
+            "wedge-construction time",
+            "peak memory",
+            "butterflies counted per second"
+          ]
+        }
+      }
+    }
   ]
 }

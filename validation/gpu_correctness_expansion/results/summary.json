@@ -1,0 +1,714 @@
+{
+  "artifacts": [
+    {
+      "code": {
+        "commit": "31acf04abb62d8829234379617bbdca6168cbe67",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/jmshi123/kPAR",
+        "status": "cloned"
+      },
+      "evidence": "results/kpar.json",
+      "metadata_path": "problems/21_personalized_pagerank_rwr/papers/2020_kpar/metadata.json",
+      "note": "Returns five rows for k=4; the 64-cycle run also omits the highest-score source. Score tolerance alone is insufficient.",
+      "paper_id": "2020_kpar",
+      "problem_dir": "21_personalized_pagerank_rwr",
+      "promoted_operation": null,
+      "screen_passed": 0,
+      "screen_total": 2,
+      "validation_status": "correctness_fail"
+    },
+    {
+      "code": {
+        "commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/burtscher/ECL-MaxFlow",
+        "status": "cloned"
+      },
+      "evidence": "results/ecl_flow.json",
+      "metadata_path": "problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/metadata.json",
+      "note": "Raw artifact: 12/13, including an edgeless launch error. Promoted only with tested launch guards, sparse-degree fix, empty-input handling and flow/cut certification.",
+      "paper_id": "2025_ecl_maxflow",
+      "problem_dir": "22_max_flow_min_cut",
+      "promoted_operation": "max-flow-min-cut",
+      "promotion_evidence": "results/library_expansion.json",
+      "screen_passed": 12,
+      "screen_total": 13,
+      "validation_status": "validated_profile"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/22_max_flow_min_cut/papers/2025_generalized_maxflow_gpu/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2025_generalized_maxflow_gpu",
+      "problem_dir": "22_max_flow_min_cut",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": "6c03c5b950ca689d67a7ec5177f920ce4e43bf0a",
+        "error": null,
+        "license_file": "code/maxflow-bcsr2/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/NTUDDSNLab/WBPR",
+        "status": "cloned"
+      },
+      "evidence": "results/wbpr.json",
+      "metadata_path": "problems/22_max_flow_min_cut/papers/2025_wbpr/metadata.json",
+      "note": "12/12 scalar flow values; full flow/cut certificate not exported or validated. License in maxflow-bcsr2 does not establish license of the tested maxflow-cuda folder.",
+      "paper_id": "2025_wbpr",
+      "problem_dir": "22_max_flow_min_cut",
+      "promoted_operation": null,
+      "screen_passed": 12,
+      "screen_total": 12,
+      "validation_status": "partial_pass"
+    },
+    {
+      "code": {
+        "commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/chenxuhao/GraphMiner",
+        "status": "cloned"
+      },
+      "evidence": "results/graphminer_butterfly.json",
+      "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_g2miner_reuse/metadata.json",
+      "note": "12/12 global counts using the existing native square kernel. New public facade enforces declared bipartite sides. Other problem modes remain unsupported.",
+      "paper_id": "2022_g2miner_reuse",
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "promoted_operation": "butterfly-counting",
+      "promotion_evidence": "results/library_expansion.json",
+      "screen_passed": 12,
+      "screen_total": 12,
+      "validation_status": "validated_profile"
+    },
+    {
+      "code": {
+        "commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+        "error": null,
+        "license_file": null,
+        "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+        "local_path": "code",
+        "source_url": "https://github.com/pkumod/GAMMA",
+        "status": "cloned"
+      },
+      "evidence": "results/gamma_butterfly.json",
+      "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/metadata.json",
+      "note": "Single K2,2 produces 16 embeddings instead of 8 injective embeddings; other fixtures mismatch or fail. Generic matcher is not a validated butterfly backend.",
+      "paper_id": "2022_gamma_reuse",
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "promoted_operation": null,
+      "screen_passed": 1,
+      "screen_total": 12,
+      "validation_status": "correctness_fail"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_gbfc/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2022_gbfc",
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2024_gbc_biclique/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2024_gbc_biclique",
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/24_graph_edit_distance_mcs/papers/2016_gpu_mcs_drug_discovery/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2016_gpu_mcs_drug_discovery",
+      "problem_dir": "24_graph_edit_distance_mcs",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": "30a8274f60778cb3e5da2c07e3b58b21abda164f",
+        "error": null,
+        "license_file": "code/LICENSE.MIT",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://gitlab.jsc.fz-juelich.de/dabah2/fast-ged.git",
+        "status": "cloned"
+      },
+      "evidence": "builds/fast_ged.json",
+      "metadata_path": "problems/24_graph_edit_distance_mcs/papers/2026_fast_ged/metadata.json",
+      "note": "javac is unavailable. No GED/MCS correctness claim.",
+      "paper_id": "2026_fast_ged",
+      "problem_dir": "24_graph_edit_distance_mcs",
+      "promoted_operation": null,
+      "validation_status": "build_blocked"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": "fatal: unable to access 'http://biocenter.shu.edu.cn/software/index.php/hga/': Failed to connect to biocenter.shu.edu.cn port 80 after 5 ms: Couldn't connect to server",
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": "http://biocenter.shu.edu.cn/software/index.php/hga",
+        "status": "clone_failed"
+      },
+      "metadata_path": "problems/25_network_alignment/papers/2015_hga_2n/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2015_hga_2n",
+      "problem_dir": "25_network_alignment",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/25_network_alignment/papers/2023_cualign/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2023_cualign",
+      "problem_dir": "25_network_alignment",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/25_network_alignment/papers/2024_gpu_local_network_alignment/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2024_gpu_local_network_alignment",
+      "problem_dir": "25_network_alignment",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/26_hop_constrained_cycle_path_enumeration/papers/2014_gpu_chordless_cycles/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2014_gpu_chordless_cycles",
+      "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/26_hop_constrained_cycle_path_enumeration/papers/2022_gpu_elementary_circuits/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2022_gpu_elementary_circuits",
+      "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": "61e2c94def74d84d4d79d59c7499218ab75d720e",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/mrprajesh/gpuSteiner",
+        "status": "cloned"
+      },
+      "evidence": "results/gpusteiner.json",
+      "metadata_path": "problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/metadata.json",
+      "note": "8/8 singleton-group tree fixtures: cost and complete returned edge set checked. General group Steiner and approximation guarantees unverified.",
+      "paper_id": "2021_gpusteiner_kmb",
+      "problem_dir": "27_group_steiner_tree",
+      "promoted_operation": null,
+      "screen_passed": 8,
+      "screen_total": 8,
+      "validation_status": "partial_pass"
+    },
+    {
+      "code": {
+        "commit": "f3da24f2621b9dcde89f71f224e4ca49c5e5d4bc",
+        "error": null,
+        "license_file": null,
+        "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+        "local_path": "code",
+        "source_url": "https://github.com/yosephbasileal/group-steiner-vlsi-routing-gpu",
+        "status": "cloned"
+      },
+      "evidence": "results/gst_vlsi.json",
+      "metadata_path": "problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/metadata.json",
+      "note": "2/2 singleton-group path costs. General group coverage and certificate checks remain missing; no explicit license detected.",
+      "paper_id": "2022_gpu_vlsi_gst",
+      "problem_dir": "27_group_steiner_tree",
+      "promoted_operation": null,
+      "screen_passed": 2,
+      "screen_total": 2,
+      "validation_status": "partial_pass"
+    },
+    {
+      "code": {
+        "commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+        "error": null,
+        "license_file": null,
+        "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+        "local_path": "code",
+        "source_url": "https://github.com/toziki/GPU4GST-sigmod",
+        "status": "cloned"
+      },
+      "evidence": "results/gpu4gst.json",
+      "metadata_path": "problems/27_group_steiner_tree/papers/2025_gpu4gst/metadata.json",
+      "note": "Both 8- and 64-vertex path queries time out after 20 seconds, even after selecting the available GPU. No returned tree witness; no explicit license detected.",
+      "paper_id": "2025_gpu4gst",
+      "problem_dir": "27_group_steiner_tree",
+      "promoted_operation": null,
+      "screen_passed": 0,
+      "screen_total": 2,
+      "validation_status": "correctness_fail"
+    },
+    {
+      "code": {
+        "commit": "82b20dc261ea8d097ecd31c2d2ad07c218abc488",
+        "error": null,
+        "license_file": "code/LICENSE.rst",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/pnnl/ripples",
+        "status": "cloned"
+      },
+      "evidence": "builds/curipples_configure.json",
+      "metadata_path": "problems/28_influence_maximization/papers/2020_curipples/metadata.json",
+      "note": "CMake cannot find spdlog; dependency set is not installed. No algorithm correctness claim.",
+      "paper_id": "2020_curipples",
+      "problem_dir": "28_influence_maximization",
+      "promoted_operation": null,
+      "validation_status": "build_blocked"
+    },
+    {
+      "code": {
+        "commit": "d84b81a47606aa7912a8d1a96770568f92f5c98d",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/LIS-Laboratory/gim",
+        "status": "cloned"
+      },
+      "evidence": "results/gim.json",
+      "metadata_path": "problems/28_influence_maximization/papers/2021_gim/metadata.json",
+      "note": "18/18 probability-one IC screens meet the predeclared 0.63 quality threshold. General probabilities, LT semantics and failure bounds remain unvalidated.",
+      "paper_id": "2021_gim",
+      "problem_dir": "28_influence_maximization",
+      "promoted_operation": null,
+      "screen_passed": 18,
+      "screen_total": 18,
+      "validation_status": "partial_pass"
+    },
+    {
+      "code": {
+        "commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+        "error": null,
+        "license_file": null,
+        "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+        "local_path": "code",
+        "source_url": "https://github.com/ggokturk/infuser",
+        "status": "cloned"
+      },
+      "evidence": "results/superfuser.json",
+      "metadata_path": "problems/28_influence_maximization/papers/2021_superfuser/metadata.json",
+      "note": "17/18 probability-one screens meet the 0.63 target. One 64-chain run selects vertex 25 (spread 39/64, below the test threshold). This is a failed quality screen, not a proof that every heuristic run is invalid.",
+      "paper_id": "2021_superfuser",
+      "problem_dir": "28_influence_maximization",
+      "promoted_operation": null,
+      "screen_passed": 17,
+      "screen_total": 18,
+      "validation_status": "correctness_fail"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/28_influence_maximization/papers/2024_difuser/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2024_difuser",
+      "problem_dir": "28_influence_maximization",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/29_simrank_vertex_similarity/papers/2023_clipsim/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2023_clipsim",
+      "problem_dir": "29_simrank_vertex_similarity",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/30_balanced_graph_partitioning/papers/2024_gkway/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2024_gkway",
+      "problem_dir": "30_balanced_graph_partitioning",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/30_balanced_graph_partitioning/papers/2024_hyperg/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2024_hyperg",
+      "problem_dir": "30_balanced_graph_partitioning",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/30_balanced_graph_partitioning/papers/2025_igkway/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2025_igkway",
+      "problem_dir": "30_balanced_graph_partitioning",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": "fatal: repository 'http://tda.gatech.edu/software/matchmaker2/index.html/' not found",
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": "http://tda.gatech.edu/software/matchmaker2/index.html",
+        "status": "clone_failed"
+      },
+      "metadata_path": "problems/31_bipartite_matching_assignment/papers/2013_deveci_mcm_gpu/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2013_deveci_mcm_gpu",
+      "problem_dir": "31_bipartite_matching_assignment",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+        "error": null,
+        "license_file": "code/LICENSE.txt",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/paclopes/HungarianGPU",
+        "status": "cloned"
+      },
+      "evidence": "results/hungarian.json",
+      "metadata_path": "problems/31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json",
+      "note": "11/11 square integer minimum-cost assignment tests versus SciPy, including size 64. Only the bounded perfect-assignment profile is promoted.",
+      "paper_id": "2019_hungariangpu",
+      "problem_dir": "31_bipartite_matching_assignment",
+      "promoted_operation": "linear-assignment",
+      "promotion_evidence": "results/library_expansion.json",
+      "screen_passed": 11,
+      "screen_total": 11,
+      "validation_status": "validated_profile"
+    },
+    {
+      "code": {
+        "commit": "85dc76604835484d9cbc0f12b243c9c290737e75",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/burtscher/graphBplus",
+        "status": "cloned"
+      },
+      "evidence": "results/graphbplus.json",
+      "metadata_path": "problems/32_signed_network_structural_balance/papers/2021_graphbplus/metadata.json",
+      "note": "Three execution smoke checks succeeded. Output is edge/tree sampling statistics rather than the required minimum-frustration partition and certificate. Mathematical correctness is not certified.",
+      "paper_id": "2021_graphbplus",
+      "problem_dir": "32_signed_network_structural_balance",
+      "promoted_operation": null,
+      "screen_passed": 3,
+      "screen_total": 3,
+      "validation_status": "artifact_mismatch"
+    },
+    {
+      "code": {
+        "commit": "230b2e8b7e82a39e7e627424a77ae724f7f8a92c",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/burtscher/ECL-SGB",
+        "status": "cloned"
+      },
+      "evidence": "results/ecl_sgb.json",
+      "metadata_path": "problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/metadata.json",
+      "note": "Three execution smoke checks succeeded. Output is edge/tree sampling statistics rather than the required minimum-frustration partition and certificate. Mathematical correctness is not certified.",
+      "paper_id": "2026_ecl_sgb",
+      "problem_dir": "32_signed_network_structural_balance",
+      "promoted_operation": null,
+      "screen_passed": 3,
+      "screen_total": 3,
+      "validation_status": "artifact_mismatch"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/33_transitive_closure_reachability/papers/2021_atc/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2021_atc",
+      "problem_dir": "33_transitive_closure_reachability",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/harp-lab/gdlog",
+        "status": "cloned"
+      },
+      "evidence": "results/gdlog_tc.json",
+      "metadata_path": "problems/33_transitive_closure_reachability/papers/2024_gdlog/metadata.json",
+      "note": "8/8 full pair-set checks. Native adapter also passes a 128-cycle (16,384 pairs), removing the diagnostic printer cap. SM89 is pinned after the inherited SM52 build failed.",
+      "paper_id": "2024_gdlog",
+      "problem_dir": "33_transitive_closure_reachability",
+      "promoted_operation": "transitive-closure",
+      "promotion_evidence": "results/library_expansion.json",
+      "screen_passed": 8,
+      "screen_total": 8,
+      "validation_status": "validated_profile"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": null,
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": null,
+        "status": "not_available"
+      },
+      "metadata_path": "problems/33_transitive_closure_reachability/papers/2026_curpq/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2026_curpq",
+      "problem_dir": "33_transitive_closure_reachability",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": "8f50c31e0a5b796624b9c709e623e503c8aee968",
+        "error": null,
+        "license_file": null,
+        "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+        "local_path": "code",
+        "source_url": "https://github.com/hsiaoko/HyperBlocker",
+        "status": "cloned"
+      },
+      "evidence": "builds/hyperblocker_configure.json",
+      "metadata_path": "problems/34_entity_resolution_blocking/papers/2025_hyperblocker/metadata.json",
+      "note": "CMake cannot find gflags; required dependency/submodule tree is incomplete. No entity-resolution correctness claim.",
+      "paper_id": "2025_hyperblocker",
+      "problem_dir": "34_entity_resolution_blocking",
+      "promoted_operation": null,
+      "validation_status": "build_blocked"
+    },
+    {
+      "code": {
+        "commit": null,
+        "error": "fatal: repository 'https://cs.txstate.edu/~burtscher/research/ECL-CC/' not found",
+        "license_file": null,
+        "license_note": null,
+        "local_path": null,
+        "source_url": "https://cs.txstate.edu/~burtscher/research/ECL-CC/",
+        "status": "clone_failed"
+      },
+      "metadata_path": "problems/35_connected_components/papers/2018_eclcc/metadata.json",
+      "note": "No local executable GPU implementation to validate.",
+      "paper_id": "2018_eclcc",
+      "problem_dir": "35_connected_components",
+      "promoted_operation": null,
+      "validation_status": "no_local_code"
+    },
+    {
+      "code": {
+        "commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+        "error": null,
+        "license_file": "code/LICENSE",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/burtscher/ECL-SCC",
+        "status": "cloned"
+      },
+      "evidence": "results/ecl_scc.json",
+      "metadata_path": "problems/35_connected_components/papers/2023_eclscc/metadata.json",
+      "note": "13/13 whole-partition oracle checks. Native facade additionally checks weak mode, canonical labels, isolated vertices, mixed external IDs, loops and duplicate arcs.",
+      "paper_id": "2023_eclscc",
+      "problem_dir": "35_connected_components",
+      "promoted_operation": "connected-components",
+      "promotion_evidence": "results/library_expansion.json",
+      "screen_passed": 13,
+      "screen_total": 13,
+      "validation_status": "validated_profile"
+    },
+    {
+      "code": {
+        "commit": "9da3af0b7ae72dbfb04b2a7b6eaf28f4d9c13344",
+        "error": null,
+        "license_file": "code/COPYING",
+        "license_note": null,
+        "local_path": "code",
+        "source_url": "https://github.com/govertb/GPUGraphLayout",
+        "status": "cloned"
+      },
+      "evidence": "builds/gpu_layout.json",
+      "metadata_path": "problems/36_graph_layout_force_directed/papers/2017_gpugraphlayout/metadata.json",
+      "note": "Build cannot find the pngwriter submodule header. No layout correctness claim.",
+      "paper_id": "2017_gpugraphlayout",
+      "problem_dir": "36_graph_layout_force_directed",
+      "promoted_operation": null,
+      "validation_status": "build_blocked"
+    }
+  ],
+  "environment": {
+    "architecture": "SM89",
+    "cuda": "12.8",
+    "gcc": "13.3",
+    "gpu": "NVIDIA RTX 6000 Ada Generation",
+    "seed": 20261004
+  },
+  "generated_at": "2026-10-04T15:49:01.531351+00:00",
+  "public_api_checks": {
+    "evidence": "results/library_expansion.json",
+    "passed": 99,
+    "total": 99
+  },
+  "scope": "New paper records for problems 21\u201337; 19 local code snapshots and 18 without local code. Earlier validation classifications remain separate.",
+  "summary": {
+    "artifact_mismatch": 2,
+    "build_blocked": 4,
+    "correctness_fail": 4,
+    "no_local_code": 18,
+    "partial_pass": 4,
+    "validated_profile": 5
+  },
+  "worker_memcheck": {
+    "evidence": "results/worker_memcheck.json",
+    "passed": 4,
+    "total": 4
+  }
+}

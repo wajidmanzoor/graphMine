@@ -64,7 +64,7 @@
           <p class="section-kicker">System B</p><h2>GPU server</h2>
           <div class="component"><strong>FastAPI + orchestrator</strong>Sessions, validation, isolated workspaces, durable queue, and events.</div>
           <div class="component"><strong>GPU 0 · Qwen3.8-27B-FP8</strong>One vLLM instance, with separate planner and analyst prompts/schemas.</div>
-          <div class="component"><strong>GPU 1 · GraphMine</strong>The precompiled 13-operation CLI and its validated CUDA backends.</div>
+          <div class="component"><strong>GPU 1 · GraphMine</strong>The precompiled 18-operation CLI and its validated CUDA backends.</div>
           <div class="component"><strong>Local state</strong>SQLite metadata plus original inputs, normalized graphs, logs, and JSON results.</div>
         </article>
       </section>
@@ -74,7 +74,7 @@
         <div class="steps">
           <article class="step"><b>01 · CONTEXT</b><h3>Choose a domain</h3><p>Fraud, bioinformatics, cybersecurity, social networks, e-commerce, knowledge graphs, infrastructure, mobility, or general analysis.</p></article>
           <article class="step"><b>02 · INPUT</b><h3>Upload research files</h3><p>Canonical graph JSON and edge lists are normalized. Query graphs, motifs, updates, and partitions receive explicit roles.</p></article>
-          <article class="step"><b>03 · PLAN</b><h3>Resolve formal intent</h3><p>The planner selects one of the 20 exact problem definitions and only continues when a validated operation exists.</p></article>
+          <article class="step"><b>03 · PLAN</b><h3>Resolve formal intent</h3><p>The planner selects one of the 37 exact problem definitions and only continues when a validated operation exists.</p></article>
           <article class="step"><b>04 · VALIDATE</b><h3>Constrain execution</h3><p>The orchestrator checks every backend, parameter, output flag, file ID, ownership boundary, and compiled capability.</p></article>
           <article class="step"><b>05 · RUN</b><h3>Execute on the GPU</h3><p>A single durable worker owns the compute GPU. Queued, running, interpreting, and terminal states stream live to the browser.</p></article>
           <article class="step"><b>06 · EXPLORE</b><h3>Interpret and visualize</h3><p>The analyst grounds findings in result paths and chooses safe tables, metrics, charts, timelines, or interactive network views.</p></article>
@@ -108,7 +108,7 @@ http://GPU_SERVER_LAN_IP:8000</code></pre>
 
       <section class="system-section">
         <p class="section-kicker">Evaluation before optimization</p><h2>Keep correctness and domain coverage measurable</h2>
-        <p>The checked-in query corpus covers every operation and all nine domains in separate future-training and held-out splits. Reports preserve the corpus hash, generation settings, per-domain scores, raw constrained output, errors, and latency. The current Qwen baseline passed all 13 held-out routes and all 13 held-out execution plans. The planning gate checks exact parameters, optional outputs, auxiliary-file roles, missing inputs, and backend allowlists through the production validator. These are regression gates for the curated set, not a claim of general language understanding. Backend/configuration optimization remains a later, separately evaluated selector based on graph features and hardware; it never weakens the deterministic plan validator.</p>
+        <p>The checked-in query corpus covers every operation and all nine domains in separate future-training and held-out splits. The V1 release matrix adds all 117 domain-operation combinations plus unsupported and ambiguous safety cases. Reports preserve the corpus hash, generation settings, per-domain scores, raw constrained output, errors, and latency. The planning gate checks exact parameters, optional outputs, auxiliary-file roles, missing inputs, and backend allowlists through the production validator. These are regression gates for the curated set, not a claim of general language understanding. The benchmark-derived selector ranks only compiled, validated, plan-compatible backends from correctness-gated timing data; an invalid or inapplicable policy falls back without weakening the deterministic validator.</p>
         <p><a href="https://github.com/wajidmanzoor/graphMine/blob/main/agent/evaluation/reports/qwen3.8-27b-fp8-held-out.json">Routing report →</a> · <a href="https://github.com/wajidmanzoor/graphMine/blob/main/agent/evaluation/reports/qwen3.8-27b-fp8-held-out-planning.json">Planning report →</a></p>
       </section>
     </main>

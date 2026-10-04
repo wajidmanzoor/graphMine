@@ -1,0 +1,16 @@
+{
+  "paper_id": "2020_curipples",
+  "title": "cuRipples: Influence Maximization on Multi-GPU Systems",
+  "year": 2020,
+  "venue": "ACM ICS 2020",
+  "doi": null,
+  "publication_url": "https://eecs.wsu.edu/~ananth/papers/Minutoli_ICS20.pdf",
+  "pdf_url": "https://eecs.wsu.edu/~ananth/papers/Minutoli_ICS20.pdf",
+  "code_url": "https://github.com/pnnl/ripples",
+  "semantic_fit": "exact",
+  "gpu_scope": "Hybrid CPU+GPU RIS-based influence maximization scaling to multi-GPU distributed platforms; BSD-3-Clause licensed.",
+  "notes": "cuRipples is the GPU configuration of PNNL's broader Ripples C++/MPI/OpenMP/CUDA library.",
+  "problem_id": "influence_maximization",
+  "problem_dir": "28_influence_maximization",
+  "research_cutoff": "2026-09-30"
+}

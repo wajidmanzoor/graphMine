@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-01T16:45:41.005091+00:00",
+  "suite": "graphmine-v1-correctness-gated-smoke",
+  "hardware": "NVIDIA RTX 6000 Ada Generation",
+  "graph_gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+  "platform": "Linux-6.17.0-23-generic-x86_64-with-glibc2.39",
+  "warmups": 1,
+  "repetitions": 3,
+  "correct_records": 69,
+  "total_records": 69,
+  "compiled_backends_exercised": 23,
+  "operations_exercised": 13,
+  "wall_ms": {
+    "minimum": 227.667293,
+    "median": 275.602700,
+    "maximum": 536.509238
+  },
+  "peak_gpu_memory_mib": 7442,
+  "policy_evaluation": {
+    "evaluated_cases": 14,
+    "oracle_matches": 14,
+    "median_regret_ratio": 1.0,
+    "maximum_regret_ratio": 1.0,
+    "note": "This is an in-sample smoke evaluation, not a generalization claim."
+  },
+  "sha256": {
+    "manifest": "37620fcfc11328bb65cd1be4daad9f24faf434446a4897ba792d09de9690556f",
+    "binary": "baf00657602285c3ab82125b76f7380704d1474a4e299b38c28592df86ad8e47",
+    "full_report": "305911b593e9bc05192a6d80677a931632c15934e090026ca4e6a564238df3e8",
+    "backend_policy": "c78d529550ae837146a660f8358965d132488c3468b1d517c02e2164c5d86340",
+    "policy_evaluation": "9f63bdfd182991f399ff32614d72e6964aa90691f6c428d7ecfb38da2708713f"
+  }
+}

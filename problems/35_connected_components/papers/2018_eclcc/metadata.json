@@ -1,0 +1,16 @@
+{
+  "paper_id": "2018_eclcc",
+  "title": "A High-Performance Connected Components Implementation for GPUs",
+  "year": 2018,
+  "venue": "ACM HPDC 2018",
+  "doi": "10.1145/3208040.3208041",
+  "publication_url": "https://doi.org/10.1145/3208040.3208041",
+  "pdf_url": "https://userweb.cs.txstate.edu/~mb92/papers/hpdc18.pdf",
+  "code_url": "https://cs.txstate.edu/~burtscher/research/ECL-CC/",
+  "semantic_fit": "exact",
+  "gpu_scope": "ECL-CC: GPU weakly-connected-components algorithm using parallelism-friendly pointer jumping for union-find, faster on average than prior CPU and GPU codes across 18 tested graphs.",
+  "notes": "Code is distributed from an institutional research page rather than a git repository; a git clone of this URL is expected to fail and is recorded honestly rather than hidden.",
+  "problem_id": "connected_components",
+  "problem_dir": "35_connected_components",
+  "research_cutoff": "2026-09-30"
+}

@@ -1,0 +1,63 @@
+{
+  "graph": {
+    "id": "delivery-travel-times",
+    "directed": true,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "domain": "transportation_mobility",
+      "description": "One-way roads; edge weights are travel time in minutes.",
+      "weight_unit": "minutes"
+    }
+  },
+  "vertices": [
+    {
+      "id": "Depot",
+      "label": "Depot"
+    },
+    {
+      "id": "North",
+      "label": "North"
+    },
+    {
+      "id": "South",
+      "label": "South"
+    },
+    {
+      "id": "Clinic",
+      "label": "Clinic"
+    }
+  ],
+  "edges": [
+    {
+      "id": "event-1",
+      "source": "Depot",
+      "target": "North",
+      "weight": 2
+    },
+    {
+      "id": "event-2",
+      "source": "North",
+      "target": "Clinic",
+      "weight": 9
+    },
+    {
+      "id": "event-3",
+      "source": "Depot",
+      "target": "South",
+      "weight": 4
+    },
+    {
+      "id": "event-4",
+      "source": "South",
+      "target": "Clinic",
+      "weight": 3
+    },
+    {
+      "id": "event-5",
+      "source": "North",
+      "target": "South",
+      "weight": 1
+    }
+  ]
+}

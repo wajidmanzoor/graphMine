@@ -1,0 +1,16 @@
+{
+  "command": [
+    "nvcc",
+    "-O2",
+    "-arch=sm_89",
+    "-std=c++17",
+    "/home/wajid/projects/graphDatabaseAgent/problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/code/src/ECL-SGB.cu",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/bin/ecl_sgb"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 1.5710967779159546,
+  "exit_code": 0,
+  "log": "builds/ecl_sgb.log",
+  "timeout": false
+}

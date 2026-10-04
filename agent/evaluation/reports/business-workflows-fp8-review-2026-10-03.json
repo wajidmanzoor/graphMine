@@ -1,0 +1,440 @@
+{
+  "created_at": "2026-10-03T22:18:51.421827+00:00",
+  "mode": "practical-business-serving-reference-review-v1",
+  "complete": true,
+  "passed": 21,
+  "total": 21,
+  "workflows_passed": 9,
+  "workflows_total": 9,
+  "median_turn_seconds": 41.523352794349194,
+  "maximum_turn_seconds": 63.67726988531649,
+  "stage_counts": {
+    "RouteDecision": 21,
+    "PlanDraft": 17,
+    "GroundedNarrative": 17,
+    "TurnDecision": 9
+  },
+  "numeric_filter_equivalence_applied": 0,
+  "original_grader_issues": [],
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "adapter_used": false,
+  "native_gpu": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+  "protocol": {
+    "suite_plan_sha256": "d9af47a2417c3a571986cfdc25bfd696d668258b5d9ee269d823bacca3dba410",
+    "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+    "source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+    "arms": [
+      "serving_fp8"
+    ],
+    "repeats": 1,
+    "route_context_budget": 16384,
+    "route_completion_budget": 2400,
+    "routing_only": true,
+    "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+    "llm_plan_reasoning_effort": "medium",
+    "llm_analyst_reasoning_effort": "medium",
+    "native_gpu": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+    "local_route_environment": null,
+    "scope": "Complete application development workflows. GPU placement is recorded; no concurrency/throughput or novice-usability claim.",
+    "real_corpus": null,
+    "questions": null,
+    "final_holdout": false,
+    "deployment_changed": false
+  },
+  "request_evidence": [
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220322.507868Z_event_f7c0921a6c9f425bb7907f6139c51b35.json",
+      "sha256": "be6ee6d842a1146a30cb5435cec13c9edcaaa20cd3582bc3cb1d1d50a002cc33",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220332.969898Z_event_fb88408d5c624e02ad0d5aa5da521bed.json",
+      "sha256": "7880ab8c1fb411835a3cc2e37c184bd13a38bfef86c87044377033b91358793c",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220349.559599Z_event_63155edb5d5c4f75b4914326209ed13b.json",
+      "sha256": "0671629c674a3c6699308bd7d388e7880d1bac4ef2a28463c42488461fa7a774",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220353.610037Z_event_bfcce0351ece458fbeff208aceb38599.json",
+      "sha256": "07575e47e97555579ba6641b3d20c7e3ebc674962b5fe6b0f9e7ebb6c3bfa52d",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220358.411010Z_event_1caa4a9579df48bfafdd18f55059b1f0.json",
+      "sha256": "afe5ac6a4a4935dea00b01bdd00321a7e4f6d9ac3a4676aae3ddae3dec516869",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220412.778235Z_event_82dfd23ee5fe4842a0847a1ee5a88c02.json",
+      "sha256": "59fb36635c54bb6b4b64c931238e2139e1e9a83018d7a04f6187a94436f6680b",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220447.848090Z_event_f24a0bdd46ed443d8892e74194206250.json",
+      "sha256": "bf1e8a1bf44c7c67c2b8591ffdb72810c0365cea5ad896eadf8728d59085ed30",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220452.914308Z_event_01360b348631426b8686a14cf0e82288.json",
+      "sha256": "1c43e8f0791d71187d5bf3dbe6c882a6ca859e1242181e94eb34dbb806bdf683",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220459.279065Z_event_1639fa7ee9b94a9b81e9bb76d3987a4d.json",
+      "sha256": "768e9d22283943c0179c24b8fdfc70e0c3db5b85babd49e8df14c1f409e0b15a",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220514.156832Z_event_46e9c4d860ee4865b4d704398133d996.json",
+      "sha256": "fbbb8600e1675731d6ddae12f3038963e8c411c312cb9ee19ee5d2609ccbc3ab",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_9b525bb0b7034bc2b894d17a6f91b970/events/20261003T220528.447909Z_event_613941ceceb6488a947e85b87af30c4e.json",
+      "sha256": "8b34499309bcb21fd0e53f9bf090d6da987ee07688784f853c6a2687b7a36e71",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220533.961735Z_event_2ac6f8f0547f4e8597a793d527bab51c.json",
+      "sha256": "cc1d3ef80c9b81a657ea6cb8a416355581a8909035d2a714e5dfa8bb9276f6e0",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220546.153653Z_event_f91475112ef540169defc4449c2e950d.json",
+      "sha256": "ac7ead783ba20e83d536ccbcd09394c465357fa753355e442785e5a1bd049354",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220610.635476Z_event_80f1d24954444d28918c23eb6ff58c48.json",
+      "sha256": "07f361fff562201efc5805cab2d0fc03c3961e5a69b9089205e952de8143f6e3",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220614.243280Z_event_a91ca5b754b14f78a5065fd9b3e18345.json",
+      "sha256": "e4f85d056df0764174a05b5644941df2a8c0b4f32ae8d5fd32b28e7750dcd5e7",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220620.429526Z_event_25a7491dd4a74d148a9bbac903d0a3a8.json",
+      "sha256": "e8927be932b2f7a9569e78f88d34eaf3d0168dcd91e0a7fbc426a3045c9662bd",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220633.417877Z_event_fd5295c754724d0b8b97bc12b939aa6e.json",
+      "sha256": "464e10def906d8406a00411fab3124262bb30270703285e51665e1550e3d7912",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220659.610471Z_event_0808200c959c481587736c2e03c75b66.json",
+      "sha256": "57bfd332c7e6262d9db14a1122a36cd228e88840235f4b8c6b2dc7ee85896511",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220704.018265Z_event_556fec87de5d44b19888d3b79e11df47.json",
+      "sha256": "529a364591044e40331326b75186d1c8a582f2080064963af814aadc9e513df5",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220710.327750Z_event_5c3fc88b91a04c13b6a8eda1fa239943.json",
+      "sha256": "154a07776ffeffe27e87e823a08f06a9df678faf70f43f568b3f673bf448adb0",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220723.031930Z_event_cac0a1324dff4f4e96d1fbb5a3f0fd6f.json",
+      "sha256": "f33bad08222cca69fd980dbf714a72dd3f04cd2d1afdeba8107e5b31895cb8be",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_90c891097a6a4ced96d760e6bf7e2e6c/events/20261003T220740.296826Z_event_4b670f5906e048f8abe163b634473cc1.json",
+      "sha256": "ab561cd6a5132d4fa7d265ad83e45db3098e89a8559d60a43171796e0705f166",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_b09c74c31f0b48429253d12239ff6b22/events/20261003T220745.569605Z_event_af6f9cba6d314e7eb4f8c69335cde348.json",
+      "sha256": "837f2a136926d012c312f90a2122ba139ee917de6514de26d136542b6bc219f8",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_b09c74c31f0b48429253d12239ff6b22/events/20261003T220759.248240Z_event_907ed457b0024fabbb6763f2d978473d.json",
+      "sha256": "9201b77cf1792db16ae5fd9972a66edf7e4dd1090c38b826c28d1a059b39073f",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_b09c74c31f0b48429253d12239ff6b22/events/20261003T220811.666183Z_event_c485fcbd76d640fab8d863558deee334.json",
+      "sha256": "15c327217d86251cd2f39b0595540593fd3c59e8a748ea951601bc0f3c805a2b",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_b09c74c31f0b48429253d12239ff6b22/events/20261003T220837.541240Z_event_f07b755375c843909414dca6b7ccf0d0.json",
+      "sha256": "df29d15e7d916f7a5b8cbff2cd324d2fe6da3e0811c0b7b2d2610522a1ac6ef5",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_4b0fc67da9f74d91aad65836588218d0/events/20261003T220841.016216Z_event_59e6c07b458246809e993ae20030ecdb.json",
+      "sha256": "975cb447fe566f5cbea9d5ef9e615d3593655fb6b067a7682553103ed2154fe4",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_4b0fc67da9f74d91aad65836588218d0/events/20261003T220851.603383Z_event_23504faa33d147b98e64c9467a41de7f.json",
+      "sha256": "4c0dcc241b65141f431d8ab3835698da13f1fa9382f31c674caa3ba4135f9d62",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_4b0fc67da9f74d91aad65836588218d0/events/20261003T220903.206711Z_event_d671c517eed14e4f8526d02715cad35f.json",
+      "sha256": "d538dbdb5ddfd264b0a41e3e6ebc522cd93b4c5ac324e072339b2f90096a549a",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_4b0fc67da9f74d91aad65836588218d0/events/20261003T220922.872861Z_event_219966ecdd9f4ab7a90ab6f98aeef7a9.json",
+      "sha256": "072c022d13cdb601d340951e2a65198f898ae37618968f9d837104f924e0e73e",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_13b27c45497f4febb69e239e883fad7a/events/20261003T220927.555408Z_event_97fcdda72b29434086fe24df0120a5c7.json",
+      "sha256": "7247049d67b7af7942157e4910ee5875560adbef306569137f09da80a5062553",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_13b27c45497f4febb69e239e883fad7a/events/20261003T220940.712895Z_event_81c896a76dd741c29530248bae025251.json",
+      "sha256": "85ba872b4c07668f83426252abc36ed583b526b2be870b622fec9c9dc0fb1c75",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_13b27c45497f4febb69e239e883fad7a/events/20261003T220958.545935Z_event_1080037ebf564979bc3c94e0a938a2ee.json",
+      "sha256": "e5b8a5c9641edca926d512fa5eb4b0ae33b19b6cc0916d309d41d14cb52fbf96",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_13b27c45497f4febb69e239e883fad7a/events/20261003T221001.228784Z_event_7283c354d1974758acf9670a85702029.json",
+      "sha256": "23548f26c3806128567bab5bd64fc5f5e4fb8a97ece35255fe6c700e0da2ae2e",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_13b27c45497f4febb69e239e883fad7a/events/20261003T221005.521153Z_event_979323c157f34ebc810742a645892585.json",
+      "sha256": "f50d66b1a884cdafc3c987e6506838d801ac96193de7c1c7b7945557e9771211",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_13b27c45497f4febb69e239e883fad7a/events/20261003T221021.616991Z_event_9d2dafe80c3641b2b1720c27722a91c9.json",
+      "sha256": "381e952d04a4cf7d86ce2c0844b68174e4c93a274b6ea14eaefedf500e280566",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_13b27c45497f4febb69e239e883fad7a/events/20261003T221036.195083Z_event_04795cd57bab4b7f8e6b0ceb5bf819a2.json",
+      "sha256": "a90cef6081effd8993ef2207f02f091bc6b571a710f8c57e097dbadffe7f857c",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_a64ab321938e4f72b43de348f1ee2390/events/20261003T221039.672671Z_event_c498aeef629d4bcb803d7fbc6a525ec1.json",
+      "sha256": "4f1b387255691c9779b0ab0a850b68384b930c22eec140bd2e7e2ddbbccf5afb",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_a64ab321938e4f72b43de348f1ee2390/events/20261003T221054.316613Z_event_7b390bf3cbc7448e985d8c410da960c8.json",
+      "sha256": "ee3910d3b2ef1215d6c0dc5da3c69bfce2d655cbe1eff767861c6e0b41016c26",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_a64ab321938e4f72b43de348f1ee2390/events/20261003T221127.862006Z_event_1b6f73d848f4470085edd750318f42cf.json",
+      "sha256": "a270de2c8614d5ad6320af3b6ca597add95a64b1b3aa835f4d1084da3170f52b",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_a64ab321938e4f72b43de348f1ee2390/events/20261003T221131.513294Z_event_7752596cc5ec4985a19589c292754ab3.json",
+      "sha256": "804ad858f420bf88f5c19efdf92fee28da0f6c0ee7fd128371eb142038b002bc",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_a64ab321938e4f72b43de348f1ee2390/events/20261003T221137.458015Z_event_31068e5d51c74b5ca5f205f107b0b7c6.json",
+      "sha256": "a8e1a20fafe8456705f1fb151be61bceb16b8dc23dd043a8e882a52360db17c7",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_a64ab321938e4f72b43de348f1ee2390/events/20261003T221153.274918Z_event_844acf3d2f7f483f9b54987067b6653b.json",
+      "sha256": "99bc70fc43e32fb5dcdd72dfbc57c108170d84b9b6deaddecb89d2669491c94d",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_a64ab321938e4f72b43de348f1ee2390/events/20261003T221218.687326Z_event_ad894d5433a543d1a304e6956079e14f.json",
+      "sha256": "624e59ef7db32eacebfeeb4c2360531b36f23b31c278262eaf20570f0fab6d11",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221222.158340Z_event_c324f1679a4948d0899704c375462243.json",
+      "sha256": "49b56c595f0eabac87f3952cab44eba435e3ce109a7b46524bc0783ecf37ccf0",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221237.199787Z_event_0b3192a904bb4bbd92acedfa158d10d9.json",
+      "sha256": "7152b7ac5e1d6065c77c2d3109fbeaf3e5369b6332c9cb362d73fc687f72be94",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221320.159256Z_event_d8ad7f4934464b96ab4b6896c12c7c32.json",
+      "sha256": "4a11c4002365c6f09be03c631b010f209241a1691d7beb24421429907e24143a",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221325.840597Z_event_c97743765d794ec8a7b9f5992455a7d8.json",
+      "sha256": "6c9ddb0b1e63d68bb9de73952b9ff9b44f1019c02a13ed27594112a518f9410d",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221331.747550Z_event_3b3ede8615eb4ebda8c0dac22207508d.json",
+      "sha256": "d14085e82a2412bc753e9fe6d4b1057c8932a6c55cac702b0fb708574d9ceb40",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221349.704646Z_event_77b3c4607bdc4e86a79aa4c9d18e829f.json",
+      "sha256": "bd826aed7f612e5e5d36ff257a53697c80c5dcd0ef6b3b4454a3eeb702e3c00d",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221404.213629Z_event_e9c6e690913348f59e4a8609a0cf5345.json",
+      "sha256": "c674c6dd3a3cc307d2a8d1f1808af04a8ea8d4fa07cd8abaa5c93a8232ec0fb2",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221410.098640Z_event_dafbf89b047e4fedb6513da7f9d1333c.json",
+      "sha256": "f81902fd219a9928014ef0f438c77495e869622b8ca95c27624c54b1b534c0d0",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_37d52466f3c4489299a9d91d655bf251/events/20261003T221417.352931Z_event_8367fe5af4de4a6a8308600ee35dad66.json",
+      "sha256": "860f279fac28fe32862f130be65631697c9c551e2492d8524347b487bd5a7c38",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f330f5ef8eea42a9a32517f69c095540/events/20261003T221433.241792Z_event_bc0b2a0bb5504461953edd560e3c4fa9.json",
+      "sha256": "f2ab37aa32b7e5d8a1f8bdfdd67c25bce2406eefe9d6dec7b8a4fcbef7c762a7",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f330f5ef8eea42a9a32517f69c095540/events/20261003T221444.885242Z_event_1ffba35cc0e64ac69ce0045272309ba2.json",
+      "sha256": "7257d9fa71befad73b8de36032f41f4c464a97acc013d3862703da915700e475",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f330f5ef8eea42a9a32517f69c095540/events/20261003T221456.532938Z_event_292b666c9d004320b11df55558da306e.json",
+      "sha256": "d0c18abfeae0466d32c862e5870eb6747f382abf5040993bae1c5adeeaada4cf",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f330f5ef8eea42a9a32517f69c095540/events/20261003T221523.672669Z_event_47b627aea3ee4597ac39773511bb5857.json",
+      "sha256": "a4b8edba49582820e26fe92d5bf5b1abef8496d91f8e8ddc909df290d7e66ae6",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f330f5ef8eea42a9a32517f69c095540/events/20261003T221526.728091Z_event_7ba6f5b71039410f97bb8674cf55a9e7.json",
+      "sha256": "067ec70106ae86e86a1f8ce010a7eb53cc3c9b93c60ddabc79b8eb6b85d053a6",
+      "schema": "TurnDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f330f5ef8eea42a9a32517f69c095540/events/20261003T221531.716596Z_event_40d085deb7634dbdb4a14c05cc6b915c.json",
+      "sha256": "2bc824d5382c9d901fca5a14889278dea40eaafb720fc97ca839209f7f5be963",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f330f5ef8eea42a9a32517f69c095540/events/20261003T221547.039407Z_event_9d0d20de2b0a41fc968bce7a15312fe2.json",
+      "sha256": "4167e2a24cd34a9f123de27ee6c7f0f22706fbb547b4a5267bc1a9edf5beb6fb",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f330f5ef8eea42a9a32517f69c095540/events/20261003T221610.208247Z_event_10519b020f7d4b88bcc098395ae9606b.json",
+      "sha256": "c0b2e7b6f6f06a47dac60a109d2ce6d113d64e710ea27ed28fb15a6f198623f5",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f02b81d4a1d24991a6781bf51deb3cda/events/20261003T221614.657855Z_event_d0173fad4d5549f6bcd142ca4efa9581.json",
+      "sha256": "b031ee4c7a7e75374759de1990841309af72d9023995d26eadfb5ad0ecdf42c4",
+      "schema": "RouteDecision",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f02b81d4a1d24991a6781bf51deb3cda/events/20261003T221626.096806Z_event_56d29af105dc49d5873d123d92984aee.json",
+      "sha256": "f078b3aefa8fb0b7c6ecb597f1cf092dab0428277fae81f93c2e01b52501a98e",
+      "schema": "PlanDraft",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8-runtime/history/session_f02b81d4a1d24991a6781bf51deb3cda/events/20261003T221651.550436Z_event_43ec1b4fcc854a558eb0387aaa28809a.json",
+      "sha256": "3232d07d5aca6e39fd9eaa9a5669fae9d98ad091ae487809bc8e2a1a8d1364fb",
+      "schema": "GroundedNarrative",
+      "model": "Qwen/Qwen3.8-27B-FP8"
+    }
+  ],
+  "evidence_sha256": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/serving_fp8.json": "e6e0a1407eaaefe76e921b9a054d57cf89c534290551047f947f09234562e2f7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/protocol.json": "a2c9bb2a643bb68829c765b083b29fec3f73168575220dd2d755b6e046e6e499",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/business-workflows-fp8-v1/status.json": "40725d32e201e57cd15405dd8ceb0a20a18fa618456f1f7a8f16d940fde5c605",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83"
+  },
+  "scope": "One fresh serving-model trial on authored practical development conversations using validation graphs. A reference only; no revised-adapter output or measured fine-tuning gain. GPU sharing and precision differ from the local NF4 arms. No oracle feedback was sent.",
+  "reference_suite_binding": "The protocol records the original-adapter routing suite, but every model request uses the serving model. No adapter was loaded in this serving-only arm. Preserve that binding in later cross-candidate comparisons.",
+  "holdout_consumed": false,
+  "deployment_changed": false
+}

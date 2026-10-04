@@ -1,0 +1,13 @@
+K = 1, eps =  0.2, model = IC
+Reading the input file and creating CSR representation of G: done!
+# of nodes: 8
+# of edges: 7
+Estimating OPT
+x: 1 ,ci: 287
+Estimating OPT: done!
+# of required RR sets: 572
+Generating RR sets: done!
+Greedy seed set selection: done!
+Time: 1.19296 ms
+7.05153
+List of nodes in the seed set: 0

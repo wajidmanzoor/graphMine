@@ -1,0 +1,14 @@
+{
+  "command": [
+    "cmake",
+    "--build",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/consumer/build",
+    "-j2"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.4651870597153902,
+  "exit_code": 0,
+  "log": "builds/consumer_build.log",
+  "stdin_path": null,
+  "timeout": false
+}

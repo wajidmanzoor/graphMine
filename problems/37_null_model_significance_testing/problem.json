@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "null_model_significance_testing",
+  "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Given an observed graph and a declared structural statistic, determine how unusual the statistic's observed value is by comparing it against its distribution over an ensemble of randomized graphs sampled from a declared null model, typically one preserving the degree sequence.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed_or_undirected", "weights": "ignored_unless_null_model_preserves_them", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Remove self-loops unless the declared null_model explicitly permits them.", "Collapse parallel edges to a single edge unless the null_model explicitly preserves multi-edges.", "Preserve exact per-vertex degree (or in/out-degree for directed graphs) as the invariant held fixed by degree_preserving_configuration."]
+  },
+  "problem_inputs": [
+    {"name": "null_model", "type": "enum", "required": false, "default": "degree_preserving_configuration", "allowed_values": ["degree_preserving_configuration", "erdos_renyi"], "description": "Randomization family: preserve the exact degree sequence, or sample a uniform random graph with the same vertex and edge count."},
+    {"name": "statistic_definition", "type": "object", "required": true, "description": "Declarative reference to the structural statistic being tested (e.g. triangle count, a specific clique/motif count, modularity of a given partition, density)."},
+    {"name": "observed_value", "type": "number_or_null", "required": false, "default": null, "description": "The statistic's value on the real input graph; null means compute it directly from the graph using statistic_definition."},
+    {"name": "sample_count", "type": "integer", "required": true, "constraints": "value >= 1", "description": "Number of randomized graphs to generate for the null distribution."},
+    {"name": "random_seed", "type": "integer_or_null", "required": false, "default": null, "description": "Seed for reproducible randomization."}
+  ],
+  "required_outputs": [
+    {"name": "observed_value", "type": "number", "description": "Resolved observed statistic value (echoed input or computed from the graph)."},
+    {"name": "null_distribution_summary", "type": "object", "description": "Mean, standard deviation, minimum, and maximum of the statistic over the sample_count randomized graphs."},
+    {"name": "z_score", "type": "number_or_null", "description": "(observed_value - null_mean) / null_std; null when null_std is zero."},
+    {"name": "empirical_p_value", "type": "number", "description": "Fraction of randomized samples whose statistic is at least as extreme as observed_value."},
+    {"name": "complete", "type": "boolean", "description": "Whether all sample_count randomizations were successfully generated and evaluated."}
+  ],
+  "optional_outputs": [
+    {"name": "null_distribution_samples", "type": "array<number>", "description": "Raw per-sample statistic values, when the sample count is small enough to return in full."},
+    {"name": "randomization_diagnostics", "type": "object", "description": "Acceptance rate, mixing, or other diagnostics for an MCMC-based null model."}
+  ],
+  "solution_semantics": {
+    "objective": "Generate sample_count graphs drawn from null_model, each exactly satisfying its declared invariant, evaluate statistic_definition on each, and report observed_value's z_score and empirical_p_value relative to that null distribution.",
+    "exactness": "Every randomized sample must exactly satisfy null_model's invariant; the null_distribution_summary, z_score, and empirical_p_value are statistical estimates whose precision improves with sample_count, not exact quantities.",
+    "duplicate_policy": "Not applicable.",
+    "ordering": "Not applicable."
+  },
+  "validation_rules": [
+    "Every randomized sample underlying null_distribution_summary satisfies null_model's declared invariant exactly (e.g. an identical degree sequence, vertex count, and edge count to the input graph for degree_preserving_configuration).",
+    "z_score recomputes exactly from observed_value and null_distribution_summary's mean and standard deviation.",
+    "empirical_p_value recomputes exactly as the fraction of null_distribution_samples at least as extreme as observed_value, when samples are returned.",
+    "complete=true only when all sample_count randomizations succeeded and were evaluated."
+  ],
+  "edge_cases": [
+    "A graph whose degree sequence admits only one simple realization yields a null distribution with zero variance; z_score is reported as null rather than divided by zero.",
+    "sample_count=1 yields a valid but very high-variance estimate of the null distribution.",
+    "A statistic_definition invariant under the chosen null_model by construction (e.g. vertex count) trivially yields z_score zero.",
+    "Isolated (zero-degree) vertices remain isolated in every randomized sample under degree_preserving_configuration."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["invariant-preservation check on every randomized sample", "z-score and p-value recomputation", "null-distribution-summary consistency with returned samples"],
+    "performance": ["end-to-end time", "time per randomized sample generated", "peak memory", "samples generated per second"]
+  }
+}

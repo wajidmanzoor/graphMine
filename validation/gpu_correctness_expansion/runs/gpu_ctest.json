@@ -1,0 +1,16 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "/home/wajid/projects/graphDatabaseAgent/library/build",
+    "--output-on-failure",
+    "--timeout",
+    "90"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 8.130639512091875,
+  "exit_code": 0,
+  "log": "runs/gpu_ctest.log",
+  "stdin_path": null,
+  "timeout": false
+}

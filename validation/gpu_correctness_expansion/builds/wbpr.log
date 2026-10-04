@@ -1,0 +1,69 @@
+mkdir obj
+g++  -O2 -UWORKLOAD -c src/graph_s.cpp -o obj/graph_s.o
+nvcc -O2 -arch=sm_89 -UWORKLOAD -c src/io_par.cu -o obj/io_par.o
+src/graph_s.cpp: In function ‘int check(int, int, int, int)’:
+src/graph_s.cpp:169:15: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  169 |         fscanf(fp,"%s",buf1);
+      |         ~~~~~~^~~~~~~~~~~~~~
+src/graph_s.cpp:170:15: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  170 |         fscanf(fp,"%s",buf2);
+      |         ~~~~~~^~~~~~~~~~~~~~
+src/graph_s.cpp:171:15: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  171 |         fscanf(fp,"%s",buf3);
+      |         ~~~~~~^~~~~~~~~~~~~~
+nvcc -O2 -arch=sm_89 -UWORKLOAD -c src/main.cu -o obj/main.o
+src/io_par.cu(61): warning #1650-D: result of call is not used
+          fscanf(fp,"%s",buf1);
+          ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+src/io_par.cu(62): warning #1650-D: result of call is not used
+          fscanf(fp,"%s",buf2);
+          ^
+
+src/io_par.cu(63): warning #1650-D: result of call is not used
+          fscanf(fp,"%s",buf3);
+          ^
+
+src/io_par.cu(61): warning #1650-D: result of call is not used
+          fscanf(fp,"%s",buf1);
+          ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+src/io_par.cu(62): warning #1650-D: result of call is not used
+          fscanf(fp,"%s",buf2);
+          ^
+
+src/io_par.cu(63): warning #1650-D: result of call is not used
+          fscanf(fp,"%s",buf3);
+          ^
+
+src/io_par.cu: In function ‘void readgraph(char*, int, int, int, int, int*, int*, int*, int*)’:
+src/io_par.cu:61:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   61 |         fscanf(fp,"%s",buf1);
+      |       ^ ~~~~~~~~~~~~~~
+src/io_par.cu:62:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   62 |         fscanf(fp,"%s",buf2);
+      |       ^ ~~~~~~~~~~~~~~
+src/io_par.cu:63:7: warning: ignoring return value of ‘int fscanf(FILE*, const char*, ...)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   63 |         fscanf(fp,"%s",buf3);
+      |       ^ ~~~~~~~~~~~~~~
+nvcc -O2 -arch=sm_89 -UWORKLOAD -c src/preflow.cu -o obj/preflow.o 
+nvcc -O2 -arch=sm_89 -UWORKLOAD -c src/push_relabel_kernel.cu -o obj/push_relabel_kernel.o 
+src/push_relabel_kernel.cu(412): warning #177-D: variable "idx" was declared but never referenced
+      int idx = (blockIdx.x*blockDim.x) + threadIdx.x;
+          ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+src/push_relabel_kernel.cu(260): warning #177-D: variable "tileID" was declared but never referenced
+      int tileID = threadIdx.x / tileSize;
+          ^
+
+nvcc -O2 -arch=sm_89 -UWORKLOAD -c src/push_relabel.cu -o obj/push_relabel.o 
+nvcc -O2 -arch=sm_89 -UWORKLOAD -c src/global_relabel.cu -o obj/global_relabel.o
+g++  -O2 -UWORKLOAD -c src/graph.cpp -o obj/graph.o
+g++  -O2 -UWORKLOAD -c src/mmio.c -o obj/mmio.o
+nvcc -O2 -arch=sm_89 -UWORKLOAD obj/graph_s.o obj/io_par.o obj/main.o obj/preflow.o obj/push_relabel_kernel.o obj/push_relabel.o obj/global_relabel.o obj/graph.o obj/mmio.o -o maxflow

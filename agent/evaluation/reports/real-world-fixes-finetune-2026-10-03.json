@@ -1,0 +1,297 @@
+{
+  "schema_version": "1.0.0",
+  "created_at": "2026-10-03T07:57:37.313122+00:00",
+  "scope": "Fixes verified on inspected development cases; local routing QLoRA started, not deployed. Not a claim that every system issue or novice-usability requirement is solved.",
+  "fixes": [
+    "Unchecked planner assumptions moved to explicitly unverified diagnostics, not displayed facts.",
+    "Exact-field filter counts/ranges retained; score and ascore cannot be interchanged in server facts.",
+    "Valid empty selections complete with a computed empty answer.",
+    "Application-layer filtering distinguished from unsupported weighted computation, with bounded re-review and unchanged safety gates.",
+    "Source names/attributes joined into readable tables and answer-only, application-colored networks.",
+    "Plain-language clarification guidance and validated follow-up actions.",
+    "Production routing prompt and export input contract shared."
+  ],
+  "verification": {
+    "pytest_passed": 222,
+    "pytest_xml": ".graphmine-learning/fixes-validation-v1.xml",
+    "pytest_xml_sha256": "3a7159a54f5155cbda1222daf18e7d519a8289629e8145b304bd731525f2053c",
+    "lint": "Changed application and added/edited tests pass Ruff. Full tests directory retains three pre-existing lint findings in test_api_flow.py and test_release_artifacts.py; unrelated files preserved.",
+    "real_native": {
+      "passed": 17,
+      "total": 17
+    },
+    "live_student": {
+      "passed_turns": 44,
+      "total_turns": 44,
+      "passed_workflow_trials": 32,
+      "workflow_trials": 32,
+      "repeats": 2,
+      "inference_profile": {
+        "llm_route_reasoning_effort": "none",
+        "llm_plan_reasoning_effort": "medium",
+        "llm_analyst_reasoning_effort": "medium"
+      },
+      "median_seconds": 47.31513604614884,
+      "maximum_seconds": 66.05584063194692
+    },
+    "comparison_caution": "Prior 38/42 report used different reviewed questions, fewer admitted cases and a different planning-reasoning profile. These are not a controlled before/after accuracy or speed comparison.",
+    "visual_reports_inspected": 4,
+    "additional_assistant_feedback": 2
+  },
+  "teacher_reviewer": {
+    "provider": "ChatGPT-authenticated Codex CLI",
+    "teacher": {
+      "provider": "codex",
+      "model": "gpt-6.1-sol",
+      "base_url": "codex://chatgpt",
+      "max_output_tokens": 4096,
+      "reasoning_effort": "low",
+      "execution_policy": {
+        "version": "codex-chatgpt-v1",
+        "config": {
+          "model_provider": "openai",
+          "forced_login_method": "chatgpt",
+          "approval_policy": "never",
+          "web_search": "disabled",
+          "project_doc_max_bytes": 0,
+          "history.persistence": "none",
+          "model_reasoning_effort": "low",
+          "features.shell_tool": false,
+          "features.unified_exec": false,
+          "features.shell_snapshot": false,
+          "features.multi_agent": false,
+          "features.multi_agent_v2": false,
+          "features.apps": false,
+          "features.plugins": false,
+          "features.hooks": false,
+          "features.skill_search": false,
+          "features.skill_mcp_dependency_install": false
+        },
+        "sandbox": "read-only",
+        "ephemeral": true,
+        "ignore_user_config": true,
+        "working_directory": "new_empty_temporary_directory",
+        "environment": "allowlisted_no_api_keys_or_endpoint_overrides",
+        "timeout_seconds": 120,
+        "stream_byte_limit": 1048576,
+        "retries": "No application retries; built-in CLI retries may occur within the per-call timeout",
+        "output_token_limit_enforcement": "post-call acceptance check, not a generation or billing cap",
+        "billing": "ChatGPT plan allowance; no API-key fallback or automatic credit purchase"
+      }
+    },
+    "reviewer": {
+      "provider": "codex",
+      "model": "gpt-6-astra",
+      "base_url": "codex://chatgpt",
+      "max_output_tokens": 4096,
+      "reasoning_effort": "low",
+      "execution_policy": {
+        "version": "codex-chatgpt-v1",
+        "config": {
+          "model_provider": "openai",
+          "forced_login_method": "chatgpt",
+          "approval_policy": "never",
+          "web_search": "disabled",
+          "project_doc_max_bytes": 0,
+          "history.persistence": "none",
+          "model_reasoning_effort": "low",
+          "features.shell_tool": false,
+          "features.unified_exec": false,
+          "features.shell_snapshot": false,
+          "features.multi_agent": false,
+          "features.multi_agent_v2": false,
+          "features.apps": false,
+          "features.plugins": false,
+          "features.hooks": false,
+          "features.skill_search": false,
+          "features.skill_mcp_dependency_install": false
+        },
+        "sandbox": "read-only",
+        "ephemeral": true,
+        "ignore_user_config": true,
+        "working_directory": "new_empty_temporary_directory",
+        "environment": "allowlisted_no_api_keys_or_endpoint_overrides",
+        "timeout_seconds": 120,
+        "stream_byte_limit": 1048576,
+        "retries": "No application retries; built-in CLI retries may occur within the per-call timeout",
+        "output_token_limit_enforcement": "post-call acceptance check, not a generation or billing cap",
+        "billing": "ChatGPT plan allowance; no API-key fallback or automatic credit purchase"
+      }
+    },
+    "calls": 42,
+    "call_ceiling": 42,
+    "calibration_passed": 8,
+    "screened": 16,
+    "quarantined": 1,
+    "quarantine_reasons": [
+      {
+        "case_id": "sociopatterns-workplace-connection-groups",
+        "issues": [
+          "turn 1: extra_constraints: expected [], extracted ['Give every recorded link equal weight.']"
+        ]
+      }
+    ],
+    "paid_api_fallback": false,
+    "evaluation_questions_used_for_training": false
+  },
+  "training": {
+    "run_directory": ".graphmine-learning/finetune-qwen27b-v3",
+    "base_model": "Qwen/Qwen3.8-27B",
+    "base_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+    "scope": "First local intent-routing adapter pilot from oracle-gated synthetic templates. Not Codex reasoning distillation, not final answer training. All real-world sources and synthetic test families excluded; no deployment.",
+    "data": {
+      "train": {
+        "path": "train.tokens.json",
+        "sha256": "8c720523e9822d344a5758ec32cf3f9287e4fd5d342ff3dbde9c27381e005866",
+        "rows": 192,
+        "min_tokens": 6958,
+        "max_tokens": 7237,
+        "supervised_tokens": 41616
+      },
+      "validation": {
+        "path": "validation.tokens.json",
+        "sha256": "c83b71f985de69dd8d273ab2176db1bfa12eb3b1abc7f15841f771bde7c45c4d",
+        "rows": 72,
+        "min_tokens": 6954,
+        "max_tokens": 7283,
+        "supervised_tokens": 15656
+      }
+    },
+    "hyperparameters": {
+      "epochs": 1,
+      "batch_size": 1,
+      "gradient_accumulation_steps": 4,
+      "learning_rate": 0.0001,
+      "lora_rank": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "seed": 271828
+    },
+    "native_audit_types": {
+      "independent_native_result_check": 288,
+      "template_and_semantic_contract_only": 108
+    },
+    "synthetic_test_cases_excluded": 132,
+    "real_sources_excluded": [
+      "SocioPatterns",
+      "STRING",
+      "OpenFlights"
+    ],
+    "state_at_handoff": {
+      "phase": "training",
+      "training_started": true,
+      "global_step": 4,
+      "pid": 4027131,
+      "gpu": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "gpu_name": "NVIDIA RTX 6000 Ada Generation",
+      "gpu_total_bytes": 50866356224,
+      "started_at": "2026-10-03T07:51:35.381689+00:00",
+      "config_sha256": "1e9f29970377e0a71b115aaa6d2d70870ac95046801f70908f9244a45a2082b5",
+      "deployed": false,
+      "updated_at": "2026-10-03T07:56:49.245835+00:00",
+      "trainable_parameters": 116727808,
+      "all_parameters": 27012726272,
+      "planned_steps": 48,
+      "epoch": 0.08333333333333333,
+      "peak_gpu_bytes": 28383930880,
+      "last_metrics": {
+        "loss": 0.7306616902351379,
+        "grad_norm": 1.2003824710845947,
+        "learning_rate": 6e-05,
+        "epoch": 0.08333333333333333
+      },
+      "latest_checkpoint": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/finetune-qwen27b-v3/checkpoints/checkpoint-2"
+    },
+    "deployed": false,
+    "status_file_is_mutable": true,
+    "systemd_unit": "graphmine-finetune-qwen27b-v3.service"
+  },
+  "deployment": {
+    "old_pid": 3935693,
+    "new_pid": 4024048,
+    "status": "ready",
+    "before_counts": {
+      "sessions": 7,
+      "files": 5,
+      "jobs": 5,
+      "results": 3,
+      "feedback": 0
+    },
+    "after_counts": {
+      "sessions": 7,
+      "files": 5,
+      "jobs": 5,
+      "results": 3,
+      "feedback": 0
+    },
+    "data_root": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-v1",
+    "log": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-v1/api-fixes-2026-10-03.log",
+    "model_process_restarted": false,
+    "restart_note": "Old API exited but remained a defunct child of its tmux parent; confirmed port release before replacement."
+  },
+  "remaining": [
+    "Complete and evaluate the adapter; training loss is not agent-quality evidence.",
+    "Empty-result card labels and domain-specific grouping caveats need further polish; feedback is saved.",
+    "Larger real graphs, concurrency, GPU contention and actual novice-user task studies remain unvalidated.",
+    "Expand automatic teacher-reviewed language, multistep workflows and untouched holdout coverage before promotion."
+  ],
+  "guidance": "Evaluation-first and separate training/validation data, following https://developers.openai.com/api/docs/guides/fine-tuning-best-practices ; this is local Qwen training, not an OpenAI hosted fine-tune.",
+  "artifacts": {
+    "real_corpus": {
+      "path": ".graphmine-learning/real-world-corpus-v5/manifest.json",
+      "sha256": "f3c4573b4227df6f83ceed58de708effad74f471e39305160259cb662b81b375"
+    },
+    "questions": {
+      "path": ".graphmine-learning/real-world-questions-v3/questions.json",
+      "sha256": "09e5e708ea570909fa88be0c47f7ab14ea253f456ebef4a2dae209d73a2baf1f"
+    },
+    "real_native": {
+      "path": ".graphmine-learning/real-world-native-v4.json",
+      "sha256": "610358237ff41d3b9c74ad86a4d58bfabe73be1cdf81182b9ffe4fd09c904ed6"
+    },
+    "live_student": {
+      "path": ".graphmine-learning/real-world-student-v2.json",
+      "sha256": "1300f876632550da73727d39daef6591b94f3a9e768459c2156dfb433f853905"
+    },
+    "synthetic_corpus": {
+      "path": ".graphmine-learning/finetune-corpus-v2/manifest.json",
+      "sha256": "13e8bea1bba99d511b2261eb096f1340d3825469f6c90b2d740053a27318d5a0"
+    },
+    "synthetic_audit": {
+      "path": ".graphmine-learning/finetune-native-v1.json",
+      "sha256": "3db1114c6a18e4da69a512b0e609e538e9e33417f5e3fc16f965b75f4b004fbf"
+    },
+    "training_export": {
+      "path": ".graphmine-learning/finetune-routing-data-v1/provenance.json",
+      "sha256": "cb49e6a871aac73d4623777b95f2fc43e078b0a0d99e3f9f654173c3b302ad28"
+    },
+    "training_config": {
+      "path": ".graphmine-learning/finetune-qwen27b-v3/run.json",
+      "sha256": "1e9f29970377e0a71b115aaa6d2d70870ac95046801f70908f9244a45a2082b5"
+    },
+    "adapter_verification": {
+      "path": ".graphmine-learning/finetune-qwen27b-v3/adapter-verification.json",
+      "sha256": "474638b479cf36386938076e64d56ef956605254ed5c7a2fe5a782135fbc3011"
+    },
+    "training_environment": {
+      "path": ".graphmine-learning/finetune-qwen27b-v3/installed-packages.json",
+      "sha256": "274c430ff007820b8ddac4c7f4a3b9ed86a36ce54d2921f7c06acd94c7aa0c48"
+    },
+    "previous_training_attempts": {
+      "path": ".graphmine-learning/finetune-qwen27b-v3/previous-attempts.json",
+      "sha256": "6df1c0070f2126f5e538743a955b7dd4e7ba04727dde3e3c3c350dc6cd61cfbd"
+    },
+    "visual_inspection": {
+      "path": ".graphmine-learning/real-world-visual-fixes-v1/inspection.json",
+      "sha256": "92815fb95a9900d39b9b9430e8ada63e50babbfc3198d52c211b4015f67254de"
+    },
+    "qualitative_feedback": {
+      "path": ".graphmine-learning/real-world-visual-fixes-v1/feedback.json",
+      "sha256": "66a8b1a36b4f6a02f702644d7deaf17dcfb24c3c925d2e79b8f4f7cf7cc34e3d"
+    },
+    "api_restart": {
+      "path": ".graphmine-v1/api-restart-fixes-2026-10-03.json",
+      "sha256": "cd8a73198b07218de379446b30f16a5cacf374f18576e543770af889a4f326d9"
+    }
+  }
+}

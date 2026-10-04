@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_wbpr",
+  "title": "Accelerating Push-Relabel Algorithm on GPU via Two-Level Parallelism Paradigm and Efficient CSR Designs",
+  "year": 2025,
+  "venue": "IEEE HPEC 2025",
+  "doi": null,
+  "publication_url": "https://github.com/NTUDDSNLab/WBPR",
+  "pdf_url": "https://raw.githubusercontent.com/NTUDDSNLab/WBPR/master/WBPR_HPEC2025_CameraReady.pdf",
+  "code_url": "https://github.com/NTUDDSNLab/WBPR",
+  "semantic_fit": "exact",
+  "gpu_scope": "Workload-balanced push-relabel max-flow on GPU with reversed-CSR and bidirectional-CSR designs; also reports a bipartite-matching application.",
+  "notes": "Paper PDF is hosted directly in the repository.",
+  "problem_id": "max_flow_min_cut",
+  "problem_dir": "22_max_flow_min_cut",
+  "research_cutoff": "2026-09-30"
+}

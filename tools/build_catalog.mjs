@@ -16,6 +16,8 @@ const readJson = (relativePath) =>
 const runtimeManifest = readJson("graphmine_manifest.json");
 const backendRegistry = readJson("catalog/backend_registry.json");
 const artifactSources = readJson("catalog/artifact_sources.json");
+const expansion = readJson("catalog/expansion_profiles.json");
+const expansionScreening = readJson(expansion.screening_source);
 const validationResults = readJson(
   "validation/gpu_correctness/results/results.json",
 );
@@ -259,6 +261,15 @@ for (const workload of validationResults.workloads) {
 }
 
 function validationForBackend(problemId, backendId) {
+  const profile = Object.values(expansion.operations).find(
+    (entry) => entry.problem_id === problemId && entry.backend_id === backendId,
+  );
+  if (profile) {
+    assert(expansionScreening.artifacts.some((entry) =>
+      entry.paper_id === profile.paper_id && entry.validation_status === "validated_profile"),
+      `Missing expansion validation for ${problemId}/${backendId}`);
+    return profile.validation;
+  }
   const implementation = validationImplementation[backendId];
   assert(implementation, `No validation implementation mapping for ${backendId}`);
   const workload = validationResults.workloads.find(
@@ -283,7 +294,7 @@ const operations = runtimeManifest.operations.map((operation) => {
     (entry) => entry.spec.problem_id === operation.research_problem_id,
   );
   assert.notEqual(problemPosition, -1);
-  const cpp = cppContracts[operation.id];
+  const cpp = cppContracts[operation.id] || expansion.operations[operation.id]?.cpp;
   assert(cpp, `Missing C++ contract for ${operation.id}`);
 
   const backendDetails = operation.backends.map((backendId) => {
@@ -357,20 +368,33 @@ const problems = problemSources.map(({ source, spec }) => {
     0,
   );
   const available = problemOperations.length > 0;
+  const screening = expansionScreening.artifacts.filter(
+    (entry) => entry.problem_dir === path.basename(path.dirname(source)),
+  );
+  const profiles = problemOperations.filter((operation) => expansion.operations[operation.id])
+    .map((operation) => ({ operation_id: operation.id, supported_profile: operation.validated_profile }));
 
   return {
     source,
-    intent_signals: intentSignals[spec.problem_id] || [],
+    intent_signals: intentSignals[spec.problem_id] || expansion.intent_signals[spec.problem_id] || [],
     library_support: {
       available,
       status: available ? "validated" : "no_validated_backend",
       operation_ids: problemOperations.map((operation) => operation.id),
       validated_backend_count: validatedBackendCount,
+      ...(profiles.length ? { validation_scope: "bounded_profiles_only", profiles } : {}),
       reason: available
-        ? "At least one implementation passed the GPU correctness validation and is exposed by GraphMine."
-        : "No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.",
+        ? (profiles.length
+          ? "Only the listed profiles are executable; broader research modes remain unsupported."
+          : "At least one implementation passed the GPU correctness validation and is exposed by GraphMine.")
+        : (screening.length
+          ? screening.map((entry) => `${entry.paper_id}: ${entry.note}`).join(" ")
+          : (expansion.intent_signals[spec.problem_id]
+            ? "No local paper/code artifact is cataloged for this definition, so there is no implementation to validate or execute."
+            : "No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.")),
     },
     validation_workloads: validationWorkloads,
+    ...(expansion.intent_signals[spec.problem_id] ? { expansion_screening: screening } : {}),
     spec,
   };
 });
@@ -423,6 +447,8 @@ const catalog = {
     validation_results: "validation/gpu_correctness/results/results.json",
     backend_registry: "catalog/backend_registry.json",
     artifact_sources: "catalog/artifact_sources.json",
+    expansion_profiles: "catalog/expansion_profiles.json",
+    expansion_screening: expansion.screening_source,
     regeneration_command: "node tools/build_catalog.mjs",
   },
   scope: {
@@ -432,10 +458,13 @@ const catalog = {
     runnable_operation_count: operations.length,
     validated_backend_count: validatedBackendCount,
     passing_validation_workload_count: passingWorkloadCount,
+    validated_expansion_profile_count: Object.keys(expansion.operations).length,
     operation_count_note:
       "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations.",
   },
   routing: {
+    contract_version: expansion.routing_contract_version,
+    model_policy: "Supply this catalog to the base router. The frozen legacy routing adapter was evaluated on the earlier 20-problem contract; do not silently extend its evaluation claims.",
     workflow: [
       {
         step: 1,
@@ -544,6 +573,8 @@ const catalog = {
     selection_rule: runtimeManifest.scope.selection_rule,
     classification_policy: validationResults.classification_policy,
     summary: validationResults.summary,
+    expansion_source: expansion.screening_source,
+    expansion_profiles: expansion.operations,
   },
   problem_index: problemIndex,
   operation_index: operationIndex,
@@ -552,11 +583,13 @@ const catalog = {
   artifacts: artifactSources.artifacts,
 };
 
-assert.equal(problems.length, 20, "Expected all 20 problem specifications");
-assert.equal(supportedProblems.length, 12, "Expected 12 supported problems");
-assert.equal(operations.length, 13, "Expected 13 runnable operations");
-assert.equal(validatedBackendCount, 26, "Expected 26 backend choices");
-assert.equal(passingWorkloadCount, 24, "Expected 24 passing workloads");
+assert(problems.length > 0 && operations.length > 0, "Catalog must not be empty");
+assert.equal(supportedProblems.length, runtimeManifest.scope.research_problem_count);
+assert.equal(operations.length, runtimeManifest.scope.runnable_operation_count);
+assert.equal(operations.length, backendRegistry.operation_count);
+assert.equal(validatedBackendCount, runtimeManifest.scope.validated_backend_count);
+assert.equal(validatedBackendCount, backendRegistry.validated_backend_count);
+assert.deepEqual(new Set(registryOperations.keys()), new Set(operations.map((operation) => operation.id)));
 assert.equal(
   Object.keys(problemIndex).length,
   problems.length,

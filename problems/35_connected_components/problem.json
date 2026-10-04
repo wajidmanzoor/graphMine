@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "connected_components",
+  "name": "Connected Components (Weakly and Strongly Connected)",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed_or_undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Remove self-loops; they never change component membership.", "Collapse parallel edges between the same pair to one edge.", "When connectivity_mode=weakly_connected, treat every edge as undirected regardless of input direction."]
+  },
+  "problem_inputs": [
+    {"name": "connectivity_mode", "type": "enum", "required": true, "allowed_values": ["weakly_connected", "strongly_connected"], "description": "Weak connectivity ignores edge direction; strong connectivity requires a directed path in both directions and is only meaningful (and may differ from weak) on a directed graph."}
+  ],
+  "required_outputs": [
+    {"name": "component_assignment", "type": "map<vertex_id,integer>", "description": "Component index assigned to every vertex."},
+    {"name": "component_count", "type": "integer", "description": "Number of distinct components."},
+    {"name": "component_sizes", "type": "array<integer>", "description": "Vertex count of each component, indexed by component number."}
+  ],
+  "optional_outputs": [
+    {"name": "largest_component_id", "type": "integer", "description": "Component number with the most vertices."},
+    {"name": "largest_component_size", "type": "integer", "description": "Vertex count of the largest component."}
+  ],
+  "solution_semantics": {
+    "objective": "Assign every vertex a component_assignment such that two vertices share a component index if and only if they are connected under connectivity_mode, and components are maximal.",
+    "exactness": "This problem is always solved exactly; component identity is a decidable equivalence relation with no approximate mode.",
+    "duplicate_policy": "Each vertex belongs to exactly one component.",
+    "ordering": "Component indices are canonically numbered by ascending smallest-member vertex ID, so results are directly comparable across independent runs or implementations."
+  },
+  "validation_rules": [
+    "Two vertices share a component_assignment value if and only if they are connected under connectivity_mode in the normalized graph.",
+    "component_count equals the number of distinct values in component_assignment.",
+    "component_sizes[i] equals the number of vertices assigned to component i, and the entries sum to the total vertex count.",
+    "Component numbering follows the ascending-smallest-member-vertex-ID convention."
+  ],
+  "edge_cases": [
+    "An isolated vertex forms its own singleton component.",
+    "An edgeless graph has every vertex in its own singleton component, so component_count equals the vertex count.",
+    "connectivity_mode=strongly_connected on a graph requested as an undirected projection degenerates to the same result as weakly_connected.",
+    "A self-loop does not merge a vertex with any other vertex."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["component-assignment agreement with an exhaustive BFS/DFS (weak) or Tarjan/Kosaraju (strong) oracle on small/medium fixtures", "component-count and size consistency", "canonical-numbering compliance"],
+    "performance": ["end-to-end time", "compute time", "peak memory", "edges processed per second"]
+  }
+}

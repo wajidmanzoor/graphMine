@@ -1,0 +1,16 @@
+{
+  "command": [
+    "nvcc",
+    "-arch=sm_89",
+    "-O2",
+    "-c",
+    "/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code/fw-cuda.cu",
+    "-o",
+    "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/build/gst_vlsi_cuda.o"
+  ],
+  "cwd": "/home/wajid/projects/graphDatabaseAgent",
+  "elapsed_seconds": 0.6658133342862129,
+  "exit_code": 0,
+  "log": "builds/gst_vlsi_cuda.log",
+  "timeout": false
+}

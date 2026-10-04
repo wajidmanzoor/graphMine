@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "simrank_vertex_similarity",
+  "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Compute a pairwise structural similarity score between vertices based on the recursive principle that two vertices are similar to the extent their in-neighbors (or neighbors) are similar, for a single source vertex, a query pair, or top-k over all vertices.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed_or_undirected", "weights": "ignored", "timestamps": "ignored", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Preserve direction when similarity is defined over in-neighbors; project to undirected when undirected_projection is requested.", "Remove self-loops.", "Collapse parallel edges to a single edge."]
+  },
+  "problem_inputs": [
+    {"name": "query_mode", "type": "enum", "required": true, "allowed_values": ["single_pair", "single_source_all", "top_k_pairs"], "description": "Score one specific pair, one vertex against every other vertex, or the highest-similarity pairs/vertices overall."},
+    {"name": "source_vertex", "type": "vertex_id_or_null", "required": false, "default": null, "description": "Required for single_source_all; the fixed vertex in single_pair's pair."},
+    {"name": "target_vertex", "type": "vertex_id_or_null", "required": false, "default": null, "description": "Required for single_pair."},
+    {"name": "decay_factor", "type": "number", "required": false, "default": 0.8, "constraints": "0 < value < 1", "description": "SimRank decay constant C controlling how quickly similarity attenuates with path length."},
+    {"name": "direction_mode", "type": "enum", "required": false, "default": "incoming", "allowed_values": ["incoming", "undirected_projection"], "description": "Whether similarity propagates over in-neighbors (classic SimRank) or an undirected projection."},
+    {"name": "top_k", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Result size limit for single_source_all or top_k_pairs."},
+    {"name": "solution_quality", "type": "enum", "required": false, "default": "approximate", "allowed_values": ["exact", "approximate"], "description": "Whether a sampling-based or truncated-iteration approximation with a disclosed error bound is permitted; exact fixed-point computation is expensive beyond small graphs."},
+    {"name": "convergence_tolerance", "type": "number", "required": false, "default": 1e-4, "constraints": "value > 0", "description": "Maximum per-pair residual for declaring convergence in exact mode."}
+  ],
+  "required_outputs": [
+    {"name": "similarity_scores", "type": "array<object>", "description": "Vertex pair and similarity score in [0,1], sized and ordered per query_mode."},
+    {"name": "complete", "type": "boolean", "description": "Whether every eligible pair/vertex was scored and output was not truncated beyond top_k."}
+  ],
+  "optional_outputs": [
+    {"name": "converged", "type": "boolean", "description": "Whether the iterative computation met convergence_tolerance."},
+    {"name": "iterations", "type": "integer", "description": "Fixed-point iterations or sampled random walks performed."},
+    {"name": "error_bound", "type": "number", "description": "Disclosed bound on approximation error for approximate mode."}
+  ],
+  "solution_semantics": {
+    "objective": "Compute the SimRank fixed point sim(a,b) = (decay_factor / (|In(a)||In(b)|)) * sum over in-neighbor pairs of sim(i,j), with sim(a,a) = 1 for every vertex a, under direction_mode.",
+    "exactness": "Exact mode requires every reported score within convergence_tolerance of the fixed point; approximate mode must disclose error_bound.",
+    "duplicate_policy": "Each unordered vertex pair is scored once; sim(a,b) == sim(b,a).",
+    "ordering": "single_source_all and top_k_pairs are ordered by descending score with a stable vertex-ID tie break; single_pair returns one score."
+  },
+  "validation_rules": [
+    "Every similarity score is in [0,1].",
+    "sim(v,v) == 1 for every scored vertex v.",
+    "Scores are symmetric: sim(a,b) reported equals sim(b,a) if both are queried.",
+    "Recomputing scores via direct fixed-point iteration on small fixtures matches reported values within tolerance."
+  ],
+  "edge_cases": [
+    "A vertex with no in-neighbors has similarity zero to every other vertex except itself.",
+    "Two vertices with identical in-neighbor sets converge toward similarity close to 1 as iterations increase.",
+    "Disconnected components yield similarity zero across components (other than self-similarity).",
+    "decay_factor near zero makes all off-diagonal similarities near zero; near one slows convergence sharply."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["score error versus an exact fixed-point oracle on small/medium fixtures", "symmetry and self-similarity checks", "rank agreement at top_k"],
+    "performance": ["end-to-end time", "compute time", "peak memory", "iterations or random walks", "pairs scored per second"]
+  }
+}

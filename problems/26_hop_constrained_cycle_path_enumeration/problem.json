@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "hop_constrained_cycle_path_enumeration",
+  "name": "Hop-Constrained Simple Path and Cycle Enumeration",
+  "category": "pattern_and_motif_mining",
+  "problem_statement": "Given a directed graph and a hop bound k, enumerate every simple (vertex-disjoint except endpoints) s-t path with at most k edges, or every simple cycle through a given vertex or edge with at most k edges.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {"direction": "directed", "weights": "ignored_unless_requested", "timestamps": "optional_for_temporal_ordering_variant", "vertex_attributes": "ignored", "edge_attributes": "ignored"},
+    "normalization": ["Remove self-loops; they cannot appear in a simple path or simple cycle of length >= 2.", "Collapse parallel directed edges between the same ordered pair to one edge unless multiplicity is explicitly requested.", "Reject undirected input unless an explicit directed projection (both directions) is requested."]
+  },
+  "problem_inputs": [
+    {"name": "task", "type": "enum", "required": true, "allowed_values": ["s_t_path", "cycle_through_vertex", "cycle_through_edge", "all_cycles"], "description": "Enumerate bounded-hop simple paths between two vertices, simple cycles through a specific vertex or edge, or every simple cycle up to the hop bound."},
+    {"name": "source", "type": "vertex_id_or_null", "required": false, "default": null, "description": "Required for s_t_path; the path/cycle start vertex for cycle_through_vertex."},
+    {"name": "target", "type": "vertex_id_or_null", "required": false, "default": null, "description": "Required for s_t_path; ignored otherwise."},
+    {"name": "anchor_edge", "type": "edge_id_or_null", "required": false, "default": null, "description": "Required for cycle_through_edge."},
+    {"name": "max_hops", "type": "integer", "required": true, "constraints": "value >= 1", "description": "Maximum number of edges permitted in a returned path or cycle."},
+    {"name": "result_limit", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum number of paths/cycles to return; null means return all, bounded by max_hops and the graph."},
+    {"name": "chronological_order_required", "type": "boolean", "required": false, "default": false, "description": "When true and edges carry timestamps, require strictly increasing timestamps along the path/cycle."}
+  ],
+  "required_outputs": [
+    {"name": "paths_or_cycles", "type": "array<array<edge_id>>", "description": "Each result as an ordered edge sequence forming a simple path or simple cycle within max_hops."},
+    {"name": "result_count", "type": "integer", "description": "Number of paths/cycles returned."},
+    {"name": "complete", "type": "boolean", "description": "Whether every qualifying path/cycle was found, or result_limit truncated the search."}
+  ],
+  "optional_outputs": [
+    {"name": "vertex_sequences", "type": "array<array<vertex_id>>", "description": "Vertex sequence corresponding to each returned edge sequence."},
+    {"name": "shortest_length_found", "type": "integer", "description": "Minimum hop count among returned results."}
+  ],
+  "solution_semantics": {
+    "objective": "Enumerate every simple path or cycle meeting the task definition and max_hops without omission, up to result_limit and chronological_order_required.",
+    "exactness": "complete=true requires no qualifying path/cycle within scope was omitted; complete=false is only acceptable when result_limit truncated output.",
+    "duplicate_policy": "Each distinct edge sequence is returned once; a cycle and its distinct rotations starting at different edges are considered the same cycle and returned once using a canonical start edge.",
+    "ordering": "paths_or_cycles have no required global ordering unless result_limit is set, in which case shorter paths/cycles are prioritized before truncation."
+  },
+  "validation_rules": [
+    "Every returned sequence is a valid walk in the normalized graph with no repeated vertex (except the shared start/end vertex of a cycle).",
+    "Every returned sequence has at most max_hops edges.",
+    "s_t_path results start at source and end at target.",
+    "cycle_through_vertex and cycle_through_edge results include the specified vertex or edge.",
+    "chronological_order_required=true results have strictly increasing edge timestamps."
+  ],
+  "edge_cases": [
+    "source equals target is invalid for s_t_path but is exactly the cycle_through_vertex case.",
+    "max_hops smaller than the shortest qualifying path/cycle yields an empty, complete result.",
+    "A vertex or edge with no incident cycle returns an empty, complete result for the cycle tasks.",
+    "Self-loops and multi-edges, once normalized away, never appear in output sequences."
+  ],
+  "evaluation_metrics": {
+    "correctness": ["exhaustive agreement with brute-force DFS enumeration on small/medium fixtures", "no duplicate or invalid sequence", "hop-bound and chronological-order compliance"],
+    "performance": ["end-to-end time", "search time", "peak memory", "paths/cycles enumerated per second", "pruned branches per second"]
+  }
+}

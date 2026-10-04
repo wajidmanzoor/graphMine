@@ -1,0 +1,68 @@
+{
+  "created_at": "2026-10-03T19:51:51.021488+00:00",
+  "phase": "completed",
+  "mode": "serving_fp8_application_reference",
+  "passed": 20,
+  "total": 21,
+  "workflows_passed": 5,
+  "workflows_total": 6,
+  "report": {
+    "path": ".graphmine-learning/adapter-workflow-fp8-v2/serving_fp8.json",
+    "sha256": "dd48db3ebc59f335d8a11e69230ec12b3a06a0fe61b6f057746e5a299d71b70b"
+  },
+  "protocol": {
+    "suite_plan_sha256": "ed266777ea5da4232646c41b21399f9bf64105f8b340c933c8e9cb009e3eb95a",
+    "adapter_sha256": "276cfd92ab692442ead80bb0170af84860d0ce604f89b9bdf1fcacc152449b75",
+    "source_sha256": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+    "arms": [
+      "serving_fp8"
+    ],
+    "repeats": 1,
+    "route_context_budget": 16384,
+    "route_completion_budget": 2400,
+    "routing_only": true,
+    "other_stages_model": "Qwen/Qwen3.8-27B-FP8",
+    "llm_plan_reasoning_effort": "medium",
+    "llm_analyst_reasoning_effort": "medium",
+    "native_gpu": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+    "local_route_environment": null,
+    "scope": "Complete application development workflows. GPU placement is recorded; no concurrency/throughput or novice-usability claim.",
+    "real_corpus": null,
+    "questions": null,
+    "final_holdout": false,
+    "deployment_changed": false
+  },
+  "protocol_sha256": "8460904f8afce3955fc58e6a1f3511c8751afe20f3665500ad6aafc53f1a4a8e",
+  "cases_sha256": "9a95146aafbffd1ee05a737e492226e5970520520cad254cefc3deeba324f761",
+  "failures": [
+    {
+      "workflow": "group-quantifiers",
+      "turn": 3,
+      "query": "Actually, show just one largest group again. One is enough if several tie.",
+      "issues": [
+        "No completed maximum-clique result"
+      ],
+      "schemas_called": [
+        "TurnDecision",
+        "GroundedNarrative"
+      ],
+      "routing_called": false,
+      "evidence": [
+        {
+          "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflow-fp8-v2/serving_fp8-runtime/history/session_585035bc759d4629bd3f2612f379a020/events/20261003T193756.244681Z_event_07f33ce3ec1c4829828349c6fbfffab9.json",
+          "sha256": "5323d9907d2646847fd8c78de99c5a0780487e0b463b2179ecff49c9f6a8c318",
+          "schema": "TurnDecision"
+        },
+        {
+          "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-workflow-fp8-v2/serving_fp8-runtime/history/session_585035bc759d4629bd3f2612f379a020/events/20261003T193804.741439Z_event_47ccd73f2c4845d59ef4a3794c50a373.json",
+          "sha256": "251700b98aeb64c40f37a1118806addd8d225ffbca6989c3f4cdfc472b4ebb77",
+          "schema": "GroundedNarrative"
+        }
+      ]
+    }
+  ],
+  "interpretation": "The largest-group follow-up was classified as explain and the application reused its latest maximal-groups result. No RouteDecision was called on that turn; it is outside this routing adapter stage. This fresh serving reference does not establish local adapter workflow quality.",
+  "latency_limitation": "Serving-model and tiny native jobs shared GPU 0. Matched local routing/native jobs will use GPU 1; timings across these arrangements are not a causal adapter speed comparison.",
+  "holdout_consumed": false,
+  "deployment_changed": false
+}
