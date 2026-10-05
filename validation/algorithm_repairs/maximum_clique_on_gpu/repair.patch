@@ -1,0 +1,1212 @@
+diff --git a/include/cgarray.cuh b/include/cgarray.cuh
+index 783668d..cc98039 100644
+--- a/include/cgarray.cuh
++++ b/include/cgarray.cuh
+@@ -28,10 +28,18 @@ namespace graph
+ 		{
+ 			N = 0;
+ 			name = "Unknown";
++			cpu_data = nullptr;
++			gpu_data = nullptr;
++			_at = AllocationTypeEnum::noalloc;
++			_deviceId = 0;
++			owns_cpu_data = false;
+ 		}
+ 
+ 		void initialize(string s, AllocationTypeEnum at, size_t size, int devId)
+ 		{
++			cpu_data = nullptr;
++			gpu_data = nullptr;
++			owns_cpu_data = false;
+ 			N = size;
+ 			name = s;
+ 			_at = at;
+@@ -43,9 +51,11 @@ namespace graph
+ 			{
+ 			case cpuonly:
+ 				cpu_data = (T *)malloc(size * (uint64) sizeof(T));
++				owns_cpu_data = true;
+ 				break;
+ 			case gpu:
+ 				cpu_data = (T *)malloc(size * (uint64) sizeof(T));
++				owns_cpu_data = true;
+ 				CUDA_RUNTIME(cudaMalloc(&gpu_data, size * (uint64) sizeof(T)));
+ 				break;
+ 			case unified:
+@@ -60,8 +70,13 @@ namespace graph
+ 
+ 		void initialize(std::string s, AllocationTypeEnum at)
+ 		{
++			N = 0;
+ 			name = s;
+ 			_at = at;
++			cpu_data = nullptr;
++			gpu_data = nullptr;
++			_deviceId = 0;
++			owns_cpu_data = false;
+ 		}
+ 
+ 		GPUArray(std::string s, AllocationTypeEnum at, size_t size, int devId)
+@@ -81,12 +96,23 @@ namespace graph
+ 				CUDA_RUNTIME(cudaSetDevice(_deviceId));
+ 				if (_at == AllocationTypeEnum::gpu || _at == AllocationTypeEnum::unified)
+ 					CUDA_RUNTIME(cudaFree(gpu_data));
++				if (_at == AllocationTypeEnum::gpu && owns_cpu_data)
++					free(cpu_data);
+ 				CUDA_RUNTIME(cudaStreamDestroy(_stream));
++				cpu_data = nullptr;
++				gpu_data = nullptr;
++				owns_cpu_data = false;
+ 				N = 0;
+ 			}
+ 		}
+ 
+-		void freeCPU() { delete cpu_data; }
++		void freeCPU()
++		{
++			if (owns_cpu_data)
++				free(cpu_data);
++			cpu_data = nullptr;
++			owns_cpu_data = false;
++		}
+ 
+ 		void setAlloc(AllocationTypeEnum at) { _at = at; }
+ 
+@@ -205,7 +231,8 @@ namespace graph
+ 		{
+ 			size_t c = count == 0 ? N : count;
+ 
+-			if (_at == AllocationTypeEnum::unified)
++			// newAlloc promises a malloc-owned copy even for managed storage.
++			if (_at == AllocationTypeEnum::unified && !newAlloc)
+ 				return &(gpu_data[startIndex]);
+ 
+ 			CUDA_RUNTIME(cudaSetDevice(_deviceId));
+@@ -238,5 +265,6 @@ namespace graph
+ 		AllocationTypeEnum _at;
+ 		cudaStream_t _stream;
+ 		int _deviceId;
++		bool owns_cpu_data;
+ 	};
+-}
+\ No newline at end of file
++}
+diff --git a/include/csrcoo.cuh b/include/csrcoo.cuh
+index 14220f6..7f56149 100644
+--- a/include/csrcoo.cuh
++++ b/include/csrcoo.cuh
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include <cassert>
++#include <cstdint>
+ #include <vector>
+ 
+ #include "cgarray.cuh"
+@@ -163,4 +164,4 @@ namespace graph
+       graph->colInd = g.colInd->cdata();
+     }
+   }
+-} // namespace graph
+\ No newline at end of file
++} // namespace graph
+diff --git a/include/graph_queue.cuh b/include/graph_queue.cuh
+index 29a2992..e6bcc4c 100644
+--- a/include/graph_queue.cuh
++++ b/include/graph_queue.cuh
+@@ -21,23 +21,29 @@ namespace graph
+ 		GPUArray<T> count;
+ 		GPUArray<T> queue;
+ 		GPUArray<MarkType> mark; // mark if a node or edge is present in the graph
+-		GPUArray<GraphQueue_d<T, MarkType>> *device_queue;
++		GPUArray<GraphQueue_d<T, MarkType>> *device_queue = nullptr;
+ 		int capacity;
+ 
+ 		void Create(AllocationTypeEnum at, uint cap, int devId)
+ 		{
+ 			capacity = cap;
+ 			count.initialize("Queue Count", at, 1, devId);
+-			count.setSingle(0, 0, true);
+ 			queue.initialize("Queue data", at, capacity, devId);
+ 			mark.initialize("Queue Mark", at, capacity, devId);
+ 
+ 			device_queue = new GPUArray<GraphQueue_d<T, MarkType>>();
+ 			device_queue->initialize("Device Queue", unified, 1, devId);
+ 
+-			count.switch_to_gpu();
+-			queue.switch_to_gpu();
+-			mark.switch_to_gpu();
++			// GPU allocations already have device storage. Copying their unused
++			// host mirrors here would overwrite initialized flags with garbage.
++			if (at == cpuonly)
++			{
++				count.switch_to_gpu(devId);
++				queue.switch_to_gpu(devId);
++				mark.switch_to_gpu(devId);
++			}
++			count.setSingle(0, 0, true);
++			mark.setAll(false, true);
+ 
+ 			device_queue->gdata()[0].count = count.gdata();
+ 			device_queue->gdata()[0].queue = queue.gdata();
+@@ -53,10 +59,15 @@ namespace graph
+ 
+ 		void free()
+ 		{
+-			device_queue->freeGPU();
++			if (device_queue != nullptr)
++			{
++				device_queue->freeGPU();
++				delete device_queue;
++				device_queue = nullptr;
++			}
+ 			count.freeGPU();
+ 			queue.freeGPU();
+ 			mark.freeGPU();
+ 		}
+ 	};
+-} // namespace graph
+\ No newline at end of file
++} // namespace graph
+diff --git a/include/kcore.cuh b/include/kcore.cuh
+index 79c17ee..5d32ff0 100644
+--- a/include/kcore.cuh
++++ b/include/kcore.cuh
+@@ -20,7 +20,7 @@ __global__ void init_asc(T *data, CntType count)
+ }
+ 
+ template <typename T, typename PeelT>
+-__global__ void filter_window(PeelT *edge_sup, T count, bool *in_bucket, T low, T high)
++__global__ void filter_window(PeelT *edge_sup, T count, uint32_t *in_bucket, T low, T high)
+ {
+ 	auto gtid = threadIdx.x + blockIdx.x * blockDim.x;
+ 	if (gtid < count)
+@@ -33,7 +33,7 @@ __global__ void filter_window(PeelT *edge_sup, T count, bool *in_bucket, T low,
+ template <typename T, typename PeelT>
+ __global__ void filter_with_random_append(
+ 		T *bucket_buf, T count, PeelT *EdgeSupport,
+-		bool *in_curr, T *curr, T *curr_cnt, T ref, T span)
++		uint32_t *in_curr, T *curr, T *curr_cnt, T ref, T span)
+ {
+ 	auto gtid = threadIdx.x + blockIdx.x * blockDim.x;
+ 	if (gtid < count)
+@@ -49,7 +49,7 @@ __global__ void filter_with_random_append(
+ }
+ 
+ template <typename T, typename PeelT>
+-__global__ void update_priority(graph::GraphQueue_d<T, bool> current, T priority, T *nodePriority, T *coreNumber)
++__global__ void update_priority(graph::GraphQueue_d<T, uint32_t> current, T priority, T *nodePriority, T *coreNumber)
+ {
+ 	auto gtid = threadIdx.x + blockIdx.x * blockDim.x;
+ 	if (gtid < current.count[0])
+@@ -61,7 +61,7 @@ __global__ void update_priority(graph::GraphQueue_d<T, bool> current, T priority
+ }
+ 
+ template <typename T>
+-__device__ void add_to_queue_1(graph::GraphQueue_d<T, bool> &q, T element)
++__device__ void add_to_queue_1(graph::GraphQueue_d<T, uint32_t> &q, T element)
+ {
+ 	auto insert_idx = atomicAdd(q.count, 1);
+ 	q.queue[insert_idx] = element;
+@@ -69,9 +69,9 @@ __device__ void add_to_queue_1(graph::GraphQueue_d<T, bool> &q, T element)
+ }
+ 
+ template <typename T>
+-__device__ void add_to_queue_1_no_dup(graph::GraphQueue_d<T, bool> &q, T element)
++__device__ void add_to_queue_1_no_dup(graph::GraphQueue_d<T, uint32_t> &q, T element)
+ {
+-	auto old_token = atomicCASBool(q.mark + element, 0, 1);
++	auto old_token = atomicCAS(q.mark + element, 0U, 1U);
+ 	if (!old_token)
+ 	{
+ 		auto insert_idx = atomicAdd(q.count, 1);
+@@ -82,8 +82,8 @@ __device__ void add_to_queue_1_no_dup(graph::GraphQueue_d<T, bool> &q, T element
+ template <typename T, typename PeelT>
+ __forceinline__ __device__ void process_degree(
+ 		T nodeId, T level, PeelT *nodeDegree,
+-		graph::GraphQueue_d<T, bool> &next,
+-		graph::GraphQueue_d<T, bool> &bucket,
++		graph::GraphQueue_d<T, uint32_t> &next,
++		graph::GraphQueue_d<T, uint32_t> &bucket,
+ 		T bucket_level_end_)
+ {
+ 	auto cur = atomicSub(&nodeDegree[nodeId], 1);
+@@ -170,6 +170,15 @@ __global__ void generateIndices_kernel(T* array , T maxIndex)
+ 	}	
+ }
+ 
++template <typename T>
++__global__ void gather_by_index_kernel(const T *values, const T *indices,
++                                      T *output, T count)
++{
++	for (uint64 i = threadIdx.x + uint64(blockIdx.x) * blockDim.x;
++	     i < count; i += uint64(blockDim.x) * gridDim.x)
++		output[i] = values[indices[i]];
++}
++
+ template <typename T>
+ __global__ void computeNewName_kernel(T *oldName, T *newName, T n_old, T n_new)
+ {
+@@ -344,9 +353,9 @@ __global__ void
+ kernel_partition_level_next(
+ 		graph::COOCSRGraph_d<T> g,
+ 		int level, bool *processed, PeelT *nodeDegree,
+-		graph::GraphQueue_d<T, bool> current,
+-		graph::GraphQueue_d<T, bool> &next,
+-		graph::GraphQueue_d<T, bool> &bucket,
++		graph::GraphQueue_d<T, uint32_t> current,
++		graph::GraphQueue_d<T, uint32_t> &next,
++		graph::GraphQueue_d<T, uint32_t> &bucket,
+ 		int bucket_level_end_,
+ 		T priority,
+ 		T *nodePriority,
+@@ -384,8 +393,8 @@ __global__ void
+ kernel_partition_remove_vertices(
+ 		graph::COOCSRGraph_d<T> g,
+ 		PeelT *nodeDegree,
+-		graph::GraphQueue_d<T, bool> kcore,
+-		graph::GraphQueue_d<T, bool> clique,
++		graph::GraphQueue_d<T, uint32_t> kcore,
++		graph::GraphQueue_d<T, uint32_t> clique,
+ 		PeelT min_degree)
+ {
+ 	const size_t partitionsPerBlock = BD / P;
+@@ -418,7 +427,7 @@ template <typename T, typename PeelT>
+ __global__ void
+ kernel_partition_remove_vertex(
+ 		graph::COOCSRGraph_d<T> g,
+-		graph::GraphQueue_d<T, bool> kcore,
++		graph::GraphQueue_d<T, uint32_t> kcore,
+ 		PeelT *nodeDegree,
+ 		T node
+ 	)
+@@ -435,8 +444,8 @@ template <typename T, typename PeelT, int BD, int P>
+ __global__ void
+ kernel_update_marks(
+ 		graph::COOCSRGraph_d<T> g,
+-		graph::GraphQueue_d<T, bool> &kcore,
+-		graph::GraphQueue_d<T, bool> clique)
++		graph::GraphQueue_d<T, uint32_t> &kcore,
++		graph::GraphQueue_d<T, uint32_t> clique)
+ {
+ 	const auto gx = (blockDim.x * blockIdx.x + threadIdx.x);
+ 
+@@ -453,8 +462,8 @@ __global__ void
+ kernel_fill_candidates_vertex(
+ 		graph::COOCSRGraph_d<T> g,
+ 		PeelT *nodeDegree,
+-		graph::GraphQueue_d<T, bool> kcore,
+-		graph::GraphQueue_d<PeelT, bool> &degree
++		graph::GraphQueue_d<T, uint32_t> kcore,
++		graph::GraphQueue_d<PeelT, uint32_t> &degree
+ )
+ {
+ 	auto gtid = (blockDim.x * blockIdx.x) + threadIdx.x;
+@@ -476,9 +485,9 @@ __global__ void
+ kernel_fill_candidates_vertex(
+ 		graph::COOCSRGraph_d<T> g,
+ 		PeelT *nodeDegree,
+-		graph::GraphQueue_d<T, bool> kcore,
+-		graph::GraphQueue_d<PeelT, bool> &degree,
+-		graph::GraphQueue_d<T, bool> &currents
++		graph::GraphQueue_d<T, uint32_t> kcore,
++		graph::GraphQueue_d<PeelT, uint32_t> &degree,
++		graph::GraphQueue_d<T, uint32_t> &currents
+ )
+ {
+ 	auto gtid = (blockDim.x * blockIdx.x) + threadIdx.x;
+@@ -502,9 +511,9 @@ __global__ void
+ kernel_fill_candidates_vertex_from_clique(
+ 		graph::COOCSRGraph_d<T> g,
+ 		PeelT *nodeDegree,
+-		graph::GraphQueue_d<T, bool> kcore,
+-		graph::GraphQueue_d<T, bool> clique,
+-		graph::GraphQueue_d<PeelT, bool> &degree
++		graph::GraphQueue_d<T, uint32_t> kcore,
++		graph::GraphQueue_d<T, uint32_t> clique,
++		graph::GraphQueue_d<PeelT, uint32_t> &degree
+ )
+ {
+ 	auto gtid = (blockDim.x * blockIdx.x) + threadIdx.x;
+@@ -528,8 +537,8 @@ __global__ void
+ kernel_get_minimum_degree_vertices(
+ 		graph::COOCSRGraph_d<T> g,
+ 		PeelT *nodeDegree,
+-		graph::GraphQueue_d<T, bool> kcore,
+-		graph::GraphQueue_d<T, bool> &clique,
++		graph::GraphQueue_d<T, uint32_t> kcore,
++		graph::GraphQueue_d<T, uint32_t> &clique,
+ 		PeelT min_degree
+ )
+ {
+@@ -551,7 +560,7 @@ __global__ void
+ kernel_fill_max_core_vertices (
+ 		graph::COOCSRGraph_d<T> g,
+ 		T *coreNumber,
+-		graph::GraphQueue_d<T, bool> &kcore,
++		graph::GraphQueue_d<T, uint32_t> &kcore,
+ 		int max_core
+ )
+ {
+@@ -574,7 +583,7 @@ template <typename T, typename PeelT, uint BLOCK_DIM_X, uint CPARTSIZE>
+ __global__ void
+ kernel_compute_degree_kcore(
+ 		graph::COOCSRGraph_d<T> g,
+-		graph::GraphQueue_d<T, bool> kcore,
++		graph::GraphQueue_d<T, uint32_t> kcore,
+ 		PeelT* nodeDegree
+ )
+ {
+@@ -601,7 +610,7 @@ template <typename T, typename PeelT, uint BLOCK_DIM_X, uint CPARTSIZE>
+ __global__ void
+ kernel_get_min_degree_vert(
+ 		graph::COOCSRGraph_d<T> g,
+-		graph::GraphQueue_d<T, bool> current,
++		graph::GraphQueue_d<T, uint32_t> current,
+ 		PeelT* nodeDegree
+ )
+ {
+@@ -664,19 +673,11 @@ namespace graph
+ 		// Same Function for any comutation
+ 		void bucket_scan(
+ 				GPUArray<PeelT> nodeDegree, T node_num, int level,
+-				GraphQueue<T, bool> &current,
++				GraphQueue<T, uint32_t> &current,
+ 				GPUArray<T> asc,
+-				GraphQueue<T, bool> &bucket,
++				GraphQueue<T, uint32_t> &bucket,
+ 				int &bucket_level_end_)
+ 		{
+-			static bool is_first = true;
+-			if (is_first)
+-			{
+-				current.mark.setAll(false, true);
+-				bucket.mark.setAll(false, true);
+-				is_first = false;
+-			}
+-
+ 			const size_t block_size = 128;
+ 
+ 			if (level == bucket_level_end_)
+@@ -710,14 +711,14 @@ namespace graph
+ 
+ 		void find_heur_clique(COOCSRGraph_d<T> &g)
+ 		{
+-			graph::GraphQueue<T, bool> kcore_q;
++			graph::GraphQueue<T, uint32_t> kcore_q;
+ 			kcore_q.Create(gpu, g.numNodes, dev_);
+ 			kcore_q.mark.setAll(false, true);
+ 			kcore_q.count.setSingle(0, 0, true);
+ 
+-			graph::GraphQueue<PeelT, bool> degree_q;
++			graph::GraphQueue<PeelT, uint32_t> degree_q;
+ 			degree_q.Create(gpu, g.numNodes, dev_);
+-			graph::GraphQueue<T, bool> currents_q;
++			graph::GraphQueue<T, uint32_t> currents_q;
+ 			currents_q.Create(gpu, g.numNodes, dev_);
+ 			
+ 			GPUArray<PeelT> _nodeDegree;
+@@ -770,7 +771,7 @@ namespace graph
+ 					cudaMemcpy(h_out, d_out, sizeof(cub::KeyValuePair<int, PeelT>), ::cudaMemcpyDeviceToHost);
+ 					auto argmin = h_out->key;
+ 					cudaFree(d_out);
+-					free(h_out);	
++					delete h_out;
+ 					min_degree.setSingle(0, degree_q.queue.getSingle(argmin), true);
+ 					node.setSingle(0, currents_q.queue.getSingle(argmin), true);
+ 				}
+@@ -778,6 +779,12 @@ namespace graph
+ 				if (min_degree.getSingle(0) + 1 == remaining.getSingle(0))
+ 				{
+ 					heurCliqueSize.setSingle(0, min_degree.getSingle(0) + 1, true);
++					heurCliqueVertices.initialize("Heuristic clique vertices",
++						AllocationTypeEnum::gpu, remaining.getSingle(0), dev_);
++					CUDA_RUNTIME(cudaMemcpy(heurCliqueVertices.gdata(),
++						currents_q.queue.gdata(),
++						remaining.getSingle(0) * sizeof(T),
++						cudaMemcpyDeviceToDevice));
+ 					remaining.setSingle(0, 0, true);
+ 					break;
+ 				}
+@@ -800,6 +807,8 @@ namespace graph
+ 			min_degree.freeGPU();
+ 			node.freeGPU();
+ 			_nodeDegree.freeGPU();
++			remaining.freeGPU();
++			degree_q.free();
+ 			currents_q.free();
+ 			kcore_q.free();
+ 			degree_q.free();
+@@ -820,6 +829,7 @@ namespace graph
+ 		GPUArray<T> nodePriority;
+ 		GPUArray<T> coreNumber;
+ 		GPUArray<int> heurCliqueSize;
++		GPUArray<T> heurCliqueVertices;
+ 
+ 		SingleGPU_Kcore(int dev) : dev_(dev)
+ 		{
+@@ -834,8 +844,14 @@ namespace graph
+ 		{
+ 			coreNumber.freeGPU();
+ 			heurCliqueSize.freeGPU();
++			heurCliqueVertices.freeGPU();
+ 			nodePriority.freeGPU();
+ 			nodeDegree.freeGPU();
++			if (stream_ != nullptr)
++			{
++				CUDA_RUNTIME(cudaStreamDestroy(stream_));
++				stream_ = nullptr;
++			}
+ 		}
+ 
+ 		void getNodeDegree(COOCSRGraph_d<T> &g, const size_t nodeOffset = 0, const size_t edgeOffset = 0)
+@@ -856,13 +872,13 @@ namespace graph
+ 			int level = 0;
+ 			int bucket_level_end_ = level;
+ 			// Lets apply queues and buckets
+-			graph::GraphQueue<T, bool> bucket_q;
++			graph::GraphQueue<T, uint32_t> bucket_q;
+ 			bucket_q.Create(gpu, g.numNodes, dev_);
+ 
+-			graph::GraphQueue<T, bool> current_q;
++			graph::GraphQueue<T, uint32_t> current_q;
+ 			current_q.Create(gpu, g.numNodes, dev_);
+ 
+-			graph::GraphQueue<T, bool> next_q;
++			graph::GraphQueue<T, uint32_t> next_q;
+ 			next_q.Create(gpu, g.numNodes, dev_);
+ 			next_q.mark.setAll(false, true);
+ 
+@@ -949,4 +965,4 @@ namespace graph
+ 		int device() const { return dev_; }
+ 		cudaStream_t stream() const { return stream_; }
+ 	};
+-} // namespace graph
+\ No newline at end of file
++} // namespace graph
+diff --git a/include/queue.cuh b/include/queue.cuh
+index 777312f..fb01b99 100644
+--- a/include/queue.cuh
++++ b/include/queue.cuh
+@@ -51,12 +51,12 @@ __device__ __forceinline__ uint32_t my_sleep(uint32_t ns)
+     const uint32_t target = ticket % queue_size;                              \
+     const uint32_t ticket_target = ticket / queue_size * 2;                   \
+     uint32_t ns = 8;                                                          \
+-    while (tickets[target].load(cuda::memory_order_relaxed) != ticket_target) \
++    while (tickets[target].fetch_add(0, cuda::memory_order_acquire) != ticket_target) \
+       ns = my_sleep(ns);                                                      \
+-    while (tickets[target].load(cuda::memory_order_acquire) != ticket_target) \
++    while (tickets[target].fetch_add(0, cuda::memory_order_acquire) != ticket_target) \
+       ns = my_sleep(ns);                                                      \
+-    queue[target] = val;                                                      \
+-    tickets[target].store(ticket_target + 1, cuda::memory_order_release);     \
++    atomicExch(&queue[target], val);                                                      \
++    tickets[target].exchange(ticket_target + 1, cuda::memory_order_release);     \
+   } while (0)
+ 
+ #define queue_dequeue(queue, tickets, head, tail, queue_size, fork, qidx, count)          \
+@@ -91,6 +91,21 @@ __device__ __forceinline__ uint32_t my_sleep(uint32_t ns)
+     tickets[target].store(ticket_target + 1, cuda::memory_order_release);     \
+   } while (0)
+ 
++#define shared_queue_wait_ticket(queue, tickets, head, tail, queue_size, qidx, res)  \
++  do                                                                          \
++  {                                                                           \
++    const uint32_t target = qidx % queue_size;                                \
++    const uint32_t ticket_target = qidx / queue_size * 2 + 1;                 \
++    uint32_t ns = 8;                                                          \
++    while (tickets[target].fetch_add(0, cuda::memory_order_acquire) != ticket_target) \
++      ns = my_sleep(ns);                                                      \
++    while (tickets[target].fetch_add(0, cuda::memory_order_acquire) != ticket_target) \
++      ns = my_sleep(ns);                                                      \
++    res = atomicAdd(&queue[target], 0U);                                                      \
++    tickets[target].exchange(ticket_target + 1, cuda::memory_order_release);     \
++  } while (0)
++
++
+ #define queue_try_wait_ticket(queue, tickets, head, tail, queue_size, qidx, res, available) \
+   do                                                                                        \
+   {                                                                                         \
+diff --git a/include/utils.cuh b/include/utils.cuh
+index be9bc18..fdaa98c 100644
+--- a/include/utils.cuh
++++ b/include/utils.cuh
+@@ -1,6 +1,9 @@
+ #pragma once
++#include <cstdint>
+ #include <cstdio>
+ #include <cuda_runtime_api.h>
++#include <stdexcept>
++#include <string>
+ 
+ #define CUDA_RUNTIME(ans)                 \
+   {                                       \
+@@ -11,9 +14,15 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
+ {
+   if (code != cudaSuccess)
+   {
++#ifdef GRAPHMINE_LIBRARY
++    throw std::runtime_error(std::string("Maximum-Clique-on-GPU CUDA failure at ") +
++                             file + ":" + std::to_string(line) + ": " +
++                             cudaGetErrorString(code));
++#else
+     fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+     if (abort)
+       exit(1);
++#endif
+   }
+ }
+ 
+@@ -47,7 +56,9 @@ struct CUDAContext
+   {
+     /*get the maximal number of threads in an SM*/
+     cudaDeviceProp prop;
+-    cudaGetDeviceProperties(&prop, 0); /*currently 0th device*/
++    int current_device = 0;
++    cudaGetDevice(&current_device);
++    cudaGetDeviceProperties(&prop, current_device);
+     max_grid_size = prop.maxGridSize[0];
+     max_threads_per_SM = prop.maxThreadsPerMultiProcessor;
+     shared_mem_size_per_block = prop.sharedMemPerBlock;
+@@ -112,4 +123,4 @@ T getVal(T *arr, T index, AllocationTypeEnum at)
+   T val = 0;
+   CUDA_RUNTIME(cudaMemcpy(&val, &(arr[index]), sizeof(T), cudaMemcpyKind::cudaMemcpyDeviceToHost));
+   return val;
+-}
+\ No newline at end of file
++}
+diff --git a/mcp/mcp.cuh b/mcp/mcp.cuh
+index ccd8ff8..b332416 100644
+--- a/mcp/mcp.cuh
++++ b/mcp/mcp.cuh
+@@ -202,111 +202,7 @@ namespace graph
+         }
+       }
+ 
+-      const uint hybrid_per_warp = config.warp_parallel ? (block_size / PSIZE) : 1;
+-      T conc_blocks_per_SM = context.GetConCBlocks(block_size);
+       const uint partition_size = PSIZE;
+-      const uint dv = 32;
+-      const uint max_level = max_core + 2;
+-      const uint num_divs = (max_degree.gdata()[0] + dv - 1) / dv;
+-      const uint64 encode_size = (uint64)num_SMs * conc_blocks_per_SM * (max_degree.gdata()[0] * num_divs);
+-
+-      encoded_induced_subgraph.initialize("induced subgraph", gpu, encode_size, dev_);
+-
+-      const uint64 level_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level * num_divs;
+-      const uint64 iset_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level * (max_degree.gdata()[0]);
+-      const uint64 level_item_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level;
+-
+-      P.initialize("P(possible)", gpu, level_size, dev_);
+-      B.initialize("B", gpu, level_size, dev_);
+-      A.initialize("A", gpu, level_size, dev_);
+-      Cmax.initialize("Cmax", gpu, max_level, dev_);
+-      C.initialize("C", gpu, level_item_size, dev_);
+-    
+-      if (config.colorAlg == COLORALG::NUMBER 
+-        || config.colorAlg == COLORALG::RENUMBER) {
+-        Iset.initialize("Iset", gpu, iset_size, dev_);
+-        Iset_count.initialize("Iset count", gpu, level_item_size, dev_);
+-      }
+-      else if (config.colorAlg == COLORALG::RECOLOR)
+-        Iset.initialize("Iset", gpu, level_size, dev_);
+-      colored.initialize("colored", gpu, num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level, dev_);
+-      P.setAll(0, true);
+-
+-      float zero = 0.0f;
+-      CUDA_RUNTIME(cudaMalloc((void **)&d_Cmax_size, sizeof(uint32_t)));
+-      CUDA_RUNTIME(cudaMemcpy((void *)d_Cmax_size, &config.lb, sizeof(uint32_t), ::cudaMemcpyHostToDevice));
+-
+-      if (config.verbose)
+-      {
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_avg_subgraph_density, sizeof(float)));
+-        CUDA_RUNTIME(cudaMemcpy((void *)d_avg_subgraph_density, &zero, sizeof(float), ::cudaMemcpyHostToDevice));
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_max_subgraph_density, sizeof(float)));
+-        CUDA_RUNTIME(cudaMemcpy((void *)d_max_subgraph_density, &zero, sizeof(float), ::cudaMemcpyHostToDevice));
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_number_of_subgraphs, sizeof(uint32_t)));
+-        CUDA_RUNTIME(cudaMemset(d_number_of_subgraphs, 0, sizeof(uint32_t)));
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_color_l1, sizeof(T)));
+-        CUDA_RUNTIME(cudaMemset(d_cut_by_color_l1, 0, sizeof(T)));
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_color, sizeof(T)));
+-        CUDA_RUNTIME(cudaMemset(d_cut_by_color, 0, sizeof(T)));
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_kcore_l1, sizeof(T)));
+-        CUDA_RUNTIME(cudaMemset(d_cut_by_kcore_l1, 0, sizeof(T)));
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_max_subgraph_width, sizeof(uint32_t)));
+-        CUDA_RUNTIME(cudaMemset(d_max_subgraph_width, 0, sizeof(uint32_t)));
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_avg_subgraph_width, sizeof(uint32_t)));
+-        CUDA_RUNTIME(cudaMemset(d_avg_subgraph_width, 0, sizeof(uint32_t)));
+-        CUDA_RUNTIME(cudaMalloc((void **)&d_branches, sizeof(unsigned long long)));
+-        CUDA_RUNTIME(cudaMemset(d_branches, 0, sizeof(unsigned long long)));
+-      }
+-    
+-      level_pointer.initialize("level pointer", gpu, level_item_size, dev_);
+-      encoded_induced_subgraph.setAll(0, true);
+-      
+-      const uint numPartitions = block_size / partition_size;
+-      const uint msg_cnt = 5;
+-      const uint conc_blocks = num_SMs * conc_blocks_per_SM;
+-      const uint warps = conc_blocks * numPartitions;
+-
+-      cudaMemcpyToSymbol(PARTSIZE, &partition_size, sizeof(PARTSIZE));
+-      cudaMemcpyToSymbol(NUMPART, &numPartitions, sizeof(NUMPART));
+-      cudaMemcpyToSymbol(MAXLEVEL, &max_level, sizeof(MAXLEVEL));
+-      cudaMemcpyToSymbol(NUMDIVS, &num_divs, sizeof(NUMDIVS));
+-      cudaMemcpyToSymbol(MAXDEG, &(max_degree.gdata()[0]), sizeof(MAXDEG));
+-      cudaMemcpyToSymbol(MAXUNDEG, &(max_undirected_degree.gdata()[0]), sizeof(MAXDEG));
+-      cudaMemcpyToSymbol(CBPSM, &(conc_blocks_per_SM), sizeof(CBPSM));
+-      cudaMemcpyToSymbol(MSGCNT, &(msg_cnt), sizeof(MSGCNT));
+-      cudaMemcpyToSymbol(CB, &(conc_blocks), sizeof(CB));
+-      cudaMemcpyToSymbol(WARPS, &(warps), sizeof(WARPS));
+-
+-      CUDA_RUNTIME(cudaMalloc((void **)&work_ready, conc_blocks * hybrid_per_warp * sizeof(cuda::atomic<uint32_t, cuda::thread_scope_device>)));
+-      CUDA_RUNTIME(cudaMemset((void *)work_ready, 0, conc_blocks * hybrid_per_warp * sizeof(cuda::atomic<uint32_t, cuda::thread_scope_device>)));
+-      
+-      if (config.mt == MAINTASK::MCP_EVAL)
+-      {
+-        cuda::binary_semaphore<cuda::thread_scope_device> init_sem{1};
+-        CUDA_RUNTIME(cudaMalloc((void **)&max_clique_sem, sizeof(cuda::binary_semaphore<cuda::thread_scope_device>)));
+-        CUDA_RUNTIME(cudaMemcpy(max_clique_sem, &init_sem, sizeof(cuda::binary_semaphore<cuda::thread_scope_device>), ::cudaMemcpyHostToDevice));
+-      }
+-
+-      global_message = GPUArray<uint32_t>("global message", gpu, conc_blocks * msg_cnt * hybrid_per_warp, dev_);
+-      const uint queue_size = conc_blocks * hybrid_per_warp;
+-      queue_init(queue, tickets, head, tail, queue_size, dev_);
+-      //if (config.hybrid) local_queue_init(local_queue, local_tickets, local_head, local_tail, queue_size, conc_blocks, dev_);
+-      work_stealing = GPUArray<uint32_t>("work stealing counter", gpu, 1, dev_);
+-      work_stealing.setAll(global_id_ + config.lb, true);
+-      Xx_aux = GPUArray<T>("auxiliary array for X for X ", gpu, 
+-                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM * hybrid_per_warp, dev_);
+-      current = GPUArray<T>("Current ", gpu, 
+-                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
+-      next = GPUArray<T>("Next ", gpu, 
+-                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
+-      ordering = GPUArray<T>("Core numbers ", gpu, 
+-                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
+-         
+-
+-      cudaMemGetInfo(&free, &total);
+-      Log(info, "VRAM usage: %llu B", total - free);
+-      
+-      auto grid_block_size = num_SMs * conc_blocks_per_SM;
+       auto kernel = mcp_kernel_l1_wl_donor_psanse<T, 128, partition_size>;
+ 
+       if (!config.warp_parallel)
+@@ -523,6 +419,117 @@ namespace graph
+         
+       }
+ 
++      const uint hybrid_per_warp = config.warp_parallel ? (block_size / PSIZE) : 1;
++      // The donor queue waits for every launched block. Its grid must fit
++      // concurrently, including this kernel's registers and shared memory.
++      int resident_blocks = 0;
++      CUDA_RUNTIME(cudaOccupancyMaxActiveBlocksPerMultiprocessor(
++          &resident_blocks, kernel, block_size, 0));
++      if (resident_blocks < 1)
++        throw std::runtime_error("search kernel cannot reside on this device");
++      const T conc_blocks_per_SM = static_cast<T>(resident_blocks);
++      const uint dv = 32;
++      const uint max_level = max_core + 2;
++      const uint num_divs = (max_degree.gdata()[0] + dv - 1) / dv;
++      const uint64 encode_size = (uint64)num_SMs * conc_blocks_per_SM * (max_degree.gdata()[0] * num_divs);
++
++      encoded_induced_subgraph.initialize("induced subgraph", gpu, encode_size, dev_);
++
++      const uint64 level_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level * num_divs;
++      const uint64 iset_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level * (max_degree.gdata()[0]);
++      const uint64 level_item_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level;
++
++      P.initialize("P(possible)", gpu, level_size, dev_);
++      B.initialize("B", gpu, level_size, dev_);
++      A.initialize("A", gpu, level_size, dev_);
++      Cmax.initialize("Cmax", gpu, max_level, dev_);
++      C.initialize("C", gpu, level_item_size, dev_);
++
++      if (config.colorAlg == COLORALG::NUMBER
++        || config.colorAlg == COLORALG::RENUMBER) {
++        Iset.initialize("Iset", gpu, iset_size, dev_);
++        Iset_count.initialize("Iset count", gpu, level_item_size, dev_);
++      }
++      else if (config.colorAlg == COLORALG::RECOLOR)
++        Iset.initialize("Iset", gpu, level_size, dev_);
++      colored.initialize("colored", gpu, num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level, dev_);
++      P.setAll(0, true);
++
++      float zero = 0.0f;
++      CUDA_RUNTIME(cudaMalloc((void **)&d_Cmax_size, sizeof(uint32_t)));
++      CUDA_RUNTIME(cudaMemcpy((void *)d_Cmax_size, &config.lb, sizeof(uint32_t), ::cudaMemcpyHostToDevice));
++
++      if (config.verbose)
++      {
++        CUDA_RUNTIME(cudaMalloc((void **)&d_avg_subgraph_density, sizeof(float)));
++        CUDA_RUNTIME(cudaMemcpy((void *)d_avg_subgraph_density, &zero, sizeof(float), ::cudaMemcpyHostToDevice));
++        CUDA_RUNTIME(cudaMalloc((void **)&d_max_subgraph_density, sizeof(float)));
++        CUDA_RUNTIME(cudaMemcpy((void *)d_max_subgraph_density, &zero, sizeof(float), ::cudaMemcpyHostToDevice));
++        CUDA_RUNTIME(cudaMalloc((void **)&d_number_of_subgraphs, sizeof(uint32_t)));
++        CUDA_RUNTIME(cudaMemset(d_number_of_subgraphs, 0, sizeof(uint32_t)));
++        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_color_l1, sizeof(T)));
++        CUDA_RUNTIME(cudaMemset(d_cut_by_color_l1, 0, sizeof(T)));
++        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_color, sizeof(T)));
++        CUDA_RUNTIME(cudaMemset(d_cut_by_color, 0, sizeof(T)));
++        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_kcore_l1, sizeof(T)));
++        CUDA_RUNTIME(cudaMemset(d_cut_by_kcore_l1, 0, sizeof(T)));
++        CUDA_RUNTIME(cudaMalloc((void **)&d_max_subgraph_width, sizeof(uint32_t)));
++        CUDA_RUNTIME(cudaMemset(d_max_subgraph_width, 0, sizeof(uint32_t)));
++        CUDA_RUNTIME(cudaMalloc((void **)&d_avg_subgraph_width, sizeof(uint32_t)));
++        CUDA_RUNTIME(cudaMemset(d_avg_subgraph_width, 0, sizeof(uint32_t)));
++        CUDA_RUNTIME(cudaMalloc((void **)&d_branches, sizeof(unsigned long long)));
++        CUDA_RUNTIME(cudaMemset(d_branches, 0, sizeof(unsigned long long)));
++      }
++
++      level_pointer.initialize("level pointer", gpu, level_item_size, dev_);
++      encoded_induced_subgraph.setAll(0, true);
++
++      const uint numPartitions = block_size / partition_size;
++      const uint msg_cnt = 5;
++      const uint conc_blocks = num_SMs * conc_blocks_per_SM;
++      const uint warps = conc_blocks * numPartitions;
++
++      cudaMemcpyToSymbol(PARTSIZE, &partition_size, sizeof(PARTSIZE));
++      cudaMemcpyToSymbol(NUMPART, &numPartitions, sizeof(NUMPART));
++      cudaMemcpyToSymbol(MAXLEVEL, &max_level, sizeof(MAXLEVEL));
++      cudaMemcpyToSymbol(NUMDIVS, &num_divs, sizeof(NUMDIVS));
++      cudaMemcpyToSymbol(MAXDEG, &(max_degree.gdata()[0]), sizeof(MAXDEG));
++      cudaMemcpyToSymbol(MAXUNDEG, &(max_undirected_degree.gdata()[0]), sizeof(MAXDEG));
++      cudaMemcpyToSymbol(CBPSM, &(conc_blocks_per_SM), sizeof(CBPSM));
++      cudaMemcpyToSymbol(MSGCNT, &(msg_cnt), sizeof(MSGCNT));
++      cudaMemcpyToSymbol(CB, &(conc_blocks), sizeof(CB));
++      cudaMemcpyToSymbol(WARPS, &(warps), sizeof(WARPS));
++
++      CUDA_RUNTIME(cudaMalloc((void **)&work_ready, conc_blocks * hybrid_per_warp * sizeof(cuda::atomic<uint32_t, cuda::thread_scope_device>)));
++      CUDA_RUNTIME(cudaMemset((void *)work_ready, 0, conc_blocks * hybrid_per_warp * sizeof(cuda::atomic<uint32_t, cuda::thread_scope_device>)));
++
++      if (config.mt == MAINTASK::MCP_EVAL)
++      {
++        cuda::binary_semaphore<cuda::thread_scope_device> init_sem{1};
++        CUDA_RUNTIME(cudaMalloc((void **)&max_clique_sem, sizeof(cuda::binary_semaphore<cuda::thread_scope_device>)));
++        CUDA_RUNTIME(cudaMemcpy(max_clique_sem, &init_sem, sizeof(cuda::binary_semaphore<cuda::thread_scope_device>), ::cudaMemcpyHostToDevice));
++      }
++
++      global_message = GPUArray<uint32_t>("global message", gpu, conc_blocks * msg_cnt * hybrid_per_warp, dev_);
++      const uint queue_size = conc_blocks * hybrid_per_warp;
++      queue_init(queue, tickets, head, tail, queue_size, dev_);
++      //if (config.hybrid) local_queue_init(local_queue, local_tickets, local_head, local_tail, queue_size, conc_blocks, dev_);
++      work_stealing = GPUArray<uint32_t>("work stealing counter", gpu, 1, dev_);
++      work_stealing.setAll(global_id_ + config.lb, true);
++      Xx_aux = GPUArray<T>("auxiliary array for X for X ", gpu,
++                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM * hybrid_per_warp, dev_);
++      current = GPUArray<T>("Current ", gpu,
++                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
++      next = GPUArray<T>("Next ", gpu,
++                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
++      ordering = GPUArray<T>("Core numbers ", gpu,
++                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
++
++
++      cudaMemGetInfo(&free, &total);
++      Log(info, "VRAM usage: %llu B", total - free);
++
++      auto grid_block_size = num_SMs * conc_blocks_per_SM;
+       mcp::GLOBAL_HANDLE<T> gh;
+       gh.gsplit = gsplit;
+       gh.iteration_limit = gsplit.numNodes;
+@@ -609,6 +616,12 @@ namespace graph
+ 
+       if (config.mt == MAINTASK::MCP_EVAL)
+       {
++        if (Cmax_size <= config.lb)
++        {
++          // Cmax is populated only when the search improves the input bound.
++          Log(info, "Search retained the input clique bound: %u", Cmax_size);
++          return;
++        }
+         // Get solution
+         T* Max_Clique = Cmax.copytocpu(0, Cmax_size, true);
+ 
+@@ -655,7 +668,7 @@ namespace graph
+         if (!is_clique)
+           printf("Not a Clique.\n");
+ 
+-        delete[] Max_Clique;
++        free(Max_Clique);
+       }
+     }
+ 
+@@ -722,15 +735,20 @@ namespace graph
+       
+       global_message.freeGPU();
+       queue_free(queue, tickets, head, tail);
++      if (stream_ != nullptr)
++      {
++        CUDA_RUNTIME(cudaStreamDestroy(stream_));
++        stream_ = nullptr;
++      }
+     }
+ 
+     void sync()
+     {
+       CUDA_RUNTIME(cudaSetDevice(dev_));
+-      cudaDeviceSynchronize();
++      CUDA_RUNTIME(cudaStreamSynchronize(stream_));
+       //CUDA_RUNTIME(cudaGetLastError());
+     }
+     int device() const { return dev_; }
+     cudaStream_t stream() const { return stream_; }
+   };
+-}
+\ No newline at end of file
++}
+diff --git a/mcp/mcp_kernel_wl_donor.cuh b/mcp/mcp_kernel_wl_donor.cuh
+index 6cd99d9..88c5e1e 100644
+--- a/mcp/mcp_kernel_wl_donor.cuh
++++ b/mcp/mcp_kernel_wl_donor.cuh
+@@ -264,10 +264,15 @@ __global__ void mcp_kernel_l1_wl_donor_psanse(
+ 		}
+ 
+ 		__syncthreads();
+-		if (threadIdx.x == 0 && sh.state == 2)
++		// Every thread observes the old state before thread zero changes it.
++		if (sh.state == 2)
+ 		{
+-			sh.state = 1;
+-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			__syncthreads();
++			if (threadIdx.x == 0)
++			{
++				sh.state = 1;
++				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			}
+ 		}
+ 		__syncthreads();
+ 	}
+@@ -530,10 +535,15 @@ __global__ void mcp_kernel_l1_wl_donor_tomita(
+ 		}
+ 
+ 		__syncthreads();
+-		if (threadIdx.x == 0 && sh.state == 2)
++		// Every thread observes the old state before thread zero changes it.
++		if (sh.state == 2)
+ 		{
+-			sh.state = 1;
+-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			__syncthreads();
++			if (threadIdx.x == 0)
++			{
++				sh.state = 1;
++				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			}
+ 		}
+ 		__syncthreads();
+ 	}
+@@ -797,10 +807,15 @@ __global__ void mcp_kernel_l1_wl_donor_psanse_recolor(
+ 		}
+ 
+ 		__syncthreads();
+-		if (threadIdx.x == 0 && sh.state == 2)
++		// Every thread observes the old state before thread zero changes it.
++		if (sh.state == 2)
+ 		{
+-			sh.state = 1;
+-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			__syncthreads();
++			if (threadIdx.x == 0)
++			{
++				sh.state = 1;
++				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			}
+ 		}
+ 		__syncthreads();
+ 	}
+@@ -1060,10 +1075,15 @@ __global__ void mcp_kernel_l1_wl_donor_tomita_renumber(
+ 		}
+ 
+ 		__syncthreads();
+-		if (threadIdx.x == 0 && sh.state == 2)
++		// Every thread observes the old state before thread zero changes it.
++		if (sh.state == 2)
+ 		{
+-			sh.state = 1;
+-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			__syncthreads();
++			if (threadIdx.x == 0)
++			{
++				sh.state = 1;
++				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			}
+ 		}
+ 		__syncthreads();
+ 	}
+@@ -1333,10 +1353,15 @@ __global__ void mcp_kernel_l1_wl_donor_reduce(
+ 		}
+ 
+ 		__syncthreads();
+-		if (threadIdx.x == 0 && sh.state == 2)
++		// Every thread observes the old state before thread zero changes it.
++		if (sh.state == 2)
+ 		{
+-			sh.state = 1;
+-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			__syncthreads();
++			if (threadIdx.x == 0)
++			{
++				sh.state = 1;
++				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
++			}
+ 		}
+ 		__syncthreads();
+ 	}
+diff --git a/mcp/mcp_kernel_wl_donor_warp.cuh b/mcp/mcp_kernel_wl_donor_warp.cuh
+index 6e1bf9a..20660b1 100644
+--- a/mcp/mcp_kernel_wl_donor_warp.cuh
++++ b/mcp/mcp_kernel_wl_donor_warp.cuh
+@@ -64,7 +64,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_psanse(
+ 	}
+ 	__syncthreads();
+ 
+-	while (sh.state != 100)
++	while (true)
+ 	{
+ 		// If First Level or begin
+ 		if (sh.state == 0)
+@@ -84,7 +84,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_psanse(
+ 				if (laneIdx == 0)
+ 				{
+ 					//printf("First level terminated\n");
+-					sh.state = 1; // finish
++					if (threadIdx.x == 0) sh.state = 1; // finish
+ 					wsh[warpIdx].state = 1;
+ 					queue_enqueue(queue, tickets, head, tail, WARPS, wsh[warpIdx].sm_warp_id);
+ 				}
+@@ -223,6 +223,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_psanse(
+ 							queue_caller(queue, tickets, head, tail));
+ 			}
+ 			__syncwarp();
++			if (wsh[warpIdx].state == 100) break;
+ 			continue;
+ 		}
+ 		else if (sh.state == 1 && wsh[warpIdx].state == 2) // Get work from queue at first level
+@@ -388,6 +389,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_psanse(
+ 	}
+ 
+ 		
++	__syncthreads();
+ 	// Collect statistics	
+ 	if (gh.verbose && threadIdx.x == 0)
+ 	{
+@@ -461,7 +463,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_reduce(
+ 	}
+ 	__syncthreads();
+ 
+-	while (sh.state != 100)
++	while (true)
+ 	{
+ 		// If First Level or begin
+ 		if (sh.state == 0)
+@@ -481,7 +483,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_reduce(
+ 				if (laneIdx == 0)
+ 				{
+ 					//printf("First level terminated\n");
+-					sh.state = 1; // finish
++					if (threadIdx.x == 0) sh.state = 1; // finish
+ 					wsh[warpIdx].state = 1;
+ 					queue_enqueue(queue, tickets, head, tail, WARPS, wsh[warpIdx].sm_warp_id);
+ 				}
+@@ -626,6 +628,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_reduce(
+ 							queue_caller(queue, tickets, head, tail));
+ 			}
+ 			__syncwarp();
++			if (wsh[warpIdx].state == 100) break;
+ 			continue;
+ 		}
+ 		else if (sh.state == 1 && wsh[warpIdx].state == 2) // Get work from queue at first level
+@@ -789,6 +792,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_reduce(
+ 
+ 	}
+ 		
++	__syncthreads();
+ 	// Collect statistics	
+ 	if (gh.verbose && threadIdx.x == 0)
+ 	{
+diff --git a/mcp/mcp_utils.cuh b/mcp/mcp_utils.cuh
+index 1123839..e386604 100644
+--- a/mcp/mcp_utils.cuh
++++ b/mcp/mcp_utils.cuh
+@@ -312,7 +312,7 @@ __device__ __forceinline__ void wait_for_donor_warp_(
+     else if (queue_full(queue, tickets, head, tail, WARPS))
+     {
+       warp_shared_state = 100;
+-      block_shared_state = 100;
++      // Each warp exits independently; do not race on the block state.
+       break;
+     }
+   } while (ns = my_sleep(ns));
+@@ -1110,7 +1110,7 @@ __device__ __forceinline__ void do_warp_fork_shared(
+   for (T j = 0; j < wsh.Xx_aux_sz; j++)
+   {
+     if (laneIdx == 0)
+-      queue_wait_ticket(sh.queue, sh.tickets, sh.head, sh.tail, NUMPART, wsh.worker_pos, wsh.shared_other_sm_warp_id);
++      shared_queue_wait_ticket(sh.queue, sh.tickets, sh.head, sh.tail, NUMPART, wsh.worker_pos, wsh.shared_other_sm_warp_id);
+     __syncwarp();
+ 
+ 
+@@ -1457,6 +1457,7 @@ __device__ __forceinline__ void prepare_fork(SHARED_HANDLE<T, BLOCK_DIM_X, CPART
+ template <typename T, uint BLOCK_DIM_X, uint CPARTSIZE>
+ __device__ __forceinline__ void prepare_warp_fork_(LOCAL_HANDLE<T> &lh, WARP_SHARED_HANDLE<T, BLOCK_DIM_X, CPARTSIZE> &wsh)
+ {
++  __syncwarp();
+   if (laneIdx == 0)
+   {
+     wsh.Xx_aux_sz = 0;
+@@ -2201,10 +2202,11 @@ __device__ __forceinline__ bool reduce(
+       const T ri_idx = 1 << (idx & 0x1F);
+       if ((sh.to_bl[block_idx] & ri_idx) > 0)
+       {
+-
++        __syncthreads();
+         if (sh.degree[idx] < k - 1 || sh.degree[idx] >= mod_R - 4)
+         {
+           bool rule_1 = sh.degree[idx] < k - 1;
++          __syncthreads();
+           if (rule_1)
+           {
+             // remove u from G
+@@ -3071,10 +3073,11 @@ __device__ __forceinline__ bool reduce_second_level(
+       const T ri_idx = 1 << (idx & 0x1F);
+       if ((sh.to_bl[block_idx] & ri_idx) > 0)
+       {
+-
++        __syncthreads();
+         if (sh.degree[idx] < k - 1 || sh.degree[idx] >= mod_R - 4)
+         {
+           bool rule_1 = sh.degree[idx] < k - 1;
++          __syncthreads();
+           if (rule_1)
+           {
+             // remove u from G
+@@ -3672,10 +3675,11 @@ __device__ __forceinline__ bool warp_reduce(
+       const T ri_idx = 1 << (idx & 0x1F);
+       if ((wsh.to_col[block_idx] & ri_idx) > 0)
+       {
+-
++        __syncwarp();
+         if (wsh.degree[idx] < k[warpIdx] - 1 || wsh.degree[idx] >= mod_R[warpIdx] - 4)
+         {
+           const bool rule_1 = wsh.degree[idx] < k[warpIdx] - 1;
++          __syncwarp();
+           if (rule_1)
+           {
+             // remove u from G
+@@ -4297,7 +4301,9 @@ __device__ __forceinline__ int add_to_iset_tomita(
+ 
+   __syncthreads();
+ 
+-  if (threadIdx.x == 0 && !inserted && k < ub) // Create a new Iset
++  const bool create_iset = !inserted && k < ub;
++  __syncthreads();
++  if (threadIdx.x == 0 && create_iset) // Create a new Iset
+   {
+     const T li = index >> 5;
+     const T ri = 1 << (index & 0x1F);
+diff --git a/src/main.cu b/src/main.cu
+index 405cefe..476f581 100644
+--- a/src/main.cu
++++ b/src/main.cu
+@@ -178,8 +178,6 @@ int main(int argc, char **argv)
+     indices.initialize("Indices from 0 to n", AllocationTypeEnum::unified, n, config.deviceId);
+     
+ 
+-    CUBSelect(red_degrees.gdata(), red_degrees_flagged.gdata(), d_flags.gdata(), n, config.deviceId);
+-    red_degrees.freeGPU();
+ 
+     // Array of inidces generate
+     execKernel((generateIndices_kernel<DataType>), blocks, block_size, config.deviceId, false, indices.gdata(), n);
+@@ -193,48 +191,35 @@ int main(int argc, char **argv)
+     
+     core_numbers_red.initialize("Core Numbers Reduced", AllocationTypeEnum::gpu, n_red, config.deviceId);
+ 
+-    CUBSelect(kcore.coreNumber.gdata(), core_numbers_red.gdata(), d_flags.gdata(), n, config.deviceId);
++    graph::GPUArray<DataType> unsorted_core_numbers("Unsorted core numbers", gpu, n_red, config.deviceId);
++    CUBSelect(kcore.coreNumber.gdata(), unsorted_core_numbers.gdata(), d_flags.gdata(), n, config.deviceId);
+ 
+     // Sort Indeces
+     void *d_temp_storage = nullptr;
+     size_t temp_storage_bytes = 0;
+-    cub::DeviceRadixSort::SortPairsDescending(
++    CUDA_RUNTIME(cub::DeviceRadixSort::SortPairsDescending(
+               d_temp_storage, temp_storage_bytes,
+-               core_numbers_red.gdata(), core_numbers_red.gdata(),
+-                d_temp_old_name.gdata(), d_oldName.gdata(), n_red);
++               unsorted_core_numbers.gdata(), core_numbers_red.gdata(),
++                d_temp_old_name.gdata(), d_oldName.gdata(), n_red));
+     // Allocate temporary storage
+     CUDA_RUNTIME(cudaMalloc(&d_temp_storage, temp_storage_bytes));
+    
+     // Run sorting operation
+-    cub::DeviceRadixSort::SortPairsDescending(
++    CUDA_RUNTIME(cub::DeviceRadixSort::SortPairsDescending(
+               d_temp_storage, temp_storage_bytes,
+-               core_numbers_red.gdata(), core_numbers_red.gdata(),
+-                d_temp_old_name.gdata(), d_oldName.gdata(), n_red);
++               unsorted_core_numbers.gdata(), core_numbers_red.gdata(),
++                d_temp_old_name.gdata(), d_oldName.gdata(), n_red));
+     cudaFree(d_temp_storage);
+ 
+     cudaDeviceSynchronize();
+     d_temp_old_name.freeGPU();
+-
+-    CUBSelect(kcore.coreNumber.gdata(), core_numbers_red.gdata(), d_flags.gdata(), n, config.deviceId);
++    unsorted_core_numbers.freeGPU();
+     d_flags.freeGPU();
+ 
+-    d_temp_storage = nullptr;
+-    temp_storage_bytes = 0;
+-    cub::DeviceRadixSort::SortPairsDescending(
+-              d_temp_storage, temp_storage_bytes,
+-               core_numbers_red.gdata(), core_numbers_red.gdata(),
+-                red_degrees_flagged.gdata(), red_degrees_flagged.gdata(), n_red);
+-    // Allocate temporary storage
+-    CUDA_RUNTIME(cudaMalloc(&d_temp_storage, temp_storage_bytes));
+-   
+-    // Run sorting operation
+-    cub::DeviceRadixSort::SortPairsDescending(
+-              d_temp_storage, temp_storage_bytes,
+-               core_numbers_red.gdata(), core_numbers_red.gdata(),
+-                red_degrees_flagged.gdata(), red_degrees_flagged.gdata(), n_red);
+-    cudaFree(d_temp_storage);
+-
+-    cudaDeviceSynchronize();
++    execKernel((gather_by_index_kernel<DataType>), blocks, block_size,
++               config.deviceId, false, red_degrees.gdata(), d_oldName.gdata(),
++               red_degrees_flagged.gdata(), n_red);
++    red_degrees.freeGPU();
+ 
+     // Graph allocation
+     red_gd->numNodes = n_red;
+@@ -261,10 +246,13 @@ int main(int argc, char **argv)
+ 
+     d_temp_storage = NULL;
+     temp_storage_bytes = 0;
+-    cub::DeviceSegmentedRadixSort::SortKeys(d_temp_storage, temp_storage_bytes, red_gd->colInd, red_gd->colInd, m_red, n_red, red_gd->rowPtr, red_gd->rowPtr + 1);
++    graph::GPUArray<DataType> sorted_neighbors("Sorted neighbors", gpu, m_red, config.deviceId);
++    CUDA_RUNTIME(cub::DeviceSegmentedRadixSort::SortKeys(d_temp_storage, temp_storage_bytes, red_gd->colInd, sorted_neighbors.gdata(), m_red, n_red, red_gd->rowPtr, red_gd->rowPtr + 1));
+     // Allocate temporary storage
+     cudaMalloc(&d_temp_storage, temp_storage_bytes);
+-    cub::DeviceSegmentedRadixSort::SortKeys(d_temp_storage, temp_storage_bytes, red_gd->colInd, red_gd->colInd, m_red, n_red, red_gd->rowPtr, red_gd->rowPtr + 1);
++    CUDA_RUNTIME(cub::DeviceSegmentedRadixSort::SortKeys(d_temp_storage, temp_storage_bytes, red_gd->colInd, sorted_neighbors.gdata(), m_red, n_red, red_gd->rowPtr, red_gd->rowPtr + 1));
++    CUDA_RUNTIME(cudaMemcpy(red_gd->colInd, sorted_neighbors.gdata(), m_red * uint64(sizeof(DataType)), cudaMemcpyDeviceToDevice));
++    sorted_neighbors.freeGPU();
+     cudaFree(d_temp_storage);
+     
+     cudaDeviceSynchronize();
+@@ -323,9 +311,11 @@ int main(int argc, char **argv)
+   if(config.mt == MAINTASK::MCP || config.mt == MAINTASK::MCP_EVAL) {
+ 
+     vector<graph::MultiGPU_MCP<DataType>> mcp;
++    // Solver instances own CUDA streams; do not copy temporary owners.
++    mcp.reserve(config.gpus.size());
+ 
+     for (int i = 0; i < config.gpus.size(); i++)
+-      mcp.push_back(graph::MultiGPU_MCP<DataType>(config.gpus[i], i, config.gpus.size(), core_numbers_red.gdata(), maxCore));
++      mcp.emplace_back(config.gpus[i], i, config.gpus.size(), core_numbers_red.gdata(), maxCore);
+ 
+     Timer mcp_timer;
+ 

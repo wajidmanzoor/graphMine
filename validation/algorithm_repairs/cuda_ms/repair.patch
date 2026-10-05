@@ -1,0 +1,1094 @@
+--- a/Makefile
++++ b/Makefile
+@@ -13,10 +13,10 @@
+ CC=$(GCC)
+ NVCC=nvcc
+ 
+-NVFLAGS=-m64 -g -G  -lineinfo  $(CUSTOM_FLAGS)  -I$(INCLUDE_PATH) -I$(CUDA_HOME)/include/ -Xcompiler "-Wall -g" -Xptxas -v,-warn-lmem-usage,-warn-spills  --maxrregcount 32
++NVFLAGS=-m64 -O3 -lineinfo $(CUSTOM_FLAGS) -I$(INCLUDE_PATH) -I$(CUDA_HOME)/include/ -Xcompiler "-Wall -g"
+ 
+ BASE_CFLAGS+= -march=native
+-NVFLAGS+=  -std=c++11 -arch=sm_30
++NVFLAGS+=  -std=c++11 -arch=sm_89
+ GCC=gcc
+ GPP=g++
+ LIBTOOL=libtool
+@@ -24,9 +24,9 @@
+ DEBUG_CFLAGS:=  -DSINGLE #-finstrument-functions
+ DEBUG_LDFLAGS:=
+ DEBUG_LDLIBS:=
+-FINAL_CFLAGS:=-ffast-math  -O3 #-mcpu=pentium3
++FINAL_CFLAGS:=-O3
+ FINAL_LDFLAGS:=
+-FINAL_LDLIBS:=
++FINAL_LDLIBS:=-lm
+ 
+ CXXFLAGS=$(BASE_CXXFLAGS) $(FINAL_CFLAGS)
+ 
+@@ -74,6 +74,11 @@
+ %.cc: %.cu
+ 	$(NVCC) -cuda $(NVFLAGS) -Xptxas -v  -o $@ $< # 2> $(@:.cc=.info)
+ 
++# CUDA 12 no longer exposes the legacy cudaConfigureCall host stubs emitted by
++# `nvcc -cuda`; compile CUDA translation units directly for local validation.
++%.o: %.cu
++	$(NVCC) -c $(NVFLAGS) -o $@ $<
++
+ 
+ 
+ all: libcudams.la find_cliques
+@@ -86,7 +91,7 @@
+ 	$(LIBTOOL) --mode=link --tag=CXX $(GPP) $(LDFLAGS) -o $@ $^ $(LDLIBS) -lopts -rpath $(LIB_PATH)
+ 
+ find_cliques: find_cliques.o  $(COMMON_SOURCES:.c=.o)  $(ARRAYS_SOURCES:.c=.o) $(MOTZKIN_SOURCES:.c=.o)  $(MOTZKIN_CUDA_SOURCES:.cu=.o)
+-	$(GCC)  $(LDFLAGS) -o $@ $^   -lstdc++ -L$(CUDA_HOME)/lib64 -lcudart -lcurand
++	$(GCC)  $(LDFLAGS) -o $@ $^   -lstdc++ -L$(CUDA_HOME)/lib64 -lcudart -lcurand $(LDLIBS)
+ 
+ clean:
+ 	rm -fr test opt-check *.o *.d .libs *.lo *.la *.opari.inc tags $(CUDA_SOURCES:.cu=.cc) $(CUDA_SOURCES:.cu=.info) find_cliques
+@@ -101,5 +106,3 @@
+ 
+ include $(SOURCES:.c=.d)
+ include $(CUDA_SOURCES:.cu=.d)
+-
+-
+--- a/common_cuda.cuh
++++ b/common_cuda.cuh
+@@ -31,12 +31,12 @@
+     if (blockSize >= 256) { if (tid < 128) { op(sdata, tid, tid + 128); } __syncthreads(); }
+     if (blockSize >= 128) { if (tid < 64)  { op(sdata, tid, tid + 64 ); } __syncthreads(); }
+ 
+-    if (blockSize >=  64) { if (tid < 32)  { op(sdata, tid, tid + 32); } }
+-    if (blockSize >=  32) { if (tid < 16)  { op(sdata, tid, tid + 16); } }
+-    if (blockSize >=  16) { if (tid <  8)  { op(sdata, tid, tid +  8); } }
+-    if (blockSize >=   8) { if (tid <  4)  { op(sdata, tid, tid +  4); } }
+-    if (blockSize >=   4) { if (tid <  2)  { op(sdata, tid, tid +  2); } }
+-    if (blockSize >=   2) { if (tid <  1)  { op(sdata, tid, tid +  1); } }
++    if (blockSize >=  64) { if (tid < 32)  { op(sdata, tid, tid + 32); } __syncthreads(); }
++    if (blockSize >=  32) { if (tid < 16)  { op(sdata, tid, tid + 16); } __syncthreads(); }
++    if (blockSize >=  16) { if (tid <  8)  { op(sdata, tid, tid +  8); } __syncthreads(); }
++    if (blockSize >=   8) { if (tid <  4)  { op(sdata, tid, tid +  4); } __syncthreads(); }
++    if (blockSize >=   4) { if (tid <  2)  { op(sdata, tid, tid +  2); } __syncthreads(); }
++    if (blockSize >=   2) { if (tid <  1)  { op(sdata, tid, tid +  1); } __syncthreads(); }
+ }
+ 
+ template <unsigned int blockSize, typename t> inline __device__ void min_reduce(t *data, int pos1, int pos2)
+@@ -61,12 +61,12 @@
+     if (blockSize >= 256) { if (tid < 128) { sdata[tid]+=sdata[tid + 128]; } __syncthreads(); }
+     if (blockSize >= 128) { if (tid < 64)  { sdata[tid]+=sdata[tid + 64 ]; } __syncthreads(); }
+ 
+-    if (blockSize >=  64) { if (tid < 32)  { sdata[tid]+=sdata[tid + 32]; } }
+-    if (blockSize >=  32) { if (tid < 16)  { sdata[tid]+=sdata[tid + 16]; } }
+-    if (blockSize >=  16) { if (tid <  8)  { sdata[tid]+=sdata[tid +  8]; } }
+-    if (blockSize >=   8) { if (tid <  4)  { sdata[tid]+=sdata[tid +  4]; } }
+-    if (blockSize >=   4) { if (tid <  2)  { sdata[tid]+=sdata[tid +  2]; } }
+-    if (blockSize >=   2) { if (tid <  1)  { sdata[tid]+=sdata[tid +  1]; } }
++    if (blockSize >=  64) { if (tid < 32)  { sdata[tid]+=sdata[tid + 32]; } __syncthreads(); }
++    if (blockSize >=  32) { if (tid < 16)  { sdata[tid]+=sdata[tid + 16]; } __syncthreads(); }
++    if (blockSize >=  16) { if (tid <  8)  { sdata[tid]+=sdata[tid +  8]; } __syncthreads(); }
++    if (blockSize >=   8) { if (tid <  4)  { sdata[tid]+=sdata[tid +  4]; } __syncthreads(); }
++    if (blockSize >=   4) { if (tid <  2)  { sdata[tid]+=sdata[tid +  2]; } __syncthreads(); }
++    if (blockSize >=   2) { if (tid <  1)  { sdata[tid]+=sdata[tid +  1]; } __syncthreads(); }
+ }
+ 
+ template <unsigned int blockSize, typename t> __device__ void reduce_max(t *sdata, unsigned int tid)
+@@ -76,12 +76,12 @@
+     if (blockSize >= 256) { if (tid < 128) { if(sdata[tid + 128] > sdata[tid]) sdata[tid]=sdata[tid + 128]; } __syncthreads(); }
+     if (blockSize >= 128) { if (tid < 64)  { if(sdata[tid + 64 ] > sdata[tid]) sdata[tid]=sdata[tid + 64 ]; } __syncthreads(); }
+ 
+-    if (blockSize >=  64) { if (tid < 32)  { if(sdata[tid + 32] > sdata[tid]) sdata[tid]=sdata[tid + 32]; } }
+-    if (blockSize >=  32) { if (tid < 16)  { if(sdata[tid + 16] > sdata[tid]) sdata[tid]=sdata[tid + 16]; } }
+-    if (blockSize >=  16) { if (tid <  8)  { if(sdata[tid +  8] > sdata[tid]) sdata[tid]=sdata[tid +  8]; } }
+-    if (blockSize >=   8) { if (tid <  4)  { if(sdata[tid +  4] > sdata[tid]) sdata[tid]=sdata[tid +  4]; } }
+-    if (blockSize >=   4) { if (tid <  2)  { if(sdata[tid +  2] > sdata[tid]) sdata[tid]=sdata[tid +  2]; } }
+-    if (blockSize >=   2) { if (tid <  1)  { if(sdata[tid +  1] > sdata[tid]) sdata[tid]=sdata[tid +  1]; } }
++    if (blockSize >=  64) { if (tid < 32)  { if(sdata[tid + 32] > sdata[tid]) sdata[tid]=sdata[tid + 32]; } __syncthreads(); }
++    if (blockSize >=  32) { if (tid < 16)  { if(sdata[tid + 16] > sdata[tid]) sdata[tid]=sdata[tid + 16]; } __syncthreads(); }
++    if (blockSize >=  16) { if (tid <  8)  { if(sdata[tid +  8] > sdata[tid]) sdata[tid]=sdata[tid +  8]; } __syncthreads(); }
++    if (blockSize >=   8) { if (tid <  4)  { if(sdata[tid +  4] > sdata[tid]) sdata[tid]=sdata[tid +  4]; } __syncthreads(); }
++    if (blockSize >=   4) { if (tid <  2)  { if(sdata[tid +  2] > sdata[tid]) sdata[tid]=sdata[tid +  2]; } __syncthreads(); }
++    if (blockSize >=   2) { if (tid <  1)  { if(sdata[tid +  1] > sdata[tid]) sdata[tid]=sdata[tid +  1]; } __syncthreads(); }
+ }
+ 
+ template <unsigned int blockSize, typename t, bool with_last> __device__ void prefixscan(t *data, int tid)
+@@ -124,9 +124,11 @@
+         }
+     }
+ 
++    __syncthreads();
+     if(with_last) {
+         if(tid==blockSize-1) data[2*blockSize]+=data[tid+blockSize];
+     }
++    __syncthreads();
+ }
+ 
+ #endif
+--- a/cudams.h
++++ b/cudams.h
+@@ -42,6 +42,11 @@
+ float graph_clique_multi_cpu(t_bitmask *par_res, t_bitmask *par_res_upper, char **graph, int n, t_bitmask allowed, int max_unsolved, float zero, float alpha, int max_masks, int mode, int max_res, t_bitmask *res_all, int *n_res, int *abortcheck_cb(void));
+ 
+ #ifndef NO_CUDA
++/* Single-result CUDA search completes a GPU coloring branch-and-bound search
++ * after the Motzkin-Straus initializer. Returns the exact integer clique size,
++ * or -1 with null output masks on failure. res_upper has the certified size.
++ * CPU and multi-result entry points remain heuristic.
++ */
+ float graph_clique_cuda(t_bitmask *par_res, t_bitmask *par_res_upper, char **graph, int n, t_bitmask allowed, int max_unsolved, float zero, float alpha, int max_masks, int mode);
+ float graph_clique_multi_cuda(t_bitmask *par_res, t_bitmask *par_res_upper, char **graph, int n, t_bitmask allowed, int max_unsolved, float zero, float alpha, int max_masks, int mode, int max_res, t_bitmask *res_all, int *n_res, int *abortcheck_cb(void));
+ #endif
+--- /dev/null
++++ b/exact_cuda.cuh
+@@ -0,0 +1,176 @@
++/* CUDA-MS single-result completion, 2026-10-04.
++ * SPDX-License-Identifier: GPL-3.0-or-later
++ * The relaxation supplies a feasible incumbent, never an upper bound.
++ * Every clique belongs to its largest vertex's search tree. Each GPU worker
++ * exhausts disjoint root trees, pruning only with proper coloring bounds.
++ */
++#include <algorithm>
++#include <cstdint>
++#include <limits>
++#include <new>
++#include <vector>
++
++namespace {
++using ms_word = unsigned long long;
++
++__device__ int ms_first(const ms_word* bits, int words) {
++    for (int w = 0; w < words; ++w)
++        if (bits[w]) return 64*w + __ffsll(bits[w]) - 1;
++    return -1;
++}
++
++// Greedy independent color classes. The first i vertices use at most
++// bounds[i-1] colors, including after later vertices have been branched away.
++__device__ int ms_color(ms_word* todo, ms_word* available,
++                        const ms_word* adjacency, int words,
++                        int* order, int* bounds) {
++    int count = 0, color = 0;
++    while (ms_first(todo, words) >= 0) {
++        ++color;
++        for (int w = 0; w < words; ++w) available[w] = todo[w];
++        for (int v = ms_first(available, words); v >= 0; v = ms_first(available, words)) {
++            order[count] = v;
++            bounds[count++] = color;
++            todo[v/64] &= ~(1ULL << (v%64));
++            available[v/64] &= ~(1ULL << (v%64));
++            for (int w = 0; w < words; ++w)
++                available[w] &= ~adjacency[static_cast<size_t>(v)*words+w];
++        }
++    }
++    return count;
++}
++
++__global__ void ms_exact_search(const ms_word* adjacency, const ms_word* allowed,
++                                int n, int words, int* scratch, size_t stride,
++                                int* global_best, int* sizes, int* witnesses) {
++    // One independent depth-first traversal per worker. No shared scratch or
++    // stack limits from device recursion; the stack has n explicitly allocated levels.
++    int* base = scratch + static_cast<size_t>(blockIdx.x)*stride;
++    int* order = base;
++    int* bounds = order + static_cast<size_t>(n)*n;
++    int* cursor = bounds + static_cast<size_t>(n)*n;
++    int* chosen = cursor + n;
++    ms_word* todo = reinterpret_cast<ms_word*>(chosen + n);
++    ms_word* available = todo + words;
++    int* witness = witnesses + static_cast<size_t>(blockIdx.x)*n;
++    int local_best = 0;
++    sizes[blockIdx.x] = 0;
++
++    for (int root = blockIdx.x; root < n; root += gridDim.x) {
++        if (!(allowed[root/64] & (1ULL << (root%64)))) continue;
++        chosen[0] = root;
++        if (atomicAdd(global_best, 0) == 0) {
++            witness[0] = root;
++            local_best = 1;
++            sizes[blockIdx.x] = 1;
++            atomicMax(global_best, 1);
++        }
++        for (int w = 0; w < words; ++w) {
++            const ms_word before = w < root/64 ? ~0ULL :
++                (w == root/64 ? ((1ULL << (root%64))-1) : 0ULL);
++            todo[w] = adjacency[static_cast<size_t>(root)*words+w] & allowed[w] & before;
++        }
++        cursor[0] = ms_color(todo, available, adjacency, words, order, bounds)-1;
++        int level = 0;
++        while (level >= 0) {
++            const size_t offset = static_cast<size_t>(level)*n;
++            const int at = cursor[level];
++            if (at < 0 || level+1+bounds[offset+at] <= atomicAdd(global_best, 0)) {
++                --level;
++                continue;
++            }
++            const int v = order[offset+at];
++            --cursor[level];
++            chosen[level+1] = v;
++            const int size = level+2;
++            if (size > local_best) {
++                for (int i = 0; i < size; ++i) witness[i] = chosen[i];
++                local_best = size;
++                sizes[blockIdx.x] = size;
++                atomicMax(global_best, size);
++            }
++            for (int w = 0; w < words; ++w) todo[w] = 0;
++            for (int i = 0; i < at; ++i) {
++                const int u = order[offset+i];
++                if (adjacency[static_cast<size_t>(v)*words+u/64] & (1ULL << (u%64)))
++                    todo[u/64] |= 1ULL << (u%64);
++            }
++            // With n chosen vertices no candidates can remain (no self loops).
++            if (ms_first(todo, words) >= 0) {
++                ++level;
++                const size_t child = static_cast<size_t>(level)*n;
++                cursor[level] = ms_color(todo, available, adjacency, words,
++                                         order+child, bounds+child)-1;
++            }
++        }
++    }
++}
++
++struct ms_device_buffer {
++    void* data = nullptr;
++    ~ms_device_buffer() { if (data) cudaFree(data); }
++    bool allocate(size_t bytes) { return cudaMalloc(&data, bytes) == cudaSuccess; }
++};
++} // namespace
++
++extern "C" int complete_cuda_clique(char** graph, int n, t_bitmask allowed,
++                                     t_bitmask result) {
++    if (n < 0 || !result) return -1;
++    if (n == 0) { mask_zeroall(result, 0); return 0; }
++    try {
++        const int words = (n-1)/64+1;
++        const size_t nn = static_cast<size_t>(n);
++        if (nn > (std::numeric_limits<size_t>::max()/sizeof(int)-4*static_cast<size_t>(words)-2*nn-1)/nn/2)
++            return -1;
++        std::vector<ms_word> matrix(nn*words, 0), permitted(words, 0);
++        std::vector<int> seed;
++        for (int v = 0; v < n; ++v) {
++            if (!graph || !graph[v]) return -1;
++            const bool valid = !allowed || (allowed[v/64] & (1ULL << (v%64)));
++            if (valid) permitted[v/64] |= 1ULL << (v%64);
++            if (valid && (result[v/64] & (1ULL << (v%64)))) {
++                bool adjacent = true;
++                for (int u : seed) adjacent &= graph[u][v] && graph[v][u];
++                if (adjacent) seed.push_back(v);
++            }
++            for (int u = 0; u < n; ++u)
++                if (v != u && graph[v][u]) matrix[static_cast<size_t>(v)*words+u/64] |= 1ULL << (u%64);
++        }
++        mask_zeroall(result, n);
++        for (int v : seed) result[v/64] |= 1ULL << (v%64);
++        int best = static_cast<int>(seed.size());
++        size_t free_bytes, total_bytes;
++        if (cudaMemGetInfo(&free_bytes, &total_bytes) != cudaSuccess) return -1;
++        // Round to an even number of ints so bitset scratch stays 8-byte aligned.
++        const size_t stride = (2*nn*nn+2*nn+4*words+1) & ~size_t(1);
++        const size_t budget = std::min(free_bytes/2,
++            std::max(size_t(512)*1024*1024, stride*sizeof(int)));
++        const int workers = static_cast<int>(std::min(std::min(nn, size_t(32)), budget/(stride*sizeof(int))));
++        if (workers < 1) return -1;
++        ms_device_buffer d_matrix, d_allowed, d_scratch, d_best, d_sizes, d_witnesses;
++        if (!d_matrix.allocate(matrix.size()*sizeof(ms_word)) ||
++            !d_allowed.allocate(permitted.size()*sizeof(ms_word)) ||
++            !d_scratch.allocate(workers*stride*sizeof(int)) ||
++            !d_best.allocate(sizeof(int)) || !d_sizes.allocate(workers*sizeof(int)) ||
++            !d_witnesses.allocate(workers*nn*sizeof(int))) return -1;
++        if (cudaMemcpy(d_matrix.data, matrix.data(), matrix.size()*sizeof(ms_word), cudaMemcpyHostToDevice) != cudaSuccess ||
++            cudaMemcpy(d_allowed.data, permitted.data(), permitted.size()*sizeof(ms_word), cudaMemcpyHostToDevice) != cudaSuccess ||
++            cudaMemcpy(d_best.data, &best, sizeof(int), cudaMemcpyHostToDevice) != cudaSuccess) return -1;
++        ms_exact_search<<<workers, 1>>>(static_cast<ms_word*>(d_matrix.data),
++            static_cast<ms_word*>(d_allowed.data), n, words, static_cast<int*>(d_scratch.data),
++            stride, static_cast<int*>(d_best.data), static_cast<int*>(d_sizes.data),
++            static_cast<int*>(d_witnesses.data));
++        if (cudaGetLastError() != cudaSuccess || cudaDeviceSynchronize() != cudaSuccess) return -1;
++        std::vector<int> sizes(workers), witness(n);
++        if (cudaMemcpy(sizes.data(), d_sizes.data, workers*sizeof(int), cudaMemcpyDeviceToHost) != cudaSuccess) return -1;
++        const int owner = static_cast<int>(std::max_element(sizes.begin(), sizes.end())-sizes.begin());
++        if (sizes[owner] > best) {
++            best = sizes[owner];
++            if (cudaMemcpy(witness.data(), static_cast<int*>(d_witnesses.data)+owner*nn,
++                           best*sizeof(int), cudaMemcpyDeviceToHost) != cudaSuccess) return -1;
++            mask_zeroall(result, n);
++            for (int i = 0; i < best; ++i) result[witness[i]/64] |= 1ULL << (witness[i]%64);
++        }
++        return best;
++    } catch (const std::bad_alloc&) { return -1; }
++}
+--- a/find_cliques.c
++++ b/find_cliques.c
+@@ -27,6 +27,9 @@
+ #include<unistd.h>
+ 
+ #include<string.h>
++#include<errno.h>
++#include<limits.h>
++#include<math.h>
+ 
+ #include <argp.h>
+ 
+@@ -76,6 +79,26 @@
+     int file_format;
+ };
+ 
++static int integer_option(const char *arg, struct argp_state *state)
++{
++    char *end;
++    errno = 0;
++    long value = strtol(arg, &end, 10);
++    if (errno || end == arg || *end || value < INT_MIN || value > INT_MAX)
++        argp_error(state, "invalid integer: %s", arg);
++    return (int)value;
++}
++
++static float float_option(const char *arg, struct argp_state *state)
++{
++    char *end;
++    errno = 0;
++    float value = strtof(arg, &end);
++    if (errno || end == arg || *end || !isfinite(value))
++        argp_error(state, "invalid finite number: %s", arg);
++    return value;
++}
++
+ static error_t parse_opt (int key, char *arg, struct argp_state *state)
+ {
+     struct arguments *arguments = state->input;
+@@ -98,7 +121,7 @@
+             if(arguments->mode>1)
+                 argp_usage (state);
+             arguments->mode=3;
+-            arguments->max_masks = arg ? atoi(arg) : 10;
++            arguments->max_masks = arg ? integer_option(arg, state) : 10;
+             break;
+ 
+         case 'n':  // anneal
+@@ -109,9 +132,9 @@
+ 
+         case 'a':  // alpha
+             if(strcmp(arg, "auto")) {
+-                arguments->alpha = atof(arg);
++                arguments->alpha = float_option(arg, state);
+                 arguments->alpha_auto=0;
+-            }
++            } else arguments->alpha_auto=1;
+             break;
+ 
+         case 'c':  // cpu
+@@ -123,19 +146,19 @@
+             break;
+ 
+         case 'm':  // max-res
+-            arguments->max_res = atoi(arg);
++            arguments->max_res = integer_option(arg, state);
+             break;
+ 
+         case 'u':  // max-unsolved
+-            arguments->max_unsolved = atoi(arg);
++            arguments->max_unsolved = integer_option(arg, state);
+             break;
+ 
+         case 'z':  // zero
+-            arguments->zero = atof(arg);
++            arguments->zero = float_option(arg, state);
+             break;
+ 
+         case 's':  // alpha-step
+-            arguments->alpha_step = atof(arg);
++            arguments->alpha_step = float_option(arg, state);
+             if(arguments->alpha_step<0)
+                 argp_usage(state);
+             break;
+@@ -190,6 +213,11 @@
+ 
+     argp_parse(&argp, argc, argv, 0, 0, &arguments);
+ 
++    if (arguments.max_res < 1 || arguments.max_masks < 1 || arguments.max_unsolved < 0) {
++        fprintf(stderr, "result/iteration counts must be positive and max-unsolved nonnegative\n");
++        return 2;
++    }
++
+     if(!arguments.gpu && !arguments.cpu) arguments.gpu=1;
+ 
+     int mode;
+@@ -289,6 +317,13 @@
+ 
+         long int end = get_timestamp();
+ 
++        if (!res) {
++            fprintf(stderr, "CUDA-MS could not complete the search\n");
++            exit(2);
++        }
++        printf("Result guarantee: %s\n", cuda && arguments.max_res == 1
++               ? "exact maximum (completed GPU search)" : "heuristic; not a global optimality certificate");
++
+         void print_res(t_bitmask res) {
+             for(int i=0; i<N; i++) if(BIT_TEST(res, i)) printf("%d ", i);
+         }
+@@ -299,11 +334,14 @@
+             for(int i=0; i<n_res; i++) order[i]=i;
+ 
+ 
+-            int size_comp(int *a, int *b) {
+-                return mask_size(res_all[*b], N) - mask_size(res_all[*a], N);
++            for (int a = 1; a < n_res; ++a) {
++                int value = order[a], b = a;
++                while (b > 0 && mask_size(res_all[order[b-1]], N) < mask_size(res_all[value], N)) {
++                    order[b] = order[b-1];
++                    --b;
++                }
++                order[b] = value;
+             }
+-
+-            qsort(order, n_res, sizeof(int), (comparison_fn_t) size_comp);
+ 
+             printf("clique %d size: %d nodes:\n", i+1, mask_size(res_all[order[i]], N));
+             print_res(res_all[order[i]]);
+@@ -316,11 +354,16 @@
+ 
+         printf("%s time (us): %ld\n", cuda ? "GPU" : "CPU", end-start);
+         printf("%s time (s): %.3f\n", cuda ? "GPU" : "CPU", (end-start)*0.000001);
++        mask_free(res);
++        mask_free(res_upper);
++        if (arguments.max_res > 1)
++            for (int i = 0; i < n_res; ++i) mask_free(res_all[i]);
+     }
+ 
+     if(arguments.cpu) run(0);
+     if(arguments.gpu) run(1);
+ 
+-}
+-
+-
++    if (arr) destroy_array((void**)arr);
++    return 0;
++
++}
+--- a/motzkin.c
++++ b/motzkin.c
+@@ -21,6 +21,9 @@
+  *
+  *******************************************************************************/
+ 
++#ifndef _GNU_SOURCE
++#define _GNU_SOURCE
++#endif
+ #include<stdio.h>
+ #include<string.h>
+ #include<sys/types.h>
+@@ -136,6 +139,15 @@
+     return 1;
+ }
+ 
++static int order_by_weight(const void *a, const void *b, void *context)
++{
++    const float *x = context;
++    const int u = *(const int*)a, v = *(const int*)b;
++    if (x[u] < x[v]) return 1;
++    if (x[u] > x[v]) return -1;
++    return (u > v) - (u < v);
++}
++
+ static int build_clique(t_bitmask lower, t_bitmask upper, float *x, char **graph, int graph_size, int max_unsolved)
+ {
+     mask_zeroall(lower, graph_size);
+@@ -149,16 +161,7 @@
+ 
+     for(int i=0; i<graph_size; i++) order[i]=i;
+ 
+-    int order_comp(const int *a, const int *b) {
+-        if (x[*a] < x[*b])
+-            return 1;
+-        else if (x[*a] > x[*b])
+-            return -1;
+-        else
+-            return 0;
+-    }
+-
+-    qsort(order, graph_size, sizeof(int), (comparison_fn_t) order_comp);
++    qsort_r(order, graph_size, sizeof(int), order_by_weight, x);
+ 
+ 
+     for(int i=0; i<graph_size; i++) if(x[order[i]]>0) {
+@@ -171,7 +174,7 @@
+             SET_BIT(lower, order[i]);
+             n_lower++;
+         } else {
+-            if(!max_unsolved) break;
++            if(!max_unsolved) continue;
+         }
+     }
+ 
+@@ -637,7 +640,7 @@
+             max_csize=csize;
+         }
+ 
+-        n_res=add_one_to_best(all_res, all_csize, n_res, max_res, &max_sim, x, csize, graph_size);
++        if(all_res) n_res=add_one_to_best(all_res, all_csize, n_res, max_res, &max_sim, x, csize, graph_size);
+ 
+         if(!quiet) {
+             P_INT(graph_size)
+@@ -786,7 +789,40 @@
+ 	printf("find_clique_simplex_cuda max_unsolved: %d\n", max_unsolved);
+ #endif
+ 
+-	return find_clique_simplex_int(par_res, par_res_upper, graph, n, allowed, max_unsolved, zero, alpha, max_masks, mode, 1, 0, 0, 0, 0);
++    extern int complete_cuda_clique(char **, int, t_bitmask, t_bitmask);
++    if (!par_res || n < 0) return -1;
++    *par_res = 0;
++    if (par_res_upper) *par_res_upper = 0;
++    if (mode < MODE_REPL_UNBIASED || mode > MODE_REPL_ATTEN_AUTO ||
++        max_masks < 0 || max_unsolved < 0 || !isfinite(alpha) || !isfinite(zero)) return -1;
++    int has_edges = 0;
++    for (int v = 0; v < n; ++v) {
++        if (!graph || !graph[v]) return -1;
++        for (int u = 0; u < v; ++u) {
++            if (!!graph[v][u] != !!graph[u][v]) return -1;
++            has_edges |= graph[v][u] != 0;
++        }
++    }
++    init_cuda();
++    t_bitmask lower = 0, support = 0;
++    // Annealing may restore eliminated coordinates. Restricted searches start
++    // with no incumbent so the allowed mask is respected in every mode.
++    if (has_edges && !allowed) {
++        find_clique_simplex_int(&lower, &support, graph, n, 0, max_unsolved,
++                               zero, alpha, max_masks, mode, 1, 0, 0, 0, 0);
++        mask_free(support);
++    } else lower = mask_alloc(n);
++    if (!lower) return -1;
++    const int size = complete_cuda_clique(graph, n, allowed, lower);
++    if (size < 0) { mask_free(lower); return -1; }
++    if (par_res_upper) {
++        *par_res_upper = mask_alloc(n);
++        if (!*par_res_upper) { mask_free(lower); return -1; }
++        // The completed search certifies this size, unlike the old support mask.
++        mask_cpy(*par_res_upper, lower, n);
++    }
++    *par_res = lower;
++    return (float)size;
+ }
+ #endif
+ 
+--- a/motzkin_cuda.cu
++++ b/motzkin_cuda.cu
+@@ -37,6 +37,7 @@
+ #include"random.h"
+ 
+ #include"common_cuda.cuh"
++#include"exact_cuda.cuh"
+ 
+ #define N_ITER 10000
+ 
+@@ -57,77 +58,14 @@
+ curandState_t *d_randstates=0;
+ int cuda_device=-1;
+ 
+-#define MAX_CUDA_DEV 8
+-
+-#define MAX_SIM_CUDA_RUNS 16
+-
+-omp_lock_t dev_read_wait_lock[MAX_CUDA_DEV];
+-
+-int dev_readcount[MAX_CUDA_DEV];
+-
+ #pragma omp threadprivate (d_randstates, cuda_device)
+ 
+-/* #define DEBUG */
+-
+-/* #define NO_CONCURRENCY */
+-
+-int threaddev[32]={-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+-int rand_init[32]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+-
+-static void lib_constructor() __attribute__((constructor));
+-static void lib_destructor() __attribute__((destructor));
+-
+-void lib_constructor(void)
+-{
+-    for(int i=0; i<MAX_CUDA_DEV; i++) {
+-        omp_init_lock(&dev_read_wait_lock[i]);
+-    }
+-    memset(dev_readcount, 0, sizeof(dev_readcount));
+-}
+-
+-void lib_destructor(void)
+-{
+-    for(int i=0; i<MAX_CUDA_DEV; i++) {
+-        omp_destroy_lock(&dev_read_wait_lock[i]);
+-    }
+-}
+-
+ static void checkCUDAError(const char *msg, int line)
+ {
+-    cudaError_t err = cudaGetLastError();
+-    if( cudaSuccess != err) {
+-#pragma omp critical (checkCUDAError)
+-        {
+-            printf("Cuda error: line: %d:  %s: %s.\n", line, msg, cudaGetErrorString( err) );
+-            P_INT(omp_get_thread_num()) P_INT(cuda_device) P_NL;
+-            P_INT_ARR(threaddev, 32) P_NL;
+-        }
++    cudaError_t error = cudaGetLastError();
++    if (error != cudaSuccess) {
++        fprintf(stderr, "CUDA-MS line %d (%s): %s\n", line, msg, cudaGetErrorString(error));
+         abort();
+-    }
+-}
+-
+-
+-static void cuda_start(void) 
+-{
+-
+-    omp_set_lock(&dev_read_wait_lock[cuda_device]);
+-#pragma omp critical (read_mutex)
+-    {
+-        dev_readcount[cuda_device]++;
+-        if(dev_readcount[cuda_device]<MAX_SIM_CUDA_RUNS) {
+-            omp_unset_lock(&dev_read_wait_lock[cuda_device]);
+-        }
+-    }
+-}
+-
+-static void cuda_end(void)
+-{
+-#pragma omp critical (read_mutex)
+-    {
+-        dev_readcount[cuda_device]--;
+-        if(dev_readcount[cuda_device]<MAX_SIM_CUDA_RUNS) {
+-            omp_unset_lock(&dev_read_wait_lock[cuda_device]);
+-        }
+     }
+ }
+ 
+@@ -318,6 +256,7 @@
+     int i=tid+blockIdx.x*blockSize*2;
+ 
+     idata[tid]=0;
++    idata[tid+blockSize]=0;
+     if (i < n) idata[tid]=test(i, data) ? 0 : 1;
+     if (i+blockSize < n) idata[tid+blockSize]=test(i+blockSize, data) ? 0 : 1;
+ 
+@@ -466,7 +405,7 @@
+     }
+ 
+     if(biased==3) {
+-        for(int i=tid; i<255; i+=blockDim.x) {
++        for(int i=tid; i<256; i+=blockDim.x) {
+             pows[i] = powf(omega, (i-1)*(i-1));
+         }
+     }
+@@ -609,6 +548,7 @@
+             }
+         }
+ 
++        __syncthreads();
+         row += gridDim.x-usedBlocks; // Some blocks may be used for something else (like normiterGPU_dev)
+     }
+ 
+@@ -620,6 +560,7 @@
+         iterGPU_dev<blockSize, biased, 1, final_mult>(d_x0_status, d_x1, d_x2, d_mat, mat_pitch, x_pitch, d_map, alpha, omega);
+     } else { 
+         normiterGPU_dev<blockSize, biased>(d_x0_status, d_x1_status, d_x1, d_map[-1], alpha);
++        __syncthreads();
+         if(maxdiff) {
+             maxdiffGPU_dev<blockSize>(d_x0, d_x1, d_x0_status, d_x1_status, d_map);
+         }
+@@ -670,7 +611,7 @@
+         unsigned char *row = d_mat + mat_pitch* d_new_map[i];
+ 
+         for(j = 0, jj = 0; jj< nmap; jj++) {
+-            if(d_new_map[j]==d_map[jj]) {
++            if(j<nnew_map && d_new_map[j]==d_map[jj]) {
+                 row[j++]=row[jj];
+             }
+         }
+@@ -698,27 +639,15 @@
+ 
+ __global__ void fullrowsGPU(int *d_fullrow, unsigned char *d_mat, int *d_map, unsigned int mat_pitch, float *d_x1)
+ {
+-    unsigned int tid = threadIdx.x;
+-	int n=d_map[-1];
+-
+-    int row=blockIdx.x+tid*gridDim.x;
+-    if(row<n) {
+-        d_fullrow[row]=1;
+-    }
+-
+-    __syncthreads();
+-
+-	for(int row = blockIdx.x;  row < n; row+=gridDim.x){
+-		int rowStart = mat_pitch*d_map[row];
+-
+-        int i=tid;
+-        while (i < n) {
+-            if(__any(!d_mat[rowStart+i] && i!=row && d_x1[i]>0)) { // This makes all threads in a warp break out of the loop together. Other threads in the block will scan until they find other zeroes.
+-                d_fullrow[row]=0;
+-                break;
+-            }
+-            i += blockDim.x;
+-        }
++    const int n = d_map[-1];
++    for (int row = blockIdx.x; row < n; row += gridDim.x) {
++        int missing = 0;
++        const size_t offset = (size_t)mat_pitch*d_map[row];
++        for (int i = threadIdx.x; i < n; i += blockDim.x)
++            missing |= !d_mat[offset+i] && i != row && d_x1[i] > 0;
++        const int any_missing = __syncthreads_or(missing);
++        if (threadIdx.x == 0) d_fullrow[row] = !any_missing;
++        __syncthreads();
+     }
+ }
+ 
+@@ -738,6 +667,7 @@
+         d_ones[i]=d_map[d_ones[i]];
+     }
+ 
++    __syncthreads();
+     if(tid==0 && blockIdx.x==0) {
+         d_ones[-1]+=d_ones[-2];
+         d_ones[-2]=0;
+@@ -760,6 +690,7 @@
+ 		d_x1[i]=0;
+ 	}
+ 
++    __syncthreads();
+     int cnt=0;
+ 
+ 	for(int i= threadIdx.x; i < d_map[-1]; i+= blockDim.x){
+@@ -901,36 +832,24 @@
+ 
+ 
+             if(data->nmap>=LARGE_N) {
+-                cudaConfigureCall(dim3(rows, rows1), 128, 2048, stream);
+-                cudaSetupArgument(pars, 0);
+                 if(data->mode==MODE_SIMPLE) {
+-                    cudaLaunch(iter1GPU<ROW_SLICE_L, 128, 0, final_mult>);
+-                    /* iter1GPU<ROW_SLICE_L, 128, 0, final_mult><<<dim3(rows, rows1), 128, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                    iter1GPU<ROW_SLICE_L, 128, 0, final_mult><<<dim3(rows, rows1), 128, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                 } else if(data->mode==MODE_REGULAR) {
+-                    cudaLaunch(iter1GPU<ROW_SLICE_L, 128, 1, final_mult>);
+-                    /* iter1GPU<ROW_SLICE_L, 128, 1, final_mult><<<dim3(rows, rows1), 128, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                    iter1GPU<ROW_SLICE_L, 128, 1, final_mult><<<dim3(rows, rows1), 128, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                 } else if(data->mode==MODE_ATTEN) {
+-                    cudaLaunch(iter1GPU<ROW_SLICE_L, 128, 2, final_mult>);
+-                    /* iter1GPU<ROW_SLICE_L, 128, 2, final_mult><<<dim3(rows, rows1), 128, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                    iter1GPU<ROW_SLICE_L, 128, 2, final_mult><<<dim3(rows, rows1), 128, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                 } else { // MODE_ATTEN
+-                    cudaLaunch(iter1GPU<ROW_SLICE_L, 128, 3, final_mult>);
+-                    /* iter1GPU<ROW_SLICE_L, 128, 3, final_mult><<<dim3(rows, rows1), 128, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                    iter1GPU<ROW_SLICE_L, 128, 3, final_mult><<<dim3(rows, rows1), 128, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                 }
+             } else {
+-                cudaConfigureCall(dim3(rows, rows1), 64, 2048, stream);
+-                cudaSetupArgument(pars, 0);
+                 if(data->mode==MODE_SIMPLE) {
+-                    cudaLaunch(iter1GPU<ROW_SLICE_S, 64, 0, final_mult>);
+-                    /* iter1GPU<ROW_SLICE_S, 64, 0, final_mult><<<dim3(rows, rows1), 64, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                    iter1GPU<ROW_SLICE_S, 64, 0, final_mult><<<dim3(rows, rows1), 64, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                 } else if(data->mode==MODE_REGULAR) {
+-                    cudaLaunch(iter1GPU<ROW_SLICE_S, 64, 1, final_mult>);
+-                    /* iter1GPU<ROW_SLICE_S, 64, 1, final_mult><<<dim3(rows, rows1), 64, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                    iter1GPU<ROW_SLICE_S, 64, 1, final_mult><<<dim3(rows, rows1), 64, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                 } else if(data->mode==MODE_ATTEN) {
+-                    cudaLaunch(iter1GPU<ROW_SLICE_S, 64, 2, final_mult>);
+-                    /* iter1GPU<ROW_SLICE_S, 64, 2, final_mult><<<dim3(rows, rows1), 64, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                    iter1GPU<ROW_SLICE_S, 64, 2, final_mult><<<dim3(rows, rows1), 64, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                 } else { // MODE_ATTEN
+-                    cudaLaunch(iter1GPU<ROW_SLICE_S, 64, 3, final_mult>);
+-                    /* iter1GPU<ROW_SLICE_S, 64, 3, final_mult><<<dim3(rows, rows1), 64, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                    iter1GPU<ROW_SLICE_S, 64, 3, final_mult><<<dim3(rows, rows1), 64, 2048, stream>>>(data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                 }
+             }
+         } else if(part==2) {
+@@ -946,15 +865,10 @@
+ 
+             struct iter2GPU_pars pars={data->instances[0].d_x_status, data->instances[1].d_x, data->instances[2].d_x, data->x_pitch, data->d_map, rows, data->alpha};
+ 
+-            cudaConfigureCall(rows1, 128, 512, stream);
+-            cudaSetupArgument(pars, 0);
+-
+             if(data->mode==MODE_SIMPLE) {
+-                cudaLaunch(iter2GPU<0, final_mult>);
+-                /* iter2GPU<0, final_mult><<<rows1, 128, 512, stream>>>(data->instances[0].d_x_status, data->instances[1].d_x, data->instances[2].d_x, data->x_pitch, data->d_map, rows, data->alpha); */
++                iter2GPU<0, final_mult><<<rows1, 128, 512, stream>>>(data->instances[0].d_x_status, data->instances[1].d_x, data->instances[2].d_x, data->x_pitch, data->d_map, rows, data->alpha);
+             } else {
+-                cudaLaunch(iter2GPU<1, final_mult>);
+-                /* iter2GPU<1, final_mult><<<rows1, 128, 512, stream>>>(data->instances[0].d_x_status, data->instances[1].d_x, data->instances[2].d_x, data->x_pitch, data->d_map, rows, data->alpha); */
++                iter2GPU<1, final_mult><<<rows1, 128, 512, stream>>>(data->instances[0].d_x_status, data->instances[1].d_x, data->instances[2].d_x, data->x_pitch, data->d_map, rows, data->alpha);
+             }
+             cudaEventRecord(data->instances[2].quadratic_done, stream);
+         }
+@@ -981,21 +895,14 @@
+             struct iterGPU_pars pars={data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega};
+ 
+ 
+-            cudaConfigureCall(MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream);
+-            cudaSetupArgument(pars, 0);
+-
+             if(data->mode==MODE_SIMPLE) {
+-                cudaLaunch(iterGPU<128, 0, maxdiff, final_mult>);
+-                /* iterGPU<128, 0, maxdiff, final_mult><<<MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                iterGPU<128, 0, maxdiff, final_mult><<<MIN(1024, MAX(2, data->nmap)), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+             } else if(data->mode==MODE_REGULAR) {
+-                cudaLaunch(iterGPU<128, 1, maxdiff, final_mult>);
+-                /* iterGPU<128, 1, maxdiff, final_mult><<<MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                iterGPU<128, 1, maxdiff, final_mult><<<MIN(1024, MAX(2, data->nmap)), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+             } else if(data->mode==MODE_ATTEN) {
+-                cudaLaunch(iterGPU<128, 2, maxdiff, final_mult>);
+-                /* iterGPU<128, 2, maxdiff, final_mult><<<MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                iterGPU<128, 2, maxdiff, final_mult><<<MIN(1024, MAX(2, data->nmap)), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+             } else { // MODE_ATTEN
+-                cudaLaunch(iterGPU<128, 3, maxdiff, final_mult>);
+-                /* iterGPU<128, 3, maxdiff, final_mult><<<MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega); */
++                iterGPU<128, 3, maxdiff, final_mult><<<MIN(1024, MAX(2, data->nmap)), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+             }
+ 
+             cudaEventRecord(data->instances[2].quadratic_done, stream);
+@@ -1023,6 +930,7 @@
+     cudaStream_t stream=data->zero_stream;
+ 
+     if(part==1) {
++        cudaStreamWaitEvent(stream, data->instances[1].quadratic_done, 0);
+         fullrowsGPU<<<128, 128, 0, stream>>>(data->d_incident, data->d_mat, data->d_map, data->mat_pitch, data->instances[1].d_x);
+     } else if(part==2) {
+         elim_cuda<isOne_data, isNotFullRow, 1/*n_skip*/, 0, 1 /*remap_ones*/>(data, data->d_one_revmap, {data->d_incident}, stream);
+@@ -1089,7 +997,7 @@
+ static void remove_unnecessary_nodes_cuda(struct cuda_clique_data *data)
+ {
+     updateMapGPU<<<DIVROUNDUP(data->nmap, 256), 256, 0, data->iter_stream>>>(data->d_new_revmap, data->instances[2].d_x, data->d_map, data->instances[0].d_x, data->d_new_map);
+-    unmapOnesGPU<<<DIVROUNDUP(data->nmap, 256), 256, 0, data->zero_stream>>>(data->d_ones, data->d_map, data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[2].d_x_status);
++    unmapOnesGPU<<<1, 256, 0, data->zero_stream>>>(data->d_ones, data->d_map, data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[2].d_x_status);
+     if(data->d_start_mat) {
+         rewriteMatrixGPU<<<512, 512, 0, data->iter_stream>>>(data->d_mat, data->d_start_mat, data->d_new_map, data->mat_pitch);
+     } else {
+@@ -1191,7 +1099,7 @@
+ 
+         SWAP(data->instances[0], data->instances[1]); SWAP(data->instances[1], data->instances[2]);
+ 
+-		if(iter_cnt>=N_ITER && ! mat_changed && !randomized) break;
++		if(iter_cnt>=N_ITER) break;
+ 		iter_cnt++;
+ 
+ 
+@@ -1299,9 +1207,9 @@
+ 
+     for(int i=0; i<n; i++) if(BIT_TEST(mask, i))
+         for(int j=i+1; j<n; j++) if(BIT_TEST(mask, j)) {
+-            if(res->h_start_mat[i*n+j]>0) {
+-                res->h_start_mat[i*n+j]=MIN((int)ceilf(sqrtf((res->h_start_mat[i*n+j] * res->h_start_mat[i*n+j])+e)), 255);
+-                res->h_start_mat[j*n+i]=res->h_start_mat[i*n+j];
++            if(res->h_start_mat[(size_t)i*n+j]>0) {
++                res->h_start_mat[(size_t)i*n+j]=MIN((int)ceilf(sqrtf((res->h_start_mat[(size_t)i*n+j] * res->h_start_mat[(size_t)i*n+j])+e)), 255);
++                res->h_start_mat[j*n+i]=res->h_start_mat[(size_t)i*n+j];
+             }
+         }
+ 
+@@ -1321,41 +1229,35 @@
+ 
+ extern "C" void init_cuda()
+ {
+-    if(cuda_device==-1) {
+-        int device_count;
+-        cudaGetDeviceCount(&device_count);
+-
+-        cuda_device=int_ran(0, device_count-1);
+-        cudaSetDevice(cuda_device);
+-
+-        threaddev[omp_get_thread_num()]=cuda_device;
+-        cudaFree(0);
+-    }
++    // Honor the caller's selected device. Random selection and a cached ID
++    // broke subsequent calls on a different CUDA device.
++    cudaGetDevice(&cuda_device);
++    checkCUDAError("init_cuda", __LINE__);
+ }
+ 
+ 
+ extern "C" void init_cuda_clique(struct cuda_clique_data *res, char **graph, int n)
+ {
+ 
+-    cuda_start();
+-
+-    if(!rand_init[omp_get_thread_num()]) {
++    init_cuda();
++
++    {
+         cudaMalloc((void **)&d_randstates, 256 * sizeof(curandState_t));
+         rand_setup_kernel<<<1, 256>>>(d_randstates);
+-        rand_init[omp_get_thread_num()]=1;
++
+     }
+ 
+ 	res->n=n;
+ 
+-	res->h_start_mat=(unsigned char *)calloc(n*n, sizeof(char));
++	res->h_start_mat=(unsigned char *)calloc((size_t)n*n, sizeof(char));
+ 
+     res->n_edges=0;
+ 
+ 	for(int i=0; i<n; i++) {
+ 		for(int j=0; j<n; j++) {
+-			res->h_start_mat[i*n+j]=i!=j ? graph[i][j] : 0;
+-
+-            res->n_edges+=res->h_start_mat[i*n+j];
++			res->h_start_mat[(size_t)i*n+j]=i!=j ? graph[i][j] : 0;
++
++            res->n_edges+=res->h_start_mat[(size_t)i*n+j];
+ 		}
+ 	}
+ 
+@@ -1449,7 +1351,8 @@
+ 	free(res->h_start_mat);
+     free(res->instances);
+ 
+-    cuda_end();
++    cudaFree(d_randstates);
++    d_randstates = 0;
+ }
+ 
+ static int mode(float alpha, float omega)
+@@ -1472,7 +1375,6 @@
+     }
+ 
+ 	data->max_unsolved=max_unsolved;
+-	data->max_unsolved=0;
+ 
+     if(zero>0) data->zero=zero;
+     else data->zero=0.0001f;
+--- a/parsers.c
++++ b/parsers.c
+@@ -24,6 +24,8 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <limits.h>
++#include <ctype.h>
+ 
+ #include "simple_macros.h"
+ #include "parsers.h"
+@@ -123,76 +125,54 @@
+     return N;
+ }
+ 
+-int read_graph_DIMACS_ascii(char *file, char ***arr,  int *edges)
+-{
+-
+-    FILE *fp;
+-
+-
+-    if ( (fp=fopen(file,"r"))==NULL ) {
+-        printf("ERROR: Cannot open infile\n");
+-        exit(10);
+-    }
+-
+-    char c;
+-    int N=-1;
+-    int n_edges=-1;
+-    int stop = 0;
+-
+-    while (!stop && (c = fgetc(fp)) != EOF ){
+-        switch (c)
+-        {
+-            case 'c':
+-                while ((c = fgetc(fp)) != '\n' && c != '\0');
+-                break;
+-
+-            case 'p':
+-                fscanf(fp, "%*s %d %d\n", &N, &n_edges);
+-                break;
+-
+-            case 'e':
+-                ungetc(c, fp);
+-                stop=1;
+-                break;
+-
+-            default:
+-                printf("ERROR: corrupted infile\n");
+-                exit(10);
+-                break;
+-        }
+-    }
+-
+-
+-    if (N<0 || n_edges<0) {
+-        printf("ERROR: corrupted infile\n");
+-        exit(10);
+-    }
+-
+-	*arr=(char **)make_array(N, N, sizeof(char));
+-
+-    while ((c = fgetc(fp)) != EOF){
+-        int i, j;
+-        switch (c) {
+-            case 'e':
+-                if (!fscanf(fp, "%d %d", &i, &j)) {
+-                    printf("ERROR: corrupted inputfile\n");
+-                    exit(10);
+-                }
+-
+-                (*arr)[i-1][j-1]=1;
+-                (*arr)[j-1][i-1]=1;
+-                break;
+-
+-            default:
+-                break;
+-        }
+-    }
+-
++static void graph_input_error(FILE *fp, const char *message)
++{
++    fprintf(stderr, "Invalid graph input: %s\n", message);
++    if (fp) fclose(fp);
++    exit(10);
++}
++
++int read_graph_DIMACS_ascii(char *file, char ***arr, int *edges)
++{
++    FILE *fp = fopen(file, "r");
++    if (!fp) graph_input_error(0, "cannot open file");
++    char *line = 0;
++    size_t capacity = 0;
++    int n = -1, expected = 0, seen = 0;
++    *arr = 0;
++    while (getline(&line, &capacity, fp) >= 0) {
++        char *text = line;
++        while (isspace((unsigned char)*text)) ++text;
++        if (!*text || *text == 'c') continue;
++        char tag, extra, format[16];
++        long long u, v;
++        if (*text == 'p') {
++            if (n >= 0 || sscanf(text, " %c %15s %lld %lld %c", &tag, format, &u, &v, &extra) != 4 ||
++                (strcmp(format, "edge") && strcmp(format, "col")) || u < 0 || u > INT_MAX ||
++                v < 0 || v > INT_MAX || v > u*(u-1)/2)
++                graph_input_error(fp, "bad or duplicate header");
++            n = (int)u;
++            expected = (int)v;
++            if (n) {
++                *arr = (char**)make_array(n, n, sizeof(char));
++                if (!*arr) graph_input_error(fp, "matrix allocation failed");
++            }
++        } else if (*text == 'e') {
++            if (n < 0 || sscanf(text, " %c %lld %lld %c", &tag, &u, &v, &extra) != 3 ||
++                u < 1 || v < 1 || u > n || v > n || u == v)
++                graph_input_error(fp, "bad edge endpoints");
++            --u; --v;
++            if ((*arr)[u][v]) graph_input_error(fp, "duplicate edge");
++            if (seen >= expected) graph_input_error(fp, "more edges than declared");
++            (*arr)[u][v] = (*arr)[v][u] = 1;
++            ++seen;
++        } else graph_input_error(fp, "unknown record");
++    }
++    free(line);
++    if (n < 0 || seen != expected) graph_input_error(fp, "missing header or edge count mismatch");
+     fclose(fp);
+-
+-    *edges=n_edges;
+-
+-    return N;
++    if (edges) *edges = seen;
++    return n;
+ }
+ 
+ 

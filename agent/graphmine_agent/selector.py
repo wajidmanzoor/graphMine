@@ -13,16 +13,10 @@ class BackendPolicyError(RuntimeError):
     """Raised when a benchmark-derived backend policy is malformed."""
 
 
-# Correctness exclusions override benchmark rankings, including stale/custom
-# policies. Keep these until an independent audit establishes a safe contract.
-# synthetic-v1/random-01-q01: CUDA-MS returned 3 and certified optimality when
-# exhaustive enumeration and both exact GPU backends found a four-clique.
-CORRECTNESS_EXCLUSIONS = {
-    "maximum-clique": {
-        "cuda-ms": "CUDA-MS cannot reliably certify the global maximum; use an exact maximum-clique backend",
-        "maximum-clique-on-gpu": "Maximum-Clique-on-GPU aborts on the seeded cycle_chords-01 regression; quarantined pending adapter repair",
-    },
-}
+# Overrides remain available for future correctness failures. The two repaired
+# clique backends passed the native/application re-audit in repaired_library.
+# Pre-repair failures remain preserved in their historical reports.
+CORRECTNESS_EXCLUSIONS: dict[str, dict[str, str]] = {}
 
 
 def feature_bucket(metadata: GraphMetadata | dict[str, Any] | None) -> str:

@@ -45,6 +45,16 @@ from graphmine_agent.profiles import (
     prepare_operation_graph,
 )
 
+ORIGINAL_EXPANSION_OPERATIONS = frozenset(
+    {
+        "connected-components",
+        "max-flow-min-cut",
+        "linear-assignment",
+        "transitive-closure",
+        "butterfly-counting",
+    }
+)
+
 AUTH = {"Authorization": "Bearer test-secret"}
 
 
@@ -132,9 +142,9 @@ def plan(catalog, operation, **updates):
 def test_expansion_catalog_preserves_all_problem_specs_and_screening(catalog, settings):
     assert len(catalog.problems) == 37
     assert (
-        sum(p["library_support"]["available"] for p in catalog.problems.values()) == 17
+        sum(p["library_support"]["available"] for p in catalog.problems.values()) == 22
     )
-    assert len(catalog.instructions) == 18
+    assert len(catalog.instructions) == 24
     for record in catalog.problems.values():
         assert record["spec"] == json.loads(
             (settings.repository_root / record["source"]).read_text()
@@ -146,7 +156,7 @@ def test_expansion_catalog_preserves_all_problem_specs_and_screening(catalog, se
             if record["spec"]["problem_id"] != "null_model_significance_testing":
                 assert record["expansion_screening"]
     context = catalog.routing_context("general")
-    assert context["contract_version"] == "expanded-37-v1"
+    assert context["contract_version"] == "repaired-37-v2"
     for operation in EXPANSION_OPERATIONS:
         support = catalog.problem(catalog.operation(operation).problem_id)[
             "library_support"
@@ -192,11 +202,11 @@ def test_expansion_holdout_covers_every_new_problem_and_domain(catalog, settings
     } == {
         (domain, operation)
         for domain in catalog.domains
-        for operation in EXPANSION_OPERATIONS
+        for operation in ORIGINAL_EXPANSION_OPERATIONS
     }
 
 
-@pytest.mark.parametrize("operation", sorted(EXPANSION_OPERATIONS))
+@pytest.mark.parametrize("operation", sorted(ORIGINAL_EXPANSION_OPERATIONS))
 def test_valid_profiles_pass_without_mutating_upload(catalog, operation):
     data = fixtures()[operation][0]
     original = copy.deepcopy(data)
@@ -275,7 +285,7 @@ def test_profiles_reject_missing_terminals_sparse_assignment_bad_sides_and_large
         )
 
 
-@pytest.mark.parametrize("operation", sorted(EXPANSION_OPERATIONS))
+@pytest.mark.parametrize("operation", sorted(ORIGINAL_EXPANSION_OPERATIONS))
 def test_projection_is_never_silently_applied(catalog, operation):
     with pytest.raises(PlanValidationError, match="directed projection"):
         PlanValidator(catalog).validate(
@@ -309,15 +319,15 @@ def test_unsupported_problem_keeps_its_identity_and_blocker(catalog):
     decision = normalize_route(
         catalog,
         RouteDecision(
-            problem_id="group_steiner_tree",
+            problem_id="signed_network_structural_balance",
             supported=True,
             confidence=1,
-            explanation="Find a minimum tree.",
+            explanation="Find a minimum-frustration partition.",
         ),
     )
     assert not decision.supported and decision.operation_id is None
-    assert decision.problem_id == "group_steiner_tree"
-    assert "singleton" in route_blocker(catalog, decision)[1].lower()
+    assert decision.problem_id == "signed_network_structural_balance"
+    assert "certificate" in route_blocker(catalog, decision)[1].lower()
 
 
 def test_terminal_schema_accepts_typed_ids_and_no_arbitrary_paths(catalog):
@@ -366,7 +376,7 @@ def test_command_preserves_typed_ids_and_maps_only_selected_weights(
     )
     assert graph_store.read_graph(record.id, session.id)["edges"][0]["weight"] == 999
     assert runner._environment()["GRAPHMINE_WORKER_INHERIT_PROCESS_GROUP"] == "1"
-    assert runner.capabilities.operation_count == 18
+    assert runner.capabilities.operation_count == 24
 
 
 def test_expanded_routing_uses_base_model_and_keeps_legacy_prompt(settings, catalog):
@@ -428,7 +438,7 @@ def test_expanded_routing_uses_base_model_and_keeps_legacy_prompt(settings, cata
     asyncio.run(scenario())
 
 
-@pytest.mark.parametrize("operation", sorted(EXPANSION_OPERATIONS))
+@pytest.mark.parametrize("operation", sorted(ORIGINAL_EXPANSION_OPERATIONS))
 def test_planning_preflight_for_new_profiles(settings, catalog, operation):
     data, parameters, intent, _, _ = fixtures()[operation]
     with TestClient(create_app(settings)) as client:
@@ -467,7 +477,7 @@ def test_planning_preflight_for_new_profiles(settings, catalog, operation):
     not os.getenv("GRAPHMINE_EXPANSION_TEST_BINARY"),
     reason="Set GRAPHMINE_EXPANSION_TEST_BINARY to run native GPU integration",
 )
-@pytest.mark.parametrize("operation", sorted(EXPANSION_OPERATIONS))
+@pytest.mark.parametrize("operation", sorted(ORIGINAL_EXPANSION_OPERATIONS))
 def test_agent_runs_native_profile_and_builds_grounded_answer(
     settings, catalog, operation
 ):

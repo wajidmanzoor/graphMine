@@ -1,0 +1,31 @@
+========= COMPUTE-SANITIZER
+========= Error: Race reported between Read access at bool mcp::reduce<unsigned int, (unsigned int)64, (unsigned int)32>(mcp::GLOBAL_HANDLE<T1> &, mcp::LOCAL_HANDLE<T1> &, mcp::SHARED_HANDLE<T1, T2, T3> &, const T1 &, int, T1 *)+0x6df0 in mcp_utils.cuh:2202
+=========     and Write access at bool mcp::reduce<unsigned int, (unsigned int)64, (unsigned int)32>(mcp::GLOBAL_HANDLE<T1> &, mcp::LOCAL_HANDLE<T1> &, mcp::SHARED_HANDLE<T1, T2, T3> &, const T1 &, int, T1 *)+0xa690 in mcp_utils.cuh:2214 [4 hazards]
+========= 
+[0mWelcome ---------------------
+    Main Task = mcp
+    Source Graph = /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/modes-racecheck/boundary-random-33.bel
+    Device ID(s) = 0
+    Coloring Algorithm = Reduce
+    Lower Bound Max Clique = 0
+    Parallelism = Blocks
+-----------------------------
+[1;32m[18:02:32] Read graph time: 0.554257 s
+[0m[1;32m[18:02:32] n = 34 and m = 620
+[0m[1;32m[18:02:32] Transfer Time: 0.000302 s
+[0mMax Core = 14
+[1;32m[18:02:32] Degeneracy ordering time: 0.334757 s
+[0m[1;32m[18:02:32] Heuristic clique size: 8
+[0m[1;32m[18:02:32] Reducing the graph and reversing the degeneracy order..
+[0m[1;32m[18:02:33] Reduced to n = 33 and m = 620
+[0m[1;32m[18:02:33] CSR Recreation time: 0.919519 s
+[0m[1;32m[18:02:33] Max directed degree: 20, max undirected degree: 27
+[0m[1;32m[18:02:33] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:02:33] VRAM usage: 1160314880 B
+[0m[1;32m[18:02:33] Launching search kernel with grid size: 3408, and block size: 64
+[0mFinished Launching Instance 0.
+[1;32m[18:02:34] search time 0.333672 s
+[0mFound a maximum clique of size 8.
+[1;32m[18:02:34] Total time: 2.143583 s
+[0mDone ...
+========= RACECHECK SUMMARY: 1 hazard displayed (1 error, 0 warnings)

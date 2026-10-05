@@ -1,0 +1,23 @@
+n=12, m=20
+Max Degree=5
+Flow Certificate component=0 numerator=5 denominator=3 capacity=120 value=110 rounds=136
+Flow Certificate component=0 numerator=2 denominator=1 capacity=40 value=40 rounds=24
+Final Max Density 2
+CDS_RESULT {"k":2,"density":2,"clique_count":10,"vertex_count":5,"optimal":true,"flow_decisions":2,"vertices":[0,1,2,3,4]}
+Total Cliques=20
+Densest Core Density=2
+Total Components=1
+
+DAG Time =9.2247819999999994 ms
+Clique Listing Time =0.036275000000000002 ms
+Core Decompose Time =0.081262000000000001 ms
+Densest Core Time =0.107332 ms
+Prune Time =0.070806999999999995 ms
+Connected Component Time =0.28426899999999999 ms
+Exact Time =15.350918 ms
+Time taken=25.155664999999999 ms
+
+Mac Clique Core=4
+lb=
+ub=
+eub=

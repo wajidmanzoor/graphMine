@@ -1,0 +1,28 @@
+{
+  "commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+  "remote": "https://github.com/ggokturk/infuser",
+  "prefix": ".",
+  "patch_sha256": "98caa3ff3cd79ece6a50a3622df5cc0cef79cb0db68f70c695e12cc37c4e9a61",
+  "base_sha256": {
+    "Makefile": "95b11370db972b15eb7fa853049ee1f9f56a24afe38e6547d24a64b03c238a26",
+    "src/common.h": "eb022033ac06766f811f1f6de5eeeb7a662212ba12acd1776d87ec0c6d8405e2",
+    "src/gpu.cu": "8a395cee1ce8d88dfb31c78e2541c26df85df853c755582d847f62684cce7a8d",
+    "src/gpu_core.cuh": null,
+    "src/gpu_input.h": null,
+    "src/main.cpp": "15794355e6df49812d2c027901200a9880a6c1ae7ca4bceb937e94f166625f8b",
+    "src/mixgreedy.h": "a3e3a12c04b11c97971c8076392592099cfaa9565c7bac0146d0c8f3e9fd04f8",
+    "src/newgreedy.h": "a2a2866c2d7a5eed81f2aa6bd82547621b043881caa6ed5b2adda31f2b248246",
+    "src/sketch.h": "c9e199321c8fe14611a094ef62f5c749475ee558195ba105a9b5ee6417a1eddf"
+  },
+  "source_sha256": {
+    "Makefile": "098110d2f917ec7f11e81f781dc461b25b9e229226578d781447bdf80ec211ff",
+    "src/common.h": "eb022033ac06766f811f1f6de5eeeb7a662212ba12acd1776d87ec0c6d8405e2",
+    "src/gpu.cu": "75270554bd7478112a6f9b74b07e2df843e745159c5532f09e9662289df6a60d",
+    "src/gpu_core.cuh": "700446750506d668fb08a5e60c03bba93164e9e7a3d792775d7508e816c2c063",
+    "src/gpu_input.h": "364527fd720caef13ccdace37c2130bc911b06e5acb651b469bfe90c78316295",
+    "src/main.cpp": "15794355e6df49812d2c027901200a9880a6c1ae7ca4bceb937e94f166625f8b",
+    "src/mixgreedy.h": "a3e3a12c04b11c97971c8076392592099cfaa9565c7bac0146d0c8f3e9fd04f8",
+    "src/newgreedy.h": "a2a2866c2d7a5eed81f2aa6bd82547621b043881caa6ed5b2adda31f2b248246",
+    "src/sketch.h": "c9e199321c8fe14611a094ef62f5c749475ee558195ba105a9b5ee6417a1eddf"
+  }
+}

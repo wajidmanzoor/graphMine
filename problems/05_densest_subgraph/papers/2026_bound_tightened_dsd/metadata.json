@@ -1,0 +1,16 @@
+{
+  "paper_id": "2026_bound_tightened_dsd",
+  "title": "Bound-Tightened Densest Subgraph Discovery on GPU",
+  "year": 2026,
+  "venue": "PACMMOD / SIGMOD 2026",
+  "doi": "10.1145/3802023",
+  "publication_url": "https://doi.org/10.1145/3802023",
+  "pdf_url": "https://upenn.ferric.systems/dbscholar/sigmod_papers/2026/10.1145_3802023.pdf",
+  "code_url": "https://github.com/wajidmanzoor/CDS",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU densest-subgraph discovery; its generalized formulation includes ordinary edge-density when clique size is two.",
+  "notes": "The author repository contains the paper's CUDA implementation. For k=2 its k-clique-density objective is ordinary unweighted densest-subgraph density; k=3 and k=4 are higher-order variants.",
+  "problem_id": "densest_subgraph",
+  "problem_dir": "05_densest_subgraph",
+  "research_cutoff": "2026-09-30"
+}

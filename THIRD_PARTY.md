@@ -33,6 +33,29 @@ Each artifact remains subject to its original copyright and license terms. A lin
 
 The validation record and exact source provenance are also embedded in [`graphmine_catalog.json`](graphmine_catalog.json).
 
+## Repaired worker sources
+
+The seven new repair workers are built from external pinned checkouts or a
+verified release archive. Their upstream source trees and compiled executables
+are not added to this repository. GraphMine publishes the adapters, repair
+patches, build scripts, source hashes and validation evidence. See
+[the build guide](library/docs/repaired_algorithms.md) and
+[artifact registry](catalog/artifact_sources.json).
+
+| Worker | Upstream | Build input | Collected license record |
+|---|---|---|---|
+| AccTD | [AccTrussDecomposition](https://github.com/RapidsAtHKUST/AccTrussDecomposition) | `a8faa445ccb45c18383087db488eff9d1836d8d1` | A license was recorded at `msp/LICENSE.txt`; see upstream for its scope. |
+| MBE-GPU | [MBE-GPU](https://github.com/fhxu00/MBE-GPU) | `4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942` and pinned CUB dependency | No explicit upstream license detected. |
+| CDS | [CDS](https://github.com/wajidmanzoor/CDS) | `3e704f98cf873336e2cf789570774039c8d6f092` | No explicit upstream license detected. |
+| kPAR | [kPAR](https://github.com/jmshi123/kPAR) | Release `v1.0/kPAR.zip`, SHA-256 `791987a738faf84d0fcab882b2f74cbb2efd4451ac9888b80e0d120ea6421916` | Upstream `LICENSE` recorded. The worker uses this release archive, not the metadata repository commit. |
+| GAMMA butterfly | [GAMMA](https://github.com/pkumod/GAMMA) | `3e01be68ededb8dcc4fa44bdb069a945a822232c` | No explicit upstream license detected. |
+| GPU4GST | [GPU4GST-sigmod](https://github.com/toziki/GPU4GST-sigmod) | `716a19c240c480cb2d23435bbaca55163a48e174` | No explicit upstream license detected. |
+| SuperFuser | [infuser](https://github.com/ggokturk/infuser) | `1506d275671a456e41bbc7bcb294876615353b2d` | No explicit upstream license detected. |
+
+The CUDA-MS and Maximum-Clique-on-GPU repairs modify the already retained source
+paths listed above; their existing license files remain in place. Historical
+validation classifications are preserved separately from repaired-binary results.
+
 ## Validated expansion profiles
 
 The imported worker sources are pinned in [PROVENANCE.json](library/src/backends/expansion/upstream/PROVENANCE.json). Adaptations are generated during CMake configuration and do not edit the preserved upstream files. Butterfly counting reuses the existing GraphMiner kernel.

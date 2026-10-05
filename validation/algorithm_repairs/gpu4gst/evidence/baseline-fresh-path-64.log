@@ -1,0 +1,25 @@
+Device Number: 0
+  Device name:                NVIDIA RTX 6000 Ada Generation
+Expected edge count: 126
+Graph load (success): 64 verts, 126 edges 3.8147e-05 second(s)
+Found 0 high-degree vertices (>1024)
+new_vert_count: 64
+son_list_map.size(): 0
+son_range_start_map.size(): 64
+开始构建新的CSR...
+原始边数: 126, 新边数: 126
+新CSR构建完成: 原始顶点数 64, 扩展顶点数 64, 126 条边
+
+=== 验证分割结果 ===
+
+=== 特判打印37701子节点信息 ===
+  警告: 37701超出扩展顶点范围
+After high-degree vertex splitting: 64 verts, 126 edges 6.00815e-05 second(s)
+group open /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/64/graph.g
+read group over
+open inquire inquire open /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/64/graph2.csv
+read inquire over
+inquire have 1
+width 4 V 64 E 126
+------------------------------------------------------------
+graph interation 0 

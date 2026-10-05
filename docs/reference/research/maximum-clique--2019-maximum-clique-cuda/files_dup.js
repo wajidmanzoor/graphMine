@@ -6,6 +6,7 @@ var files_dup =
     [ "bitops.h", "dd/dc2/bitops_8h.html", "dd/dc2/bitops_8h" ],
     [ "common_cuda.cuh", "d4/d25/common__cuda_8cuh.html", "d4/d25/common__cuda_8cuh" ],
     [ "cudams.h", "da/d98/cudams_8h.html", "da/d98/cudams_8h" ],
+    [ "exact_cuda.cuh", "d6/deb/exact__cuda_8cuh.html", "d6/deb/exact__cuda_8cuh" ],
     [ "find_cliques.c", "d7/d2b/find__cliques_8c.html", "d7/d2b/find__cliques_8c" ],
     [ "motzkin.c", "dd/dc9/motzkin_8c.html", "dd/dc9/motzkin_8c" ],
     [ "motzkin_cpu.c", "d0/dc9/motzkin__cpu_8c.html", "d0/dc9/motzkin__cpu_8c" ],

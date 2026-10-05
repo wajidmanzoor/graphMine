@@ -42,7 +42,7 @@ var NAVTREE =
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
-        [ "Functions", "functions_func.html", null ],
+        [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Typedefs", "functions_type.html", null ],
         [ "Related Symbols", "functions_rela.html", null ]
@@ -51,10 +51,12 @@ var NAVTREE =
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
+        [ "All", "globals.html", "globals_dup" ],
         [ "Functions", "globals_func.html", null ],
         [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
+        [ "Enumerator", "globals_eval.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -64,17 +66,21 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"d2/dda/structgraphmine_1_1MotifVertexParticipation.html#abd5080945d4a5d0390ec346b0afec914",
-"d3/dc7/structgraphmine_1_1anonymous__namespace_02subgraph__isomorphism_8cpp_03_1_1EncodedLabels.html#a9d807a82d63e5c7e3cb1cdac6ffda91d",
-"d5/d1a/classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer.html#aaff800bc981bed43ba3f56248832e044",
-"d6/da3/structgraphmine_1_1TemporalMotifInstance.html#af38843a26b29feb86d1a17dc774fe233",
-"d7/d73/classgraphmine_1_1PropertyValue.html#a7c779cc6dc5e3830cd1eeb2783619b58",
-"d8/d4c/namespacegraphmine.html#abda3d199f0e92d94d150121dd9ba75b3a788f865fd029169e09ebfe9a9a90891d",
-"d9/d5e/graph__motifs_8hpp.html#a59d7f6f690f22c4c9010c5c64c3dbbe9ae58b7b06fdd5ae95610ddb8644d6e373",
-"da/d95/temporal__motif__mining_8cpp.html#aee80bf3571cf6678319c49ec0efcf858",
-"dc/db0/cuqc__stub_8cpp.html#ae82e1ede36fa4e3a113fb2d71beffec4",
-"de/d52/src_2problems_2maximal__cliques_8cpp.html#a73786457fbc737e4ac2a70bff27b1986",
-"df/df8/g2miner__motif_8cu.html#a5781f2e4b33da27862631cd1cc235671"
+"d2/d05/structgraphmine_1_1detail_1_1GraphMotifBackendResult.html",
+"d3/d35/classgraphmine_1_1DynamicTriangleCounting.html#aa85ae68cb9d4749485bb1e53dc8f0b94",
+"d3/dfc/namespacegraphmine_1_1detail.html#a167ad2dfec68d540865d9e8c8d876ae8",
+"d5/d19/maxflow_8cu.html",
+"d5/db9/graphset__motif__stub_8cpp.html#a61d3e617616699402501800122a41cdb",
+"d7/d19/structgraphmine_1_1detail_1_1temporal__cuda_1_1Invocation.html#a1ec83d86b907993b3373747d9cebfde5",
+"d8/d14/structgraphmine_1_1MaxFlowOutput.html",
+"d8/d61/relation_8cu.html#a1f5660465d051798e1ae6e6ead77bfb4",
+"d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html#a07435daac309824ed583671969c05a60",
+"da/d3d/classgraphmine_1_1QuasiCliques.html#a730551dbcab8612f453c35bb95b7ffa2",
+"db/da5/structgraphmine_1_1MaximalBicliqueOptions.html#afbee977a0d9814e78d0fd2a9f7be9900",
+"dd/d39/namespacegraphmine_1_1detail_1_1anonymous__namespace_02maximum__clique__on__gpu__backend_8cu_03.html#ae1a8dfbdfd323cba7003626f93ccd655",
+"de/d13/HungarianCUDA_8cu.html#a6ab1ef3a220133d308e33010d31a48e2",
+"df/d4c/classgraphmine_1_1ExternalId.html#a587e4cdd77be281d5621ae617816e621",
+"functions_func_v.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

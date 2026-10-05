@@ -1,0 +1,8400 @@
+{
+  "suite": "stress",
+  "tool": null,
+  "binary_sha256": "f73a12f8fc35b4990432afda69f64ad5a215bcd27c71d5eb50be4eec32b64706",
+  "manifest_sha256": "efa37d994b67ef059c38eeefeb88823cd9c73ba398cfa8c71bf60a461d56bb4e",
+  "gpu": 1,
+  "cases": 580,
+  "passed": 580,
+  "failed": 0,
+  "elapsed_seconds": 14.204815587028861,
+  "results": [
+    {
+      "id": "00000-cycle_chords-01",
+      "graph": "cycle_chords-01",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00001-mixed-core",
+      "graph": "mixed-core",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00002-random-medium-000",
+      "graph": "random-medium-000",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        10,
+        11,
+        13
+      ]
+    },
+    {
+      "id": "00003-random-medium-001",
+      "graph": "random-medium-001",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        7,
+        14
+      ]
+    },
+    {
+      "id": "00004-random-medium-002",
+      "graph": "random-medium-002",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        7,
+        16,
+        23,
+        30,
+        33,
+        39,
+        45,
+        57,
+        60
+      ]
+    },
+    {
+      "id": "00005-random-medium-003",
+      "graph": "random-medium-003",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        54,
+        20,
+        16,
+        25,
+        27
+      ]
+    },
+    {
+      "id": "00006-random-medium-004",
+      "graph": "random-medium-004",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        38,
+        28
+      ]
+    },
+    {
+      "id": "00007-random-medium-005",
+      "graph": "random-medium-005",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        15,
+        19,
+        22,
+        25
+      ]
+    },
+    {
+      "id": "00008-random-medium-006",
+      "graph": "random-medium-006",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        86,
+        12,
+        42,
+        14,
+        17,
+        25,
+        50,
+        51,
+        71,
+        67
+      ]
+    },
+    {
+      "id": "00009-random-medium-007",
+      "graph": "random-medium-007",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        17,
+        18
+      ]
+    },
+    {
+      "id": "00010-random-medium-008",
+      "graph": "random-medium-008",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        32,
+        37,
+        44,
+        51,
+        53,
+        3
+      ]
+    },
+    {
+      "id": "00011-random-medium-009",
+      "graph": "random-medium-009",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        28,
+        26,
+        14,
+        22,
+        12,
+        21,
+        0
+      ]
+    },
+    {
+      "id": "00012-random-medium-010",
+      "graph": "random-medium-010",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        0,
+        21,
+        2,
+        26,
+        32,
+        20,
+        14,
+        33
+      ]
+    },
+    {
+      "id": "00013-random-medium-011",
+      "graph": "random-medium-011",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        9,
+        58,
+        16,
+        23,
+        32,
+        33,
+        44
+      ]
+    },
+    {
+      "id": "00014-random-medium-012",
+      "graph": "random-medium-012",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        23,
+        7,
+        13,
+        31,
+        21
+      ]
+    },
+    {
+      "id": "00015-random-medium-013",
+      "graph": "random-medium-013",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        11,
+        48,
+        53
+      ]
+    },
+    {
+      "id": "00016-random-medium-014",
+      "graph": "random-medium-014",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        25,
+        0,
+        32,
+        40,
+        58,
+        53,
+        23
+      ]
+    },
+    {
+      "id": "00017-random-medium-015",
+      "graph": "random-medium-015",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        59,
+        7,
+        29,
+        28,
+        57,
+        48,
+        47,
+        31,
+        36,
+        40
+      ]
+    },
+    {
+      "id": "00018-random-medium-016",
+      "graph": "random-medium-016",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        81,
+        2,
+        3,
+        13,
+        15,
+        17,
+        50,
+        51,
+        52
+      ]
+    },
+    {
+      "id": "00019-random-medium-017",
+      "graph": "random-medium-017",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        24,
+        33,
+        4,
+        5,
+        9,
+        20
+      ]
+    },
+    {
+      "id": "00020-random-medium-018",
+      "graph": "random-medium-018",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        18,
+        22
+      ]
+    },
+    {
+      "id": "00021-random-medium-019",
+      "graph": "random-medium-019",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        9,
+        11
+      ]
+    },
+    {
+      "id": "00022-random-medium-020",
+      "graph": "random-medium-020",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        33,
+        39
+      ]
+    },
+    {
+      "id": "00023-random-medium-021",
+      "graph": "random-medium-021",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        66,
+        36,
+        30
+      ]
+    },
+    {
+      "id": "00024-random-medium-022",
+      "graph": "random-medium-022",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        57,
+        34,
+        23,
+        14,
+        50
+      ]
+    },
+    {
+      "id": "00025-random-medium-023",
+      "graph": "random-medium-023",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        21,
+        1,
+        0,
+        20
+      ]
+    },
+    {
+      "id": "00026-random-medium-024",
+      "graph": "random-medium-024",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        21,
+        41,
+        14
+      ]
+    },
+    {
+      "id": "00027-random-medium-025",
+      "graph": "random-medium-025",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        16,
+        24,
+        15,
+        9,
+        19
+      ]
+    },
+    {
+      "id": "00028-random-medium-026",
+      "graph": "random-medium-026",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        16
+      ]
+    },
+    {
+      "id": "00029-random-medium-027",
+      "graph": "random-medium-027",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        20,
+        26,
+        7,
+        19,
+        11,
+        16,
+        25
+      ]
+    },
+    {
+      "id": "00030-random-medium-028",
+      "graph": "random-medium-028",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        9,
+        25,
+        31,
+        52,
+        62
+      ]
+    },
+    {
+      "id": "00031-random-medium-029",
+      "graph": "random-medium-029",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "id": "00032-random-medium-030",
+      "graph": "random-medium-030",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        30,
+        33,
+        39,
+        2,
+        3,
+        5,
+        26,
+        27
+      ]
+    },
+    {
+      "id": "00033-random-medium-031",
+      "graph": "random-medium-031",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        19,
+        27,
+        30
+      ]
+    },
+    {
+      "id": "00034-random-medium-032",
+      "graph": "random-medium-032",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        0,
+        18,
+        4,
+        15,
+        26,
+        13,
+        34
+      ]
+    },
+    {
+      "id": "00035-random-medium-033",
+      "graph": "random-medium-033",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        35,
+        67,
+        52,
+        64,
+        13,
+        34,
+        16,
+        62,
+        25
+      ]
+    },
+    {
+      "id": "00036-random-medium-034",
+      "graph": "random-medium-034",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        14,
+        35
+      ]
+    },
+    {
+      "id": "00037-random-medium-035",
+      "graph": "random-medium-035",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        75,
+        58,
+        50,
+        6,
+        56,
+        39,
+        11,
+        28,
+        42,
+        23
+      ]
+    },
+    {
+      "id": "00038-random-medium-036",
+      "graph": "random-medium-036",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        28,
+        3,
+        7,
+        20,
+        19,
+        14,
+        10
+      ]
+    },
+    {
+      "id": "00039-random-medium-037",
+      "graph": "random-medium-037",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        58,
+        30,
+        3,
+        25,
+        35,
+        16,
+        7,
+        37
+      ]
+    },
+    {
+      "id": "00040-random-medium-038",
+      "graph": "random-medium-038",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        45,
+        4,
+        0,
+        24,
+        7
+      ]
+    },
+    {
+      "id": "00041-random-medium-039",
+      "graph": "random-medium-039",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        64,
+        33,
+        0,
+        12,
+        41,
+        45,
+        60,
+        28
+      ]
+    },
+    {
+      "id": "00042-random-medium-040",
+      "graph": "random-medium-040",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        20,
+        36,
+        57,
+        61
+      ]
+    },
+    {
+      "id": "00043-random-medium-041",
+      "graph": "random-medium-041",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        19,
+        20
+      ]
+    },
+    {
+      "id": "00044-random-medium-042",
+      "graph": "random-medium-042",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        7,
+        14,
+        20
+      ]
+    },
+    {
+      "id": "00045-random-medium-043",
+      "graph": "random-medium-043",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        25,
+        45,
+        58,
+        57
+      ]
+    },
+    {
+      "id": "00046-random-medium-044",
+      "graph": "random-medium-044",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        11,
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00047-random-medium-045",
+      "graph": "random-medium-045",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        73,
+        21,
+        17,
+        46
+      ]
+    },
+    {
+      "id": "00048-random-medium-046",
+      "graph": "random-medium-046",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        40,
+        23,
+        6,
+        10,
+        21,
+        24,
+        34
+      ]
+    },
+    {
+      "id": "00049-random-medium-047",
+      "graph": "random-medium-047",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        8,
+        9
+      ]
+    },
+    {
+      "id": "00050-random-medium-048",
+      "graph": "random-medium-048",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        21
+      ]
+    },
+    {
+      "id": "00051-random-medium-049",
+      "graph": "random-medium-049",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        76,
+        36,
+        57,
+        22,
+        54,
+        55,
+        35,
+        39,
+        41,
+        28
+      ]
+    },
+    {
+      "id": "00052-random-medium-050",
+      "graph": "random-medium-050",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        49,
+        9,
+        17,
+        21,
+        36
+      ]
+    },
+    {
+      "id": "00053-random-medium-051",
+      "graph": "random-medium-051",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        3,
+        13,
+        29,
+        20,
+        4,
+        31,
+        8
+      ]
+    },
+    {
+      "id": "00054-random-medium-052",
+      "graph": "random-medium-052",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        44,
+        36,
+        14,
+        32,
+        8,
+        0,
+        7,
+        10,
+        43
+      ]
+    },
+    {
+      "id": "00055-random-medium-053",
+      "graph": "random-medium-053",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        48,
+        51
+      ]
+    },
+    {
+      "id": "00056-random-medium-054",
+      "graph": "random-medium-054",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        34,
+        29,
+        40,
+        14,
+        1,
+        54
+      ]
+    },
+    {
+      "id": "00057-random-medium-055",
+      "graph": "random-medium-055",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        34,
+        25,
+        29,
+        40,
+        39,
+        10,
+        42,
+        9
+      ]
+    },
+    {
+      "id": "00058-random-medium-056",
+      "graph": "random-medium-056",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        15
+      ]
+    },
+    {
+      "id": "00059-random-medium-057",
+      "graph": "random-medium-057",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        79,
+        36
+      ]
+    },
+    {
+      "id": "00060-random-medium-058",
+      "graph": "random-medium-058",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        14,
+        2
+      ]
+    },
+    {
+      "id": "00061-random-medium-059",
+      "graph": "random-medium-059",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        3,
+        0,
+        18,
+        7
+      ]
+    },
+    {
+      "id": "00062-random-medium-060",
+      "graph": "random-medium-060",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        39,
+        14
+      ]
+    },
+    {
+      "id": "00063-random-medium-061",
+      "graph": "random-medium-061",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00064-random-medium-062",
+      "graph": "random-medium-062",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        55,
+        5,
+        9,
+        8,
+        31,
+        22,
+        20
+      ]
+    },
+    {
+      "id": "00065-random-medium-063",
+      "graph": "random-medium-063",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        30,
+        29,
+        2,
+        1,
+        9,
+        23,
+        19
+      ]
+    },
+    {
+      "id": "00066-random-medium-064",
+      "graph": "random-medium-064",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        46,
+        9,
+        42,
+        24,
+        26,
+        35,
+        22
+      ]
+    },
+    {
+      "id": "00067-random-medium-065",
+      "graph": "random-medium-065",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        8,
+        34,
+        17,
+        18,
+        11,
+        35,
+        27
+      ]
+    },
+    {
+      "id": "00068-random-medium-066",
+      "graph": "random-medium-066",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        6,
+        13,
+        14,
+        24
+      ]
+    },
+    {
+      "id": "00069-random-medium-067",
+      "graph": "random-medium-067",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        4,
+        5,
+        7,
+        19,
+        46,
+        50,
+        76
+      ]
+    },
+    {
+      "id": "00070-random-medium-068",
+      "graph": "random-medium-068",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        31,
+        35,
+        23,
+        6,
+        5,
+        51,
+        10,
+        45,
+        36
+      ]
+    },
+    {
+      "id": "00071-random-medium-069",
+      "graph": "random-medium-069",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        8,
+        14
+      ]
+    },
+    {
+      "id": "00072-random-medium-070",
+      "graph": "random-medium-070",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        48,
+        19,
+        32,
+        30,
+        35,
+        44,
+        21
+      ]
+    },
+    {
+      "id": "00073-random-medium-071",
+      "graph": "random-medium-071",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        10,
+        6
+      ]
+    },
+    {
+      "id": "00074-random-medium-072",
+      "graph": "random-medium-072",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "00075-random-medium-073",
+      "graph": "random-medium-073",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        15,
+        16,
+        24
+      ]
+    },
+    {
+      "id": "00076-random-medium-074",
+      "graph": "random-medium-074",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        33,
+        29,
+        15,
+        31
+      ]
+    },
+    {
+      "id": "00077-random-medium-075",
+      "graph": "random-medium-075",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        59,
+        20,
+        27,
+        52,
+        45
+      ]
+    },
+    {
+      "id": "00078-random-medium-076",
+      "graph": "random-medium-076",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        24,
+        33
+      ]
+    },
+    {
+      "id": "00079-random-medium-077",
+      "graph": "random-medium-077",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        38,
+        22,
+        3
+      ]
+    },
+    {
+      "id": "00080-random-medium-078",
+      "graph": "random-medium-078",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        54,
+        21
+      ]
+    },
+    {
+      "id": "00081-random-medium-079",
+      "graph": "random-medium-079",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        29
+      ]
+    },
+    {
+      "id": "00082-random-medium-080",
+      "graph": "random-medium-080",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        50,
+        17,
+        19,
+        41,
+        38,
+        31,
+        48,
+        12,
+        8,
+        25
+      ]
+    },
+    {
+      "id": "00083-random-medium-081",
+      "graph": "random-medium-081",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        9,
+        0,
+        62,
+        37,
+        19,
+        40
+      ]
+    },
+    {
+      "id": "00084-random-medium-082",
+      "graph": "random-medium-082",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        7,
+        28
+      ]
+    },
+    {
+      "id": "00085-random-medium-083",
+      "graph": "random-medium-083",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        68,
+        55,
+        62,
+        50,
+        38,
+        42,
+        67
+      ]
+    },
+    {
+      "id": "00086-random-medium-084",
+      "graph": "random-medium-084",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        14,
+        28
+      ]
+    },
+    {
+      "id": "00087-random-medium-085",
+      "graph": "random-medium-085",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        55,
+        6,
+        17,
+        23,
+        73
+      ]
+    },
+    {
+      "id": "00088-random-medium-086",
+      "graph": "random-medium-086",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        43,
+        14,
+        27
+      ]
+    },
+    {
+      "id": "00089-random-medium-087",
+      "graph": "random-medium-087",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        23,
+        34,
+        44
+      ]
+    },
+    {
+      "id": "00090-random-medium-088",
+      "graph": "random-medium-088",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        23,
+        28
+      ]
+    },
+    {
+      "id": "00091-random-medium-089",
+      "graph": "random-medium-089",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        32,
+        44
+      ]
+    },
+    {
+      "id": "00092-random-medium-090",
+      "graph": "random-medium-090",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        8,
+        1,
+        9,
+        30,
+        14,
+        41,
+        20,
+        47
+      ]
+    },
+    {
+      "id": "00093-random-medium-091",
+      "graph": "random-medium-091",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        74,
+        45,
+        18,
+        2,
+        52,
+        31
+      ]
+    },
+    {
+      "id": "00094-random-medium-092",
+      "graph": "random-medium-092",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        32,
+        2,
+        10
+      ]
+    },
+    {
+      "id": "00095-random-medium-093",
+      "graph": "random-medium-093",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        35,
+        52
+      ]
+    },
+    {
+      "id": "00096-random-medium-094",
+      "graph": "random-medium-094",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        19,
+        30,
+        0,
+        11,
+        15,
+        35
+      ]
+    },
+    {
+      "id": "00097-random-medium-095",
+      "graph": "random-medium-095",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        52,
+        8,
+        34,
+        13,
+        0,
+        45,
+        10,
+        25,
+        24
+      ]
+    },
+    {
+      "id": "00098-random-medium-096",
+      "graph": "random-medium-096",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        8,
+        12
+      ]
+    },
+    {
+      "id": "00099-random-medium-097",
+      "graph": "random-medium-097",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        7,
+        2,
+        13
+      ]
+    },
+    {
+      "id": "00100-random-medium-098",
+      "graph": "random-medium-098",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        8,
+        5,
+        9,
+        23
+      ]
+    },
+    {
+      "id": "00101-random-medium-099",
+      "graph": "random-medium-099",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        9,
+        23,
+        30
+      ]
+    },
+    {
+      "id": "00102-boundary-random-31",
+      "graph": "boundary-random-31",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        10,
+        6,
+        25,
+        4,
+        11,
+        22,
+        15
+      ]
+    },
+    {
+      "id": "00103-boundary-random-32",
+      "graph": "boundary-random-32",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        21,
+        13,
+        1,
+        5,
+        17,
+        24,
+        18
+      ]
+    },
+    {
+      "id": "00104-boundary-random-33",
+      "graph": "boundary-random-33",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        8,
+        11,
+        17,
+        23,
+        24,
+        27,
+        29
+      ]
+    },
+    {
+      "id": "00105-boundary-random-63",
+      "graph": "boundary-random-63",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        43,
+        15,
+        12,
+        17,
+        29,
+        26
+      ]
+    },
+    {
+      "id": "00106-boundary-random-64",
+      "graph": "boundary-random-64",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        45,
+        28,
+        10,
+        14,
+        23,
+        29,
+        33
+      ]
+    },
+    {
+      "id": "00107-boundary-random-65",
+      "graph": "boundary-random-65",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        9,
+        16,
+        49,
+        53,
+        23,
+        37
+      ]
+    },
+    {
+      "id": "00108-boundary-random-128",
+      "graph": "boundary-random-128",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        104,
+        6,
+        42,
+        62
+      ]
+    },
+    {
+      "id": "00109-boundary-random-257",
+      "graph": "boundary-random-257",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        116,
+        149,
+        168
+      ]
+    },
+    {
+      "id": "00110-boundary-random-513",
+      "graph": "boundary-random-513",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        25,
+        18,
+        4
+      ]
+    },
+    {
+      "id": "00111-low-core-optimum-3",
+      "graph": "low-core-optimum-3",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00112-low-core-optimum-8",
+      "graph": "low-core-optimum-8",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00113-low-core-optimum-17",
+      "graph": "low-core-optimum-17",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00114-low-core-optimum-33",
+      "graph": "low-core-optimum-33",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00115-low-core-optimum-65",
+      "graph": "low-core-optimum-65",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00116-cycle_chords-01",
+      "graph": "cycle_chords-01",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00117-mixed-core",
+      "graph": "mixed-core",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00118-random-medium-000",
+      "graph": "random-medium-000",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        10,
+        11,
+        13
+      ]
+    },
+    {
+      "id": "00119-random-medium-001",
+      "graph": "random-medium-001",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        7,
+        14
+      ]
+    },
+    {
+      "id": "00120-random-medium-002",
+      "graph": "random-medium-002",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        60,
+        30,
+        23,
+        33,
+        7,
+        16,
+        45,
+        3,
+        39,
+        57
+      ]
+    },
+    {
+      "id": "00121-random-medium-003",
+      "graph": "random-medium-003",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        54,
+        20,
+        16,
+        25,
+        27
+      ]
+    },
+    {
+      "id": "00122-random-medium-004",
+      "graph": "random-medium-004",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        38,
+        28
+      ]
+    },
+    {
+      "id": "00123-random-medium-005",
+      "graph": "random-medium-005",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        8,
+        22,
+        25,
+        28
+      ]
+    },
+    {
+      "id": "00124-random-medium-006",
+      "graph": "random-medium-006",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        86,
+        12,
+        42,
+        14,
+        17,
+        25,
+        50,
+        51,
+        67,
+        71
+      ]
+    },
+    {
+      "id": "00125-random-medium-007",
+      "graph": "random-medium-007",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        17,
+        18
+      ]
+    },
+    {
+      "id": "00126-random-medium-008",
+      "graph": "random-medium-008",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        32,
+        37,
+        44,
+        51,
+        53,
+        3
+      ]
+    },
+    {
+      "id": "00127-random-medium-009",
+      "graph": "random-medium-009",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        28,
+        25,
+        12,
+        29,
+        27,
+        14
+      ]
+    },
+    {
+      "id": "00128-random-medium-010",
+      "graph": "random-medium-010",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        0,
+        21,
+        2,
+        26,
+        32,
+        33,
+        14,
+        20
+      ]
+    },
+    {
+      "id": "00129-random-medium-011",
+      "graph": "random-medium-011",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        6,
+        32,
+        16,
+        7,
+        43,
+        23
+      ]
+    },
+    {
+      "id": "00130-random-medium-012",
+      "graph": "random-medium-012",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        23,
+        13,
+        7,
+        21,
+        31
+      ]
+    },
+    {
+      "id": "00131-random-medium-013",
+      "graph": "random-medium-013",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        23,
+        28
+      ]
+    },
+    {
+      "id": "00132-random-medium-014",
+      "graph": "random-medium-014",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        25,
+        0,
+        32,
+        23,
+        58,
+        40,
+        53
+      ]
+    },
+    {
+      "id": "00133-random-medium-015",
+      "graph": "random-medium-015",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        59,
+        29,
+        7,
+        28,
+        47,
+        48,
+        57,
+        31,
+        40,
+        36
+      ]
+    },
+    {
+      "id": "00134-random-medium-016",
+      "graph": "random-medium-016",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        81,
+        51,
+        2,
+        50,
+        72,
+        17,
+        52,
+        13,
+        3,
+        15
+      ]
+    },
+    {
+      "id": "00135-random-medium-017",
+      "graph": "random-medium-017",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        24,
+        33,
+        4,
+        5,
+        9,
+        20
+      ]
+    },
+    {
+      "id": "00136-random-medium-018",
+      "graph": "random-medium-018",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        18,
+        22
+      ]
+    },
+    {
+      "id": "00137-random-medium-019",
+      "graph": "random-medium-019",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        9,
+        11
+      ]
+    },
+    {
+      "id": "00138-random-medium-020",
+      "graph": "random-medium-020",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        80,
+        57,
+        58
+      ]
+    },
+    {
+      "id": "00139-random-medium-021",
+      "graph": "random-medium-021",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        66,
+        36,
+        30
+      ]
+    },
+    {
+      "id": "00140-random-medium-022",
+      "graph": "random-medium-022",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        57,
+        52,
+        23,
+        14,
+        50
+      ]
+    },
+    {
+      "id": "00141-random-medium-023",
+      "graph": "random-medium-023",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        21,
+        1,
+        0,
+        20
+      ]
+    },
+    {
+      "id": "00142-random-medium-024",
+      "graph": "random-medium-024",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        21,
+        37,
+        41
+      ]
+    },
+    {
+      "id": "00143-random-medium-025",
+      "graph": "random-medium-025",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        16,
+        24,
+        15,
+        9,
+        19
+      ]
+    },
+    {
+      "id": "00144-random-medium-026",
+      "graph": "random-medium-026",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        16
+      ]
+    },
+    {
+      "id": "00145-random-medium-027",
+      "graph": "random-medium-027",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        7,
+        26,
+        20,
+        16,
+        11,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "00146-random-medium-028",
+      "graph": "random-medium-028",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        64,
+        28,
+        23,
+        26,
+        50
+      ]
+    },
+    {
+      "id": "00147-random-medium-029",
+      "graph": "random-medium-029",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "id": "00148-random-medium-030",
+      "graph": "random-medium-030",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        30,
+        33,
+        39,
+        2,
+        3,
+        5,
+        26,
+        27
+      ]
+    },
+    {
+      "id": "00149-random-medium-031",
+      "graph": "random-medium-031",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        19,
+        27,
+        30
+      ]
+    },
+    {
+      "id": "00150-random-medium-032",
+      "graph": "random-medium-032",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        18,
+        0,
+        13,
+        15,
+        34,
+        26,
+        4
+      ]
+    },
+    {
+      "id": "00151-random-medium-033",
+      "graph": "random-medium-033",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        67,
+        52,
+        64,
+        35,
+        13,
+        34,
+        16,
+        25,
+        62
+      ]
+    },
+    {
+      "id": "00152-random-medium-034",
+      "graph": "random-medium-034",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        14,
+        35
+      ]
+    },
+    {
+      "id": "00153-random-medium-035",
+      "graph": "random-medium-035",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        75,
+        58,
+        50,
+        6,
+        56,
+        39,
+        11,
+        28,
+        42,
+        23
+      ]
+    },
+    {
+      "id": "00154-random-medium-036",
+      "graph": "random-medium-036",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        28,
+        7,
+        3,
+        19,
+        20,
+        14,
+        10
+      ]
+    },
+    {
+      "id": "00155-random-medium-037",
+      "graph": "random-medium-037",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        58,
+        30,
+        3,
+        16,
+        37,
+        25,
+        35,
+        7
+      ]
+    },
+    {
+      "id": "00156-random-medium-038",
+      "graph": "random-medium-038",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        45,
+        4,
+        0,
+        7,
+        24
+      ]
+    },
+    {
+      "id": "00157-random-medium-039",
+      "graph": "random-medium-039",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        64,
+        0,
+        33,
+        12,
+        41,
+        45,
+        60,
+        28
+      ]
+    },
+    {
+      "id": "00158-random-medium-040",
+      "graph": "random-medium-040",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        20,
+        36,
+        57,
+        61
+      ]
+    },
+    {
+      "id": "00159-random-medium-041",
+      "graph": "random-medium-041",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        19,
+        20
+      ]
+    },
+    {
+      "id": "00160-random-medium-042",
+      "graph": "random-medium-042",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        7,
+        14,
+        20
+      ]
+    },
+    {
+      "id": "00161-random-medium-043",
+      "graph": "random-medium-043",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        25,
+        58,
+        45,
+        57
+      ]
+    },
+    {
+      "id": "00162-random-medium-044",
+      "graph": "random-medium-044",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        11,
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00163-random-medium-045",
+      "graph": "random-medium-045",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        73,
+        21,
+        17,
+        46
+      ]
+    },
+    {
+      "id": "00164-random-medium-046",
+      "graph": "random-medium-046",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        40,
+        24,
+        21,
+        6,
+        10,
+        34,
+        23
+      ]
+    },
+    {
+      "id": "00165-random-medium-047",
+      "graph": "random-medium-047",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        8,
+        9
+      ]
+    },
+    {
+      "id": "00166-random-medium-048",
+      "graph": "random-medium-048",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        21
+      ]
+    },
+    {
+      "id": "00167-random-medium-049",
+      "graph": "random-medium-049",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        12,
+        40,
+        55,
+        23,
+        2,
+        37,
+        63,
+        28,
+        35
+      ]
+    },
+    {
+      "id": "00168-random-medium-050",
+      "graph": "random-medium-050",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        35,
+        4,
+        6,
+        7,
+        17
+      ]
+    },
+    {
+      "id": "00169-random-medium-051",
+      "graph": "random-medium-051",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        3,
+        13,
+        29,
+        20,
+        4,
+        31,
+        8
+      ]
+    },
+    {
+      "id": "00170-random-medium-052",
+      "graph": "random-medium-052",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        45,
+        0,
+        10,
+        14,
+        7,
+        8,
+        43,
+        44,
+        32
+      ]
+    },
+    {
+      "id": "00171-random-medium-053",
+      "graph": "random-medium-053",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        48,
+        51
+      ]
+    },
+    {
+      "id": "00172-random-medium-054",
+      "graph": "random-medium-054",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        34,
+        29,
+        40,
+        14,
+        1,
+        54
+      ]
+    },
+    {
+      "id": "00173-random-medium-055",
+      "graph": "random-medium-055",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        29,
+        25,
+        40,
+        39,
+        34,
+        10,
+        42,
+        9
+      ]
+    },
+    {
+      "id": "00174-random-medium-056",
+      "graph": "random-medium-056",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        15
+      ]
+    },
+    {
+      "id": "00175-random-medium-057",
+      "graph": "random-medium-057",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        79,
+        36
+      ]
+    },
+    {
+      "id": "00176-random-medium-058",
+      "graph": "random-medium-058",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        14,
+        2
+      ]
+    },
+    {
+      "id": "00177-random-medium-059",
+      "graph": "random-medium-059",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        58,
+        47,
+        64,
+        61
+      ]
+    },
+    {
+      "id": "00178-random-medium-060",
+      "graph": "random-medium-060",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        39,
+        14
+      ]
+    },
+    {
+      "id": "00179-random-medium-061",
+      "graph": "random-medium-061",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00180-random-medium-062",
+      "graph": "random-medium-062",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        55,
+        6,
+        18,
+        37,
+        29,
+        43,
+        20
+      ]
+    },
+    {
+      "id": "00181-random-medium-063",
+      "graph": "random-medium-063",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        30,
+        29,
+        2,
+        1,
+        9,
+        23,
+        19
+      ]
+    },
+    {
+      "id": "00182-random-medium-064",
+      "graph": "random-medium-064",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        9,
+        26,
+        35,
+        42,
+        24,
+        46
+      ]
+    },
+    {
+      "id": "00183-random-medium-065",
+      "graph": "random-medium-065",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        34,
+        30,
+        22,
+        35,
+        27,
+        18,
+        11
+      ]
+    },
+    {
+      "id": "00184-random-medium-066",
+      "graph": "random-medium-066",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        6,
+        13,
+        14,
+        24
+      ]
+    },
+    {
+      "id": "00185-random-medium-067",
+      "graph": "random-medium-067",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        70,
+        83,
+        32,
+        42,
+        27,
+        4,
+        68,
+        79
+      ]
+    },
+    {
+      "id": "00186-random-medium-068",
+      "graph": "random-medium-068",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        31,
+        35,
+        23,
+        6,
+        5,
+        51,
+        10,
+        45,
+        36
+      ]
+    },
+    {
+      "id": "00187-random-medium-069",
+      "graph": "random-medium-069",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        8,
+        14
+      ]
+    },
+    {
+      "id": "00188-random-medium-070",
+      "graph": "random-medium-070",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        48,
+        19,
+        32,
+        35,
+        30,
+        44,
+        21
+      ]
+    },
+    {
+      "id": "00189-random-medium-071",
+      "graph": "random-medium-071",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        10,
+        6
+      ]
+    },
+    {
+      "id": "00190-random-medium-072",
+      "graph": "random-medium-072",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "00191-random-medium-073",
+      "graph": "random-medium-073",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        15,
+        16,
+        24
+      ]
+    },
+    {
+      "id": "00192-random-medium-074",
+      "graph": "random-medium-074",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        15,
+        31,
+        33,
+        29
+      ]
+    },
+    {
+      "id": "00193-random-medium-075",
+      "graph": "random-medium-075",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        18,
+        47,
+        17,
+        6
+      ]
+    },
+    {
+      "id": "00194-random-medium-076",
+      "graph": "random-medium-076",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        24,
+        33
+      ]
+    },
+    {
+      "id": "00195-random-medium-077",
+      "graph": "random-medium-077",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        38,
+        22,
+        3
+      ]
+    },
+    {
+      "id": "00196-random-medium-078",
+      "graph": "random-medium-078",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        54,
+        13,
+        40
+      ]
+    },
+    {
+      "id": "00197-random-medium-079",
+      "graph": "random-medium-079",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        29
+      ]
+    },
+    {
+      "id": "00198-random-medium-080",
+      "graph": "random-medium-080",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        50,
+        17,
+        19,
+        41,
+        38,
+        12,
+        48,
+        31,
+        25,
+        8
+      ]
+    },
+    {
+      "id": "00199-random-medium-081",
+      "graph": "random-medium-081",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        47,
+        11,
+        43,
+        46,
+        0,
+        24,
+        21
+      ]
+    },
+    {
+      "id": "00200-random-medium-082",
+      "graph": "random-medium-082",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        7,
+        28
+      ]
+    },
+    {
+      "id": "00201-random-medium-083",
+      "graph": "random-medium-083",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        47,
+        41,
+        52,
+        18,
+        20,
+        25,
+        10
+      ]
+    },
+    {
+      "id": "00202-random-medium-084",
+      "graph": "random-medium-084",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        14,
+        28
+      ]
+    },
+    {
+      "id": "00203-random-medium-085",
+      "graph": "random-medium-085",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        73,
+        55,
+        6,
+        17,
+        23
+      ]
+    },
+    {
+      "id": "00204-random-medium-086",
+      "graph": "random-medium-086",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        43,
+        14,
+        27
+      ]
+    },
+    {
+      "id": "00205-random-medium-087",
+      "graph": "random-medium-087",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        23,
+        34,
+        44
+      ]
+    },
+    {
+      "id": "00206-random-medium-088",
+      "graph": "random-medium-088",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        23,
+        28
+      ]
+    },
+    {
+      "id": "00207-random-medium-089",
+      "graph": "random-medium-089",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        32,
+        44
+      ]
+    },
+    {
+      "id": "00208-random-medium-090",
+      "graph": "random-medium-090",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        49,
+        7,
+        9,
+        15,
+        16,
+        17,
+        22,
+        36
+      ]
+    },
+    {
+      "id": "00209-random-medium-091",
+      "graph": "random-medium-091",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        74,
+        45,
+        2,
+        18,
+        31,
+        52
+      ]
+    },
+    {
+      "id": "00210-random-medium-092",
+      "graph": "random-medium-092",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        32,
+        2,
+        10
+      ]
+    },
+    {
+      "id": "00211-random-medium-093",
+      "graph": "random-medium-093",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        35,
+        52
+      ]
+    },
+    {
+      "id": "00212-random-medium-094",
+      "graph": "random-medium-094",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        0,
+        30,
+        19,
+        11,
+        15,
+        35
+      ]
+    },
+    {
+      "id": "00213-random-medium-095",
+      "graph": "random-medium-095",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        60,
+        55,
+        3,
+        44,
+        11,
+        25,
+        43,
+        48,
+        31
+      ]
+    },
+    {
+      "id": "00214-random-medium-096",
+      "graph": "random-medium-096",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        8,
+        12
+      ]
+    },
+    {
+      "id": "00215-random-medium-097",
+      "graph": "random-medium-097",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        7,
+        2,
+        13
+      ]
+    },
+    {
+      "id": "00216-random-medium-098",
+      "graph": "random-medium-098",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        8,
+        5,
+        9,
+        23
+      ]
+    },
+    {
+      "id": "00217-random-medium-099",
+      "graph": "random-medium-099",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        9,
+        23,
+        30
+      ]
+    },
+    {
+      "id": "00218-boundary-random-31",
+      "graph": "boundary-random-31",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        10,
+        15,
+        6,
+        11,
+        4,
+        25,
+        22
+      ]
+    },
+    {
+      "id": "00219-boundary-random-32",
+      "graph": "boundary-random-32",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        21,
+        13,
+        1,
+        5,
+        17,
+        24,
+        18
+      ]
+    },
+    {
+      "id": "00220-boundary-random-33",
+      "graph": "boundary-random-33",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        8,
+        11,
+        17,
+        23,
+        24,
+        27,
+        29
+      ]
+    },
+    {
+      "id": "00221-boundary-random-63",
+      "graph": "boundary-random-63",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        0,
+        9,
+        16,
+        28,
+        30
+      ]
+    },
+    {
+      "id": "00222-boundary-random-64",
+      "graph": "boundary-random-64",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        45,
+        10,
+        23,
+        33,
+        14,
+        29,
+        13
+      ]
+    },
+    {
+      "id": "00223-boundary-random-65",
+      "graph": "boundary-random-65",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        9,
+        16,
+        49,
+        23,
+        53,
+        37
+      ]
+    },
+    {
+      "id": "00224-boundary-random-128",
+      "graph": "boundary-random-128",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        42,
+        62,
+        104
+      ]
+    },
+    {
+      "id": "00225-boundary-random-257",
+      "graph": "boundary-random-257",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        138,
+        66,
+        43
+      ]
+    },
+    {
+      "id": "00226-boundary-random-513",
+      "graph": "boundary-random-513",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        25,
+        4,
+        18
+      ]
+    },
+    {
+      "id": "00227-low-core-optimum-3",
+      "graph": "low-core-optimum-3",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00228-low-core-optimum-8",
+      "graph": "low-core-optimum-8",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00229-low-core-optimum-17",
+      "graph": "low-core-optimum-17",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00230-low-core-optimum-33",
+      "graph": "low-core-optimum-33",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00231-low-core-optimum-65",
+      "graph": "low-core-optimum-65",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00232-cycle_chords-01",
+      "graph": "cycle_chords-01",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00233-mixed-core",
+      "graph": "mixed-core",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00234-random-medium-000",
+      "graph": "random-medium-000",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        10,
+        11,
+        13
+      ]
+    },
+    {
+      "id": "00235-random-medium-001",
+      "graph": "random-medium-001",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        7,
+        14
+      ]
+    },
+    {
+      "id": "00236-random-medium-002",
+      "graph": "random-medium-002",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        7,
+        16,
+        23,
+        30,
+        33,
+        39,
+        45,
+        57,
+        60
+      ]
+    },
+    {
+      "id": "00237-random-medium-003",
+      "graph": "random-medium-003",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        54,
+        20,
+        16,
+        27,
+        25
+      ]
+    },
+    {
+      "id": "00238-random-medium-004",
+      "graph": "random-medium-004",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        38,
+        28
+      ]
+    },
+    {
+      "id": "00239-random-medium-005",
+      "graph": "random-medium-005",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        15,
+        19,
+        22,
+        25
+      ]
+    },
+    {
+      "id": "00240-random-medium-006",
+      "graph": "random-medium-006",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        86,
+        12,
+        42,
+        14,
+        17,
+        25,
+        50,
+        51,
+        67,
+        71
+      ]
+    },
+    {
+      "id": "00241-random-medium-007",
+      "graph": "random-medium-007",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        17,
+        18
+      ]
+    },
+    {
+      "id": "00242-random-medium-008",
+      "graph": "random-medium-008",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        32,
+        37,
+        51,
+        3,
+        44,
+        19
+      ]
+    },
+    {
+      "id": "00243-random-medium-009",
+      "graph": "random-medium-009",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        3,
+        6,
+        4,
+        25,
+        28,
+        21
+      ]
+    },
+    {
+      "id": "00244-random-medium-010",
+      "graph": "random-medium-010",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        0,
+        21,
+        2,
+        26,
+        20,
+        14,
+        32,
+        33
+      ]
+    },
+    {
+      "id": "00245-random-medium-011",
+      "graph": "random-medium-011",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        58,
+        16,
+        23,
+        44,
+        33,
+        9,
+        32
+      ]
+    },
+    {
+      "id": "00246-random-medium-012",
+      "graph": "random-medium-012",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        23,
+        13,
+        7,
+        31,
+        21
+      ]
+    },
+    {
+      "id": "00247-random-medium-013",
+      "graph": "random-medium-013",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        11,
+        48,
+        53
+      ]
+    },
+    {
+      "id": "00248-random-medium-014",
+      "graph": "random-medium-014",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        25,
+        0,
+        32,
+        23,
+        58,
+        53,
+        40
+      ]
+    },
+    {
+      "id": "00249-random-medium-015",
+      "graph": "random-medium-015",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        59,
+        29,
+        7,
+        28,
+        48,
+        31,
+        57,
+        47,
+        36,
+        40
+      ]
+    },
+    {
+      "id": "00250-random-medium-016",
+      "graph": "random-medium-016",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        81,
+        2,
+        51,
+        50,
+        72,
+        17,
+        52,
+        13,
+        3,
+        15
+      ]
+    },
+    {
+      "id": "00251-random-medium-017",
+      "graph": "random-medium-017",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        24,
+        33,
+        4,
+        5,
+        9,
+        20
+      ]
+    },
+    {
+      "id": "00252-random-medium-018",
+      "graph": "random-medium-018",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        18,
+        22
+      ]
+    },
+    {
+      "id": "00253-random-medium-019",
+      "graph": "random-medium-019",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        9,
+        11
+      ]
+    },
+    {
+      "id": "00254-random-medium-020",
+      "graph": "random-medium-020",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        33,
+        39
+      ]
+    },
+    {
+      "id": "00255-random-medium-021",
+      "graph": "random-medium-021",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        15,
+        70,
+        71
+      ]
+    },
+    {
+      "id": "00256-random-medium-022",
+      "graph": "random-medium-022",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        34,
+        50,
+        57,
+        59
+      ]
+    },
+    {
+      "id": "00257-random-medium-023",
+      "graph": "random-medium-023",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        21,
+        0,
+        1,
+        20
+      ]
+    },
+    {
+      "id": "00258-random-medium-024",
+      "graph": "random-medium-024",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        21,
+        41,
+        14
+      ]
+    },
+    {
+      "id": "00259-random-medium-025",
+      "graph": "random-medium-025",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        38,
+        21,
+        0,
+        36,
+        2,
+        28
+      ]
+    },
+    {
+      "id": "00260-random-medium-026",
+      "graph": "random-medium-026",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        16
+      ]
+    },
+    {
+      "id": "00261-random-medium-027",
+      "graph": "random-medium-027",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        26,
+        20,
+        7,
+        16,
+        11,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "00262-random-medium-028",
+      "graph": "random-medium-028",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        49,
+        52,
+        9,
+        12,
+        25
+      ]
+    },
+    {
+      "id": "00263-random-medium-029",
+      "graph": "random-medium-029",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "id": "00264-random-medium-030",
+      "graph": "random-medium-030",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        30,
+        33,
+        39,
+        2,
+        3,
+        5,
+        26,
+        27
+      ]
+    },
+    {
+      "id": "00265-random-medium-031",
+      "graph": "random-medium-031",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        19,
+        27,
+        30
+      ]
+    },
+    {
+      "id": "00266-random-medium-032",
+      "graph": "random-medium-032",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        0,
+        32,
+        15,
+        37,
+        13,
+        4,
+        34
+      ]
+    },
+    {
+      "id": "00267-random-medium-033",
+      "graph": "random-medium-033",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        67,
+        52,
+        64,
+        35,
+        13,
+        34,
+        16,
+        62,
+        25
+      ]
+    },
+    {
+      "id": "00268-random-medium-034",
+      "graph": "random-medium-034",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        14,
+        35
+      ]
+    },
+    {
+      "id": "00269-random-medium-035",
+      "graph": "random-medium-035",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        75,
+        58,
+        50,
+        56,
+        6,
+        11,
+        39,
+        28,
+        42,
+        23
+      ]
+    },
+    {
+      "id": "00270-random-medium-036",
+      "graph": "random-medium-036",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        28,
+        7,
+        3,
+        19,
+        20,
+        14,
+        10
+      ]
+    },
+    {
+      "id": "00271-random-medium-037",
+      "graph": "random-medium-037",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        13,
+        15,
+        69,
+        33,
+        37,
+        41,
+        48,
+        60,
+        62
+      ]
+    },
+    {
+      "id": "00272-random-medium-038",
+      "graph": "random-medium-038",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        45,
+        0,
+        4,
+        7,
+        24
+      ]
+    },
+    {
+      "id": "00273-random-medium-039",
+      "graph": "random-medium-039",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        17,
+        24,
+        31,
+        45,
+        50,
+        53,
+        57,
+        64
+      ]
+    },
+    {
+      "id": "00274-random-medium-040",
+      "graph": "random-medium-040",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        20,
+        36,
+        57,
+        61
+      ]
+    },
+    {
+      "id": "00275-random-medium-041",
+      "graph": "random-medium-041",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        19,
+        20
+      ]
+    },
+    {
+      "id": "00276-random-medium-042",
+      "graph": "random-medium-042",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        7,
+        14,
+        20
+      ]
+    },
+    {
+      "id": "00277-random-medium-043",
+      "graph": "random-medium-043",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        25,
+        45,
+        57,
+        58
+      ]
+    },
+    {
+      "id": "00278-random-medium-044",
+      "graph": "random-medium-044",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        11,
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00279-random-medium-045",
+      "graph": "random-medium-045",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        73,
+        21,
+        17,
+        46
+      ]
+    },
+    {
+      "id": "00280-random-medium-046",
+      "graph": "random-medium-046",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        40,
+        23,
+        6,
+        10,
+        21,
+        34,
+        24
+      ]
+    },
+    {
+      "id": "00281-random-medium-047",
+      "graph": "random-medium-047",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        8,
+        9
+      ]
+    },
+    {
+      "id": "00282-random-medium-048",
+      "graph": "random-medium-048",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        21
+      ]
+    },
+    {
+      "id": "00283-random-medium-049",
+      "graph": "random-medium-049",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        40,
+        12,
+        23,
+        55,
+        63,
+        2,
+        37,
+        28,
+        35
+      ]
+    },
+    {
+      "id": "00284-random-medium-050",
+      "graph": "random-medium-050",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        49,
+        9,
+        17,
+        21,
+        36
+      ]
+    },
+    {
+      "id": "00285-random-medium-051",
+      "graph": "random-medium-051",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        3,
+        4,
+        8,
+        20,
+        13,
+        31,
+        29
+      ]
+    },
+    {
+      "id": "00286-random-medium-052",
+      "graph": "random-medium-052",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        44,
+        36,
+        14,
+        32,
+        8,
+        0,
+        7,
+        43,
+        10
+      ]
+    },
+    {
+      "id": "00287-random-medium-053",
+      "graph": "random-medium-053",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        48,
+        51
+      ]
+    },
+    {
+      "id": "00288-random-medium-054",
+      "graph": "random-medium-054",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        34,
+        29,
+        40,
+        14,
+        1,
+        54
+      ]
+    },
+    {
+      "id": "00289-random-medium-055",
+      "graph": "random-medium-055",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        29,
+        34,
+        40,
+        39,
+        25,
+        10,
+        42,
+        9
+      ]
+    },
+    {
+      "id": "00290-random-medium-056",
+      "graph": "random-medium-056",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        15
+      ]
+    },
+    {
+      "id": "00291-random-medium-057",
+      "graph": "random-medium-057",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        36,
+        79
+      ]
+    },
+    {
+      "id": "00292-random-medium-058",
+      "graph": "random-medium-058",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        2,
+        14
+      ]
+    },
+    {
+      "id": "00293-random-medium-059",
+      "graph": "random-medium-059",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        58,
+        47,
+        64,
+        61
+      ]
+    },
+    {
+      "id": "00294-random-medium-060",
+      "graph": "random-medium-060",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        39,
+        14
+      ]
+    },
+    {
+      "id": "00295-random-medium-061",
+      "graph": "random-medium-061",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00296-random-medium-062",
+      "graph": "random-medium-062",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        9,
+        31,
+        41,
+        14,
+        20,
+        49
+      ]
+    },
+    {
+      "id": "00297-random-medium-063",
+      "graph": "random-medium-063",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        30,
+        29,
+        2,
+        1,
+        9,
+        23,
+        19
+      ]
+    },
+    {
+      "id": "00298-random-medium-064",
+      "graph": "random-medium-064",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        9,
+        18,
+        24,
+        26,
+        42,
+        46,
+        56
+      ]
+    },
+    {
+      "id": "00299-random-medium-065",
+      "graph": "random-medium-065",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        17,
+        8,
+        34,
+        35,
+        27,
+        18,
+        11
+      ]
+    },
+    {
+      "id": "00300-random-medium-066",
+      "graph": "random-medium-066",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        6,
+        13,
+        14,
+        24
+      ]
+    },
+    {
+      "id": "00301-random-medium-067",
+      "graph": "random-medium-067",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        4,
+        5,
+        7,
+        19,
+        46,
+        50,
+        76
+      ]
+    },
+    {
+      "id": "00302-random-medium-068",
+      "graph": "random-medium-068",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        31,
+        35,
+        23,
+        6,
+        5,
+        51,
+        10,
+        45,
+        36
+      ]
+    },
+    {
+      "id": "00303-random-medium-069",
+      "graph": "random-medium-069",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        8,
+        14
+      ]
+    },
+    {
+      "id": "00304-random-medium-070",
+      "graph": "random-medium-070",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        48,
+        19,
+        32,
+        35,
+        30,
+        44,
+        21
+      ]
+    },
+    {
+      "id": "00305-random-medium-071",
+      "graph": "random-medium-071",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        10,
+        6
+      ]
+    },
+    {
+      "id": "00306-random-medium-072",
+      "graph": "random-medium-072",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "00307-random-medium-073",
+      "graph": "random-medium-073",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        15,
+        16,
+        24
+      ]
+    },
+    {
+      "id": "00308-random-medium-074",
+      "graph": "random-medium-074",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        15,
+        31,
+        33,
+        29
+      ]
+    },
+    {
+      "id": "00309-random-medium-075",
+      "graph": "random-medium-075",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        47,
+        18,
+        17,
+        5,
+        6
+      ]
+    },
+    {
+      "id": "00310-random-medium-076",
+      "graph": "random-medium-076",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        24,
+        33
+      ]
+    },
+    {
+      "id": "00311-random-medium-077",
+      "graph": "random-medium-077",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        38,
+        22,
+        3
+      ]
+    },
+    {
+      "id": "00312-random-medium-078",
+      "graph": "random-medium-078",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        54,
+        21
+      ]
+    },
+    {
+      "id": "00313-random-medium-079",
+      "graph": "random-medium-079",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        29
+      ]
+    },
+    {
+      "id": "00314-random-medium-080",
+      "graph": "random-medium-080",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        50,
+        17,
+        38,
+        41,
+        19,
+        12,
+        48,
+        25,
+        31,
+        8
+      ]
+    },
+    {
+      "id": "00315-random-medium-081",
+      "graph": "random-medium-081",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        47,
+        11,
+        43,
+        46,
+        0,
+        24,
+        21
+      ]
+    },
+    {
+      "id": "00316-random-medium-082",
+      "graph": "random-medium-082",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        7,
+        28
+      ]
+    },
+    {
+      "id": "00317-random-medium-083",
+      "graph": "random-medium-083",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        68,
+        55,
+        50,
+        62,
+        42,
+        38,
+        67
+      ]
+    },
+    {
+      "id": "00318-random-medium-084",
+      "graph": "random-medium-084",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        14,
+        28
+      ]
+    },
+    {
+      "id": "00319-random-medium-085",
+      "graph": "random-medium-085",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        55,
+        6,
+        17,
+        23,
+        73
+      ]
+    },
+    {
+      "id": "00320-random-medium-086",
+      "graph": "random-medium-086",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        43,
+        14,
+        27
+      ]
+    },
+    {
+      "id": "00321-random-medium-087",
+      "graph": "random-medium-087",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        89,
+        1,
+        40
+      ]
+    },
+    {
+      "id": "00322-random-medium-088",
+      "graph": "random-medium-088",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        23,
+        28
+      ]
+    },
+    {
+      "id": "00323-random-medium-089",
+      "graph": "random-medium-089",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        32,
+        34,
+        52
+      ]
+    },
+    {
+      "id": "00324-random-medium-090",
+      "graph": "random-medium-090",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        42,
+        10,
+        38,
+        5,
+        6,
+        26,
+        14,
+        41
+      ]
+    },
+    {
+      "id": "00325-random-medium-091",
+      "graph": "random-medium-091",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        74,
+        45,
+        31,
+        2,
+        52,
+        18
+      ]
+    },
+    {
+      "id": "00326-random-medium-092",
+      "graph": "random-medium-092",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        32,
+        10,
+        2
+      ]
+    },
+    {
+      "id": "00327-random-medium-093",
+      "graph": "random-medium-093",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        35,
+        52
+      ]
+    },
+    {
+      "id": "00328-random-medium-094",
+      "graph": "random-medium-094",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        19,
+        30,
+        0,
+        11,
+        15,
+        35
+      ]
+    },
+    {
+      "id": "00329-random-medium-095",
+      "graph": "random-medium-095",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        60,
+        55,
+        3,
+        44,
+        11,
+        25,
+        43,
+        48,
+        31
+      ]
+    },
+    {
+      "id": "00330-random-medium-096",
+      "graph": "random-medium-096",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        8,
+        12
+      ]
+    },
+    {
+      "id": "00331-random-medium-097",
+      "graph": "random-medium-097",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        7,
+        2,
+        13
+      ]
+    },
+    {
+      "id": "00332-random-medium-098",
+      "graph": "random-medium-098",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        8,
+        5,
+        9,
+        23
+      ]
+    },
+    {
+      "id": "00333-random-medium-099",
+      "graph": "random-medium-099",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        9,
+        23,
+        30
+      ]
+    },
+    {
+      "id": "00334-boundary-random-31",
+      "graph": "boundary-random-31",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        10,
+        15,
+        6,
+        11,
+        4,
+        25,
+        22
+      ]
+    },
+    {
+      "id": "00335-boundary-random-32",
+      "graph": "boundary-random-32",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        21,
+        13,
+        18,
+        1,
+        5,
+        24,
+        17
+      ]
+    },
+    {
+      "id": "00336-boundary-random-33",
+      "graph": "boundary-random-33",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        8,
+        11,
+        17,
+        23,
+        24,
+        27,
+        29
+      ]
+    },
+    {
+      "id": "00337-boundary-random-63",
+      "graph": "boundary-random-63",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        43,
+        3,
+        12,
+        17,
+        29,
+        26
+      ]
+    },
+    {
+      "id": "00338-boundary-random-64",
+      "graph": "boundary-random-64",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        50,
+        7,
+        11,
+        3,
+        45,
+        10
+      ]
+    },
+    {
+      "id": "00339-boundary-random-65",
+      "graph": "boundary-random-65",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        9,
+        16,
+        49,
+        23,
+        53,
+        37
+      ]
+    },
+    {
+      "id": "00340-boundary-random-128",
+      "graph": "boundary-random-128",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        42,
+        62,
+        104,
+        6
+      ]
+    },
+    {
+      "id": "00341-boundary-random-257",
+      "graph": "boundary-random-257",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        60,
+        38,
+        40
+      ]
+    },
+    {
+      "id": "00342-boundary-random-513",
+      "graph": "boundary-random-513",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        25,
+        18,
+        4
+      ]
+    },
+    {
+      "id": "00343-low-core-optimum-3",
+      "graph": "low-core-optimum-3",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00344-low-core-optimum-8",
+      "graph": "low-core-optimum-8",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00345-low-core-optimum-17",
+      "graph": "low-core-optimum-17",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00346-low-core-optimum-33",
+      "graph": "low-core-optimum-33",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00347-low-core-optimum-65",
+      "graph": "low-core-optimum-65",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00348-cycle_chords-01",
+      "graph": "cycle_chords-01",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00349-mixed-core",
+      "graph": "mixed-core",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00350-random-medium-000",
+      "graph": "random-medium-000",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        10,
+        11,
+        13
+      ]
+    },
+    {
+      "id": "00351-random-medium-001",
+      "graph": "random-medium-001",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        7,
+        14
+      ]
+    },
+    {
+      "id": "00352-random-medium-002",
+      "graph": "random-medium-002",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        7,
+        16,
+        23,
+        30,
+        33,
+        39,
+        45,
+        57,
+        60
+      ]
+    },
+    {
+      "id": "00353-random-medium-003",
+      "graph": "random-medium-003",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        54,
+        20,
+        16,
+        27,
+        25
+      ]
+    },
+    {
+      "id": "00354-random-medium-004",
+      "graph": "random-medium-004",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        38,
+        28
+      ]
+    },
+    {
+      "id": "00355-random-medium-005",
+      "graph": "random-medium-005",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        8,
+        22,
+        25,
+        28
+      ]
+    },
+    {
+      "id": "00356-random-medium-006",
+      "graph": "random-medium-006",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        86,
+        12,
+        42,
+        14,
+        17,
+        25,
+        50,
+        51,
+        71,
+        67
+      ]
+    },
+    {
+      "id": "00357-random-medium-007",
+      "graph": "random-medium-007",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        17,
+        18
+      ]
+    },
+    {
+      "id": "00358-random-medium-008",
+      "graph": "random-medium-008",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        32,
+        37,
+        51,
+        3,
+        44,
+        19
+      ]
+    },
+    {
+      "id": "00359-random-medium-009",
+      "graph": "random-medium-009",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        8,
+        7,
+        12,
+        14,
+        21,
+        29
+      ]
+    },
+    {
+      "id": "00360-random-medium-010",
+      "graph": "random-medium-010",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        0,
+        2,
+        21,
+        26,
+        32,
+        33,
+        14,
+        20
+      ]
+    },
+    {
+      "id": "00361-random-medium-011",
+      "graph": "random-medium-011",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        79,
+        1,
+        63,
+        39,
+        23,
+        44,
+        10
+      ]
+    },
+    {
+      "id": "00362-random-medium-012",
+      "graph": "random-medium-012",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        23,
+        13,
+        7,
+        21,
+        31
+      ]
+    },
+    {
+      "id": "00363-random-medium-013",
+      "graph": "random-medium-013",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        11,
+        48,
+        53
+      ]
+    },
+    {
+      "id": "00364-random-medium-014",
+      "graph": "random-medium-014",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        25,
+        0,
+        32,
+        58,
+        53,
+        40,
+        23
+      ]
+    },
+    {
+      "id": "00365-random-medium-015",
+      "graph": "random-medium-015",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        59,
+        29,
+        7,
+        28,
+        47,
+        48,
+        57,
+        31,
+        40,
+        36
+      ]
+    },
+    {
+      "id": "00366-random-medium-016",
+      "graph": "random-medium-016",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        81,
+        2,
+        3,
+        13,
+        15,
+        17,
+        50,
+        51,
+        52
+      ]
+    },
+    {
+      "id": "00367-random-medium-017",
+      "graph": "random-medium-017",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        24,
+        33,
+        4,
+        5,
+        9,
+        20
+      ]
+    },
+    {
+      "id": "00368-random-medium-018",
+      "graph": "random-medium-018",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        18,
+        22
+      ]
+    },
+    {
+      "id": "00369-random-medium-019",
+      "graph": "random-medium-019",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        9,
+        11
+      ]
+    },
+    {
+      "id": "00370-random-medium-020",
+      "graph": "random-medium-020",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        33,
+        39
+      ]
+    },
+    {
+      "id": "00371-random-medium-021",
+      "graph": "random-medium-021",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        25,
+        54,
+        56
+      ]
+    },
+    {
+      "id": "00372-random-medium-022",
+      "graph": "random-medium-022",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        34,
+        50,
+        57,
+        59
+      ]
+    },
+    {
+      "id": "00373-random-medium-023",
+      "graph": "random-medium-023",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        21,
+        1,
+        0,
+        20
+      ]
+    },
+    {
+      "id": "00374-random-medium-024",
+      "graph": "random-medium-024",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        21,
+        37
+      ]
+    },
+    {
+      "id": "00375-random-medium-025",
+      "graph": "random-medium-025",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        16,
+        24,
+        15,
+        9,
+        19
+      ]
+    },
+    {
+      "id": "00376-random-medium-026",
+      "graph": "random-medium-026",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        16
+      ]
+    },
+    {
+      "id": "00377-random-medium-027",
+      "graph": "random-medium-027",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        7,
+        26,
+        20,
+        16,
+        11,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "00378-random-medium-028",
+      "graph": "random-medium-028",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        64,
+        28,
+        23,
+        50,
+        26
+      ]
+    },
+    {
+      "id": "00379-random-medium-029",
+      "graph": "random-medium-029",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "id": "00380-random-medium-030",
+      "graph": "random-medium-030",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        30,
+        33,
+        39,
+        2,
+        3,
+        5,
+        26,
+        27
+      ]
+    },
+    {
+      "id": "00381-random-medium-031",
+      "graph": "random-medium-031",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        19,
+        27,
+        30
+      ]
+    },
+    {
+      "id": "00382-random-medium-032",
+      "graph": "random-medium-032",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        0,
+        13,
+        32,
+        15,
+        34,
+        4,
+        37
+      ]
+    },
+    {
+      "id": "00383-random-medium-033",
+      "graph": "random-medium-033",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        67,
+        52,
+        64,
+        35,
+        13,
+        34,
+        16,
+        25,
+        62
+      ]
+    },
+    {
+      "id": "00384-random-medium-034",
+      "graph": "random-medium-034",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        14,
+        35
+      ]
+    },
+    {
+      "id": "00385-random-medium-035",
+      "graph": "random-medium-035",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        75,
+        58,
+        50,
+        6,
+        56,
+        39,
+        11,
+        28,
+        42,
+        23
+      ]
+    },
+    {
+      "id": "00386-random-medium-036",
+      "graph": "random-medium-036",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        28,
+        7,
+        3,
+        20,
+        19,
+        14,
+        10
+      ]
+    },
+    {
+      "id": "00387-random-medium-037",
+      "graph": "random-medium-037",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        58,
+        30,
+        3,
+        37,
+        25,
+        16,
+        35,
+        7
+      ]
+    },
+    {
+      "id": "00388-random-medium-038",
+      "graph": "random-medium-038",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        9,
+        22,
+        27,
+        31
+      ]
+    },
+    {
+      "id": "00389-random-medium-039",
+      "graph": "random-medium-039",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        64,
+        33,
+        0,
+        12,
+        41,
+        45,
+        28,
+        60
+      ]
+    },
+    {
+      "id": "00390-random-medium-040",
+      "graph": "random-medium-040",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        47,
+        17,
+        1,
+        24
+      ]
+    },
+    {
+      "id": "00391-random-medium-041",
+      "graph": "random-medium-041",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        19,
+        20
+      ]
+    },
+    {
+      "id": "00392-random-medium-042",
+      "graph": "random-medium-042",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        7,
+        14,
+        20
+      ]
+    },
+    {
+      "id": "00393-random-medium-043",
+      "graph": "random-medium-043",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        25,
+        58,
+        45,
+        57
+      ]
+    },
+    {
+      "id": "00394-random-medium-044",
+      "graph": "random-medium-044",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        11,
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00395-random-medium-045",
+      "graph": "random-medium-045",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        73,
+        21,
+        17,
+        46
+      ]
+    },
+    {
+      "id": "00396-random-medium-046",
+      "graph": "random-medium-046",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        40,
+        23,
+        6,
+        10,
+        21,
+        24,
+        34
+      ]
+    },
+    {
+      "id": "00397-random-medium-047",
+      "graph": "random-medium-047",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        8,
+        9
+      ]
+    },
+    {
+      "id": "00398-random-medium-048",
+      "graph": "random-medium-048",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        21
+      ]
+    },
+    {
+      "id": "00399-random-medium-049",
+      "graph": "random-medium-049",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        75,
+        41,
+        21,
+        36,
+        60,
+        64,
+        12,
+        22,
+        61,
+        35
+      ]
+    },
+    {
+      "id": "00400-random-medium-050",
+      "graph": "random-medium-050",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        17,
+        35
+      ]
+    },
+    {
+      "id": "00401-random-medium-051",
+      "graph": "random-medium-051",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        3,
+        4,
+        8,
+        20,
+        31,
+        13,
+        29
+      ]
+    },
+    {
+      "id": "00402-random-medium-052",
+      "graph": "random-medium-052",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        44,
+        36,
+        14,
+        32,
+        8,
+        0,
+        7,
+        43,
+        10
+      ]
+    },
+    {
+      "id": "00403-random-medium-053",
+      "graph": "random-medium-053",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        50,
+        22
+      ]
+    },
+    {
+      "id": "00404-random-medium-054",
+      "graph": "random-medium-054",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        34,
+        29,
+        40,
+        14,
+        1,
+        54
+      ]
+    },
+    {
+      "id": "00405-random-medium-055",
+      "graph": "random-medium-055",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        29,
+        34,
+        40,
+        39,
+        25,
+        10,
+        42,
+        9
+      ]
+    },
+    {
+      "id": "00406-random-medium-056",
+      "graph": "random-medium-056",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        15
+      ]
+    },
+    {
+      "id": "00407-random-medium-057",
+      "graph": "random-medium-057",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        79,
+        36
+      ]
+    },
+    {
+      "id": "00408-random-medium-058",
+      "graph": "random-medium-058",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        2,
+        14
+      ]
+    },
+    {
+      "id": "00409-random-medium-059",
+      "graph": "random-medium-059",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        3,
+        0,
+        18,
+        7
+      ]
+    },
+    {
+      "id": "00410-random-medium-060",
+      "graph": "random-medium-060",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        39,
+        14
+      ]
+    },
+    {
+      "id": "00411-random-medium-061",
+      "graph": "random-medium-061",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00412-random-medium-062",
+      "graph": "random-medium-062",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        9,
+        41,
+        31,
+        14,
+        20,
+        49
+      ]
+    },
+    {
+      "id": "00413-random-medium-063",
+      "graph": "random-medium-063",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        30,
+        29,
+        2,
+        1,
+        9,
+        23,
+        19
+      ]
+    },
+    {
+      "id": "00414-random-medium-064",
+      "graph": "random-medium-064",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        42,
+        46,
+        56,
+        9,
+        18,
+        24,
+        26
+      ]
+    },
+    {
+      "id": "00415-random-medium-065",
+      "graph": "random-medium-065",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        34,
+        30,
+        22,
+        35,
+        27,
+        18,
+        11
+      ]
+    },
+    {
+      "id": "00416-random-medium-066",
+      "graph": "random-medium-066",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        6,
+        13,
+        14,
+        24
+      ]
+    },
+    {
+      "id": "00417-random-medium-067",
+      "graph": "random-medium-067",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        76,
+        42,
+        2,
+        5,
+        7,
+        19,
+        50,
+        4
+      ]
+    },
+    {
+      "id": "00418-random-medium-068",
+      "graph": "random-medium-068",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        31,
+        35,
+        23,
+        6,
+        5,
+        51,
+        36,
+        45,
+        10
+      ]
+    },
+    {
+      "id": "00419-random-medium-069",
+      "graph": "random-medium-069",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        8,
+        14
+      ]
+    },
+    {
+      "id": "00420-random-medium-070",
+      "graph": "random-medium-070",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        48,
+        19,
+        32,
+        35,
+        30,
+        44,
+        21
+      ]
+    },
+    {
+      "id": "00421-random-medium-071",
+      "graph": "random-medium-071",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        10,
+        6
+      ]
+    },
+    {
+      "id": "00422-random-medium-072",
+      "graph": "random-medium-072",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "00423-random-medium-073",
+      "graph": "random-medium-073",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        15,
+        16,
+        24
+      ]
+    },
+    {
+      "id": "00424-random-medium-074",
+      "graph": "random-medium-074",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        33,
+        29,
+        31,
+        15
+      ]
+    },
+    {
+      "id": "00425-random-medium-075",
+      "graph": "random-medium-075",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        36,
+        40,
+        56,
+        58
+      ]
+    },
+    {
+      "id": "00426-random-medium-076",
+      "graph": "random-medium-076",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        24,
+        33
+      ]
+    },
+    {
+      "id": "00427-random-medium-077",
+      "graph": "random-medium-077",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        38,
+        22,
+        3
+      ]
+    },
+    {
+      "id": "00428-random-medium-078",
+      "graph": "random-medium-078",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        54,
+        13,
+        40
+      ]
+    },
+    {
+      "id": "00429-random-medium-079",
+      "graph": "random-medium-079",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        29
+      ]
+    },
+    {
+      "id": "00430-random-medium-080",
+      "graph": "random-medium-080",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        50,
+        17,
+        19,
+        41,
+        38,
+        31,
+        48,
+        8,
+        12,
+        25
+      ]
+    },
+    {
+      "id": "00431-random-medium-081",
+      "graph": "random-medium-081",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        47,
+        11,
+        43,
+        46,
+        0,
+        21,
+        24
+      ]
+    },
+    {
+      "id": "00432-random-medium-082",
+      "graph": "random-medium-082",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        7,
+        28
+      ]
+    },
+    {
+      "id": "00433-random-medium-083",
+      "graph": "random-medium-083",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        48,
+        51,
+        52,
+        56,
+        67,
+        71,
+        15
+      ]
+    },
+    {
+      "id": "00434-random-medium-084",
+      "graph": "random-medium-084",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        14,
+        28
+      ]
+    },
+    {
+      "id": "00435-random-medium-085",
+      "graph": "random-medium-085",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        73,
+        83,
+        17,
+        43,
+        58
+      ]
+    },
+    {
+      "id": "00436-random-medium-086",
+      "graph": "random-medium-086",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        43,
+        14,
+        27
+      ]
+    },
+    {
+      "id": "00437-random-medium-087",
+      "graph": "random-medium-087",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        82,
+        56,
+        63
+      ]
+    },
+    {
+      "id": "00438-random-medium-088",
+      "graph": "random-medium-088",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        23,
+        28
+      ]
+    },
+    {
+      "id": "00439-random-medium-089",
+      "graph": "random-medium-089",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        32,
+        34,
+        67
+      ]
+    },
+    {
+      "id": "00440-random-medium-090",
+      "graph": "random-medium-090",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        49,
+        7,
+        9,
+        15,
+        16,
+        17,
+        22,
+        36
+      ]
+    },
+    {
+      "id": "00441-random-medium-091",
+      "graph": "random-medium-091",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        74,
+        45,
+        18,
+        2,
+        52,
+        31
+      ]
+    },
+    {
+      "id": "00442-random-medium-092",
+      "graph": "random-medium-092",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        32,
+        10,
+        2
+      ]
+    },
+    {
+      "id": "00443-random-medium-093",
+      "graph": "random-medium-093",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        35,
+        52
+      ]
+    },
+    {
+      "id": "00444-random-medium-094",
+      "graph": "random-medium-094",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        0,
+        30,
+        19,
+        35,
+        11,
+        15
+      ]
+    },
+    {
+      "id": "00445-random-medium-095",
+      "graph": "random-medium-095",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        60,
+        55,
+        3,
+        44,
+        11,
+        25,
+        43,
+        48,
+        31
+      ]
+    },
+    {
+      "id": "00446-random-medium-096",
+      "graph": "random-medium-096",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        8,
+        12
+      ]
+    },
+    {
+      "id": "00447-random-medium-097",
+      "graph": "random-medium-097",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        2,
+        7,
+        13
+      ]
+    },
+    {
+      "id": "00448-random-medium-098",
+      "graph": "random-medium-098",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        8,
+        5,
+        9,
+        23
+      ]
+    },
+    {
+      "id": "00449-random-medium-099",
+      "graph": "random-medium-099",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        9,
+        23,
+        30
+      ]
+    },
+    {
+      "id": "00450-boundary-random-31",
+      "graph": "boundary-random-31",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        10,
+        6,
+        25,
+        4,
+        11,
+        15,
+        22
+      ]
+    },
+    {
+      "id": "00451-boundary-random-32",
+      "graph": "boundary-random-32",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        21,
+        1,
+        13,
+        17,
+        5,
+        24,
+        18
+      ]
+    },
+    {
+      "id": "00452-boundary-random-33",
+      "graph": "boundary-random-33",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        8,
+        11,
+        17,
+        23,
+        24,
+        27,
+        29
+      ]
+    },
+    {
+      "id": "00453-boundary-random-63",
+      "graph": "boundary-random-63",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        9,
+        28,
+        30,
+        7,
+        0
+      ]
+    },
+    {
+      "id": "00454-boundary-random-64",
+      "graph": "boundary-random-64",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        45,
+        10,
+        14,
+        23,
+        28,
+        29,
+        33
+      ]
+    },
+    {
+      "id": "00455-boundary-random-65",
+      "graph": "boundary-random-65",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        9,
+        16,
+        49,
+        23,
+        53,
+        37
+      ]
+    },
+    {
+      "id": "00456-boundary-random-128",
+      "graph": "boundary-random-128",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        58,
+        33,
+        18,
+        39
+      ]
+    },
+    {
+      "id": "00457-boundary-random-257",
+      "graph": "boundary-random-257",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        116,
+        149,
+        168
+      ]
+    },
+    {
+      "id": "00458-boundary-random-513",
+      "graph": "boundary-random-513",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        25,
+        18,
+        4
+      ]
+    },
+    {
+      "id": "00459-low-core-optimum-3",
+      "graph": "low-core-optimum-3",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00460-low-core-optimum-8",
+      "graph": "low-core-optimum-8",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00461-low-core-optimum-17",
+      "graph": "low-core-optimum-17",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00462-low-core-optimum-33",
+      "graph": "low-core-optimum-33",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00463-low-core-optimum-65",
+      "graph": "low-core-optimum-65",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00464-cycle_chords-01",
+      "graph": "cycle_chords-01",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00465-mixed-core",
+      "graph": "mixed-core",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00466-random-medium-000",
+      "graph": "random-medium-000",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        10,
+        11,
+        13
+      ]
+    },
+    {
+      "id": "00467-random-medium-001",
+      "graph": "random-medium-001",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        7,
+        14
+      ]
+    },
+    {
+      "id": "00468-random-medium-002",
+      "graph": "random-medium-002",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        7,
+        16,
+        23,
+        30,
+        33,
+        39,
+        45,
+        57,
+        60
+      ]
+    },
+    {
+      "id": "00469-random-medium-003",
+      "graph": "random-medium-003",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        54,
+        16,
+        20,
+        25,
+        27
+      ]
+    },
+    {
+      "id": "00470-random-medium-004",
+      "graph": "random-medium-004",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        38,
+        28
+      ]
+    },
+    {
+      "id": "00471-random-medium-005",
+      "graph": "random-medium-005",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        15,
+        19,
+        22,
+        25
+      ]
+    },
+    {
+      "id": "00472-random-medium-006",
+      "graph": "random-medium-006",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        86,
+        12,
+        42,
+        14,
+        17,
+        25,
+        50,
+        51,
+        67,
+        71
+      ]
+    },
+    {
+      "id": "00473-random-medium-007",
+      "graph": "random-medium-007",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        17,
+        18
+      ]
+    },
+    {
+      "id": "00474-random-medium-008",
+      "graph": "random-medium-008",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        32,
+        37,
+        51,
+        3,
+        44,
+        19
+      ]
+    },
+    {
+      "id": "00475-random-medium-009",
+      "graph": "random-medium-009",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        28,
+        14,
+        8,
+        22,
+        12,
+        21,
+        0
+      ]
+    },
+    {
+      "id": "00476-random-medium-010",
+      "graph": "random-medium-010",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        0,
+        2,
+        21,
+        26,
+        32,
+        33,
+        20,
+        14
+      ]
+    },
+    {
+      "id": "00477-random-medium-011",
+      "graph": "random-medium-011",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        16,
+        43,
+        32,
+        7,
+        23,
+        53
+      ]
+    },
+    {
+      "id": "00478-random-medium-012",
+      "graph": "random-medium-012",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        3,
+        0,
+        14,
+        5
+      ]
+    },
+    {
+      "id": "00479-random-medium-013",
+      "graph": "random-medium-013",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        11,
+        48,
+        53
+      ]
+    },
+    {
+      "id": "00480-random-medium-014",
+      "graph": "random-medium-014",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        25,
+        0,
+        32,
+        53,
+        58,
+        23,
+        40
+      ]
+    },
+    {
+      "id": "00481-random-medium-015",
+      "graph": "random-medium-015",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        59,
+        7,
+        29,
+        28,
+        57,
+        48,
+        31,
+        47,
+        40,
+        36
+      ]
+    },
+    {
+      "id": "00482-random-medium-016",
+      "graph": "random-medium-016",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        81,
+        2,
+        51,
+        72,
+        50,
+        17,
+        52,
+        3,
+        13,
+        15
+      ]
+    },
+    {
+      "id": "00483-random-medium-017",
+      "graph": "random-medium-017",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        24,
+        33,
+        4,
+        5,
+        9,
+        20
+      ]
+    },
+    {
+      "id": "00484-random-medium-018",
+      "graph": "random-medium-018",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        18,
+        22
+      ]
+    },
+    {
+      "id": "00485-random-medium-019",
+      "graph": "random-medium-019",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        9,
+        11
+      ]
+    },
+    {
+      "id": "00486-random-medium-020",
+      "graph": "random-medium-020",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        33,
+        39
+      ]
+    },
+    {
+      "id": "00487-random-medium-021",
+      "graph": "random-medium-021",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        25,
+        24,
+        8
+      ]
+    },
+    {
+      "id": "00488-random-medium-022",
+      "graph": "random-medium-022",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        54,
+        0,
+        1,
+        21,
+        22
+      ]
+    },
+    {
+      "id": "00489-random-medium-023",
+      "graph": "random-medium-023",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        21,
+        1,
+        0,
+        20
+      ]
+    },
+    {
+      "id": "00490-random-medium-024",
+      "graph": "random-medium-024",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        21,
+        37
+      ]
+    },
+    {
+      "id": "00491-random-medium-025",
+      "graph": "random-medium-025",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        24,
+        16,
+        15,
+        9,
+        19
+      ]
+    },
+    {
+      "id": "00492-random-medium-026",
+      "graph": "random-medium-026",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        16
+      ]
+    },
+    {
+      "id": "00493-random-medium-027",
+      "graph": "random-medium-027",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        26,
+        20,
+        7,
+        19,
+        11,
+        16,
+        25
+      ]
+    },
+    {
+      "id": "00494-random-medium-028",
+      "graph": "random-medium-028",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        49,
+        52,
+        9,
+        12,
+        25
+      ]
+    },
+    {
+      "id": "00495-random-medium-029",
+      "graph": "random-medium-029",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "id": "00496-random-medium-030",
+      "graph": "random-medium-030",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        30,
+        33,
+        39,
+        2,
+        3,
+        5,
+        26,
+        27
+      ]
+    },
+    {
+      "id": "00497-random-medium-031",
+      "graph": "random-medium-031",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        19,
+        27,
+        30
+      ]
+    },
+    {
+      "id": "00498-random-medium-032",
+      "graph": "random-medium-032",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        0,
+        13,
+        32,
+        15,
+        37,
+        34,
+        4
+      ]
+    },
+    {
+      "id": "00499-random-medium-033",
+      "graph": "random-medium-033",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        35,
+        67,
+        52,
+        64,
+        13,
+        34,
+        16,
+        25,
+        62
+      ]
+    },
+    {
+      "id": "00500-random-medium-034",
+      "graph": "random-medium-034",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        14,
+        35
+      ]
+    },
+    {
+      "id": "00501-random-medium-035",
+      "graph": "random-medium-035",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        75,
+        58,
+        50,
+        6,
+        56,
+        39,
+        11,
+        28,
+        42,
+        23
+      ]
+    },
+    {
+      "id": "00502-random-medium-036",
+      "graph": "random-medium-036",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        33,
+        3,
+        28,
+        7,
+        10,
+        14,
+        19,
+        20
+      ]
+    },
+    {
+      "id": "00503-random-medium-037",
+      "graph": "random-medium-037",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        58,
+        3,
+        30,
+        25,
+        37,
+        16,
+        35,
+        7
+      ]
+    },
+    {
+      "id": "00504-random-medium-038",
+      "graph": "random-medium-038",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        17,
+        22,
+        27,
+        41,
+        52
+      ]
+    },
+    {
+      "id": "00505-random-medium-039",
+      "graph": "random-medium-039",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        33,
+        0,
+        64,
+        41,
+        12,
+        45,
+        60,
+        28
+      ]
+    },
+    {
+      "id": "00506-random-medium-040",
+      "graph": "random-medium-040",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        47,
+        17,
+        1,
+        24
+      ]
+    },
+    {
+      "id": "00507-random-medium-041",
+      "graph": "random-medium-041",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        19,
+        20
+      ]
+    },
+    {
+      "id": "00508-random-medium-042",
+      "graph": "random-medium-042",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        5,
+        7,
+        14,
+        20
+      ]
+    },
+    {
+      "id": "00509-random-medium-043",
+      "graph": "random-medium-043",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        36,
+        25,
+        45,
+        58,
+        57
+      ]
+    },
+    {
+      "id": "00510-random-medium-044",
+      "graph": "random-medium-044",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        6,
+        7,
+        11,
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00511-random-medium-045",
+      "graph": "random-medium-045",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        73,
+        21,
+        17,
+        46
+      ]
+    },
+    {
+      "id": "00512-random-medium-046",
+      "graph": "random-medium-046",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        40,
+        23,
+        6,
+        10,
+        21,
+        24,
+        34
+      ]
+    },
+    {
+      "id": "00513-random-medium-047",
+      "graph": "random-medium-047",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        4,
+        8,
+        9
+      ]
+    },
+    {
+      "id": "00514-random-medium-048",
+      "graph": "random-medium-048",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        21
+      ]
+    },
+    {
+      "id": "00515-random-medium-049",
+      "graph": "random-medium-049",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        67,
+        12,
+        40,
+        23,
+        55,
+        63,
+        2,
+        37,
+        28,
+        35
+      ]
+    },
+    {
+      "id": "00516-random-medium-050",
+      "graph": "random-medium-050",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        49,
+        9,
+        17,
+        21,
+        36
+      ]
+    },
+    {
+      "id": "00517-random-medium-051",
+      "graph": "random-medium-051",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        3,
+        4,
+        8,
+        13,
+        31,
+        20,
+        29
+      ]
+    },
+    {
+      "id": "00518-random-medium-052",
+      "graph": "random-medium-052",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        43,
+        7,
+        0,
+        13,
+        36,
+        10,
+        8,
+        14,
+        32
+      ]
+    },
+    {
+      "id": "00519-random-medium-053",
+      "graph": "random-medium-053",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        41,
+        48,
+        51
+      ]
+    },
+    {
+      "id": "00520-random-medium-054",
+      "graph": "random-medium-054",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        72,
+        29,
+        40,
+        34,
+        14,
+        1,
+        54
+      ]
+    },
+    {
+      "id": "00521-random-medium-055",
+      "graph": "random-medium-055",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        62,
+        29,
+        25,
+        40,
+        39,
+        34,
+        10,
+        42,
+        9
+      ]
+    },
+    {
+      "id": "00522-random-medium-056",
+      "graph": "random-medium-056",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        6,
+        15
+      ]
+    },
+    {
+      "id": "00523-random-medium-057",
+      "graph": "random-medium-057",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        38,
+        63,
+        79
+      ]
+    },
+    {
+      "id": "00524-random-medium-058",
+      "graph": "random-medium-058",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        14,
+        2
+      ]
+    },
+    {
+      "id": "00525-random-medium-059",
+      "graph": "random-medium-059",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        0,
+        3,
+        18,
+        7
+      ]
+    },
+    {
+      "id": "00526-random-medium-060",
+      "graph": "random-medium-060",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        31,
+        39,
+        14
+      ]
+    },
+    {
+      "id": "00527-random-medium-061",
+      "graph": "random-medium-061",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "00528-random-medium-062",
+      "graph": "random-medium-062",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        55,
+        5,
+        9,
+        8,
+        31,
+        22,
+        20
+      ]
+    },
+    {
+      "id": "00529-random-medium-063",
+      "graph": "random-medium-063",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        30,
+        29,
+        2,
+        1,
+        9,
+        23,
+        19
+      ]
+    },
+    {
+      "id": "00530-random-medium-064",
+      "graph": "random-medium-064",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        9,
+        26,
+        35,
+        42,
+        24,
+        46
+      ]
+    },
+    {
+      "id": "00531-random-medium-065",
+      "graph": "random-medium-065",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        8,
+        34,
+        17,
+        11,
+        18,
+        35,
+        27
+      ]
+    },
+    {
+      "id": "00532-random-medium-066",
+      "graph": "random-medium-066",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        6,
+        13,
+        14,
+        24
+      ]
+    },
+    {
+      "id": "00533-random-medium-067",
+      "graph": "random-medium-067",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        76,
+        42,
+        2,
+        5,
+        19,
+        7,
+        4,
+        50
+      ]
+    },
+    {
+      "id": "00534-random-medium-068",
+      "graph": "random-medium-068",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        69,
+        31,
+        35,
+        23,
+        6,
+        5,
+        51,
+        36,
+        10,
+        45
+      ]
+    },
+    {
+      "id": "00535-random-medium-069",
+      "graph": "random-medium-069",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        8,
+        14
+      ]
+    },
+    {
+      "id": "00536-random-medium-070",
+      "graph": "random-medium-070",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        48,
+        19,
+        32,
+        35,
+        30,
+        44,
+        21
+      ]
+    },
+    {
+      "id": "00537-random-medium-071",
+      "graph": "random-medium-071",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        10,
+        6
+      ]
+    },
+    {
+      "id": "00538-random-medium-072",
+      "graph": "random-medium-072",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        39,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "00539-random-medium-073",
+      "graph": "random-medium-073",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        15,
+        16,
+        24
+      ]
+    },
+    {
+      "id": "00540-random-medium-074",
+      "graph": "random-medium-074",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        34,
+        31,
+        15,
+        33,
+        29
+      ]
+    },
+    {
+      "id": "00541-random-medium-075",
+      "graph": "random-medium-075",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        53,
+        18,
+        47,
+        17,
+        6
+      ]
+    },
+    {
+      "id": "00542-random-medium-076",
+      "graph": "random-medium-076",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        24,
+        33
+      ]
+    },
+    {
+      "id": "00543-random-medium-077",
+      "graph": "random-medium-077",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        38,
+        22,
+        3
+      ]
+    },
+    {
+      "id": "00544-random-medium-078",
+      "graph": "random-medium-078",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        13,
+        40,
+        54
+      ]
+    },
+    {
+      "id": "00545-random-medium-079",
+      "graph": "random-medium-079",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        16,
+        29
+      ]
+    },
+    {
+      "id": "00546-random-medium-080",
+      "graph": "random-medium-080",
+      "expected": 10,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        50,
+        17,
+        19,
+        41,
+        38,
+        31,
+        48,
+        12,
+        8,
+        25
+      ]
+    },
+    {
+      "id": "00547-random-medium-081",
+      "graph": "random-medium-081",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        47,
+        11,
+        43,
+        46,
+        21,
+        0,
+        24
+      ]
+    },
+    {
+      "id": "00548-random-medium-082",
+      "graph": "random-medium-082",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        7,
+        28
+      ]
+    },
+    {
+      "id": "00549-random-medium-083",
+      "graph": "random-medium-083",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        48,
+        51,
+        52,
+        56,
+        67,
+        71,
+        15
+      ]
+    },
+    {
+      "id": "00550-random-medium-084",
+      "graph": "random-medium-084",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        14,
+        28
+      ]
+    },
+    {
+      "id": "00551-random-medium-085",
+      "graph": "random-medium-085",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        73,
+        83,
+        17,
+        43,
+        55
+      ]
+    },
+    {
+      "id": "00552-random-medium-086",
+      "graph": "random-medium-086",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        43,
+        14,
+        27
+      ]
+    },
+    {
+      "id": "00553-random-medium-087",
+      "graph": "random-medium-087",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        82,
+        63,
+        56
+      ]
+    },
+    {
+      "id": "00554-random-medium-088",
+      "graph": "random-medium-088",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        18,
+        23,
+        28
+      ]
+    },
+    {
+      "id": "00555-random-medium-089",
+      "graph": "random-medium-089",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        32,
+        34,
+        52
+      ]
+    },
+    {
+      "id": "00556-random-medium-090",
+      "graph": "random-medium-090",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        8,
+        9,
+        1,
+        30,
+        14,
+        20,
+        41,
+        47
+      ]
+    },
+    {
+      "id": "00557-random-medium-091",
+      "graph": "random-medium-091",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        74,
+        45,
+        31,
+        2,
+        52,
+        18
+      ]
+    },
+    {
+      "id": "00558-random-medium-092",
+      "graph": "random-medium-092",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        32,
+        10,
+        2
+      ]
+    },
+    {
+      "id": "00559-random-medium-093",
+      "graph": "random-medium-093",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        35,
+        52
+      ]
+    },
+    {
+      "id": "00560-random-medium-094",
+      "graph": "random-medium-094",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        37,
+        19,
+        30,
+        0,
+        11,
+        15,
+        35
+      ]
+    },
+    {
+      "id": "00561-random-medium-095",
+      "graph": "random-medium-095",
+      "expected": 9,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        60,
+        55,
+        3,
+        44,
+        11,
+        43,
+        25,
+        48,
+        31
+      ]
+    },
+    {
+      "id": "00562-random-medium-096",
+      "graph": "random-medium-096",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        3,
+        8,
+        12
+      ]
+    },
+    {
+      "id": "00563-random-medium-097",
+      "graph": "random-medium-097",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        19,
+        7,
+        2,
+        13
+      ]
+    },
+    {
+      "id": "00564-random-medium-098",
+      "graph": "random-medium-098",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        8,
+        5,
+        9,
+        23
+      ]
+    },
+    {
+      "id": "00565-random-medium-099",
+      "graph": "random-medium-099",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        9,
+        23,
+        30
+      ]
+    },
+    {
+      "id": "00566-boundary-random-31",
+      "graph": "boundary-random-31",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        29,
+        10,
+        25,
+        6,
+        11,
+        4,
+        22,
+        15
+      ]
+    },
+    {
+      "id": "00567-boundary-random-32",
+      "graph": "boundary-random-32",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        26,
+        21,
+        1,
+        13,
+        17,
+        5,
+        24,
+        18
+      ]
+    },
+    {
+      "id": "00568-boundary-random-33",
+      "graph": "boundary-random-33",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        8,
+        11,
+        17,
+        23,
+        24,
+        27,
+        29
+      ]
+    },
+    {
+      "id": "00569-boundary-random-63",
+      "graph": "boundary-random-63",
+      "expected": 6,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        55,
+        29,
+        33,
+        17,
+        21,
+        12
+      ]
+    },
+    {
+      "id": "00570-boundary-random-64",
+      "graph": "boundary-random-64",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        45,
+        10,
+        14,
+        23,
+        28,
+        29,
+        33
+      ]
+    },
+    {
+      "id": "00571-boundary-random-65",
+      "graph": "boundary-random-65",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        9,
+        16,
+        49,
+        23,
+        53,
+        37
+      ]
+    },
+    {
+      "id": "00572-boundary-random-128",
+      "graph": "boundary-random-128",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        104,
+        110,
+        31,
+        42
+      ]
+    },
+    {
+      "id": "00573-boundary-random-257",
+      "graph": "boundary-random-257",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        116,
+        149,
+        168
+      ]
+    },
+    {
+      "id": "00574-boundary-random-513",
+      "graph": "boundary-random-513",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        25,
+        18,
+        4
+      ]
+    },
+    {
+      "id": "00575-low-core-optimum-3",
+      "graph": "low-core-optimum-3",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00576-low-core-optimum-8",
+      "graph": "low-core-optimum-8",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00577-low-core-optimum-17",
+      "graph": "low-core-optimum-17",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00578-low-core-optimum-33",
+      "graph": "low-core-optimum-33",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00579-low-core-optimum-65",
+      "graph": "low-core-optimum-65",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    }
+  ],
+  "batches": [
+    {
+      "id": "00000",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00000.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00000.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "5fc6265e93b652ee1e8233b195aa06bd3d84097f7d64c410a2670e42f564c8fe"
+    },
+    {
+      "id": "00064",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00064.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00064.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "2130a1700428c219692c810bd80b3ac255ad3728eee700c83615fdda6381c328"
+    },
+    {
+      "id": "00128",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00128.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00128.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "bd70cf3781ed0f0597e2318f7bbda89679b50492050a1528e209ac43c5cb0a6f"
+    },
+    {
+      "id": "00192",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00192.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00192.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "83d3d2e3d612cf4da0d7fa44d082874fc865aebbf9c7672c32e7b06c0f761d40"
+    },
+    {
+      "id": "00256",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00256.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00256.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "44329b1d755bf0d5ed13e733674820fcdcd2cf6296422e28269e01fe95c1d7e6"
+    },
+    {
+      "id": "00320",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00320.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00320.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "4db6a3aa8b39686004f411c8fd951562ab57a7c20f94c1222d6214c1a3f2c979"
+    },
+    {
+      "id": "00384",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00384.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00384.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "7995cc7ef71f7cb7c12b043dfdd61965d21c985783b53d9617f7d17151f3bcb5"
+    },
+    {
+      "id": "00448",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00448.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00448.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "4fb394d47c2e89138f03be0166c95d05e32b9b15d63fc677b44ea57b814c74bc"
+    },
+    {
+      "id": "00512",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00512.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00512.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "36fe44f28ac775803c21e024bd64ca15c655f2d995a96f93c4e8f61427843866"
+    },
+    {
+      "id": "00576",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00576.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress/00576.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "8de1b2ab43c58943a3222c514c207604fbfbfc5309348d24d295456be2b07ed0"
+    }
+  ]
+}

@@ -132,6 +132,8 @@ class FileInfo(StrictModel):
 
 
 JsonScalar = str | int | float | bool | None
+# Nested groups are validated against the operation-specific ID contract.
+JsonParameter = JsonScalar | list[list[JsonScalar]]
 
 
 class DataFilter(StrictModel):
@@ -189,7 +191,7 @@ class ExecutionPlan(StrictModel):
         default="auto",
         description="Exact backend ID from the selected operation, or auto.",
     )
-    parameters: dict[str, JsonScalar] = Field(
+    parameters: dict[str, JsonParameter] = Field(
         default_factory=dict,
         description=(
             "Only exact keys from program_instruction.parameters; null means "
@@ -228,7 +230,7 @@ class PlanConfiguration(StrictModel):
     """Only tool choices need generation; executable identity is server-owned."""
 
     backend_id: str = "auto"
-    parameters: dict[str, JsonScalar] = Field(default_factory=dict)
+    parameters: dict[str, JsonParameter] = Field(default_factory=dict)
     optional_outputs: list[str] = Field(default_factory=list)
     auxiliary_inputs: dict[str, list[str]] = Field(default_factory=dict)
     rationale: str = Field(default="", max_length=800)
@@ -252,7 +254,7 @@ class PlanRequest(StrictModel):
     message: str = Field(min_length=1, max_length=20_000)
     graph_id: str
     backend_id: str | None = None
-    parameters: dict[str, JsonScalar] = Field(default_factory=dict)
+    parameters: dict[str, JsonParameter] = Field(default_factory=dict)
     optional_outputs: list[str] = Field(default_factory=list)
     auxiliary_inputs: dict[str, list[str]] = Field(default_factory=dict)
     allow_directed_projection: bool = False

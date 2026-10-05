@@ -1,0 +1,1104 @@
+========= COMPUTE-SANITIZER
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (111,0,0)
+=========     Address 0x755458968000 is out of bounds
+=========     and is 8244527104 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (111,0,0)
+=========     Address 0x755458968004 is out of bounds
+=========     and is 8244527100 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (111,0,0)
+=========     Address 0x755458968008 is out of bounds
+=========     and is 8244527096 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (111,0,0)
+=========     Address 0x75545896800c is out of bounds
+=========     and is 8244527092 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (111,0,0)
+=========     Address 0x755458968010 is out of bounds
+=========     and is 8244527088 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (111,0,0)
+=========     Address 0x755458968014 is out of bounds
+=========     and is 8244527084 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (111,0,0)
+=========     Address 0x755458968018 is out of bounds
+=========     and is 8244527080 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (111,0,0)
+=========     Address 0x75545896801c is out of bounds
+=========     and is 8244527076 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (111,0,0)
+=========     Address 0x755458968020 is out of bounds
+=========     and is 8244527072 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (111,0,0)
+=========     Address 0x755458968024 is out of bounds
+=========     and is 8244527068 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (112,0,0)
+=========     Address 0x75545d628000 is out of bounds
+=========     and is 8164048896 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (112,0,0)
+=========     Address 0x75545d628004 is out of bounds
+=========     and is 8164048892 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (112,0,0)
+=========     Address 0x75545d628008 is out of bounds
+=========     and is 8164048888 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (112,0,0)
+=========     Address 0x75545d62800c is out of bounds
+=========     and is 8164048884 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (112,0,0)
+=========     Address 0x75545d628010 is out of bounds
+=========     and is 8164048880 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (112,0,0)
+=========     Address 0x75545d628014 is out of bounds
+=========     and is 8164048876 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (112,0,0)
+=========     Address 0x75545d628018 is out of bounds
+=========     and is 8164048872 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (112,0,0)
+=========     Address 0x75545d62801c is out of bounds
+=========     and is 8164048868 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (112,0,0)
+=========     Address 0x75545d628020 is out of bounds
+=========     and is 8164048864 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (112,0,0)
+=========     Address 0x75545d628024 is out of bounds
+=========     and is 8164048860 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (117,0,0)
+=========     Address 0x7554755e8000 is out of bounds
+=========     and is 7761657856 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (117,0,0)
+=========     Address 0x7554755e8004 is out of bounds
+=========     and is 7761657852 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (117,0,0)
+=========     Address 0x7554755e8008 is out of bounds
+=========     and is 7761657848 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (117,0,0)
+=========     Address 0x7554755e800c is out of bounds
+=========     and is 7761657844 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (117,0,0)
+=========     Address 0x7554755e8010 is out of bounds
+=========     and is 7761657840 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (117,0,0)
+=========     Address 0x7554755e8014 is out of bounds
+=========     and is 7761657836 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (117,0,0)
+=========     Address 0x7554755e8018 is out of bounds
+=========     and is 7761657832 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (117,0,0)
+=========     Address 0x7554755e801c is out of bounds
+=========     and is 7761657828 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (117,0,0)
+=========     Address 0x7554755e8020 is out of bounds
+=========     and is 7761657824 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (117,0,0)
+=========     Address 0x7554755e8024 is out of bounds
+=========     and is 7761657820 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (118,0,0)
+=========     Address 0x75547a2a8000 is out of bounds
+=========     and is 7681179648 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (118,0,0)
+=========     Address 0x75547a2a8004 is out of bounds
+=========     and is 7681179644 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (118,0,0)
+=========     Address 0x75547a2a8008 is out of bounds
+=========     and is 7681179640 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (118,0,0)
+=========     Address 0x75547a2a800c is out of bounds
+=========     and is 7681179636 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (118,0,0)
+=========     Address 0x75547a2a8010 is out of bounds
+=========     and is 7681179632 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (118,0,0)
+=========     Address 0x75547a2a8014 is out of bounds
+=========     and is 7681179628 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (118,0,0)
+=========     Address 0x75547a2a8018 is out of bounds
+=========     and is 7681179624 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (118,0,0)
+=========     Address 0x75547a2a801c is out of bounds
+=========     and is 7681179620 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (118,0,0)
+=========     Address 0x75547a2a8020 is out of bounds
+=========     and is 7681179616 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (118,0,0)
+=========     Address 0x75547a2a8024 is out of bounds
+=========     and is 7681179612 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (119,0,0)
+=========     Address 0x75547ef68000 is out of bounds
+=========     and is 7600701440 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (119,0,0)
+=========     Address 0x75547ef68004 is out of bounds
+=========     and is 7600701436 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (119,0,0)
+=========     Address 0x75547ef68008 is out of bounds
+=========     and is 7600701432 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (119,0,0)
+=========     Address 0x75547ef6800c is out of bounds
+=========     and is 7600701428 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (119,0,0)
+=========     Address 0x75547ef68010 is out of bounds
+=========     and is 7600701424 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (119,0,0)
+=========     Address 0x75547ef68014 is out of bounds
+=========     and is 7600701420 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (119,0,0)
+=========     Address 0x75547ef68018 is out of bounds
+=========     and is 7600701416 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (119,0,0)
+=========     Address 0x75547ef6801c is out of bounds
+=========     and is 7600701412 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (119,0,0)
+=========     Address 0x75547ef68020 is out of bounds
+=========     and is 7600701408 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (119,0,0)
+=========     Address 0x75547ef68024 is out of bounds
+=========     and is 7600701404 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (122,0,0)
+=========     Address 0x75548d5a8000 is out of bounds
+=========     and is 7359266816 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (122,0,0)
+=========     Address 0x75548d5a8004 is out of bounds
+=========     and is 7359266812 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (122,0,0)
+=========     Address 0x75548d5a8008 is out of bounds
+=========     and is 7359266808 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (122,0,0)
+=========     Address 0x75548d5a800c is out of bounds
+=========     and is 7359266804 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (122,0,0)
+=========     Address 0x75548d5a8010 is out of bounds
+=========     and is 7359266800 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (122,0,0)
+=========     Address 0x75548d5a8014 is out of bounds
+=========     and is 7359266796 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (122,0,0)
+=========     Address 0x75548d5a8018 is out of bounds
+=========     and is 7359266792 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (122,0,0)
+=========     Address 0x75548d5a801c is out of bounds
+=========     and is 7359266788 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (122,0,0)
+=========     Address 0x75548d5a8020 is out of bounds
+=========     and is 7359266784 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (122,0,0)
+=========     Address 0x75548d5a8024 is out of bounds
+=========     and is 7359266780 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (123,0,0)
+=========     Address 0x755492268000 is out of bounds
+=========     and is 7278788608 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (123,0,0)
+=========     Address 0x755492268004 is out of bounds
+=========     and is 7278788604 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (123,0,0)
+=========     Address 0x755492268008 is out of bounds
+=========     and is 7278788600 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (123,0,0)
+=========     Address 0x75549226800c is out of bounds
+=========     and is 7278788596 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (123,0,0)
+=========     Address 0x755492268010 is out of bounds
+=========     and is 7278788592 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (123,0,0)
+=========     Address 0x755492268014 is out of bounds
+=========     and is 7278788588 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (123,0,0)
+=========     Address 0x755492268018 is out of bounds
+=========     and is 7278788584 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (123,0,0)
+=========     Address 0x75549226801c is out of bounds
+=========     and is 7278788580 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (123,0,0)
+=========     Address 0x755492268020 is out of bounds
+=========     and is 7278788576 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (123,0,0)
+=========     Address 0x755492268024 is out of bounds
+=========     and is 7278788572 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (124,0,0)
+=========     Address 0x755496f28000 is out of bounds
+=========     and is 7198310400 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (125,0,0)
+=========     Address 0x75549bbe8000 is out of bounds
+=========     and is 7117832192 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (125,0,0)
+=========     Address 0x75549bbe8004 is out of bounds
+=========     and is 7117832188 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (125,0,0)
+=========     Address 0x75549bbe8008 is out of bounds
+=========     and is 7117832184 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (125,0,0)
+=========     Address 0x75549bbe800c is out of bounds
+=========     and is 7117832180 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (125,0,0)
+=========     Address 0x75549bbe8010 is out of bounds
+=========     and is 7117832176 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (125,0,0)
+=========     Address 0x75549bbe8014 is out of bounds
+=========     and is 7117832172 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (125,0,0)
+=========     Address 0x75549bbe8018 is out of bounds
+=========     and is 7117832168 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (125,0,0)
+=========     Address 0x75549bbe801c is out of bounds
+=========     and is 7117832164 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (125,0,0)
+=========     Address 0x75549bbe8020 is out of bounds
+=========     and is 7117832160 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (125,0,0)
+=========     Address 0x75549bbe8024 is out of bounds
+=========     and is 7117832156 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (129,0,0)
+=========     Address 0x7554aeee8000 is out of bounds
+=========     and is 6795919360 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (129,0,0)
+=========     Address 0x7554aeee8004 is out of bounds
+=========     and is 6795919356 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (129,0,0)
+=========     Address 0x7554aeee8008 is out of bounds
+=========     and is 6795919352 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (129,0,0)
+=========     Address 0x7554aeee800c is out of bounds
+=========     and is 6795919348 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (129,0,0)
+=========     Address 0x7554aeee8010 is out of bounds
+=========     and is 6795919344 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (129,0,0)
+=========     Address 0x7554aeee8014 is out of bounds
+=========     and is 6795919340 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (129,0,0)
+=========     Address 0x7554aeee8018 is out of bounds
+=========     and is 6795919336 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (129,0,0)
+=========     Address 0x7554aeee801c is out of bounds
+=========     and is 6795919332 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (129,0,0)
+=========     Address 0x7554aeee8020 is out of bounds
+=========     and is 6795919328 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (9,0,0) in block (129,0,0)
+=========     Address 0x7554aeee8024 is out of bounds
+=========     and is 6795919324 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (0,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba8000 is out of bounds
+=========     and is 6715441152 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (1,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba8004 is out of bounds
+=========     and is 6715441148 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (2,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba8008 is out of bounds
+=========     and is 6715441144 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (3,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba800c is out of bounds
+=========     and is 6715441140 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (4,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba8010 is out of bounds
+=========     and is 6715441136 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (5,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba8014 is out of bounds
+=========     and is 6715441132 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (6,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba8018 is out of bounds
+=========     and is 6715441128 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (7,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba801c is out of bounds
+=========     and is 6715441124 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Invalid __global__ write of size 4 bytes
+=========     at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x1020
+=========     by thread (8,0,0) in block (130,0,0)
+=========     Address 0x7554b3ba8020 is out of bounds
+=========     and is 6715441120 bytes before the nearest allocation at 0x755644000000 of size 11427905536 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x93ed7] in baseline-MBE_GPU
+=========         Host Frame: IterFinderGpu2::Execute() [0x1ffe7] in baseline-MBE_GPU
+=========         Host Frame: FinderTest(BicliqueFinder*, char*) [0x1ccc9] in baseline-MBE_GPU
+=========         Host Frame: main [0xc434] in baseline-MBE_GPU
+========= 
+========= Target application returned an error
+========= ERROR SUMMARY: 142 errors
+========= ERROR SUMMARY: 42 errors were not printed. Use --print-limit option to adjust the number of printed errors

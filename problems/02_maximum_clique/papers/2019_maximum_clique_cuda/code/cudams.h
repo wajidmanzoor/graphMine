@@ -42,6 +42,11 @@ float graph_clique_cpu(t_bitmask *par_res, t_bitmask *par_res_upper, char **grap
 float graph_clique_multi_cpu(t_bitmask *par_res, t_bitmask *par_res_upper, char **graph, int n, t_bitmask allowed, int max_unsolved, float zero, float alpha, int max_masks, int mode, int max_res, t_bitmask *res_all, int *n_res, int *abortcheck_cb(void));
 
 #ifndef NO_CUDA
+/* Single-result CUDA search completes a GPU coloring branch-and-bound search
+ * after the Motzkin-Straus initializer. Returns the exact integer clique size,
+ * or -1 with null output masks on failure. res_upper has the certified size.
+ * CPU and multi-result entry points remain heuristic.
+ */
 float graph_clique_cuda(t_bitmask *par_res, t_bitmask *par_res_upper, char **graph, int n, t_bitmask allowed, int max_unsolved, float zero, float alpha, int max_masks, int mode);
 float graph_clique_multi_cuda(t_bitmask *par_res, t_bitmask *par_res_upper, char **graph, int n, t_bitmask allowed, int max_unsolved, float zero, float alpha, int max_masks, int mode, int max_res, t_bitmask *res_all, int *n_res, int *abortcheck_cb(void));
 #endif

@@ -1,0 +1,7 @@
+{
+  "date": "2026-10-04",
+  "standalone_binary": "/home/wajid/projects/graphDatabaseAgent/problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/parallel_mcp_on_gpus",
+  "sha256": "79f23e487ab7d7eb913ac1fcff1de53628f814c3f2480e2272a76e15c883cf7a",
+  "source": "_work/verified/parallel_mcp_on_gpus",
+  "pre_repair_backup": "_work/baseline/parallel_mcp_on_gpus"
+}

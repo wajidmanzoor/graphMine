@@ -1,0 +1,6 @@
+[0mWelcome ---------------------
+    Main Task = convert
+    Source Graph = /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/fixtures/cycle_chords-01.mtx
+    Destination Graph = /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/fixtures/cycle_chords-01.bel
+-----------------------------
+n = 9 and m = 9

@@ -16,6 +16,12 @@ EXPANSION_OPERATIONS = frozenset(
         "linear-assignment",
         "transitive-closure",
         "butterfly-counting",
+        "k-truss",
+        "densest-subgraph",
+        "maximal-biclique-counting",
+        "personalized-pagerank",
+        "group-steiner-tree",
+        "influence-maximization",
     }
 )
 DIRECTION_PRESERVING_OPERATIONS = frozenset(
@@ -24,6 +30,8 @@ DIRECTION_PRESERVING_OPERATIONS = frozenset(
         "connected-components",
         "max-flow-min-cut",
         "transitive-closure",
+        "personalized-pagerank",
+        "influence-maximization",
     }
 )
 
@@ -51,12 +59,54 @@ def prepare_operation_graph(
         raise ProfileInputError(
             "This profile accepts at most 1,000,000 entities and 10,000,000 relationships."
         )
-    if operation in {"max-flow-min-cut", "transitive-closure"} and not directed:
+    if (
+        operation
+        in {
+            "max-flow-min-cut",
+            "transitive-closure",
+            "personalized-pagerank",
+            "influence-maximization",
+        }
+        and not directed
+    ):
         raise ProfileInputError(
             "This calculation requires directed relationships; an undirected input cannot be interpreted as directed automatically."
         )
-    if operation in {"linear-assignment", "butterfly-counting"} and directed:
-        raise ProfileInputError("This bipartite profile requires an undirected graph.")
+    if (
+        operation
+        in {
+            "linear-assignment",
+            "butterfly-counting",
+            "maximal-biclique-counting",
+            "k-truss",
+            "densest-subgraph",
+            "group-steiner-tree",
+        }
+        and directed
+    ):
+        raise ProfileInputError("This profile requires an undirected graph.")
+    if operation == "densest-subgraph" and not vertices:
+        raise ProfileInputError(
+            "Densest subgraph requires at least one selected entity."
+        )
+    if operation in {"personalized-pagerank", "group-steiner-tree"}:
+        ids = {identity(row["id"]) for row in vertices}
+        requested = (
+            [plan.parameters["seed_vertex"]]
+            if operation == "personalized-pagerank" and "seed_vertex" in plan.parameters
+            else [v for group in plan.parameters.get("groups", []) for v in group]
+        )
+        if any(identity(v) not in ids for v in requested):
+            raise ProfileInputError(
+                "A selected seed or group member is absent after filtering. Choose entities in this scope.",
+                "needs_information",
+            )
+    if operation == "influence-maximization" and plan.parameters.get(
+        "seed_set_size", 1
+    ) > len(vertices):
+        raise ProfileInputError(
+            "The seed budget cannot exceed the number of selected entities."
+        )
     if operation == "transitive-closure" and len(vertices) > 1024:
         raise ProfileInputError(
             "Full reachability currently supports at most 1,024 entities; a reusable index is not available."
@@ -74,14 +124,27 @@ def prepare_operation_graph(
     weighted = operation in {
         "max-flow-min-cut",
         "linear-assignment",
+        "group-steiner-tree",
+        "influence-maximization",
     } and not plan.parameters.get("unit_capacity", False)
     if weighted:
         intent = plan.application_intent
         field = (
             intent.weight_attribute if intent and intent.weight_attribute else "weight"
         )
-        label = "capacity" if operation == "max-flow-min-cut" else "assignment cost"
-        maximum = 1_000_000_000 if operation == "max-flow-min-cut" else 999
+        label = {
+            "max-flow-min-cut": "capacity",
+            "linear-assignment": "assignment cost",
+            "group-steiner-tree": "tree edge cost",
+            "influence-maximization": "activation probability",
+        }[operation]
+        maximum = {
+            "max-flow-min-cut": 1_000_000_000,
+            "linear-assignment": 999,
+            "group-steiner-tree": 2**53 - 1,
+            "influence-maximization": 1,
+        }[operation]
+        integer_required = operation != "influence-maximization"
         prepared = copy.deepcopy(graph)
         for edge in prepared["edges"]:
             try:
@@ -101,12 +164,24 @@ def prepare_operation_graph(
                 or not isinstance(value, (int, float))
                 or not 0 <= value <= maximum
                 or not math.isfinite(value)
-                or int(value) != value
+                or (integer_required and int(value) != value)
             ):
                 raise ProfileInputError(
-                    f"This profile requires integer {label} values from 0 to {maximum}; values cannot be rounded or rescaled automatically."
+                    f"This profile requires {'integer ' if integer_required else ''}{label} values from 0 to {maximum}; values cannot be rounded or rescaled automatically."
                 )
-            edge["weight"] = int(value)
+            edge["weight"] = int(value) if integer_required else value
+    unweighted_profile = operation in {
+        "k-truss",
+        "densest-subgraph",
+        "maximal-biclique-counting",
+        "personalized-pagerank",
+    } or (operation == "butterfly-counting" and plan.backend_id == "gamma-butterfly")
+    if unweighted_profile and any(
+        edge.get("weight") is not None and edge["weight"] != 1 for edge in edges
+    ):
+        raise ProfileInputError(
+            "This profile accepts unweighted relationships or explicit unit weights only."
+        )
     if operation == "max-flow-min-cut":
         total = sum(
             1 if plan.parameters.get("unit_capacity") else edge["weight"]
@@ -117,7 +192,11 @@ def prepare_operation_graph(
             raise ProfileInputError(
                 "Total edge capacity must not exceed 1,000,000,000 in this profile."
             )
-    if operation in {"linear-assignment", "butterfly-counting"}:
+    if operation in {
+        "linear-assignment",
+        "butterfly-counting",
+        "maximal-biclique-counting",
+    }:
         sides = {
             identity(row["id"]): row.get("attributes", {}).get("side")
             for row in vertices

@@ -1,0 +1,335 @@
+{
+  "manifest": {
+    "archive_url": "https://github.com/jmshi123/kPAR/releases/download/v1.0/kPAR.zip",
+    "archive_sha256": "791987a738faf84d0fcab882b2f74cbb2efd4451ac9888b80e0d120ea6421916",
+    "patch_sha256": "75f364c862f8dd0a3e1658690649dd9b7592439ff6d423ed3718637b1a77d93e",
+    "source_sha256": {
+      "Makefile": "5b8abebadde316903f5cf2f9b9567a688882975d67356acbbb411995b5517eb9",
+      "algo/GtopkRrw.cuh": "f5afb81b1973baf96747282dda15be9a569acdd75e1b84fe2063df59a52496d4",
+      "algo_setting.h": "6e90a6b6f4cfc561a590c34ceef30d9fd5208995a12aa84072050868a9aa009d",
+      "main.cu": "554d1fa92642557e48f07afe5636cd501a259c06a6d198d432d9494d758012a2",
+      "model/Graph.h": "e38228a9611a317f52676d6f0efda349b5dcb4a26742db22dadd955846dffadc",
+      "model/GraphD.cuh": "6ae414b1b373cbbcdb96b1028d40e89e80471ff0c7594c2d4ef7c28696f2377f",
+      "model/HighRrwIndex.cuh": "ad1f6212d76fd7ef1375c4fa12f543124ffd1c2d2b58b98a5008c776cb23b04e",
+      "model/PprData.h": "13b0b2728f5efe0a8546c7920872c5ff1e8d85d57d03d82b8b886519d6d1cbe5",
+      "model/PprDataD.cuh": "70fa1f18555d99e9dbf087711bc42014f1e54c61fdf4bc16312b883102d721df",
+      "model/RWIndex.h": "96736e0393b97401ad176ef653a5834456b617e6b329ee3d755ecd7c2726d1e4",
+      "model/RWIndexD.cuh": "b32fb17e2fbe33ed0f2ccd9943c1e4baefee16c5dd62be7aab42902c4fcf6e48",
+      "query.h": "b4c7a9f5f6aa39c2a58c041f83260465b6e9b555d1aa61207f5ecc5897fb4c61",
+      "util/CudaUtil.cuh": "455a5cd6ef26d7e844aca341a4a71de2b519032769663011192986b821b55d4d",
+      "util/GPUTimer.cuh": "2a84d3ff3d99aa9d7feb35d28dad20445f90a598812e306537d2854f3189ef81",
+      "util/config.h": "b82a2a07632e86f61cb7fc5960afe9277dd15d51f21343648dbc97dc06add454",
+      "util/util.h": "b7adbeb677e330a8a2f9fc5a49080dccb217857f52d69b7190a188cfc945049e"
+    }
+  },
+  "baseline_binary_sha256": "b554f6f4712697058c8112dc35c2f054fa92d646937723353e131444a5306f6e",
+  "clean_build": {
+    "archive_sha256": "791987a738faf84d0fcab882b2f74cbb2efd4451ac9888b80e0d120ea6421916",
+    "patch_sha256": "75f364c862f8dd0a3e1658690649dd9b7592439ff6d423ed3718637b1a77d93e",
+    "source_sha256": {
+      "Makefile": "5b8abebadde316903f5cf2f9b9567a688882975d67356acbbb411995b5517eb9",
+      "algo/GtopkRrw.cuh": "f5afb81b1973baf96747282dda15be9a569acdd75e1b84fe2063df59a52496d4",
+      "algo_setting.h": "6e90a6b6f4cfc561a590c34ceef30d9fd5208995a12aa84072050868a9aa009d",
+      "main.cu": "554d1fa92642557e48f07afe5636cd501a259c06a6d198d432d9494d758012a2",
+      "model/Graph.h": "e38228a9611a317f52676d6f0efda349b5dcb4a26742db22dadd955846dffadc",
+      "model/GraphD.cuh": "6ae414b1b373cbbcdb96b1028d40e89e80471ff0c7594c2d4ef7c28696f2377f",
+      "model/HighRrwIndex.cuh": "ad1f6212d76fd7ef1375c4fa12f543124ffd1c2d2b58b98a5008c776cb23b04e",
+      "model/PprData.h": "13b0b2728f5efe0a8546c7920872c5ff1e8d85d57d03d82b8b886519d6d1cbe5",
+      "model/PprDataD.cuh": "70fa1f18555d99e9dbf087711bc42014f1e54c61fdf4bc16312b883102d721df",
+      "model/RWIndex.h": "96736e0393b97401ad176ef653a5834456b617e6b329ee3d755ecd7c2726d1e4",
+      "model/RWIndexD.cuh": "b32fb17e2fbe33ed0f2ccd9943c1e4baefee16c5dd62be7aab42902c4fcf6e48",
+      "query.h": "b4c7a9f5f6aa39c2a58c041f83260465b6e9b555d1aa61207f5ecc5897fb4c61",
+      "util/CudaUtil.cuh": "455a5cd6ef26d7e844aca341a4a71de2b519032769663011192986b821b55d4d",
+      "util/GPUTimer.cuh": "2a84d3ff3d99aa9d7feb35d28dad20445f90a598812e306537d2854f3189ef81",
+      "util/config.h": "b82a2a07632e86f61cb7fc5960afe9277dd15d51f21343648dbc97dc06add454",
+      "util/util.h": "b7adbeb677e330a8a2f9fc5a49080dccb217857f52d69b7190a188cfc945049e"
+    },
+    "commands": [
+      [
+        "nvcc",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src/main.cu",
+        "-std=c++17",
+        "-arch=sm_89",
+        "-O2",
+        "-lineinfo",
+        "--expt-relaxed-constexpr",
+        "--default-stream",
+        "per-thread",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src/algo",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src/model",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src/util",
+        "-o",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/kpar"
+      ],
+      [
+        "nvcc",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/probe.cu",
+        "-std=c++17",
+        "-arch=sm_89",
+        "-O2",
+        "-lineinfo",
+        "--expt-relaxed-constexpr",
+        "--default-stream",
+        "per-thread",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src/algo",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src/model",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/src/util",
+        "-o",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-build/probe"
+      ]
+    ],
+    "binaries": {
+      "kpar": "cbaed54b006e03eb6373143914db40a963b396038938c89fd0e28025b1bdd511",
+      "probe": "5873dbe254ee82fbe6270ffc3829cb7111bdae43041674f3f9880c6ed8c2e625"
+    },
+    "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n",
+    "asan": false
+  },
+  "asan_build": {
+    "archive_sha256": "791987a738faf84d0fcab882b2f74cbb2efd4451ac9888b80e0d120ea6421916",
+    "patch_sha256": "75f364c862f8dd0a3e1658690649dd9b7592439ff6d423ed3718637b1a77d93e",
+    "source_sha256": {
+      "Makefile": "5b8abebadde316903f5cf2f9b9567a688882975d67356acbbb411995b5517eb9",
+      "algo/GtopkRrw.cuh": "f5afb81b1973baf96747282dda15be9a569acdd75e1b84fe2063df59a52496d4",
+      "algo_setting.h": "6e90a6b6f4cfc561a590c34ceef30d9fd5208995a12aa84072050868a9aa009d",
+      "main.cu": "554d1fa92642557e48f07afe5636cd501a259c06a6d198d432d9494d758012a2",
+      "model/Graph.h": "e38228a9611a317f52676d6f0efda349b5dcb4a26742db22dadd955846dffadc",
+      "model/GraphD.cuh": "6ae414b1b373cbbcdb96b1028d40e89e80471ff0c7594c2d4ef7c28696f2377f",
+      "model/HighRrwIndex.cuh": "ad1f6212d76fd7ef1375c4fa12f543124ffd1c2d2b58b98a5008c776cb23b04e",
+      "model/PprData.h": "13b0b2728f5efe0a8546c7920872c5ff1e8d85d57d03d82b8b886519d6d1cbe5",
+      "model/PprDataD.cuh": "70fa1f18555d99e9dbf087711bc42014f1e54c61fdf4bc16312b883102d721df",
+      "model/RWIndex.h": "96736e0393b97401ad176ef653a5834456b617e6b329ee3d755ecd7c2726d1e4",
+      "model/RWIndexD.cuh": "b32fb17e2fbe33ed0f2ccd9943c1e4baefee16c5dd62be7aab42902c4fcf6e48",
+      "query.h": "b4c7a9f5f6aa39c2a58c041f83260465b6e9b555d1aa61207f5ecc5897fb4c61",
+      "util/CudaUtil.cuh": "455a5cd6ef26d7e844aca341a4a71de2b519032769663011192986b821b55d4d",
+      "util/GPUTimer.cuh": "2a84d3ff3d99aa9d7feb35d28dad20445f90a598812e306537d2854f3189ef81",
+      "util/config.h": "b82a2a07632e86f61cb7fc5960afe9277dd15d51f21343648dbc97dc06add454",
+      "util/util.h": "b7adbeb677e330a8a2f9fc5a49080dccb217857f52d69b7190a188cfc945049e"
+    },
+    "commands": [
+      [
+        "nvcc",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src/main.cu",
+        "-std=c++17",
+        "-arch=sm_89",
+        "-O2",
+        "-lineinfo",
+        "--expt-relaxed-constexpr",
+        "--default-stream",
+        "per-thread",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src/algo",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src/model",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src/util",
+        "-Xcompiler=-fsanitize=address",
+        "-Xcompiler=-fsanitize=undefined",
+        "-Xcompiler=-fno-omit-frame-pointer",
+        "-Xcompiler=-fno-pie",
+        "-Xlinker=-no-pie",
+        "-o",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/kpar"
+      ],
+      [
+        "nvcc",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/probe.cu",
+        "-std=c++17",
+        "-arch=sm_89",
+        "-O2",
+        "-lineinfo",
+        "--expt-relaxed-constexpr",
+        "--default-stream",
+        "per-thread",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src/algo",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src/model",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/src/util",
+        "-Xcompiler=-fsanitize=address",
+        "-Xcompiler=-fsanitize=undefined",
+        "-Xcompiler=-fno-omit-frame-pointer",
+        "-Xcompiler=-fno-pie",
+        "-Xlinker=-no-pie",
+        "-o",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/final-asan-build/probe"
+      ]
+    ],
+    "binaries": {
+      "kpar": "6bca59ad0a40064030773681aa99e03a66026750147f5e6df2158cd76653b3d1",
+      "probe": "b2132879462cabad113b05eab0cdd817acdac788212a3237f4b4d120fab2022b"
+    },
+    "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n",
+    "asan": true
+  },
+  "production_binary_sha256": "bcf6d1230b1901f0483d4eb28e31ac43fb5bb7f1b28f409741ada23e5e2ac57d",
+  "evidence": {
+    "evidence/numerical-summary.json.gz": {
+      "raw_sha256": "a4b634ebab76ab70df3ebebfdb317e8322c616abbb7479720d61483a5dcc3cf3",
+      "gzip_sha256": "079c8b51fec8fd831b7a44e7f0eb1a0796893af904d798fe568daf329808db84"
+    },
+    "evidence/numerical-results.txt.gz": {
+      "raw_sha256": "de89070805e52d20962f1a63240e3c6bc2ff4b43c9f1ceb7d971df216ecdee94",
+      "gzip_sha256": "e8b73cad3fed8881be90971de5cae67f7bfe175b69a404ab8aa957b6753fcfe1"
+    },
+    "evidence/numerical-run.log.gz": {
+      "raw_sha256": "b7806b48dc69fbb61c797c116f75509a5e5b0d03fa65b0465e4bf43e76c0c681",
+      "gzip_sha256": "dc43be983f2c610c813ac74495eab76b892c9734c4aec9137464eb2b28a67e85"
+    },
+    "evidence/numerical-commands.txt.gz": {
+      "raw_sha256": "e15f4ffdb40748c346dd45397f38ce8d2aaa8e599d9180b4f1ad08cd14e9df48",
+      "gzip_sha256": "889f60701bce937bf43e509fe40d61f5eccfe157a6261f4b710e0240a31efc89"
+    },
+    "evidence/tight-epsilon-summary.json.gz": {
+      "raw_sha256": "6e1baebf86fea3f57046c6205b594d2a964e8a386f9a2fcbfd7dfe3310f1b7df",
+      "gzip_sha256": "555badd881e266c601bf6937bd53e3b3ea7dd0da28421cacc365221c55439542"
+    },
+    "evidence/tight-epsilon-results.txt.gz": {
+      "raw_sha256": "71858661e2d4198134284697218755e1f643887ccbcdd46fc94a42427315660e",
+      "gzip_sha256": "f8c1781a61535e4a83c992468dcbf527694f1610265679bade82b18034afc44c"
+    },
+    "evidence/tight-epsilon-run.log.gz": {
+      "raw_sha256": "c6327c629d11b725217de646921bcaa74159d2f9bc59233b57e0c5f01b549cee",
+      "gzip_sha256": "21075fea14f60cb872b2287014d834d70fcba454489e3ae845ebbe57f7c382f6"
+    },
+    "evidence/tight-epsilon-commands.txt.gz": {
+      "raw_sha256": "d55cb10dbfba7325b03ce34a0b16a9c04a866f609539bcfac74aa3d2b5afc3ad",
+      "gzip_sha256": "cf9fcca7adab8f0f76c06cc6380e32a3ab67c45b2fb009694aa5a326028ef594"
+    },
+    "evidence/asan-summary.json.gz": {
+      "raw_sha256": "d7d00a4e3983e411f6dc7bc618a804ba3231ef541a4fcf3325147ee57ddf72a9",
+      "gzip_sha256": "a8e0296fd748a2e6c6bf2dca087d430550e6b4041a73f6b2527a2263e3cafcc7"
+    },
+    "evidence/asan-results.txt.gz": {
+      "raw_sha256": "b4a2eb66a8f00cf0472e0d05de01a59bcb2b55334d723a6ac9f43e237825ffd3",
+      "gzip_sha256": "c38a482d459abddab576ac6e383884498bb4aade8becad3e9961cae8e3e118b7"
+    },
+    "evidence/asan-run.log.gz": {
+      "raw_sha256": "556052256792815c8ca7ae47edf0d6096630fe037722604e270f5f9dff1b129f",
+      "gzip_sha256": "648586b25902fbf9fb2a426699a7653890395596ebe392c6b6ec1e1f81aee619"
+    },
+    "evidence/asan-commands.txt.gz": {
+      "raw_sha256": "1310695f1d11966335567cf14081f967dd47bd275b0e0fd1cd3dbbf739732630",
+      "gzip_sha256": "99400ced5afd4cb668c8cbf3a8dfe80da6a771848e20f5b8714a96808206ba2f"
+    },
+    "evidence/memcheck-summary.json.gz": {
+      "raw_sha256": "2f1f7d2948cbc55641e643c89e085540cba80c2985b1239014ec58479a707ff6",
+      "gzip_sha256": "ecf57b7d52e0e38642b84c1f8270daf06159840a3462bdbc68fbc67a97a3835d"
+    },
+    "evidence/memcheck-results.txt.gz": {
+      "raw_sha256": "b202928cf448e6426ca7fb92bcd5509a870d3215d0753616475cbc744e1d7677",
+      "gzip_sha256": "3d9c89fc9e2b361776a47b2bf454ca5ffa04dce3fe77a9d9ae99ce15ec56ac66"
+    },
+    "evidence/memcheck-run.log.gz": {
+      "raw_sha256": "680e9d9a6f032683b2450df03834bf958690d35a4310a9705ca565a1d2724f8e",
+      "gzip_sha256": "0ffd7b77b934a1699679b2a92036549c4c3bdb5e9544f9bb5a605c992719666d"
+    },
+    "evidence/memcheck-commands.txt.gz": {
+      "raw_sha256": "d102793ffeea69ba80cb04fb55c59a6aecb2085dd753e5f0369375e40136d1a6",
+      "gzip_sha256": "8a53f6407b9cb54b053e4c982761a2f2f232d75ef807e0970b53ce5f5b938c53"
+    },
+    "evidence/initcheck-summary.json.gz": {
+      "raw_sha256": "0c576e30d82203571db7901eea76cde51f99f63878f0f135ebae84834af0757d",
+      "gzip_sha256": "a9645fffb16bbded96e5b51835915cbd16dca1ea2c570ca65078aa95c4ba0a2a"
+    },
+    "evidence/initcheck-results.txt.gz": {
+      "raw_sha256": "b202928cf448e6426ca7fb92bcd5509a870d3215d0753616475cbc744e1d7677",
+      "gzip_sha256": "3d9c89fc9e2b361776a47b2bf454ca5ffa04dce3fe77a9d9ae99ce15ec56ac66"
+    },
+    "evidence/initcheck-run.log.gz": {
+      "raw_sha256": "3715d3d9ddc466e6465fe648bea038b919593186841b129f54a916b8a3c861f9",
+      "gzip_sha256": "23fa7af27be11d34710f134c17cb95e3e242b22546a66ccf5c1dafa85f31db26"
+    },
+    "evidence/initcheck-commands.txt.gz": {
+      "raw_sha256": "a0d0b69b90ed5cd58d6e7af30f2468053beedf182c12cf22357e821f8fe7cf15",
+      "gzip_sha256": "89ae9627baeae0f0b83de4684309af7c35fccede7cba0036f0d40dfb92947e10"
+    },
+    "evidence/synccheck-summary.json.gz": {
+      "raw_sha256": "8a6a80bf5acf018bb53b483a526f98c7751dedb03b72d967ec4f6b85ab73ad04",
+      "gzip_sha256": "6756b90f69ffc15d17f69b2d2e7af6b057f438544238efdbd5202d9a7b388ddf"
+    },
+    "evidence/synccheck-results.txt.gz": {
+      "raw_sha256": "b202928cf448e6426ca7fb92bcd5509a870d3215d0753616475cbc744e1d7677",
+      "gzip_sha256": "3d9c89fc9e2b361776a47b2bf454ca5ffa04dce3fe77a9d9ae99ce15ec56ac66"
+    },
+    "evidence/synccheck-run.log.gz": {
+      "raw_sha256": "fa36c2edec43abfc881ed55ddd9020d037d7b8e650ac12b2055f00a59dd467a3",
+      "gzip_sha256": "4f5467e36789503b94565ccf4dfb8309238d41d4f5da18709b74c072acef1753"
+    },
+    "evidence/synccheck-commands.txt.gz": {
+      "raw_sha256": "c1c8700e566672ce4aede4f179905feabb9148785bd93ea76d06abb28da847cf",
+      "gzip_sha256": "85bc54472f6e8604ab8141811400364f7bd576e1688ead248e775f6afb0d64e4"
+    },
+    "evidence/racecheck-summary.json.gz": {
+      "raw_sha256": "a0c955954cf5df22870b918b6e42ae904949fa629f4c375eb49f51b6a4b30176",
+      "gzip_sha256": "1547008f26cb107b4dcff85fead0165556cb8fc0ae44b61e199effd63eb3ca25"
+    },
+    "evidence/racecheck-results.txt.gz": {
+      "raw_sha256": "b202928cf448e6426ca7fb92bcd5509a870d3215d0753616475cbc744e1d7677",
+      "gzip_sha256": "3d9c89fc9e2b361776a47b2bf454ca5ffa04dce3fe77a9d9ae99ce15ec56ac66"
+    },
+    "evidence/racecheck-run.log.gz": {
+      "raw_sha256": "9c5f7e863416d95c323a86cc07f8de496c246313ac26aca7b30e8b7a1ab703f2",
+      "gzip_sha256": "3940c5e03ca74fccbc63cd87dd700cad68b48bcdb6862c577fe64ea8d3014c80"
+    },
+    "evidence/racecheck-commands.txt.gz": {
+      "raw_sha256": "a834d7323aeb47ff782bac55fed129a5359d9ae0a0ec09ef17577b53a9e7afe0",
+      "gzip_sha256": "531118ae5b967d969d40df2ac055f0e0138f3152d714ea17810b0be5dcbaa63e"
+    },
+    "evidence/cli-summary.json.gz": {
+      "raw_sha256": "20b882660dcea6cb9f46e69c314ce5abe081c096a67d291b1c9000a70a821239",
+      "gzip_sha256": "f3675fb208438c78baa5006dd52ac7f3a2fd8b275ae0536ebca60fcf880f1d23"
+    },
+    "evidence/cli-results.json.gz": {
+      "raw_sha256": "7325bac6a0d4e9273ea30c3bf0e43c1328e0d801df32e66f1af6504fb6b1eec2",
+      "gzip_sha256": "a1a314d4933b8259ec61fa0a21180df493d9a9a01fafe21aae7b79f440135bfb"
+    },
+    "evidence/asan-cli-summary.json.gz": {
+      "raw_sha256": "20b882660dcea6cb9f46e69c314ce5abe081c096a67d291b1c9000a70a821239",
+      "gzip_sha256": "f3675fb208438c78baa5006dd52ac7f3a2fd8b275ae0536ebca60fcf880f1d23"
+    },
+    "evidence/asan-cli-results.json.gz": {
+      "raw_sha256": "d701571ec62f864a52a5c61b0141b0cae26cfb82712831384addab57542295ea",
+      "gzip_sha256": "e2575fd51bf6ca62fbe947b2ca945341b440460b3efb4c9bc1093bac618101f7"
+    },
+    "evidence/corpus.json.gz": {
+      "raw_sha256": "33ed43580377bd788eca93b4acac078f342736643a2d5c69f246022670bf96be",
+      "gzip_sha256": "d0313d14297e6c6037c2ec4583701cf5f1a98c32adeb99fb9ac9b19509e9d180"
+    },
+    "evidence/asan-default-startup-failure.log.gz": {
+      "raw_sha256": "1e42ad98f0f2b5c053f60afaf1a16448bfa771ac9b92b815f71b27b9f5d96d0e",
+      "gzip_sha256": "a8d9c4569648f6c8726b74cb7621db8a0dbc02657a60b4b253b49e880f8f96f7"
+    },
+    "evidence/final-build-build.json.gz": {
+      "raw_sha256": "fbc7961899d10d7778bb0f9707bd691cae3765e6460f20b6184901c5c108dd8c",
+      "gzip_sha256": "463d18ed1d6a85a6f55e2da7d17f618ca4fddef3f679228d0c204aa7f2d7f9ba"
+    },
+    "evidence/final-build-kpar-build.log.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    "evidence/final-build-probe-build.log.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    "evidence/final-asan-build-build.json.gz": {
+      "raw_sha256": "0fef7d8dde5ccd7fbf2dd111fbbbcbb6b3c2acea2a93bae00a2e1564b2a3712a",
+      "gzip_sha256": "6e2ed248b923d20eb318509c6b120a4d126870c3ac4496ba000d603869db6523"
+    },
+    "evidence/final-asan-build-kpar-build.log.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    "evidence/final-asan-build-probe-build.log.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    "evidence/production-summary.json.gz": {
+      "raw_sha256": "f0078de4b9e33b6c5cc6661a33f05b66dc85e6e65188aa1ea69b02a3a229f51f",
+      "gzip_sha256": "d7493ab8275fd5f9aff85d08dda10c56d5e41d758c73a8d890f7e913e4533ab2"
+    },
+    "evidence/production-results.json.gz": {
+      "raw_sha256": "fdfda614e7b1121ffe230ba73e5ed538798eb3de2c769c9a26c2ba1ee2c67208",
+      "gzip_sha256": "16dc877eb6f254c6749f48b286aeb9cdb0c3297c1e88711ea2bb183d3f0f09fb"
+    }
+  }
+}

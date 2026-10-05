@@ -62,9 +62,9 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "d7/d5c/classgraph_1_1SingleGPU__Kcore.html",
-"d9/d3b/namespacemcp.html#a62aead73ed4b9aba186b286b22327546",
-"dd/dc7/mcp__utils_8cuh.html#a6ca9bc60feb85a8dafaf9ca64f35c2a4",
-"namespacemembers.html"
+"d9/d3b/namespacemcp.html#a60a29aaedf4c391ed1613f92c497b5c8",
+"dd/dc7/mcp__utils_8cuh.html#a6b9d9584d16663e8f00b0f78e365fd28",
+"index.html#autotoc_md2"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

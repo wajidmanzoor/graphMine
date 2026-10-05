@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="../../graphmine-mark.svg"/></td>
   <td id="projectalign">
-   <div id="projectname">GraphMine library code reference<span id="projectnumber">&#160;0.1.0</span>
+   <div id="projectname">GraphMine library code reference<span id="projectnumber">&#160;1.0.0</span>
    </div>
    <div id="projectbrief">Function-level C++ and CUDA documentation</div>
   </td>
@@ -95,12 +95,15 @@ $(document).ready(function(){initNavTree('d3/dab/graphmine_8cpp.html','../../');
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">graphmine.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;boost/json/src.hpp&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="../../df/df3/validated__expansion_8hpp_source.html">graphmine/problems/validated_expansion.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../d4/d7b/repaired__algorithms_8hpp_source.html">graphmine/problems/repaired_algorithms.hpp</a>&quot;</code><br />
+<code>#include &lt;boost/json.hpp&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;charconv&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
@@ -162,6 +165,11 @@ Namespaces</h2></td></tr>
 <tr class="memitem:d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03" id="r_d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html">anonymous_namespace{graphmine.cpp}</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a5f6e000f28f86e0b458da3b421e44a13" id="r_a5f6e000f28f86e0b458da3b421e44a13"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dab/graphmine_8cpp.html#a5f6e000f28f86e0b458da3b421e44a13">GRAPHMINE_VERSION</a>&#160;&#160;&#160;&quot;unknown&quot;</td></tr>
+<tr class="separator:a5f6e000f28f86e0b458da3b421e44a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a904d947f5cd71981ad9353fdc5c640a0" id="r_a904d947f5cd71981ad9353fdc5c640a0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a904d947f5cd71981ad9353fdc5c640a0">anonymous_namespace{graphmine.cpp}::BackendProvider</a> = std::function&lt; std::vector&lt; <a class="el" href="../../da/d08/structgraphmine_1_1BackendInfo.html">graphmine::BackendInfo</a> &gt;()&gt;</td></tr>
@@ -169,6 +177,8 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a9e68141a362d8d3a52c82405dd060c99" id="r_a9e68141a362d8d3a52c82405dd060c99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../df/d4c/classgraphmine_1_1ExternalId.html">ExternalId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a9e68141a362d8d3a52c82405dd060c99">anonymous_namespace{graphmine.cpp}::argument_id</a> (const std::string &amp;text)</td></tr>
+<tr class="separator:a9e68141a362d8d3a52c82405dd060c99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57931aafa952ef33f54e54836785c081" id="r_a57931aafa952ef33f54e54836785c081"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a57931aafa952ef33f54e54836785c081">anonymous_namespace{graphmine.cpp}::backend_json</a> (const <a class="el" href="../../da/d08/structgraphmine_1_1BackendInfo.html">graphmine::BackendInfo</a> &amp;backend)</td></tr>
 <tr class="separator:a57931aafa952ef33f54e54836785c081"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a480e5c83f3e6be1e2e44537a5b572fdc" id="r_a480e5c83f3e6be1e2e44537a5b572fdc"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a480e5c83f3e6be1e2e44537a5b572fdc">anonymous_namespace{graphmine.cpp}::centrality_output</a> (const <a class="el" href="../../d5/da1/structgraphmine_1_1BetweennessCentralityOutput.html">graphmine::BetweennessCentralityOutput</a> &amp;output)</td></tr>
@@ -181,6 +191,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5cbfccc866c403da3575978abc1c1c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a881712807b501789db764b9e845d5307" id="r_a881712807b501789db764b9e845d5307"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a881712807b501789db764b9e845d5307">anonymous_namespace{graphmine.cpp}::emit_json</a> (const json::value &amp;value, const std::optional&lt; std::string &gt; &amp;path, bool pretty)</td></tr>
 <tr class="separator:a881712807b501789db764b9e845d5307"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b6a3cbffb6dd6695312d7317f2eb5f7" id="r_a7b6a3cbffb6dd6695312d7317f2eb5f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a7b6a3cbffb6dd6695312d7317f2eb5f7">anonymous_namespace{graphmine.cpp}::expansion_backend</a> (const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common, const std::string &amp;expected)</td></tr>
+<tr class="separator:a7b6a3cbffb6dd6695312d7317f2eb5f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a557e27125947aa070ed20bbf32993c6f" id="r_a557e27125947aa070ed20bbf32993c6f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="../../d8/d88/structanonymous__namespace_02graphmine_8cpp_03_1_1OperationDescriptor.html">OperationDescriptor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a557e27125947aa070ed20bbf32993c6f">anonymous_namespace{graphmine.cpp}::find_operation</a> (std::string name)</td></tr>
 <tr class="separator:a557e27125947aa070ed20bbf32993c6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53fa6269ba083c550cb02a30a346729a" id="r_a53fa6269ba083c550cb02a30a346729a"><td class="memItemLeft" align="right" valign="top">json::value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a53fa6269ba083c550cb02a30a346729a">anonymous_namespace{graphmine.cpp}::id_json</a> (const <a class="el" href="../../df/d4c/classgraphmine_1_1ExternalId.html">ExternalId</a> &amp;id)</td></tr>
@@ -190,6 +202,9 @@ Functions</h2></td></tr>
 <tr class="memitem:acaf3a2b6f1e130702b2d94b4079b2459" id="r_acaf3a2b6f1e130702b2d94b4079b2459"><td class="memTemplParams" colspan="2">template&lt;typename Callable &gt; </td></tr>
 <tr class="memitem:acaf3a2b6f1e130702b2d94b4079b2459"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#acaf3a2b6f1e130702b2d94b4079b2459">anonymous_namespace{graphmine.cpp}::invoke_backend</a> (Callable &amp;&amp;callable) -&gt; decltype(callable())</td></tr>
 <tr class="separator:acaf3a2b6f1e130702b2d94b4079b2459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7520743f4b55bb774c3d57ea3b8527" id="r_afc7520743f4b55bb774c3d57ea3b8527"><td class="memTemplParams" colspan="2">template&lt;class Options &gt; </td></tr>
+<tr class="memitem:afc7520743f4b55bb774c3d57ea3b8527"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#afc7520743f4b55bb774c3d57ea3b8527">anonymous_namespace{graphmine.cpp}::isolated_options</a> (Options &amp;options, <a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
+<tr class="separator:afc7520743f4b55bb774c3d57ea3b8527"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae77693e27dc887390acc06ff83da1f7e" id="r_ae77693e27dc887390acc06ff83da1f7e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#ae77693e27dc887390acc06ff83da1f7e">anonymous_namespace{graphmine.cpp}::json_succeeded</a> (const json::object &amp;result)</td></tr>
 <tr class="separator:ae77693e27dc887390acc06ff83da1f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7145e0077262b07fbb14b3765fa36321" id="r_a7145e0077262b07fbb14b3765fa36321"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a7145e0077262b07fbb14b3765fa36321">anonymous_namespace{graphmine.cpp}::k_clique_output</a> (const <a class="el" href="../../d5/d51/structgraphmine_1_1KCliqueOutput.html">graphmine::KCliqueOutput</a> &amp;output)</td></tr>
@@ -268,8 +283,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5b611e2f8051679564721a3c0d00bc27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe16727edf91022351585783948e063e" id="r_afe16727edf91022351585783948e063e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#afe16727edf91022351585783948e063e">anonymous_namespace{graphmine.cpp}::require_string</a> (const json::value &amp;value, std::string_view context)</td></tr>
 <tr class="separator:afe16727edf91022351585783948e063e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8650fad38027689347d767c627dab7ac" id="r_a8650fad38027689347d767c627dab7ac"><td class="memTemplParams" colspan="2">template&lt;typename Output , typename Serialize &gt; </td></tr>
-<tr class="memitem:a8650fad38027689347d767c627dab7ac"><td class="memTemplItemLeft" align="right" valign="top">json::object&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a8650fad38027689347d767c627dab7ac">anonymous_namespace{graphmine.cpp}::result_json</a> (const <a class="el" href="../../d6/dca/classgraphmine_1_1ExecutionResult.html">graphmine::ExecutionResult</a>&lt; Output &gt; &amp;result, bool include_statistics, Serialize serialize)</td></tr>
+<tr class="memitem:a8650fad38027689347d767c627dab7ac" id="r_a8650fad38027689347d767c627dab7ac"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="../../df/df1/structOutput.html">Output</a> , typename Serialize &gt; </td></tr>
+<tr class="memitem:a8650fad38027689347d767c627dab7ac"><td class="memTemplItemLeft" align="right" valign="top">json::object&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a8650fad38027689347d767c627dab7ac">anonymous_namespace{graphmine.cpp}::result_json</a> (const <a class="el" href="../../d6/dca/classgraphmine_1_1ExecutionResult.html">graphmine::ExecutionResult</a>&lt; <a class="el" href="../../df/df1/structOutput.html">Output</a> &gt; &amp;result, bool include_statistics, Serialize serialize)</td></tr>
 <tr class="separator:a8650fad38027689347d767c627dab7ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ffd094e9aefbfc218a9832f3e991d4d" id="r_a4ffd094e9aefbfc218a9832f3e991d4d"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a4ffd094e9aefbfc218a9832f3e991d4d">anonymous_namespace{graphmine.cpp}::run_centrality</a> (<a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
 <tr class="separator:a4ffd094e9aefbfc218a9832f3e991d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -277,6 +292,8 @@ Functions</h2></td></tr>
 <tr class="separator:a004149f186b1b08df81b27f19a66e849"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3a0d1ec89017b2f6802ba8f41bfe241" id="r_af3a0d1ec89017b2f6802ba8f41bfe241"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#af3a0d1ec89017b2f6802ba8f41bfe241">anonymous_namespace{graphmine.cpp}::run_dynamic_triangle_counting</a> (<a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
 <tr class="separator:af3a0d1ec89017b2f6802ba8f41bfe241"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5cbed7771550458f01af718c7403580" id="r_aa5cbed7771550458f01af718c7403580"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#aa5cbed7771550458f01af718c7403580">anonymous_namespace{graphmine.cpp}::run_expansion</a> (const std::string &amp;operation, <a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
+<tr class="separator:aa5cbed7771550458f01af718c7403580"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08b351e8cabc3fe5d5f6e2b6b4230730" id="r_a08b351e8cabc3fe5d5f6e2b6b4230730"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a08b351e8cabc3fe5d5f6e2b6b4230730">anonymous_namespace{graphmine.cpp}::run_graph_motifs</a> (<a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
 <tr class="separator:a08b351e8cabc3fe5d5f6e2b6b4230730"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa05c1c9641398d5e30bcfc9c934ce5a2" id="r_aa05c1c9641398d5e30bcfc9c934ce5a2"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#aa05c1c9641398d5e30bcfc9c934ce5a2">anonymous_namespace{graphmine.cpp}::run_k_cliques</a> (<a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
@@ -293,6 +310,8 @@ Functions</h2></td></tr>
 <tr class="separator:a6958ab676a41c9221aa6e1787de246a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf07fbfb50f249f893551cdf8ddbc9ea" id="r_acf07fbfb50f249f893551cdf8ddbc9ea"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#acf07fbfb50f249f893551cdf8ddbc9ea">anonymous_namespace{graphmine.cpp}::run_quasi_cliques</a> (<a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
 <tr class="separator:acf07fbfb50f249f893551cdf8ddbc9ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebf9c13856958dbc9cb33a5509d7c742" id="r_aebf9c13856958dbc9cb33a5509d7c742"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#aebf9c13856958dbc9cb33a5509d7c742">anonymous_namespace{graphmine.cpp}::run_repaired</a> (const std::string &amp;operation, <a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
+<tr class="separator:aebf9c13856958dbc9cb33a5509d7c742"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2e42049f6d469e6424d63a101307774" id="r_ab2e42049f6d469e6424d63a101307774"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#ab2e42049f6d469e6424d63a101307774">anonymous_namespace{graphmine.cpp}::run_subgraph_isomorphism</a> (<a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
 <tr class="separator:ab2e42049f6d469e6424d63a101307774"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7213e8c76ddf8ac51c2b867a3817b58a" id="r_a7213e8c76ddf8ac51c2b867a3817b58a"><td class="memItemLeft" align="right" valign="top">json::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a7213e8c76ddf8ac51c2b867a3817b58a">anonymous_namespace{graphmine.cpp}::run_temporal_motifs</a> (<a class="el" href="../../d9/d5e/classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments.html">Arguments</a> &amp;arguments, const <a class="el" href="../../db/d3d/structanonymous__namespace_02graphmine_8cpp_03_1_1CommonOptions.html">CommonOptions</a> &amp;common)</td></tr>
@@ -318,6 +337,23 @@ Functions</h2></td></tr>
 <tr class="memitem:a9cd31eed2847c24e13aed59fd4a1f653" id="r_a9cd31eed2847c24e13aed59fd4a1f653"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d37/namespaceanonymous__namespace_02graphmine_8cpp_03.html#a9cd31eed2847c24e13aed59fd4a1f653">anonymous_namespace{graphmine.cpp}::write_pretty</a> (std::ostream &amp;output, const json::value &amp;value, unsigned indent=0)</td></tr>
 <tr class="separator:a9cd31eed2847c24e13aed59fd4a1f653"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a5f6e000f28f86e0b458da3b421e44a13" name="a5f6e000f28f86e0b458da3b421e44a13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f6e000f28f86e0b458da3b421e44a13">&#9670;&#160;</a></span>GRAPHMINE_VERSION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GRAPHMINE_VERSION&#160;&#160;&#160;&quot;unknown&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00047">47</a> of file <a class="el" href="../../d3/dab/graphmine_8cpp_source.html">graphmine.cpp</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a3c04138a5bfe5d72780bb7e82a18e627" name="a3c04138a5bfe5d72780bb7e82a18e627"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3c04138a5bfe5d72780bb7e82a18e627">&#9670;&#160;</a></span>main()</h2>
@@ -345,9 +381,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01645">1645</a> of file <a class="el" href="../../d3/dab/graphmine_8cpp_source.html">graphmine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01775">1775</a> of file <a class="el" href="../../d3/dab/graphmine_8cpp_source.html">graphmine.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00495">anonymous_namespace{graphmine.cpp}::emit_json()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01533">anonymous_namespace{graphmine.cpp}::find_operation()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01426">anonymous_namespace{graphmine.cpp}::OperationDescriptor::id</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01638">anonymous_namespace{graphmine.cpp}::json_succeeded()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01546">anonymous_namespace{graphmine.cpp}::list_json()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00634">anonymous_namespace{graphmine.cpp}::normalized_name()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01522">anonymous_namespace{graphmine.cpp}::operation_json()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00663">anonymous_namespace{graphmine.cpp}::parse_common()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01619">anonymous_namespace{graphmine.cpp}::print_help()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00362">anonymous_namespace{graphmine.cpp}::read_graph()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01579">anonymous_namespace{graphmine.cpp}::run_operation()</a>, and <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01566">anonymous_namespace{graphmine.cpp}::validate_graph_json()</a>.</p>
+<p class="reference">References <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00501">anonymous_namespace{graphmine.cpp}::emit_json()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01657">anonymous_namespace{graphmine.cpp}::find_operation()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00047">GRAPHMINE_VERSION</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01539">anonymous_namespace{graphmine.cpp}::OperationDescriptor::id</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01768">anonymous_namespace{graphmine.cpp}::json_succeeded()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01670">anonymous_namespace{graphmine.cpp}::list_json()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00640">anonymous_namespace{graphmine.cpp}::normalized_name()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01646">anonymous_namespace{graphmine.cpp}::operation_json()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00669">anonymous_namespace{graphmine.cpp}::parse_common()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01748">anonymous_namespace{graphmine.cpp}::print_help()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l00368">anonymous_namespace{graphmine.cpp}::read_graph()</a>, <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01704">anonymous_namespace{graphmine.cpp}::run_operation()</a>, and <a class="el" href="../../d3/dab/graphmine_8cpp_source.html#l01691">anonymous_namespace{graphmine.cpp}::validate_graph_json()</a>.</p>
 
 </div>
 </div>

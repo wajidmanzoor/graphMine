@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "provenance": {
+    "problem": "maximum_clique",
+    "backend": "maximum-clique-on-gpu",
+    "backend_version": "Maximum-Clique-on-GPU artifact (2026-10-04 repair)",
+    "source_commit": "62708c588219",
+    "execution_path": "repaired k-core preprocessing and reduction + GPU branch-and-bound with clique witness"
+  },
+  "warnings": [],
+  "statistics": {
+    "end_to_end_ms": 141.160136,
+    "backend_ms": 26.320811,
+    "output_materialization_ms": 0.0
+  },
+  "output": {
+    "maximum_size": 3,
+    "cliques": [
+      [
+        "device-875-2",
+        "device-656-1",
+        "device-447-0"
+      ]
+    ],
+    "optimal": true
+  }
+}

@@ -231,7 +231,8 @@ namespace graph
 		{
 			size_t c = count == 0 ? N : count;
 
-			if (_at == AllocationTypeEnum::unified)
+			// newAlloc promises a malloc-owned copy even for managed storage.
+			if (_at == AllocationTypeEnum::unified && !newAlloc)
 				return &(gpu_data[startIndex]);
 
 			CUDA_RUNTIME(cudaSetDevice(_deviceId));

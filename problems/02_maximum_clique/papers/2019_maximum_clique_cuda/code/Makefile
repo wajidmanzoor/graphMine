@@ -13,7 +13,7 @@ BASE_LDLIBS:= #-lcurand
 CC=$(GCC)
 NVCC=nvcc
 
-NVFLAGS=-m64 -g -G  -lineinfo  $(CUSTOM_FLAGS)  -I$(INCLUDE_PATH) -I$(CUDA_HOME)/include/ -Xcompiler "-Wall -g" -Xptxas -v,-warn-lmem-usage,-warn-spills  --maxrregcount 32
+NVFLAGS=-m64 -O3 -lineinfo $(CUSTOM_FLAGS) -I$(INCLUDE_PATH) -I$(CUDA_HOME)/include/ -Xcompiler "-Wall -g"
 
 BASE_CFLAGS+= -march=native
 NVFLAGS+=  -std=c++11 -arch=sm_89
@@ -24,7 +24,7 @@ LIBTOOL=libtool
 DEBUG_CFLAGS:=  -DSINGLE #-finstrument-functions
 DEBUG_LDFLAGS:=
 DEBUG_LDLIBS:=
-FINAL_CFLAGS:=-ffast-math  -O3 #-mcpu=pentium3
+FINAL_CFLAGS:=-O3
 FINAL_LDFLAGS:=
 FINAL_LDLIBS:=-lm
 

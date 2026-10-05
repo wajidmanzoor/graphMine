@@ -21,7 +21,9 @@ def _sha256(relative: str) -> str:
 
 def test_v1_version_is_consistent_across_release_contracts() -> None:
     assert __version__ == "1.0.0"
-    assert (REPOSITORY_ROOT / "VERSION").read_text(encoding="utf-8").strip() == __version__
+    assert (REPOSITORY_ROOT / "VERSION").read_text(
+        encoding="utf-8"
+    ).strip() == __version__
     pyproject = tomllib.loads(
         (REPOSITORY_ROOT / "agent" / "pyproject.toml").read_text(encoding="utf-8")
     )
@@ -55,8 +57,7 @@ def test_v1_qwen_reports_match_current_corpus_and_pass_exact_gate() -> None:
         assert len(report["cases"]) == total
         assert all(case["passed"] for case in report["cases"])
         assert all(
-            group["passed"] == group["total"]
-            for group in report["by_domain"].values()
+            group["passed"] == group["total"] for group in report["by_domain"].values()
         )
 
 
@@ -74,8 +75,8 @@ def test_v1_benchmark_summary_and_policy_are_hash_linked() -> None:
     }
     assert summary["sha256"]["manifest"] == _sha256("benchmarks/v1-smoke.json")
     assert summary["sha256"]["backend_policy"] == _sha256(
-        "agent/backend_policy.json"
+        "benchmarks/reports/v1-backend-policy.json"
     )
-    policy = _json("agent/backend_policy.json")
+    policy = _json("benchmarks/reports/v1-backend-policy.json")
     assert policy["schema_version"] == "1.0.0"
     assert len(policy["operations"]) == 13

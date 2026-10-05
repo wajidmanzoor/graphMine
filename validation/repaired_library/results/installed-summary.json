@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "checks": 49,
+  "passed": 49,
+  "failures": 0,
+  "rejection_checks": 21,
+  "suite": "quick",
+  "binary_sha256": "b18babf302965e4c038faa19f1cd6374149033761a03312077738d76ceb6d508"
+}

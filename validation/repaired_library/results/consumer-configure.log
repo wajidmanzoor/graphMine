@@ -1,0 +1,17 @@
+-- Enabled Kokkos devices: SERIAL;CUDA
+CMake Warning at /tmp/pggc-deps/install/lib/cmake/Kokkos/KokkosConfigCommon.cmake:59 (message):
+  The installed Kokkos configuration does not support CXX extensions.
+  Forcing -DCMAKE_CXX_EXTENSIONS=Off
+Call Stack (most recent call first):
+  /tmp/pggc-deps/install/lib/cmake/Kokkos/KokkosConfig.cmake:43 (include)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/pggc-deps/install/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake:35 (find_dependency)
+  /usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /tmp/graphmine-repaired-install/lib/cmake/GraphMine/GraphMineConfig.cmake:51 (find_dependency)
+  CMakeLists.txt:4 (find_package)
+
+
+-- kokkos_launch_compiler is enabled globally. C++ compiler commands with -DKOKKOS_DEPENDENCE will be redirected to the appropriate compiler for Kokkos
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/graphmine-repaired-consumer

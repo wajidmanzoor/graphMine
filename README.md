@@ -6,10 +6,12 @@ graph model, typed problem APIs, runtime backend selection, and a build-once
 JSON command-line runner.
 
 - **37** complete graph-problem contracts for problem identification
-- **17** problems with validated library support
-- **18** runnable library operations
-- **31** registered backend choices (existing agent correctness exclusions still apply)
+- **22** problems with validated library support
+- **24** runnable library operations
+- **38** registered backend choices
 - Canonical JSON graph input and structured JSON results
+
+The [repaired algorithm guide](library/docs/repaired_algorithms.md) documents the nine repaired integrations, their exact profiles, installation, and agent JSON contracts.
 
 The [2026-10-04 expansion](docs/ALGORITHM_EXPANSION.md) explains the five new
 executable profiles, all 17 new problem definitions, and routing without mandatory
@@ -30,6 +32,9 @@ retraining. The original V1 release scope and scores remain in
   operation/CLI contract.
 - [`validation/gpu_correctness/results/results.json`](validation/gpu_correctness/results/results.json)
   records the validation classifications and checks used by the catalog.
+- [`validation/algorithm_repairs/`](validation/algorithm_repairs/) records
+  sequential algorithm fixes, independent regression checks, and reproducible
+  repair patches. All nine repaired profiles now have [library and agent integration evidence](validation/repaired_library/REPORT.md).
 - [`docs/`](docs/) is the static documentation website.
 - [`agent/`](agent/) contains the domain-aware planner/analyst service,
   private-LAN API, durable GPU job queue, and interactive web application.
@@ -37,6 +42,7 @@ retraining. The original V1 release scope and scores remain in
 ## Build once, run many queries
 
 ```bash
+python3 library/tools/prepare_repaired_workers.py --fetch --gpu 1
 cmake -S library -B library/build \
   -DCMAKE_BUILD_TYPE=Release \
   -DGRAPHMINE_BUILD_CLI=ON
@@ -99,7 +105,7 @@ For supported problems, the catalog connects that formal contract to:
 - selectable backend capabilities and source provenance;
 - the passing validation workload, checks, and notes.
 
-For the other 20 problem definitions, the catalog explicitly returns
+For the other 15 problem definitions, the catalog explicitly returns
 `no_validated_backend`; a query planner must not substitute a nearby problem.
 Regenerate the catalog after changing a problem or library contract with:
 
@@ -118,9 +124,8 @@ The site has no framework or build dependency. It reads the global problem
 catalog at runtime to render the searchable validated-operation documentation.
 It also includes a [low-level code reference](docs/reference/) for GraphMine's
 public C++ API and adapters plus isolated function-by-function C/C++/CUDA
-references for the original 24 research source artifacts. The new profiles are
-documented in the expansion guide; the generator also supports their source
-paths. Regenerate those
+references for vendored research sources and provenance/build pages for the
+seven externally prepared repair workers. Regenerate those
 committed pages with `node tools/build_code_docs.mjs` when code changes.
 
 ## Research artifacts

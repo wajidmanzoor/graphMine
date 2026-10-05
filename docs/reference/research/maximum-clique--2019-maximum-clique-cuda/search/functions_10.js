@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['vec_5fsim_0',['vec_sim',['../dd/dc9/motzkin_8c.html#adcd31b5a0f5749deb9e823af5f7d3083',1,'motzkin.c']]],
-  ['vec_5fto_5fmask_1',['vec_to_mask',['../dd/dc9/motzkin_8c.html#a005e56e35544e594505d1d78164c8d45',1,'motzkin.c']]]
+  ['uni_5fran_0',['uni_ran',['../dc/de5/random_8c.html#a5fd230dd79027314fd0b21246d3cb4d7',1,'uni_ran(double min, double max):&#160;random.c'],['../d1/d79/random_8h.html#a5fd230dd79027314fd0b21246d3cb4d7',1,'uni_ran(double min, double max):&#160;random.c']]],
+  ['unmaponesgpu_1',['unmapOnesGPU',['../d2/d82/motzkin__cuda_8cu.html#aeadabc8fe15d011463be712cfba0c91c',1,'motzkin_cuda.cu']]],
+  ['unmapresgpu_2',['unmapResGPU',['../d2/d82/motzkin__cuda_8cu.html#a8b785ecfc3a5c8b7b6c01dc841e1f0b2',1,'motzkin_cuda.cu']]],
+  ['updatemapgpu_3',['updateMapGPU',['../d2/d82/motzkin__cuda_8cu.html#a55cc1c5d2c41f671dcfc51ca44387dfe',1,'motzkin_cuda.cu']]]
 ];

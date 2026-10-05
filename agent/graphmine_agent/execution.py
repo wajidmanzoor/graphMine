@@ -270,12 +270,12 @@ class GraphMineRunner:
             if specification["type"] == "boolean":
                 if value:
                     command.append(flag)
-            elif specification["type"] == "vertex_id":
+            elif specification["type"] in {"vertex_id", "vertex_groups"}:
                 command.extend([flag, json.dumps(value, ensure_ascii=False)])
             else:
                 command.extend([flag, str(value)])
 
-        if plan.operation_id in EXPANSION_OPERATIONS - {"butterfly-counting"}:
+        if plan.operation_id in EXPANSION_OPERATIONS:
             command.extend(
                 ["--timeout-seconds", str(min(60, self.settings.job_timeout_seconds))]
             )

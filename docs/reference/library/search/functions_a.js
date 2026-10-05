@@ -8,5 +8,7 @@ var searchData=
   ['kcliques_5',['KCliques',['../d9/d4c/classgraphmine_1_1KCliques.html#a58132ac23348db2a1624aa3135f59c39',1,'graphmine::KCliques']]],
   ['kcore_6',['KCore',['../dd/d5c/classgraphmine_1_1KCore.html#a032e9e86e5f1334aee8fb4e39c144dc3',1,'graphmine::KCore']]],
   ['kcore_5fgpu_5fbackend_5fcompiled_7',['kcore_gpu_backend_compiled',['../d3/dfc/namespacegraphmine_1_1detail.html#a84c31d82cbd48d33b11f23723d32a14a',1,'graphmine::detail']]],
-  ['kcore_5fprovenance_8',['kcore_provenance',['../d7/d0d/namespacegraphmine_1_1anonymous__namespace_02k__core_8cpp_03.html#abfca049ea98eecfcb90b6be332a037e9',1,'graphmine::anonymous_namespace{k_core.cpp}']]]
+  ['kcore_5fprovenance_8',['kcore_provenance',['../d7/d0d/namespacegraphmine_1_1anonymous__namespace_02k__core_8cpp_03.html#abfca049ea98eecfcb90b6be332a037e9',1,'graphmine::anonymous_namespace{k_core.cpp}']]],
+  ['kerneltimer_9',['KernelTimer',['../d4/df9/structKernelTimer.html#a75b4c10ec02f61600d312f694ed5737f',1,'KernelTimer']]],
+  ['ktruss_10',['KTruss',['../d2/ddc/classgraphmine_1_1KTruss.html#a096b9897f6d78721b653146b507c2711',1,'graphmine::KTruss']]]
 ];

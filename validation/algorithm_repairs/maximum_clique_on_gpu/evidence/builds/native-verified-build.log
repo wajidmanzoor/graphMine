@@ -1,0 +1,474 @@
+[  2%] Built target graphmine_core
+[  2%] Built target graphmine_worker_ecl_scc
+[  3%] Built target graphmine_worker_ecl_flow
+[  9%] Built target graphmine_worker_gdlog_tc
+[ 11%] Built target graphmine_worker_hungarian
+[ 13%] Built target graphmine_backend_g2_aimd
+[ 14%] Built target graphmine_backend_mce_gpu
+[ 17%] Built target graphmine_backend_rdmce
+[ 21%] Built target graphmine_backend_kcoregpu
+[ 26%] Built target graphmine_backend_cuda_ms
+[ 26%] Building CUDA object CMakeFiles/graphmine_backend_maximum_clique_on_gpu.dir/src/backends/maximum_clique_on_gpu_backend.cu.o
+[ 27%] Built target graphmine_backend_wetric
+[ 29%] Built target graphmine_backend_tot
+[ 34%] Built target graphmine_backend_gpu_maximum_clique
+[ 36%] Built target graphmine_backend_graphset_kclique
+[ 38%] Built target graphmine_backend_kcgpu
+[ 40%] Built target graphmine_backend_edtc
+[ 44%] Built target graphmine_backend_cumbe
+[ 44%] Built target graphmine_backend_gamma_kclique
+[ 45%] Built target graphmine_backend_turbobc
+[ 46%] Built target graphmine_backend_cuqc
+[ 50%] Built target graphmine_backend_gmatch
+[ 52%] Built target graphmine_backend_everest
+[ 54%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 59%] Built target graphmine_maximal_cliques
+[ 64%] Built target graphmine_backend_pggc
+[ 67%] Built target graphmine_backend_graphminer_motif
+[ 72%] Built target graphmine_backend_dumato_motif
+[ 80%] Built target graphmine_backend_graphset_motif
+[ 82%] Built target graphmine_k_core
+[ 83%] Built target graphmine_dynamic_triangle_counting
+[ 84%] Built target graphmine_triangle_counting
+[ 85%] Built target graphmine_k_cliques
+[ 86%] Built target graphmine_maximal_bicliques
+[ 89%] Built target graphmine_betweenness_centrality
+[ 90%] Built target graphmine_quasi_cliques
+[ 91%] Built target graphmine_subgraph_isomorphism
+[ 92%] Built target graphmine_temporal_motif_mining
+[ 94%] Built target graphmine_community_detection
+[ 95%] Built target graphmine_graph_motifs
+[ 96%] Built target graphmine_validated_expansion
+In file included from /home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh:4,
+                 from /home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/kcore.cuh:10,
+                 from /home/wajid/projects/graphDatabaseAgent/library/src/backends/maximum_clique_on_gpu_backend.cu:48:
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/../include/queue.cuh:19:83: warning: backslash and newline separated by space
+   19 |   {                                                                               \
+      |                                                                                    
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/../include/queue.cuh:29:83: warning: backslash and newline separated by space
+   29 |     }                                                                             \
+      |                                                                                    
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/../include/queue.cuh:165:52: warning: backslash-newline at end of file
+  165 | #define waiting_blocks(queue, tickets, head, tail) \
+      |                                                     
+In file included from /home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh:4,
+                 from /home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/kcore.cuh:10,
+                 from /home/wajid/projects/graphDatabaseAgent/library/src/backends/maximum_clique_on_gpu_backend.cu:48:
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/../include/queue.cuh:19:83: warning: backslash and newline separated by space
+   19 |   {                                                                               \
+      |                                                                                    
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/../include/queue.cuh:29:83: warning: backslash and newline separated by space
+   29 |     }                                                                             \
+      |                                                                                    
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/../include/queue.cuh:165:52: warning: backslash-newline at end of file
+  165 | #define waiting_blocks(queue, tickets, head, tail) \
+      |                                                     
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(546): warning #83-D: type qualifier specified more than once
+    GLOBAL_HANDLE<T> &gh, const T& num_divs_local, const T const* encode, const T& max_clq)
+                                                           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(756): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(756): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(779): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(779): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(803): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(803): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(828): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(863): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(895): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(931): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(931): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(999): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(999): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1054): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1054): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1106): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1106): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1516): warning #83-D: type qualifier specified more than once
+                            bool empty(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                    ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1540): warning #83-D: type qualifier specified more than once
+                            bool empty_w(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                      ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1551): warning #83-D: type qualifier specified more than once
+                            T popc(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1582): warning #83-D: type qualifier specified more than once
+      const T &lim, const int& last_choosen_index, const T const*col)
+                                                           ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1618): warning #83-D: type qualifier specified more than once
+      const T &lim, const int& last_choosen_index, const T const*col)
+                                                           ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1655): warning #83-D: type qualifier specified more than once
+      const int &lim, const int& last_choosen_index, const T const*col)
+                                                             ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1866): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, T* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1893): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1893): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, const T const* cur_bl)
+                                                ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1907): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1950): warning #83-D: type qualifier specified more than once
+      const int& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                            ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1993): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(2040): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5132): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl)
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5259): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl, T * cur_bl)
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5331): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5376): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5429): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(546): warning #83-D: type qualifier specified more than once
+    GLOBAL_HANDLE<T> &gh, const T& num_divs_local, const T const* encode, const T& max_clq)
+                                                           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(756): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(756): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(779): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(779): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(803): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(803): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(828): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(863): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(895): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(931): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(931): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(999): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(999): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1054): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1054): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1106): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1106): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1516): warning #83-D: type qualifier specified more than once
+                            bool empty(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                    ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1540): warning #83-D: type qualifier specified more than once
+                            bool empty_w(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                      ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1551): warning #83-D: type qualifier specified more than once
+                            T popc(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1582): warning #83-D: type qualifier specified more than once
+      const T &lim, const int& last_choosen_index, const T const*col)
+                                                           ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1618): warning #83-D: type qualifier specified more than once
+      const T &lim, const int& last_choosen_index, const T const*col)
+                                                           ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1655): warning #83-D: type qualifier specified more than once
+      const int &lim, const int& last_choosen_index, const T const*col)
+                                                             ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1866): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, T* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1893): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1893): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, const T const* cur_bl)
+                                                ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1907): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1950): warning #83-D: type qualifier specified more than once
+      const int& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                            ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(1993): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(2040): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5132): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl)
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5259): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl, T * cur_bl)
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5331): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5376): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5429): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/kcore.cuh(868): warning #177-D: variable "dimBlock" was declared but never referenced
+     constexpr int dimBlock = 64;
+                   ^
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/kcore.cuh(364): warning #177-D: variable "partitionsPerBlock" was declared but never referenced
+   const size_t partitionsPerBlock = BD / P;
+                ^
+          detected during instantiation of "void graphmine_maximum_clique_on_gpu_upstream::SingleGPU_Kcore<T, PeelT>::findKcoreIncremental_async(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<T> &, size_t, size_t) [with T=DataType, PeelT=PeelType]" at line 189 of /home/wajid/projects/graphDatabaseAgent/library/src/backends/maximum_clique_on_gpu_backend.cu
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/kcore.cuh(366): warning #177-D: variable "_warpIdx" was declared but never referenced
+   const int _warpIdx = threadIdx.x / P;
+             ^
+          detected during instantiation of "void graphmine_maximum_clique_on_gpu_upstream::SingleGPU_Kcore<T, PeelT>::findKcoreIncremental_async(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<T> &, size_t, size_t) [with T=DataType, PeelT=PeelType]" at line 189 of /home/wajid/projects/graphDatabaseAgent/library/src/backends/maximum_clique_on_gpu_backend.cu
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(163): warning #177-D: variable "_warpIdx" was declared but never referenced
+      const int _warpIdx = threadIdx.x / CPARTSIZE;
+                ^
+          detected during:
+            instantiation of "void mcp_kernel_l1_wl_donor_psanse<T,BLOCK_DIM_X,CPARTSIZE>(mcp::GLOBAL_HANDLE<T>, uint32_t *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *) [with T=DataType, BLOCK_DIM_X=128U, CPARTSIZE=32U]" at line 206 of /home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/mcp/mcp.cuh
+            instantiation of "void graphmine_maximum_clique_on_gpu_upstream::MultiGPU_MCP<T>::mcp_search<PSIZE>(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<T> &, GraphMineMaximumCliqueOnGpuConfig) [with T=DataType, PSIZE=32]" at line 410 of /home/wajid/projects/graphDatabaseAgent/library/src/backends/maximum_clique_on_gpu_backend.cu
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(192): warning #177-D: variable "_warpIdx" was declared but never referenced
+      const int _warpIdx = threadIdx.x / CPARTSIZE;
+                ^
+          detected during:
+            instantiation of "void mcp_kernel_l1_wl_donor_psanse<T,BLOCK_DIM_X,CPARTSIZE>(mcp::GLOBAL_HANDLE<T>, uint32_t *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *) [with T=DataType, BLOCK_DIM_X=128U, CPARTSIZE=32U]" at line 206 of /home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/mcp/mcp.cuh
+            instantiation of "void graphmine_maximum_clique_on_gpu_upstream::MultiGPU_MCP<T>::mcp_search<PSIZE>(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<T> &, GraphMineMaximumCliqueOnGpuConfig) [with T=DataType, PSIZE=32]" at line 410 of /home/wajid/projects/graphDatabaseAgent/library/src/backends/maximum_clique_on_gpu_backend.cu
+
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/../mcp/mcp_utils.cuh(5336): warning #177-D: variable "inserted" was declared but never referenced
+              bool inserted;
+                   ^
+          detected during:
+            instantiation of "void mcp_kernel_l1_wl_donor_tomita<T,BLOCK_DIM_X,CPARTSIZE>(mcp::GLOBAL_HANDLE<T>, uint32_t *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *) [with T=DataType, BLOCK_DIM_X=64U, CPARTSIZE=32U]" at line 252 of /home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/mcp/mcp.cuh
+            instantiation of "void graphmine_maximum_clique_on_gpu_upstream::MultiGPU_MCP<T>::mcp_search<PSIZE>(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<T> &, GraphMineMaximumCliqueOnGpuConfig) [with T=DataType, PSIZE=32]" at line 410 of /home/wajid/projects/graphDatabaseAgent/library/src/backends/maximum_clique_on_gpu_backend.cu
+
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_reduceIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_reduceIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_reduceIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_psanseIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_psanseIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_psanseIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj1024ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj64ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj1024ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj64ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj1024ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj64ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj1024ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj64ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. minnctapersm will be ignored
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/logger.h: In instantiation of ‘void Log(LogPriorityEnum, const char*, Args ...) [with bool NEWLINE = true; Args = {}]’:
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/cgarray.cuh:135:4:   required from ‘void graphmine_maximum_clique_on_gpu_upstream::GPUArray<T>::switch_to_gpu(int, size_t) [with T = unsigned int; size_t = long unsigned int]’
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/graph_queue.cuh:41:22:   required from ‘void graphmine_maximum_clique_on_gpu_upstream::GraphQueue<T, MarkType>::Create(AllocationTypeEnum, uint, int) [with T = unsigned int; MarkType = unsigned int; uint = unsigned int]’
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/kcore.cuh:876:16:   required from ‘void graphmine_maximum_clique_on_gpu_upstream::SingleGPU_Kcore<T, PeelT>::findKcoreIncremental_async(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<T>&, size_t, size_t) [with T = unsigned int; PeelT = int; size_t = long unsigned int]’
+/home/wajid/projects/graphDatabaseAgent/library/src/backends/maximum_clique_on_gpu_backend.cu:189:33:   required from here
+/home/wajid/projects/graphDatabaseAgent/library/../problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/logger.h:33:7: warning: format not a string literal and no format arguments [-Wformat-security]
+   33 |   printf(f, args...);
+      |   ~~~~^~~~~~~~~~~~
+[ 97%] Linking CUDA device code CMakeFiles/graphmine_backend_maximum_clique_on_gpu.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 97%] Linking CXX static library libgraphmine_backend_maximum_clique_on_gpu.a
+[ 97%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 98%] Building CXX object CMakeFiles/graphmine_maximum_clique.dir/src/problems/maximum_clique.cpp.o
+[ 98%] Linking CXX static library libgraphmine_maximum_clique.a
+[ 98%] Built target graphmine_maximum_clique
+[100%] Linking CXX executable graphmine
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+ptxas warning : Value of threads per SM for entry _Z16cycle4_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z18triangle_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z15wedge_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+/usr/bin/ld: warning: motzkin.c.o: requires executable stack (because the .note.GNU-stack section is executable)
+[100%] Built target graphmine_cli
+[  8%] Built target graphmine_core
+[ 41%] Built target graphmine_backend_cuda_ms
+[ 58%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 83%] Built target graphmine_backend_gpu_maximum_clique
+[ 91%] Built target graphmine_maximum_clique
+[100%] Building CXX object CMakeFiles/graphmine_maximum_clique_test.dir/tests/maximum_clique_test.cpp.o
+[100%] Linking CXX executable graphmine_maximum_clique_test
+/usr/bin/ld: warning: motzkin.c.o: requires executable stack (because the .note.GNU-stack section is executable)
+[100%] Built target graphmine_maximum_clique_test

@@ -1,0 +1,44 @@
+{
+  "binary_sha256": {
+    "library/build/graphmine": "f316f8cb4e484bf325698e162d9e1eadfcb0a0271768bc92a99e2052f25c6836",
+    "library/build/graphmine_maximum_clique_test": "4485fce7c5e57bbf7e1078b34ec5de98a59d0d495ef8d155b9e879629bd0036e",
+    "library/build/libgraphmine_backend_maximum_clique_on_gpu.a": "efb343e66dbcb7f6c372e07dea42483f0f41155c527ab45a565bb0256540bdc8",
+    "graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/native-linked-probe": "25006b511ac803a79a36706cf682edcc56eebb38feae6c7260f44fe89b32580a"
+  },
+  "source_sha256": {
+    "library/src/backends/maximum_clique_on_gpu_backend.cu": "070dfc7c8f9778f8cce1c47ba781971e7e8d4e9243e841ca3b03fafaad7ae238",
+    "library/src/problems/maximum_clique.cpp": "fe8747f33a10191938e1d8795db5f2ca94a0551e622cc59326f30ab45b9e5245",
+    "library/tests/maximum_clique_test.cpp": "a62e139f06c58c60d0859a353fb4f84e131def710ebbdeffd1d4e8b8a681b85a"
+  },
+  "commands": [
+    [
+      "cmake",
+      "--build",
+      "library/build",
+      "--target",
+      "graphmine_cli",
+      "graphmine_maximum_clique_test",
+      "--parallel",
+      "4"
+    ],
+    [
+      "nvcc",
+      "-O2",
+      "-std=c++20",
+      "-arch=sm_89",
+      "-Ilibrary/include",
+      "-Ilibrary/src",
+      "graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/probe.cpp",
+      "library/src/backends/cuda_ms_stub.cpp",
+      "library/src/backends/gpu_maximum_clique_stub.cpp",
+      "-Llibrary/build",
+      "-lgraphmine_maximum_clique",
+      "-lgraphmine_backend_maximum_clique_on_gpu",
+      "-lgraphmine_core",
+      "-lcudart",
+      "-lcudadevrt",
+      "-o",
+      "graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/native-linked-probe"
+    ]
+  ]
+}

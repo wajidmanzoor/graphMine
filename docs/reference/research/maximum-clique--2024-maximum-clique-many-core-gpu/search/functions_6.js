@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['filter_5fwindow_0',['filter_window',['../d9/d00/kcore_8cuh.html#a7eaa857a60ffb6ce6a7415684e2bbabd',1,'kcore.cuh']]],
-  ['filter_5fwith_5frandom_5fappend_1',['filter_with_random_append',['../d9/d00/kcore_8cuh.html#af615b2d9343b04871731fb656059cf85',1,'kcore.cuh']]],
+  ['filter_5fwindow_0',['filter_window',['../d9/d00/kcore_8cuh.html#a0ea3ab0246e31dd9b3b202f24ef0dca1',1,'kcore.cuh']]],
+  ['filter_5fwith_5frandom_5fappend_1',['filter_with_random_append',['../d9/d00/kcore_8cuh.html#a358981be12f087be16c5b74aa691b114',1,'kcore.cuh']]],
   ['find_5fheur_5fclique_2',['find_heur_clique',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a0e0be973b3ff6f3e16244c618e349c58',1,'graph::SingleGPU_Kcore']]],
   ['findkcoreincremental_5fasync_3',['findKcoreIncremental_async',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#ac75e41c21cfd65d9219e8b7926bac8c3',1,'graph::SingleGPU_Kcore']]],
   ['free_4',['free',['../d8/d1f/classgraph_1_1GraphQueue.html#a400bd7cd68b8f23a01c467f09c81af00',1,'graph::GraphQueue']]],

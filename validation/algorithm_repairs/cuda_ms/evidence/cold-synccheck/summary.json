@@ -1,0 +1,25 @@
+{
+  "runs": 4,
+  "passed": 4,
+  "failures": 0,
+  "exit_code": 0,
+  "sanitizer": "synccheck",
+  "sanitizer_clean": true,
+  "output_lines": 4,
+  "binary_sha256": "0f8b3f83279ae20924d18f4a6f1f713d5804f06cb6a1a40fc70846e4e6de6c41",
+  "input_sha256": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+  "command": [
+    "compute-sanitizer",
+    "--tool",
+    "synccheck",
+    "--error-exitcode",
+    "86",
+    "--log-file",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-synccheck/sanitizer.log",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-cold/raw_probe",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-synccheck/input.txt",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-synccheck/observed.txt"
+  ],
+  "gpu": 1,
+  "elapsed_s": 0.4196259584277868
+}

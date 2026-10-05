@@ -12,5 +12,5 @@ var searchData=
   ['prepare_5ffork_9',['prepare_fork',['../d9/d3b/namespacemcp.html#a5fee14dda3c161f7c798a9ad4e37d7b5',1,'mcp']]],
   ['prepare_5fwarp_5ffork_5f_10',['prepare_warp_fork_',['../d9/d3b/namespacemcp.html#ae6c42d4bd68a70d4c8fbaa38fe057ee9',1,'mcp']]],
   ['printconfig_11',['printConfig',['../db/d16/config_8h.html#ac59da8a0518c3c173ad9ed9cdfa360f2',1,'config.h']]],
-  ['process_5fdegree_12',['process_degree',['../d9/d00/kcore_8cuh.html#ada8ed8df92bd2bf082ec14abe3dfb18e',1,'kcore.cuh']]]
+  ['process_5fdegree_12',['process_degree',['../d9/d00/kcore_8cuh.html#ad57753d24167be0ec374984395210bd4',1,'kcore.cuh']]]
 ];

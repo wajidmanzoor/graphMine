@@ -1,0 +1,35 @@
+{
+  "commit": "a0b6b00a1f67b6fe65380b2efcb242cf40889d83",
+  "patch_sha256": "87742e68a5679cb29e0aa8415b74596d0369c90a9d41494e39235c6254471c02",
+  "source_sha256": {
+    "Makefile": "b280ab8ea43441eeabac797a4538200d3b00bcd4eb7eedad44b16450bbe75318",
+    "arrays.c": "00c44c8bc32e88b28a3d2ef51c946595efe085c5ecf01c9a8f7a2780c1bdf1a1",
+    "arrays.h": "5d5856e293385de2d15797abeb58d657fef8b456686c938f0e0e03c244f9dfc7",
+    "bitops.c": "cb483d9c9d19c235f048ddf6c33f8711770f9c5e1af86faed73648414871dcb6",
+    "bitops.h": "b0ca141ddedba697fda3215115d94f28b9b1ad5461b42200f2aeb51467d68a9b",
+    "common_cuda.cuh": "ec61f11577415233c5856c988654b59c6528bd225ea32408416edda9a06006ea",
+    "cudams.h": "ede879f57c260b300de4f957395be2e3ae2f9cf9bb7d257aa2d357008ae28593",
+    "exact_cuda.cuh": "291849700e3a82ad308e933cebc95a1a936185a6fee01b69cd2a42d5d60b18ed",
+    "find_cliques.c": "5a519577120f06c0fb73e08cd1b1684e462b48e668c7e28aab1c5ca07fbdcee9",
+    "motzkin.c": "c86297d725ec32c4546d3a9dd585e91c6ddc06b1d4802519688c7475ebfc71d8",
+    "motzkin_cpu.c": "79d44d6c2bb88831515520eea545d9ae330f8435ab32b58e1279a5a5d9d53174",
+    "motzkin_cpu.h": "16d0199547a9719342931754b75477966ec13cf30740f0f87dd26018565dfffd",
+    "motzkin_cuda.cu": "5944f1f2098b36066e9c481c94fdb9b24aeca41a0a58314bc399d2a1c892c648",
+    "motzkin_cuda.h": "75868c119fbfe29c11d762c67fffd4e91a2818def00c7fe2e2c1cb4983f01a2f",
+    "parsers.c": "6dd247bd9dd25141bf840ce8f2e4871e87b1ecebdb9874fba3783e880963ee61",
+    "parsers.h": "6228c6d7e979a5c0894698d5ea4284f8428400b01f16b9861d5f0189513ef488",
+    "random.c": "bb638de325156e777e02c12feb198fa776bf44c32862ff02b8b5d533af6325a5",
+    "random.h": "3bff6954979c14e0bc9fb91015c208cd648a3896c93a3f65de148c8245c66a2b",
+    "simple_macros.h": "7abae708cd17b245962913ede624dea78e7d2f0840283eb05dc0f22c2da77048"
+  },
+  "library_source_sha256": {
+    "src/backends/cuda_ms.cpp": "4694444220c7dfa42d066157e14f3a40bb2ae5bc8f43fa8f4b83d7463aba617c",
+    "src/backends/gpu_maximum_clique_stub.cpp": "484675acaab38eeff232b0db9ebbc9779d9f324b3ad1d93b4fa699014460f3c0",
+    "src/backends/maximum_clique_on_gpu_stub.cpp": "5cfbefcab1ec8454ef0ad1f85f978ca41fc3cca97d84e334840b740fe86de8d7",
+    "src/core/graph.cpp": "adda75f2932369d622bd010a80c95f405242f26390f19054f71ac6fae658f8bf",
+    "src/problems/maximum_clique.cpp": "d43364da425e62ab9f1f3579a8c2d7d1f4a28fe17ecbbbc3c247d5ee1e13e9af",
+    "src/backends/maximum_clique_backend.hpp": "7527bf0d1cab3ee47a7c9c7ff62828a3436309a8a20fa9ca49b4aed5cf95fed0",
+    "CMakeLists.txt": "e4e65e596af3c43280d3638fc75b8e93e3a6e666c44fc326ee96bc2a55baad6f",
+    "tests/maximum_clique_test.cpp": "2486168a09df812cc7d196c1daaddf0b1263a65b61c4c7db6c5b93c2df462d47"
+  }
+}

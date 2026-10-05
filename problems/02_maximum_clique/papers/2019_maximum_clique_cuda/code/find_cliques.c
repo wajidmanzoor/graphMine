@@ -27,6 +27,9 @@
 #include<unistd.h>
 
 #include<string.h>
+#include<errno.h>
+#include<limits.h>
+#include<math.h>
 
 #include <argp.h>
 
@@ -76,6 +79,26 @@ struct arguments
     int file_format;
 };
 
+static int integer_option(const char *arg, struct argp_state *state)
+{
+    char *end;
+    errno = 0;
+    long value = strtol(arg, &end, 10);
+    if (errno || end == arg || *end || value < INT_MIN || value > INT_MAX)
+        argp_error(state, "invalid integer: %s", arg);
+    return (int)value;
+}
+
+static float float_option(const char *arg, struct argp_state *state)
+{
+    char *end;
+    errno = 0;
+    float value = strtof(arg, &end);
+    if (errno || end == arg || *end || !isfinite(value))
+        argp_error(state, "invalid finite number: %s", arg);
+    return value;
+}
+
 static error_t parse_opt (int key, char *arg, struct argp_state *state)
 {
     struct arguments *arguments = state->input;
@@ -98,7 +121,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
             if(arguments->mode>1)
                 argp_usage (state);
             arguments->mode=3;
-            arguments->max_masks = arg ? atoi(arg) : 10;
+            arguments->max_masks = arg ? integer_option(arg, state) : 10;
             break;
 
         case 'n':  // anneal
@@ -109,9 +132,9 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 
         case 'a':  // alpha
             if(strcmp(arg, "auto")) {
-                arguments->alpha = atof(arg);
+                arguments->alpha = float_option(arg, state);
                 arguments->alpha_auto=0;
-            }
+            } else arguments->alpha_auto=1;
             break;
 
         case 'c':  // cpu
@@ -123,19 +146,19 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
             break;
 
         case 'm':  // max-res
-            arguments->max_res = atoi(arg);
+            arguments->max_res = integer_option(arg, state);
             break;
 
         case 'u':  // max-unsolved
-            arguments->max_unsolved = atoi(arg);
+            arguments->max_unsolved = integer_option(arg, state);
             break;
 
         case 'z':  // zero
-            arguments->zero = atof(arg);
+            arguments->zero = float_option(arg, state);
             break;
 
         case 's':  // alpha-step
-            arguments->alpha_step = atof(arg);
+            arguments->alpha_step = float_option(arg, state);
             if(arguments->alpha_step<0)
                 argp_usage(state);
             break;
@@ -189,6 +212,11 @@ int main(int argc, char **argv)
     arguments.file_format = 0;
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
+
+    if (arguments.max_res < 1 || arguments.max_masks < 1 || arguments.max_unsolved < 0) {
+        fprintf(stderr, "result/iteration counts must be positive and max-unsolved nonnegative\n");
+        return 2;
+    }
 
     if(!arguments.gpu && !arguments.cpu) arguments.gpu=1;
 
@@ -289,6 +317,13 @@ int main(int argc, char **argv)
 
         long int end = get_timestamp();
 
+        if (!res) {
+            fprintf(stderr, "CUDA-MS could not complete the search\n");
+            exit(2);
+        }
+        printf("Result guarantee: %s\n", cuda && arguments.max_res == 1
+               ? "exact maximum (completed GPU search)" : "heuristic; not a global optimality certificate");
+
         void print_res(t_bitmask res) {
             for(int i=0; i<N; i++) if(BIT_TEST(res, i)) printf("%d ", i);
         }
@@ -299,11 +334,14 @@ int main(int argc, char **argv)
             for(int i=0; i<n_res; i++) order[i]=i;
 
 
-            int size_comp(int *a, int *b) {
-                return mask_size(res_all[*b], N) - mask_size(res_all[*a], N);
+            for (int a = 1; a < n_res; ++a) {
+                int value = order[a], b = a;
+                while (b > 0 && mask_size(res_all[order[b-1]], N) < mask_size(res_all[value], N)) {
+                    order[b] = order[b-1];
+                    --b;
+                }
+                order[b] = value;
             }
-
-            qsort(order, n_res, sizeof(int), (comparison_fn_t) size_comp);
 
             printf("clique %d size: %d nodes:\n", i+1, mask_size(res_all[order[i]], N));
             print_res(res_all[order[i]]);
@@ -316,11 +354,16 @@ int main(int argc, char **argv)
 
         printf("%s time (us): %ld\n", cuda ? "GPU" : "CPU", end-start);
         printf("%s time (s): %.3f\n", cuda ? "GPU" : "CPU", (end-start)*0.000001);
+        mask_free(res);
+        mask_free(res_upper);
+        if (arguments.max_res > 1)
+            for (int i = 0; i < n_res; ++i) mask_free(res_all[i]);
     }
 
     if(arguments.cpu) run(0);
     if(arguments.gpu) run(1);
 
+    if (arr) destroy_array((void**)arr);
+    return 0;
+
 }
-
-

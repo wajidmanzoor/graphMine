@@ -1,0 +1,372 @@
+diff --git a/src/GpuUtil.cuh b/src/GpuUtil.cuh
+index ea25462..abb0b5c 100644
+--- a/src/GpuUtil.cuh
++++ b/src/GpuUtil.cuh
+@@ -2,6 +2,7 @@
+ #define __GPU_UTIL_H
+ 
+ #include <cuda_runtime.h>
++#include <cuda/atomic>
+ #include <stdio.h>
+ #define FULL_MASK 0xffffffff
+ #define POS_INFINITY 0x7fffffff
+@@ -228,6 +229,9 @@ __device__ __forceinline__ T seq_union_warp_naive(T* src_0, T size_0, T* src_1,
+   int res_cnt = 0;
+   src_0_buf[lane_id] = (lane_id >= size_0) ? POS_INFINITY : src_0[lane_id];
+   src_1_buf[lane_id] = (lane_id >= size_1) ? POS_INFINITY : src_1[lane_id];
++  // Neighboring lanes consume these shared-memory windows below. Shuffles
++  // and ballots synchronize execution, but do not order shared-memory access.
++  __syncwarp();
+ 
+   for (int i = lane_id; i < size_0 + size_1; i += warpSize) {
+     int val = -1;
+@@ -293,6 +297,7 @@ __device__ __forceinline__ T seq_union_warp_naive(T* src_0, T size_0, T* src_1,
+       int next_A_mask = (window_A_begin + 31) & 0xffffffe0;
+       int next_B_mask = ((i & 0xffffffe0) - window_A_begin + 63) & 0xffffffe0;
+ 
++      __syncwarp();
+       if (cur_A_mask != next_A_mask) {
+         int xid = next_A_mask + lane_id;
+         src_0_buf[xid & 63] = (xid >= size_0) ? POS_INFINITY : src_0[xid];
+@@ -301,8 +306,10 @@ __device__ __forceinline__ T seq_union_warp_naive(T* src_0, T size_0, T* src_1,
+         int xid = next_B_mask + lane_id;
+         src_1_buf[xid & 63] = (xid >= size_1) ? POS_INFINITY : src_1[xid];
+       }
++      __syncwarp();
+     }
+   }
++  __syncwarp();
+   res_cnt = __shfl_sync(FULL_MASK, res_cnt, 0);
+ 
+   return res_cnt;
+@@ -417,19 +424,19 @@ public:
+   }
+   __device__ void safeCopy(const LongTask &task, bool systemWide = false) {
+     for (int i = 1; i < 4; i++) {
+-      vertices[i] = task.vertices[i];
++      atomicExch(&vertices[i], task.vertices[i]);
+     }
+     if (systemWide) {
+-      __threadfence_system();
+-      atomicExch_system(&vertices[0], task.vertices[0]);
++      cuda::atomic_ref<int, cuda::thread_scope_system>(vertices[0]).exchange(
++          task.vertices[0], cuda::memory_order_release);
+     } else if (__isGlobal(this))
+     {
+-      __threadfence();
+-      atomicExch(&vertices[0], task.vertices[0]);
++      cuda::atomic_ref<int, cuda::thread_scope_device>(vertices[0]).exchange(
++          task.vertices[0], cuda::memory_order_release);
+     }
+     else if (__isShared(this)){
+-      __threadfence_block();
+-      atomicExch_block(&vertices[0], task.vertices[0]);
++      cuda::atomic_ref<int, cuda::thread_scope_block>(vertices[0]).exchange(
++          task.vertices[0], cuda::memory_order_release);
+     }
+   }
+   __device__ void Init() {
+@@ -440,23 +447,40 @@ public:
+   __host__ __device__ LongTask & operator = (const LongTask &task) {
+     if(this != &task) {
+       for (int i = 0; i < 4; i++) {
++#ifdef __CUDA_ARCH__
++        // Queue payload access is atomic as well as the publication flag.
++        // Local task copies need no inter-thread synchronization.
++        if (__isShared(&task) || __isGlobal(&task)) {
++          vertices[i] = atomicAdd(const_cast<int *>(&task.vertices[i]), 0);
++        } else
++#endif
+         vertices[i] = task.vertices[i];
+       }
+     }
+     return *this;
+   }
+   __device__ bool isvalid() volatile {
+-    //printf("%d\n", vertices[0]);
+-    return vertices[0] != -1;
++    // The first vertex publishes both task contents and slot reuse. Acquire
++    // pairs with safeCopy/invalidate so the remaining vertices cannot race.
++    int &state = const_cast<int &>(vertices[0]);
++    if (__isShared(&state)) {
++      return cuda::atomic_ref<int, cuda::thread_scope_block>(state).fetch_add(
++          0, cuda::memory_order_acquire) != -1;
++    }
++    return cuda::atomic_ref<int, cuda::thread_scope_system>(state).fetch_add(
++        0, cuda::memory_order_acquire) != -1;
+   }
+   
+   __device__ void invalidate() {
+     if (__isGlobal(this)) {
+-      atomicExch(&vertices[0], -1);
++      cuda::atomic_ref<int, cuda::thread_scope_device>(vertices[0]).exchange(
++          -1, cuda::memory_order_release);
+     } else if (__isShared(this)) {
+-      atomicExch_block(&vertices[0], -1);
++      cuda::atomic_ref<int, cuda::thread_scope_block>(vertices[0]).exchange(
++          -1, cuda::memory_order_release);
+     } else {
+-      atomicExch_system(&vertices[0], -1);
++      cuda::atomic_ref<int, cuda::thread_scope_system>(vertices[0]).exchange(
++          -1, cuda::memory_order_release);
+     }
+   }
+ }; 
+diff --git a/src/IterFinderGpu.cu b/src/IterFinderGpu.cu
+index c7babb5..79b98ef 100644
+--- a/src/IterFinderGpu.cu
++++ b/src/IterFinderGpu.cu
+@@ -85,7 +85,7 @@ __device__ void finder_pop_bitset(bitset_t &L, bitset_t *Q_C, int *exe_stack, in
+   }
+ }
+ 
+-__device__ void IterProcess_bitset(bitset_t &L, bitset_t *Q_C, int &Q_C_size, int c_start, int &local_mb_counter, int *exe_stack, int *C_level_neighbors, int &level_start)
++__device__ void IterProcess_bitset(bitset_t &L, bitset_t *Q_C, int &Q_C_size, int c_start, unsigned long long &local_mb_counter, int *exe_stack, int *C_level_neighbors, int &level_start)
+ {
+   int level = level_start + 1;
+   if (get_lane_id() == 0)
+@@ -144,7 +144,7 @@ __device__ void bitset_adapter(CSRBiGraph &graph, int cur_cid,
+                                int *L_vertices, int *L_level,
+                                int L_size, int *C_vertices,
+                                int *C_level_neighbors, int C_size,
+-                               int *exe_stack, int &local_mb_counter,
++                               int *exe_stack, unsigned long long &local_mb_counter,
+                                bitset_t *bitsets_ptr, int level)
+ {
+   int cur_l_size = 0;
+@@ -234,7 +234,7 @@ __device__ __forceinline__ void IterProcess(CSRBiGraph &graph, int *L_vertices,
+                                             int *C_vertices,
+                                             int *C_level_neighbors, int C_size,
+                                             int *exe_stack, int first_id,
+-                                            int &local_mb_counter,
++                                            unsigned long long &local_mb_counter,
+ #ifdef NN
+                                             bitset_t *bitsets_ptr,
+ #endif
+@@ -322,15 +322,15 @@ __device__ __forceinline__ void IterProcess(CSRBiGraph &graph, int *L_vertices,
+ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+     void IterFinderKernel(CSRBiGraph graph, int *global_buffer,
+                           unsigned long long *maximal_bicliques, int *processing_vertex,
+-                          double clock_rate, unsigned long long *max_d2)
++                          double clock_rate)
+ {
+   auto sm_start = clock64();
+   int warp_id = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
+   // int num_warps = WARP_PER_BLOCK * gridDim.x;
+-  int *warp_buffer = global_buffer + BUFFER_PER_WARP * warp_id;
++  int *warp_buffer = global_buffer + (size_t)BUFFER_PER_WARP * warp_id;
+   //int warp_cache_size = SHARED_CACHE_SIZE / WARP_PER_BLOCK;
+   //int *warp_cache = cache + threadIdx.x / warpSize * warp_cache_size;
+-  int local_mb_counter = 0;
++  unsigned long long local_mb_counter = 0;
+ 
+   int *L_vertices;
+   int *L_level = warp_buffer;
+@@ -372,7 +372,7 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+           local_mb_counter++;
+       }
+     }
+-    else
++    else if (L_size > 1)
+     {
+       // step 2: initialize R set and maximality check
+       int *R_vertices = exe_stack;
+@@ -386,9 +386,6 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+         // step 3: initialize C set
+         C_size = NeighborsUnionL(graph, L_vertices, L_size, C_level_neighbors,
+                                  C_vertices);
+-        if (get_lane_id() == 0)
+-          atomicMax(max_d2, C_size);
+-        continue;
+         C_size = seq_diff_warp(C_vertices, C_size, R_vertices, R_size);
+ 
+         if (C_size > MAX_2_H_DEGREE_BOUND && get_lane_id() == 0)
+@@ -452,21 +449,15 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+   {
+     printf("SM exit: %lf\n", (sm_end - sm_start) / 1000.0 / clock_rate);
+   }
+-  if (threadIdx.x == 0)
+-  {
+-    printf(" [%llu] ", *max_d2 - 1);
+-    //printf("sm end. now maximal_bicliques is %d\n", *maximal_bicliques);
+-  }
+ }
+ 
+ void IterFinderGpu::SyncMB()
+ {
+   printf("start to sync\n");
+-  cudaStream_t stream;
+-  gpuErrchk(cudaMemcpyAsync(&maximal_nodes_, dev_mb_, sizeof(int),
+-                            cudaMemcpyDeviceToHost, stream));
++  gpuErrchk(cudaMemcpy(&maximal_nodes_, dev_mb_, sizeof(maximal_nodes_),
++                       cudaMemcpyDeviceToHost));
+   exe_time_ = get_cur_time() - start_time_;
+-  printf("copy success, mb: %d\n", maximal_nodes_);
++  printf("copy success, mb: %llu\n", maximal_nodes_);
+ }
+ 
+ IterFinderGpu::IterFinderGpu(CSRBiGraph *graph_in) : BicliqueFinder(graph_in)
+@@ -506,16 +497,12 @@ IterFinderGpu::~IterFinderGpu()
+ 
+ void IterFinderGpu::Execute()
+ {
+-  unsigned long long *max_d2;
+-
+   start_time_ = get_cur_time();
+-  gpuErrchk(cudaMalloc((void **)&max_d2, sizeof(unsigned long long)));
+-  gpuErrchk(cudaMemset(max_d2, 0, sizeof(unsigned long long)));
+   IterFinderKernel<<<MAX_BLOCKS, WARP_PER_BLOCK * 32>>>(
+-      *graph_gpu_, dev_global_buffer_, dev_mb_, dev_processing_vertex_, clock_rate, max_d2);
++      *graph_gpu_, dev_global_buffer_, dev_mb_, dev_processing_vertex_, clock_rate);
+   gpuErrchk(cudaGetLastError());
+   gpuErrchk(cudaDeviceSynchronize());
+-  gpuErrchk(cudaMemcpy(&maximal_nodes_, dev_mb_, sizeof(int),
++  gpuErrchk(cudaMemcpy(&maximal_nodes_, dev_mb_, sizeof(maximal_nodes_),
+                        cudaMemcpyDeviceToHost));
+   exe_time_ = get_cur_time() - start_time_;
+ }
+@@ -533,9 +520,9 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+ {
+   auto sm_start = clock64();
+   int warp_id = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
+-  int *warp_buffer = global_buffer + BUFFER_PER_WARP_2 * warp_id +
+-                     SD_BUFFER_PER_BLOCK * (blockIdx.x + 1);
+-  int local_mb_counter = 0;
++  int *warp_buffer = global_buffer + (size_t)BUFFER_PER_WARP_2 * warp_id +
++                     (size_t)SD_BUFFER_PER_BLOCK * (blockIdx.x + 1);
++  unsigned long long local_mb_counter = 0;
+   // shared C for each block
+   int *C_vertices_sd = global_buffer + BUFFER_PER_BLOCK_2 * blockIdx.x;
+   __shared__ int C_size_sd;
+@@ -562,6 +549,9 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+ 
+   while (true)
+   {
++    // Even a root with no candidates must finish all shared-state reads
++    // before the first warp starts publishing the next root.
++    __syncthreads();
+     if (threadIdx.x == 0)
+     {
+       first_vertex = graph.V_size - 1 - atomicAdd(processing_vertex, 1);
+@@ -590,7 +580,7 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+               local_mb_counter++;
+           }
+         }
+-        else
++        else if (L_size > 1)
+         {
+           // init R
+           int *R_vertices = exe_stack;
+@@ -751,7 +741,6 @@ IterFinderGpu2::~IterFinderGpu2()
+ void IterFinderGpu2::Execute()
+ {
+   start_time_ = get_cur_time();
+-  unsigned long long clock_initialize, clock_iterate, host_total_clock;
+   IterFinderKernel_2<<<MAX_BLOCKS, WARP_PER_BLOCK * 32>>>(
+       *graph_gpu_, dev_global_buffer_, dev_mb_, dev_processing_vertex_,
+       clock_rate);
+@@ -759,12 +748,6 @@ void IterFinderGpu2::Execute()
+   gpuErrchk(cudaDeviceSynchronize());
+   gpuErrchk(cudaMemcpy(&maximal_nodes_, dev_mb_, sizeof(unsigned long long),
+                        cudaMemcpyDeviceToHost));
+-  cudaMemcpy(&clock_initialize, total_clock_initialize, sizeof(unsigned long long), cudaMemcpyDeviceToHost);
+-  cudaMemcpy(&clock_iterate, total_clock_iterate, sizeof(unsigned long long), cudaMemcpyDeviceToHost);
+-  cudaMemcpy(&host_total_clock, dev_total_clock, sizeof(unsigned long long), cudaMemcpyDeviceToHost);
+-  printf("initialize clock: %lld\n", clock_initialize);
+-  printf("iterate clock: %lld\n", clock_iterate);
+-  printf("other clock: %lld\n", host_total_clock - clock_initialize - clock_iterate);
+   exe_time_ = get_cur_time() - start_time_;
+ }
+ 
+@@ -796,7 +779,7 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+   int C_size;
+ 
+   int second_id, second_vertex;
+-  int local_mb_counter = 0;
++  unsigned long long local_mb_counter = 0;
+ 
+   if (threadIdx.x == 0)
+   {
+@@ -889,6 +872,10 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+ __device__ __forceinline__ int get_common_neighbors(int *row_offset, int *column_indices, int const *vertices, int vertices_size,
+                                                     int *const buffer, int *const result)
+ {
++  // Empty sides are excluded from maximal biclique enumeration. In particular,
++  // never dereference vertices[-1] when a root is an isolated vertex.
++  if (vertices_size == 0)
++    return 0;
+   int now_vertex = vertices[vertices_size - 1];
+   int size_temp = row_offset[now_vertex + 1] - row_offset[now_vertex];
+   int *base = column_indices + row_offset[now_vertex];
+@@ -1005,7 +992,7 @@ __device__ __forceinline__ int get_all_neighbors(CSRBiGraph &graph, int const *v
+ }
+ 
+ __device__ bool IterFinderWithMultipleVertex(CSRBiGraph graph, int *warp_buffer, WorkList<LargeTask> *global_large_worklist,
+-                                             const TinyTask &tt, int &local_mb_counter, unsigned long long *large_count,
++                                             const TinyTask &tt, unsigned long long &local_mb_counter, unsigned long long *large_count,
+                                              unsigned long long *non_maximal = nullptr,
+                                              int bound_height = 20, int bound_size = 1500)
+ {
+@@ -1026,6 +1013,8 @@ __device__ bool IterFinderWithMultipleVertex(CSRBiGraph graph, int *warp_buffer,
+ 
+   int L_size = get_common_neighbors(graph.row_offset, graph.column_indices, tt.vertices, vertices_size, exe_stack, L_vertices);
+   __syncwarp();
++  if (L_size == 0)
++    return false;
+   if (L_size > MAX_DEGREE_BOUND && get_lane_id() == 0)
+     printf("L_size is out of memory %d/%d\n", L_size, MAX_DEGREE_BOUND);
+ 
+@@ -1193,7 +1182,7 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+   int warp_id = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
+   int *warp_buffer = global_buffer + (size_t)BUFFER_PER_WARP_2 * warp_id +
+                      (size_t)SD_BUFFER_PER_BLOCK * (blockIdx.x + 1);
+-  int local_mb_counter = 0;
++  unsigned long long local_mb_counter = 0;
+ 
+   __shared__ TinyTask local_tiny_worklist_ptr[LOCAL_TINY_WORKLIST_SIZE];
+   for (int i = threadIdx.x; i < LOCAL_TINY_WORKLIST_SIZE; i += blockDim.x)
+@@ -1535,7 +1524,7 @@ void IterFinderGpu6::Execute()
+   cudaMemcpy(&host_non_maximal, non_maximal, sizeof(unsigned long long), cudaMemcpyDeviceToHost);
+ //printf("non_maximal: %lld\n", host_non_maximal);
+ #ifndef PRINT_TIMELY
+-  gpuErrchk(cudaMemcpy(&maximal_nodes_, dev_mb_, sizeof(int),
++  gpuErrchk(cudaMemcpy(&maximal_nodes_, dev_mb_, sizeof(maximal_nodes_),
+                        cudaMemcpyDeviceToHost));
+ #else
+   maximal_nodes_ = *mb_host;
+@@ -1553,7 +1542,7 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+   int warp_id = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
+   int *warp_buffer = global_buffer + (size_t)BUFFER_PER_WARP_2 * warp_id +
+                      (size_t)SD_BUFFER_PER_BLOCK * (blockIdx.x + 1);
+-  int local_mb_counter = 0;
++  unsigned long long local_mb_counter = 0;
+ 
+   __shared__ TinyTask local_tiny_worklist_ptr[LOCAL_TINY_WORKLIST_SIZE];
+   for (int i = threadIdx.x; i < LOCAL_TINY_WORKLIST_SIZE; i += blockDim.x)
+@@ -1934,7 +1923,7 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+   int warp_id = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
+   int *warp_buffer = global_buffer + (size_t)BUFFER_PER_WARP_2 * warp_id +
+                      (size_t)SD_BUFFER_PER_BLOCK * (blockIdx.x + 1);
+-  int local_mb_counter = 0;
++  unsigned long long local_mb_counter = 0;
+ 
+   __shared__ TinyTask local_tiny_worklist_ptr[LOCAL_TINY_WORKLIST_SIZE];
+   for (int i = threadIdx.x; i < LOCAL_TINY_WORKLIST_SIZE; i += blockDim.x)
+@@ -2244,7 +2233,7 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+   int warp_id = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
+   int *warp_buffer = global_buffer + (size_t)BUFFER_PER_WARP_2 * warp_id +
+                      (size_t)SD_BUFFER_PER_BLOCK * (blockIdx.x + 1);
+-  int local_mb_counter = 0;
++  unsigned long long local_mb_counter = 0;
+ 
+   __shared__ TinyTask local_tiny_worklist_ptr[LOCAL_TINY_WORKLIST_SIZE];
+   for (int i = threadIdx.x; i < LOCAL_TINY_WORKLIST_SIZE; i += blockDim.x)
+@@ -2599,7 +2588,7 @@ __launch_bounds__(32 * WARP_PER_SM, 1) __global__
+   int warp_id = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
+   int *warp_buffer = global_buffer + (size_t)BUFFER_PER_WARP_2 * warp_id +
+                      (size_t)SD_BUFFER_PER_BLOCK * (blockIdx.x + 1);
+-  int local_mb_counter = 0;
++  unsigned long long local_mb_counter = 0;
+ 
+   __shared__ TinyTask local_tiny_worklist_ptr[LOCAL_TINY_WORKLIST_SIZE];
+   for (int i = threadIdx.x; i < LOCAL_TINY_WORKLIST_SIZE; i += blockDim.x)

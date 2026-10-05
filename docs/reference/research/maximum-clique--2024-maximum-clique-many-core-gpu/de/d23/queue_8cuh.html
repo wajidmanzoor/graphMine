@@ -135,6 +135,8 @@ Macros</h2></td></tr>
 <tr class="separator:abfa719005f29c09a4d2ebaca160f80f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfa3b025dcf9c0659364fb28badc9f49" id="r_acfa3b025dcf9c0659364fb28badc9f49"><td class="memItemLeft" align="right" valign="top">#<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">define</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d23/queue_8cuh.html#acfa3b025dcf9c0659364fb28badc9f49">shared_queue_full</a>(queue,  <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>,  head,  tail,  <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">queue_size</a>)&#160;&#160;&#160;  (<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tail.load</a>(<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">cuda::memory_order_relaxed</a>) - <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">head.load</a>(<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">cuda::memory_order_relaxed</a>) == <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">queue_size</a>)</td></tr>
 <tr class="separator:acfa3b025dcf9c0659364fb28badc9f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8671d894c81dc20c9b57f73f03b761bc" id="r_a8671d894c81dc20c9b57f73f03b761bc"><td class="memItemLeft" align="right" valign="top">#<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">define</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d23/queue_8cuh.html#a8671d894c81dc20c9b57f73f03b761bc">shared_queue_wait_ticket</a>(queue,  <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>,  head,  tail,  <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">queue_size</a>,  <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">qidx</a>,  <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">res</a>)</td></tr>
+<tr class="separator:a8671d894c81dc20c9b57f73f03b761bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50a765a519ce961dbc82f77e9de997e2" id="r_a50a765a519ce961dbc82f77e9de997e2"><td class="memItemLeft" align="right" valign="top">#<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">define</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d23/queue_8cuh.html#a50a765a519ce961dbc82f77e9de997e2">waiting_blocks</a>(queue,  <a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>,  head,  tail)&#160;&#160;&#160;  (tail-&gt;<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">load</a>(<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">cuda::memory_order_relaxed</a>) - head-&gt;<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">load</a>(<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">cuda::memory_order_relaxed</a>))</td></tr>
 <tr class="separator:a50a765a519ce961dbc82f77e9de997e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -886,12 +888,12 @@ Functions</h2></td></tr>
 <div class="line">    <span class="keyword">const</span> uint32_t <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a> = <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket</a> % <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">queue_size</a>;                              \</div>
 <div class="line">    <span class="keyword">const</span> uint32_t <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a> = <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket</a> / <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">queue_size</a> * 2;                   \</div>
 <div class="line">    uint32_t <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a> = 8;                                                          <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">\</a></div>
-<div class="line"><a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">    while</a> (<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">load</a>(cuda::memory_order_relaxed) != <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a>) \</div>
+<div class="line"><a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">    while</a> (<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">fetch_add</a>(0, cuda::memory_order_acquire) != <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a>) \</div>
 <div class="line">      <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a> = <a class="code hl_function" href="../../de/d23/queue_8cuh.html#a17a81752e8f33567973eba62eb7e5e31">my_sleep</a>(<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a>);                                                      <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">\</a></div>
-<div class="line"><a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">    while</a> (<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">load</a>(cuda::memory_order_acquire) != <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a>) \</div>
-<div class="line">      <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a> = <a class="code hl_function" href="../../de/d23/queue_8cuh.html#a17a81752e8f33567973eba62eb7e5e31">my_sleep</a>(<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a>);                                                      \</div>
-<div class="line">    queue[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>] = <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">val</a>;                                                      \</div>
-<div class="line">    <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].store(<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a> + 1, cuda::memory_order_release);     \</div>
+<div class="line"><a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">    while</a> (<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">fetch_add</a>(0, cuda::memory_order_acquire) != <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a>) \</div>
+<div class="line">      <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a> = <a class="code hl_function" href="../../de/d23/queue_8cuh.html#a17a81752e8f33567973eba62eb7e5e31">my_sleep</a>(<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a>);                                                      <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">\</a></div>
+<div class="line"><a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">    atomicExch</a>(&amp;queue[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>], <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">val</a>);                                                      \</div>
+<div class="line">    <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].exchange(<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a> + 1, cuda::memory_order_release);     \</div>
 <div class="line">  } <span class="keywordflow">while</span> (0)</div>
 </div><!-- fragment -->
 </div>
@@ -940,6 +942,76 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+</div>
+</div>
+<a id="a8671d894c81dc20c9b57f73f03b761bc" name="a8671d894c81dc20c9b57f73f03b761bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8671d894c81dc20c9b57f73f03b761bc">&#9670;&#160;</a></span>shared_queue_wait_ticket</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#<a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">define</a> shared_queue_wait_ticket</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">queue, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">head, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">tail, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">queue_size</a>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">qidx</a>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><a class="el" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">res</a>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span>                                                                          \</div>
+<div class="line">  {                                                                           \</div>
+<div class="line">    <span class="keyword">const</span> uint32_t <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a> = <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">qidx</a> % <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">queue_size</a>;                                \</div>
+<div class="line">    <span class="keyword">const</span> uint32_t <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a> = <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">qidx</a> / <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">queue_size</a> * 2 + 1;                 \</div>
+<div class="line">    uint32_t <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a> = 8;                                                          <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">\</a></div>
+<div class="line"><a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">    while</a> (<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">fetch_add</a>(0, cuda::memory_order_acquire) != <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a>) \</div>
+<div class="line">      <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a> = <a class="code hl_function" href="../../de/d23/queue_8cuh.html#a17a81752e8f33567973eba62eb7e5e31">my_sleep</a>(<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a>);                                                      <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">\</a></div>
+<div class="line"><a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">    while</a> (<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">fetch_add</a>(0, cuda::memory_order_acquire) != <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a>) \</div>
+<div class="line">      <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a> = <a class="code hl_function" href="../../de/d23/queue_8cuh.html#a17a81752e8f33567973eba62eb7e5e31">my_sleep</a>(<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ns</a>);                                                      \</div>
+<div class="line">    <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">res</a> = <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">atomicAdd</a>(&amp;queue[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>], 0<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">U</a>);                                                      \</div>
+<div class="line">    <a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">tickets</a>[<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">target</a>].exchange(<a class="code hl_function" href="../../d8/dac/cgarray_8cuh.html#a956eb679c5230ef9c9a1b2a1f4f95064">ticket_target</a> + 1, cuda::memory_order_release);     \</div>
+<div class="line">  } <span class="keywordflow">while</span> (0)</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a50a765a519ce961dbc82f77e9de997e2" name="a50a765a519ce961dbc82f77e9de997e2"></a>

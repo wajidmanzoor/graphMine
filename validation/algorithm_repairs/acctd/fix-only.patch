@@ -1,0 +1,248 @@
+--- a/opt-truss-decomp-offload/main.cu
++++ b/opt-truss-decomp-offload/main.cu
+@@ -1,5 +1,6 @@
+ #include <climits>
+ #include <cassert>
++#include <cstdlib>
+ 
+ #include <chrono>
+ #include <sstream>
+@@ -20,8 +21,8 @@
+ 
+ int main(int argc, char *argv[]) {
+     setlocale(LC_NUMERIC, "");
+-    if (argc < 2) {
+-        fprintf(stderr, "%s <Graph file>\n", argv[0]);
++    if (argc < 3) {
++        fprintf(stderr, "%s <Graph directory> <ordering>\n", argv[0]);
+         exit(1);
+     }
+ 
+@@ -47,7 +48,7 @@
+     log_info("Algorithm name: %s", algorithm_name.c_str());
+     read_env();
+ 
+-    graph_t g;
++    graph_t g{};
+ 
+     //load the graph from file
+     Graph yche_graph(argv[1]);
+@@ -55,6 +56,21 @@
+     g.num_edges = yche_graph.node_off;
+     g.n = yche_graph.nodemax;
+     g.m = yche_graph.edgemax;
++
++    // There is no peeling work for an edgeless graph. Avoid zero-grid CUDA
++    // launches and searching an all-zero level-offset array past its start.
++    if (g.m == 0) {
++        std::ofstream histogram(string(argv[1]) + "/ktruss-" + algorithm_name + ".histogram");
++        histogram << "[]\n";
++        if (const char *path = std::getenv("ACCTD_EDGE_OUTPUT")) {
++            std::ofstream result(path);
++            if (!result) return 1;
++        }
++        log_info("Total #Edges: 0");
++        log_info("Max-truss: 0; #Edges in Max-truss: 0");
++        free_graph(&g);
++        return histogram ? 0 : 1;
++    }
+ 
+     string reorder_method(argv[2]);
+ 
+@@ -73,6 +89,10 @@
+     get_eid_timer.reset();
+     //Populate the edge list array
+     getEidAndEdgeList(&g, edgeIdToEdge);
++    // Preserve the original edge order before the CPU/GPU handoff compacts it.
++    const char *edge_output = std::getenv("ACCTD_EDGE_OUTPUT");
++    std::vector<Edge> original_edges;
++    if (edge_output) original_edges.assign(edgeIdToEdge, edgeIdToEdge + org_num_edges);
+     log_info("Init Eid Time: %.9lf s", get_eid_timer.elapsed());
+     get_eid_timer.reset();
+ 
+@@ -149,6 +169,17 @@
+     }
+     log_info("Finish Constructing Final Results..., Recovery Time: %.9lfs", recovery_timer.elapsed());
+     display_stats(final_result_output, org_num_edges, output_dir);
++    if (edge_output) {
++        std::ofstream result(edge_output);
++        for (long i = 0; i < org_num_edges; ++i) {
++            result << original_edges[i].u << ' ' << original_edges[i].v << ' '
++                   << final_result_output[i] + 2 << '\n';
++        }
++        if (!result) {
++            fprintf(stderr, "Cannot write per-edge truss output: %s\n", edge_output);
++            return 1;
++        }
++    }
+     log_info("Finish Checking, ET: %.9lfs", recovery_timer.elapsed_and_reset());
+ 
+     //Free memory
+--- a/opt-truss-decomp-offload/pkt_cuda_experimental.cu
++++ b/opt-truss-decomp-offload/pkt_cuda_experimental.cu
+@@ -5,6 +5,8 @@
+ #include <omp.h>
+ 
+ #include <functional>
++#include <cstdlib>
++#include <fstream>
+ #include <iostream>
+ #include <unordered_map>
+ #include <climits>
+@@ -632,6 +634,7 @@
+ 
+     // 2nd: Processed.
+     ZLCudaMalloc(&processed, sizeof(bool) * edge_num, mem_stat);
++    checkCudaErrors(cudaMemset(processed, 0, sizeof(bool) * edge_num));
+ 
+     // 3rd: Queue Related.
+     ZLCudaMalloc(&next_cnt, sizeof(uint32_t), mem_stat);
+@@ -639,6 +642,11 @@
+     ZLCudaMalloc(&next, sizeof(int) * edge_num, mem_stat);
+     ZLCudaMalloc(&inCurr, sizeof(bool) * edge_num, mem_stat);
+     ZLCudaMalloc(&inNext, sizeof(bool) * edge_num, mem_stat);
++    // Managed allocations can reuse storage from triangle counting. Stale
++    // membership bits cause PeelTriangle to skip live edges or count a
++    // triangle as though another edge were already in the current frontier.
++    checkCudaErrors(cudaMemset(inCurr, 0, sizeof(bool) * edge_num));
++    checkCudaErrors(cudaMemset(inNext, 0, sizeof(bool) * edge_num));
+ 
+     // 4th: Keep the edge offset mapping.
+     long grid_size = (edge_num + BLOCK_SIZE - 1) / BLOCK_SIZE;
+@@ -666,6 +674,14 @@
+ void PKT_cuda(
+         graph_t *g, eid_t *edge_off_origin_cpu, int *&EdgeSupport, Edge *edgeIdToEdge, int shrink_factor,
+         int *output, eid_t *level_start_pos, ZLCUDAMemStat *mem_stat, ZLCUDATimer *time_stat, int level) {
++    if (const char *path = std::getenv("ACCTD_SUPPORT_OUTPUT")) {
++        checkCudaErrors(cudaDeviceSynchronize());
++        std::ofstream support(path);
++        for (long i = 0; i < g->m / 2; ++i) {
++            support << edgeIdToEdge[i].u << ' ' << edgeIdToEdge[i].v << ' '
++                    << EdgeSupport[i] << '\n';
++        }
++    }
+     extern double tc_time;
+     Timer scan_timer, sub_process_timer, copy_timer, tc_timer, shrink_timer, prepare_timer;
+     double scan_time = 0, sub_process_time = 0, copy_time = 0, shrink_time = 0, prepare_time = 0, penalty_tc_time = 0;
+--- a/opt-truss-decomp-offload/cuda_tc.cu
++++ b/opt-truss-decomp-offload/cuda_tc.cu
+@@ -37,8 +37,9 @@
+         node_id = atomicAdd(vertex_count, 1); /*get current vertex id*/
+         start_src = d_offsets[node_id];
+         end_src = d_offsets[node_id + 1];
+-        start_src_in_bitmap = d_dsts[start_src] / elem_bits;
+-        end_src_in_bitmap = (start_src == end_src) ? d_dsts[start_src] / elem_bits : d_dsts[end_src - 1] / elem_bits;
++        // Isolated vertices have no valid adjacency entry at start_src.
++        start_src_in_bitmap = start_src < end_src ? d_dsts[start_src] / elem_bits : 0;
++        end_src_in_bitmap = start_src < end_src ? d_dsts[end_src - 1] / elem_bits : 0;
+     } else if (tid == tnum - 1) {
+         uint32_t temp = 0;
+         asm("mov.u32 %0, %smid;" : "=r"(sm_id));
+@@ -94,7 +95,7 @@
+     __syncthreads();
+ 
+     /*clean the bitmap*/
+-    if (end_src_in_bitmap - start_src_in_bitmap + 1 <= end_src - start_src) {
++    if (start_src < end_src && end_src_in_bitmap - start_src_in_bitmap + 1 <= end_src - start_src) {
+         for (uint32_t idx = start_src_in_bitmap + tid; idx <= end_src_in_bitmap; idx += tnum) {
+             bitmap[idx] = 0;
+         }
+@@ -139,9 +140,9 @@
+         u = atomicAdd(vertex_count, 1); /*get current vertex id*/
+         off_u = d_offsets[u];
+         off_u_plus_one = d_offsets[u + 1];
+-        start_src_in_bitmap = d_dsts[off_u] / elem_bits;
+-        end_src_in_bitmap = (off_u == off_u_plus_one) ? d_dsts[off_u] / elem_bits :
+-                            d_dsts[off_u_plus_one - 1] / elem_bits;
++        // In particular, trailing isolated rows point one past d_dsts.
++        start_src_in_bitmap = off_u < off_u_plus_one ? d_dsts[off_u] / elem_bits : 0;
++        end_src_in_bitmap = off_u < off_u_plus_one ? d_dsts[off_u_plus_one - 1] / elem_bits : 0;
+     } else if (tid == num_threads - 1) {
+         uint32_t temp = 0;
+         asm("mov.u32 %0, %smid;" : "=r"(sm_id));
+@@ -201,7 +202,7 @@
+     __syncthreads();
+ 
+     /*clean the bitmap*/
+-    if (end_src_in_bitmap - start_src_in_bitmap + 1 <= off_u_plus_one - off_u) {
++    if (off_u < off_u_plus_one && end_src_in_bitmap - start_src_in_bitmap + 1 <= off_u_plus_one - off_u) {
+         for (uint32_t idx = start_src_in_bitmap + tid; idx <= end_src_in_bitmap; idx += num_threads) {
+             bitmap[idx] = 0;
+         }
+--- a/opt-truss-decomp-offload/pkt_inter_based_sup_updates.cu
++++ b/opt-truss-decomp-offload/pkt_inter_based_sup_updates.cu
+@@ -24,8 +24,9 @@
+         node_id = atomicAdd(vertex_count, 1); /*get current vertex id*/
+         start_src = d_offsets[node_id];
+         end_src = d_offsets[node_id + 1];
+-        start_src_in_bitmap = d_dsts[start_src] / elem_bits;
+-        end_src_in_bitmap = (start_src == end_src) ? d_dsts[start_src] / elem_bits : d_dsts[end_src - 1] / elem_bits;
++        // Isolated vertices have no valid adjacency entry at start_src.
++        start_src_in_bitmap = start_src < end_src ? d_dsts[start_src] / elem_bits : 0;
++        end_src_in_bitmap = start_src < end_src ? d_dsts[end_src - 1] / elem_bits : 0;
+     } else if (tid == tnum - 1) {
+         uint32_t temp = 0;
+         asm("mov.u32 %0, %smid;" : "=r"(sm_id));
+@@ -102,7 +103,7 @@
+     __syncthreads();
+ 
+     /*clean the bitmap*/
+-    if (end_src_in_bitmap - start_src_in_bitmap + 1 <= end_src - start_src) {
++    if (start_src < end_src && end_src_in_bitmap - start_src_in_bitmap + 1 <= end_src - start_src) {
+         for (uint32_t idx = start_src_in_bitmap + tid; idx <= end_src_in_bitmap; idx += tnum) {
+             bitmap[idx] = 0;
+         }
+@@ -142,9 +143,9 @@
+         u = atomicAdd(vertex_count, 1); /*get current vertex id*/
+         off_u = d_offsets[u];
+         off_u_plus_one = d_offsets[u + 1];
+-        start_src_in_bitmap = d_dsts[off_u] / elem_bits;
+-        end_src_in_bitmap = (off_u == off_u_plus_one) ? d_dsts[off_u] / elem_bits :
+-                            d_dsts[off_u_plus_one - 1] / elem_bits;
++        // In particular, trailing isolated rows point one past d_dsts.
++        start_src_in_bitmap = off_u < off_u_plus_one ? d_dsts[off_u] / elem_bits : 0;
++        end_src_in_bitmap = off_u < off_u_plus_one ? d_dsts[off_u_plus_one - 1] / elem_bits : 0;
+     } else if (tid == num_threads - 1) {
+         uint32_t temp = 0;
+         asm("mov.u32 %0, %smid;" : "=r"(sm_id));
+@@ -228,7 +229,7 @@
+     __syncthreads();
+ 
+     /*clean the bitmap*/
+-    if (end_src_in_bitmap - start_src_in_bitmap + 1 <= off_u_plus_one - off_u) {
++    if (off_u < off_u_plus_one && end_src_in_bitmap - start_src_in_bitmap + 1 <= off_u_plus_one - off_u) {
+         for (uint32_t idx = start_src_in_bitmap + tid; idx <= end_src_in_bitmap; idx += num_threads) {
+             bitmap[idx] = 0;
+         }
+--- a/opt-truss-decomp-offload/util/graph.cpp
++++ b/opt-truss-decomp-offload/util/graph.cpp
+@@ -163,7 +163,8 @@
+              FormatWithCommas(edgemax).c_str());
+ 
+     degree.resize(static_cast<unsigned long>(nodemax));
+-    deg_file.read(reinterpret_cast<char *>(&degree.front()), sizeof(int) * nodemax);
++    if (nodemax != 0)
++        deg_file.read(reinterpret_cast<char *>(degree.data()), sizeof(int) * nodemax);
+ 
+     auto end = high_resolution_clock::now();
+     log_info("read degree file time: %.3lf s", duration_cast<milliseconds>(end - start).count() / 1000.0);
+@@ -179,7 +180,8 @@
+ 
+     string dst_v_file_name = dir + string("/b_adj.bin");
+     auto dst_v_fd = open(dst_v_file_name.c_str(), O_RDONLY, S_IRUSR | S_IWUSR);
+-    int *buffer = (int *) mmap(0, static_cast<uint64_t >(edgemax) * 4u, PROT_READ, MAP_PRIVATE, dst_v_fd, 0);
++    int *buffer = edgemax == 0 ? nullptr :
++        (int *) mmap(0, static_cast<uint64_t >(edgemax) * 4u, PROT_READ, MAP_PRIVATE, dst_v_fd, 0);
+ 
+     // prefix sum
+     node_off[0] = 0;
+@@ -197,7 +199,8 @@
+         // inclusive
+         degree[i]++;
+     }
+-    munmap(buffer, static_cast<uint64_t >(edgemax) * 4u);
++    if (edgemax != 0) munmap(buffer, static_cast<uint64_t >(edgemax) * 4u);
++    close(dst_v_fd);
+ 
+ #ifdef VERIFY_INPUT
+     // Verify.

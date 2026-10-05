@@ -1,0 +1,2756 @@
+diff --git a/code/TrimCDP-WB/CMakeLists.txt b/code/TrimCDP-WB/CMakeLists.txt
+index a7cd6eb..fc7e1df 100644
+--- a/code/TrimCDP-WB/CMakeLists.txt
++++ b/code/TrimCDP-WB/CMakeLists.txt
+@@ -1,51 +1,9 @@
+-cmake_minimum_required(VERSION 3.23.1 FATAL_ERROR)
+-message("generator:${CMAKE_GENERATOR}")
+-message("C++ compiler:${CMAKE_CXX_COMPILER}")
+-message("C compiler:${CMAKE_C_COMPILER}")
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -O3")
+-
+-set(CMAKE_CXX_STANDARD 17)
+-set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
+-
+-if(NOT EXISTS  ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
+-file(
+-  DOWNLOAD
+-  https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.40.0/CPM.cmake
+-  ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
+-)
+-endif()
+-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/CUCO_RAPIDS.cmake)
+-    file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/branch-24.10/RAPIDS.cmake
+-         ${CMAKE_CURRENT_BINARY_DIR}/CUCO_RAPIDS.cmake)
+-endif()
+-include(${CMAKE_CURRENT_BINARY_DIR}/CUCO_RAPIDS.cmake)
+-include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
+-
+-
+-
+-include(rapids-cmake)
+-include(rapids-cpm)
+-include(rapids-cuda)
+-include(rapids-export)
+-include(rapids-find)
+-# * Determine GPU architectures
+-# * Enable the CMake CUDA language
+-rapids_cuda_init_architectures(TrimCDP-WB)
+-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3")
+-message(STATUS "Example: CMAKE_CUDA_ARCHITECTURES: ${CMAKE_CUDA_ARCHITECTURES}")
+-project(TrimCDP-WB VERSION 0.0.1 LANGUAGES CXX CUDA)
+-
+-rapids_find_package(
+-    CUDAToolkit REQUIRED
+- 
+-)
+-find_package(Boost REQUIRED)
+-message("${Boost_INCLUDE_DIRS}")
+-message("${Boost_LIBRARIES}")
+-# 包含Boost头文件目录
+-include_directories(${Boost_INCLUDE_DIRS})
+-add_executable(${PROJECT_NAME} src/GSTnonHop.cu)
+-target_link_libraries(${PROJECT_NAME}  CUDA::toolkit)
+-include_directories(include)
+-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build/bin)
+-
++cmake_minimum_required(VERSION 3.23.1)
++project(TrimCDP-WB VERSION 0.0.1 LANGUAGES CXX CUDA)
++find_package(CUDAToolkit REQUIRED)
++add_executable(TrimCDP-WB src/GSTnonHop.cu)
++target_include_directories(TrimCDP-WB PRIVATE include)
++target_compile_features(TrimCDP-WB PRIVATE cxx_std_17 cuda_std_17)
++target_compile_options(TrimCDP-WB PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-O2;-lineinfo;--extended-lambda>)
++target_link_libraries(TrimCDP-WB PRIVATE CUDA::cudart)
++set_target_properties(TrimCDP-WB PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+diff --git a/code/TrimCDP-WB/include/barrier.cuh b/code/TrimCDP-WB/include/barrier.cuh
+index d2ca9da..02fc059 100644
+--- a/code/TrimCDP-WB/include/barrier.cuh
++++ b/code/TrimCDP-WB/include/barrier.cuh
+@@ -1,98 +1,12 @@
+ #ifndef _BARRIER_H_
+ #define _BARRIER_H_
+-
+-/*
+-   Attention!!!!
+- * For debugging purpose, Barrier needs very low amount of threads
+- *
+- */
+-
+-#include "util.h"
+-
+-__device__ __forceinline__ int ThreadLoad(int *ptr)
+-{
+-	int retval;           
+-	asm volatile ("ld.global.cg.s32 %0, [%1];" :    \
+-			"=r"(retval) :                        \
+-			"l" (ptr) );                          \
+-		return retval;  
+-}
+-
+-//__device__ __forceinline__ void ThreadStore(volatile int *ptr, int val)
+-//{
+-//	asm volatile ("st.global.s32 [%0], %1;" : "+l"(ptr): "r"(val));
+-//}
+-
+-class Barrier {
+-	
+-	public:
+-		int *d_lock;
+-
+-		Barrier(int blks_num){
+-			setup(blks_num);	
+-		}
+-
+-		virtual ~Barrier(){
+-			//printf("Barrier is deleted\n");
+-			//cudaFree(d_lock);
+-		}
+-	public:
+-
+-		void setup(int blks_num)
+-		{
+-			H_ERR(cudaMalloc((void **)&d_lock, sizeof(int)*blks_num));
+-			H_ERR(cudaMemset((void *)d_lock, 0, sizeof(int)*blks_num));
+-			H_ERR(cudaDeviceSynchronize());
+-			
+-		}
+-
+-
+-		//__device__ __forceinline__ void sync_grid(int 0, int 1)
+-		__device__ __forceinline__ void sync_grid_opt()
+-		{
+-			volatile int *lock = d_lock;	
+-
+-			// Threadfence and syncthreads ensure global writes 
+-			// thread-0 reports in with its sync counter
+-			__threadfence();
+-			__syncthreads();
+-
+-			if (blockIdx.x == 0)
+-			{
+-				// Report in ourselves
+-				if (threadIdx.x == 0)
+-					lock[blockIdx.x] = 1;
+-
+-				__syncthreads();
+-
+-				// Wait for everyone else to report in
+-				for (int peer_block = threadIdx.x; 
+-						peer_block < gridDim.x; peer_block += blockDim.x)
+-					while (ThreadLoad(d_lock + peer_block) == 0)
+-						__threadfence_block();
+-				
+-				__syncthreads();
+-
+-				// Let everyone know it's safe to proceed
+-				for (int peer_block = threadIdx.x; 
+-                        peer_block < gridDim.x; peer_block += blockDim.x)
+-					lock[peer_block] = 0;
+-			}
+-			else
+-			{
+-				if (threadIdx.x == 0)
+-				{
+-					// Report in
+-					lock[blockIdx.x] = 1;
+-
+-					// Wait for acknowledgment
+-					while (ThreadLoad(d_lock + blockIdx.x) != 0)
+-						__threadfence_block();
+-				}
+-
+-				__syncthreads();
+-			}
+-		}
++#include <cooperative_groups.h>
++// Persistent kernels must be launched cooperatively. CUDA guarantees that all
++// participating blocks can reach each grid barrier and publishes their writes.
++struct Barrier {
++    explicit Barrier(int) {}
++    __device__ __forceinline__ void sync_grid_opt() {
++        cooperative_groups::this_grid().sync();
++    }
+ };
+-
+ #endif
+diff --git a/code/TrimCDP-WB/include/gpu_graph.cuh b/code/TrimCDP-WB/include/gpu_graph.cuh
+index 8e22336..4ac76ce 100644
+--- a/code/TrimCDP-WB/include/gpu_graph.cuh
++++ b/code/TrimCDP-WB/include/gpu_graph.cuh
+@@ -13,6 +13,7 @@ public:
+ 	vertex_t *adj_list;
+ 	weight_t *weight_list;
+ 	index_t *beg_pos;
++	index_t *end_pos;
+ 	int *merge_pointer_d, *merge_groups_d;
+ 	index_t vert_count;
+ 	index_t edge_count;
+@@ -37,7 +38,7 @@ public:
+ 	{
+ 		vert_count = ginst->vert_count; // 保持原始vertex_count用于算法逻辑
+ 		edge_count = ginst->edge_count;
+-		avg_degree = ginst->edge_count / ginst->vert_count;
++		avg_degree = ginst->vert_count ? ginst->edge_count / ginst->vert_count : 0;
+ 		new_vert_count = ginst->new_vert_count; // 扩展后的顶点数
+ 
+ 		size_t weight_sz = sizeof(weight_t) * edge_count;
+@@ -50,6 +51,9 @@ public:
+ 		H_ERR(cudaMalloc((void **)&beg_pos, beg_sz));
+ 		H_ERR(cudaMalloc((void **)&weight_list, weight_sz));
+ 
++		H_ERR(cudaMalloc((void **)&end_pos, sizeof(index_t) * new_vert_count));
++		H_ERR(cudaMemcpy(end_pos, ginst->end_pos, sizeof(index_t) * new_vert_count, cudaMemcpyHostToDevice));
++
+ 		/* copy it to GPU */
+ 		H_ERR(cudaMemcpy(adj_list, ginst->adj_list,
+ 						 adj_sz, cudaMemcpyHostToDevice));
+@@ -92,9 +96,8 @@ public:
+ 	{
+ 		cudaFree(adj_list);
+ 		cudaFree(beg_pos);
++		cudaFree(end_pos);
+ 		cudaFree(weight_list);
+-		cudaFree(merge_groups_d);
+-		cudaFree(merge_pointer_d);
+ 		cudaFree(son_d);
+ 		cudaFree(mother_d);
+ 		cudaFree(son_range_start_d);
+diff --git a/code/TrimCDP-WB/include/graph.h b/code/TrimCDP-WB/include/graph.h
+index be3ee72..d358492 100644
+--- a/code/TrimCDP-WB/include/graph.h
++++ b/code/TrimCDP-WB/include/graph.h
+@@ -16,7 +16,7 @@ typedef struct non_overlapped_group_sets{
+ 	std::vector<int> non_overlapped_group_sets_IDs_pointer_host, non_overlapped_group_sets_IDs;
+ 	int length;
+ }non_overlapped_group_sets;
+-void set_max_ID(graph_v_of_v_idealID &group_graph, std::vector<int> &cumpulsory_group_vertices, int *host_tree, std::vector<int> &contain_group_vertices,int width)
++void set_max_ID(graph_v_of_v_idealID &group_graph, std::vector<int> &cumpulsory_group_vertices, feature_t *host_tree, std::vector<int> &contain_group_vertices,int width)
+ {
+ 	int bit_num = 1, v;
+ 	for (auto it = cumpulsory_group_vertices.begin(); it != cumpulsory_group_vertices.end(); it++, bit_num <<= 1)
+@@ -43,16 +43,11 @@ non_overlapped_group_sets graph_v_of_v_idealID_DPBF_non_overlapped_group_sets_gp
+ 	for (int i = 1; i <= group_sets_ID_range; i++)
+ 	{ // i is a nonempty group_set ID
+ 		s.non_overlapped_group_sets_IDs_pointer_host[i] = s.length;
+-		for (int j = 1; j < group_sets_ID_range; j++)
+-		{ // j is another nonempty group_set ID
+-			if ((i & j) == 0)
+-			{ // i and j are non-overlapping group sets
+-				/* The & (bitwise AND) in C or C++ takes two numbers as operands and does AND on every bit of two numbers. The result of AND for each bit is 1 only if both bits are 1.
+-				https://www.programiz.com/cpp-programming/bitwise-operators */
+-				s.non_overlapped_group_sets_IDs.push_back(j);
+-				s.length++;
+-			}
+-		}
++        int remaining = group_sets_ID_range ^ i;
++        for (int j = remaining; j; j = (j - 1) & remaining) {
++            s.non_overlapped_group_sets_IDs.push_back(j);
++            ++s.length;
++        }
+ 	}
+ 	s.non_overlapped_group_sets_IDs_pointer_host[group_sets_ID_range + 1] = s.length;
+ 	return s;
+@@ -70,9 +65,10 @@ typename new_vert_t, typename new_index_t, typename new_weight_t>
+ class graph
+ {
+ 	public:
+-		new_index_t *beg_pos;
+-		new_vert_t *adj_list;
+-		new_weight_t *weight;
++		new_index_t *beg_pos = nullptr;
++		new_index_t *end_pos = nullptr;
++		new_vert_t *adj_list = nullptr;
++		new_weight_t *weight = nullptr;
+ 		new_index_t vert_count;
+ 		new_index_t edge_count;
+ 		graph_v_of_v_idealID group_graph;
+@@ -93,28 +89,13 @@ class graph
+ 		new_weight_t *new_weight;             // 新的权重数组
+ 	public:
+ 		graph(){};
+-		~graph(){};
++		~graph(){ delete[] beg_pos; delete[] end_pos; delete[] adj_list; delete[] weight; };
+ 		graph(const char *beg_file, 
+ 				const char *adj_list_file,
+ 				const char *weight_file);
+ 
+-		graph(file_vert_t *csr,
+-				file_index_t *beg_pos,
+-				file_weight_t *weight_list,
+-				file_index_t vert_count,
+-				file_index_t edge_count,
+-				graph_v_of_v_idealID group_graph,
+-		std::vector<std::vector<int>>inquire
+-				)
+-		{
+-			this->beg_pos = beg_pos;
+-			this->adj_list = csr;
+-			this->weight = weight_list;
+-			this->edge_count = edge_count;
+-			this->vert_count = vert_count;
+-			this->group_graph = group_graph;
+-			this->inquire = inquire;
+-		};
++        graph(const graph&) = delete;
++        graph& operator=(const graph&) = delete;
+ 
+ 		void read_gi(std::string file_name1,std::string file_name2)
+ 		{
+@@ -129,7 +110,7 @@ class graph
+ 		void split_high_degree_vertices();
+ 		void build_new_csr();
+ };
+-int get_max(int vertex, int *host_tree, int width)
++int get_max(int vertex, feature_t *host_tree, int width)
+ {
+ 	int re = 0;
+ 	for (size_t i = 1; i < width; i <<= 1)
+diff --git a/code/TrimCDP-WB/include/graph.hpp b/code/TrimCDP-WB/include/graph.hpp
+index 6075b67..c34e959 100644
+--- a/code/TrimCDP-WB/include/graph.hpp
++++ b/code/TrimCDP-WB/include/graph.hpp
+@@ -1,579 +1,139 @@
+-#include "graph.h"
+-#include <unistd.h>
+-#include<vector>
+-#include<string>
++#ifndef GPU4GST_GRAPH_HPP
++#define GPU4GST_GRAPH_HPP
++#include <algorithm>
+ #include <fstream>
++#include <limits>
++#include <stdexcept>
++#include <vector>
+ 
+-template<
+-typename file_vert_t, typename file_index_t, typename file_weight_t,
+-typename new_vert_t, typename new_index_t, typename new_weight_t>
+-graph<file_vert_t,file_index_t, file_weight_t,
+-new_vert_t,new_index_t,new_weight_t>
+-::graph(
+-		const char *beg_file,
+-		const char *adj_file,
+-		const char *weight_file
+-		)
+-{
+-	
+-	double tm=wtime();
+-	FILE *file=NULL;
+-	file_index_t ret;
+-
+-
+-	
+-	vert_count=fsize(beg_file)/sizeof(file_index_t) - 1;
+-	edge_count=fsize(adj_file)/sizeof(file_vert_t);
+-	
+-	file=fopen(beg_file, "rb");
+-	if(file!=NULL)
+-	{
+-		file_index_t *tmp_beg_pos=NULL;
+-
+-		if(posix_memalign((void **)&tmp_beg_pos, getpagesize(),
+-					sizeof(file_index_t)*(vert_count+1)))
+-			perror("posix_memalign");
+-//posix_memalign 为数组分配临时空间
+-		ret=fread(tmp_beg_pos, sizeof(file_index_t), 
+-				vert_count+1, file);
+-		assert(ret==vert_count+1);
+-		fclose(file);
+-		edge_count=tmp_beg_pos[vert_count];
+-		std::cout<<"Expected edge count: "<<tmp_beg_pos[vert_count]<<"\n";
+-
+-        assert(tmp_beg_pos[vert_count]>0);
+-
+-		//converting to new type when different 
+-		if(sizeof(file_index_t)!=sizeof(new_index_t))
+-		{
+-			if(posix_memalign((void **)&beg_pos, getpagesize(),
+-					sizeof(new_index_t)*(vert_count+1)))
+-			perror("posix_memalign");
+-			for(new_index_t i=0;i<vert_count+1;++i)
+-				beg_pos[i]=(new_index_t)tmp_beg_pos[i];
+-			delete[] tmp_beg_pos;
+-		}else{beg_pos=(new_index_t*)tmp_beg_pos;}
+-	}else std::cout<<"beg file cannot open\n";
+-
+-	file=fopen(adj_file, "rb");
+-	if(file!=NULL)
+-	{
+-		file_vert_t *tmp_adj_list = NULL;
+-		if(posix_memalign((void **)&tmp_adj_list,getpagesize(),
+-						sizeof(file_vert_t)*edge_count))
+-			perror("posix_memalign");
+-		
+-		ret=fread(tmp_adj_list, sizeof(file_vert_t), edge_count, file);
+-		assert(ret==edge_count);
+-		assert(ret==beg_pos[vert_count]);
+-		fclose(file);
+-			
+-		if(sizeof(file_vert_t)!=sizeof(new_vert_t))
+-		{
+-			if(posix_memalign((void **)&adj_list,getpagesize(),
+-						sizeof(new_vert_t)*edge_count))
+-				perror("posix_memalign");
+-			for(new_index_t i=0;i<edge_count;++i)
+-				adj_list[i]=(new_vert_t)tmp_adj_list[i];
+-			delete[] tmp_adj_list;
+-		}else adj_list =(new_vert_t*)tmp_adj_list;
+-
+-	}else std::cout<<"adj file cannot open\n";
+-
++// Input files are headerless arrays of signed 64-bit little-endian integers.
++template<class T> std::vector<T> read_graph_array(const char* name) {
++    std::ifstream in(name, std::ios::binary | std::ios::ate);
++    if (!in) throw std::runtime_error(std::string("cannot open ") + name);
++    auto size = in.tellg();
++    if (size < 0 || size % sizeof(T)) throw std::runtime_error("truncated graph array");
++    size_t count = static_cast<size_t>(size) / sizeof(T);
++    if (count > static_cast<size_t>(INT_MAX)) throw std::runtime_error("graph exceeds 32-bit index capacity");
++    std::vector<T> values(count);
++    in.seekg(0);
++    if (size && !in.read(reinterpret_cast<char*>(values.data()), size))
++        throw std::runtime_error("cannot read complete graph array");
++    return values;
++}
+ 
+-	file=fopen(weight_file, "rb");
+-	if(file!=NULL)
+-	{
+-		file_weight_t *tmp_weight = NULL;
+-		if(posix_memalign((void **)&tmp_weight,getpagesize(),
+-					sizeof(file_weight_t)*edge_count))
+-			perror("posix_memalign");
+-		
+-		ret=fread(tmp_weight, sizeof(file_weight_t), edge_count, file);
+-		assert(ret==edge_count);
+-		fclose(file);
+-	
+-		if(sizeof(file_weight_t)!=sizeof(new_weight_t))
+-		{
+-			if(posix_memalign((void **)&weight,getpagesize(),
+-						sizeof(new_weight_t)*edge_count))
+-				perror("posix_memalign");
+-			for(new_index_t i=0;i<edge_count;++i)
+-            {
+-                weight[i]=(new_weight_t)tmp_weight[i];
+-                //if(weight[i] ==0)
+-                //{
+-                //    std::cout<<"zero weight: "<<i<<"\n";
+-                //    exit(-1);
+-                //}
++template<typename FV, typename FI, typename FW, typename V, typename I, typename W>
++graph<FV,FI,FW,V,I,W>::graph(const char* beg_file, const char* adj_file, const char* weight_file) {
++    static_assert(sizeof(FV) == 8 && sizeof(FI) == 8 && sizeof(FW) == 8, "64-bit graph files required");
++    auto offsets = read_graph_array<FI>(beg_file);
++    auto dest = read_graph_array<FV>(adj_file);
++    auto weights = read_graph_array<FW>(weight_file);
++    if (offsets.empty() || offsets.front() != 0 || offsets.back() != static_cast<FI>(dest.size()) || dest.size() != weights.size())
++        throw std::runtime_error("inconsistent CSR array lengths or endpoints");
++    vert_count = offsets.size() - 1;
++    edge_count = dest.size();
++    for (size_t i = 1; i < offsets.size(); ++i)
++        if (offsets[i] < offsets[i-1] || offsets[i] < 0 || offsets[i] > static_cast<FI>(edge_count))
++            throw std::runtime_error("CSR offsets must be nonnegative and nondecreasing");
++    FW largest = 0;
++    for (size_t e = 0; e < dest.size(); ++e) {
++        if (dest[e] < 0 || dest[e] >= vert_count) throw std::runtime_error("CSR vertex out of range");
++        if (weights[e] < 0 || weights[e] >= inf) throw std::runtime_error("edge weight outside [0, 2^58)");
++        largest = std::max(largest, weights[e]);
++    }
++    if (static_cast<__int128>(largest) * (vert_count ? vert_count-1 : 0) >= inf)
++        throw std::runtime_error("maximum simple-tree cost must be below 2^58");
++    // Normalize arbitrary neighbor order without discarding parallel edges.
++    for (I v = 0; v < vert_count; ++v) {
++        std::vector<std::pair<FV,FW>> row;
++        for (FI e = offsets[v]; e < offsets[v+1]; ++e) row.emplace_back(dest[e], weights[e]);
++        std::sort(row.begin(), row.end());
++        for (size_t j = 0; j < row.size(); ++j) {
++            dest[offsets[v]+j] = row[j].first;
++            weights[offsets[v]+j] = row[j].second;
++        }
++    }
++    // GST is undirected: validate the weight and multiplicity of reciprocal arcs.
++    for (I v = 0; v < vert_count; ++v) {
++        for (FI e = offsets[v]; e < offsets[v+1];) {
++            FV u = dest[e]; FW w = weights[e];
++            FI next = e+1;
++            while (next < offsets[v+1] && dest[next] == u && weights[next] == w) ++next;
++            FI lo = offsets[u], hi = offsets[u+1];
++            while (lo < hi) {
++                FI mid = lo+(hi-lo)/2;
++                if (std::make_pair(dest[mid], weights[mid]) < std::make_pair(static_cast<FV>(v),w)) lo = mid+1;
++                else hi = mid;
+             }
+-
+-			delete[] tmp_weight;
+-		}else weight=(new_weight_t*)tmp_weight;
+-	}
+-	else std::cout<<"Weight file cannot open\n";
+-    
+-	std::cout<<"Graph load (success): "<<vert_count<<" verts, "
+-		<<edge_count<<" edges "<<wtime()-tm<<" second(s)\n";
+-		
+-	// 执行大度数节点分割
+-	split_high_degree_vertices();
+-	build_new_csr();
+-	
+-	// 输出分割后的最终图信息
+-	std::cout<<"After high-degree vertex splitting: "<<vert_count<<" verts, "
+-		<<edge_count<<" edges "<<wtime()-tm<<" second(s)\n";
++            FI end = lo;
++            while (end < offsets[u+1] && dest[end] == v && weights[end] == w) ++end;
++            if (end-lo != next-e) throw std::runtime_error("CSR must have matching reciprocal weighted arcs");
++            e = next;
++        }
++    }
++    // Allocate only after validating the complete input.
++    beg_pos = new I[vert_count+1];
++    adj_list = new V[edge_count];
++    weight = new W[edge_count];
++    std::copy(offsets.begin(), offsets.end(), beg_pos);
++    std::copy(dest.begin(), dest.end(), adj_list);
++    std::copy(weights.begin(), weights.end(), weight);
++    split_high_degree_vertices();
++    build_new_csr();
+ }
+ 
+-// 大度数节点分割函数实现
+-template<
+-typename file_vert_t, typename file_index_t, typename file_weight_t,
+-typename new_vert_t, typename new_index_t, typename new_weight_t>
+-void graph<file_vert_t,file_index_t, file_weight_t,
+-new_vert_t,new_index_t,new_weight_t>::split_high_degree_vertices()
+-{
+-	original_vert_count = vert_count;
+-	
+-	// 第一步：计算需要分割的大度数节点
+-	std::vector<new_index_t> high_degree_vertices;
+-	for (new_index_t i = 0; i < vert_count; i++) {
+-		new_index_t degree = beg_pos[i + 1] - beg_pos[i];
+-		if (degree > 1024) {
+-			high_degree_vertices.push_back(i);
+-		}
+-	}
+-	
+-	std::cout << "Found " << high_degree_vertices.size() << " high-degree vertices (>1024)" << std::endl;
+-	
+-	// 第二步：计算需要增加的空间（包括分割节点）
+-	new_vert_count = vert_count;
+-	std::vector<new_index_t> split_counts; // 记录每个大度数节点需要分割成几个子节点
+-	split_counts.resize(vert_count, 0);
+-	
+-	for (auto v : high_degree_vertices) {
+-		new_index_t degree = beg_pos[v + 1] - beg_pos[v];
+-		new_index_t num_splits = (degree + 511) / 512; // 向上取整，确保每个子节点度 <= 512
+-		split_counts[v] = num_splits;
+-		new_vert_count += num_splits; // 子节点
+-	}
+-	
+-	// 为每个大度数节点组添加一个分割节点
+-	new_vert_count += high_degree_vertices.size();
+-	
+-	std::cout << "new_vert_count: " << new_vert_count << std::endl;
+-	
+-	// 第三步：分配空间
+-	mother_map.resize(new_vert_count);
+-	son_d_map.resize(new_vert_count);
+-	son_range_start_map.resize(new_vert_count);
+-	son_range_end_map.resize(new_vert_count);
+-	
+-	// 第四步：初始化映射数组
+-	// 首先，所有节点默认映射到自己
+-	for (new_index_t i = 0; i < vert_count; i++) {
+-		mother_map[i] = i;
+-		son_d_map[i] = i;  // 节点默认映射到自己
+-		son_range_start_map[i] = i;
+-		son_range_end_map[i] = i; // 非大度数节点没有子节点，范围为空
+-	}
+-	
+-	// 第五步：为每个大度数节点创建子节点和分割节点
+-	new_index_t current_new_vertex = vert_count;
+-	for (auto v : high_degree_vertices) {
+-		new_index_t num_splits = split_counts[v];
+-		
+-		// 设置子节点范围起始位置
+-		son_range_start_map[v] = current_new_vertex;
+-		
+-		// 设置大度数节点的son_d_map为第一个子节点
+-		son_d_map[v] = current_new_vertex;
+-		
+-		// 创建子节点
+-		for (new_index_t i = 0; i < num_splits; i++) {
+-			mother_map[current_new_vertex] = v; // 子节点映射到父节点
+-			son_d_map[current_new_vertex] = current_new_vertex; // 子节点映射到自己
+-			current_new_vertex++;
+-		}
+-		
+-		// 设置子节点范围结束位置
+-		son_range_end_map[v] = current_new_vertex;
+-		
+-		// 创建分割节点（不映射到任何父节点，仅用于CSR分割）
+-		mother_map[current_new_vertex] = -1; // 分割节点没有父节点
+-		son_d_map[current_new_vertex] = current_new_vertex; // 分割节点映射到自己
+-		current_new_vertex++;
+-		
+-		// 打印调试信息
+-		std::cout << "设置大度数点 " << v << " 的子节点范围: [" << son_range_start_map[v] 
+-				  << ", " << (current_new_vertex - 1) << "] (分割节点: " << (current_new_vertex - 1) << ")" << std::endl;
+-	}
+-	
+-	// 第六步：构建son_list_map - 类似CSR格式
+-	son_list_map.clear();
+-	for (new_index_t i = 0; i < original_vert_count; i++) {
+-		new_index_t start = son_range_start_map[i];
+-		new_index_t end;
+-		
+-		// 检查是否是大度数点
+-		new_index_t degree = beg_pos[i + 1] - beg_pos[i];
+-		if (degree > 1024) {
+-			// 大度数点：找到下一个大度数点的起始位置，或者到new_vert_count
+-			end = new_vert_count;
+-			for (auto v : high_degree_vertices) {
+-				if (v > i) {
+-					end = son_range_start_map[v];
+-					break;
+-				}
+-			}
+-		} else {
+-			// 非大度数点：没有子节点，范围为空
+-			end = start;
+-		}
+-		
+-		// 确保索引在有效范围内
+-		if (start < new_vert_count && end <= new_vert_count && start <= end) {
+-			for (new_index_t j = start; j < end; j++) {
+-				son_list_map.push_back(j);
+-			}
+-		}
+-	}
+-	std::cout << "son_list_map.size(): " << son_list_map.size() << std::endl;
+-	
+-	// 第七步：对于新增的子节点和分割节点，范围起始位置为自己
+-	for (new_index_t i = original_vert_count; i < new_vert_count; i++) {
+-		son_range_start_map[i] = i;
+-		son_range_end_map[i] = i + 1; // 结束位置是下一个位置
+-		son_d_map[i] = i;  // 子节点映射到自己
+-	}
+-	std::cout << "son_range_start_map.size(): " << son_range_start_map.size() << std::endl;
+-	
+-	// 第八步：保存原始的子节点范围信息，用于后续打印
+-	original_son_ranges.resize(original_vert_count);
+-	for (new_index_t i = 0; i < original_vert_count; i++) {
+-		new_index_t start = son_range_start_map[i];
+-		new_index_t end;
+-		
+-		// 检查是否是大度数点
+-		new_index_t degree = beg_pos[i + 1] - beg_pos[i];
+-		if (degree > 1024) {
+-			// 大度数点：找到下一个大度数点的起始位置，或者到new_vert_count
+-			end = new_vert_count;
+-			for (auto v : high_degree_vertices) {
+-				if (v > i) {
+-					end = son_range_start_map[v];
+-					break;
+-				}
+-			}
+-		} else {
+-			// 非大度数点：没有子节点，范围为空
+-			end = start;
+-		}
+-		
+-		original_son_ranges[i] = std::make_pair(start, end);
+-		
+-		// 打印调试信息
+-		if (end - start > 1024) {
+-			std::cout << "节点 " << i << " 的子节点范围: [" << start << ", " << end << ")" << std::endl;
+-		}
+-		if(end < start)
+-		{
+-			std::cout<<"end<start "<<i<<" "<<start<<" "<<end<<std::endl;
+-		}
+-	}
++template<typename FV, typename FI, typename FW, typename V, typename I, typename W>
++void graph<FV,FI,FW,V,I,W>::split_high_degree_vertices() {
++    original_vert_count = vert_count;
++    new_vert_count = vert_count;
++    for (I v = 0; v < vert_count; ++v) {
++        I degree = beg_pos[v+1]-beg_pos[v];
++        if (degree > 1024) {
++            uint64_t count = static_cast<uint64_t>(new_vert_count)+(degree+511)/512;
++            if (count > INT_MAX) throw std::runtime_error("virtual vertices exceed index capacity");
++            new_vert_count = count;
++        }
++    }
++    mother_map.resize(new_vert_count);
++    son_d_map.resize(new_vert_count);
++    son_range_start_map.resize(new_vert_count);
++    son_range_end_map.resize(new_vert_count);
++    I next = vert_count;
++    for (I v = 0; v < vert_count; ++v) {
++        mother_map[v] = son_d_map[v] = v;
++        son_range_start_map[v] = son_range_end_map[v] = next;
++        I degree = beg_pos[v+1]-beg_pos[v];
++        if (degree <= 1024) continue;
++        son_d_map[v] = next;
++        for (I part = 0; part < (degree+511)/512; ++part, ++next) {
++            mother_map[next] = v;
++            son_d_map[next] = next;
++            son_range_start_map[next] = son_range_end_map[next] = next;
++            son_list_map.push_back(next);
++        }
++        son_range_end_map[v] = next;
++    }
+ }
+ 
+-template<
+-typename file_vert_t, typename file_index_t, typename file_weight_t,
+-typename new_vert_t, typename new_index_t, typename new_weight_t>
+-void graph<file_vert_t,file_index_t, file_weight_t,
+-new_vert_t,new_index_t,new_weight_t>::build_new_csr()
+-{
+-	std::cout << "开始构建新的CSR..." << std::endl;
+-	
+-	// 保存原始数据用于验证
+-	std::vector<new_index_t> original_beg_pos(beg_pos, beg_pos + original_vert_count + 1);
+-	std::vector<new_vert_t> original_adj_list(adj_list, adj_list + edge_count);
+-	std::vector<new_weight_t> original_weight(weight, weight + edge_count);
+-	
+-	// 第一步：计算新的边数量
+-	new_edge_count = edge_count; // 原始边数保持不变
+-	for (new_index_t i = 0; i < original_vert_count; i++) {
+-		new_index_t degree = original_beg_pos[i + 1] - original_beg_pos[i];
+-		if (degree > 1024) {
+-			// 大度数节点：子节点指向父节点边表的子集，不增加新的边
+-			// 子节点只是重新组织父节点的边表，不复制边
+-		}
+-	}
+-	
+-	std::cout << "原始边数: " << edge_count << ", 新边数: " << new_edge_count << std::endl;
+-	
+-	// 第二步：分配新的CSR数组
+-	new_beg_pos = new new_index_t[new_vert_count + 1];
+-	new_adj_list = new new_vert_t[new_edge_count];
+-	new_weight = new new_weight_t[new_edge_count];
+-	
+-	// 第三步：构建新的CSR
+-	// 首先复制所有原始边表（保持位置不变）
+-	for (new_index_t i = 0; i < edge_count; i++) {
+-		new_adj_list[i] = original_adj_list[i];
+-		new_weight[i] = original_weight[i];
+-	}
+-	
+-	// 复制所有原始节点的beg_pos（保持位置不变）
+-	for (new_index_t i = 0; i < original_vert_count + 1; i++) {
+-		new_beg_pos[i] = original_beg_pos[i];
+-	}
+-	
+-	// 然后为子节点设置beg_pos，指向父节点边表的子集
+-	new_index_t vertex_offset = original_vert_count;
+-	for (new_index_t i = 0; i < original_vert_count; i++) {
+-		new_index_t degree = original_beg_pos[i + 1] - original_beg_pos[i];
+-		
+-		if (degree > 1024) {
+-			// 大度数节点：为子节点设置beg_pos
+-			std::cout << "处理大度数点 " << i << " (度数: " << degree << ")" << std::endl;
+-			
+-			new_index_t num_splits = (degree + 511) / 512; // 向上取整
+-			
+-			new_index_t processed_edges = 0;
+-			for (new_index_t j = 0; j < num_splits; j++) {
+-				// 计算当前子节点的边数
+-				new_index_t edges_for_this_son;
+-				if (j == num_splits - 1) {
+-					// 最后一个子节点处理剩余的所有边
+-					edges_for_this_son = degree - processed_edges;
+-				} else {
+-					// 其他子节点处理512条边
+-					edges_for_this_son = 512;
+-				}
+-				
+-				// 设置子节点的beg_pos，指向父节点边表的子集
+-				new_beg_pos[vertex_offset + j] = original_beg_pos[i] + processed_edges;
+-				
+-				processed_edges += edges_for_this_son;
+-			}
+-			
+-			// 设置分割节点的beg_pos（没有边）
+-			new_beg_pos[vertex_offset + num_splits] = original_beg_pos[i] + degree; // 指向父节点边表的末尾
+-			
+-			vertex_offset += num_splits + 1; // +1 包括分割节点
+-		}
+-	}
+-	
+-	// 设置最后一个起始位置
+-	new_beg_pos[new_vert_count] = edge_count;
+-	
+-	// 第四步：更新图的CSR数据
+-	delete[] adj_list;
+-	delete[] beg_pos;
+-	delete[] weight;
+-	
+-	adj_list = new_adj_list;
+-	beg_pos = new_beg_pos;
+-	weight = new_weight;
+-	// 保持原始vertex_count不变，子节点只在grow中使用
+-	// vert_count = new_vert_count; // 注释掉这行，保持原始vertex_count
+-	edge_count = new_edge_count;
+-	
+-	std::cout << "新CSR构建完成: 原始顶点数 " << vert_count << ", 扩展顶点数 " << new_vert_count << ", " << new_edge_count << " 条边" << std::endl;
+-	
+-	// 打印分割后前5个大度数点的子节点在新CSR中的信息
+-	std::cout << "\n=== 验证分割结果 ===" << std::endl;
+-	int print_count = 0;
+-	for (new_index_t i = 0; i < original_vert_count; i++) {
+-		new_index_t original_degree = original_beg_pos[i + 1] - original_beg_pos[i];
+-		if (original_degree > 1024) {
+-			if (print_count >= 5) break;
+-			
+-			std::cout << "\n大度数点 " << i << " (原始度数: " << original_degree << "):" << std::endl;
+-			
+-			// 使用start和end数组直接获取子节点范围
+-			new_index_t start_son = son_range_start_map[i];
+-			new_index_t end_son = son_range_end_map[i];
+-			new_index_t num_sons = end_son - start_son;
+-			
+-			std::cout << "  子节点范围: [" << start_son << ", " << end_son << ") (共" << num_sons << "个子节点)" << std::endl;
+-			
+-			// 验证每个子节点的度数
+-			new_index_t total_son_edges = 0;
+-			for (new_index_t j = 0; j < num_sons; j++) {
+-				new_index_t son_vertex = start_son + j;
+-				if (son_vertex + 1 < new_vert_count) {
+-					new_index_t son_degree = beg_pos[son_vertex + 1] - beg_pos[son_vertex];
+-					total_son_edges += son_degree;
+-				}
+-			}
+-			
+-			// 验证总边数是否匹配
+-			std::cout << "  验证: 原始父节点 " << original_degree << " 条边, 子节点总计 " << total_son_edges << " 条边 ";
+-			if (original_degree == total_son_edges) {
+-				std::cout << "✓" << std::endl;
+-			} else {
+-				std::cout << "✗" << std::endl;
+-			}
+-			
+-			// 验证子节点度数是否符合512分割规则
+-			std::cout << "  512分割验证: ";
+-			bool split_correct = true;
+-			for (new_index_t j = 0; j < num_sons; j++) {
+-				new_index_t son_vertex = start_son + j;
+-				if (son_vertex + 1 < new_vert_count) {
+-					new_index_t son_degree = beg_pos[son_vertex + 1] - beg_pos[son_vertex];
+-					if (j < num_sons - 1 && son_degree != 512) {
+-						split_correct = false;
+-						break;
+-					}
+-					if (j == num_sons - 1 && son_degree > 512) {
+-						split_correct = false;
+-						break;
+-					}
+-				}
+-			}
+-			std::cout << (split_correct ? "✓" : "✗") << std::endl;
+-			
+-			// 验证父节点映射正确性
+-			std::cout << "  父节点映射验证: ";
+-			bool parent_mapping_correct = true;
+-			for (new_index_t j = 0; j < num_sons; j++) {
+-				new_index_t son_vertex = start_son + j;
+-				if (mother_map[son_vertex] != i) {
+-					parent_mapping_correct = false;
+-					break;
+-				}
+-			}
+-			std::cout << (parent_mapping_correct ? "✓" : "✗") << std::endl;
+-			
+-			// 打印大度数点和子节点的边信息对比
+-			std::cout << "  边信息对比:" << std::endl;
+-			
+-			// 打印父节点的前5条边
+-			std::cout << "    父节点 " << i << " 前5条边: ";
+-			new_index_t parent_beg = beg_pos[i];
+-			new_index_t parent_end = beg_pos[i + 1];
+-			new_index_t print_count_edges = 0;
+-			for (new_index_t j = parent_beg; j < parent_end && print_count_edges < 5; j++) {
+-				std::cout << "(" << adj_list[j] << "," << weight[j] << ")";
+-				if (j < parent_end - 1 && print_count_edges < 4) std::cout << " ";
+-				print_count_edges++;
+-			}
+-			std::cout << std::endl;
+-			
+-			// 打印父节点的最后5条边
+-			std::cout << "    父节点 " << i << " 最后5条边: ";
+-			print_count_edges = 0;
+-			for (new_index_t j = parent_end - 1; j >= parent_beg && print_count_edges < 5; j--) {
+-				std::cout << "(" << adj_list[j] << "," << weight[j] << ")";
+-				if (j > parent_beg && print_count_edges < 4) std::cout << " ";
+-				print_count_edges++;
+-			}
+-			std::cout << std::endl;
+-			
+-			// 打印第一个子节点的前5条边
+-			if (num_sons > 0) {
+-				new_index_t first_son = start_son;
+-				new_index_t first_son_beg = beg_pos[first_son];
+-				new_index_t first_son_end = beg_pos[first_son + 1];
+-				std::cout << "    第一个子节点 " << first_son << " 前5条边: ";
+-				print_count_edges = 0;
+-				for (new_index_t j = first_son_beg; j < first_son_end && print_count_edges < 5; j++) {
+-					std::cout << "(" << adj_list[j] << "," << weight[j] << ")";
+-					if (j < first_son_end - 1 && print_count_edges < 4) std::cout << " ";
+-					print_count_edges++;
+-				}
+-				std::cout << std::endl;
+-			}
+-			
+-			// 打印最后一个子节点的最后5条边
+-			if (num_sons > 0) {
+-				new_index_t last_son = start_son + num_sons - 1;
+-				new_index_t last_son_beg = beg_pos[last_son];
+-				new_index_t last_son_end = beg_pos[last_son + 1];
+-				std::cout << "    最后一个子节点 " << last_son << " 最后5条边: ";
+-				print_count_edges = 0;
+-				for (new_index_t j = last_son_end - 1; j >= last_son_beg && print_count_edges < 5; j--) {
+-					std::cout << "(" << adj_list[j] << "," << weight[j] << ")";
+-					if (j > last_son_beg && print_count_edges < 4) std::cout << " ";
+-					print_count_edges++;
+-				}
+-				std::cout << std::endl;
+-			}
+-			
+-			print_count++;
+-		}
+-	}
+-	
+-	// 特判打印37701子节点的所有信息
+-	std::cout << "\n=== 特判打印37701子节点信息 ===" << std::endl;
+-	
+-	// 直接检查37701子节点
+-	new_index_t son_vertex = 37701;
+-	
+-	// 检查37701是否在有效范围内
+-	if (son_vertex < new_vert_count) {
+-		std::cout << "\n37701子节点详细信息:" << std::endl;
+-		
+-		// 获取父节点
+-		new_index_t parent_vertex = mother_map[son_vertex];
+-		std::cout << "  父节点: mother_map[" << son_vertex << "]=" << parent_vertex << std::endl;
+-		
+-		// 获取子节点的CSR信息
+-		new_index_t son_beg = beg_pos[son_vertex];
+-		new_index_t son_end = beg_pos[son_vertex + 1];
+-		new_index_t son_degree = son_end - son_beg;
+-		
+-		std::cout << "  CSR位置: beg_pos[" << son_vertex << "]=" << son_beg << ", beg_pos[" << (son_vertex+1) << "]=" << son_end << std::endl;
+-		std::cout << "  度数: " << son_degree << std::endl;
+-		std::cout << "  子节点映射: son_d_map[" << son_vertex << "]=" << son_d_map[son_vertex] << std::endl;
+-		
+-		// 打印37701子节点的所有边
+-		std::cout << "  所有边: ";
+-		for (new_index_t j = son_beg; j < son_end; j++) {
+-			std::cout << "(" << adj_list[j] << "," << weight[j] << ")";
+-			if (j < son_end - 1) std::cout << " ";
+-		}
+-		std::cout << std::endl;
+-		
+-		// 验证37701子节点在父节点边表中的位置
+-		if (parent_vertex < original_vert_count) {
+-			new_index_t parent_beg = beg_pos[parent_vertex];
+-			new_index_t parent_end = beg_pos[parent_vertex + 1];
+-			new_index_t parent_degree = parent_end - parent_beg;
+-			
+-			std::cout << "  父节点" << parent_vertex << "信息:" << std::endl;
+-			std::cout << "    原始度数: " << parent_degree << std::endl;
+-			std::cout << "    边表范围: [" << parent_beg << ", " << parent_end << ")" << std::endl;
+-			std::cout << "    37701子节点边表范围: [" << son_beg << ", " << son_end << ")" << std::endl;
+-			
+-			// 验证37701子节点的边是否确实是父节点边表的子集
+-			bool is_subset = true;
+-			for (new_index_t j = son_beg; j < son_end; j++) {
+-				if (j < parent_beg || j >= parent_end) {
+-					is_subset = false;
+-					break;
+-				}
+-			}
+-			std::cout << "    是否为父节点边表子集: " << (is_subset ? "✓" : "✗") << std::endl;
+-			
+-			// 检查父节点的子节点范围
+-			new_index_t start_son = son_range_start_map[parent_vertex];
+-			new_index_t end_son = son_range_end_map[parent_vertex];
+-			new_index_t num_sons = end_son - start_son;
+-			
+-			std::cout << "    父节点子节点范围: [" << start_son << ", " << end_son << ") (共" << num_sons << "个子节点)" << std::endl;
+-			
+-			// 检查37701在父节点子节点范围中的位置
+-			bool in_range = (son_vertex >= start_son && son_vertex < end_son);
+-			std::cout << "    37701是否在父节点子节点范围内: " << (in_range ? "✓" : "✗") << std::endl;
+-			
+-			if (in_range) {
+-				new_index_t son_index = son_vertex - start_son;
+-				std::cout << "    37701是父节点的第" << son_index << "个子节点" << std::endl;
+-			}
+-		} else {
+-			std::cout << "  警告: 父节点" << parent_vertex << "超出原始顶点范围" << std::endl;
+-		}
+-	} else {
+-		std::cout << "  警告: 37701超出扩展顶点范围" << std::endl;
+-	}
++template<typename FV, typename FI, typename FW, typename V, typename I, typename W>
++void graph<FV,FI,FW,V,I,W>::build_new_csr() {
++    // Virtual rows alias chunks of original rows. They need explicit ends:
++    // appending their starts to a CSR overwrites the last original row's end.
++    auto starts = new I[new_vert_count+1];
++    end_pos = new I[new_vert_count];
++    for (I v = 0; v < vert_count; ++v) {
++        starts[v] = beg_pos[v];
++        end_pos[v] = beg_pos[v+1];
++        for (I child = son_range_start_map[v]; child < son_range_end_map[v]; ++child) {
++            I start = beg_pos[v]+(child-son_range_start_map[v])*512;
++            starts[child] = start;
++            end_pos[child] = std::min(start+512, beg_pos[v+1]);
++        }
++    }
++    starts[new_vert_count] = edge_count;
++    delete[] beg_pos;
++    beg_pos = starts;
++    new_edge_count = edge_count;
++    std::cout << "Graph load: " << vert_count << " vertices, " << edge_count
++              << " arcs, " << new_vert_count-vert_count << " virtual rows\n";
+ }
+-
++#endif
+diff --git a/code/TrimCDP-WB/include/header.h b/code/TrimCDP-WB/include/header.h
+index cd8035c..f1cca4c 100644
+--- a/code/TrimCDP-WB/include/header.h
++++ b/code/TrimCDP-WB/include/header.h
+@@ -5,12 +5,12 @@ typedef struct queue_element
+ {
+     int v,p;
+ } queue_element;
+-typedef int feature_t;
+-typedef int weight_t;
++typedef long long feature_t;
++typedef long long weight_t;
+ typedef unsigned char bit_t;
+ typedef  int vertex_t;
+ #define INFTY			(int)(1<<20)
+-#define inf 100000
++#define inf (1LL << 58)
+ #define BIN_SZ			64
+ 
+ 
+diff --git a/code/TrimCDP-WB/include/mapper.cuh b/code/TrimCDP-WB/include/mapper.cuh
+index 9974888..ae8b971 100644
+--- a/code/TrimCDP-WB/include/mapper.cuh
++++ b/code/TrimCDP-WB/include/mapper.cuh
+@@ -23,6 +23,7 @@ public:
+ 	vertex_t *adj_list;
+ 	weight_t *weight_list;
+ 	index_t *beg_pos;
++	index_t *end_pos;
+ 	index_t vert_count;
+ 	index_t new_vert_count; // 扩展后的顶点数，用于边界检查
+ 	feature_t *vert_status;
+@@ -30,8 +31,9 @@ public:
+ 	feature_t *one_label_lower_bound;
+ 	feature_t *lb_record;
+ 	feature_t *in_queue;
+-	int width, full, *lb0;
+-	volatile int *best;
++	int width, full;
++	feature_t *lb0;
++	volatile feature_t *best;
+ 	int *merge_pointer;
+ 	int *merge_groups;
+ 	// index_t *cat_thd_count_sml;
+@@ -59,6 +61,7 @@ public:
+ 		adj_list = ggraph.adj_list;
+ 		weight_list = ggraph.weight_list;
+ 		beg_pos = ggraph.beg_pos;
++		end_pos = ggraph.end_pos;
+ 		width = wid;
+ 		lb0 = mdata.lb0;
+ 		in_queue = mdata.in_queue;
+@@ -103,7 +106,7 @@ public:
+ 		const index_t GRP_COUNT,
+ 		const index_t THD_OFF,
+ 		feature_t level,
+-		volatile vertex_t *bests,
++		volatile feature_t *bests,
+ 		feature_t *records)
+ 	{
+ 		index_t appr_work = 0;
+@@ -115,7 +118,7 @@ public:
+ 			vertex_t frontier = worklist[i];
+ 
+ 			int v = frontier / width, p = frontier % width;
+-			index_t beg = beg_pos[v], end = beg_pos[v + 1], x_slash = full - p, vline = v * width;
++			index_t beg = beg_pos[v], end = end_pos[v], x_slash = full - p, vline = v * width;
+ 
+ 			for (index_t j = beg + THD_OFF; j < end; j += GRP_SZ)
+ 			{
+@@ -128,7 +131,7 @@ public:
+ 			
+ 				if (vert_status[update_dest] > dist)
+ 				{
+-					int lb = get_lb(one_label_lower_bound, lb0, vert_end * width, x_slash);
++					feature_t lb = get_lb(one_label_lower_bound, lb0, vert_end * width, x_slash);
+ 					atomicMin(vert_status + update_dest, dist);
+ 					if (lb + dist <= (*best))
+ 						in_queue[update_dest] = 1;
+@@ -148,7 +151,7 @@ public:
+ 				if (vert_status[update_dest] > dist)
+ 				{
+ 					atomicMin(vert_status + update_dest, dist);
+-					int lb = get_lb_m(one_label_lower_bound, lb0, vline, x_slash, dist);
++					feature_t lb = get_lb_m(one_label_lower_bound, lb0, vline, x_slash, dist);
+ 					if (lb + dist <= (*best))
+ 						in_queue[update_dest] = 1;
+ 				}
+@@ -160,10 +163,10 @@ public:
+ 	}
+ 
+ 	
+-	__device__ __forceinline__ int get_lb(feature_t *status, feature_t *lb0, int vline, int x_slash)
++	__device__ __forceinline__ feature_t get_lb(feature_t *status, feature_t *lb0, int vline, int x_slash)
+ 	{
+ 		
+-		int ret = 0;
++		feature_t ret = 0;
+ 		for (int i = 1; i <= x_slash; i <<= 1)
+ 		{
+ 			if ((x_slash & i) && ret < status[vline + i])
+@@ -174,10 +177,10 @@ public:
+ 		ret = thrust::max(ret, lb0[vline + x_slash]);
+ 		return ret;
+ 	}
+-	__device__ __forceinline__ int get_lb_m(feature_t *status, feature_t *lb0, int vline, int x_slash, int w)
++	__device__ __forceinline__ feature_t get_lb_m(feature_t *status, feature_t *lb0, int vline, int x_slash, feature_t w)
+ 	{
+ 		
+-		int ret = 0;
++		feature_t ret = 0;
+ 		for (int i = 1; i <= x_slash; i <<= 1)
+ 		{
+ 			if ((x_slash & i) && ret < status[vline + i])
+@@ -186,7 +189,7 @@ public:
+ 			}
+ 		}
+ 		ret = thrust::max(ret, lb0[vline + x_slash]);
+-		ret = ret > 0.5 * w ? ret : 0.5 * w;
++		ret = thrust::max(ret, w / 2);
+ 		return ret;
+ 	}
+ 	__device__ __forceinline__ void
+@@ -203,7 +206,7 @@ public:
+ 		const index_t THD_OFF,	  // 线程在warp的位置
+ 		feature_t level,
+ 		index_t bin_off,
+-		volatile vertex_t *bests,
++		volatile feature_t *bests,
+ 		feature_t *records,
+ 		feature_t *lb_record)		 
+ 	{								 // 从任务队列中获得对各个指向点的更新值 并且根据这些值对对应位置更新
+@@ -215,15 +218,15 @@ public:
+ 			vertex_t frontier = worklist[i];
+ 			int v = frontier / width, p = frontier % width;
+ 			index_t beg = beg_pos[v], x_slash = full - p, vline = v * width;
+-			index_t end = beg_pos[v + 1];
++			index_t end = end_pos[v];
+ 			if (vert_status[vline + x_slash] != inf)
+ 			{
+-				int new_value = vert_status[vline + x_slash] + vert_status[frontier];
+-				atomicMin((int *)bests, new_value);
++				feature_t new_value = vert_status[vline + x_slash] + vert_status[frontier];
++				atomicMin((feature_t *)bests, new_value);
+ 			}
+ 			else
+ 			{
+-				int complement = 0;
++				feature_t complement = 0;
+ 				for (int i = 1; i <= x_slash; i <<= 1)
+ 				{
+ 
+@@ -232,7 +235,7 @@ public:
+ 						complement += records[vline + i];
+ 					}
+ 				}
+-				atomicMin((int *)bests, complement + vert_status[frontier]);
++				atomicMin((feature_t *)bests, complement + vert_status[frontier]);
+ 			}
+ 			if (vert_status[frontier] - 1 > (*bests) / 2)
+ 			{
+@@ -246,7 +249,7 @@ public:
+ 				vertex_t update_dest = vert_end * width + p;
+ 				feature_t dist = (*edge_compute_push)(frontier, update_dest,
+ 													  level, beg_pos, weight, vert_status, vert_status_prev); // 获取值 根据任务选择操作
+-				int lb = get_lb(one_label_lower_bound, lb0, vert_end * width, x_slash);
++				feature_t lb = get_lb(one_label_lower_bound, lb0, vert_end * width, x_slash);
+ 				lb_record[update_dest] = lb;
+ 				if (vert_status[update_dest] > dist)
+ 				{
+@@ -258,7 +261,7 @@ public:
+ 							{
+ 								worklist_bin[bin_off + my_front_count] = update_dest;
+ 								my_front_count++;
+-								appr_work += beg_pos[vert_end + 1] - beg_pos[vert_end];
++								appr_work += end_pos[vert_end] - beg_pos[vert_end];
+ 							}
+ 
+ 							else
+@@ -270,8 +273,8 @@ public:
+ 			// merge
+ 			beg = merge_pointer[p];
+ 			end = merge_pointer[p + 1];
+-			vertex_t d = beg_pos[v + 1] - beg_pos[v];
+-			int dist;
++			vertex_t d = end_pos[v] - beg_pos[v];
++			feature_t dist;
+ 			for (index_t j = beg + THD_OFF; j < end; j += GRP_SZ)
+ 			{
+ 				weight_t weight = vert_status[v * width + merge_groups[j]];
+@@ -281,7 +284,7 @@ public:
+ 											level, beg_pos, weight, vert_status, vert_status_prev); // 获取值 根据任务选择操作
+ 
+ 				x_slash = full - p - merge_groups[j];
+-				int lb = get_lb(one_label_lower_bound, lb0, v * width, x_slash);
++				feature_t lb = get_lb(one_label_lower_bound, lb0, v * width, x_slash);
+ 				lb_record[update_dest] = lb;
+ 				if (vert_status[update_dest] > dist)
+ 				{
+@@ -331,7 +334,7 @@ public:
+ 			vertex_t frontier = worklist[i];
+ 			int v = frontier / width, p = frontier % width;
+ 			index_t beg = beg_pos[v];
+-			index_t end = beg_pos[v + 1];
++			index_t end = end_pos[v];
+ 
+ 			for (index_t j = beg + THD_OFF; j < end; j += GRP_SZ)
+ 			{
+@@ -349,7 +352,7 @@ public:
+ 						{
+ 							worklist_bin[bin_off + my_front_count] = update_dest;
+ 							my_front_count++;
+-							appr_work += beg_pos[vert_end + 1] - beg_pos[vert_end];
++							appr_work += end_pos[vert_end] - beg_pos[vert_end];
+ 						}
+ 						else
+ 							overflow_indicator[0] = -1;
+@@ -373,7 +376,7 @@ public:
+ 		const index_t GRP_COUNT,
+ 		const index_t THD_OFF,
+ 		feature_t level,
+-		volatile vertex_t *bests,
++		volatile feature_t *bests,
+ 		feature_t *records)
+ 	{
+ 		index_t appr_work = 0;
+@@ -383,9 +386,8 @@ public:
+ 		for (index_t i = GRP_ID; i < WSZ; i += GRP_COUNT)
+ 		{
+ 			vertex_t frontier = worklist[i];
+-			in_queue[frontier]=0;
+ 			int v = frontier / width, p = frontier % width;
+-			index_t beg = beg_pos[v], end = beg_pos[v + 1], x_slash = full - p, vline = v * width;
++			index_t beg = beg_pos[v], end = end_pos[v], x_slash = full - p, vline = v * width;
+ 			
+ 			int parent_vertex = mother_d[v];
+ 			// if(parent_vertex!=v)
+@@ -401,7 +403,7 @@ public:
+ 
+ 				if (vert_status[update_dest] > dist)
+ 				{
+-					int lb = get_lb(one_label_lower_bound, lb0, parent_vertex * width, x_slash);
++					feature_t lb = get_lb(one_label_lower_bound, lb0, vert_end * width, x_slash);
+ 					atomicMin(vert_status + update_dest, dist);
+ 					if (lb + dist <= (*best))
+ 						in_queue[update_dest] = 1;
+@@ -422,14 +424,13 @@ public:
+ 		const index_t GRP_COUNT,
+ 		const index_t THD_OFF,
+ 		feature_t level,
+-		volatile vertex_t *bests,
++		volatile feature_t *bests,
+ 		feature_t *records)
+ 	{
+ 		const vertex_t WSZ = wqueue;
+ 		for (index_t i = GRP_ID; i < WSZ; i += GRP_COUNT)
+ 		{
+ 			vertex_t frontier = worklist[i];
+-			in_queue[frontier]=0;
+ 			int v = frontier / width, p = frontier % width;
+ 			index_t beg = merge_pointer[p], end = merge_pointer[p + 1];
+ 			index_t vline = v * width;
+@@ -444,7 +445,7 @@ public:
+ 				if (vert_status[update_dest] > dist)
+ 				{
+ 					atomicMin(vert_status + update_dest, dist);
+-					int lb = get_lb_m(one_label_lower_bound, lb0, vline, x_slash, dist);
++					feature_t lb = get_lb_m(one_label_lower_bound, lb0, vline, x_slash, dist);
+ 					if (lb + dist <= (*best))
+ 						in_queue[update_dest] = 1;
+ 				}
+diff --git a/code/TrimCDP-WB/include/mapper_enactor.cuh b/code/TrimCDP-WB/include/mapper_enactor.cuh
+index dd62214..5ee35da 100644
+--- a/code/TrimCDP-WB/include/mapper_enactor.cuh
++++ b/code/TrimCDP-WB/include/mapper_enactor.cuh
+@@ -40,13 +40,14 @@ hybrid_bin_scan_push_kernel(
+ 	global_barrier.sync_grid_opt();
+ 	worklist_gather._push_coalesced_scan_single_random_list(smem, TID, wid_in_blk, tid_in_wrp, wcount_in_blk, GRNTY, level_thd);
+ 
++	global_barrier.sync_grid_opt();
+ 	vertex_t mid_queue = mdata.worklist_sz_mid[0];
+-	level[1] = mid_queue;
++	if (!TID) level[1] = mid_queue;
+ 
+ 	while (true)
+ 	{
+ 
+-		mdata.future_work[0] = 0;
++		if (!TID) mdata.future_work[0] = 0;
+ 		global_barrier.sync_grid_opt();
+ 
+ 		if (!TID)
+@@ -56,7 +57,7 @@ hybrid_bin_scan_push_kernel(
+ 			mdata.worklist_sz_sml[0] = 0;
+ 		}
+ 		vertex_t my_front_count = 0;
+-		vertex_t bests = *(mdata.best);
++		feature_t bests = *(mdata.best);
+ 		// compute on the graph
+ 		// and generate frontiers immediately
+ 		global_barrier.sync_grid_opt();
+@@ -107,12 +108,22 @@ hybrid_bin_scan_push_kernel(
+ 										   smem,
+ 										   mdata.worklist_sz_mid);
+ 
++            global_barrier.sync_grid_opt();
++            const bool frontier_overflow = mdata.worklist_sz_mid[0] > ggraph.vert_count * mdata.width;
++            global_barrier.sync_grid_opt(); // publish every thread's branch decision before resetting the count
++            if (frontier_overflow) {
++                if (!TID) mdata.worklist_sz_mid[0] = 0;
++                global_barrier.sync_grid_opt();
++                worklist_gather._push_coalesced_scan_single_random_list(smem, TID,
++                    wid_in_blk, tid_in_wrp, wcount_in_blk, GRNTY, level_thd + 1);
++            } else {
+ 			// compact all thread bins in frontier queue
+ 			worklist_gather._thread_stride_gather(mdata.worklist_mid,
+ 												  mdata.worklist_bin,
+ 												  my_front_count,
+ 												  output_off,
+ 												  BIN_OFF);
++            }
+ 		}
+ 
+ 		global_barrier.sync_grid_opt();
+@@ -168,6 +179,7 @@ balanced_push_kernel(
+ 			mdata.worklist_sz_lrg[0] = 0;
+ 			mdata.worklist_sz_merge[0] = 0; // 初始化merge队列
+ 		}
++		global_barrier.sync_grid_opt();
+ 		// worklist_gather._push_coalesced_scan_random_list(TID, wid_in_blk, tid_in_wrp, wcount_in_blk, GRNTY, level_thd+1);
+ 		worklist_gather._push_coalesced_scan_random_list_best_atomic(TID, wid_in_blk, tid_in_wrp, wcount_in_blk, GRNTY, level_thd + 1, mdata.record);
+ 		// compute on the graph
+@@ -236,11 +248,6 @@ balanced_push_kernel(
+ 
+ 		//      global_barrier.sync_grid_opt();
+ 
+-		_grid_sum<vertex_t, index_t>(mdata.cat_thd_count_sml[TID] +
+-										 mdata.cat_thd_count_mid[TID] +
+-										 mdata.cat_thd_count_lrg[TID] +
+-										 mdata.worklist_sz_merge[0],
+-									 mdata.future_work);
+ 
+ 		global_barrier.sync_grid_opt();
+ 	}
+@@ -274,14 +281,15 @@ hybrid_bin_scan_push_kernel_only(
+ 	global_barrier.sync_grid_opt();
+ 	worklist_gather._push_coalesced_scan_single_random_list(smem, TID, wid_in_blk, tid_in_wrp, wcount_in_blk, GRNTY, level_thd);
+ 
++	global_barrier.sync_grid_opt();
+ 	vertex_t mid_queue = mdata.worklist_sz_mid[0];
+-	level[1] = mid_queue;
++	if (!TID) level[1] = mid_queue;
+ 	// printf("at level %d qsize %d\n",level_thd,mid_queue);
+ 
+ 	while (true)
+ 	{
+ 
+-		mdata.future_work[0] = 0;
++		if (!TID) mdata.future_work[0] = 0;
+ 		global_barrier.sync_grid_opt();
+ 
+ 		if (!TID)
+@@ -344,20 +352,31 @@ hybrid_bin_scan_push_kernel_only(
+ 										   smem,
+ 										   mdata.worklist_sz_mid);
+ 
++            global_barrier.sync_grid_opt();
++            const bool frontier_overflow = mdata.worklist_sz_mid[0] > ggraph.vert_count * mdata.width;
++            global_barrier.sync_grid_opt(); // publish every thread's branch decision before resetting the count
++            if (frontier_overflow) {
++                if (!TID) mdata.worklist_sz_mid[0] = 0;
++                global_barrier.sync_grid_opt();
++                worklist_gather._push_coalesced_scan_single_random_list(smem, TID,
++                    wid_in_blk, tid_in_wrp, wcount_in_blk, GRNTY, level_thd + 1);
++            } else {
+ 			// compact all thread bins in frontier queue
+ 			worklist_gather._thread_stride_gather(mdata.worklist_mid,
+ 												  mdata.worklist_bin,
+ 												  my_front_count,
+ 												  output_off,
+ 												  BIN_OFF);
++            }
+ 		}
+ 
+ 		global_barrier.sync_grid_opt();
+ 		if ((mid_queue = mdata.worklist_sz_mid[0]) == 0)
+ 			break;
+ #ifndef __VOTE__
+-		for (index_t i = TID; i < ggraph.vert_count; i += GRNTY)
++		for (index_t i = TID; i < ggraph.vert_count * mdata.width; i += GRNTY)
+ 			mdata.vert_status_prev[i] = mdata.vert_status[i];
++        global_barrier.sync_grid_opt();
+ #endif
+ 		level_thd++;
+ 	}
+@@ -367,89 +386,47 @@ hybrid_bin_scan_push_kernel_only(
+ 
+ 
+ 
+-int balanced_push(
+-	int cfg_blk_size,
+-	feature_t *level,
+-	gpu_graph ggraph,
+-	meta_data mdata,
+-	mapper compute_mapper,
+-	reducer worklist_gather,
+-	Barrier global_barrier)
++// Query occupancy for the actual kernel at the actual block size; scaling the
++// occupancy estimate of another kernel can deadlock a persistent grid.
++inline void launch_persistent(const void* kernel, int block_size,
++    feature_t* level, gpu_graph ggraph, meta_data mdata, mapper compute_mapper,
++    reducer worklist_gather, Barrier global_barrier)
+ {
+-	// 分成三种情况大中小
+-	int blk_size = 0;
+-	int grd_size = 0;
+-	// cudaFuncGetAttributes
+-	cudaOccupancyMaxPotentialBlockSize(&grd_size, &blk_size,
+-									   balanced_push_kernel, 0, 0);
+-
+-	grd_size = (blk_size * grd_size) / cfg_blk_size;
+-	blk_size = cfg_blk_size;
+-	// grd_size = (blk_size * grd_size)/ 128;
+-	// blk_size = 128;
+-
+-	// printf("balanced push-- block=%d, grid=%d\n", blk_size, grd_size);
+-	assert(blk_size * grd_size <= BLKS_NUM * THDS_NUM);
+-
+-	// push_pull_opt_kernel
+-	double time = wtime();
+-	balanced_push_kernel<<<grd_size, blk_size>>>(level,
+-												 ggraph,
+-												 mdata,
+-												 compute_mapper,
+-												 worklist_gather,
+-												 global_barrier);
+-
+-	cudaDeviceSynchronize();
+-
+-	return 0;
++    int device, per_sm;
++    cudaDeviceProp prop;
++    H_ERR(cudaGetDevice(&device));
++    H_ERR(cudaGetDeviceProperties(&prop, device));
++    if (!prop.cooperativeLaunch) {
++        fprintf(stderr, "GPU4GST requires cooperative CUDA launches\n");
++        exit(1);
++    }
++    H_ERR(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&per_sm, kernel, block_size, 0));
++    int grid_size = std::min(per_sm * prop.multiProcessorCount,
++                             BLKS_NUM * THDS_NUM / block_size);
++    if (grid_size <= 0) { fprintf(stderr, "GPU4GST kernel cannot be resident\n"); exit(1); }
++    void* args[] = {&level, &ggraph, &mdata, &compute_mapper, &worklist_gather, &global_barrier};
++    H_ERR(cudaLaunchCooperativeKernel(kernel, dim3(grid_size), dim3(block_size), args));
++    H_ERR(cudaDeviceSynchronize());
+ }
+ 
+-int mapper_hybrid_push_merge(
+-	int cfg_blk_size,
+-	feature_t *level,
+-	gpu_graph ggraph,
+-	meta_data mdata,
+-	mapper compute_mapper,
+-	reducer worklist_gather,
+-	Barrier global_barrier, int init_flag)
++int balanced_push(int block_size, feature_t* level, gpu_graph ggraph,
++    meta_data mdata, mapper compute_mapper, reducer worklist_gather, Barrier barrier)
+ {
+-	// CPU函数
+-	int blk_size = 0;
+-	int grd_size = 0;
+-	int best_h = inf;
+-	cudaMemcpy((int *)mdata.best, &best_h, sizeof(int), cudaMemcpyHostToDevice);
+-	cudaOccupancyMaxPotentialBlockSize(&grd_size, &blk_size,
+-									   hybrid_bin_scan_push_kernel, 0, 0); // 库函数 获取的是指定值
+-
+-	grd_size = (blk_size * grd_size) / cfg_blk_size;
+-	blk_size = cfg_blk_size;
+-
+-	assert(blk_size * grd_size <= BLKS_NUM * THDS_NUM);
+-	if (init_flag == 1)
+-	{
+-		hybrid_bin_scan_push_kernel_only<<<grd_size, blk_size>>>(level,
+-																 ggraph,
+-																 mdata,
+-																 compute_mapper,
+-																 worklist_gather,
+-																 global_barrier);
+-	}
+-	else
+-	{
+-		hybrid_bin_scan_push_kernel<<<grd_size, blk_size>>>(level,
+-															ggraph,
+-															mdata,
+-															compute_mapper,
+-															worklist_gather,
+-															global_barrier);
+-	}
+-
+-	cudaMemcpy(&best_h, (int *)mdata.best, sizeof(int), cudaMemcpyDeviceToHost);
+-	H_ERR(cudaDeviceSynchronize());
+-	return 0;
++    launch_persistent((const void*)balanced_push_kernel, block_size, level,
++        ggraph, mdata, compute_mapper, worklist_gather, barrier);
++    return 0;
+ }
+ 
+-
+-
++int mapper_hybrid_push_merge(int block_size, feature_t* level, gpu_graph ggraph,
++    meta_data mdata, mapper compute_mapper, reducer worklist_gather, Barrier barrier,
++    int init_flag)
++{
++    feature_t best = inf;
++    H_ERR(cudaMemcpy((feature_t*)mdata.best, &best, sizeof(best), cudaMemcpyHostToDevice));
++    const void* kernel = init_flag == 1 ? (const void*)hybrid_bin_scan_push_kernel_only
++                                      : (const void*)hybrid_bin_scan_push_kernel;
++    launch_persistent(kernel, block_size, level, ggraph, mdata,
++                      compute_mapper, worklist_gather, barrier);
++    return 0;
++}
+ #endif
+diff --git a/code/TrimCDP-WB/include/meta_data.cuh b/code/TrimCDP-WB/include/meta_data.cuh
+index 948671b..81368b8 100644
+--- a/code/TrimCDP-WB/include/meta_data.cuh
++++ b/code/TrimCDP-WB/include/meta_data.cuh
+@@ -22,8 +22,8 @@ public:
+ 	index_t *sml_count_chk;
+ 	index_t *mid_count_chk;
+ 	index_t *lrg_count_chk;
+-	int *lb0;
+-	volatile int *best;
++	feature_t *lb0;
++	volatile feature_t *best;
+ 	index_t *future_work;
+ 
+ 	/*reducer*/
+@@ -87,7 +87,7 @@ public:
+ 	~meta_data() {}
+ 	meta_data(
+ 		vertex_t vert_count,
+-		index_t edge_count, int wid)
++		index_t edge_count, int wid, index_t virtual_count)
+ 	{
+ 		const size_t VERT_SZ = sizeof(vertex_t) * vert_count;
+ 		const size_t FEAT_SZ = sizeof(feature_t) * vert_count;
+@@ -108,7 +108,8 @@ public:
+ 		H_ERR(cudaMalloc((void **)&temp_st, FEAT_SZ));
+ 		H_ERR(cudaMalloc((void **)&lb_record, FEAT_SZ * width)); // for compute
+ 		H_ERR(cudaMalloc((void **)&record, FEAT_SZ * width));	 // one label
+-		H_ERR(cudaMalloc((void **)&lb0, FEAT_SZ * width));		 // w1 w2
++		H_ERR(cudaMalloc((void **)&lb0, FEAT_SZ * width));
++		H_ERR(cudaMemset(lb0, 0, FEAT_SZ * width));		 // w1 w2
+ 		H_ERR(cudaMalloc((void **)&in_queue, FEAT_SZ * width));
+ 		H_ERR(cudaMalloc((void **)&bitmap, BIT_SZ));
+ 		H_ERR(cudaMemset(bitmap, 0, BIT_SZ));
+@@ -119,8 +120,8 @@ public:
+ 		// H_ERR(cudaMalloc((void **)&worklist_sz, sizeof(vertex_t)));
+ 		// Workload balancing: count, prefix and collect.
+ 		H_ERR(cudaMalloc((void **)&worklist_sml, VERT_SZ * width));
+-		H_ERR(cudaMalloc((void **)&worklist_mid,0.5* VERT_SZ * width));
+-		H_ERR(cudaMalloc((void **)&worklist_lrg, 0.5*VERT_SZ * width));
++		H_ERR(cudaMalloc((void **)&worklist_mid,VERT_SZ * width));
++		H_ERR(cudaMalloc((void **)&worklist_lrg, sizeof(vertex_t) * static_cast<size_t>(virtual_count) * width));
+ 		// H_ERR(cudaMalloc((void **)&new_worklist_sml, VERT_SZ * width));
+ 		// H_ERR(cudaMalloc((void **)&new_worklist_mid, VERT_SZ * width));
+ 		// H_ERR(cudaMalloc((void **)&new_worklist_lrg, VERT_SZ * width));
+@@ -156,7 +157,7 @@ public:
+ 		H_ERR(cudaMalloc((void **)&new_worklist_sz_sml, sizeof(vertex_t)));
+ 		H_ERR(cudaMalloc((void **)&new_worklist_sz_mid, sizeof(vertex_t)));
+ 		H_ERR(cudaMalloc((void **)&new_worklist_sz_lrg, sizeof(vertex_t)));
+-		H_ERR(cudaMalloc((void **)&best, sizeof(vertex_t)));
++		H_ERR(cudaMalloc((void **)&best, sizeof(feature_t)));
+ 
+ 		// for frontier queue size report
+ 		// Allocated on CPU, mapped to GPU
+@@ -192,27 +193,54 @@ public:
+ 		H_ERR(cudaMalloc((void **)&son_range_start, sizeof(index_t) * vert_count));
+ 		H_ERR(cudaMalloc((void **)&son_list, sizeof(vertex_t) * vert_count));
+ 	}
+-	void release()
+-	{
+-		cudaFree(vert_status);
+-		cudaFree(vert_status_prev);
+-		cudaFree(worklist_lrg);
+-		cudaFree(worklist_mid);
+-		cudaFree(worklist_sml);
+-		cudaFree(new_worklist_lrg);
+-		cudaFree(new_worklist_mid);
+-		cudaFree(new_worklist_sml);
+-		cudaFree(worklist_bin);
+-		cudaFree(worklist_merge);
+-		cudaFree(temp_st);
+-		cudaFree(record);
+-		cudaFree(lb_record);
+-		cudaFree(in_queue);
+-		cudaFree(son);
+-		cudaFree(mother);
+-		cudaFree(son_range_start);
+-		cudaFree(son_list);
+-	}
++    void release() {
++        H_ERR(cudaFree((void*)vert_status));
++        H_ERR(cudaFree((void*)vert_status_prev));
++        H_ERR(cudaFree((void*)temp_st));
++        H_ERR(cudaFree((void*)lb_record));
++        H_ERR(cudaFree((void*)record));
++        H_ERR(cudaFree((void*)lb0));
++        H_ERR(cudaFree((void*)in_queue));
++        H_ERR(cudaFree((void*)bitmap));
++        H_ERR(cudaFree((void*)max_queue_size));
++        H_ERR(cudaFree((void*)worklist_bin));
++        H_ERR(cudaFree((void*)worklist_sml));
++        H_ERR(cudaFree((void*)worklist_mid));
++        H_ERR(cudaFree((void*)worklist_lrg));
++        H_ERR(cudaFree((void*)worklist_merge));
++        H_ERR(cudaFree((void*)worklist_sz_merge));
++        H_ERR(cudaFree((void*)cat_thd_count_sml));
++        H_ERR(cudaFree((void*)cat_thd_count_mid));
++        H_ERR(cudaFree((void*)cat_thd_count_lrg));
++        H_ERR(cudaFree((void*)cat_thd_off_sml));
++        H_ERR(cudaFree((void*)cat_thd_off_mid));
++        H_ERR(cudaFree((void*)cat_thd_off_lrg));
++        H_ERR(cudaFree((void*)scan_temp_sml));
++        H_ERR(cudaFree((void*)scan_temp_mid));
++        H_ERR(cudaFree((void*)scan_temp_lrg));
++        H_ERR(cudaFree((void*)cat_thd_count_merge));
++        H_ERR(cudaFree((void*)cat_thd_off_merge));
++        H_ERR(cudaFree((void*)scan_temp_merge));
++        H_ERR(cudaFree((void*)worklist_sz_sml));
++        H_ERR(cudaFree((void*)worklist_sz_mid));
++        H_ERR(cudaFree((void*)worklist_sz_lrg));
++        H_ERR(cudaFree((void*)new_worklist_sz_sml));
++        H_ERR(cudaFree((void*)new_worklist_sz_mid));
++        H_ERR(cudaFree((void*)new_worklist_sz_lrg));
++        H_ERR(cudaFree((void*)best));
++        H_ERR(cudaFree((void*)future_work));
++        H_ERR(cudaFree((void*)son));
++        H_ERR(cudaFree((void*)mother));
++        H_ERR(cudaFree((void*)son_range_start));
++        H_ERR(cudaFree((void*)son_list));
++        H_ERR(cudaFreeHost(cat_thd_count_h));
++        H_ERR(cudaFreeHost(cat_thd_off_h));
++        H_ERR(cudaFreeHost(sa_chk));
++        H_ERR(cudaFreeHost(sml_count_chk));
++        H_ERR(cudaFreeHost(mid_count_chk));
++        H_ERR(cudaFreeHost(lrg_count_chk));
++        for (int i = 0; i < 3; ++i) H_ERR(cudaStreamDestroy(stream[i]));
++        free(stream);
++    }
+ };
+-
+ #endif
+diff --git a/code/TrimCDP-WB/include/prefix_scan.cuh b/code/TrimCDP-WB/include/prefix_scan.cuh
+index dad7899..eebfaf3 100644
+--- a/code/TrimCDP-WB/include/prefix_scan.cuh
++++ b/code/TrimCDP-WB/include/prefix_scan.cuh
+@@ -85,8 +85,7 @@ __forceinline__ __device__ void _grid_scan(
+ 	__syncthreads();
+ 	if(warp_id_inblk==0)
+ 	{
+-		data_t value2 = smem[thd_id_inwarp] * 
+-			(thd_id_inwarp < warp_count_inblk);
++		data_t value2 = (thd_id_inwarp < warp_count_inblk ? smem[thd_id_inwarp] : 0);
+ 		
+ 		warp_scan_exc<data_t, index_t>(value2, thd_id_inwarp);
+ 		smem[thd_id_inwarp] = value2;
+diff --git a/code/TrimCDP-WB/include/read_group.hpp b/code/TrimCDP-WB/include/read_group.hpp
+index 35fd97b..c57991a 100644
+--- a/code/TrimCDP-WB/include/read_group.hpp
++++ b/code/TrimCDP-WB/include/read_group.hpp
+@@ -1,106 +1,61 @@
+-
+-#include <parse_string.h>
++#ifndef GPU4GST_READ_GROUP_HPP
++#define GPU4GST_READ_GROUP_HPP
++#include <algorithm>
++#include <charconv>
+ #include <fstream>
+-#include <iostream>
+-#include <iterator>
+- #include<sstream>
+- typedef std::vector<std::vector<std::pair<int,int>>> graph_v_of_v_idealID;
+- using namespace std;
+-void read_Group(std::string instance_name, graph_v_of_v_idealID &group_graph)
+-{
+-
+-	std::string line_content;
+-	string temp = instance_name;
+-	cout<<"group open "<<temp<<endl;
+-	group_graph.clear();
+-	std::ifstream myfile(temp); // open the file
+-	if (myfile.is_open()) // if the file is opened successfully
+-	{
+-		while (getline(myfile, line_content)) // read file line by line
+-		{
+-			if (line_content[line_content.length() - 1] == ' ')
+-			{
+-				line_content.erase(line_content.length() - 1);
+-			}
+-			std::vector<std::string> Parsed_content = parse_string(line_content, ":");
+-			int g = std::stod(Parsed_content[0].substr(1, Parsed_content[0].length())) - 1;
+-	
+-			group_graph.push_back({});
+-			std::stringstream ss(Parsed_content[1]);
+-			
+-			std::istream_iterator<std::string> begin(ss);
+-			std::istream_iterator<std::string> end;
+-			std::vector<std::string> groups_mem(begin, end);
+-			group_graph[g].resize(groups_mem.size());
+-			for (size_t i = 0; i < groups_mem.size(); i++)
+-			{
+-				
+-				int v = std::stoi(groups_mem[i]);
+-		
+-				group_graph[g][i] = {v, 1};
+-			}
+-	
+-		}
+-
+-		myfile.close(); // close the file
+-	}
+-	else
+-	{
+-		std::cout << "Unable to open file " << instance_name << std::endl
+-				  << "Please check the file location or file name." << std::endl; // throw an error message
+-		getchar();																  // keep the console window
+-		exit(1);																  // end the program
+-	}
++#include <sstream>
++#include <stdexcept>
++#include <string>
++#include <vector>
++using graph_v_of_v_idealID = std::vector<std::vector<std::pair<int,int>>>;
++inline int parse_nonnegative(const std::string& s) {
++    int value = 0;
++    auto result = std::from_chars(s.data(), s.data()+s.size(), value);
++    if (s.empty() || result.ec != std::errc() || result.ptr != s.data()+s.size() || value < 0)
++        throw std::runtime_error("expected a nonnegative integer: " + s);
++    return value;
+ }
+-void read_inquire(std::string instance_name, std::vector<std::vector<int>> &inquire)
+-{
+-	std::cout << "open inquire" << " ";
+-	inquire.clear();
+-	std::string line_content;
+-	string temp = instance_name;
+-	cout<<"inquire open "<<temp<<endl;
+-	std::ifstream myfile(temp); // open the file
+-	if (myfile.is_open())				 // if the file is opened successfully
+-	{
+-		while (getline(myfile, line_content)) // read file line by line
+-		{
+-			inquire.push_back({});
+-			if (line_content[line_content.length() - 1] == ' ')
+-			{
+-				line_content.erase(line_content.length() - 1);
+-			}
+-			std::vector<std::string> Parsed_content = parse_string(line_content, " ");
+-			for (size_t i = 0; i < Parsed_content.size(); i++)
+-			{
+-				
+-				int v = std::stoi(Parsed_content[i]);
+-				inquire[inquire.size() - 1].push_back(v);
+-			}
+-		}
+-
+-		myfile.close(); // close the file
+-	}
+-	else
+-	{
+-		std::cout << "Unable to open file " << instance_name << std::endl
+-				  << "Please check the file location or file name." << std::endl; // throw an error message
+-		getchar();																  // keep the console window
+-		exit(1);																  // end the program
+-	}
++inline std::string trim(const std::string& text) {
++    auto first = text.find_first_not_of(" \t\r\n");
++    if (first == std::string::npos) return {};
++    return text.substr(first, text.find_last_not_of(" \t\r\n")-first+1);
+ }
+-void write_result(std::string instance_name, std::vector<double> &times,std::vector<int> &costs)
+-{
+-	std::cout << "writes " << endl;
+-	std::string line_content;
+-	string temp = "/home/sunyahui/lijiayu/simd/data/"+instance_name+"/"+instance_name+".res7";
+-	 std::ofstream outfile(temp); 
+-	 if (!outfile.is_open()) { // 检查文件是否成功打开
+-        std::cerr << "无法打开文件" << std::endl;
+-        
++inline void read_Group(std::string name, graph_v_of_v_idealID& groups) {
++    std::ifstream in(name);
++    if (!in) throw std::runtime_error("cannot open groups: " + name);
++    groups.clear();
++    std::string line;
++    while (std::getline(in,line)) {
++        line = trim(line);
++        if (line.empty()) continue;
++        auto colon = line.find(':');
++        if (colon == std::string::npos || line[0] != 'g') throw std::runtime_error("expected gN: vertex list");
++        auto id = trim(line.substr(1,colon-1));
++        if (parse_nonnegative(id) != groups.size()+1) throw std::runtime_error("group IDs must be consecutive from g1");
++        std::istringstream row(line.substr(colon+1));
++        std::vector<std::pair<int,int>> group;
++        std::string token;
++        while (row >> token) group.emplace_back(parse_nonnegative(token),1);
++        std::sort(group.begin(),group.end());
++        group.erase(std::unique(group.begin(),group.end()),group.end());
++        groups.push_back(std::move(group));
+     }
+-	for (int i = 0; i < costs.size(); i++)
+-	{
+-		outfile<<times[i]<<" "<<costs[i]<<endl;
+-	}
+-	 outfile.close(); // 关闭文件
++    if (!in.eof()) throw std::runtime_error("cannot read groups");
+ }
++inline void read_inquire(std::string name, std::vector<std::vector<int>>& queries) {
++    std::ifstream in(name);
++    if (!in) throw std::runtime_error("cannot open queries: " + name);
++    queries.clear();
++    std::string line;
++    while (std::getline(in,line)) {
++        line = trim(line);
++        if (line.empty()) continue;
++        std::istringstream row(line);
++        std::vector<int> query;
++        std::string token;
++        while (row >> token) query.push_back(parse_nonnegative(token));
++        queries.push_back(std::move(query));
++    }
++    if (!in.eof() || queries.empty()) throw std::runtime_error("query file is unreadable or empty");
++}
++#endif
+diff --git a/code/TrimCDP-WB/include/reducer.cuh b/code/TrimCDP-WB/include/reducer.cuh
+index 0fb5822..54c5c87 100644
+--- a/code/TrimCDP-WB/include/reducer.cuh
++++ b/code/TrimCDP-WB/include/reducer.cuh
+@@ -22,6 +22,7 @@ public:
+ 	// variables
+ 	vertex_t *adj_list;
+ 	index_t *beg_pos;
++	index_t *end_pos;
+ 	index_t vert_count;
+ 	index_t new_vert_count; // 扩展后的顶点数，用于边界检查
+ 	feature_t *vert_status;
+@@ -33,9 +34,9 @@ public:
+ 	vertex_t *worklist_lrg;
+ 	feature_t *temp_st;
+ 	int width;
+-		volatile int *best;
+-	vertex_t *in_queue;
+-	vertex_t *lb_record, *lb0;
++		volatile feature_t *best;
++	feature_t *in_queue;
++	feature_t *lb_record, *lb0;
+ 	volatile vertex_t *worklist_sz_sml;
+ 	volatile vertex_t *worklist_sz_mid;
+ 	volatile vertex_t *worklist_sz_lrg;
+@@ -74,6 +75,7 @@ public:
+ 	{
+ 		adj_list = ggraph.adj_list;
+ 		beg_pos = ggraph.beg_pos;
++		end_pos = ggraph.end_pos;
+ 		vert_count = ggraph.vert_count;
+ 		new_vert_count = ggraph.new_vert_count; // 扩展后的顶点数
+ 		width = wid;
+@@ -255,7 +257,7 @@ public:
+ 			// if(vert_status[my_beg] <= K)
+ 			{
+ 				int v = my_beg / width;
+-				index_t degree = beg_pos[v + 1] - beg_pos[v];
++				index_t degree = end_pos[v] - beg_pos[v];
+ 				if (degree == 0)
+ 					continue;
+ 
+@@ -284,7 +286,7 @@ public:
+ 			//	if(vert_status[my_beg] <= K)
+ 			{
+ 				int v = my_beg / width;
+-				index_t degree = beg_pos[v + 1] - beg_pos[v];
++				index_t degree = end_pos[v] - beg_pos[v];
+ 				if (degree == 0)
+ 					continue;
+ 
+@@ -298,10 +300,10 @@ public:
+ 		}
+ 		__syncthreads();
+ 	}
+-	__device__ __forceinline__ int get_lb(feature_t *status, feature_t *lb0, int vline, int x_slash)
++	__device__ __forceinline__ feature_t get_lb(feature_t *status, feature_t *lb0, int vline, int x_slash)
+ 	{
+ 		// 计算lower bound需要的参数 ： 状态status 要计算的v,p
+-		int ret = 0;
++		feature_t ret = 0;
+ 		for (int i = 1; i <= x_slash; i <<= 1)
+ 		{
+ 			if ((x_slash & i) && ret < status[vline + i])
+@@ -339,7 +341,7 @@ public:
+ 				int x_slash = width - 1 - p, vline = v * width;
+ 				if (vert_status[vline + x_slash] == inf)
+ 				{
+-					int complement = 0;
++					feature_t complement = 0;
+ 					for (int i = 1; i <= x_slash; i <<= 1)
+ 					{
+ 						if (x_slash & i)
+@@ -347,13 +349,14 @@ public:
+ 							complement += one_label_lower_bound[vline + i];
+ 						}
+ 					}
+-					atomicMin((int*)best, complement + vert_status[my_beg]);
+-					atomicMin(&vert_status[vline + width -1] , *best);
++					atomicMin((feature_t*)best, complement + vert_status[my_beg]);
++					atomicMin(&vert_status[vline + width -1], complement + vert_status[my_beg]);
+ 				}
+ 				else
+ 				{
+-					int new_value = vert_status[vline + x_slash] + vert_status[my_beg];
+-					atomicMin((int*)best, new_value);
++					feature_t new_value = vert_status[vline + x_slash] + vert_status[my_beg];
++					atomicMin((feature_t*)best, new_value);
++                    atomicMin(&vert_status[vline + width - 1], new_value);
+ 				}
+ 			}
+ 			if(vert_status[my_beg]-1>(*best)/2)
+@@ -365,7 +368,7 @@ public:
+ 			// if(in_queue[my_beg])
+ 			// {
+ 			// 	int v = my_beg / width;
+-			// 	index_t degree = beg_pos[v + 1] - beg_pos[v];
++			// 	index_t degree = end_pos[v] - beg_pos[v];
+ 			// 	if (degree == 0)
+ 			// 		continue;
+ 
+@@ -385,7 +388,7 @@ public:
+ 			{
+ 				in_queue[my_beg]=0;
+ 				int v = my_beg / width, p = my_beg % width;
+-				index_t degree = beg_pos[v + 1] - beg_pos[v];
++				index_t degree = end_pos[v] - beg_pos[v];
+ 				if (degree == 0)
+ 					continue;
+ 				int pos_merge = atomicAdd((int*)worklist_sz_merge,1);
+@@ -458,7 +461,7 @@ public:
+ 				int x_slash = width - 1 - p, vline = v * width;
+ 				if (vert_status[vline + x_slash] == inf)
+ 				{
+-					int complement = 0;
++					feature_t complement = 0;
+ 					for (int i = 1; i <= x_slash; i <<= 1)
+ 					{
+ 						if (x_slash & i)
+@@ -466,13 +469,14 @@ public:
+ 							complement += one_label_lower_bound[vline + i];
+ 						}
+ 					}
+-					atomicMin((int*)best, complement + vert_status[vline + p]);
+-					atomicMin(&vert_status[vline + width -1] , *best);
++					atomicMin((feature_t*)best, complement + vert_status[vline + p]);
++					atomicMin(&vert_status[vline + width -1], complement + vert_status[my_beg]);
+ 				}
+ 				else
+ 				{
+-					int new_value = vert_status[vline + x_slash] + vert_status[vline + p];
+-					atomicMin((int*)best, new_value);
++					feature_t new_value = vert_status[vline + x_slash] + vert_status[vline + p];
++					atomicMin((feature_t*)best, new_value);
++                    atomicMin(&vert_status[vline + width - 1], new_value);
+ 				}
+ 			}
+ 			// 根据父节点进行判断，而不是当前节点自身
+@@ -487,7 +491,7 @@ public:
+ 			if(in_queue[my_beg])
+ 			{
+ 				int v = my_beg / width;
+-				index_t degree = beg_pos[v + 1] - beg_pos[v];
++				index_t degree = end_pos[v] - beg_pos[v];
+ 				if (degree == 0)
+ 					continue;
+ 
+@@ -528,7 +532,7 @@ public:
+ 			{
+ 				in_queue[my_beg]=0;
+ 				int v = my_beg / width;
+-				index_t degree = beg_pos[v + 1] - beg_pos[v];
++				index_t degree = end_pos[v] - beg_pos[v];
+ 				if (degree == 0)
+ 					continue;
+ 
+@@ -568,7 +572,7 @@ public:
+ 									  vert_status, vert_status_prev))
+ 			{
+ 				int v = my_beg / width;
+-				index_t degree = beg_pos[v + 1] - beg_pos[v];
++				index_t degree = end_pos[v] - beg_pos[v];
+ 				if (degree == 0)
+ 					continue;
+ 
+@@ -609,7 +613,7 @@ public:
+ 									  vert_status, vert_status_prev))
+ 			{
+ 				int v = my_beg / width;
+-				index_t degree = beg_pos[v + 1] - beg_pos[v];
++				index_t degree = end_pos[v] - beg_pos[v];
+ 				if (degree == 0)
+ 					continue;
+ 
+diff --git a/code/TrimCDP-WB/src/GSTnonHop.cu b/code/TrimCDP-WB/src/GSTnonHop.cu
+index 96afbc3..9996ff7 100644
+--- a/code/TrimCDP-WB/src/GSTnonHop.cu
++++ b/code/TrimCDP-WB/src/GSTnonHop.cu
+@@ -49,7 +49,7 @@ __inline__ __device__ bool vertex_selector_best_push(vertex_t vert_id,
+ 													 feature_t *in_queue,
+ 													 feature_t *temp_store)
+ {
+-	if (vert_status[vert_id] != vert_status_prev[vert_id] && vert_status[vert_id] - 1 <= 0.5 * (*best))
++	if (vert_status[vert_id] != vert_status_prev[vert_id] && vert_status[vert_id] - 1 <= (*best) / 2)
+ 	{
+ 
+ 		if (lb_record[vert_id] + vert_status[vert_id] <= (*best))
+@@ -85,13 +85,14 @@ __inline__ __host__ __device__ bool vertex_selector_pull // reduce
+ 	// return (vert_status[vert_id] != vert_status_prev[vert_id] || vert_status[vert_id] == INFTY);
+ 	// return true;
+ }
+-__global__ void one_label_lb_1(int *tree, int width, int *lb0, int N, int G, int *can_find_solution, int *w, int *w1)
++__global__ void one_label_lb_1(feature_t *tree, int width, feature_t *lb0, int N, int G, int *can_find_solution, feature_t *w, feature_t *w1)
+ {
+ 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+ 
+ 	if (idx < N)
+ 	{
+-		int row = idx * width, temp = 0;
++		int row = idx * width;
++		feature_t temp = 0;
+ 
+ 		for (size_t i = 1; i < width; i <<= 1)
+ 		{
+@@ -102,7 +103,7 @@ __global__ void one_label_lb_1(int *tree, int width, int *lb0, int N, int G, int
+ 		}
+ 		if (temp != inf)
+ 		{
+-			*can_find_solution = 1;
++			atomicExch(can_find_solution, 1);
+ 		}
+ 		int vline = idx * width;
+ 		for (int x = 1; x < width; x++)
+@@ -115,7 +116,7 @@ __global__ void one_label_lb_1(int *tree, int width, int *lb0, int N, int G, int
+ 					lb0[vline + x] = thrust::min(lb0[vline + x], tree[vline + (1 << i)] + w[i * width * G + j * width + x] + tree[vline + (1 << j)]);
+ 				}
+ 			}
+-			int minj = inf;
++			feature_t minj = inf;
+ 			for (size_t i = 0; i < G; i++)
+ 			{
+ 				if ((1 << i) & x)
+@@ -137,7 +138,7 @@ __global__ void one_label_lb_1(int *tree, int width, int *lb0, int N, int G, int
+ 	}
+ }
+ 
+-__global__ void count_used(int *tree, int width, int *counts, int N)
++__global__ void count_used(feature_t *tree, int width, int *counts, int N)
+ {
+ 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+ 	if (idx < N)
+@@ -157,354 +158,177 @@ __device__ cb_mapper vert_behave_push_d = user_mapper_push;
+ __device__ cb_mapper vert_behave_pull_d = user_mapper_pull;
+ __device__ best_reducer vertex_selector_best_push_d = vertex_selector_best_push;
+ 
+-int main(int args, char **argv)
+-{
+-	string path = argv[2], data_name = argv[3];
+-	int T = atoi(argv[4]), task_start_num = atoi(argv[5]), task_end_num = atoi(argv[6]);
+-	// string path = "/home/lijiayu/simd/data/", data_name = "com-amazon";
+-	// int T = 4, task_start_num =0, task_end_num = 1999;
+-	// double tm_map, tm_red, tm_scan;   无直径约束gpu2
+-	string file_beg = path + data_name + "_beg_pos.bin";
+-	string file_adj = path + data_name + "_csr.bin";
+-	string file_weight = path + data_name + "_weight.bin";
+-	cudaDeviceProp prop;
+-	cudaSetDevice(3);
+-	for (int i = 0; i < 4; i++)
+-	{
+-		cudaDeviceProp prop;
+-		cudaGetDeviceProperties(&prop, i);
+-		std::cout << "Device Number: " << i << std::endl;
+-		std::cout << "  Device name:                " << prop.name << std::endl;
+-	}
+-	const char *file_beg_pos = file_beg.c_str();
+-	const char *file_adj_list = file_adj.c_str();
+-	const char *file_weight_list = file_weight.c_str();
+-	int blk_size = 512;
+-	// int switch_iter = 100;
+-	int *non_overlapped_group_gpu, *non_overlapped_group_pointer, *can_find, *w_d, *w1_d;
+-	// Read graph to CPU
+-	graph<long, long, long, vertex_t, index_t, weight_t>
+-		*ginst = new graph<long, long, long, vertex_t, index_t, weight_t>(file_beg_pos, file_adj_list, file_weight_list);
+-	ginst->read_gi(path + data_name + ".g", path + data_name + to_string(T) + ".csv");
+-	cout << "inquire have " << ginst->inquire.size() << endl;
+-	int G = ginst->inquire[0].size(), V = ginst->vert_count;
+-	int width = 1 << G, problem_size = V * width, sum_cost = 0;
+-	non_overlapped_group_sets s = graph_v_of_v_idealID_DPBF_non_overlapped_group_sets_gpu(width - 1);
+-	cudaMallocManaged((void **)&non_overlapped_group_gpu, sizeof(int) * s.length);
+-	cudaMallocManaged((void **)&non_overlapped_group_pointer, sizeof(int) * (width + 1));
+-	cudaMallocManaged((void **)&w_d, G * G * width * sizeof(int));
+-	cudaMallocManaged((void **)&w1_d, G * width * sizeof(int));
+-	cudaMemcpy(non_overlapped_group_gpu, s.non_overlapped_group_sets_IDs.data(), sizeof(int) * s.length, cudaMemcpyHostToDevice);
+-	cudaMemcpy(non_overlapped_group_pointer, s.non_overlapped_group_sets_IDs_pointer_host.data(), (width + 1) * sizeof(int), cudaMemcpyHostToDevice);
+-
+-	meta_data mdata(ginst->vert_count, ginst->edge_count, width);
+-	std::vector<int> contain_group_vertices, costs(100);
+-	std::vector<double> times(100);
+-	int *host_tree = new int[width * V], *inqueue = new int[problem_size];
+-	int *one_label_h = new int[width * V];
+-	int w[G * G * width], w1[G * width], vv[G][G];
+-	std::fill(inqueue, inqueue + problem_size, 0);
+-	feature_t *level, *level_h;
+-	cudaMalloc((void **)&level, 10 * sizeof(feature_t));
+-	cudaMallocHost((void **)&level_h, 10 * sizeof(feature_t));
+-	cudaMemset(level, 0, sizeof(feature_t));
+-	cudaMallocManaged((void **)&can_find, sizeof(int));
+-	cb_reducer vert_selector_push_h;
+-	cb_reducer vert_selector_pull_h;
+-	best_reducer vert_selector_push_h_best;
+-	cudaMemcpyFromSymbol(&vert_selector_push_h_best, vertex_selector_best_push_d, sizeof(cb_reducer));
+-	cudaMemcpyFromSymbol(&vert_selector_push_h, vert_selector_push_d, sizeof(cb_reducer));
+-	cudaMemcpyFromSymbol(&vert_selector_pull_h, vert_selector_pull_d, sizeof(cb_reducer));
+-
+-	cb_mapper vert_behave_push_h;
+-	cb_mapper vert_behave_pull_h;
+-
+-	cudaMemcpyFromSymbol(&vert_behave_push_h, vert_behave_push_d, sizeof(cb_reducer));
+-	cudaMemcpyFromSymbol(&vert_behave_pull_h, vert_behave_pull_d, sizeof(cb_reducer));
+-	// Init three data structures
+-	gpu_graph ggraph(ginst);
+-
+-	ggraph.merge_groups_d = non_overlapped_group_gpu, ggraph.merge_pointer_d = non_overlapped_group_pointer;
+-	double sum_time = 0;
+-	cout << "width " << mdata.width << " V " << ginst->vert_count << " E " << ginst->edge_count << endl;
+-	for (int ii = 0; ii < ginst->inquire.size(); ii++)
+-	{
+-		for (int jj = 0; jj < ginst->inquire[ii].size(); jj++)
+-		{
+-			// ginst->inquire[ii][jj] -= (V);
+-		}
+-	}
+-	ofstream outputFile;
+-	outputFile.precision(8);
+-	outputFile.setf(ios::fixed);
+-	outputFile.setf(ios::showpoint);
+-	outputFile.open(path + "result/exp_GPU2_nonHop_" + data_name + "_T" + to_string(T) + "_" + to_string(task_start_num) + "-" + to_string(task_end_num) + ".csv");
+-
+-	outputFile << "task_ID,task,GPU2_nonHop_time,GPU2_nonHop_cost,GPU2_nonHop_memory,counts,process_num" << endl;
+-	Barrier global_barrier(BLKS_NUM);
+-	mapper compute_mapper(ggraph, mdata, vert_behave_push_h, vert_behave_pull_h, width);
+-	reducer worklist_gather(ggraph, mdata, vert_selector_push_h, vert_selector_pull_h, vert_selector_push_h_best, width);
+-	for (int ii = task_start_num; ii <= task_end_num; ii++)
+-	{
+-		string task = "";
+-		for (size_t j = 0; j < ginst->inquire[ii].size(); j++)
+-		{
+-			task += to_string(ginst->inquire[ii][j]) + " ";
+-		}
+-		std::cout << "------------------------------------------------------------" << endl;
+-		cout << data_name << " interation " << ii << " " << endl;
+-		//  cout << ginst->inquire[i][j] << " ";
+-		std::fill(host_tree, host_tree + width * V, inf);
+-		cudaMemcpy(mdata.vert_status_prev, host_tree, problem_size * sizeof(int), cudaMemcpyHostToDevice);
+-		contain_group_vertices.clear();
+-		set_max_ID(ginst->group_graph, ginst->inquire[ii], host_tree, contain_group_vertices, width); // 在置初值前传递参数到prev
+-		for (auto it = contain_group_vertices.begin(); it != contain_group_vertices.end(); it++)
+-		{
+-			int v = *it;
+-			int group_set_ID_v = get_max(v, host_tree, width); /*time complexity: O(|Gamma|)*/
+-			for (size_t j = 1; j <= group_set_ID_v; j <<= 1)
+-			{
+-				if (j & group_set_ID_v)
+-				{
+-					host_tree[v * width + j] = 0;
+-				}
+-			}
+-		}
+-		cudaMemcpy(mdata.vert_status, host_tree, problem_size * sizeof(int), cudaMemcpyHostToDevice);
+-		cudaDeviceSynchronize();
+-
+-		//* necessary for high diameter graph, e.g., euro.osm and roadnet.ca
+-		// mapper_merge_push(blk_size, level, ggraph, mdata, compute_mapper, worklist_gather, global_barrier);
+-		double stime = wtime();
+-		cudaMemset(level, 0, 10 * sizeof(feature_t));
+-
+-		mapper_hybrid_push_merge(blk_size, level, ggraph, mdata, compute_mapper, worklist_gather, global_barrier, 1);
+-		double sstime = wtime() - stime;
+-		H_ERR(cudaMemcpy(mdata.record, mdata.vert_status, problem_size * sizeof(int), cudaMemcpyDeviceToDevice));
+-
+-		// for (size_t i = 0; i < V; i++)
+-		// {
+-		// 	cout << " v " << mdata.worklist_mid[i] / width << " p " << mdata.worklist_mid[i] % width << "  ";
+-		// }
+-		// cout << endl;
+-		std::fill(host_tree, host_tree + problem_size, inf);
+-		cudaMemcpy(mdata.vert_status_prev, host_tree, problem_size * sizeof(int), cudaMemcpyHostToDevice);
+-
+-		std::fill(inqueue, inqueue + problem_size, 0);
+-		set_max_ID(ginst->group_graph, ginst->inquire[ii], host_tree, contain_group_vertices, width); // 在置初值前传递参数到prev
+-		for (auto it = contain_group_vertices.begin(); it != contain_group_vertices.end(); it++)
+-		{
+-			int v = *it;
+-			int group_set_ID_v = get_max(v, host_tree, width); /*time complexity: O(|Gamma|)*/
+-			for (size_t i = 1; i <= group_set_ID_v; i++)
+-			{
+-				if ((i | group_set_ID_v) == group_set_ID_v)
+-				{
+-					host_tree[v * width + i] = 0;
+-					inqueue[v * width + i] = 1;
+-				}
+-			}
+-		}
+-		cudaMemcpy(mdata.in_queue, inqueue, problem_size * sizeof(int), cudaMemcpyHostToDevice);
+-		// for (size_t i = 0; i < *dis_queue_size; i++)
+-		// {
+-		// 	cout << " v " << dis_queue[i] / width << " p " << dis_queue[i] % width << "  ";
+-		// }
+-		// cout << endl;
+-
+-		for (size_t i = 0; i < G; i++)
+-		{
+-			for (size_t j = 0; j < G; j++)
+-			{
+-				vv[i][j] = inf;
+-				for (size_t k = 0; k < width; k++)
+-				{
+-					w[i * width * G + j * width + k] = inf;
+-				}
+-			}
+-		}
+-		cudaMemcpy(mdata.vert_status, host_tree, problem_size * sizeof(int), cudaMemcpyHostToDevice);
+-		// cudaMemcpy(&work_size, (void **)&mdata.worklist_sz_sml, sizeof(int), cudaMemcpyDeviceToHost);
+-		// cout << "work size " << work_size << endl;
+-		// mapper_hybrid_push_merge(blk_size, level, ggraph, mdata, compute_mapper, worklist_gather, global_barrier, 0);
+-
+-		cudaMemcpy(one_label_h, mdata.record, width * V * sizeof(int), cudaMemcpyDeviceToHost);
+-		for (size_t i = 0; i < 5; i++)
+-		{
+-			// cout << i << "  ";
+-			for (size_t j = 1; j < width; j <<= 1)
+-			{
+-				//	cout << one_label_h[i * width + j] << " ";
+-			}
+-			// cout << endl;
+-		}
+-		for (size_t i = 0; i < V; i++)
+-		{
+-			for (size_t j = 0; j < G; j++)
+-			{
+-				if (one_label_h[i * width + (1 << j)] == 0)
+-				{
+-					for (size_t k = 0; k < G; k++)
+-					{
+-						vv[j][k] = min(vv[j][k], one_label_h[i * width + (1 << k)]);
+-					}
+-				}
+-			}
+-		}
+-		for (size_t i = 0; i < G; i++)
+-		{
+-			// cout << i << " ";
+-			w[i * width * G + i * width + (1 << i)] = 0;
+-			for (size_t j = 0; j < G; j++)
+-			{
+-				//	cout << vv[i][j] << " ";
+-				w[i * width * G + j * width] = vv[i][j];
+-			}
+-			// cout << endl;
+-		}
+-		for (int x = 1; x < width; x++)
+-		{
+-			for (int i = 0; i < G; i++)
+-			{
+-				for (int j = 0; j < G; j++)
+-				{
+-					int xx = x;
+-					if (xx & (1 << j))
+-						xx -= (1 << j);
+-					if (xx & (1 << i))
+-						xx -= (1 << i);
+-					if (xx == 0)
+-					{
+-						w[i * width * G + j * width + x] = w[i * width * G + j * width];
+-					}
+-					for (int p = 0; p < G; p++)
+-					{
+-						if ((1 << p) & (xx)) // p作为中间节点的首要条件是p要是xx的一个点
+-						{
+-							// printf("x=%d i=%d j=%d mid=%d ,compare %d %d\n", x, i, j, 1 << p, w[i][j][x], w[i][p][xx - (1 << p)] + vv[p][j]);
+-
+-							w[i * width * G + j * width + x] = min(w[i * width * G + j * width + x], w[i * width * G + p * width + xx - (1 << p)] + vv[p][j]);
+-						}
+-					}
+-					// printf("set  i=%d j=%d, x=%d W=%d\n", i, j, x, w[i][j][x]);
+-				}
+-			}
+-		}
+-
+-		for (int i = 0; i < G; i++)
+-		{
+-			for (size_t x = 1; x < width; x++)
+-			{
+-				w1[i * width + x] = inf;
+-				for (size_t j = 0; j < G; j++)
+-				{
+-					w1[i * width + x] = min(w1[i * width + x], w[i * width * G + j * width + x]);
+-				}
+-			}
+-		}
+-		cudaMemcpy((void **)&w_d, w, G * G * width * sizeof(int), cudaMemcpyHostToDevice);
+-		cudaMemcpy((void **)&w1_d, w1, G * width * sizeof(int), cudaMemcpyHostToDevice);
+-		*can_find = 0;
+-		one_label_lb_1<<<(V + THREAD_PER_BLOCK - 1) / THREAD_PER_BLOCK, THREAD_PER_BLOCK>>>(mdata.record, width, mdata.lb0, V, G, can_find, w_d, w1_d);
+-		cudaDeviceSynchronize();
+-		if (*can_find == 0)
+-		{
+-			cout << "can not find a solution" << endl;
+-			//	return solution_tree;
+-		}
+-
+-		double time = wtime();
+-		// mapper_hybrid_push_merge(blk_size, level, ggraph, mdata, compute_mapper, worklist_gather, global_barrier, 0);
+-
+-		balanced_push(blk_size, level, ggraph, mdata, compute_mapper, worklist_gather, global_barrier);
+-		double ftime = wtime() - time; // 一阶段推的耗时
+-		cudaMemcpy(level_h, level, 10 * sizeof(feature_t), cudaMemcpyDeviceToHost);
+-		// std::cout << "iteration: " << level_h[0] << " queue size " << level_h[1] << " record best " << level_h[2] << "overflow " << level_h[3]<<" used "<<level_h[5]<<"total"<<level_h[6] << "\n";
+-		cudaMemcpy(host_tree, mdata.vert_status, problem_size * sizeof(int), cudaMemcpyDeviceToHost);
+-		// for (size_t i = 0; i < V; i++)
+-		// {
+-		// 	cout << i << "  ";
+-		// 	for (size_t j = 1; j < width; j++)
+-		// 	{
+-		// 		cout << host_tree[i * width + j] << " ";
+-		// 	}
+-		// 	cout << endl;
+-		// }
+-		// cudaMemcpy(one_label_h, worklist_gather.temp_st, width * V * sizeof(int), cudaMemcpyDeviceToHost);
+-		// 			for (size_t i = 0; i <V; i++)
+-		// {
+-		// 	cout << i << "  ";
+-		// 	for (size_t j = 1; j < width; j++)
+-		// 	{
+-		// 		cout << one_label_h[i * width + j] << " ";
+-		// 	}
+-		// 	cout << endl;
+-		// }
+-		int minc = inf;
+-		for (size_t i = 0; i < V; i++)
+-		{
+-			minc = min(minc, host_tree[i * width + width - 1]);
+-		}
+-		cout << "min cost " << minc << endl;
+-		sum_cost += minc;
+-		// balanced_push(blk_size, level, ggraph, mdata, compute_mapper, worklist_gather, global_barrier);
+-
+-		// cudaMemcpy(inqueue, mdata.in_queue, problem_size * sizeof(int), cudaMemcpyDeviceToHost);
+-		// cudaMemcpy(host_tree, mdata.vert_status, problem_size * sizeof(int), cudaMemcpyDeviceToHost);
+-
+-		// cudaMemcpy(work_list, mdata.new_worklist_sml, problem_size * sizeof(int), cudaMemcpyDeviceToHost);
+-
+-		// cudaMemcpy(&work_size, (void **)&mdata.new_worklist_sz_sml, sizeof(int), cudaMemcpyDeviceToHost);
+-		// cout << "work size " << work_size << endl;
+-		// for (size_t i = 0; i < V; i++)
+-		// {
+-		// 	cout << i << "  ";
+-		// 	for (size_t j = 1; j < width; j++)
+-		// 	{
+-		// 		cout << host_tree[i * width + j] << " ";
+-		// 	}
+-		// 	cout << endl;
+-		// }
+-		// for (size_t i = 0; i < V; i++)
+-		// {
+-		// 	cout << i << "  ";
+-		// 	for (size_t j = 1; j < width; j++)
+-		// 	{
+-		// 		cout << inqueue[i * width + j] << " ";
+-		// 	}
+-		// 	cout << endl;
+-		// }
+-
+-		// for (size_t i = 0; i < problem_size; i++)
+-		// {
+-		// 	cout << work_list[i] / width << "-" << work_list[i] % width << " ";
+-		// }
+-		// cout << endl;
+-		//* works for low diameter graphs.
+-		// push_pull_opt(blk_size, level, ggraph, mdata, compute_mapper, worklist_gather, global_barrier);
+-		time = wtime() - time;
+-		int *set_num;
+-		cudaMallocManaged((void **)&set_num, sizeof(int));
+-
+-		count_used<<<(V + THREAD_PER_BLOCK - 1) / THREAD_PER_BLOCK, THREAD_PER_BLOCK>>>(mdata.vert_status, width, set_num, V);
+-		cudaDeviceSynchronize();
+-		int mem_MB = (level_h[5] + V * width + *set_num);
+-		// cout<<"set num "<<*set_num<<" queue size "<<level_h[5]<<" V*width "<<V*width<<endl;
+-		outputFile << ii << "," << task << "," << ftime << "," << minc << "," << mem_MB << "," << *set_num << "," << level_h[6] << endl;
+-		cout << "time " << ftime << endl;
+-		sum_time += ftime;
+-		// std::cout << "Total iteration: " << level_h[0] << "\n";
+-	}
+-	delete[] host_tree;
+-	delete[] inqueue;
+-	delete[] one_label_h;
+-
+-	mdata.release();
+-	ggraph.release();
+-	cudaFree(w1_d);
+-	cudaFree(w_d);
+-	cudaFree(non_overlapped_group_gpu);
+-	cudaFree(non_overlapped_group_pointer);
+-	return 0;
+-	// delete[] gpu_dist;
++#include "witness.hpp"
++#include <filesystem>
++#include <memory>
++#include <stdexcept>
++
++int run_gpu4gst(int argc, char** argv) {
++    if (argc == 2 && std::string(argv[1]) == "--help") {
++        std::cout << "Usage: TrimCDP-WB unused DIRECTORY DATASET GROUP_COUNT FIRST LAST [--witness]\n";
++        return 0;
++    }
++    bool want_witness = argc == 8 && std::string(argv[7]) == "--witness";
++    if (argc != 7 && !want_witness) throw std::runtime_error("usage: TrimCDP-WB unused DIRECTORY DATASET GROUP_COUNT FIRST LAST");
++    int G = parse_nonnegative(argv[4]);
++    int first = parse_nonnegative(argv[5]), last = parse_nonnegative(argv[6]);
++    if (G < 1 || G > 16) throw std::runtime_error("group count must be in [1,16]");
++    if (first > last) throw std::runtime_error("FIRST must not exceed LAST");
++    std::filesystem::path path(argv[2]);
++    std::string dataset(argv[3]);
++    if (dataset.empty() || dataset == "." || dataset == ".." || dataset.find('/') != std::string::npos)
++        throw std::runtime_error("DATASET must be a filename stem");
++    using HostGraph = graph<long,long,long,vertex_t,index_t,weight_t>;
++    auto g = std::make_unique<HostGraph>((path/(dataset+"_beg_pos.bin")).c_str(),
++        (path/(dataset+"_csr.bin")).c_str(), (path/(dataset+"_weight.bin")).c_str());
++    g->read_gi((path/(dataset+".g")).string(), (path/(dataset+std::to_string(G)+".csv")).string());
++    if (static_cast<size_t>(last) >= g->inquire.size()) throw std::runtime_error("query range out of bounds");
++    for (auto& group : g->group_graph)
++        for (auto member : group)
++            if (static_cast<unsigned>(member.first) >= g->vert_count) throw std::runtime_error("group vertex out of range");
++    for (auto& query : g->inquire) {
++        if (query.size() != static_cast<size_t>(G)) throw std::runtime_error("query arity does not match GROUP_COUNT");
++        for (int id : query)
++            if (static_cast<size_t>(id) >= g->group_graph.size()) throw std::runtime_error("query group out of range");
++    }
++    int width = 1 << G, V = g->vert_count;
++    if (static_cast<uint64_t>(g->new_vert_count)*width > INT_MAX)
++        throw std::runtime_error("vertex-mask and virtual-row states exceed 32-bit queue capacity");
++    size_t states = static_cast<size_t>(V)*width;
++    std::filesystem::create_directories(path/"result");
++    std::ofstream output(path/"result"/("exp_GPU2_nonHop_"+dataset+"_T"+std::to_string(G)+"_"+std::to_string(first)+"-"+std::to_string(last)+".csv"));
++    if (!output) throw std::runtime_error("cannot create result CSV");
++    output << "task_ID,task,GPU2_nonHop_time,GPU2_nonHop_cost,GPU2_nonHop_memory,counts,process_num\n";
++    if (V == 0) {
++        for (int q = first; q <= last; ++q) {
++            std::cout << "query " << q << "\nmin cost infeasible\n";
++            output << q << ",,0,infeasible,0,0,0\n";
++        }
++        return 0;
++    }
++    H_ERR(cudaSetDevice(0)); // CUDA_VISIBLE_DEVICES controls the physical device.
++    size_t free_bytes, total_bytes;
++    H_ERR(cudaMemGetInfo(&free_bytes, &total_bytes));
++    uint64_t merge_count = 1;
++    for (int i = 0; i < G; ++i) merge_count *= 3;
++    uint64_t required = states*80 + static_cast<uint64_t>(g->new_vert_count)*width*4
++        + static_cast<uint64_t>(g->edge_count)*12 + merge_count*4
++        + static_cast<uint64_t>(G*G+G)*width*8 + 100*1024*1024;
++    if (required > free_bytes-free_bytes/10) throw std::runtime_error("insufficient GPU memory for exact vertex-mask state tables");
++    auto subsets = graph_v_of_v_idealID_DPBF_non_overlapped_group_sets_gpu(width-1);
++    int *merge_groups, *merge_offsets, *can_find, *set_num;
++    feature_t *w_d, *w1_d, *level;
++    H_ERR(cudaMalloc((void**)&merge_groups, subsets.length*sizeof(int)));
++    H_ERR(cudaMalloc((void**)&merge_offsets, (width+1)*sizeof(int)));
++    H_ERR(cudaMemcpy(merge_groups, subsets.non_overlapped_group_sets_IDs.data(), subsets.length*sizeof(int), cudaMemcpyHostToDevice));
++    H_ERR(cudaMemcpy(merge_offsets, subsets.non_overlapped_group_sets_IDs_pointer_host.data(), (width+1)*sizeof(int), cudaMemcpyHostToDevice));
++    H_ERR(cudaMalloc((void**)&w_d, static_cast<size_t>(G)*G*width*sizeof(feature_t)));
++    H_ERR(cudaMalloc((void**)&w1_d, static_cast<size_t>(G)*width*sizeof(feature_t)));
++    H_ERR(cudaMalloc((void**)&level, 10*sizeof(feature_t)));
++    H_ERR(cudaMallocManaged((void**)&can_find, sizeof(int)));
++    H_ERR(cudaMallocManaged((void**)&set_num, sizeof(int)));
++    meta_data mdata(V, g->edge_count, width, g->new_vert_count);
++    gpu_graph ggraph(g.get());
++    ggraph.merge_groups_d = merge_groups;
++    ggraph.merge_pointer_d = merge_offsets;
++    cb_reducer select_push, select_pull;
++    best_reducer select_best;
++    cb_mapper map_push, map_pull;
++    H_ERR(cudaMemcpyFromSymbol(&select_push, vert_selector_push_d, sizeof(select_push)));
++    H_ERR(cudaMemcpyFromSymbol(&select_pull, vert_selector_pull_d, sizeof(select_pull)));
++    H_ERR(cudaMemcpyFromSymbol(&select_best, vertex_selector_best_push_d, sizeof(select_best)));
++    H_ERR(cudaMemcpyFromSymbol(&map_push, vert_behave_push_d, sizeof(map_push)));
++    H_ERR(cudaMemcpyFromSymbol(&map_pull, vert_behave_pull_d, sizeof(map_pull)));
++    mapper compute(ggraph, mdata, map_push, map_pull, width);
++    reducer gather(ggraph, mdata, select_push, select_pull, select_best, width);
++    Barrier barrier(BLKS_NUM);
++    std::vector<feature_t> tree(states), queued(states), singleton(states);
++    std::vector<feature_t> w(static_cast<size_t>(G)*G*width), w1(static_cast<size_t>(G)*width), vv(G*G);
++    std::vector<int> members;
++    feature_t levels[10];
++    for (int q = first; q <= last; ++q) {
++        double start_time = wtime();
++        std::fill(tree.begin(),tree.end(),inf);
++        H_ERR(cudaMemcpy(mdata.vert_status_prev, tree.data(), states*sizeof(feature_t), cudaMemcpyHostToDevice));
++        members.clear();
++        set_max_ID(g->group_graph, g->inquire[q], tree.data(), members, width);
++        H_ERR(cudaMemcpy(mdata.vert_status, tree.data(), states*sizeof(feature_t), cudaMemcpyHostToDevice));
++        H_ERR(cudaMemset(level, 0, 10*sizeof(feature_t)));
++        mapper_hybrid_push_merge(512, level, ggraph, mdata, compute, gather, barrier, 1);
++        H_ERR(cudaMemcpy(mdata.record, mdata.vert_status, states*sizeof(feature_t), cudaMemcpyDeviceToDevice));
++        H_ERR(cudaMemcpy(singleton.data(), mdata.record, states*sizeof(feature_t), cudaMemcpyDeviceToHost));
++        // Root/group shortest paths supply the original TrimCDP lower bounds.
++        std::fill(vv.begin(),vv.end(),inf);
++        std::fill(w.begin(),w.end(),inf);
++        std::fill(w1.begin(),w1.end(),inf);
++        for (int v = 0; v < V; ++v)
++            for (int i = 0; i < G; ++i)
++                if (singleton[v*width+(1<<i)] == 0)
++                    for (int j = 0; j < G; ++j)
++                        vv[i*G+j] = std::min(vv[i*G+j],singleton[v*width+(1<<j)]);
++        for (int i = 0; i < G; ++i)
++            for (int j = 0; j < G; ++j) w[(i*G+j)*width] = vv[i*G+j];
++        for (int mask = 1; mask < width; ++mask)
++            for (int i = 0; i < G; ++i)
++                for (int j = 0; j < G; ++j) {
++                    int middle = mask & ~(1<<i) & ~(1<<j);
++                    auto& cost = w[(i*G+j)*width+mask];
++                    if (!middle) cost = vv[i*G+j];
++                    for (int k = 0; k < G; ++k)
++                        if (middle & (1<<k)) cost = std::min(cost, w[(i*G+k)*width+(middle^(1<<k))]+vv[k*G+j]);
++                }
++        for (int i = 0; i < G; ++i)
++            for (int mask = 1; mask < width; ++mask)
++                for (int j = 0; j < G; ++j) w1[i*width+mask] = std::min(w1[i*width+mask], w[(i*G+j)*width+mask]);
++        H_ERR(cudaMemcpy(w_d, w.data(), w.size()*sizeof(feature_t), cudaMemcpyHostToDevice));
++        H_ERR(cudaMemcpy(w1_d, w1.data(), w1.size()*sizeof(feature_t), cudaMemcpyHostToDevice));
++        *can_find = 0;
++        one_label_lb_1<<<(V+511)/512,512>>>(mdata.record,width,mdata.lb0,V,G,can_find,w_d,w1_d);
++        H_ERR(cudaGetLastError());
++        H_ERR(cudaDeviceSynchronize());
++        std::fill(tree.begin(),tree.end(),inf);
++        H_ERR(cudaMemcpy(mdata.vert_status_prev, tree.data(), states*sizeof(feature_t), cudaMemcpyHostToDevice));
++        std::fill(queued.begin(),queued.end(),0);
++        members.clear();
++        set_max_ID(g->group_graph, g->inquire[q], tree.data(), members, width);
++        for (int v : members) {
++            int mask = get_max(v,tree.data(),width);
++            for (int sub = mask; sub; sub = (sub-1)&mask) {
++                tree[v*width+sub] = 0;
++                queued[v*width+sub] = 1;
++            }
++        }
++        H_ERR(cudaMemcpy(mdata.vert_status, tree.data(), states*sizeof(feature_t), cudaMemcpyHostToDevice));
++        H_ERR(cudaMemcpy(mdata.in_queue, queued.data(), states*sizeof(feature_t), cudaMemcpyHostToDevice));
++        feature_t cost = inf;
++        std::fill(std::begin(levels),std::end(levels),0);
++        *set_num = 0;
++        if (*can_find) {
++            balanced_push(512,level,ggraph,mdata,compute,gather,barrier);
++            H_ERR(cudaMemcpy(tree.data(), mdata.vert_status, states*sizeof(feature_t), cudaMemcpyDeviceToHost));
++            H_ERR(cudaMemcpy(levels, level, sizeof(levels), cudaMemcpyDeviceToHost));
++            for (int v = 0; v < V; ++v) cost = std::min(cost,tree[v*width+width-1]);
++            count_used<<<(V+511)/512,512>>>(mdata.vert_status,width,set_num,V);
++            H_ERR(cudaGetLastError());
++            H_ERR(cudaDeviceSynchronize());
++        }
++        double elapsed = wtime()-start_time;
++        std::string result = cost == inf ? "infeasible" : std::to_string(cost);
++        if (want_witness && cost != inf) print_witness(q,cost,decode_witness(*g,g->inquire[q],width,tree,singleton,cost));
++        std::cout << "query " << q << "\nmin cost " << result << "\ntime " << elapsed << "\n";
++        output << q << ',';
++        for (int id : g->inquire[q]) output << id << ' ';
++        output << ',' << elapsed << ',' << result << ',' << (levels[5]+states+*set_num)
++               << ',' << *set_num << ',' << levels[6] << '\n';
++    }
++    mdata.release();
++    ggraph.release();
++    for (void* pointer : std::initializer_list<void*>{merge_groups,merge_offsets,w_d,w1_d,level,can_find,set_num}) H_ERR(cudaFree(pointer));
++    output.close();
++    if (!output) throw std::runtime_error("cannot finish writing result CSV");
++    return 0;
++}
++int main(int argc, char** argv) {
++    try { return run_gpu4gst(argc,argv); }
++    catch (const std::exception& error) { std::cerr << "GPU4GST: " << error.what() << '\n'; return 2; }
+ }
+diff --git a/code/TrimCDP-WB/Makefile b/code/TrimCDP-WB/Makefile
+new file mode 100644
+index 0000000..5d288e7
+--- /dev/null
++++ b/code/TrimCDP-WB/Makefile
+@@ -0,0 +1,11 @@
++NVCC ?= nvcc
++CUDA_ARCH ?= sm_89
++NVCCFLAGS ?= -O2 -lineinfo -std=c++17 --extended-lambda
++TARGET := build/bin/TrimCDP-WB
++.PHONY: all clean
++all: $(TARGET)
++$(TARGET): src/GSTnonHop.cu $(wildcard include/*)
++	mkdir -p $(dir $@)
++	$(NVCC) $(NVCCFLAGS) -arch=$(CUDA_ARCH) -Iinclude $< -o $@
++clean:
++	rm -f $(TARGET)
+diff --git a/code/TrimCDP-WB/include/witness.hpp b/code/TrimCDP-WB/include/witness.hpp
+new file mode 100644
+index 0000000..a882142
+--- /dev/null
++++ b/code/TrimCDP-WB/include/witness.hpp
+@@ -0,0 +1,118 @@
++#ifndef GPU4GST_WITNESS_HPP
++#define GPU4GST_WITNESS_HPP
++#include <functional>
++#include <numeric>
++#include <set>
++#include <tuple>
++
++// Decode equalities in the GPU-computed tables. This does not solve a second
++// Steiner problem: every accepted edge/merge must reproduce a GPU cost label.
++struct GSTWitness {
++    std::set<int> vertices;
++    std::set<std::tuple<int,int,feature_t>> edges;
++    void add(const GSTWitness& other) {
++        vertices.insert(other.vertices.begin(),other.vertices.end());
++        edges.insert(other.edges.begin(),other.edges.end());
++    }
++    void edge(int u,int v,feature_t weight) {
++        vertices.insert(u); vertices.insert(v);
++        if (u != v) edges.emplace(std::min(u,v),std::max(u,v),weight);
++    }
++};
++
++template<class Graph>
++GSTWitness decode_witness(const Graph& g, const std::vector<int>& query, int width,
++    const std::vector<feature_t>& dp, const std::vector<feature_t>& singleton, feature_t optimum) {
++    int n = g.vert_count, full = width-1;
++    std::vector<int> coverage(n);
++    for (size_t i = 0; i < query.size(); ++i)
++        for (auto member : g.group_graph[query[i]]) coverage[member.first] |= 1<<i;
++    auto value = [&](int v,int mask) {
++        return (mask && !(mask&(mask-1)) ? singleton : dp)[static_cast<size_t>(v)*width+mask];
++    };
++    std::function<bool(int,int,GSTWitness&)> decode = [&](int root,int mask,GSTWitness& answer) {
++        if (value(root,mask) == inf) return false;
++        std::vector<int> previous(n,-1), queue{root};
++        std::vector<feature_t> previous_weight(n);
++        previous[root] = root;
++        for (size_t next = 0; next < queue.size(); ++next) {
++            int v = queue[next];
++            feature_t cost = value(v,mask);
++            GSTWitness local;
++            bool found = cost == 0 && (coverage[v]&mask) == mask;
++            if (found) local.vertices.insert(v);
++            for (int left = (mask-1)&mask; left && !found; left = (left-1)&mask) {
++                int right = mask^left;
++                if (left > right || value(v,left)+value(v,right) != cost) continue;
++                GSTWitness a,b;
++                if (decode(v,left,a) && decode(v,right,b)) {
++                    local.add(a); local.add(b); found = true;
++                }
++            }
++            // TrimCDP may finish a full tree using a partial tree plus one
++            // shortest path per remaining group, before explicit merge states.
++            if (mask == full && !found) {
++                for (int left = (mask-1)&mask; left && !found; left = (left-1)&mask) {
++                    feature_t candidate = value(v,left);
++                    for (int bit = 1; bit < width; bit <<= 1)
++                        if ((mask^left)&bit) candidate += singleton[static_cast<size_t>(v)*width+bit];
++                    if (candidate != cost) continue;
++                    GSTWitness combined;
++                    bool okay = decode(v,left,combined);
++                    for (int bit = 1; bit < width && okay; bit <<= 1)
++                        if ((mask^left)&bit) {
++                            GSTWitness branch;
++                            okay = decode(v,bit,branch);
++                            combined.add(branch);
++                        }
++                    if (okay) { local.add(combined); found = true; }
++                }
++            }
++            if (found) {
++                for (int u = v; u != root; u = previous[u]) local.edge(previous[u],u,previous_weight[u]);
++                answer.add(local);
++                return true;
++            }
++            for (index_t e = g.beg_pos[v]; e < g.end_pos[v]; ++e) {
++                int u = g.adj_list[e];
++                if (previous[u] == -1 && g.weight[e]+value(u,mask) == cost) {
++                    previous[u] = v; previous_weight[u] = g.weight[e]; queue.push_back(u);
++                }
++            }
++        }
++        return false;
++    };
++    GSTWitness result;
++    bool found = false;
++    for (int v = 0; v < n && !found; ++v)
++        if (dp[static_cast<size_t>(v)*width+full] == optimum) found = decode(v,full,result);
++    if (!found) throw std::runtime_error("cannot reconstruct the GPU optimum from its state tables");
++    // Remove zero-cost cycles in the decoded union. Positive-cost redundancy
++    // would contradict the claimed optimum, and is rejected below.
++    std::vector<std::tuple<feature_t,int,int>> sorted;
++    for (auto [u,v,w] : result.edges) sorted.emplace_back(w,u,v);
++    std::sort(sorted.begin(),sorted.end());
++    std::vector<int> parent(n);
++    std::iota(parent.begin(),parent.end(),0);
++    auto root = [&](int v) { while (v != parent[v]) { parent[v] = parent[parent[v]]; v = parent[v]; } return v; };
++    result.edges.clear();
++    feature_t sum = 0;
++    for (auto [w,u,v] : sorted) {
++        int a = root(u), b = root(v);
++        if (a != b) { parent[a] = b; result.edge(u,v,w); sum += w; }
++    }
++    int covered = 0;
++    for (int v : result.vertices) covered |= coverage[v];
++    if (result.vertices.empty() || result.edges.size()+1 != result.vertices.size() || covered != full || sum != optimum)
++        throw std::runtime_error("decoded tree does not certify the GPU optimum: expected cost " + std::to_string(optimum) + ", tree cost " + std::to_string(sum) + ", coverage " + std::to_string(covered) + "/" + std::to_string(full));
++    return result;
++}
++inline void print_witness(int query, feature_t cost, const GSTWitness& tree) {
++    std::cout << "witness {\"query\":" << query << ",\"cost\":" << cost << ",\"vertices\":[";
++    bool comma = false;
++    for (int v : tree.vertices) { if (comma) std::cout << ','; std::cout << v; comma = true; }
++    std::cout << "],\"edges\":["; comma = false;
++    for (auto [u,v,w] : tree.edges) { if (comma) std::cout << ','; std::cout << '[' << u << ',' << v << ',' << w << ']'; comma = true; }
++    std::cout << "]}\n";
++}
++#endif

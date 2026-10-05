@@ -37,6 +37,7 @@
 #include"random.h"
 
 #include"common_cuda.cuh"
+#include"exact_cuda.cuh"
 
 #define N_ITER 10000
 
@@ -57,77 +58,14 @@
 curandState_t *d_randstates=0;
 int cuda_device=-1;
 
-#define MAX_CUDA_DEV 8
-
-#define MAX_SIM_CUDA_RUNS 16
-
-omp_lock_t dev_read_wait_lock[MAX_CUDA_DEV];
-
-int dev_readcount[MAX_CUDA_DEV];
-
 #pragma omp threadprivate (d_randstates, cuda_device)
-
-/* #define DEBUG */
-
-/* #define NO_CONCURRENCY */
-
-int threaddev[32]={-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-int rand_init[32]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-static void lib_constructor() __attribute__((constructor));
-static void lib_destructor() __attribute__((destructor));
-
-void lib_constructor(void)
-{
-    for(int i=0; i<MAX_CUDA_DEV; i++) {
-        omp_init_lock(&dev_read_wait_lock[i]);
-    }
-    memset(dev_readcount, 0, sizeof(dev_readcount));
-}
-
-void lib_destructor(void)
-{
-    for(int i=0; i<MAX_CUDA_DEV; i++) {
-        omp_destroy_lock(&dev_read_wait_lock[i]);
-    }
-}
 
 static void checkCUDAError(const char *msg, int line)
 {
-    cudaError_t err = cudaGetLastError();
-    if( cudaSuccess != err) {
-#pragma omp critical (checkCUDAError)
-        {
-            printf("Cuda error: line: %d:  %s: %s.\n", line, msg, cudaGetErrorString( err) );
-            P_INT(omp_get_thread_num()) P_INT(cuda_device) P_NL;
-            P_INT_ARR(threaddev, 32) P_NL;
-        }
+    cudaError_t error = cudaGetLastError();
+    if (error != cudaSuccess) {
+        fprintf(stderr, "CUDA-MS line %d (%s): %s\n", line, msg, cudaGetErrorString(error));
         abort();
-    }
-}
-
-
-static void cuda_start(void) 
-{
-
-    omp_set_lock(&dev_read_wait_lock[cuda_device]);
-#pragma omp critical (read_mutex)
-    {
-        dev_readcount[cuda_device]++;
-        if(dev_readcount[cuda_device]<MAX_SIM_CUDA_RUNS) {
-            omp_unset_lock(&dev_read_wait_lock[cuda_device]);
-        }
-    }
-}
-
-static void cuda_end(void)
-{
-#pragma omp critical (read_mutex)
-    {
-        dev_readcount[cuda_device]--;
-        if(dev_readcount[cuda_device]<MAX_SIM_CUDA_RUNS) {
-            omp_unset_lock(&dev_read_wait_lock[cuda_device]);
-        }
     }
 }
 
@@ -318,6 +256,7 @@ template <unsigned int blockSize, typename T, int test(int i, T)> __global__ voi
     int i=tid+blockIdx.x*blockSize*2;
 
     idata[tid]=0;
+    idata[tid+blockSize]=0;
     if (i < n) idata[tid]=test(i, data) ? 0 : 1;
     if (i+blockSize < n) idata[tid+blockSize]=test(i+blockSize, data) ? 0 : 1;
 
@@ -466,7 +405,7 @@ template <unsigned int blockSizeX, unsigned int blockSizeY, int biased, int fina
     }
 
     if(biased==3) {
-        for(int i=tid; i<255; i+=blockDim.x) {
+        for(int i=tid; i<256; i+=blockDim.x) {
             pows[i] = powf(omega, (i-1)*(i-1));
         }
     }
@@ -609,6 +548,7 @@ template <int blockSize, int biased, int usedBlocks, int final_mult> __device__ 
             }
         }
 
+        __syncthreads();
         row += gridDim.x-usedBlocks; // Some blocks may be used for something else (like normiterGPU_dev)
     }
 
@@ -620,6 +560,7 @@ template <int blockSize, int biased, int maxdiff, int final_mult> __global__ voi
         iterGPU_dev<blockSize, biased, 1, final_mult>(d_x0_status, d_x1, d_x2, d_mat, mat_pitch, x_pitch, d_map, alpha, omega);
     } else { 
         normiterGPU_dev<blockSize, biased>(d_x0_status, d_x1_status, d_x1, d_map[-1], alpha);
+        __syncthreads();
         if(maxdiff) {
             maxdiffGPU_dev<blockSize>(d_x0, d_x1, d_x0_status, d_x1_status, d_map);
         }
@@ -670,7 +611,7 @@ __global__ void rewriteMatrixGPU1(unsigned char *d_mat, int *d_map, int *d_new_m
         unsigned char *row = d_mat + mat_pitch* d_new_map[i];
 
         for(j = 0, jj = 0; jj< nmap; jj++) {
-            if(d_new_map[j]==d_map[jj]) {
+            if(j<nnew_map && d_new_map[j]==d_map[jj]) {
                 row[j++]=row[jj];
             }
         }
@@ -698,27 +639,15 @@ __global__ void updateMapGPU(int *d_new_rev_map, float *d_x1, int *d_map, float 
 
 __global__ void fullrowsGPU(int *d_fullrow, unsigned char *d_mat, int *d_map, unsigned int mat_pitch, float *d_x1)
 {
-    unsigned int tid = threadIdx.x;
-	int n=d_map[-1];
-
-    int row=blockIdx.x+tid*gridDim.x;
-    if(row<n) {
-        d_fullrow[row]=1;
-    }
-
-    __syncthreads();
-
-	for(int row = blockIdx.x;  row < n; row+=gridDim.x){
-		int rowStart = mat_pitch*d_map[row];
-
-        int i=tid;
-        while (i < n) {
-            if(__any_sync(0xffffffffu, !d_mat[rowStart+i] && i!=row && d_x1[i]>0)) { // This makes all threads in a warp break out of the loop together. Other threads in the block will scan until they find other zeroes.
-                d_fullrow[row]=0;
-                break;
-            }
-            i += blockDim.x;
-        }
+    const int n = d_map[-1];
+    for (int row = blockIdx.x; row < n; row += gridDim.x) {
+        int missing = 0;
+        const size_t offset = (size_t)mat_pitch*d_map[row];
+        for (int i = threadIdx.x; i < n; i += blockDim.x)
+            missing |= !d_mat[offset+i] && i != row && d_x1[i] > 0;
+        const int any_missing = __syncthreads_or(missing);
+        if (threadIdx.x == 0) d_fullrow[row] = !any_missing;
+        __syncthreads();
     }
 }
 
@@ -738,6 +667,7 @@ __global__ void unmapOnesGPU(int *d_ones, int *d_map, struct cuda_clique_status 
         d_ones[i]=d_map[d_ones[i]];
     }
 
+    __syncthreads();
     if(tid==0 && blockIdx.x==0) {
         d_ones[-1]+=d_ones[-2];
         d_ones[-2]=0;
@@ -760,6 +690,7 @@ template <unsigned int blockSize> __global__ void unmapResGPU(float *d_x0, float
 		d_x1[i]=0;
 	}
 
+    __syncthreads();
     int cnt=0;
 
 	for(int i= threadIdx.x; i < d_map[-1]; i+= blockDim.x){
@@ -965,13 +896,13 @@ template<int part, int maxdiff, int final_mult> static void quadratic_cuda(struc
 
 
             if(data->mode==MODE_SIMPLE) {
-                iterGPU<128, 0, maxdiff, final_mult><<<MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                iterGPU<128, 0, maxdiff, final_mult><<<MIN(1024, MAX(2, data->nmap)), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
             } else if(data->mode==MODE_REGULAR) {
-                iterGPU<128, 1, maxdiff, final_mult><<<MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                iterGPU<128, 1, maxdiff, final_mult><<<MIN(1024, MAX(2, data->nmap)), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
             } else if(data->mode==MODE_ATTEN) {
-                iterGPU<128, 2, maxdiff, final_mult><<<MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                iterGPU<128, 2, maxdiff, final_mult><<<MIN(1024, MAX(2, data->nmap)), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
             } else { // MODE_ATTEN
-                iterGPU<128, 3, maxdiff, final_mult><<<MIN(1024, data->nmap), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
+                iterGPU<128, 3, maxdiff, final_mult><<<MIN(1024, MAX(2, data->nmap)), 128, (128+256)*sizeof(float), stream>>>(data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[0].d_x, data->instances[1].d_x, data->instances[2].d_x, data->d_mat, data->mat_pitch, data->x_pitch, data->d_map, data->alpha, data->omega);
             }
 
             cudaEventRecord(data->instances[2].quadratic_done, stream);
@@ -999,6 +930,7 @@ template<int part> static void find_full_rows_cuda(struct cuda_clique_data *data
     cudaStream_t stream=data->zero_stream;
 
     if(part==1) {
+        cudaStreamWaitEvent(stream, data->instances[1].quadratic_done, 0);
         fullrowsGPU<<<128, 128, 0, stream>>>(data->d_incident, data->d_mat, data->d_map, data->mat_pitch, data->instances[1].d_x);
     } else if(part==2) {
         elim_cuda<isOne_data, isNotFullRow, 1/*n_skip*/, 0, 1 /*remap_ones*/>(data, data->d_one_revmap, {data->d_incident}, stream);
@@ -1065,7 +997,7 @@ static void randomize_cuda(struct cuda_clique_data *data, float fact)
 static void remove_unnecessary_nodes_cuda(struct cuda_clique_data *data)
 {
     updateMapGPU<<<DIVROUNDUP(data->nmap, 256), 256, 0, data->iter_stream>>>(data->d_new_revmap, data->instances[2].d_x, data->d_map, data->instances[0].d_x, data->d_new_map);
-    unmapOnesGPU<<<DIVROUNDUP(data->nmap, 256), 256, 0, data->zero_stream>>>(data->d_ones, data->d_map, data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[2].d_x_status);
+    unmapOnesGPU<<<1, 256, 0, data->zero_stream>>>(data->d_ones, data->d_map, data->instances[0].d_x_status, data->instances[1].d_x_status, data->instances[2].d_x_status);
     if(data->d_start_mat) {
         rewriteMatrixGPU<<<512, 512, 0, data->iter_stream>>>(data->d_mat, data->d_start_mat, data->d_new_map, data->mat_pitch);
     } else {
@@ -1167,7 +1099,7 @@ static int d_iterate(struct cuda_clique_data *data, int *abortcheck_cb(void))
 
         SWAP(data->instances[0], data->instances[1]); SWAP(data->instances[1], data->instances[2]);
 
-		if(iter_cnt>=N_ITER && ! mat_changed && !randomized) break;
+		if(iter_cnt>=N_ITER) break;
 		iter_cnt++;
 
 
@@ -1275,9 +1207,9 @@ extern "C" void apply_mask_cuda_clique(struct cuda_clique_data *res, t_bitmask m
 
     for(int i=0; i<n; i++) if(BIT_TEST(mask, i))
         for(int j=i+1; j<n; j++) if(BIT_TEST(mask, j)) {
-            if(res->h_start_mat[i*n+j]>0) {
-                res->h_start_mat[i*n+j]=MIN((int)ceilf(sqrtf((res->h_start_mat[i*n+j] * res->h_start_mat[i*n+j])+e)), 255);
-                res->h_start_mat[j*n+i]=res->h_start_mat[i*n+j];
+            if(res->h_start_mat[(size_t)i*n+j]>0) {
+                res->h_start_mat[(size_t)i*n+j]=MIN((int)ceilf(sqrtf((res->h_start_mat[(size_t)i*n+j] * res->h_start_mat[(size_t)i*n+j])+e)), 255);
+                res->h_start_mat[j*n+i]=res->h_start_mat[(size_t)i*n+j];
             }
         }
 
@@ -1297,41 +1229,35 @@ __global__ void rand_setup_kernel(curandState_t *state)
 
 extern "C" void init_cuda()
 {
-    if(cuda_device==-1) {
-        int device_count;
-        cudaGetDeviceCount(&device_count);
-
-        cuda_device=int_ran(0, device_count-1);
-        cudaSetDevice(cuda_device);
-
-        threaddev[omp_get_thread_num()]=cuda_device;
-        cudaFree(0);
-    }
+    // Honor the caller's selected device. Random selection and a cached ID
+    // broke subsequent calls on a different CUDA device.
+    cudaGetDevice(&cuda_device);
+    checkCUDAError("init_cuda", __LINE__);
 }
 
 
 extern "C" void init_cuda_clique(struct cuda_clique_data *res, char **graph, int n)
 {
 
-    cuda_start();
+    init_cuda();
 
-    if(!rand_init[omp_get_thread_num()]) {
+    {
         cudaMalloc((void **)&d_randstates, 256 * sizeof(curandState_t));
         rand_setup_kernel<<<1, 256>>>(d_randstates);
-        rand_init[omp_get_thread_num()]=1;
+
     }
 
 	res->n=n;
 
-	res->h_start_mat=(unsigned char *)calloc(n*n, sizeof(char));
+	res->h_start_mat=(unsigned char *)calloc((size_t)n*n, sizeof(char));
 
     res->n_edges=0;
 
 	for(int i=0; i<n; i++) {
 		for(int j=0; j<n; j++) {
-			res->h_start_mat[i*n+j]=i!=j ? graph[i][j] : 0;
+			res->h_start_mat[(size_t)i*n+j]=i!=j ? graph[i][j] : 0;
 
-            res->n_edges+=res->h_start_mat[i*n+j];
+            res->n_edges+=res->h_start_mat[(size_t)i*n+j];
 		}
 	}
 
@@ -1425,7 +1351,8 @@ extern "C" void clear_cuda_clique(struct cuda_clique_data *res)
 	free(res->h_start_mat);
     free(res->instances);
 
-    cuda_end();
+    cudaFree(d_randstates);
+    d_randstates = 0;
 }
 
 static int mode(float alpha, float omega)
@@ -1448,7 +1375,6 @@ extern "C" float iterate_cuda_clique(struct cuda_clique_data *data, float *x, in
     }
 
 	data->max_unsolved=max_unsolved;
-	data->max_unsolved=0;
 
     if(zero>0) data->zero=zero;
     else data->zero=0.0001f;

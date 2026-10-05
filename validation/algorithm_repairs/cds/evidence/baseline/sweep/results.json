@@ -1,0 +1,565 @@
+{
+  "binary": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+  "binary_sha256": "b24e46b63ee4441ac78ae99eb4a35a2e6a43171cb1612e2700c29d9be1dd36f7",
+  "manifest_sha256": "083d94f838ec901bf8ea0d7492e3cdd07a192fb11bcfd4641bc2741fdc5ca579",
+  "gpu": 1,
+  "sanitizer": null,
+  "baseline": true,
+  "cases": 26,
+  "passed": 23,
+  "failed": 3,
+  "elapsed_seconds": 7.356,
+  "brute_crosschecked": 10,
+  "buffer_factor": 1,
+  "results": [
+    {
+      "name": "path_5_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/path_5.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        4,
+        5
+      ],
+      "returncode": 0,
+      "observed": 0.8,
+      "pass": true,
+      "seconds": 0.27524
+    },
+    {
+      "name": "barbell_3_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/barbell_3.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        11,
+        10
+      ],
+      "returncode": 0,
+      "observed": 1.1,
+      "pass": true,
+      "seconds": 0.276058
+    },
+    {
+      "name": "original_small_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        2,
+        1
+      ],
+      "returncode": 0,
+      "observed": 1.73333,
+      "pass": false,
+      "error": "wrong density",
+      "seconds": 0.260841
+    },
+    {
+      "name": "original_small_k3",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        2,
+        1
+      ],
+      "returncode": 0,
+      "observed": 2.0,
+      "pass": true,
+      "seconds": 0.242274
+    },
+    {
+      "name": "original_small_k4",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "4",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        1,
+        1
+      ],
+      "returncode": 0,
+      "observed": 1.0,
+      "pass": true,
+      "seconds": 0.283864
+    },
+    {
+      "name": "original_medium_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_medium.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        7,
+        2
+      ],
+      "returncode": 0,
+      "observed": 3.5,
+      "pass": true,
+      "seconds": 0.246394
+    },
+    {
+      "name": "original_medium_k3",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_medium.adj",
+        "3",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        7,
+        1
+      ],
+      "returncode": 0,
+      "observed": 7.0,
+      "pass": true,
+      "seconds": 0.285157
+    },
+    {
+      "name": "original_medium_k4",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_medium.adj",
+        "4",
+        "64",
+        "144",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        35,
+        4
+      ],
+      "returncode": 0,
+      "observed": 8.75,
+      "pass": true,
+      "seconds": 0.27709
+    },
+    {
+      "name": "random_000_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_000.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        2,
+        3
+      ],
+      "returncode": 0,
+      "observed": 0.666667,
+      "pass": true,
+      "seconds": 0.276449
+    },
+    {
+      "name": "random_000_k3",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_000.adj",
+        "3",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        0,
+        1
+      ],
+      "returncode": 0,
+      "observed": 0.0,
+      "pass": true,
+      "seconds": 0.266279
+    },
+    {
+      "name": "random_000_k4",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_000.adj",
+        "4",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        0,
+        1
+      ],
+      "returncode": 0,
+      "observed": 0.0,
+      "pass": true,
+      "seconds": 0.24641
+    },
+    {
+      "name": "random_001_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_001.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        1,
+        2
+      ],
+      "returncode": 0,
+      "observed": 0.5,
+      "pass": true,
+      "seconds": 0.274745
+    },
+    {
+      "name": "random_001_k3",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_001.adj",
+        "3",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        0,
+        1
+      ],
+      "returncode": 0,
+      "observed": 0.0,
+      "pass": true,
+      "seconds": 0.265428
+    },
+    {
+      "name": "random_001_k4",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_001.adj",
+        "4",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        0,
+        1
+      ],
+      "returncode": 0,
+      "observed": 0.0,
+      "pass": true,
+      "seconds": 0.268328
+    },
+    {
+      "name": "random_002_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_002.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        0,
+        1
+      ],
+      "returncode": 0,
+      "observed": 0.0,
+      "pass": true,
+      "seconds": 0.266544
+    },
+    {
+      "name": "random_002_k3",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_002.adj",
+        "3",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        0,
+        1
+      ],
+      "returncode": 0,
+      "observed": 0.0,
+      "pass": true,
+      "seconds": 0.318294
+    },
+    {
+      "name": "random_002_k4",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_002.adj",
+        "4",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        0,
+        1
+      ],
+      "returncode": 0,
+      "observed": 0.0,
+      "pass": true,
+      "seconds": 0.31708
+    },
+    {
+      "name": "random_003_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_003.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        293,
+        26
+      ],
+      "returncode": 0,
+      "observed": 11.2692,
+      "pass": true,
+      "seconds": 0.272492
+    },
+    {
+      "name": "random_003_k3",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_003.adj",
+        "3",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        1909,
+        26
+      ],
+      "returncode": 0,
+      "observed": 73.4231,
+      "pass": true,
+      "seconds": 0.327891
+    },
+    {
+      "name": "random_004_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_004.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        526,
+        35
+      ],
+      "returncode": 0,
+      "observed": 15.0286,
+      "pass": true,
+      "seconds": 0.272798
+    },
+    {
+      "name": "random_004_k3",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_004.adj",
+        "3",
+        "68",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        4528,
+        35
+      ],
+      "returncode": 0,
+      "observed": 129.371,
+      "pass": true,
+      "seconds": 0.368989
+    },
+    {
+      "name": "random_005_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_005.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        94,
+        15
+      ],
+      "returncode": 0,
+      "observed": 6.26667,
+      "pass": true,
+      "seconds": 0.288919
+    },
+    {
+      "name": "random_005_k3",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_005.adj",
+        "3",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        323,
+        15
+      ],
+      "returncode": 0,
+      "observed": 21.5333,
+      "pass": true,
+      "seconds": 0.28415
+    },
+    {
+      "name": "random_005_k4",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/random_005.adj",
+        "4",
+        "64",
+        "196",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        671,
+        15
+      ],
+      "returncode": 0,
+      "observed": 44.7333,
+      "pass": true,
+      "seconds": 0.296613
+    },
+    {
+      "name": "clique4_triangle_bridge_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/clique4_triangle_bridge.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        3,
+        2
+      ],
+      "returncode": 0,
+      "observed": 1.46429,
+      "pass": false,
+      "error": "wrong density",
+      "seconds": 0.255322
+    },
+    {
+      "name": "clique4_cycle4_bridge_k2",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/baseline-main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/clique4_cycle4_bridge.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "expected": [
+        3,
+        2
+      ],
+      "returncode": 0,
+      "observed": 1.41477,
+      "pass": false,
+      "error": "wrong density",
+      "seconds": 0.243407
+    }
+  ]
+}

@@ -1,0 +1,423 @@
+diff --git a/opt-truss-decomp-offload/CMakeLists.txt b/opt-truss-decomp-offload/CMakeLists.txt
+index 28ac7ea..70edfc8 100644
+--- a/opt-truss-decomp-offload/CMakeLists.txt
++++ b/opt-truss-decomp-offload/CMakeLists.txt
+@@ -15,9 +15,8 @@ option(USE_TCMALLOC "use tcmalloc" OFF)
+ option(BUILD_CPU "build on cpu" OFF)
+ 
+ find_package(OpenMP)
+-find_package(TBB REQUIRED)
+-include_directories(${TBB_INCLUDE_DIRS})
+-link_libraries(${TBB_LIBRARIES})
++# The artifact only used TBB for one parallel_sort call; the validation build
++# uses std::sort so a retired TBB release is not a hard dependency.
+ if (OPENMP_FOUND)
+     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+@@ -74,7 +73,8 @@ endif ()
+ if (CUDA_FOUND)
+     message("--- CUDA Found, Toolkit Path: ${CUDA_TOOLKIT_ROOT_DIR}/")
+     include_directories(${CUDA_TOOLKIT_ROOT_DIR}/include) # locate libraries installed with toolkit, e.g, "thrust"
+-    include_directories(${CMAKE_SOURCE_DIR}/../dependencies/cub)
++    # CUDA 12 ships a compatible CUB; including the artifact's old bundled CUB
++    # causes duplicate definitions through Thrust.
+     include_directories(${CMAKE_SOURCE_DIR}/../dependencies/moderngpu/src)
+ 
+     # modify options globally
+@@ -131,4 +131,3 @@ if (CUDA_FOUND)
+     endforeach ()
+ endif ()
+ 
+-
+diff --git a/opt-truss-decomp-offload/cuda_tc.cu b/opt-truss-decomp-offload/cuda_tc.cu
+index acbc6d8..0b5acd2 100644
+--- a/opt-truss-decomp-offload/cuda_tc.cu
++++ b/opt-truss-decomp-offload/cuda_tc.cu
+@@ -37,8 +37,9 @@ __global__ void bmp_kernel(uint32_t *d_offsets, /*card: |V|+1*/
+         node_id = atomicAdd(vertex_count, 1); /*get current vertex id*/
+         start_src = d_offsets[node_id];
+         end_src = d_offsets[node_id + 1];
+-        start_src_in_bitmap = d_dsts[start_src] / elem_bits;
+-        end_src_in_bitmap = (start_src == end_src) ? d_dsts[start_src] / elem_bits : d_dsts[end_src - 1] / elem_bits;
++        // Isolated vertices have no valid adjacency entry at start_src.
++        start_src_in_bitmap = start_src < end_src ? d_dsts[start_src] / elem_bits : 0;
++        end_src_in_bitmap = start_src < end_src ? d_dsts[end_src - 1] / elem_bits : 0;
+     } else if (tid == tnum - 1) {
+         uint32_t temp = 0;
+         asm("mov.u32 %0, %smid;" : "=r"(sm_id));
+@@ -94,7 +95,7 @@ __global__ void bmp_kernel(uint32_t *d_offsets, /*card: |V|+1*/
+     __syncthreads();
+ 
+     /*clean the bitmap*/
+-    if (end_src_in_bitmap - start_src_in_bitmap + 1 <= end_src - start_src) {
++    if (start_src < end_src && end_src_in_bitmap - start_src_in_bitmap + 1 <= end_src - start_src) {
+         for (uint32_t idx = start_src_in_bitmap + tid; idx <= end_src_in_bitmap; idx += tnum) {
+             bitmap[idx] = 0;
+         }
+@@ -139,9 +140,9 @@ __global__ void bmp_bsr_kernel(uint32_t *d_offsets, /*card: |V|+1*/
+         u = atomicAdd(vertex_count, 1); /*get current vertex id*/
+         off_u = d_offsets[u];
+         off_u_plus_one = d_offsets[u + 1];
+-        start_src_in_bitmap = d_dsts[off_u] / elem_bits;
+-        end_src_in_bitmap = (off_u == off_u_plus_one) ? d_dsts[off_u] / elem_bits :
+-                            d_dsts[off_u_plus_one - 1] / elem_bits;
++        // In particular, trailing isolated rows point one past d_dsts.
++        start_src_in_bitmap = off_u < off_u_plus_one ? d_dsts[off_u] / elem_bits : 0;
++        end_src_in_bitmap = off_u < off_u_plus_one ? d_dsts[off_u_plus_one - 1] / elem_bits : 0;
+     } else if (tid == num_threads - 1) {
+         uint32_t temp = 0;
+         asm("mov.u32 %0, %smid;" : "=r"(sm_id));
+@@ -201,7 +202,7 @@ __global__ void bmp_bsr_kernel(uint32_t *d_offsets, /*card: |V|+1*/
+     __syncthreads();
+ 
+     /*clean the bitmap*/
+-    if (end_src_in_bitmap - start_src_in_bitmap + 1 <= off_u_plus_one - off_u) {
++    if (off_u < off_u_plus_one && end_src_in_bitmap - start_src_in_bitmap + 1 <= off_u_plus_one - off_u) {
+         for (uint32_t idx = start_src_in_bitmap + tid; idx <= end_src_in_bitmap; idx += num_threads) {
+             bitmap[idx] = 0;
+         }
+@@ -277,7 +278,7 @@ void invoke_tc_bmp_gpu(graph_t *g, int *edge_sup) {
+     const uint32_t num_words_bmp = (g->n + elem_bits - 1) / elem_bits;
+     const uint32_t num_word_bmp_idx = (num_words_bmp + BITMAP_SCALE - 1) / BITMAP_SCALE;
+     uint32_t block_size = 1024; // maximally reduce the number of bitmaps
+-    dim3 t_dimension(WARP_SIZE, block_size / WARP_SIZE); /*2-D*/
++    dim3 t_dimension(APP_WARP_SIZE, block_size / APP_WARP_SIZE); /*2-D*/
+     CUDAContext context;
+     auto conc_blocks_per_SM = context.GetConCBlocks(block_size);
+ #ifndef BSR_OPT
+@@ -308,4 +309,4 @@ void invoke_tc_bmp_gpu(graph_t *g, int *edge_sup) {
+     ZLCudaFree(edge_sup_gpu, &mem_stat);
+     log_info("Free memory, Time: %.9lfs", timer.elapsed());
+     log_info("End-To-End Time: %.9lfs", total_timer.elapsed());
+-}
+\ No newline at end of file
++}
+diff --git a/opt-truss-decomp-offload/main.cu b/opt-truss-decomp-offload/main.cu
+index 0a2a42d..6d1c1c7 100644
+--- a/opt-truss-decomp-offload/main.cu
++++ b/opt-truss-decomp-offload/main.cu
+@@ -1,5 +1,6 @@
+ #include <climits>
+ #include <cassert>
++#include <cstdlib>
+ 
+ #include <chrono>
+ #include <sstream>
+@@ -20,8 +21,8 @@
+ 
+ int main(int argc, char *argv[]) {
+     setlocale(LC_NUMERIC, "");
+-    if (argc < 2) {
+-        fprintf(stderr, "%s <Graph file>\n", argv[0]);
++    if (argc < 3) {
++        fprintf(stderr, "%s <Graph directory> <ordering>\n", argv[0]);
+         exit(1);
+     }
+ 
+@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
+     log_info("Algorithm name: %s", algorithm_name.c_str());
+     read_env();
+ 
+-    graph_t g;
++    graph_t g{};
+ 
+     //load the graph from file
+     Graph yche_graph(argv[1]);
+@@ -56,6 +57,21 @@ int main(int argc, char *argv[]) {
+     g.n = yche_graph.nodemax;
+     g.m = yche_graph.edgemax;
+ 
++    // There is no peeling work for an edgeless graph. Avoid zero-grid CUDA
++    // launches and searching an all-zero level-offset array past its start.
++    if (g.m == 0) {
++        std::ofstream histogram(string(argv[1]) + "/ktruss-" + algorithm_name + ".histogram");
++        histogram << "[]\n";
++        if (const char *path = std::getenv("ACCTD_EDGE_OUTPUT")) {
++            std::ofstream result(path);
++            if (!result) return 1;
++        }
++        log_info("Total #Edges: 0");
++        log_info("Max-truss: 0; #Edges in Max-truss: 0");
++        free_graph(&g);
++        return histogram ? 0 : 1;
++    }
++
+     string reorder_method(argv[2]);
+ 
+     vector<int32_t> new_vid_dict;
+@@ -73,6 +89,10 @@ int main(int argc, char *argv[]) {
+     get_eid_timer.reset();
+     //Populate the edge list array
+     getEidAndEdgeList(&g, edgeIdToEdge);
++    // Preserve the original edge order before the CPU/GPU handoff compacts it.
++    const char *edge_output = std::getenv("ACCTD_EDGE_OUTPUT");
++    std::vector<Edge> original_edges;
++    if (edge_output) original_edges.assign(edgeIdToEdge, edgeIdToEdge + org_num_edges);
+     log_info("Init Eid Time: %.9lf s", get_eid_timer.elapsed());
+     get_eid_timer.reset();
+ 
+@@ -149,6 +169,17 @@ int main(int argc, char *argv[]) {
+     }
+     log_info("Finish Constructing Final Results..., Recovery Time: %.9lfs", recovery_timer.elapsed());
+     display_stats(final_result_output, org_num_edges, output_dir);
++    if (edge_output) {
++        std::ofstream result(edge_output);
++        for (long i = 0; i < org_num_edges; ++i) {
++            result << original_edges[i].u << ' ' << original_edges[i].v << ' '
++                   << final_result_output[i] + 2 << '\n';
++        }
++        if (!result) {
++            fprintf(stderr, "Cannot write per-edge truss output: %s\n", edge_output);
++            return 1;
++        }
++    }
+     log_info("Finish Checking, ET: %.9lfs", recovery_timer.elapsed_and_reset());
+ 
+     //Free memory
+diff --git a/opt-truss-decomp-offload/pkt_cuda_experimental.cu b/opt-truss-decomp-offload/pkt_cuda_experimental.cu
+index 8214c31..6949fca 100644
+--- a/opt-truss-decomp-offload/pkt_cuda_experimental.cu
++++ b/opt-truss-decomp-offload/pkt_cuda_experimental.cu
+@@ -5,6 +5,8 @@
+ #include <omp.h>
+ 
+ #include <functional>
++#include <cstdlib>
++#include <fstream>
+ #include <iostream>
+ #include <unordered_map>
+ #include <climits>
+@@ -202,14 +204,14 @@ void warp_detect_deleted_edges(
+         eid_t *eid, bool *old_processed,
+         eid_t *histogram, bool *focus) {
+ 
+-    __shared__ uint32_t cnts[WARPS_PER_BLOCK];
++    __shared__ uint32_t cnts[APP_WARPS_PER_BLOCK];
+ 
+     auto gtid = threadIdx.x + blockIdx.x * blockDim.x;
+     auto gtnum = blockDim.x * gridDim.x;
+-    auto gwid = gtid >> WARP_BITS;
+-    auto gwnum = gtnum >> WARP_BITS;
+-    auto lane = threadIdx.x & WARP_MASK;
+-    auto lwid = threadIdx.x >> WARP_BITS;
++    auto gwid = gtid >> APP_WARP_BITS;
++    auto gwnum = gtnum >> APP_WARP_BITS;
++    auto lane = threadIdx.x & APP_WARP_MASK;
++    auto lwid = threadIdx.x >> APP_WARP_BITS;
+ 
+     for (auto u = gwid; u < old_offset_cnt; u += gwnum) {
+         if (0 == lane) cnts[lwid] = 0;
+@@ -217,7 +219,7 @@ void warp_detect_deleted_edges(
+ 
+         auto start = old_offsets[u];
+         auto end = old_offsets[u + 1];
+-        for (auto v_idx = start + lane; v_idx < end; v_idx += WARP_SIZE) {
++        for (auto v_idx = start + lane; v_idx < end; v_idx += APP_WARP_SIZE) {
+             auto target_edge_idx = eid[v_idx];
+             focus[v_idx] = !old_processed[target_edge_idx];
+             if (focus[v_idx])
+@@ -432,7 +434,7 @@ void PKT_SubLevelTCBased(
+ 
+     /* TC-based Support Updates */
+     block_size = 1024;
+-    dim3 t_dimension(WARP_SIZE, block_size / WARP_SIZE); /*2-D*/
++    dim3 t_dimension(APP_WARP_SIZE, block_size / APP_WARP_SIZE); /*2-D*/
+     cudaMemset(vertex_count, 0, sizeof(uint32_t));
+ 
+ #ifndef DISABLE_BSR
+@@ -632,6 +634,7 @@ void PrepareCSRELEidQueues(graph_t *g, graph_t &g_cuda, Edge *edgeIdToEdge, CUDA
+ 
+     // 2nd: Processed.
+     ZLCudaMalloc(&processed, sizeof(bool) * edge_num, mem_stat);
++    checkCudaErrors(cudaMemset(processed, 0, sizeof(bool) * edge_num));
+ 
+     // 3rd: Queue Related.
+     ZLCudaMalloc(&next_cnt, sizeof(uint32_t), mem_stat);
+@@ -639,6 +642,11 @@ void PrepareCSRELEidQueues(graph_t *g, graph_t &g_cuda, Edge *edgeIdToEdge, CUDA
+     ZLCudaMalloc(&next, sizeof(int) * edge_num, mem_stat);
+     ZLCudaMalloc(&inCurr, sizeof(bool) * edge_num, mem_stat);
+     ZLCudaMalloc(&inNext, sizeof(bool) * edge_num, mem_stat);
++    // Managed allocations can reuse storage from triangle counting. Stale
++    // membership bits cause PeelTriangle to skip live edges or count a
++    // triangle as though another edge were already in the current frontier.
++    checkCudaErrors(cudaMemset(inCurr, 0, sizeof(bool) * edge_num));
++    checkCudaErrors(cudaMemset(inNext, 0, sizeof(bool) * edge_num));
+ 
+     // 4th: Keep the edge offset mapping.
+     long grid_size = (edge_num + BLOCK_SIZE - 1) / BLOCK_SIZE;
+@@ -666,6 +674,14 @@ void PrepareBucket(InBucketWinType *&in_bucket_window_,
+ void PKT_cuda(
+         graph_t *g, eid_t *edge_off_origin_cpu, int *&EdgeSupport, Edge *edgeIdToEdge, int shrink_factor,
+         int *output, eid_t *level_start_pos, ZLCUDAMemStat *mem_stat, ZLCUDATimer *time_stat, int level) {
++    if (const char *path = std::getenv("ACCTD_SUPPORT_OUTPUT")) {
++        checkCudaErrors(cudaDeviceSynchronize());
++        std::ofstream support(path);
++        for (long i = 0; i < g->m / 2; ++i) {
++            support << edgeIdToEdge[i].u << ' ' << edgeIdToEdge[i].v << ' '
++                    << EdgeSupport[i] << '\n';
++        }
++    }
+     extern double tc_time;
+     Timer scan_timer, sub_process_timer, copy_timer, tc_timer, shrink_timer, prepare_timer;
+     double scan_time = 0, sub_process_time = 0, copy_time = 0, shrink_time = 0, prepare_time = 0, penalty_tc_time = 0;
+@@ -913,4 +929,4 @@ void PKT_cuda(
+     log_info("TC stat: %s", ss2.str().c_str());
+     log_info("Update processed time: %.4f s.", process_update_time);
+     log_info("Max mem size: %'lld Bytes.", mem_stat->get_max_use());
+-}
+\ No newline at end of file
++}
+diff --git a/opt-truss-decomp-offload/pkt_inter_based_sup_updates.cu b/opt-truss-decomp-offload/pkt_inter_based_sup_updates.cu
+index d33fa39..25b68b5 100644
+--- a/opt-truss-decomp-offload/pkt_inter_based_sup_updates.cu
++++ b/opt-truss-decomp-offload/pkt_inter_based_sup_updates.cu
+@@ -24,8 +24,9 @@ __global__ void bmp_update_next(uint32_t *d_offsets, int32_t *d_dsts,
+         node_id = atomicAdd(vertex_count, 1); /*get current vertex id*/
+         start_src = d_offsets[node_id];
+         end_src = d_offsets[node_id + 1];
+-        start_src_in_bitmap = d_dsts[start_src] / elem_bits;
+-        end_src_in_bitmap = (start_src == end_src) ? d_dsts[start_src] / elem_bits : d_dsts[end_src - 1] / elem_bits;
++        // Isolated vertices have no valid adjacency entry at start_src.
++        start_src_in_bitmap = start_src < end_src ? d_dsts[start_src] / elem_bits : 0;
++        end_src_in_bitmap = start_src < end_src ? d_dsts[end_src - 1] / elem_bits : 0;
+     } else if (tid == tnum - 1) {
+         uint32_t temp = 0;
+         asm("mov.u32 %0, %smid;" : "=r"(sm_id));
+@@ -102,7 +103,7 @@ __global__ void bmp_update_next(uint32_t *d_offsets, int32_t *d_dsts,
+     __syncthreads();
+ 
+     /*clean the bitmap*/
+-    if (end_src_in_bitmap - start_src_in_bitmap + 1 <= end_src - start_src) {
++    if (start_src < end_src && end_src_in_bitmap - start_src_in_bitmap + 1 <= end_src - start_src) {
+         for (uint32_t idx = start_src_in_bitmap + tid; idx <= end_src_in_bitmap; idx += tnum) {
+             bitmap[idx] = 0;
+         }
+@@ -142,9 +143,9 @@ __global__ void bmp_bsr_update_next(uint32_t *d_offsets, int32_t *d_dsts,
+         u = atomicAdd(vertex_count, 1); /*get current vertex id*/
+         off_u = d_offsets[u];
+         off_u_plus_one = d_offsets[u + 1];
+-        start_src_in_bitmap = d_dsts[off_u] / elem_bits;
+-        end_src_in_bitmap = (off_u == off_u_plus_one) ? d_dsts[off_u] / elem_bits :
+-                            d_dsts[off_u_plus_one - 1] / elem_bits;
++        // In particular, trailing isolated rows point one past d_dsts.
++        start_src_in_bitmap = off_u < off_u_plus_one ? d_dsts[off_u] / elem_bits : 0;
++        end_src_in_bitmap = off_u < off_u_plus_one ? d_dsts[off_u_plus_one - 1] / elem_bits : 0;
+     } else if (tid == num_threads - 1) {
+         uint32_t temp = 0;
+         asm("mov.u32 %0, %smid;" : "=r"(sm_id));
+@@ -228,7 +229,7 @@ __global__ void bmp_bsr_update_next(uint32_t *d_offsets, int32_t *d_dsts,
+     __syncthreads();
+ 
+     /*clean the bitmap*/
+-    if (end_src_in_bitmap - start_src_in_bitmap + 1 <= off_u_plus_one - off_u) {
++    if (off_u < off_u_plus_one && end_src_in_bitmap - start_src_in_bitmap + 1 <= off_u_plus_one - off_u) {
+         for (uint32_t idx = start_src_in_bitmap + tid; idx <= end_src_in_bitmap; idx += num_threads) {
+             bitmap[idx] = 0;
+         }
+diff --git a/opt-truss-decomp-offload/reordering_utils/reorder_utils.cpp b/opt-truss-decomp-offload/reordering_utils/reorder_utils.cpp
+index f89ddcd..b10fc36 100644
+--- a/opt-truss-decomp-offload/reordering_utils/reorder_utils.cpp
++++ b/opt-truss-decomp-offload/reordering_utils/reorder_utils.cpp
+@@ -142,7 +142,7 @@ void ReorderDegDescending(graph_t &g, vector<int32_t> &new_vid_dict, vector<int3
+ 
+ #ifdef TBB
+     log_info("Use TBB parallel sort");
+-    tbb::parallel_sort(begin(old_vid_dict), end(old_vid_dict),
++    std::sort(begin(old_vid_dict), end(old_vid_dict),
+                        [&g](int l, int r) -> bool { return g.degree[l] > g.degree[r]; });
+ #else
+     log_info("Use parallel sort (parasort)");
+@@ -198,4 +198,4 @@ void ReorderWrapper(graph_t &g, string dir, string reorder_method, vector<int32_
+         log_info("Unknown Method: %s, Keep the orginal ordering...", reorder_method.c_str());
+     }
+     log_info("Total Reordering Time: %.9lf s", timer.elapsed());
+-}
+\ No newline at end of file
++}
+diff --git a/opt-truss-decomp-offload/util/cuda/cuda_config.h b/opt-truss-decomp-offload/util/cuda/cuda_config.h
+index 991f152..59d0a3c 100644
+--- a/opt-truss-decomp-offload/util/cuda/cuda_config.h
++++ b/opt-truss-decomp-offload/util/cuda/cuda_config.h
+@@ -5,9 +5,9 @@
+ #pragma once
+ 
+ /*CUDA configuration*/
+-#define WARP_BITS   (5)
+-#define WARP_SIZE   (1<<WARP_BITS)
+-#define WARP_MASK   (WARP_SIZE-1)
++#define APP_WARP_BITS   (5)
++#define APP_WARP_SIZE   (1<<APP_WARP_BITS)
++#define APP_WARP_MASK   (APP_WARP_SIZE-1)
+ #define BLOCK_SIZE  (256)  /*default block size*/
+-#define WARPS_PER_BLOCK (BLOCK_SIZE/WARP_SIZE)
++#define APP_WARPS_PER_BLOCK (BLOCK_SIZE/APP_WARP_SIZE)
+ #define GRID_SIZE   (1024) /*default grid size*/
+diff --git a/opt-truss-decomp-offload/util/cuda/cuda_util.h b/opt-truss-decomp-offload/util/cuda/cuda_util.h
+index 840b604..a3654b4 100644
+--- a/opt-truss-decomp-offload/util/cuda/cuda_util.h
++++ b/opt-truss-decomp-offload/util/cuda/cuda_util.h
+@@ -5,6 +5,8 @@
+ #ifndef CUDA_UTIL_H
+ #define CUDA_UTIL_H
+ 
++#include <cstdint>
++
+ #ifdef __JETBRAINS_IDE__
+ 
+ #include "../../cuda_fake/fake.h"
+@@ -183,4 +185,3 @@ public:
+ /*---- 5. CUDA timing functions end ----*/
+ 
+ #endif
+-
+diff --git a/opt-truss-decomp-offload/util/graph.cpp b/opt-truss-decomp-offload/util/graph.cpp
+index b06c982..644e9c4 100644
+--- a/opt-truss-decomp-offload/util/graph.cpp
++++ b/opt-truss-decomp-offload/util/graph.cpp
+@@ -163,7 +163,8 @@ void Graph::ReadDegree() {
+              FormatWithCommas(edgemax).c_str());
+ 
+     degree.resize(static_cast<unsigned long>(nodemax));
+-    deg_file.read(reinterpret_cast<char *>(&degree.front()), sizeof(int) * nodemax);
++    if (nodemax != 0)
++        deg_file.read(reinterpret_cast<char *>(degree.data()), sizeof(int) * nodemax);
+ 
+     auto end = high_resolution_clock::now();
+     log_info("read degree file time: %.3lf s", duration_cast<milliseconds>(end - start).count() / 1000.0);
+@@ -179,7 +180,8 @@ void Graph::ReadAdjacencyList() {
+ 
+     string dst_v_file_name = dir + string("/b_adj.bin");
+     auto dst_v_fd = open(dst_v_file_name.c_str(), O_RDONLY, S_IRUSR | S_IWUSR);
+-    int *buffer = (int *) mmap(0, static_cast<uint64_t >(edgemax) * 4u, PROT_READ, MAP_PRIVATE, dst_v_fd, 0);
++    int *buffer = edgemax == 0 ? nullptr :
++        (int *) mmap(0, static_cast<uint64_t >(edgemax) * 4u, PROT_READ, MAP_PRIVATE, dst_v_fd, 0);
+ 
+     // prefix sum
+     node_off[0] = 0;
+@@ -197,7 +199,8 @@ void Graph::ReadAdjacencyList() {
+         // inclusive
+         degree[i]++;
+     }
+-    munmap(buffer, static_cast<uint64_t >(edgemax) * 4u);
++    if (edgemax != 0) munmap(buffer, static_cast<uint64_t >(edgemax) * 4u);
++    close(dst_v_fd);
+ 
+ #ifdef VERIFY_INPUT
+     // Verify.
+diff --git a/opt-truss-decomp-offload/util/graph.h b/opt-truss-decomp-offload/util/graph.h
+index 162da45..6ea1d90 100644
+--- a/opt-truss-decomp-offload/util/graph.h
++++ b/opt-truss-decomp-offload/util/graph.h
+@@ -1,10 +1,10 @@
+ #pragma once
+ 
++#include <cstdint>
++#include <string>
+ #include <unordered_map>
+ #include <vector>
+ 
+-#include <tbb/concurrent_unordered_map.h>
+-#include <tbb/concurrent_hash_map.h>
+ 
+ using namespace std;
+ 

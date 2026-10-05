@@ -1,0 +1,170 @@
+{
+  "status": "passed",
+  "totals": {
+    "numerical_checks": 28522,
+    "cuda_sanitizer_checks": 92,
+    "rejection_checks": 162,
+    "prefix_spread_checks": 62843,
+    "core_state_checks": 1136512,
+    "cuda_sanitizer_state_checks": 1104128
+  },
+  "suites": {
+    "numerical": {
+      "status": "passed",
+      "cases": 13874,
+      "checks": 13874,
+      "prefix_checks": 31153,
+      "core_state_checks": 0,
+      "quality_checks": 13855,
+      "minimum_quality_ratio": 0.6666666666666666,
+      "calibration_checks": 13855,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 25.638
+    },
+    "core": {
+      "status": "passed",
+      "cases": 259,
+      "checks": 259,
+      "prefix_checks": 0,
+      "core_state_checks": 568256,
+      "quality_checks": 0,
+      "minimum_quality_ratio": null,
+      "calibration_checks": 0,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 0.894
+    },
+    "repeat": {
+      "status": "passed",
+      "cases": 190,
+      "checks": 190,
+      "prefix_checks": 435,
+      "core_state_checks": 0,
+      "quality_checks": 95,
+      "minimum_quality_ratio": 0.9824561403508771,
+      "calibration_checks": 95,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 17.47
+    },
+    "memcheck": {
+      "status": "passed",
+      "cases": 23,
+      "checks": 23,
+      "prefix_checks": 25,
+      "core_state_checks": 276032,
+      "quality_checks": 4,
+      "minimum_quality_ratio": 0.9824561403508771,
+      "calibration_checks": 4,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 0.545
+    },
+    "initcheck": {
+      "status": "passed",
+      "cases": 23,
+      "checks": 23,
+      "prefix_checks": 25,
+      "core_state_checks": 276032,
+      "quality_checks": 4,
+      "minimum_quality_ratio": 0.9824561403508771,
+      "calibration_checks": 4,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 0.544
+    },
+    "racecheck": {
+      "status": "passed",
+      "cases": 23,
+      "checks": 23,
+      "prefix_checks": 25,
+      "core_state_checks": 276032,
+      "quality_checks": 4,
+      "minimum_quality_ratio": 0.9824561403508771,
+      "calibration_checks": 4,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 2.35
+    },
+    "synccheck": {
+      "status": "passed",
+      "cases": 23,
+      "checks": 23,
+      "prefix_checks": 25,
+      "core_state_checks": 276032,
+      "quality_checks": 4,
+      "minimum_quality_ratio": 0.9824561403508771,
+      "calibration_checks": 4,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 0.494
+    },
+    "asan": {
+      "status": "passed",
+      "cases": 13874,
+      "checks": 13874,
+      "prefix_checks": 31153,
+      "core_state_checks": 0,
+      "quality_checks": 13855,
+      "minimum_quality_ratio": 0.6666666666666666,
+      "calibration_checks": 13855,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 26.468
+    },
+    "asan-core": {
+      "status": "passed",
+      "cases": 259,
+      "checks": 259,
+      "prefix_checks": 0,
+      "core_state_checks": 568256,
+      "quality_checks": 0,
+      "minimum_quality_ratio": null,
+      "calibration_checks": 0,
+      "failures": 0,
+      "process_exit": 0,
+      "seconds": 0.96
+    },
+    "cli": {
+      "status": "passed",
+      "positive_checks": 16,
+      "prefix_checks": 26,
+      "rejections": 54,
+      "failures": 0,
+      "binary_sha256": "2999018be451d0b994054115289cae5174e29e6727cdfffc4589809cd0f94bad"
+    },
+    "asan-cli": {
+      "status": "passed",
+      "positive_checks": 16,
+      "prefix_checks": 26,
+      "rejections": 54,
+      "failures": 0,
+      "binary_sha256": "2ffca10c66ca7f7d89e126cb0000979d5d21bd1ab3023fcc90d38861531ac793"
+    }
+  },
+  "production": {
+    "status": "passed",
+    "checks": 34,
+    "prefix_checks": 50,
+    "rejections": 54,
+    "failures": 0,
+    "original_fixture_checks": 18,
+    "binary_sha256": "16068b927f8147edece2292ab2c8fe2660527c804aad796a3de7521660b841b2",
+    "cli": {
+      "status": "passed",
+      "positive_checks": 16,
+      "prefix_checks": 26,
+      "rejections": 54,
+      "failures": 0,
+      "binary_sha256": "16068b927f8147edece2292ab2c8fe2660527c804aad796a3de7521660b841b2"
+    }
+  },
+  "consistency": {
+    "normal_asan_cases": 13874,
+    "normal_asan_core_cases": 259,
+    "repeated_stress_cases": 38,
+    "repeated_equalities": 152
+  },
+  "gpu": "physical GPU 1, NVIDIA RTX 6000 Ada Generation (SM 89)"
+}

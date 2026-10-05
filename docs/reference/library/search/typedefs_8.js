@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['pggcoffsetview_0',['PggcOffsetView',['../d8/d72/namespacegraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03.html#a7619bc63240048e3433c2e8bdc9d8157',1,'graphmine::detail::anonymous_namespace{pggc.cpp}']]],
-  ['pggcvertexview_1',['PggcVertexView',['../d8/d72/namespacegraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03.html#adece82510d059d8bbbd939092c1e6e55',1,'graphmine::detail::anonymous_namespace{pggc.cpp}']]],
-  ['pggcweightview_2',['PggcWeightView',['../d8/d72/namespacegraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03.html#a5ff9aa65e55b194c5b45b85751db5af8',1,'graphmine::detail::anonymous_namespace{pggc.cpp}']]]
+  ['motifedgeinfov1_0',['MotifEdgeInfoV1',['../d0/def/namespacecorelib.html#ae62e0399c4f143b30728ab6ed6e2ba15',1,'corelib']]],
+  ['motifinstance_1',['MotifInstance',['../d8/d4c/namespacegraphmine.html#a7ab4ff288e0811d1239fc1d87a201c1a',1,'graphmine']]]
 ];

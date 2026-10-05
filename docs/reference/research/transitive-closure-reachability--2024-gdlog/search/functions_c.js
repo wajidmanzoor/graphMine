@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['shrink_5findex_5fmap_0',['shrink_index_map',['../dd/da5/relation_8cuh.html#a6d79995c4cc246dd6dcc6b0c8a314a50',1,'shrink_index_map(GHashRelContainer *target, MEntity *old_index_map, tuple_size_t old_index_map_size):&#160;relation.cu'],['../d8/d61/relation_8cu.html#a6d79995c4cc246dd6dcc6b0c8a314a50',1,'shrink_index_map(GHashRelContainer *target, MEntity *old_index_map, tuple_size_t old_index_map_size):&#160;relation.cu']]],
+  ['sort_5ftuple_5fby_5fhash_1',['sort_tuple_by_hash',['../d8/def/tuple_8cuh.html#ac259b7ef0bd6d7eaa6f105288ff67059',1,'sort_tuple_by_hash(tuple_type *tuples, tuple_size_t rows, tuple_size_t arity, tuple_size_t index_column_size, int grid_size, int block_size):&#160;tuple.cu'],['../d2/dc5/tuple_8cu.html#ac259b7ef0bd6d7eaa6f105288ff67059',1,'sort_tuple_by_hash(tuple_type *tuples, tuple_size_t rows, tuple_size_t arity, tuple_size_t index_column_size, int grid_size, int block_size):&#160;tuple.cu']]],
+  ['sort_5ftuples_2',['sort_tuples',['../d8/def/tuple_8cuh.html#ae02c184c17626b127b420b72dcc2b2a9',1,'sort_tuples(tuple_type *tuples, tuple_size_t rows, tuple_size_t arity, tuple_size_t index_column_size, int grid_size, int block_size):&#160;tuple.cu'],['../d2/dc5/tuple_8cu.html#ae02c184c17626b127b420b72dcc2b2a9',1,'sort_tuples(tuple_type *tuples, tuple_size_t rows, tuple_size_t arity, tuple_size_t index_column_size, int grid_size, int block_size):&#160;tuple.cu']]],
+  ['start_5ftimer_3',['start_timer',['../d4/df9/structKernelTimer.html#a4e71192cd48f3235c3ef05ce8b3ac920',1,'KernelTimer']]],
+  ['stop_5ftimer_4',['stop_timer',['../d4/df9/structKernelTimer.html#a6a6c7c2f5e4c7ff373f421227ca01606',1,'KernelTimer']]]
+];

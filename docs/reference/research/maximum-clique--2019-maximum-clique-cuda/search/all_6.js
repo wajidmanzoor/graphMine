@@ -11,7 +11,8 @@ var searchData=
   ['find_5fcliques_2ec_8',['find_cliques.c',['../d7/d2b/find__cliques_8c.html',1,'']]],
   ['find_5ffull_5frows_5fcuda_9',['find_full_rows_cuda',['../d2/d82/motzkin__cuda_8cu.html#a357cfd7158031d78348aae2a38548977',1,'motzkin_cuda.cu']]],
   ['fix_5fzeroes_10',['fix_zeroes',['../dd/dc9/motzkin_8c.html#aceae0fd11a7be71c016ae6fdb05ffc29',1,'motzkin.c']]],
-  ['free_5finstance_11',['free_instance',['../d2/d82/motzkin__cuda_8cu.html#a605072779e91948916aa37e711e6ec01',1,'motzkin_cuda.cu']]],
-  ['full_5frow_12',['full_row',['../da/d64/structisOne__data.html#a11f23b14fdf89a90a2e60eb400e6b7ec',1,'isOne_data']]],
-  ['fullrowsgpu_13',['fullrowsGPU',['../d2/d82/motzkin__cuda_8cu.html#ad427347f0f35f2bdf5cccbfcfc23c5c1',1,'motzkin_cuda.cu']]]
+  ['float_5foption_11',['float_option',['../d7/d2b/find__cliques_8c.html#a624ee04b3bdfe8138d81bf9774142f51',1,'find_cliques.c']]],
+  ['free_5finstance_12',['free_instance',['../d2/d82/motzkin__cuda_8cu.html#a605072779e91948916aa37e711e6ec01',1,'motzkin_cuda.cu']]],
+  ['full_5frow_13',['full_row',['../da/d64/structisOne__data.html#a11f23b14fdf89a90a2e60eb400e6b7ec',1,'isOne_data']]],
+  ['fullrowsgpu_14',['fullrowsGPU',['../d2/d82/motzkin__cuda_8cu.html#ad427347f0f35f2bdf5cccbfcfc23c5c1',1,'motzkin_cuda.cu']]]
 ];

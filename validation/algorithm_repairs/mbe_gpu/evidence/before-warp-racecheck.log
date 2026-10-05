@@ -1,0 +1,9 @@
+========= COMPUTE-SANITIZER
+========= Warning: Race reported between Write access at IterFinderKernel(CSRBiGraph, int *, unsigned long long *, int *, double)+0x2050 in GpuUtil.cuh:229
+=========     and Read access at ncwarpEj+0x2250 in GpuUtil.cuh:240 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at ncwarpEj+0x2060 in GpuUtil.cuh:230
+=========     and Read access at ncwarpEj+0x2200 in GpuUtil.cuh:241 [8 hazards]
+=========     and Read access at ncwarpEj+0x2260 in GpuUtil.cuh:242 [8 hazards]
+========= 
+========= RACECHECK SUMMARY: 2 hazards displayed (0 errors, 2 warnings)

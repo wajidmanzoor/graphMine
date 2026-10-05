@@ -14,6 +14,7 @@ var queue_8cuh =
     [ "shared_queue_dequeue", "de/d23/queue_8cuh.html#a7980e354daf9c8dc544d0ea2057518db", null ],
     [ "shared_queue_enqueue", "de/d23/queue_8cuh.html#abfa719005f29c09a4d2ebaca160f80f7", null ],
     [ "shared_queue_full", "de/d23/queue_8cuh.html#acfa3b025dcf9c0659364fb28badc9f49", null ],
+    [ "shared_queue_wait_ticket", "de/d23/queue_8cuh.html#a8671d894c81dc20c9b57f73f03b761bc", null ],
     [ "waiting_blocks", "de/d23/queue_8cuh.html#a50a765a519ce961dbc82f77e9de997e2", null ],
     [ "if", "de/d23/queue_8cuh.html#abc9b6bff715227cc95d1823a2de97cfd", null ],
     [ "if", "de/d23/queue_8cuh.html#a1958ec7365ff8575f7973e15353c0121", null ],

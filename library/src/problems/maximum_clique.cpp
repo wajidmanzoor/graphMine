@@ -70,11 +70,11 @@ Provenance maximum_clique_provenance(MaximumCliqueBackend backend) {
   provenance.backend = to_string(backend);
   switch (backend) {
     case MaximumCliqueBackend::cuda_ms:
-      provenance.backend_version = "CUDA-MS artifact";
+      provenance.backend_version = "CUDA-MS artifact (2026-10-04 exact completion repair)";
       provenance.source_commit =
           "a0b6b00a1f67";
       provenance.execution_path =
-          "original CUDA-MS solver + GraphMine feasibility and coloring bound";
+          "repaired CUDA-MS relaxation + completed GPU coloring branch-and-bound + clique witness";
       break;
     case MaximumCliqueBackend::gpu_maximum_clique:
       provenance.backend_version = "GPUMaximumClique artifact";
@@ -83,10 +83,10 @@ Provenance maximum_clique_provenance(MaximumCliqueBackend backend) {
           "original parallel greedy preprocessing + clique-merging search";
       break;
     case MaximumCliqueBackend::maximum_clique_on_gpu:
-      provenance.backend_version = "Maximum-Clique-on-GPU artifact";
+      provenance.backend_version = "Maximum-Clique-on-GPU artifact (2026-10-04 repair)";
       provenance.source_commit = "62708c588219";
       provenance.execution_path =
-          "original k-core heuristic, reduction, and GPU branch-and-bound";
+          "repaired k-core preprocessing and reduction + GPU branch-and-bound with clique witness";
       break;
     case MaximumCliqueBackend::automatic:
       break;
@@ -245,10 +245,8 @@ ExecutionResult<MaximumCliqueOutput> MaximumClique::run(
         provenance, std::move(warnings));
   }
 
-  // CUDA-MS's returned relaxation mask is not a certified global upper
-  // bound. On the seeded nine-vertex regression it has size three although
-  // vertices 2, 4, 6, 7 form a four-clique. Only a proper coloring provides
-  // the common upper bound; a local relaxation must never certify optimality.
+  // Retain an independent feasibility/bound check even after exact GPU search.
+  // A relaxation support mask alone must never certify a maximum.
   const auto certified_upper = greedy_coloring_upper_bound(normalized.csr);
   if (backend.clique.size() > certified_upper) {
     return ExecutionResult<MaximumCliqueOutput>::failure(
@@ -271,8 +269,7 @@ ExecutionResult<MaximumCliqueOutput> MaximumClique::run(
   } else {
     for (const auto& clique : backend.tied_cliques) append_clique(clique);
   }
-  output.optimal = selected != MaximumCliqueBackend::cuda_ms ||
-                   output.maximum_size == certified_upper;
+  output.optimal = true;
   if (has_output(options_.optional_outputs,
                  MaximumCliqueOptionalOutput::upper_bound)) {
     output.upper_bound = certified_upper;

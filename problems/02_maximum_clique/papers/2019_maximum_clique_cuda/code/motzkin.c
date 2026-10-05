@@ -21,6 +21,9 @@
  *
  *******************************************************************************/
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include<stdio.h>
 #include<string.h>
 #include<sys/types.h>
@@ -136,6 +139,15 @@ static int is_clique_extendable(char** graph, int graph_size, t_bitmask mask, in
     return 1;
 }
 
+static int order_by_weight(const void *a, const void *b, void *context)
+{
+    const float *x = context;
+    const int u = *(const int*)a, v = *(const int*)b;
+    if (x[u] < x[v]) return 1;
+    if (x[u] > x[v]) return -1;
+    return (u > v) - (u < v);
+}
+
 static int build_clique(t_bitmask lower, t_bitmask upper, float *x, char **graph, int graph_size, int max_unsolved)
 {
     mask_zeroall(lower, graph_size);
@@ -149,16 +161,7 @@ static int build_clique(t_bitmask lower, t_bitmask upper, float *x, char **graph
 
     for(int i=0; i<graph_size; i++) order[i]=i;
 
-    int order_comp(const int *a, const int *b) {
-        if (x[*a] < x[*b])
-            return 1;
-        else if (x[*a] > x[*b])
-            return -1;
-        else
-            return 0;
-    }
-
-    qsort(order, graph_size, sizeof(int), (comparison_fn_t) order_comp);
+    qsort_r(order, graph_size, sizeof(int), order_by_weight, x);
 
 
     for(int i=0; i<graph_size; i++) if(x[order[i]]>0) {
@@ -171,7 +174,7 @@ static int build_clique(t_bitmask lower, t_bitmask upper, float *x, char **graph
             SET_BIT(lower, order[i]);
             n_lower++;
         } else {
-            if(!max_unsolved) break;
+            if(!max_unsolved) continue;
         }
     }
 
@@ -637,7 +640,7 @@ static float find_clique_atten(char **graph, int graph_size, float *res_x, int m
             max_csize=csize;
         }
 
-        n_res=add_one_to_best(all_res, all_csize, n_res, max_res, &max_sim, x, csize, graph_size);
+        if(all_res) n_res=add_one_to_best(all_res, all_csize, n_res, max_res, &max_sim, x, csize, graph_size);
 
         if(!quiet) {
             P_INT(graph_size)
@@ -786,7 +789,40 @@ float graph_clique_cuda(t_bitmask *par_res, t_bitmask *par_res_upper, char **gra
 	printf("find_clique_simplex_cuda max_unsolved: %d\n", max_unsolved);
 #endif
 
-	return find_clique_simplex_int(par_res, par_res_upper, graph, n, allowed, max_unsolved, zero, alpha, max_masks, mode, 1, 0, 0, 0, 0);
+    extern int complete_cuda_clique(char **, int, t_bitmask, t_bitmask);
+    if (!par_res || n < 0) return -1;
+    *par_res = 0;
+    if (par_res_upper) *par_res_upper = 0;
+    if (mode < MODE_REPL_UNBIASED || mode > MODE_REPL_ATTEN_AUTO ||
+        max_masks < 0 || max_unsolved < 0 || !isfinite(alpha) || !isfinite(zero)) return -1;
+    int has_edges = 0;
+    for (int v = 0; v < n; ++v) {
+        if (!graph || !graph[v]) return -1;
+        for (int u = 0; u < v; ++u) {
+            if (!!graph[v][u] != !!graph[u][v]) return -1;
+            has_edges |= graph[v][u] != 0;
+        }
+    }
+    init_cuda();
+    t_bitmask lower = 0, support = 0;
+    // Annealing may restore eliminated coordinates. Restricted searches start
+    // with no incumbent so the allowed mask is respected in every mode.
+    if (has_edges && !allowed) {
+        find_clique_simplex_int(&lower, &support, graph, n, 0, max_unsolved,
+                               zero, alpha, max_masks, mode, 1, 0, 0, 0, 0);
+        mask_free(support);
+    } else lower = mask_alloc(n);
+    if (!lower) return -1;
+    const int size = complete_cuda_clique(graph, n, allowed, lower);
+    if (size < 0) { mask_free(lower); return -1; }
+    if (par_res_upper) {
+        *par_res_upper = mask_alloc(n);
+        if (!*par_res_upper) { mask_free(lower); return -1; }
+        // The completed search certifies this size, unlike the old support mask.
+        mask_cpy(*par_res_upper, lower, n);
+    }
+    *par_res = lower;
+    return (float)size;
 }
 #endif
 

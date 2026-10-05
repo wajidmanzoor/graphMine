@@ -6,9 +6,7 @@ var motzkin__cuda_8cu =
     [ "CHECK_PERIOD", "d2/d82/motzkin__cuda_8cu.html#acc2c9940a4c9ca66578d0d924c6cfd12", null ],
     [ "DIVROUNDUP", "d2/d82/motzkin__cuda_8cu.html#a194bf734017f3ede6401b6968eaaacb8", null ],
     [ "LARGE_N", "d2/d82/motzkin__cuda_8cu.html#a796a31e5cc0a8906805534c0ba9fedd0", null ],
-    [ "MAX_CUDA_DEV", "d2/d82/motzkin__cuda_8cu.html#aae437fd8c09b8e2f3d5d2e7e9ac56410", null ],
     [ "MAX_DOUBLE_SIZE_MAT", "d2/d82/motzkin__cuda_8cu.html#ab2dc5594b0f7b4363999589f0949e2a6", null ],
-    [ "MAX_SIM_CUDA_RUNS", "d2/d82/motzkin__cuda_8cu.html#aad15bbe36efee1f6c1a74d695b3676b5", null ],
     [ "N_ITER", "d2/d82/motzkin__cuda_8cu.html#a880de1f77ef6a48f73d27a7a36c9afb5", null ],
     [ "ROW_SLICE_L", "d2/d82/motzkin__cuda_8cu.html#af07da3ec97e2b8051a0e3eb1a2ce5b36", null ],
     [ "ROW_SLICE_S", "d2/d82/motzkin__cuda_8cu.html#a7b52fa0bad9b43fca415addbdaa7e174", null ],
@@ -25,8 +23,6 @@ var motzkin__cuda_8cu =
     [ "compute_stats_cuda", "d2/d82/motzkin__cuda_8cu.html#a411d5bd7a496c3e1a1e3aa2dfd7fc554", null ],
     [ "count_untouched_cuda_clique", "d2/d82/motzkin__cuda_8cu.html#a1864b272cd1e18d27d0f9bb8ac3769c1", null ],
     [ "cuda_clique_size", "d2/d82/motzkin__cuda_8cu.html#ae0cbbe084c8d3fd82df3fa453129848e", null ],
-    [ "cuda_end", "d2/d82/motzkin__cuda_8cu.html#a1219fca53018706d771d60744da0415f", null ],
-    [ "cuda_start", "d2/d82/motzkin__cuda_8cu.html#aa59f07adb352f98379ecbece2db579e8", null ],
     [ "cudaCalloc", "d2/d82/motzkin__cuda_8cu.html#a8070b5456942485b475a07f258065a59", null ],
     [ "d_iterate", "d2/d82/motzkin__cuda_8cu.html#a0dc3b595867d7d26ce50bed3beb3a04b", null ],
     [ "elim15GPU", "d2/d82/motzkin__cuda_8cu.html#ad5e5c5bec2fb6068561734f7a6c330de", null ],
@@ -53,8 +49,6 @@ var motzkin__cuda_8cu =
     [ "iterate_cuda_clique", "d2/d82/motzkin__cuda_8cu.html#adf2d36a2435fe5a0c1cd7d806c1672e6", null ],
     [ "iterGPU", "d2/d82/motzkin__cuda_8cu.html#aca94de0572e7ffa787a6fb1c8c161d54", null ],
     [ "iterGPU_dev", "d2/d82/motzkin__cuda_8cu.html#a93b0efe3848e42990c05b2179024e5d0", null ],
-    [ "lib_constructor", "d2/d82/motzkin__cuda_8cu.html#aa4a90de3efa801cc4fd4531b9a3c5b67", null ],
-    [ "lib_destructor", "d2/d82/motzkin__cuda_8cu.html#a26fbb3722d2c751e34997ce2a28ec53a", null ],
     [ "maxdiffGPU", "d2/d82/motzkin__cuda_8cu.html#a0bf961da40be11ac15e070895c30f2cd", null ],
     [ "maxdiffGPU_dev", "d2/d82/motzkin__cuda_8cu.html#a1785b6a25c74dd09bfe15f2f47ee7e9c", null ],
     [ "mode", "d2/d82/motzkin__cuda_8cu.html#a30d3fa842d8b4d5310a8fd41aed56dd8", null ],
@@ -76,9 +70,5 @@ var motzkin__cuda_8cu =
     [ "unmapResGPU", "d2/d82/motzkin__cuda_8cu.html#a8b785ecfc3a5c8b7b6c01dc841e1f0b2", null ],
     [ "updateMapGPU", "d2/d82/motzkin__cuda_8cu.html#a55cc1c5d2c41f671dcfc51ca44387dfe", null ],
     [ "cuda_device", "d2/d82/motzkin__cuda_8cu.html#a9a044afd5ba679a5b7fe1dd71b0208d0", null ],
-    [ "d_randstates", "d2/d82/motzkin__cuda_8cu.html#a7aba0c23aa77d1f94d00d9fcaf72cd06", null ],
-    [ "dev_read_wait_lock", "d2/d82/motzkin__cuda_8cu.html#af68f4dc174c432bc255a78a9662cbf17", null ],
-    [ "dev_readcount", "d2/d82/motzkin__cuda_8cu.html#a6e883a1ea7e42305191788ad0929318f", null ],
-    [ "rand_init", "d2/d82/motzkin__cuda_8cu.html#a48f4ef018296c19be2eb3760c076305d", null ],
-    [ "threaddev", "d2/d82/motzkin__cuda_8cu.html#ac7b2ed870b095b41757b2d37f0c79f8e", null ]
+    [ "d_randstates", "d2/d82/motzkin__cuda_8cu.html#a7aba0c23aa77d1f94d00d9fcaf72cd06", null ]
 ];

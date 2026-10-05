@@ -1,0 +1,108 @@
+Generating code reference with Doxygen 1.9.8
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:81: warning: The following parameter of calculate_index_hash(GHashRelContainer *target, tuple_indexed_less cmp) is not documented:
+  parameter 'cmp'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:81: warning: found documented return type for calculate_index_hash that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:219: warning: The following parameters of copy_relation_container(GHashRelContainer *dst, GHashRelContainer *src, int grid_size, int block_size) are not documented:
+  parameter 'grid_size'
+  parameter 'block_size'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:90: warning: found documented return type for count_index_entry_size that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:155: warning: argument 'output_reorder_array' of command @param is not found in the argument list of get_join_result(GHashRelContainer *inner_table, GHashRelContainer *outer_table, int join_column_counts, tuple_generator_hook tp_gen, tuple_predicate tp_pred, int output_arity, column_type *output_raw_data, tuple_size_t *res_count_array, tuple_size_t *res_offset, JoinDirection direction)
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:155: warning: The following parameters of get_join_result(GHashRelContainer *inner_table, GHashRelContainer *outer_table, int join_column_counts, tuple_generator_hook tp_gen, tuple_predicate tp_pred, int output_arity, column_type *output_raw_data, tuple_size_t *res_count_array, tuple_size_t *res_offset, JoinDirection direction) are not documented:
+  parameter 'tp_gen'
+  parameter 'tp_pred'
+  parameter 'res_count_array'
+  parameter 'res_offset'
+  parameter 'direction'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:155: warning: found documented return type for get_join_result that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:136: warning: argument 'return' of command @param is not found in the argument list of get_join_result_size(GHashRelContainer *inner_table, GHashRelContainer *outer_table, int join_column_counts, tuple_generator_hook tp_gen, tuple_predicate tp_pred, tuple_size_t *join_result_size)
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:136: warning: The following parameters of get_join_result_size(GHashRelContainer *inner_table, GHashRelContainer *outer_table, int join_column_counts, tuple_generator_hook tp_gen, tuple_predicate tp_pred, tuple_size_t *join_result_size) are not documented:
+  parameter 'tp_gen'
+  parameter 'tp_pred'
+  parameter 'join_result_size'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:136: warning: found documented return type for get_join_result_size that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:114: warning: found documented return type for init_index_map that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:120: warning: found documented return type for init_tuples_unsorted that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:305: warning: The following parameter of load_relation(Relation *target, std::string name, int arity, column_type *data, tuple_size_t data_row_size, tuple_size_t index_column_size, int dependent_column_size, int grid_size, int block_size, bool tmp_flag=false) is not documented:
+  parameter 'tmp_flag'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:186: warning: argument 'index_columns' of command @param is not found in the argument list of load_relation_container(GHashRelContainer *target, int arity, column_type *data, tuple_size_t data_row_size, tuple_size_t index_column_size, int dependent_column_size, float index_map_load_factor, int grid_size, int block_size, float *detail_time, bool gpu_data_flag=false, bool sorted_flag=false, bool build_index_flag=true, bool tuples_array_flag=true)
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:186: warning: The following parameters of load_relation_container(GHashRelContainer *target, int arity, column_type *data, tuple_size_t data_row_size, tuple_size_t index_column_size, int dependent_column_size, float index_map_load_factor, int grid_size, int block_size, float *detail_time, bool gpu_data_flag=false, bool sorted_flag=false, bool build_index_flag=true, bool tuples_array_flag=true) are not documented:
+  parameter 'dependent_column_size'
+  parameter 'detail_time'
+  parameter 'tuples_array_flag'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:102: warning: found documented return type for shrink_index_map that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:81: warning: The following parameter of calculate_index_hash(GHashRelContainer *target, tuple_indexed_less cmp) is not documented:
+  parameter 'cmp'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:81: warning: found documented return type for calculate_index_hash that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:219: warning: The following parameters of copy_relation_container(GHashRelContainer *dst, GHashRelContainer *src, int grid_size, int block_size) are not documented:
+  parameter 'grid_size'
+  parameter 'block_size'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:90: warning: found documented return type for count_index_entry_size that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:155: warning: argument 'output_reorder_array' of command @param is not found in the argument list of get_join_result(GHashRelContainer *inner_table, GHashRelContainer *outer_table, int join_column_counts, tuple_generator_hook tp_gen, tuple_predicate tp_pred, int output_arity, column_type *output_raw_data, tuple_size_t *res_count_array, tuple_size_t *res_offset, JoinDirection direction)
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:155: warning: The following parameters of get_join_result(GHashRelContainer *inner_table, GHashRelContainer *outer_table, int join_column_counts, tuple_generator_hook tp_gen, tuple_predicate tp_pred, int output_arity, column_type *output_raw_data, tuple_size_t *res_count_array, tuple_size_t *res_offset, JoinDirection direction) are not documented:
+  parameter 'tp_gen'
+  parameter 'tp_pred'
+  parameter 'res_count_array'
+  parameter 'res_offset'
+  parameter 'direction'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:155: warning: found documented return type for get_join_result that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:136: warning: argument 'return' of command @param is not found in the argument list of get_join_result_size(GHashRelContainer *inner_table, GHashRelContainer *outer_table, int join_column_counts, tuple_generator_hook tp_gen, tuple_predicate tp_pred, tuple_size_t *join_result_size)
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:136: warning: The following parameters of get_join_result_size(GHashRelContainer *inner_table, GHashRelContainer *outer_table, int join_column_counts, tuple_generator_hook tp_gen, tuple_predicate tp_pred, tuple_size_t *join_result_size) are not documented:
+  parameter 'tp_gen'
+  parameter 'tp_pred'
+  parameter 'join_result_size'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:136: warning: found documented return type for get_join_result_size that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:114: warning: found documented return type for init_index_map that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:120: warning: found documented return type for init_tuples_unsorted that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:305: warning: The following parameter of load_relation(Relation *target, std::string name, int arity, column_type *data, tuple_size_t data_row_size, tuple_size_t index_column_size, int dependent_column_size, int grid_size, int block_size, bool tmp_flag=false) is not documented:
+  parameter 'tmp_flag'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:186: warning: argument 'index_columns' of command @param is not found in the argument list of load_relation_container(GHashRelContainer *target, int arity, column_type *data, tuple_size_t data_row_size, tuple_size_t index_column_size, int dependent_column_size, float index_map_load_factor, int grid_size, int block_size, float *detail_time, bool gpu_data_flag=false, bool sorted_flag=false, bool build_index_flag=true, bool tuples_array_flag=true)
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:186: warning: The following parameters of load_relation_container(GHashRelContainer *target, int arity, column_type *data, tuple_size_t data_row_size, tuple_size_t index_column_size, int dependent_column_size, float index_map_load_factor, int grid_size, int block_size, float *detail_time, bool gpu_data_flag=false, bool sorted_flag=false, bool build_index_flag=true, bool tuples_array_flag=true) are not documented:
+  parameter 'dependent_column_size'
+  parameter 'detail_time'
+  parameter 'tuples_array_flag'
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:102: warning: found documented return type for shrink_index_map that does not return anything
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/expansion/upstream/gdlog/include/relation.cuh:296: warning: The following parameter of Relation::flush_delta(int grid_size, int block_size, float *detail_time) is not documented:
+  parameter 'detail_time'
+Generated GraphMine library reference
+[1/36] centrality_influential_node_mining / 2021_turbobc
+[2/36] community_detection / 2026_gleiden
+[3/36] community_detection / 2026_multilevel_graph_clustering
+[4/36] graph_motif_counting / 2022_g2miner
+  Preserved upstream documentation warnings: 9
+[5/36] graph_motif_counting / 2023_graphset
+  Preserved upstream documentation warnings: 1
+[6/36] graph_motif_counting / 2024_dumato
+[7/36] k_clique_counting_enumeration / 2022_parallel_k_clique_counting
+  Preserved upstream documentation warnings: 169
+[8/36] k_clique_counting_enumeration / 2023_graphset
+  Preserved upstream documentation warnings: 1
+[9/36] k_clique_counting_enumeration / 2024_gamma
+[10/36] k_core_decomposition / 2023_accelerating_k_core_gpu
+[11/36] maximal_biclique_enumeration / 2024_cumbe
+[12/36] maximal_clique_enumeration / 2023_parallelizing_mce
+[13/36] maximal_clique_enumeration / 2024_g2_aimd
+  Preserved upstream documentation warnings: 3
+[14/36] maximal_clique_enumeration / 2026_rdmce
+[15/36] maximum_clique / 2019_maximum_clique_cuda
+[16/36] maximum_clique / 2023_maximum_clique_enumeration_gpu
+[17/36] maximum_clique / 2024_maximum_clique_many_core_gpu
+[18/36] quasi_clique_mining / 2025_cuqc
+[19/36] subgraph_isomorphism / 2026_gmatch
+[20/36] temporal_motif_mining / 2024_everest
+  Preserved upstream documentation warnings: 8
+[21/36] temporal_motif_mining / 2025_mayura
+  Preserved upstream documentation warnings: 8
+[22/36] triangle_counting_listing / 2025_tot_tensor_cores
+[23/36] triangle_counting_listing / 2025_wetric
+[24/36] triangle_counting_listing / 2026_edtc
+  Preserved upstream documentation warnings: 3
+[25/36] max_flow_min_cut / 2025_ecl_maxflow
+[26/36] butterfly_counting_bipartite / 2022_g2miner_reuse
+  Preserved upstream documentation warnings: 9
+[27/36] bipartite_matching_assignment / 2019_hungariangpu
+[28/36] transitive_closure_reachability / 2024_gdlog
+  Preserved upstream documentation warnings: 64
+[29/36] connected_components / 2023_eclscc
+Generated 36 isolated research artifact references
+Normalized 4,706 generated text files
+Validated 539,595 local references across 4,548 HTML pages

@@ -1,8 +1,10 @@
 var find__cliques_8c =
 [
     [ "arguments", "d6/d2e/structarguments.html", "d6/d2e/structarguments" ],
+    [ "float_option", "d7/d2b/find__cliques_8c.html#a624ee04b3bdfe8138d81bf9774142f51", null ],
     [ "get_timestamp", "d7/d2b/find__cliques_8c.html#a5555814d1dc8a371f67c856145d8d233", null ],
     [ "init_cuda", "d7/d2b/find__cliques_8c.html#a60ce7636b78b6b2d944aaef6864ce1ed", null ],
+    [ "integer_option", "d7/d2b/find__cliques_8c.html#a95ce31f05fc8f80270d675943b762956", null ],
     [ "main", "d7/d2b/find__cliques_8c.html#a3c04138a5bfe5d72780bb7e82a18e627", null ],
     [ "parse_opt", "d7/d2b/find__cliques_8c.html#a35ee63236273ebb9325c444cacf00159", null ],
     [ "argp", "d7/d2b/find__cliques_8c.html#ab70c96531b1b652d70c221cfaf3207f3", null ],

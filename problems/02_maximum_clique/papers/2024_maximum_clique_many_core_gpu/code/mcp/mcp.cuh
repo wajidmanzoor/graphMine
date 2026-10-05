@@ -202,111 +202,7 @@ namespace graph
         }
       }
 
-      const uint hybrid_per_warp = config.warp_parallel ? (block_size / PSIZE) : 1;
-      T conc_blocks_per_SM = context.GetConCBlocks(block_size);
       const uint partition_size = PSIZE;
-      const uint dv = 32;
-      const uint max_level = max_core + 2;
-      const uint num_divs = (max_degree.gdata()[0] + dv - 1) / dv;
-      const uint64 encode_size = (uint64)num_SMs * conc_blocks_per_SM * (max_degree.gdata()[0] * num_divs);
-
-      encoded_induced_subgraph.initialize("induced subgraph", gpu, encode_size, dev_);
-
-      const uint64 level_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level * num_divs;
-      const uint64 iset_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level * (max_degree.gdata()[0]);
-      const uint64 level_item_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level;
-
-      P.initialize("P(possible)", gpu, level_size, dev_);
-      B.initialize("B", gpu, level_size, dev_);
-      A.initialize("A", gpu, level_size, dev_);
-      Cmax.initialize("Cmax", gpu, max_level, dev_);
-      C.initialize("C", gpu, level_item_size, dev_);
-    
-      if (config.colorAlg == COLORALG::NUMBER 
-        || config.colorAlg == COLORALG::RENUMBER) {
-        Iset.initialize("Iset", gpu, iset_size, dev_);
-        Iset_count.initialize("Iset count", gpu, level_item_size, dev_);
-      }
-      else if (config.colorAlg == COLORALG::RECOLOR)
-        Iset.initialize("Iset", gpu, level_size, dev_);
-      colored.initialize("colored", gpu, num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level, dev_);
-      P.setAll(0, true);
-
-      float zero = 0.0f;
-      CUDA_RUNTIME(cudaMalloc((void **)&d_Cmax_size, sizeof(uint32_t)));
-      CUDA_RUNTIME(cudaMemcpy((void *)d_Cmax_size, &config.lb, sizeof(uint32_t), ::cudaMemcpyHostToDevice));
-
-      if (config.verbose)
-      {
-        CUDA_RUNTIME(cudaMalloc((void **)&d_avg_subgraph_density, sizeof(float)));
-        CUDA_RUNTIME(cudaMemcpy((void *)d_avg_subgraph_density, &zero, sizeof(float), ::cudaMemcpyHostToDevice));
-        CUDA_RUNTIME(cudaMalloc((void **)&d_max_subgraph_density, sizeof(float)));
-        CUDA_RUNTIME(cudaMemcpy((void *)d_max_subgraph_density, &zero, sizeof(float), ::cudaMemcpyHostToDevice));
-        CUDA_RUNTIME(cudaMalloc((void **)&d_number_of_subgraphs, sizeof(uint32_t)));
-        CUDA_RUNTIME(cudaMemset(d_number_of_subgraphs, 0, sizeof(uint32_t)));
-        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_color_l1, sizeof(T)));
-        CUDA_RUNTIME(cudaMemset(d_cut_by_color_l1, 0, sizeof(T)));
-        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_color, sizeof(T)));
-        CUDA_RUNTIME(cudaMemset(d_cut_by_color, 0, sizeof(T)));
-        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_kcore_l1, sizeof(T)));
-        CUDA_RUNTIME(cudaMemset(d_cut_by_kcore_l1, 0, sizeof(T)));
-        CUDA_RUNTIME(cudaMalloc((void **)&d_max_subgraph_width, sizeof(uint32_t)));
-        CUDA_RUNTIME(cudaMemset(d_max_subgraph_width, 0, sizeof(uint32_t)));
-        CUDA_RUNTIME(cudaMalloc((void **)&d_avg_subgraph_width, sizeof(uint32_t)));
-        CUDA_RUNTIME(cudaMemset(d_avg_subgraph_width, 0, sizeof(uint32_t)));
-        CUDA_RUNTIME(cudaMalloc((void **)&d_branches, sizeof(unsigned long long)));
-        CUDA_RUNTIME(cudaMemset(d_branches, 0, sizeof(unsigned long long)));
-      }
-    
-      level_pointer.initialize("level pointer", gpu, level_item_size, dev_);
-      encoded_induced_subgraph.setAll(0, true);
-      
-      const uint numPartitions = block_size / partition_size;
-      const uint msg_cnt = 5;
-      const uint conc_blocks = num_SMs * conc_blocks_per_SM;
-      const uint warps = conc_blocks * numPartitions;
-
-      cudaMemcpyToSymbol(PARTSIZE, &partition_size, sizeof(PARTSIZE));
-      cudaMemcpyToSymbol(NUMPART, &numPartitions, sizeof(NUMPART));
-      cudaMemcpyToSymbol(MAXLEVEL, &max_level, sizeof(MAXLEVEL));
-      cudaMemcpyToSymbol(NUMDIVS, &num_divs, sizeof(NUMDIVS));
-      cudaMemcpyToSymbol(MAXDEG, &(max_degree.gdata()[0]), sizeof(MAXDEG));
-      cudaMemcpyToSymbol(MAXUNDEG, &(max_undirected_degree.gdata()[0]), sizeof(MAXDEG));
-      cudaMemcpyToSymbol(CBPSM, &(conc_blocks_per_SM), sizeof(CBPSM));
-      cudaMemcpyToSymbol(MSGCNT, &(msg_cnt), sizeof(MSGCNT));
-      cudaMemcpyToSymbol(CB, &(conc_blocks), sizeof(CB));
-      cudaMemcpyToSymbol(WARPS, &(warps), sizeof(WARPS));
-
-      CUDA_RUNTIME(cudaMalloc((void **)&work_ready, conc_blocks * hybrid_per_warp * sizeof(cuda::atomic<uint32_t, cuda::thread_scope_device>)));
-      CUDA_RUNTIME(cudaMemset((void *)work_ready, 0, conc_blocks * hybrid_per_warp * sizeof(cuda::atomic<uint32_t, cuda::thread_scope_device>)));
-      
-      if (config.mt == MAINTASK::MCP_EVAL)
-      {
-        cuda::binary_semaphore<cuda::thread_scope_device> init_sem{1};
-        CUDA_RUNTIME(cudaMalloc((void **)&max_clique_sem, sizeof(cuda::binary_semaphore<cuda::thread_scope_device>)));
-        CUDA_RUNTIME(cudaMemcpy(max_clique_sem, &init_sem, sizeof(cuda::binary_semaphore<cuda::thread_scope_device>), ::cudaMemcpyHostToDevice));
-      }
-
-      global_message = GPUArray<uint32_t>("global message", gpu, conc_blocks * msg_cnt * hybrid_per_warp, dev_);
-      const uint queue_size = conc_blocks * hybrid_per_warp;
-      queue_init(queue, tickets, head, tail, queue_size, dev_);
-      //if (config.hybrid) local_queue_init(local_queue, local_tickets, local_head, local_tail, queue_size, conc_blocks, dev_);
-      work_stealing = GPUArray<uint32_t>("work stealing counter", gpu, 1, dev_);
-      work_stealing.setAll(global_id_ + config.lb, true);
-      Xx_aux = GPUArray<T>("auxiliary array for X for X ", gpu, 
-                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM * hybrid_per_warp, dev_);
-      current = GPUArray<T>("Current ", gpu, 
-                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
-      next = GPUArray<T>("Next ", gpu, 
-                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
-      ordering = GPUArray<T>("Core numbers ", gpu, 
-                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
-         
-
-      cudaMemGetInfo(&free, &total);
-      Log(info, "VRAM usage: %llu B", total - free);
-      
-      auto grid_block_size = num_SMs * conc_blocks_per_SM;
       auto kernel = mcp_kernel_l1_wl_donor_psanse<T, 128, partition_size>;
 
       if (!config.warp_parallel)
@@ -523,6 +419,117 @@ namespace graph
         
       }
 
+      const uint hybrid_per_warp = config.warp_parallel ? (block_size / PSIZE) : 1;
+      // The donor queue waits for every launched block. Its grid must fit
+      // concurrently, including this kernel's registers and shared memory.
+      int resident_blocks = 0;
+      CUDA_RUNTIME(cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+          &resident_blocks, kernel, block_size, 0));
+      if (resident_blocks < 1)
+        throw std::runtime_error("search kernel cannot reside on this device");
+      const T conc_blocks_per_SM = static_cast<T>(resident_blocks);
+      const uint dv = 32;
+      const uint max_level = max_core + 2;
+      const uint num_divs = (max_degree.gdata()[0] + dv - 1) / dv;
+      const uint64 encode_size = (uint64)num_SMs * conc_blocks_per_SM * (max_degree.gdata()[0] * num_divs);
+
+      encoded_induced_subgraph.initialize("induced subgraph", gpu, encode_size, dev_);
+
+      const uint64 level_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level * num_divs;
+      const uint64 iset_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level * (max_degree.gdata()[0]);
+      const uint64 level_item_size = (uint64)num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level;
+
+      P.initialize("P(possible)", gpu, level_size, dev_);
+      B.initialize("B", gpu, level_size, dev_);
+      A.initialize("A", gpu, level_size, dev_);
+      Cmax.initialize("Cmax", gpu, max_level, dev_);
+      C.initialize("C", gpu, level_item_size, dev_);
+
+      if (config.colorAlg == COLORALG::NUMBER
+        || config.colorAlg == COLORALG::RENUMBER) {
+        Iset.initialize("Iset", gpu, iset_size, dev_);
+        Iset_count.initialize("Iset count", gpu, level_item_size, dev_);
+      }
+      else if (config.colorAlg == COLORALG::RECOLOR)
+        Iset.initialize("Iset", gpu, level_size, dev_);
+      colored.initialize("colored", gpu, num_SMs * conc_blocks_per_SM * hybrid_per_warp * max_level, dev_);
+      P.setAll(0, true);
+
+      float zero = 0.0f;
+      CUDA_RUNTIME(cudaMalloc((void **)&d_Cmax_size, sizeof(uint32_t)));
+      CUDA_RUNTIME(cudaMemcpy((void *)d_Cmax_size, &config.lb, sizeof(uint32_t), ::cudaMemcpyHostToDevice));
+
+      if (config.verbose)
+      {
+        CUDA_RUNTIME(cudaMalloc((void **)&d_avg_subgraph_density, sizeof(float)));
+        CUDA_RUNTIME(cudaMemcpy((void *)d_avg_subgraph_density, &zero, sizeof(float), ::cudaMemcpyHostToDevice));
+        CUDA_RUNTIME(cudaMalloc((void **)&d_max_subgraph_density, sizeof(float)));
+        CUDA_RUNTIME(cudaMemcpy((void *)d_max_subgraph_density, &zero, sizeof(float), ::cudaMemcpyHostToDevice));
+        CUDA_RUNTIME(cudaMalloc((void **)&d_number_of_subgraphs, sizeof(uint32_t)));
+        CUDA_RUNTIME(cudaMemset(d_number_of_subgraphs, 0, sizeof(uint32_t)));
+        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_color_l1, sizeof(T)));
+        CUDA_RUNTIME(cudaMemset(d_cut_by_color_l1, 0, sizeof(T)));
+        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_color, sizeof(T)));
+        CUDA_RUNTIME(cudaMemset(d_cut_by_color, 0, sizeof(T)));
+        CUDA_RUNTIME(cudaMalloc((void **)&d_cut_by_kcore_l1, sizeof(T)));
+        CUDA_RUNTIME(cudaMemset(d_cut_by_kcore_l1, 0, sizeof(T)));
+        CUDA_RUNTIME(cudaMalloc((void **)&d_max_subgraph_width, sizeof(uint32_t)));
+        CUDA_RUNTIME(cudaMemset(d_max_subgraph_width, 0, sizeof(uint32_t)));
+        CUDA_RUNTIME(cudaMalloc((void **)&d_avg_subgraph_width, sizeof(uint32_t)));
+        CUDA_RUNTIME(cudaMemset(d_avg_subgraph_width, 0, sizeof(uint32_t)));
+        CUDA_RUNTIME(cudaMalloc((void **)&d_branches, sizeof(unsigned long long)));
+        CUDA_RUNTIME(cudaMemset(d_branches, 0, sizeof(unsigned long long)));
+      }
+
+      level_pointer.initialize("level pointer", gpu, level_item_size, dev_);
+      encoded_induced_subgraph.setAll(0, true);
+
+      const uint numPartitions = block_size / partition_size;
+      const uint msg_cnt = 5;
+      const uint conc_blocks = num_SMs * conc_blocks_per_SM;
+      const uint warps = conc_blocks * numPartitions;
+
+      cudaMemcpyToSymbol(PARTSIZE, &partition_size, sizeof(PARTSIZE));
+      cudaMemcpyToSymbol(NUMPART, &numPartitions, sizeof(NUMPART));
+      cudaMemcpyToSymbol(MAXLEVEL, &max_level, sizeof(MAXLEVEL));
+      cudaMemcpyToSymbol(NUMDIVS, &num_divs, sizeof(NUMDIVS));
+      cudaMemcpyToSymbol(MAXDEG, &(max_degree.gdata()[0]), sizeof(MAXDEG));
+      cudaMemcpyToSymbol(MAXUNDEG, &(max_undirected_degree.gdata()[0]), sizeof(MAXDEG));
+      cudaMemcpyToSymbol(CBPSM, &(conc_blocks_per_SM), sizeof(CBPSM));
+      cudaMemcpyToSymbol(MSGCNT, &(msg_cnt), sizeof(MSGCNT));
+      cudaMemcpyToSymbol(CB, &(conc_blocks), sizeof(CB));
+      cudaMemcpyToSymbol(WARPS, &(warps), sizeof(WARPS));
+
+      CUDA_RUNTIME(cudaMalloc((void **)&work_ready, conc_blocks * hybrid_per_warp * sizeof(cuda::atomic<uint32_t, cuda::thread_scope_device>)));
+      CUDA_RUNTIME(cudaMemset((void *)work_ready, 0, conc_blocks * hybrid_per_warp * sizeof(cuda::atomic<uint32_t, cuda::thread_scope_device>)));
+
+      if (config.mt == MAINTASK::MCP_EVAL)
+      {
+        cuda::binary_semaphore<cuda::thread_scope_device> init_sem{1};
+        CUDA_RUNTIME(cudaMalloc((void **)&max_clique_sem, sizeof(cuda::binary_semaphore<cuda::thread_scope_device>)));
+        CUDA_RUNTIME(cudaMemcpy(max_clique_sem, &init_sem, sizeof(cuda::binary_semaphore<cuda::thread_scope_device>), ::cudaMemcpyHostToDevice));
+      }
+
+      global_message = GPUArray<uint32_t>("global message", gpu, conc_blocks * msg_cnt * hybrid_per_warp, dev_);
+      const uint queue_size = conc_blocks * hybrid_per_warp;
+      queue_init(queue, tickets, head, tail, queue_size, dev_);
+      //if (config.hybrid) local_queue_init(local_queue, local_tickets, local_head, local_tail, queue_size, conc_blocks, dev_);
+      work_stealing = GPUArray<uint32_t>("work stealing counter", gpu, 1, dev_);
+      work_stealing.setAll(global_id_ + config.lb, true);
+      Xx_aux = GPUArray<T>("auxiliary array for X for X ", gpu,
+                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM * hybrid_per_warp, dev_);
+      current = GPUArray<T>("Current ", gpu,
+                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
+      next = GPUArray<T>("Next ", gpu,
+                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
+      ordering = GPUArray<T>("Core numbers ", gpu,
+                           max_degree.gdata()[0] * num_SMs * conc_blocks_per_SM, dev_);
+
+
+      cudaMemGetInfo(&free, &total);
+      Log(info, "VRAM usage: %llu B", total - free);
+
+      auto grid_block_size = num_SMs * conc_blocks_per_SM;
       mcp::GLOBAL_HANDLE<T> gh;
       gh.gsplit = gsplit;
       gh.iteration_limit = gsplit.numNodes;
@@ -609,6 +616,12 @@ namespace graph
 
       if (config.mt == MAINTASK::MCP_EVAL)
       {
+        if (Cmax_size <= config.lb)
+        {
+          // Cmax is populated only when the search improves the input bound.
+          Log(info, "Search retained the input clique bound: %u", Cmax_size);
+          return;
+        }
         // Get solution
         T* Max_Clique = Cmax.copytocpu(0, Cmax_size, true);
 
@@ -655,7 +668,7 @@ namespace graph
         if (!is_clique)
           printf("Not a Clique.\n");
 
-        delete[] Max_Clique;
+        free(Max_Clique);
       }
     }
 
@@ -732,7 +745,7 @@ namespace graph
     void sync()
     {
       CUDA_RUNTIME(cudaSetDevice(dev_));
-      cudaDeviceSynchronize();
+      CUDA_RUNTIME(cudaStreamSynchronize(stream_));
       //CUDA_RUNTIME(cudaGetLastError());
     }
     int device() const { return dev_; }

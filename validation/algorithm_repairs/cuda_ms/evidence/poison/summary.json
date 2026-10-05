@@ -1,0 +1,18 @@
+{
+  "runs": 2772,
+  "passed": 2772,
+  "failures": 0,
+  "exit_code": 0,
+  "sanitizer": null,
+  "sanitizer_clean": true,
+  "output_lines": 2772,
+  "binary_sha256": "d150d89e21e2a2d1df37c565dff7c16bb17f9340d5bec69eeaf8fea0545fffdc",
+  "input_sha256": "fd7b94540f4e7ce5c32451b3c2eb50ac4d5c6e1cf153e552af3ec95ae8b2638f",
+  "command": [
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-poison/raw_probe",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/poison/input.txt",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/poison/observed.txt"
+  ],
+  "gpu": 1,
+  "elapsed_s": 4.215503856539726
+}

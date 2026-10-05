@@ -19,8 +19,6 @@ extern "C" {
 #include "motzkin_cuda.h"
 }
 
-extern int cuda_device;
-
 namespace graphmine::detail {
 
 bool cuda_ms_backend_compiled() noexcept { return true; }
@@ -84,25 +82,23 @@ MaximumCliqueBackendResult run_cuda_ms(const CsrGraph& graph, int device_id) {
     }
   }
 
-  // CUDA-MS stores its selected device in an OpenMP thread-local global.
-  // Setting it explicitly preserves the public execution option instead of
-  // allowing the upstream random-device chooser to override the caller.
-  cuda_device = device_id;
+  // The repaired initializer honors cudaSetDevice without exposing its
+  // OpenMP thread-local storage across C/C++ compilation boundaries.
   quiet = 1;
 
   t_bitmask clique_mask = nullptr;
   t_bitmask upper_mask = nullptr;
   const auto started = std::chrono::steady_clock::now();
-  graph_clique_cuda(&clique_mask, &upper_mask, row_pointers.data(), n, nullptr,
+  const auto size = graph_clique_cuda(&clique_mask, &upper_mask, row_pointers.data(), n, nullptr,
                     5, 0.001F, 0.5F, 5, MODE_REPL);
   const auto cuda_result = cudaDeviceSynchronize();
   const auto finished = std::chrono::steady_clock::now();
-  if (cuda_result != cudaSuccess || clique_mask == nullptr) {
+  if (cuda_result != cudaSuccess || clique_mask == nullptr || size < 0) {
     if (clique_mask != nullptr) mask_free(clique_mask);
     if (upper_mask != nullptr) mask_free(upper_mask);
     return {{StatusCode::execution_failed,
              std::string("CUDA-MS failed: ") +
-                 cudaGetErrorString(cuda_result)},
+                 (cuda_result == cudaSuccess ? "GPU exact search could not complete" : cudaGetErrorString(cuda_result))},
             {}, 0, 0.0};
   }
 

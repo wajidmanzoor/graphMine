@@ -1,0 +1,365 @@
+========= COMPUTE-SANITIZER
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x5e0 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x5c0 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x610 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x630 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x610 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x670 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x680 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x670 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x6c0 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x6c0 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x6d0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x700 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x710 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x5e0 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x5c0 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x610 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x630 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x610 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x670 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x680 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x670 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x6c0 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x6c0 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x6d0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x700 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)256, float>(T2 *, unsigned int)+0x710 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1150
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1140 [576 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11a0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11f0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230 [72 hazards]
+========= 
+========= Error: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0xec0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1120 [128 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x720 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x710 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8e0 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8d0 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230
+=========     and Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1240 [72 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x760 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x920 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1280
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [36 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7a0 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7d0 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x960 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7d0 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7e0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9a0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x810 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x820 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9d0 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9f0 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1150
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1140 [576 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11a0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11f0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230 [72 hazards]
+========= 
+========= Error: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0xec0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1120 [128 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x720 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x710 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8e0 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8d0 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230
+=========     and Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1240 [72 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x760 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x920 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1280
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [36 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7a0 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7d0 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x960 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7d0 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7e0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9a0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x810 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x820 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9d0 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9f0 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1150
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1140 [576 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11a0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11f0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230 [72 hazards]
+========= 
+========= Error: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0xec0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1120 [128 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x720 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x710 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8e0 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8d0 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230
+=========     and Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1240 [72 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x760 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x920 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1280
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [36 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7a0 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7d0 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x960 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7d0 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7e0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9a0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x810 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x820 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9d0 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9f0 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1150
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1140 [576 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11a0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11f0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230 [72 hazards]
+========= 
+========= Error: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0xec0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1120 [128 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x720 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x710 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8e0 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8d0 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230
+=========     and Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1240 [72 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x760 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x920 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1280
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [36 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7a0 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7d0 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x960 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7d0 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7e0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9a0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x810 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x820 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9d0 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9f0 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x18c0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x18b0 [576 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1900 [288 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1910
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1900 [288 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1950 [144 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1960
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1950 [144 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x19a0 [72 hazards]
+========= 
+========= Error: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1630
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1890 [128 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1a30 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x740 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x730 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x770 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x900 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8f0 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x940 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x19a0
+=========     and Write access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x19b0 [72 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x780 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x770 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7b0 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x950 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x940 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x19f0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)1, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1a30 [36 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7c0 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7b0 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7f0 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9a0 in common_cuda.cuh:66
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x990 in common_cuda.cuh:67 [16 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9d0 in common_cuda.cuh:68 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x7f0 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x800 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9d0 in common_cuda.cuh:68
+=========     and Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x9e0 in common_cuda.cuh:67 [8 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x830 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x840 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0xa10 in common_cuda.cuh:68
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0xa50 in common_cuda.cuh:69 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_max<(unsigned int)128, float>(T2 *, unsigned int)+0x1480 in common_cuda.cuh:82
+=========     and Read access at void reduce_max<(unsigned int)128, float>(T2 *, unsigned int)+0x14d0 in common_cuda.cuh:83 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_max<(unsigned int)128, float>(T2 *, unsigned int)+0x14f0 in common_cuda.cuh:83
+=========     and Read access at void reduce_max<(unsigned int)128, float>(T2 *, unsigned int)+0x1530 in common_cuda.cuh:84 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1150
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1140 [576 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11a0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1190 [288 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+========= 
+========= Warning: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11f0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x11e0 [144 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230 [72 hazards]
+========= 
+========= Error: Race reported between Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0xec0
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1120 [128 hazards]
+=========     and Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x12c0 [4 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x720 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x710 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8e0 in common_cuda.cuh:64
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x8d0 in common_cuda.cuh:65 [64 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x910 in common_cuda.cuh:66 [32 hazards]
+========= 
+========= Warning: Race reported between Read access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1230
+=========     and Write access at void iterGPU<(int)128, (int)1, (int)0, (int)1>(cuda_clique_status *, cuda_clique_status *, float *, float *, float *, unsigned char *, unsigned long, unsigned long, int *, float, float)+0x1240 [72 hazards]
+========= 
+========= Warning: Race reported between Write access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x760 in common_cuda.cuh:65
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x750 in common_cuda.cuh:66 [32 hazards]
+=========     and Read access at void reduce_sum<(unsigned int)128, float>(T2 *, unsigned int)+0x790 in common_cuda.cuh:67 [16 hazards]
+========= 
+========= RACECHECK SUMMARY: 100 hazards displayed (69 errors, 1090 warnings)

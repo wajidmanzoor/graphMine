@@ -10,7 +10,9 @@ var dir_cec608aa1948be76a09258b8f7b389fd =
     [ "maximal_cliques.hpp", "db/d02/maximal__cliques_8hpp.html", "db/d02/maximal__cliques_8hpp" ],
     [ "maximum_clique.hpp", "d9/d76/maximum__clique_8hpp.html", "d9/d76/maximum__clique_8hpp" ],
     [ "quasi_cliques.hpp", "d4/d0b/quasi__cliques_8hpp.html", "d4/d0b/quasi__cliques_8hpp" ],
+    [ "repaired_algorithms.hpp", "d4/d7b/repaired__algorithms_8hpp.html", "d4/d7b/repaired__algorithms_8hpp" ],
     [ "subgraph_isomorphism.hpp", "d9/d54/subgraph__isomorphism_8hpp.html", "d9/d54/subgraph__isomorphism_8hpp" ],
     [ "temporal_motif_mining.hpp", "df/dd0/temporal__motif__mining_8hpp.html", "df/dd0/temporal__motif__mining_8hpp" ],
-    [ "triangle_counting.hpp", "dc/d07/triangle__counting_8hpp.html", "dc/d07/triangle__counting_8hpp" ]
+    [ "triangle_counting.hpp", "dc/d07/triangle__counting_8hpp.html", "dc/d07/triangle__counting_8hpp" ],
+    [ "validated_expansion.hpp", "df/df3/validated__expansion_8hpp.html", "df/df3/validated__expansion_8hpp" ]
 ];

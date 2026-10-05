@@ -1,0 +1,6 @@
+# Repair patches and recorded tool output must retain their exact bytes/hashes.
+# Upstream CRLF lines and patch context intentionally contain trailing spaces.
+validation/algorithm_repairs/**/*.patch -text -whitespace
+validation/algorithm_repairs/**/evidence/** -text -whitespace
+validation/algorithm_repairs/**/fixtures/** -text -whitespace
+validation/repaired_library/results/** -text -whitespace

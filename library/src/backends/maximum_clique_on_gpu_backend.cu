@@ -211,7 +211,8 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
     // vertex set is always available if no larger clique exists.
     (void)known_lower_bound;
     GraphMineMaximumCliqueOnGpuConfig config{};
-    config.mt = MAINTASK::MCP;
+    // Only the evaluation path publishes clique vertices as well as its size.
+    config.mt = MAINTASK::MCP_EVAL;
     config.deviceId = device_id;
     config.block_size = 64;
     config.warp_parallel = false;
@@ -272,10 +273,6 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
 
     UpstreamArray compact_degrees("Compact reduced degrees", unified,
                                   reduced_vertex_count, device_id);
-    graphmine_maximum_clique_on_gpu_cub_select(
-        reduced_degrees.gdata(), compact_degrees.gdata(), flags.gdata(),
-        vertex_count, device_id);
-    reduced_degrees.freeGPU();
 
     UpstreamArray indices("Original indices", unified, vertex_count,
                           device_id);
@@ -291,8 +288,10 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
 
     UpstreamArray reduced_core_numbers("Reduced core numbers", gpu,
                                        reduced_vertex_count, device_id);
+    UpstreamArray unsorted_core_numbers("Unsorted core numbers", gpu,
+                                        reduced_vertex_count, device_id);
     graphmine_maximum_clique_on_gpu_cub_select(
-        kcore.coreNumber.gdata(), reduced_core_numbers.gdata(), flags.gdata(),
+        kcore.coreNumber.gdata(), unsorted_core_numbers.gdata(), flags.gdata(),
         vertex_count, device_id);
     flags.freeGPU();
 
@@ -300,34 +299,25 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
                             device_id);
     void* temporary_storage = nullptr;
     std::size_t temporary_storage_bytes = 0;
-    cub::DeviceRadixSort::SortPairsDescending(
+    CUDA_RUNTIME(cub::DeviceRadixSort::SortPairsDescending(
         temporary_storage, temporary_storage_bytes,
-        reduced_core_numbers.gdata(), reduced_core_numbers.gdata(),
-        temporary_old_names.gdata(), old_names.gdata(), reduced_vertex_count);
+        unsorted_core_numbers.gdata(), reduced_core_numbers.gdata(),
+        temporary_old_names.gdata(), old_names.gdata(), reduced_vertex_count));
     CUDA_RUNTIME(cudaMalloc(&temporary_storage, temporary_storage_bytes));
-    cub::DeviceRadixSort::SortPairsDescending(
+    CUDA_RUNTIME(cub::DeviceRadixSort::SortPairsDescending(
         temporary_storage, temporary_storage_bytes,
-        reduced_core_numbers.gdata(), reduced_core_numbers.gdata(),
-        temporary_old_names.gdata(), old_names.gdata(), reduced_vertex_count);
+        unsorted_core_numbers.gdata(), reduced_core_numbers.gdata(),
+        temporary_old_names.gdata(), old_names.gdata(), reduced_vertex_count));
     CUDA_RUNTIME(cudaFree(temporary_storage));
     temporary_old_names.freeGPU();
+    unsorted_core_numbers.freeGPU();
 
-    // Preserve the artifact's second key/value ordering step exactly.
-    temporary_storage = nullptr;
-    temporary_storage_bytes = 0;
-    cub::DeviceRadixSort::SortPairsDescending(
-        temporary_storage, temporary_storage_bytes,
-        reduced_core_numbers.gdata(), reduced_core_numbers.gdata(),
-        compact_degrees.gdata(), compact_degrees.gdata(),
-        reduced_vertex_count);
-    CUDA_RUNTIME(cudaMalloc(&temporary_storage, temporary_storage_bytes));
-    cub::DeviceRadixSort::SortPairsDescending(
-        temporary_storage, temporary_storage_bytes,
-        reduced_core_numbers.gdata(), reduced_core_numbers.gdata(),
-        compact_degrees.gdata(), compact_degrees.gdata(),
-        reduced_vertex_count);
-    CUDA_RUNTIME(cudaFree(temporary_storage));
-    CUDA_RUNTIME(cudaDeviceSynchronize());
+    // Apply exactly the same permutation to degrees as to vertex names.
+    // Sorting already sorted keys a second time leaves degrees misaligned.
+    execKernel((gather_by_index_kernel<DataType>), blocks, block_size,
+               device_id, false, reduced_degrees.gdata(), old_names.gdata(),
+               compact_degrees.gdata(), reduced_vertex_count);
+    reduced_degrees.freeGPU();
 
     DeviceGraphStorage reduced;
     reduced.value.numNodes = reduced_vertex_count;
@@ -362,15 +352,21 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
 
     temporary_storage = nullptr;
     temporary_storage_bytes = 0;
-    cub::DeviceSegmentedRadixSort::SortKeys(
+    UpstreamArray sorted_neighbors("Sorted neighbors", gpu,
+                                    reduced_edge_count, device_id);
+    CUDA_RUNTIME(cub::DeviceSegmentedRadixSort::SortKeys(
         temporary_storage, temporary_storage_bytes, reduced.value.colInd,
-        reduced.value.colInd, reduced_edge_count, reduced_vertex_count,
-        reduced.value.rowPtr, reduced.value.rowPtr + 1);
+        sorted_neighbors.gdata(), reduced_edge_count, reduced_vertex_count,
+        reduced.value.rowPtr, reduced.value.rowPtr + 1));
     CUDA_RUNTIME(cudaMalloc(&temporary_storage, temporary_storage_bytes));
-    cub::DeviceSegmentedRadixSort::SortKeys(
+    CUDA_RUNTIME(cub::DeviceSegmentedRadixSort::SortKeys(
         temporary_storage, temporary_storage_bytes, reduced.value.colInd,
-        reduced.value.colInd, reduced_edge_count, reduced_vertex_count,
-        reduced.value.rowPtr, reduced.value.rowPtr + 1);
+        sorted_neighbors.gdata(), reduced_edge_count, reduced_vertex_count,
+        reduced.value.rowPtr, reduced.value.rowPtr + 1));
+    CUDA_RUNTIME(cudaMemcpy(reduced.value.colInd, sorted_neighbors.gdata(),
+                            sizeof(DataType) * reduced_edge_count,
+                            cudaMemcpyDeviceToDevice));
+    sorted_neighbors.freeGPU();
     CUDA_RUNTIME(cudaFree(temporary_storage));
     CUDA_RUNTIME(cudaDeviceSynchronize());
 
@@ -425,6 +421,11 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
       clique.clear();
       clique.reserve(solver.Cmax_size);
       for (std::uint32_t i = 0; i < solver.Cmax_size; ++i) {
+        if (reduced_clique[i] >= reduced_vertex_count) {
+          std::free(reduced_clique);
+          std::free(original_names);
+          throw std::runtime_error("search returned an invalid reduced vertex");
+        }
         const auto original_vertex = original_names[reduced_clique[i]];
         if (original_vertex != 0) clique.push_back(original_vertex - 1U);
       }

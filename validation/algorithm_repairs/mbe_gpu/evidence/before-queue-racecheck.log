@@ -1,0 +1,11 @@
+========= COMPUTE-SANITIZER
+========= Error: Race reported between Read access at tersect_warp_for_iter_finderIiEvPT_S1_S0_S1_S0_S0_S0_+0xec0 in GpuUtil.cuh:449
+=========     and Write access at S1_S0_S1_+0x1dfe0 in GpuUtil.cuh:426 [12 hazards]
+========= 
+========= Error: Race reported between Read access at tersect_warp_for_iter_finderIiEvPT_S1_S0_S1_S0_S0_S0_+0xee0 in GpuUtil.cuh:449
+=========     and Write access at S1_S0_S1_+0x1e020 in GpuUtil.cuh:426 [12 hazards]
+========= 
+========= Error: Race reported between Read access at tersect_warp_for_iter_finderIiEvPT_S1_S0_S1_S0_S0_S0_+0xf00 in GpuUtil.cuh:449
+=========     and Write access at S1_S0_S1_+0x1e0a0 in GpuUtil.cuh:426 [12 hazards]
+========= 
+========= RACECHECK SUMMARY: 3 hazards displayed (3 errors, 0 warnings)

@@ -1,6 +1,22 @@
 var searchData=
 [
-  ['undirectedgraphview_0',['UndirectedGraphView',['../d1/da6/structgraphmine_1_1UndirectedGraphView.html',1,'graphmine']]],
-  ['undirectedprojectionoptions_1',['UndirectedProjectionOptions',['../d3/d01/structgraphmine_1_1UndirectedProjectionOptions.html',1,'graphmine']]],
-  ['usageerror_2',['UsageError',['../dc/d9d/classanonymous__namespace_02graphmine_8cpp_03_1_1UsageError.html',1,'anonymous_namespace{graphmine.cpp}']]]
+  ['t_5fequal_0',['t_equal',['../d5/d3e/structt__equal.html',1,'']]],
+  ['tempdirectory_1',['TempDirectory',['../d3/d90/structgraphmine_1_1detail_1_1isolated_1_1TempDirectory.html',1,'graphmine::detail::isolated']]],
+  ['temporalmotifbackendevent_2',['TemporalMotifBackendEvent',['../de/d8f/structgraphmine_1_1detail_1_1TemporalMotifBackendEvent.html',1,'graphmine::detail']]],
+  ['temporalmotifbackendinput_3',['TemporalMotifBackendInput',['../d7/d38/structgraphmine_1_1detail_1_1TemporalMotifBackendInput.html',1,'graphmine::detail']]],
+  ['temporalmotifbackendresult_4',['TemporalMotifBackendResult',['../d7/d22/structgraphmine_1_1detail_1_1TemporalMotifBackendResult.html',1,'graphmine::detail']]],
+  ['temporalmotifinstance_5',['TemporalMotifInstance',['../d6/da3/structgraphmine_1_1TemporalMotifInstance.html',1,'graphmine']]],
+  ['temporalmotifmining_6',['TemporalMotifMining',['../d5/d31/classgraphmine_1_1TemporalMotifMining.html',1,'graphmine']]],
+  ['temporalmotifoptions_7',['TemporalMotifOptions',['../dd/d7d/structgraphmine_1_1TemporalMotifOptions.html',1,'graphmine']]],
+  ['temporalmotifoutput_8',['TemporalMotifOutput',['../df/d62/structgraphmine_1_1TemporalMotifOutput.html',1,'graphmine']]],
+  ['transitiveclosure_9',['TransitiveClosure',['../db/d09/classgraphmine_1_1TransitiveClosure.html',1,'graphmine']]],
+  ['trianglebackendresult_10',['TriangleBackendResult',['../d6/da3/structgraphmine_1_1detail_1_1TriangleBackendResult.html',1,'graphmine::detail']]],
+  ['trianglecounting_11',['TriangleCounting',['../dd/dfb/classgraphmine_1_1TriangleCounting.html',1,'graphmine']]],
+  ['trianglematerialization_12',['TriangleMaterialization',['../da/d67/structgraphmine_1_1anonymous__namespace_02triangle__counting_8cpp_03_1_1TriangleMaterialization.html',1,'graphmine::anonymous_namespace{triangle_counting.cpp}']]],
+  ['triangleoptions_13',['TriangleOptions',['../d5/d85/structgraphmine_1_1TriangleOptions.html',1,'graphmine']]],
+  ['triangleoutput_14',['TriangleOutput',['../da/d11/structgraphmine_1_1TriangleOutput.html',1,'graphmine']]],
+  ['triangleupdate_15',['TriangleUpdate',['../dc/dd6/structgraphmine_1_1TriangleUpdate.html',1,'graphmine']]],
+  ['tuple_5findexed_5fless_16',['tuple_indexed_less',['../de/dfa/structtuple__indexed__less.html',1,'']]],
+  ['tuple_5findexed_5fless2_17',['tuple_indexed_less2',['../d6/d2b/structtuple__indexed__less2.html',1,'']]],
+  ['tuple_5fweak_5fless_18',['tuple_weak_less',['../dd/d9a/structtuple__weak__less.html',1,'']]]
 ];

@@ -1,0 +1,32 @@
+[
+  {
+    "n": 8,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/baseline-device0",
+      "unused",
+      "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/8/",
+      "graph",
+      "2",
+      "0",
+      "0"
+    ],
+    "exit_code": 124,
+    "timeout": true,
+    "output": "Device Number: 0\n  Device name:                NVIDIA RTX 6000 Ada Generation\nExpected edge count: 14\nGraph load (success): 8 verts, 14 edges 5.31673e-05 second(s)\nFound 0 high-degree vertices (>1024)\nnew_vert_count: 8\nson_list_map.size(): 0\nson_range_start_map.size(): 8\n\u5f00\u59cb\u6784\u5efa\u65b0\u7684CSR...\n\u539f\u59cb\u8fb9\u6570: 14, \u65b0\u8fb9\u6570: 14\n\u65b0CSR\u6784\u5efa\u5b8c\u6210: \u539f\u59cb\u9876\u70b9\u6570 8, \u6269\u5c55\u9876\u70b9\u6570 8, 14 \u6761\u8fb9\n\n=== \u9a8c\u8bc1\u5206\u5272\u7ed3\u679c ===\n\n=== \u7279\u5224\u6253\u537037701\u5b50\u8282\u70b9\u4fe1\u606f ===\n  \u8b66\u544a: 37701\u8d85\u51fa\u6269\u5c55\u9876\u70b9\u8303\u56f4\nAfter high-degree vertex splitting: 8 verts, 14 edges 8.10623e-05 second(s)\ngroup open /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/8/graph.g\nread group over\nopen inquire inquire open /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/8/graph2.csv\nread inquire over\ninquire have 1\nwidth 4 V 8 E 14\n------------------------------------------------------------\ngraph interation 0 \n"
+  },
+  {
+    "n": 64,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/baseline-device0",
+      "unused",
+      "/home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/64/",
+      "graph",
+      "2",
+      "0",
+      "0"
+    ],
+    "exit_code": 124,
+    "timeout": true,
+    "output": "Device Number: 0\n  Device name:                NVIDIA RTX 6000 Ada Generation\nExpected edge count: 126\nGraph load (success): 64 verts, 126 edges 4.69685e-05 second(s)\nFound 0 high-degree vertices (>1024)\nnew_vert_count: 64\nson_list_map.size(): 0\nson_range_start_map.size(): 64\n\u5f00\u59cb\u6784\u5efa\u65b0\u7684CSR...\n\u539f\u59cb\u8fb9\u6570: 126, \u65b0\u8fb9\u6570: 126\n\u65b0CSR\u6784\u5efa\u5b8c\u6210: \u539f\u59cb\u9876\u70b9\u6570 64, \u6269\u5c55\u9876\u70b9\u6570 64, 126 \u6761\u8fb9\n\n=== \u9a8c\u8bc1\u5206\u5272\u7ed3\u679c ===\n\n=== \u7279\u5224\u6253\u537037701\u5b50\u8282\u70b9\u4fe1\u606f ===\n  \u8b66\u544a: 37701\u8d85\u51fa\u6269\u5c55\u9876\u70b9\u8303\u56f4\nAfter high-degree vertex splitting: 64 verts, 126 edges 7.39098e-05 second(s)\ngroup open /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/64/graph.g\nread group over\nopen inquire inquire open /home/wajid/projects/graphDatabaseAgent/validation/gpu_correctness_expansion/datasets/gpu4gst/64/graph2.csv\nread inquire over\ninquire have 1\nwidth 4 V 64 E 126\n------------------------------------------------------------\ngraph interation 0 \n"
+  }
+]

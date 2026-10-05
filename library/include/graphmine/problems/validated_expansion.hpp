@@ -100,7 +100,7 @@ class TransitiveClosure {
   ReachabilityOptions options_;
 };
 
-struct ButterflyOptions { ExecutionOptions execution; };
+struct ButterflyOptions : IsolatedBackendOptions { std::string backend = "graphminer"; };
 struct ButterflyOutput { std::uint64_t butterfly_count = 0; bool complete = true; };
 class ButterflyCounting {
  public:

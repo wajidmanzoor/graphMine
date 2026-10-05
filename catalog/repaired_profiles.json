@@ -1,0 +1,241 @@
+{
+  "schema_version": "1.0.0",
+  "routing_contract_version": "repaired-37-v2",
+  "integration_report": "validation/repaired_library/REPORT.md",
+  "public_api_evidence": "validation/repaired_library/results/native-summary.json",
+  "operations": {
+    "k-truss": {
+      "problem_id": "k_truss_decomposition",
+      "backend_id": "acctd",
+      "profile": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID.",
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::KTruss",
+        "options_type": "graphmine::KTrussOptions"
+      }
+    },
+    "densest-subgraph": {
+      "problem_id": "densest_subgraph",
+      "backend_id": "cds",
+      "profile": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::DensestSubgraph",
+        "options_type": "graphmine::DensestSubgraphOptions"
+      }
+    },
+    "maximal-biclique-counting": {
+      "problem_id": "maximal_biclique_enumeration",
+      "backend_id": "mbe-gpu",
+      "profile": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode.",
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::MaximalBicliqueCounting",
+        "options_type": "graphmine::MaximalBicliqueCountingOptions"
+      }
+    },
+    "personalized-pagerank": {
+      "problem_id": "personalized_pagerank_rwr",
+      "backend_id": "kpar",
+      "profile": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion.",
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::PersonalizedPageRank",
+        "options_type": "graphmine::PersonalizedPageRankOptions"
+      }
+    },
+    "group-steiner-tree": {
+      "problem_id": "group_steiner_tree",
+      "backend_id": "gpu4gst",
+      "profile": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint.",
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::GroupSteinerTree",
+        "options_type": "graphmine::GroupSteinerTreeOptions"
+      }
+    },
+    "influence-maximization": {
+      "problem_id": "influence_maximization",
+      "backend_id": "superfuser",
+      "profile": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution.",
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::InfluenceMaximization",
+        "options_type": "graphmine::InfluenceMaximizationOptions"
+      }
+    }
+  },
+  "backends": [
+    {
+      "problem_id": "k_truss_decomposition",
+      "backend_id": "acctd",
+      "operation_id": "k-truss",
+      "repair_directory": "acctd",
+      "validation": {
+        "workload_id": "repaired_acctd",
+        "implementation": "acctd",
+        "status": "validated_profile",
+        "note": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/acctd/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2020_accelerating_truss_heterogeneous"
+        ]
+      }
+    },
+    {
+      "problem_id": "densest_subgraph",
+      "backend_id": "cds",
+      "operation_id": "densest-subgraph",
+      "repair_directory": "cds",
+      "validation": {
+        "workload_id": "repaired_cds",
+        "implementation": "cds",
+        "status": "validated_profile",
+        "note": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/cds/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2026_bound_tightened_dsd"
+        ]
+      }
+    },
+    {
+      "problem_id": "maximal_biclique_enumeration",
+      "backend_id": "mbe-gpu",
+      "operation_id": "maximal-biclique-counting",
+      "repair_directory": "mbe_gpu",
+      "validation": {
+        "workload_id": "repaired_mbe-gpu",
+        "implementation": "mbe-gpu",
+        "status": "validated_profile",
+        "note": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/mbe_gpu/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2023_efficient_mbe_gpus"
+        ]
+      }
+    },
+    {
+      "problem_id": "personalized_pagerank_rwr",
+      "backend_id": "kpar",
+      "operation_id": "personalized-pagerank",
+      "repair_directory": "kpar",
+      "validation": {
+        "workload_id": "repaired_kpar",
+        "implementation": "kpar",
+        "status": "validated_profile",
+        "note": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/kpar/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2020_kpar"
+        ]
+      }
+    },
+    {
+      "problem_id": "group_steiner_tree",
+      "backend_id": "gpu4gst",
+      "operation_id": "group-steiner-tree",
+      "repair_directory": "gpu4gst",
+      "validation": {
+        "workload_id": "repaired_gpu4gst",
+        "implementation": "gpu4gst",
+        "status": "validated_profile",
+        "note": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/gpu4gst/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2025_gpu4gst"
+        ]
+      }
+    },
+    {
+      "problem_id": "influence_maximization",
+      "backend_id": "superfuser",
+      "operation_id": "influence-maximization",
+      "repair_directory": "superfuser",
+      "validation": {
+        "workload_id": "repaired_superfuser",
+        "implementation": "superfuser",
+        "status": "validated_profile",
+        "note": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/superfuser/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2021_superfuser"
+        ]
+      }
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "backend_id": "gamma-butterfly",
+      "operation_id": "butterfly-counting",
+      "repair_directory": "gamma_butterfly",
+      "validation": {
+        "workload_id": "repaired_gamma-butterfly",
+        "implementation": "gamma-butterfly",
+        "status": "validated_profile",
+        "note": "Exact global butterfly count on an undirected graph with declared sides; C4 injective embedding count divided by eight. No participation, listing, or core decomposition.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/gamma_butterfly/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2022_gamma_reuse"
+        ]
+      }
+    },
+    {
+      "problem_id": "maximum_clique",
+      "backend_id": "cuda-ms",
+      "operation_id": "maximum-clique",
+      "repair_directory": "cuda_ms",
+      "validation": {
+        "workload_id": "repaired_cuda-ms",
+        "implementation": "cuda-ms",
+        "status": "validated_profile",
+        "note": "Exact single maximum-clique witness; single GPU; no all-ties mode.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/cuda_ms/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2019_maximum_clique_cuda"
+        ]
+      }
+    },
+    {
+      "problem_id": "maximum_clique",
+      "backend_id": "maximum-clique-on-gpu",
+      "operation_id": "maximum-clique",
+      "repair_directory": "maximum_clique_on_gpu",
+      "validation": {
+        "workload_id": "repaired_maximum-clique-on-gpu",
+        "implementation": "maximum-clique-on-gpu",
+        "status": "validated_profile",
+        "note": "Exact single maximum-clique witness; single GPU; no all-ties mode.",
+        "checks": {
+          "standalone_report": "validation/algorithm_repairs/maximum_clique_on_gpu/README.md",
+          "public_api_suite": "validation/repaired_library/results/native-summary.json"
+        },
+        "paper_artifacts": [
+          "2024_maximum_clique_many_core_gpu"
+        ]
+      }
+    }
+  ]
+}

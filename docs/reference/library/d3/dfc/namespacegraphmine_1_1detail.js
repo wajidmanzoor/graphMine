@@ -42,6 +42,7 @@ var namespacegraphmine_1_1detail =
       [ "cuda_status", "d4/d89/namespacegraphmine_1_1detail_1_1anonymous__namespace_02turbobc_8cu_03.html#a861d1b586fb77b8b7be669684d82910f", null ],
       [ "turbobc_mutex", "d4/d89/namespacegraphmine_1_1detail_1_1anonymous__namespace_02turbobc_8cu_03.html#a3b51e1fd8b70ad65a5f292111c66cc3b", null ]
     ] ],
+    [ "isolated", "d9/db7/namespacegraphmine_1_1detail_1_1isolated.html", "d9/db7/namespacegraphmine_1_1detail_1_1isolated" ],
     [ "temporal_cuda", "d4/d1c/namespacegraphmine_1_1detail_1_1temporal__cuda.html", "d4/d1c/namespacegraphmine_1_1detail_1_1temporal__cuda" ],
     [ "BackendCountResult", "d7/dfb/structgraphmine_1_1detail_1_1BackendCountResult.html", "d7/dfb/structgraphmine_1_1detail_1_1BackendCountResult" ],
     [ "BetweennessCentralityBackendResult", "db/d73/structgraphmine_1_1detail_1_1BetweennessCentralityBackendResult.html", "db/d73/structgraphmine_1_1detail_1_1BetweennessCentralityBackendResult" ],

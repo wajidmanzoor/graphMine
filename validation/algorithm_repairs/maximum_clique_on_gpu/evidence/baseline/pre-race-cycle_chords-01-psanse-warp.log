@@ -1,0 +1,46 @@
+========= COMPUTE-SANITIZER
+[0mWelcome ---------------------
+    Main Task = mcp
+    Source Graph = /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/modes-racecheck/cycle_chords-01.bel
+    Device ID(s) = 0
+    Coloring Algorithm = San Segundo
+    Lower Bound Max Clique = 0
+    Parallelism = Warps
+-----------------------------
+[1;32m[18:02:18] Read graph time: 0.539567 s
+[0m[1;32m[18:02:18] n = 9 and m = 18
+[0m[1;32m[18:02:18] Transfer Time: 0.000244 s
+[0mMax Core = 2
+[1;32m[18:02:18] Degeneracy ordering time: 0.143409 s
+[0m[1;32m[18:02:18] Heuristic clique size: 2
+[0m[1;32m[18:02:18] Reducing the graph and reversing the degeneracy order..
+[0m[1;32m[18:02:18] Reduced to n = 8 and m = 18
+[0m[1;32m[18:02:19] CSR Recreation time: 0.664521 s
+[0m[1;32m[18:02:19] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[18:02:19] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:02:19] VRAM usage: 1214840832 B
+[0m[1;32m[18:02:19] Max external parallelism: 6816
+[0m[1;32m[18:02:19] Launching search kernel with grid size: 1704, and block size: 128
+[0mFinished Launching Instance 0.
+Found clique of size 3.
+========= Error: Race reported between Write access at mcp::wait_for_donor_warp_(cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> &, unsigned int &, unsigned int &, unsigned int *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *)+0xaa0 in mcp_utils.cuh:315
+=========     and Read access at void mcp_kernel_l1_wl_donor_w_psanse<unsigned int, (unsigned int)128, (unsigned int)32>(mcp::GLOBAL_HANDLE<T1>, unsigned int *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *)+0xe5e0 in mcp_kernel_wl_donor_warp.cuh:67 [11608 hazards]
+========= 
+========= Error: Race reported between Read access at void mcp::do_warp_fork_shared<unsigned int, (unsigned int)128, (unsigned int)32>(mcp::LOCAL_HANDLE<T1> &, mcp::GLOBAL_HANDLE<T1> &, mcp::WARP_SHARED_HANDLE<T1, T2, T3> &, const T1 &, const T1 *, const T1 *, mcp::SHARED_HANDLE<T1, T2, T3> &)+0xb2f0 in mcp_utils.cuh:1113
+=========     and Write access at void mcp_kernel_l1_wl_donor_w_psanse<unsigned int, (unsigned int)128, (unsigned int)32>(mcp::GLOBAL_HANDLE<T1>, unsigned int *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *)+0x77d0 in mcp_kernel_wl_donor_warp.cuh:250 [4 hazards]
+=========     and Write access at void mcp_kernel_l1_wl_donor_w_psanse<unsigned int, (unsigned int)128, (unsigned int)32>(mcp::GLOBAL_HANDLE<T1>, unsigned int *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *)+0xdd10 in mcp_kernel_wl_donor_warp.cuh:368 [4 hazards]
+========= 
+========= Error: Race reported between Write access at void cuda::std::__4::__cuda_atomic_store<unsigned int>(T1 *, T1 &, cuda::std::__4::integral_constant<cuda::std::__4::__atomic_cuda_memorder, (cuda::std::__4::__atomic_cuda_memorder)1>, cuda::std::__4::__atomic_cuda_operand_tag<(cuda::std::__4::__atomic_cuda_operand)3, (unsigned long)32>, cuda::std::__4::__thread_scope_block_tag, cuda::std::__4::integral_constant<bool, (bool)0>)+0x7830 in cuda_ptx_generated.h:930
+=========     and Read access at void cuda::std::__4::__cuda_atomic_load<unsigned int>(const T1 *, T1 &, cuda::std::__4::integral_constant<cuda::std::__4::__atomic_cuda_memorder, (cuda::std::__4::__atomic_cuda_memorder)0>, cuda::std::__4::__atomic_cuda_operand_tag<(cuda::std::__4::__atomic_cuda_operand)3, (unsigned long)32>, cuda::std::__4::__thread_scope_block_tag, cuda::std::__4::integral_constant<bool, (bool)0>)+0xb110 in cuda_ptx_generated.h:294 [4 hazards]
+========= 
+========= Error: Race reported between Write access at void cuda::std::__4::__cuda_atomic_store<unsigned int>(T1 *, T1 &, cuda::std::__4::integral_constant<cuda::std::__4::__atomic_cuda_memorder, (cuda::std::__4::__atomic_cuda_memorder)1>, cuda::std::__4::__atomic_cuda_operand_tag<(cuda::std::__4::__atomic_cuda_operand)3, (unsigned long)32>, cuda::std::__4::__thread_scope_block_tag, cuda::std::__4::integral_constant<bool, (bool)0>)+0xb370 in cuda_ptx_generated.h:930
+=========     and Read access at void cuda::std::__4::__cuda_atomic_load<unsigned int>(const T1 *, T1 &, cuda::std::__4::integral_constant<cuda::std::__4::__atomic_cuda_memorder, (cuda::std::__4::__atomic_cuda_memorder)0>, cuda::std::__4::__atomic_cuda_operand_tag<(cuda::std::__4::__atomic_cuda_operand)3, (unsigned long)32>, cuda::std::__4::__thread_scope_block_tag, cuda::std::__4::integral_constant<bool, (bool)0>)+0xdb20 in cuda_ptx_generated.h:294 [4 hazards]
+========= 
+========= Warning: Race reported between Read access at void mcp::do_warp_fork_shared<unsigned int, (unsigned int)128, (unsigned int)32>(mcp::LOCAL_HANDLE<T1> &, mcp::GLOBAL_HANDLE<T1> &, mcp::WARP_SHARED_HANDLE<T1, T2, T3> &, const T1 &, const T1 *, const T1 *, mcp::SHARED_HANDLE<T1, T2, T3> &)+0xba20 in mcp_utils.cuh:1110
+=========     and Write access at void mcp::prepare_warp_fork_<unsigned int, (unsigned int)128, (unsigned int)32>(mcp::LOCAL_HANDLE<T1> &, mcp::WARP_SHARED_HANDLE<T1, T2, T3> &)+0xbac0 in mcp_utils.cuh:1462 [4 hazards]
+========= 
+[1;32m[18:02:19] search time 0.416875 s
+[0mFound a maximum clique of size 3.
+[1;32m[18:02:19] Total time: 1.765565 s
+[0mDone ...
+========= RACECHECK SUMMARY: 5 hazards displayed (4 errors, 1 warning)

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
-  "operation_count": 18,
-  "validated_backend_count": 31,
+  "operation_count": 24,
+  "validated_backend_count": 38,
   "operations": [
     {
       "id": "maximal-cliques",
@@ -488,7 +488,7 @@
     {
       "id": "butterfly-counting",
       "research_problem": "butterfly_counting_bipartite",
-      "usage": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",
+      "usage": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer|gamma-butterfly] (global count only; undirected bipartite graph)",
       "backends": [
         {
           "id": "graphminer",
@@ -499,6 +499,125 @@
           "capabilities": [
             "exact global butterfly count on checked bipartite topology",
             "reuses existing GraphMiner square kernel; no alpha/beta core or listing modes"
+          ]
+        },
+        {
+          "id": "gamma-butterfly",
+          "display_name": "gamma-butterfly",
+          "problem": "butterfly_counting_bipartite",
+          "source_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+          "validated": true,
+          "capabilities": [
+            "exact global butterfly count from injective unlabelled C4 embeddings / 8",
+            "declared bipartite sides; single GPU; no listing or alpha/beta cores"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k-truss",
+      "research_problem": "k_truss_decomposition",
+      "usage": "graphmine run k-truss --graph GRAPH.json [--backend acctd]",
+      "backends": [
+        {
+          "id": "acctd",
+          "display_name": "acctd",
+          "problem": "k_truss_decomposition",
+          "source_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1",
+          "validated": true,
+          "capabilities": [
+            "exact full per-edge truss decomposition; single GPU",
+            "unweighted undirected; loops removed; parallel edges use smallest external edge ID"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "densest-subgraph",
+      "research_problem": "densest_subgraph",
+      "usage": "graphmine run densest-subgraph --graph GRAPH.json [--backend cds]",
+      "backends": [
+        {
+          "id": "cds",
+          "display_name": "cds",
+          "problem": "densest_subgraph",
+          "source_commit": "3e704f98cf873336e2cf789570774039c8d6f092",
+          "validated": true,
+          "capabilities": [
+            "exact unweighted edge density |E(S)|/|S| with vertex witness",
+            "single GPU; nonempty undirected graph; no cardinality or weighted objective"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "maximal-biclique-counting",
+      "research_problem": "maximal_biclique_enumeration",
+      "usage": "graphmine run maximal-biclique-counting --graph GRAPH.json [--backend mbe-gpu] (count only; attributes.side = left|right)",
+      "backends": [
+        {
+          "id": "mbe-gpu",
+          "display_name": "mbe-gpu",
+          "problem": "maximal_biclique_enumeration",
+          "source_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
+          "validated": true,
+          "capabilities": [
+            "exact nonempty maximal-biclique count; scheduled single-GPU variant",
+            "declared bipartite sides; no vertex-set listing, size filter, bitmap or multi-GPU mode"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "personalized-pagerank",
+      "research_problem": "personalized_pagerank_rwr",
+      "usage": "graphmine run personalized-pagerank --graph GRAPH.json --seed-vertex ID --top-k N --restart-probability 0.2 [--epsilon 0.01] [--random-seed N]",
+      "backends": [
+        {
+          "id": "kpar",
+          "display_name": "kpar",
+          "problem": "personalized_pagerank_rwr",
+          "source_commit": "v1.0:791987a738faf84d0fcab882b2f74cbb2efd4451ac9888b80e0d120ea6421916",
+          "validated": true,
+          "capabilities": [
+            "approximate top-k PPR; single seed; restart probability 0.2",
+            "directed unweighted outgoing multigraph; dangling mass returns to seed; no certified error bound"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group-steiner-tree",
+      "research_problem": "group_steiner_tree",
+      "usage": "graphmine run group-steiner-tree --graph GRAPH.json --groups '[[ID,...],...]' [--backend gpu4gst]",
+      "backends": [
+        {
+          "id": "gpu4gst",
+          "display_name": "gpu4gst",
+          "problem": "group_steiner_tree",
+          "source_commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+          "validated": true,
+          "capabilities": [
+            "exact undirected group Steiner tree; 1..16 nonempty groups; full tree certificate",
+            "nonnegative integer edge weights <=2^53-1; cost bound below 2^58; single GPU"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "influence-maximization",
+      "research_problem": "influence_maximization",
+      "usage": "graphmine run influence-maximization --graph GRAPH.json --diffusion-model independent_cascade --seed-set-size N [--sample-count 256] [--random-seed N]",
+      "backends": [
+        {
+          "id": "superfuser",
+          "display_name": "superfuser",
+          "problem": "influence_maximization",
+          "source_commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+          "validated": true,
+          "capabilities": [
+            "approximate independent-cascade seed selection; guarantee_met=false",
+            "explicit edge probabilities; independent holdout spread; single GPU; no linear threshold"
           ]
         }
       ]

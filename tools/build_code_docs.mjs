@@ -400,7 +400,7 @@ function renderResearchPortal(artifacts, problemMap) {
                 <div><dt>Source files</dt><dd>${artifact.sourceCount}</dd></div>
                 <div><dt>Commit</dt><dd><code>${escapeHtml(artifact.code_commit.slice(0, 12))}</code></dd></div>
               </dl>
-              <a class="card-action" href="${artifact.outputSlug}/">Open function reference <span aria-hidden="true">→</span></a>
+              <a class="card-action" href="${artifact.outputSlug}/">${artifact.source_distribution === "external_checkout" ? "Open build and repair notes" : "Open function reference"} <span aria-hidden="true">→</span></a>
             </article>`,
         )
         .join("");
@@ -532,6 +532,27 @@ try {
   for (const [index, artifact] of artifacts.entries()) {
     const problem = problemMap.get(artifact.problem_id);
     if (!problem) throw new Error(`Unknown problem: ${artifact.problem_id}`);
+    if (artifact.source_distribution === "external_checkout") {
+      const outputSlug = artifactSlug(artifact);
+      const output = assertSafeOutput(path.join(researchRoot, outputSlug));
+      fs.mkdirSync(output, { recursive: true });
+      const repo = "https://github.com/wajidmanzoor/graphMine/blob/main/";
+      fs.writeFileSync(path.join(output, "index.html"), `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(artifact.title)} · GraphMine</title><link rel="stylesheet" href="../../styles.css"></head>
+<body><main class="shell"><p><a href="../">Research references</a> · <a href="../../library/">C++ API</a></p>
+<h1>${escapeHtml(artifact.title)}</h1><p>${escapeHtml(problem.name)}</p>
+<p>This repaired implementation is built from a pinned external checkout. GraphMine publishes the adapter, repair patch, build script, and test evidence; this page does not reproduce upstream source code.</p>
+<p>Upstream: <a href="${escapeHtml(artifact.code_url)}">${escapeHtml(artifact.code_url)}</a><br>
+Commit: <code>${escapeHtml(artifact.code_commit)}</code>. Exact build inputs, including any release-archive hash, are recorded in the repair manifest.</p>
+<ul><li><a href="${repo}library/docs/repaired_algorithms.md">Supported profiles, C++ and CLI usage</a></li>
+<li><a href="${repo}${escapeHtml(artifact.repair_report)}">Repair and standalone test evidence</a></li>
+<li><a href="${repo}${escapeHtml(artifact.repair_manifest)}">Pinned build inputs</a></li>
+<li><a href="${repo}validation/repaired_library/REPORT.md">Library and agent integration tests</a></li>
+<li><a href="${repo}THIRD_PARTY.md">Source and license notes</a></li></ul></main></body></html>\n`);
+      Object.assign(artifact, { outputSlug, sourceCount: "External" });
+      continue;
+    }
     const selectedInputs = artifactInputs[artifact.paper_id];
     if (!selectedInputs) throw new Error(`Missing input rule for ${artifact.paper_id}`);
 
@@ -579,9 +600,19 @@ try {
     runDoxygen(configPath, artifact.paper_id);
     requireGeneratedFiles(
       output,
-      ["index.html", "files.html", "globals.html", "functions.html"],
+      ["index.html", "files.html"],
       artifact.paper_id,
     );
+    // A C/CUDA-only artifact can have free functions without any classes.
+    // Omit navigation to indexes Doxygen correctly did not generate.
+    const indexPath = path.join(output, "index.html");
+    let indexHtml = fs.readFileSync(indexPath, "utf8");
+    for (const optionalIndex of ["functions.html", "annotated.html", "globals.html"]) {
+      if (!fs.existsSync(path.join(output, optionalIndex))) {
+        indexHtml = indexHtml.replace(new RegExp(`<li><a href="${optionalIndex.replace(".", "\\.")}">[^<]*</a></li>`, "g"), "");
+      }
+    }
+    fs.writeFileSync(indexPath, indexHtml);
     if (
       !fs.existsSync(path.join(output, "globals_func.html")) &&
       !fs.existsSync(path.join(output, "functions_func.html"))

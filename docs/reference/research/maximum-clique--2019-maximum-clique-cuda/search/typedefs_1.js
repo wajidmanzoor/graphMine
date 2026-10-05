@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['t_5fbitmask_0',['t_bitmask',['../dd/dc2/bitops_8h.html#ab678163a34b04d052562172370bc0e65',1,'bitops.h']]],
-  ['t_5fmaskcell_1',['t_maskcell',['../dd/dc2/bitops_8h.html#a133c975349fc6d82972376342038aa37',1,'bitops.h']]]
+  ['ms_5fword_0',['ms_word',['../dd/dad/namespaceanonymous__namespace_02exact__cuda_8cuh_03.html#ab3c374c8aa70d13e013b320cc11b6ae1',1,'anonymous_namespace{exact_cuda.cuh}']]]
 ];

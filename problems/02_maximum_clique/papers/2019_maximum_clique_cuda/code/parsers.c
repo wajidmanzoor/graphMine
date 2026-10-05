@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
+#include <ctype.h>
 
 #include "simple_macros.h"
 #include "parsers.h"
@@ -123,76 +125,54 @@ int read_graph_DIMACS_bin(char *file, char ***arr,  int *edges)
     return N;
 }
 
-int read_graph_DIMACS_ascii(char *file, char ***arr,  int *edges)
+static void graph_input_error(FILE *fp, const char *message)
 {
+    fprintf(stderr, "Invalid graph input: %s\n", message);
+    if (fp) fclose(fp);
+    exit(10);
+}
 
-    FILE *fp;
-
-
-    if ( (fp=fopen(file,"r"))==NULL ) {
-        printf("ERROR: Cannot open infile\n");
-        exit(10);
+int read_graph_DIMACS_ascii(char *file, char ***arr, int *edges)
+{
+    FILE *fp = fopen(file, "r");
+    if (!fp) graph_input_error(0, "cannot open file");
+    char *line = 0;
+    size_t capacity = 0;
+    int n = -1, expected = 0, seen = 0;
+    *arr = 0;
+    while (getline(&line, &capacity, fp) >= 0) {
+        char *text = line;
+        while (isspace((unsigned char)*text)) ++text;
+        if (!*text || *text == 'c') continue;
+        char tag, extra, format[16];
+        long long u, v;
+        if (*text == 'p') {
+            if (n >= 0 || sscanf(text, " %c %15s %lld %lld %c", &tag, format, &u, &v, &extra) != 4 ||
+                (strcmp(format, "edge") && strcmp(format, "col")) || u < 0 || u > INT_MAX ||
+                v < 0 || v > INT_MAX || v > u*(u-1)/2)
+                graph_input_error(fp, "bad or duplicate header");
+            n = (int)u;
+            expected = (int)v;
+            if (n) {
+                *arr = (char**)make_array(n, n, sizeof(char));
+                if (!*arr) graph_input_error(fp, "matrix allocation failed");
+            }
+        } else if (*text == 'e') {
+            if (n < 0 || sscanf(text, " %c %lld %lld %c", &tag, &u, &v, &extra) != 3 ||
+                u < 1 || v < 1 || u > n || v > n || u == v)
+                graph_input_error(fp, "bad edge endpoints");
+            --u; --v;
+            if ((*arr)[u][v]) graph_input_error(fp, "duplicate edge");
+            if (seen >= expected) graph_input_error(fp, "more edges than declared");
+            (*arr)[u][v] = (*arr)[v][u] = 1;
+            ++seen;
+        } else graph_input_error(fp, "unknown record");
     }
-
-    char c;
-    int N=-1;
-    int n_edges=-1;
-    int stop = 0;
-
-    while (!stop && (c = fgetc(fp)) != EOF ){
-        switch (c)
-        {
-            case 'c':
-                while ((c = fgetc(fp)) != '\n' && c != '\0');
-                break;
-
-            case 'p':
-                fscanf(fp, "%*s %d %d\n", &N, &n_edges);
-                break;
-
-            case 'e':
-                ungetc(c, fp);
-                stop=1;
-                break;
-
-            default:
-                printf("ERROR: corrupted infile\n");
-                exit(10);
-                break;
-        }
-    }
-
-
-    if (N<0 || n_edges<0) {
-        printf("ERROR: corrupted infile\n");
-        exit(10);
-    }
-
-	*arr=(char **)make_array(N, N, sizeof(char));
-
-    while ((c = fgetc(fp)) != EOF){
-        int i, j;
-        switch (c) {
-            case 'e':
-                if (!fscanf(fp, "%d %d", &i, &j)) {
-                    printf("ERROR: corrupted inputfile\n");
-                    exit(10);
-                }
-
-                (*arr)[i-1][j-1]=1;
-                (*arr)[j-1][i-1]=1;
-                break;
-
-            default:
-                break;
-        }
-    }
-
+    free(line);
+    if (n < 0 || seen != expected) graph_input_error(fp, "missing header or edge count mismatch");
     fclose(fp);
-
-    *edges=n_edges;
-
-    return N;
+    if (edges) *edges = seen;
+    return n;
 }
 
 

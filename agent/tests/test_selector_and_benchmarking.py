@@ -33,7 +33,21 @@ def test_feature_bucket_is_stable() -> None:
     )
 
 
-def test_correctness_exclusion_overrides_rankings_and_fails_closed(settings, tmp_path):
+def test_correctness_exclusion_overrides_rankings_and_fails_closed(
+    settings, tmp_path, monkeypatch
+):
+    from graphmine_agent import selector as module
+
+    monkeypatch.setattr(
+        module,
+        "CORRECTNESS_EXCLUSIONS",
+        {
+            "maximum-clique": {
+                "cuda-ms": "test-only quarantined pending application re-audit",
+                "maximum-clique-on-gpu": "test-only quarantined pending application re-audit",
+            }
+        },
+    )
     catalog = Catalog(settings)
     # Even without a benchmark policy, auto must not fall back to CUDA-MS.
     selector = BackendSelector(
@@ -51,7 +65,9 @@ def test_correctness_exclusion_overrides_rankings_and_fails_closed(settings, tmp
     assert selected.backend_id == "gpu-maximum-clique"
     with pytest.raises(PlanValidationError, match="correctness-approved"):
         selector.select(plan, None, {"cuda-ms"})
-    with pytest.raises(PlanValidationError, match="cannot reliably certify"):
+    with pytest.raises(
+        PlanValidationError, match="quarantined pending application re-audit"
+    ):
         selector.select(
             plan.model_copy(update={"backend_id": "cuda-ms"}), None, {"cuda-ms"}
         )

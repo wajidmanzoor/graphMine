@@ -1,0 +1,21 @@
+{
+  "problem_id": "densest_subgraph",
+  "paper_id": "2026_bound_tightened_dsd",
+  "title": "Bound-Tightened Densest Subgraph Discovery on GPU",
+  "checked_at": "2026-10-03T22:04:41Z",
+  "paper": {
+    "source_url": "https://upenn.ferric.systems/dbscholar/sigmod_papers/2026/10.1145_3802023.pdf",
+    "status": "downloaded",
+    "local_path": "paper.pdf",
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/wajidmanzoor/CDS",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "3e704f98cf873336e2cf789570774039c8d6f092",
+    "license_file": null,
+    "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+    "error": null
+  }
+}

@@ -14,7 +14,6 @@ var searchData=
   ['d_5ftmp_11',['d_tmp',['../d8/d55/structcuda__clique__data.html#a821c251739e9de8143ec3c0d5d8b114b',1,'cuda_clique_data']]],
   ['d_5fx_12',['d_x',['../d6/ded/structcuda__clique__instance.html#a7d017f07be43aaffee6e3a74a76470b9',1,'cuda_clique_instance']]],
   ['d_5fx_5fstatus_13',['d_x_status',['../d6/ded/structcuda__clique__instance.html#ad2e4c0a654ce3c4778fa573b05e2e65c',1,'cuda_clique_instance']]],
-  ['dev_5fread_5fwait_5flock_14',['dev_read_wait_lock',['../d2/d82/motzkin__cuda_8cu.html#af68f4dc174c432bc255a78a9662cbf17',1,'motzkin_cuda.cu']]],
-  ['dev_5freadcount_15',['dev_readcount',['../d2/d82/motzkin__cuda_8cu.html#a6e883a1ea7e42305191788ad0929318f',1,'motzkin_cuda.cu']]],
-  ['doc_16',['doc',['../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5',1,'find_cliques.c']]]
+  ['data_14',['data',['../de/dc0/structanonymous__namespace_02exact__cuda_8cuh_03_1_1ms__device__buffer.html#a1d725d7ca2f63d479887a66e9eecb646',1,'anonymous_namespace{exact_cuda.cuh}::ms_device_buffer']]],
+  ['doc_15',['doc',['../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5',1,'find_cliques.c']]]
 ];

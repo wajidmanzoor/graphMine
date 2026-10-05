@@ -1,10 +1,13 @@
 var searchData=
 [
-  ['scopedbackendoutputsilence_0',['ScopedBackendOutputSilence',['../de/d42/classanonymous__namespace_02graphmine_8cpp_03_1_1ScopedBackendOutputSilence.html',1,'anonymous_namespace{graphmine.cpp}']]],
-  ['status_1',['Status',['../d9/d6a/classgraphmine_1_1Status.html',1,'graphmine']]],
-  ['subgraphisomorphism_2',['SubgraphIsomorphism',['../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html',1,'graphmine']]],
-  ['subgraphisomorphismbackendresult_3',['SubgraphIsomorphismBackendResult',['../d7/d70/structgraphmine_1_1detail_1_1SubgraphIsomorphismBackendResult.html',1,'graphmine::detail']]],
-  ['subgraphisomorphismoptions_4',['SubgraphIsomorphismOptions',['../df/da3/structgraphmine_1_1SubgraphIsomorphismOptions.html',1,'graphmine']]],
-  ['subgraphisomorphismoutput_5',['SubgraphIsomorphismOutput',['../d4/dd8/structgraphmine_1_1SubgraphIsomorphismOutput.html',1,'graphmine']]],
-  ['supportreport_6',['SupportReport',['../d1/d6a/structgraphmine_1_1SupportReport.html',1,'graphmine']]]
+  ['rankedvertex_0',['RankedVertex',['../d2/da3/structgraphmine_1_1RankedVertex.html',1,'graphmine']]],
+  ['rawmotifedgeinfo_1',['RawMotifEdgeInfo',['../db/def/structgraphmine_1_1detail_1_1temporal__cuda_1_1RawMotifEdgeInfo.html',1,'graphmine::detail::temporal_cuda']]],
+  ['rawtemporaledge_2',['RawTemporalEdge',['../db/de4/structgraphmine_1_1detail_1_1temporal__cuda_1_1RawTemporalEdge.html',1,'graphmine::detail::temporal_cuda']]],
+  ['reachabilityoptions_3',['ReachabilityOptions',['../d3/dff/structgraphmine_1_1ReachabilityOptions.html',1,'graphmine']]],
+  ['reachabilityoutput_4',['ReachabilityOutput',['../d4/d28/structgraphmine_1_1ReachabilityOutput.html',1,'graphmine']]],
+  ['reachablepair_5',['ReachablePair',['../d8/d57/structgraphmine_1_1ReachablePair.html',1,'graphmine']]],
+  ['relation_6',['Relation',['../d0/dff/structRelation.html',1,'']]],
+  ['relationalacopy_7',['RelationalACopy',['../d3/d04/structRelationalACopy.html',1,'']]],
+  ['relationalcopy_8',['RelationalCopy',['../dd/df7/structRelationalCopy.html',1,'']]],
+  ['relationaljoin_9',['RelationalJoin',['../da/d59/structRelationalJoin.html',1,'']]]
 ];

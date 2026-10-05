@@ -1,0 +1,24 @@
+{
+  "commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
+  "upstream_url": "https://github.com/fhxu00/MBE-GPU",
+  "cub_commit": "ec07c16deb3ed8d21c7eefb4c40a89ad16ddb749",
+  "patch_sha256": "7c9561531f45c76dadfb3b5edb6dd8fcd8d19e541d783a3644c9461d5d9938de",
+  "patched_source_sha256": {
+    "src/BiGraph.cu": "e0eabc4f0653c9ed248282a60a0860d79dda2aa17337a557ea589d49dab43af0",
+    "src/BiGraph.h": "bcc35440889c43613b4a7a5b036cb9dbf0e53ce75529c678ea674f05162a6a14",
+    "src/BicliqueFinder.cu": "78f79eb1cdd485e397d031d481c7812376cc817e59cd831d8a64f661e41896bc",
+    "src/BicliqueFinder.h": "b410cab75fc40ecd592b7c444d7dffd32269cb909136ea71e432e43c56ce1332",
+    "src/CMakeLists.txt": "80ea0bbbf63520b9033149ba6eceb01fbf9f63444d782f524096c94cbe7015d9",
+    "src/CudaInfo.cu": "1ddcf5b7eff28d25500884b35ca4931115659c8a596b98ae4619044cf085496d",
+    "src/GpuUtil.cuh": "623fed6151f85419738fd60a580ad6eb5a717ec588dfd789f24ebf03eeea8ff7",
+    "src/IterFinderGpu.cu": "bc256812099995c35733ccef970dc220ae8b7e68f3e906827d89f3d1ddabf7aa",
+    "src/IterFinderGpu.h": "b34ba53d993c45ffc9dcf67553bede0ffa08dfc8c74e9d29b52954e619f2eaeb",
+    "src/Makefile": "ff9dfabc11c55dc01069c6dac144c747909401f56da614d37523d06ebaf37a91",
+    "src/Utility.cu": "121acdbebcdf3bbc0d579acc4c2a17d6d56105d4496fdab60781a2b8c5203aa9",
+    "src/Utility.h": "73008f8291bfa77a75aba4ca5e11c4270e42aab42bbc04f984204c98df725bdc",
+    "src/WorkList.cuh": "c210ffdfebf1453d06ec7864103564a8dccbd37e13438e67c1a7cb6486d37df6",
+    "src/main.cu": "1f94ecb22db6f628485c09d9861ecd035553ef02ced4e36cb1370b653e4a05c0"
+  },
+  "baseline_binary_sha256": "e5f900a00604e1e58d1e335c87bc3a378449b21fd0c980bde74f8df7a7af15e6",
+  "scope": "MBE_GPU, single GPU variants -s 0, -s 1, -s 2; sorted unique nonnegative adjacency rows, nonempty sides"
+}

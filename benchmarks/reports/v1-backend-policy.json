@@ -1,0 +1,307 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-01T16:45:53.307712+00:00",
+  "source_report_sha256": "d295ccfc04d874ff683b97a1336b36a1e881f66fa19b678dec63a937df7bf4c0",
+  "operations": {
+    "betweenness-centrality": {
+      "global_ranked_backends": [
+        "turbo-bc"
+      ],
+      "global_median_wall_ms": {
+        "turbo-bc": 257.526323
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "turbo-bc"
+          ],
+          "median_wall_ms": {
+            "turbo-bc": 257.526323
+          },
+          "sample_count": 3
+        }
+      },
+      "sample_count": 3
+    },
+    "community-detection": {
+      "global_ranked_backends": [
+        "gleiden"
+      ],
+      "global_median_wall_ms": {
+        "gleiden": 231.428791
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "gleiden"
+          ],
+          "median_wall_ms": {
+            "gleiden": 231.428791
+          },
+          "sample_count": 3
+        }
+      },
+      "sample_count": 3
+    },
+    "dynamic-triangle-counting": {
+      "global_ranked_backends": [
+        "edtc"
+      ],
+      "global_median_wall_ms": {
+        "edtc": 238.765787
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "edtc"
+          ],
+          "median_wall_ms": {
+            "edtc": 238.765787
+          },
+          "sample_count": 3
+        }
+      },
+      "sample_count": 3
+    },
+    "graph-motifs": {
+      "global_ranked_backends": [
+        "dumato",
+        "graphminer",
+        "graphset"
+      ],
+      "global_median_wall_ms": {
+        "graphminer": 279.779052,
+        "dumato": 262.016961,
+        "graphset": 410.752704
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "dumato",
+            "graphminer",
+            "graphset"
+          ],
+          "median_wall_ms": {
+            "graphminer": 279.779052,
+            "dumato": 262.016961,
+            "graphset": 410.752704
+          },
+          "sample_count": 9
+        }
+      },
+      "sample_count": 9
+    },
+    "k-cliques": {
+      "global_ranked_backends": [
+        "kcgpu",
+        "graphset",
+        "gamma"
+      ],
+      "global_median_wall_ms": {
+        "kcgpu": 252.19439,
+        "graphset": 267.082889,
+        "gamma": 499.752911
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "kcgpu",
+            "graphset",
+            "gamma"
+          ],
+          "median_wall_ms": {
+            "kcgpu": 252.19439,
+            "graphset": 267.082889,
+            "gamma": 499.752911
+          },
+          "sample_count": 9
+        }
+      },
+      "sample_count": 9
+    },
+    "k-core": {
+      "global_ranked_backends": [
+        "kcore-gpu"
+      ],
+      "global_median_wall_ms": {
+        "kcore-gpu": 274.361085
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "kcore-gpu"
+          ],
+          "median_wall_ms": {
+            "kcore-gpu": 274.361085
+          },
+          "sample_count": 3
+        }
+      },
+      "sample_count": 3
+    },
+    "maximal-bicliques": {
+      "global_ranked_backends": [
+        "cumbe"
+      ],
+      "global_median_wall_ms": {
+        "cumbe": 276.784204
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "cumbe"
+          ],
+          "median_wall_ms": {
+            "cumbe": 276.784204
+          },
+          "sample_count": 3
+        }
+      },
+      "sample_count": 3
+    },
+    "maximal-cliques": {
+      "global_ranked_backends": [
+        "mce-gpu",
+        "rdmce",
+        "g2-aimd"
+      ],
+      "global_median_wall_ms": {
+        "mce-gpu": 275.6027,
+        "g2-aimd": 305.194287,
+        "rdmce": 282.012826
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "mce-gpu",
+            "rdmce",
+            "g2-aimd"
+          ],
+          "median_wall_ms": {
+            "mce-gpu": 275.6027,
+            "g2-aimd": 305.194287,
+            "rdmce": 282.012826
+          },
+          "sample_count": 9
+        }
+      },
+      "sample_count": 9
+    },
+    "maximum-clique": {
+      "global_ranked_backends": [
+        "cuda-ms",
+        "maximum-clique-on-gpu",
+        "gpu-maximum-clique"
+      ],
+      "global_median_wall_ms": {
+        "cuda-ms": 278.59661,
+        "gpu-maximum-clique": 287.870156,
+        "maximum-clique-on-gpu": 279.818323
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "cuda-ms",
+            "maximum-clique-on-gpu",
+            "gpu-maximum-clique"
+          ],
+          "median_wall_ms": {
+            "cuda-ms": 278.59661,
+            "gpu-maximum-clique": 287.870156,
+            "maximum-clique-on-gpu": 279.818323
+          },
+          "sample_count": 9
+        }
+      },
+      "sample_count": 9
+    },
+    "quasi-cliques": {
+      "global_ranked_backends": [
+        "cuqc"
+      ],
+      "global_median_wall_ms": {
+        "cuqc": 259.296596
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "cuqc"
+          ],
+          "median_wall_ms": {
+            "cuqc": 259.296596
+          },
+          "sample_count": 3
+        }
+      },
+      "sample_count": 3
+    },
+    "subgraph-isomorphism": {
+      "global_ranked_backends": [
+        "gmatch"
+      ],
+      "global_median_wall_ms": {
+        "gmatch": 429.231092
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "gmatch"
+          ],
+          "median_wall_ms": {
+            "gmatch": 429.231092
+          },
+          "sample_count": 3
+        }
+      },
+      "sample_count": 3
+    },
+    "temporal-motif-mining": {
+      "global_ranked_backends": [
+        "mayura",
+        "everest"
+      ],
+      "global_median_wall_ms": {
+        "everest": 261.914495,
+        "mayura": 258.830763
+      },
+      "buckets": {
+        "tiny:dense:directed:temporal": {
+          "ranked_backends": [
+            "mayura",
+            "everest"
+          ],
+          "median_wall_ms": {
+            "everest": 261.914495,
+            "mayura": 258.830763
+          },
+          "sample_count": 6
+        }
+      },
+      "sample_count": 6
+    },
+    "triangle-counting": {
+      "global_ranked_backends": [
+        "wetric",
+        "tot"
+      ],
+      "global_median_wall_ms": {
+        "tot": 292.952726,
+        "wetric": 246.874034
+      },
+      "buckets": {
+        "tiny:dense:undirected:static": {
+          "ranked_backends": [
+            "wetric",
+            "tot"
+          ],
+          "median_wall_ms": {
+            "tot": 292.952726,
+            "wetric": 246.874034
+          },
+          "sample_count": 6
+        }
+      },
+      "sample_count": 6
+    }
+  }
+}

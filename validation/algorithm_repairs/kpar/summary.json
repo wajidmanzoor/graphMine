@@ -1,0 +1,78 @@
+{
+  "status": "passed",
+  "totals": {
+    "numerical_queries": 44288,
+    "cuda_sanitizer_queries": 96,
+    "rejection_checks": 116,
+    "deterministic_index_rebuilds": 16
+  },
+  "suites": {
+    "numerical": {
+      "graphs": 166,
+      "queries": 32472,
+      "failures": 0,
+      "max_abs_error": 0.0381774870755518,
+      "tool": null
+    },
+    "tight-epsilon": {
+      "graphs": 41,
+      "queries": 714,
+      "failures": 0,
+      "max_abs_error": 8.29158897682758e-05,
+      "tool": null
+    },
+    "asan": {
+      "graphs": 166,
+      "queries": 10824,
+      "failures": 0,
+      "max_abs_error": 0.030110671002565093,
+      "tool": null
+    },
+    "memcheck": {
+      "graphs": 8,
+      "queries": 24,
+      "failures": 0,
+      "max_abs_error": 0.00011369087011098115,
+      "tool": "memcheck"
+    },
+    "initcheck": {
+      "graphs": 8,
+      "queries": 24,
+      "failures": 0,
+      "max_abs_error": 0.00011369087011098115,
+      "tool": "initcheck"
+    },
+    "synccheck": {
+      "graphs": 8,
+      "queries": 24,
+      "failures": 0,
+      "max_abs_error": 0.00011369087011098115,
+      "tool": "synccheck"
+    },
+    "racecheck": {
+      "graphs": 8,
+      "queries": 24,
+      "failures": 0,
+      "max_abs_error": 0.00011369087011098115,
+      "tool": "racecheck"
+    },
+    "cli": {
+      "positive_queries": 138,
+      "rejections": 58,
+      "processes": 122,
+      "deterministic_index_rebuilds": 8
+    },
+    "asan-cli": {
+      "positive_queries": 138,
+      "rejections": 58,
+      "processes": 122,
+      "deterministic_index_rebuilds": 8
+    }
+  },
+  "production": {
+    "positive_queries": 2,
+    "binary_sha256": "bcf6d1230b1901f0483d4eb28e31ac43fb5bb7f1b28f409741ada23e5e2ac57d"
+  },
+  "gpu": "physical GPU 1, NVIDIA RTX 6000 Ada Generation (SM 89)",
+  "default_asan_startup_failure_excluded": true
+}

@@ -1,0 +1,21 @@
+{
+  "problem_id": "maximal_biclique_enumeration",
+  "paper_id": "2025_advanced_mbe_gpu_bitmaps",
+  "title": "Advanced Maximal Biclique Enumeration on GPUs Using Bitmaps",
+  "checked_at": "2026-10-03T22:04:41Z",
+  "paper": {
+    "source_url": "https://shuibing9420.github.io/assets/pdf/GMBE%2BTC25.pdf",
+    "status": "downloaded",
+    "local_path": "paper.pdf",
+    "error": null
+  },
+  "code": {
+    "source_url": "https://github.com/fhxu00/MBE-GPU",
+    "status": "cloned",
+    "local_path": "code",
+    "commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
+    "license_file": null,
+    "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+    "error": null
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "status": "passed",
+  "totals": {
+    "numerical_checks": 24932,
+    "cuda_sanitizer_checks": 224,
+    "rejection_checks": 80
+  },
+  "suites": {
+    "numerical": {
+      "graphs": 2065,
+      "checks": 8260,
+      "failures": 0,
+      "tool": null,
+      "poison": false,
+      "max_count": 4004000
+    },
+    "poison": {
+      "graphs": 2065,
+      "checks": 8260,
+      "failures": 0,
+      "tool": null,
+      "poison": true,
+      "max_count": 4004000
+    },
+    "asan": {
+      "graphs": 2065,
+      "checks": 8260,
+      "failures": 0,
+      "tool": null,
+      "poison": false,
+      "max_count": 4004000
+    },
+    "overflow": {
+      "graphs": 2,
+      "checks": 8,
+      "failures": 0,
+      "tool": null,
+      "poison": false,
+      "max_count": 34917730848
+    },
+    "memcheck": {
+      "graphs": 14,
+      "checks": 56,
+      "failures": 0,
+      "tool": "memcheck",
+      "poison": false,
+      "max_count": 4004000
+    },
+    "initcheck": {
+      "graphs": 14,
+      "checks": 56,
+      "failures": 0,
+      "tool": "initcheck",
+      "poison": false,
+      "max_count": 4004000
+    },
+    "synccheck": {
+      "graphs": 14,
+      "checks": 56,
+      "failures": 0,
+      "tool": "synccheck",
+      "poison": false,
+      "max_count": 4004000
+    },
+    "racecheck": {
+      "graphs": 14,
+      "checks": 56,
+      "failures": 0,
+      "tool": "racecheck",
+      "poison": false,
+      "max_count": 4004000
+    },
+    "cli": {
+      "positive_checks": 48,
+      "rejections": 40,
+      "processes": 88
+    },
+    "asan-cli": {
+      "positive_checks": 48,
+      "rejections": 40,
+      "processes": 88
+    }
+  },
+  "production": {
+    "checks": 48,
+    "binary_sha256": "f96d28128d019f9dffcfa8a7293bb597ac52a71f16ef3523fdefdfab15ac3a7d"
+  },
+  "gpu": "physical GPU 1, NVIDIA RTX 6000 Ada Generation (SM 89)"
+}

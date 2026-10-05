@@ -1,0 +1,13 @@
+[ 33%] Building CXX object CMakeFiles/main.dir/src/graph.cpp.o
+[ 33%] Building CUDA object CMakeFiles/main.dir/src/helpers.cu.o
+[ 50%] Building CUDA object CMakeFiles/main.dir/src/gpuMemoryAllocation.cu.o
+[ 66%] Building CXX object CMakeFiles/main.dir/src/common.cpp.o
+[ 83%] Building CUDA object CMakeFiles/main.dir/main.cu.o
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/source/cudaCode/main.cu(124): warning #177-D: variable "partialSize" was declared but never referenced
+    ui partialSize = (216 * (1024 / 32)) * pSize;
+       ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+[100%] Linking CXX executable main
+[100%] Built target main

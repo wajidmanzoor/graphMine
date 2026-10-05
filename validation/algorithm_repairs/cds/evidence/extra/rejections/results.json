@@ -1,0 +1,381 @@
+{
+  "cases": 25,
+  "passed": 25,
+  "results": [
+    {
+      "name": "missing_header",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/missing_header.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "negative_size",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/negative_size.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "header_junk",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/header_junk.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "missing_row",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/missing_row.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "unordered_rows",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/unordered_rows.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "duplicate_neighbor",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/duplicate_neighbor.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "out_of_range",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/out_of_range.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "self_loop",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/self_loop.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "extra_row",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/extra_row.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "bad_token",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/bad_token.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "wrong_edge_count",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/wrong_edge_count.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "asymmetric",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/asymmetric.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "unsorted",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/evidence/extra/rejections/inputs/unsorted.adj",
+        "2",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "k_zero",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "0",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "k_one",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "1",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "negative_buffer",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "-1",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "zero_buffer",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "64",
+        "0",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "noninteger",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "a",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "integer_overflow",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "4294967296",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "scratch_index_overflow",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "2147483647",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "early_stop",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "64",
+        "128",
+        "1024",
+        "1024",
+        "10"
+      ],
+      "returncode": 2,
+      "passed": true
+    },
+    {
+      "name": "candidate_partition_overflow",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "64",
+        "1",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 1,
+      "passed": true
+    },
+    {
+      "name": "clique_partition_overflow",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/original_small.adj",
+        "3",
+        "1",
+        "128",
+        "1024",
+        "1024",
+        "-1"
+      ],
+      "returncode": 1,
+      "passed": true
+    },
+    {
+      "name": "peeling_queue_overflow",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-normal/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/large_disjoint_triangles.adj",
+        "3",
+        "64",
+        "128",
+        "1",
+        "1024",
+        "-1"
+      ],
+      "returncode": 1,
+      "passed": true
+    },
+    {
+      "name": "capacity_overflow",
+      "command": [
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-wide/build/main",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/fixtures/large_windmill.adj",
+        "3",
+        "8192",
+        "4096",
+        "4097",
+        "1024",
+        "-1"
+      ],
+      "returncode": 2,
+      "passed": true
+    }
+  ]
+}

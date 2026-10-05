@@ -1,0 +1,8 @@
+{
+  "workspace_maximum_clique_ctest": "1/1 passed",
+  "packaged_maximum_clique_ctest": "1/1 passed",
+  "agent_exclusion_test": "1 passed",
+  "production_cli_sha256": "1177b8822bfe6366fb82aef1347f6066e7af441f8e03a439dc49c865a3283c6c",
+  "packaged_cli_sha256": "69c0e61a310f570ff2f0731f7470f3d91135e77266d8afd782c73c217d778f1d",
+  "source_mirrors_verified": true
+}

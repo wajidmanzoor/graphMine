@@ -1,0 +1,243 @@
+diff --git a/include/cgarray.cuh b/include/cgarray.cuh
+index 783668d..df751ed 100644
+--- a/include/cgarray.cuh
++++ b/include/cgarray.cuh
+@@ -28,10 +28,18 @@ namespace graph
+ 		{
+ 			N = 0;
+ 			name = "Unknown";
++			cpu_data = nullptr;
++			gpu_data = nullptr;
++			_at = AllocationTypeEnum::noalloc;
++			_deviceId = 0;
++			owns_cpu_data = false;
+ 		}
+ 
+ 		void initialize(string s, AllocationTypeEnum at, size_t size, int devId)
+ 		{
++			cpu_data = nullptr;
++			gpu_data = nullptr;
++			owns_cpu_data = false;
+ 			N = size;
+ 			name = s;
+ 			_at = at;
+@@ -43,9 +51,11 @@ namespace graph
+ 			{
+ 			case cpuonly:
+ 				cpu_data = (T *)malloc(size * (uint64) sizeof(T));
++				owns_cpu_data = true;
+ 				break;
+ 			case gpu:
+ 				cpu_data = (T *)malloc(size * (uint64) sizeof(T));
++				owns_cpu_data = true;
+ 				CUDA_RUNTIME(cudaMalloc(&gpu_data, size * (uint64) sizeof(T)));
+ 				break;
+ 			case unified:
+@@ -60,8 +70,13 @@ namespace graph
+ 
+ 		void initialize(std::string s, AllocationTypeEnum at)
+ 		{
++			N = 0;
+ 			name = s;
+ 			_at = at;
++			cpu_data = nullptr;
++			gpu_data = nullptr;
++			_deviceId = 0;
++			owns_cpu_data = false;
+ 		}
+ 
+ 		GPUArray(std::string s, AllocationTypeEnum at, size_t size, int devId)
+@@ -81,12 +96,23 @@ namespace graph
+ 				CUDA_RUNTIME(cudaSetDevice(_deviceId));
+ 				if (_at == AllocationTypeEnum::gpu || _at == AllocationTypeEnum::unified)
+ 					CUDA_RUNTIME(cudaFree(gpu_data));
++				if (_at == AllocationTypeEnum::gpu && owns_cpu_data)
++					free(cpu_data);
+ 				CUDA_RUNTIME(cudaStreamDestroy(_stream));
++				cpu_data = nullptr;
++				gpu_data = nullptr;
++				owns_cpu_data = false;
+ 				N = 0;
+ 			}
+ 		}
+ 
+-		void freeCPU() { delete cpu_data; }
++		void freeCPU()
++		{
++			if (owns_cpu_data)
++				free(cpu_data);
++			cpu_data = nullptr;
++			owns_cpu_data = false;
++		}
+ 
+ 		void setAlloc(AllocationTypeEnum at) { _at = at; }
+ 
+@@ -238,5 +264,6 @@ namespace graph
+ 		AllocationTypeEnum _at;
+ 		cudaStream_t _stream;
+ 		int _deviceId;
++		bool owns_cpu_data;
+ 	};
+-}
+\ No newline at end of file
++}
+diff --git a/include/csrcoo.cuh b/include/csrcoo.cuh
+index 14220f6..7f56149 100644
+--- a/include/csrcoo.cuh
++++ b/include/csrcoo.cuh
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include <cassert>
++#include <cstdint>
+ #include <vector>
+ 
+ #include "cgarray.cuh"
+@@ -163,4 +164,4 @@ namespace graph
+       graph->colInd = g.colInd->cdata();
+     }
+   }
+-} // namespace graph
+\ No newline at end of file
++} // namespace graph
+diff --git a/include/graph_queue.cuh b/include/graph_queue.cuh
+index 29a2992..d8e99cb 100644
+--- a/include/graph_queue.cuh
++++ b/include/graph_queue.cuh
+@@ -53,10 +53,15 @@ namespace graph
+ 
+ 		void free()
+ 		{
+-			device_queue->freeGPU();
++			if (device_queue != nullptr)
++			{
++				device_queue->freeGPU();
++				delete device_queue;
++				device_queue = nullptr;
++			}
+ 			count.freeGPU();
+ 			queue.freeGPU();
+ 			mark.freeGPU();
+ 		}
+ 	};
+-} // namespace graph
+\ No newline at end of file
++} // namespace graph
+diff --git a/include/kcore.cuh b/include/kcore.cuh
+index 79c17ee..4a4e214 100644
+--- a/include/kcore.cuh
++++ b/include/kcore.cuh
+@@ -778,6 +778,12 @@ namespace graph
+ 				if (min_degree.getSingle(0) + 1 == remaining.getSingle(0))
+ 				{
+ 					heurCliqueSize.setSingle(0, min_degree.getSingle(0) + 1, true);
++					heurCliqueVertices.initialize("Heuristic clique vertices",
++						AllocationTypeEnum::gpu, remaining.getSingle(0), dev_);
++					CUDA_RUNTIME(cudaMemcpy(heurCliqueVertices.gdata(),
++						currents_q.queue.gdata(),
++						remaining.getSingle(0) * sizeof(T),
++						cudaMemcpyDeviceToDevice));
+ 					remaining.setSingle(0, 0, true);
+ 					break;
+ 				}
+@@ -820,6 +826,7 @@ namespace graph
+ 		GPUArray<T> nodePriority;
+ 		GPUArray<T> coreNumber;
+ 		GPUArray<int> heurCliqueSize;
++		GPUArray<T> heurCliqueVertices;
+ 
+ 		SingleGPU_Kcore(int dev) : dev_(dev)
+ 		{
+@@ -834,8 +841,14 @@ namespace graph
+ 		{
+ 			coreNumber.freeGPU();
+ 			heurCliqueSize.freeGPU();
++			heurCliqueVertices.freeGPU();
+ 			nodePriority.freeGPU();
+ 			nodeDegree.freeGPU();
++			if (stream_ != nullptr)
++			{
++				CUDA_RUNTIME(cudaStreamDestroy(stream_));
++				stream_ = nullptr;
++			}
+ 		}
+ 
+ 		void getNodeDegree(COOCSRGraph_d<T> &g, const size_t nodeOffset = 0, const size_t edgeOffset = 0)
+@@ -949,4 +962,4 @@ namespace graph
+ 		int device() const { return dev_; }
+ 		cudaStream_t stream() const { return stream_; }
+ 	};
+-} // namespace graph
+\ No newline at end of file
++} // namespace graph
+diff --git a/include/utils.cuh b/include/utils.cuh
+index be9bc18..fdaa98c 100644
+--- a/include/utils.cuh
++++ b/include/utils.cuh
+@@ -1,6 +1,9 @@
+ #pragma once
++#include <cstdint>
+ #include <cstdio>
+ #include <cuda_runtime_api.h>
++#include <stdexcept>
++#include <string>
+ 
+ #define CUDA_RUNTIME(ans)                 \
+   {                                       \
+@@ -11,9 +14,15 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
+ {
+   if (code != cudaSuccess)
+   {
++#ifdef GRAPHMINE_LIBRARY
++    throw std::runtime_error(std::string("Maximum-Clique-on-GPU CUDA failure at ") +
++                             file + ":" + std::to_string(line) + ": " +
++                             cudaGetErrorString(code));
++#else
+     fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+     if (abort)
+       exit(1);
++#endif
+   }
+ }
+ 
+@@ -47,7 +56,9 @@ struct CUDAContext
+   {
+     /*get the maximal number of threads in an SM*/
+     cudaDeviceProp prop;
+-    cudaGetDeviceProperties(&prop, 0); /*currently 0th device*/
++    int current_device = 0;
++    cudaGetDevice(&current_device);
++    cudaGetDeviceProperties(&prop, current_device);
+     max_grid_size = prop.maxGridSize[0];
+     max_threads_per_SM = prop.maxThreadsPerMultiProcessor;
+     shared_mem_size_per_block = prop.sharedMemPerBlock;
+@@ -112,4 +123,4 @@ T getVal(T *arr, T index, AllocationTypeEnum at)
+   T val = 0;
+   CUDA_RUNTIME(cudaMemcpy(&val, &(arr[index]), sizeof(T), cudaMemcpyKind::cudaMemcpyDeviceToHost));
+   return val;
+-}
+\ No newline at end of file
++}
+diff --git a/mcp/mcp.cuh b/mcp/mcp.cuh
+index ccd8ff8..f283c16 100644
+--- a/mcp/mcp.cuh
++++ b/mcp/mcp.cuh
+@@ -722,6 +722,11 @@ namespace graph
+       
+       global_message.freeGPU();
+       queue_free(queue, tickets, head, tail);
++      if (stream_ != nullptr)
++      {
++        CUDA_RUNTIME(cudaStreamDestroy(stream_));
++        stream_ = nullptr;
++      }
+     }
+ 
+     void sync()
+@@ -733,4 +738,4 @@ namespace graph
+     int device() const { return dev_; }
+     cudaStream_t stream() const { return stream_; }
+   };
+-}
+\ No newline at end of file
++}

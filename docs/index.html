@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="GraphMine is a validated C++17/CUDA graph-mining library with 37 exact problem contracts, 18 runnable operations, and 31 registered backend choices."
+      content="GraphMine is a validated C++17/CUDA graph-mining library with 37 exact problem contracts, 24 runnable operations, and 38 registered backend choices."
     />
     <meta name="theme-color" content="#ffffff" />
     <meta property="og:title" content="GraphMine documentation" />
@@ -111,15 +111,15 @@
 
           <dl class="hero-stats" aria-label="GraphMine library statistics">
             <div>
-              <dt data-stat="research-problems">17</dt>
+              <dt data-stat="research-problems">22</dt>
               <dd>supported problems</dd>
             </div>
             <div>
-              <dt data-stat="operations">18</dt>
+              <dt data-stat="operations">24</dt>
               <dd>runnable operations</dd>
             </div>
             <div>
-              <dt data-stat="backends">31</dt>
+              <dt data-stat="backends">38</dt>
               <dd>validated backends</dd>
             </div>
           </dl>
@@ -309,7 +309,7 @@ cmake --build library/build --parallel \
             <h2>Explore every validated operation.</h2>
             <p>
               This catalog is rendered from a problem-first global JSON. It
-              embeds all 37 exact local problem contracts, then links the 17
+              embeds all 37 exact local problem contracts, then links the 22
               supported problems to commands, parameters, outputs, validation
               evidence, and backend choices. See the <a href="https://github.com/wajidmanzoor/graphMine/blob/main/docs/ALGORITHM_EXPANSION.md">new profiles and remaining blockers</a>.
             </p>
@@ -531,14 +531,15 @@ graphmine::MaximalCliques algorithm(options);
 
             <article class="code-reference-card code-reference-card-research">
               <div class="code-reference-meta">
-                <span>24 source artifacts</span>
+                <span>Sources and repair provenance</span>
                 <strong>C · C++ · CUDA</strong>
               </div>
               <h3>Research implementations</h3>
+              <p><a href="https://github.com/wajidmanzoor/graphMine/blob/main/library/docs/repaired_algorithms.md">Nine repaired algorithms: supported profiles and agent integration</a></p>
               <p>
                 Choose a problem and paper, then search its original host
                 functions, device functions, kernels, structures, files, and
-                preserved upstream comments without symbol collisions.
+                preserved upstream comments without symbol collisions. Repaired workers include pinned build and validation notes.
               </p>
               <ul>
                 <li>One isolated reference per validated artifact</li>

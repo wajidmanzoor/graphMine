@@ -1,27 +1,29 @@
 # Catalog sources
 
-This directory contains the small authored registries used to generate the
-repository-root [`graphmine_catalog.json`](../graphmine_catalog.json).
+These authored registries generate the repository-root [catalog](../graphmine_catalog.json):
 
-- `backend_registry.json` records the public operation usage, backend IDs,
-  display names, pinned commits, and capabilities exposed by the library.
-- `artifact_sources.json` records the paper, upstream repository, pinned
-  commit, and detected license metadata for every passing artifact.
+- `backend_registry.json`: operation/backend IDs, usage, provenance and capabilities.
+- `artifact_sources.json`: paper, upstream commit, license metadata and external-source status.
+- `repaired_profiles.json`: nine repaired profiles, six new APIs and linked validation evidence.
 
-`../tools/build_catalog.mjs` combines these registries with:
+`tools/build_catalog.mjs` combines them with all 37 authoritative problem definitions,
+the canonical graph schema, runtime manifest, original validation classifications,
+expansion profiles and repair evidence. Current totals are **22 supported families,
+24 operations and 38 backend choices**; all 37 problem specifications remain intact.
+Historical failures remain linked to the old binaries. Availability applies only
+to the explicitly described executable profile.
 
-- all 20 `problems/*/problem.json` files;
-- `problems/graph_input.schema.json`;
-- `graphmine_manifest.json`; and
-- `validation/gpu_correctness/results/results.json`.
-
-Run the generator from the repository root:
+After building the repaired workers and native CLI:
 
 ```bash
+python3 tools/update_repair_catalog.py
 node tools/build_catalog.mjs
+.venv/bin/graphmine-agent export-schemas agent/schemas
 ```
 
-The generator validates the expected 20 problem definitions, 12 supported
-problems, 13 operations, 26 backend selections, and 24 passing validation
-workloads. It writes identical copies to the repository root and
-`library/manifests/` for installation with GraphMine.
+The repair updater refreshes the manifests, backend registry, repair profiles and
+`agent/program_instructions.json` from the validated native contract. The catalog
+builder verifies passing public API evidence and writes identical root and
+`library/manifests/` copies. It does not promote newly discovered artifacts.
+The routing contract is `repaired-37-v2`; the legacy adapter contract remains frozen.
+See the [current integration guide](../library/docs/repaired_algorithms.md).

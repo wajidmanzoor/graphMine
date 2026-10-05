@@ -1,0 +1,234 @@
+{
+  "commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+  "binary_sha256": "85d538ae6b69913fda64ffba822aa6ecd736db39f666b09082044f67bf4f0932",
+  "cases": [
+    {
+      "name": "star_8_0",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        8.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "star_8_1",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        8.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "star_8_2",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        8.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "chain_8_0",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        5.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "chain_8_1",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        5.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "chain_8_2",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        5.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "two_stars_8_0",
+      "exit": 0,
+      "seeds": [
+        4,
+        0
+      ],
+      "reported": [
+        4.0,
+        8.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "two_stars_8_1",
+      "exit": 0,
+      "seeds": [
+        4,
+        0
+      ],
+      "reported": [
+        4.0,
+        8.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "two_stars_8_2",
+      "exit": 0,
+      "seeds": [
+        4,
+        0
+      ],
+      "reported": [
+        4.0,
+        8.0
+      ],
+      "exact_spread": 8,
+      "passed": true
+    },
+    {
+      "name": "star_64_0",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        64.0
+      ],
+      "exact_spread": 64,
+      "passed": true
+    },
+    {
+      "name": "star_64_1",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        64.0
+      ],
+      "exact_spread": 64,
+      "passed": true
+    },
+    {
+      "name": "star_64_2",
+      "exit": 0,
+      "seeds": [
+        0
+      ],
+      "reported": [
+        64.0
+      ],
+      "exact_spread": 64,
+      "passed": true
+    },
+    {
+      "name": "chain_64_0",
+      "exit": 0,
+      "seeds": [
+        5
+      ],
+      "reported": [
+        4.0
+      ],
+      "exact_spread": 59,
+      "passed": true
+    },
+    {
+      "name": "chain_64_1",
+      "exit": 0,
+      "seeds": [
+        5
+      ],
+      "reported": [
+        4.0
+      ],
+      "exact_spread": 59,
+      "passed": true
+    },
+    {
+      "name": "chain_64_2",
+      "exit": 0,
+      "seeds": [
+        4
+      ],
+      "reported": [
+        5.0
+      ],
+      "exact_spread": 60,
+      "passed": true
+    },
+    {
+      "name": "two_stars_64_0",
+      "exit": 0,
+      "seeds": [
+        0,
+        32
+      ],
+      "reported": [
+        32.0,
+        64.0
+      ],
+      "exact_spread": 64,
+      "passed": true
+    },
+    {
+      "name": "two_stars_64_1",
+      "exit": 0,
+      "seeds": [
+        0,
+        32
+      ],
+      "reported": [
+        32.0,
+        64.0
+      ],
+      "exact_spread": 64,
+      "passed": true
+    },
+    {
+      "name": "two_stars_64_2",
+      "exit": 0,
+      "seeds": [
+        0,
+        32
+      ],
+      "reported": [
+        32.0,
+        64.0
+      ],
+      "exact_spread": 64,
+      "passed": true
+    }
+  ]
+}

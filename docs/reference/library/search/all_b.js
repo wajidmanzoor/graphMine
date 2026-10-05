@@ -36,7 +36,16 @@ var searchData=
   ['kcoreoptions_33',['KCoreOptions',['../df/d6b/structgraphmine_1_1KCoreOptions.html',1,'graphmine']]],
   ['kcoreoutput_34',['KCoreOutput',['../df/d3e/structgraphmine_1_1KCoreOutput.html',1,'graphmine']]],
   ['kernel_5fpartition_5flevel_5fnext_35',['kernel_partition_level_next',['../df/de1/mce__gpu__backend_8cu.html#a639e60ccf2188428687953174170121c',1,'mce_gpu_backend.cu']]],
-  ['kind_36',['kind',['../dc/dd6/structgraphmine_1_1TriangleUpdate.html#acc523b31634019b5db08e3d9688346db',1,'graphmine::TriangleUpdate']]],
-  ['known_5flower_5fbound_37',['known_lower_bound',['../d4/d0f/structgraphmine_1_1MaximumCliqueOptions.html#a3be3de6b225cbafd8941c00755f6cd63',1,'graphmine::MaximumCliqueOptions']]],
-  ['kokkosruntime_38',['KokkosRuntime',['../da/dc2/structgraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03_1_1KokkosRuntime.html',1,'graphmine::detail::anonymous_namespace{pggc.cpp}']]]
+  ['kernel_5fstats_36',['kernel_stats',['../de/d13/HungarianCUDA_8cu.html#a7665d59485cb26fadaf86f6326a79835',1,'HungarianCUDA.cu']]],
+  ['kerneltimer_37',['kerneltimer',['../d4/df9/structKernelTimer.html#a75b4c10ec02f61600d312f694ed5737f',1,'KernelTimer::KernelTimer()'],['../d4/df9/structKernelTimer.html',1,'KernelTimer']]],
+  ['key_38',['key',['../d1/dbf/structMEntity.html#ae4ee2c308459234b9f5495cb1e5451ea',1,'MEntity']]],
+  ['kind_39',['kind',['../dc/dd6/structgraphmine_1_1TriangleUpdate.html#acc523b31634019b5db08e3d9688346db',1,'graphmine::TriangleUpdate']]],
+  ['klog2_40',['klog2',['../de/d13/HungarianCUDA_8cu.html#af3f9101dfdb36ff20c5481d138dad216',1,'HungarianCUDA.cu']]],
+  ['kmax_41',['kmax',['../de/d13/HungarianCUDA_8cu.html#af1809f5c99dab891364c0685e0ee538d',1,'HungarianCUDA.cu']]],
+  ['kmin_42',['kmin',['../de/d13/HungarianCUDA_8cu.html#a1c3502512d61a86b836f2162cd634039',1,'HungarianCUDA.cu']]],
+  ['known_5flower_5fbound_43',['known_lower_bound',['../d4/d0f/structgraphmine_1_1MaximumCliqueOptions.html#a3be3de6b225cbafd8941c00755f6cd63',1,'graphmine::MaximumCliqueOptions']]],
+  ['kokkosruntime_44',['KokkosRuntime',['../da/dc2/structgraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03_1_1KokkosRuntime.html',1,'graphmine::detail::anonymous_namespace{pggc.cpp}']]],
+  ['ktruss_45',['ktruss',['../d2/ddc/classgraphmine_1_1KTruss.html#a096b9897f6d78721b653146b507c2711',1,'graphmine::KTruss::KTruss()'],['../d2/ddc/classgraphmine_1_1KTruss.html',1,'graphmine::KTruss']]],
+  ['ktrussoptions_46',['KTrussOptions',['../d6/d12/structgraphmine_1_1KTrussOptions.html',1,'graphmine']]],
+  ['ktrussoutput_47',['KTrussOutput',['../d2/ddd/structgraphmine_1_1KTrussOutput.html',1,'graphmine']]]
 ];

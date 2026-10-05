@@ -1,0 +1,13 @@
+{
+  "recolor_block": {
+    "timeout_seconds": 60,
+    "found_size": 3,
+    "completed": false
+  },
+  "reduce_warp": {
+    "timeout_seconds": 60,
+    "found_size": 3,
+    "completed": false
+  },
+  "note": "The sweep was stopped after confirming persistent-kernel deadlocks. These are development results, excluded from final passing totals."
+}

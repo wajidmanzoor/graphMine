@@ -24,8 +24,8 @@ import networkx as nx
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 
-HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+HERE = Path(os.environ.get("GRAPHMINE_VALIDATION_ROOT", Path(__file__).resolve().parent)).resolve()
+ROOT = Path(__file__).resolve().parents[2]
 PROBLEMS = ROOT / "problems"
 SEED = 20261004
 resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
@@ -50,7 +50,7 @@ SUPERFUSER = source("28_influence_maximization", "2021_superfuser")
 def run_command(name, command, *, cwd=ROOT, timeout=120, kind="runs", stdin_path=None):
     directory = HERE / kind
     directory.mkdir(parents=True, exist_ok=True)
-    env = {**os.environ, "CUDA_VISIBLE_DEVICES": "0", "OMP_NUM_THREADS": "4"}
+    env = {**os.environ, "CUDA_VISIBLE_DEVICES": os.environ.get("CUDA_VISIBLE_DEVICES", "0"), "OMP_NUM_THREADS": "4"}
     started = time.monotonic()
     with (directory / (name + ".log")).open("w") as log, (Path(stdin_path) if stdin_path else Path('/dev/null')).open('rb') as input_stream:
         process = subprocess.Popen(list(map(str, command)), cwd=cwd, env=env,

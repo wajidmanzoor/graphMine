@@ -1,0 +1,149 @@
+[
+  {
+    "case": "original-small",
+    "version": 2,
+    "returncode": 0,
+    "elapsed": 0.229,
+    "tail": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 2, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/original-small.adj, 142, 16, 20, 1500, 7, 0.019612\n"
+  },
+  {
+    "case": "original-small",
+    "version": 0,
+    "returncode": 0,
+    "elapsed": 0.336,
+    "tail": "3709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [5]  [5] , 5, 0.015009\n"
+  },
+  {
+    "case": "original-small",
+    "version": 1,
+    "returncode": 0,
+    "elapsed": 0.254,
+    "tail": "epo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 1, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/original-small.adj, 142, 16, 20, 1500initialize clock: 4294967808\niterate clock: 4294967438\nother clock: 17179868535\n, 7, 0.022173\n"
+  },
+  {
+    "case": "original-medium",
+    "version": 2,
+    "returncode": 0,
+    "elapsed": 0.366,
+    "tail": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 2, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/original-medium.adj, 142, 16, 20, 1500, 16, 0.025374\n"
+  },
+  {
+    "case": "original-medium",
+    "version": 0,
+    "returncode": 0,
+    "elapsed": 0.335,
+    "tail": "4073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [10]  [11]  [11]  [11]  [21]  [21]  [21] , 12, 0.015823\n"
+  },
+  {
+    "case": "original-medium",
+    "version": 1,
+    "returncode": 188,
+    "elapsed": 0.399,
+    "tail": "nt_mbe_gpus/code/src/IterFinderGpu.cu 759\n/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 1, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/original-medium.adj, 142, 16, 20, 1500"
+  },
+  {
+    "case": "medium-no-isolates",
+    "version": 2,
+    "returncode": 0,
+    "elapsed": 0.351,
+    "tail": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 2, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/medium-no-isolates.adj, 142, 16, 20, 1500, 15, 0.023202\n"
+  },
+  {
+    "case": "medium-no-isolates",
+    "version": 0,
+    "returncode": 0,
+    "elapsed": 0.326,
+    "tail": "8446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [11]  [11]  [11]  [11]  [21]  [21]  [21]  [21] , 11, 0.014755\n"
+  },
+  {
+    "case": "medium-no-isolates",
+    "version": 1,
+    "returncode": 188,
+    "elapsed": 0.385,
+    "tail": "mbe_gpus/code/src/IterFinderGpu.cu 759\n/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 1, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/medium-no-isolates.adj, 142, 16, 20, 1500"
+  },
+  {
+    "case": "one-edge",
+    "version": 2,
+    "returncode": 0,
+    "elapsed": 0.346,
+    "tail": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 2, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/one-edge.adj, 142, 16, 20, 1500, 1, 0.023162\n"
+  },
+  {
+    "case": "one-edge",
+    "version": 0,
+    "returncode": 0,
+    "elapsed": 0.33,
+    "tail": "18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615] , 1, 0.013865\n"
+  },
+  {
+    "case": "one-edge",
+    "version": 1,
+    "returncode": 0,
+    "elapsed": 0.263,
+    "tail": "Mine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 1, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/one-edge.adj, 142, 16, 20, 1500initialize clock: 4294967808\niterate clock: 4294967438\nother clock: -4294967949\n, 1, 0.020333\n"
+  },
+  {
+    "case": "one-edge-isolate",
+    "version": 2,
+    "returncode": 0,
+    "elapsed": 0.363,
+    "tail": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 2, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/one-edge-isolate.adj, 142, 16, 20, 1500, 2, 0.022119\n"
+  },
+  {
+    "case": "one-edge-isolate",
+    "version": 0,
+    "returncode": 0,
+    "elapsed": 0.33,
+    "tail": "44073709551615]  [0]  [0]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [0]  [18446744073709551615]  [18446744073709551615]  [0]  [18446744073709551615]  [0]  [0]  [18446744073709551615] , 2, 0.014081\n"
+  },
+  {
+    "case": "one-edge-isolate",
+    "version": 1,
+    "returncode": -11,
+    "elapsed": 1.334,
+    "tail": ""
+  },
+  {
+    "case": "no-edges",
+    "version": 2,
+    "returncode": 0,
+    "elapsed": 0.352,
+    "tail": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 2, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/no-edges.adj, 142, 16, 20, 1500, 1, 0.022118\n"
+  },
+  {
+    "case": "no-edges",
+    "version": 0,
+    "returncode": 188,
+    "elapsed": 0.419,
+    "tail": "09551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615] GPUassert: an illegal memory access was encountered /home/wajid/projects/graphDatabaseAgent/problems/09_maximal_biclique_enumeration/papers/2023_efficient_mbe_gpus/code/src/IterFinderGpu.cu 517\n"
+  },
+  {
+    "case": "no-edges",
+    "version": 1,
+    "returncode": 188,
+    "elapsed": 0.362,
+    "tail": "efficient_mbe_gpus/code/src/IterFinderGpu.cu 759\n/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 1, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/no-edges.adj, 142, 16, 20, 1500"
+  },
+  {
+    "case": "overlap",
+    "version": 2,
+    "returncode": 0,
+    "elapsed": 0.356,
+    "tail": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 2, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/overlap.adj, 142, 16, 20, 1500, 3, 0.021067\n"
+  },
+  {
+    "case": "overlap",
+    "version": 0,
+    "returncode": 0,
+    "elapsed": 0.339,
+    "tail": "18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615]  [18446744073709551615] , 2, 0.014862\n"
+  },
+  {
+    "case": "overlap",
+    "version": 1,
+    "returncode": 0,
+    "elapsed": 0.244,
+    "tail": "nt/graphMine-repo/validation/algorithm_repairs/mbe_gpu/_work/baseline-MBE_GPU, 1, /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/mbe_gpu/fixtures/overlap.adj, 142, 16, 20, 1500initialize clock: 4294967808\niterate clock: 4294967438\nother clock: -651\n, 3, 0.019424\n"
+  }
+]

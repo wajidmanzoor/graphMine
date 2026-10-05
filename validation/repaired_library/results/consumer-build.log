@@ -1,0 +1,26 @@
+[ 25%] Building CXX object CMakeFiles/graphmine_repaired_install_consumer.dir/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/tests/repaired_algorithms_test.cpp.o
+[ 50%] Building CXX object CMakeFiles/graphmine_install_consumer.dir/main.cpp.o
+[ 75%] Linking CXX executable graphmine_install_consumer
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[100%] Linking CXX executable graphmine_repaired_install_consumer
+[100%] Built target graphmine_repaired_install_consumer
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z16cycle4_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z18triangle_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z15wedge_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+[100%] Built target graphmine_install_consumer

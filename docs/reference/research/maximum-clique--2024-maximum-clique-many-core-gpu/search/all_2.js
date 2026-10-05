@@ -12,7 +12,7 @@ var searchData=
   ['bl_9',['bl',['../df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ade8be8273f9ff3a3de14f174c94b4790',1,'mcp::WARP_SHARED_HANDLE::bl'],['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a11d9578ef2a55ed1402bcf2862e98af7',1,'mcp::SHARED_HANDLE::bl']]],
   ['block_5fsize_10',['block_size',['../df/d87/structConfig.html#ab86f919dd2cfc6d5f50971e35dde3a1f',1,'Config']]],
   ['branches_11',['branches',['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#acc512d104716ff4277099c4ae8ccf399',1,'mcp::GLOBAL_HANDLE::branches'],['../d3/d70/classgraph_1_1MultiGPU__MCP.html#a875e5ba251a8d4d1c6bda4f8ee3b2d62',1,'graph::MultiGPU_MCP::branches']]],
-  ['bucket_5fscan_12',['bucket_scan',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#ab031664cff4def7a0d621e04441f76c7',1,'graph::SingleGPU_Kcore']]],
+  ['bucket_5fscan_12',['bucket_scan',['../d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a2427e0c24fbecd15dca6e2b71dca3a46',1,'graph::SingleGPU_Kcore']]],
   ['buildreducedbylb_5fkernel_13',['buildReducedByLB_kernel',['../d9/d00/kcore_8cuh.html#a62053a9666833e90a8ac602f15250953',1,'kcore.cuh']]],
   ['buildreducedbylbb_5fkernel_14',['buildReducedByLBB_kernel',['../d9/d00/kcore_8cuh.html#ab9748ce650fd10a064785323b2868788',1,'kcore.cuh']]],
   ['buildreducedbylbbw_5fkernel_15',['buildReducedByLBBW_kernel',['../d9/d00/kcore_8cuh.html#a66e64f668fa2515568c08af8bf8dbb57',1,'kcore.cuh']]]

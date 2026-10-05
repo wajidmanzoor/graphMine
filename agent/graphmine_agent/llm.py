@@ -147,6 +147,28 @@ def constrain_plan_schema(
                     {"type": "string", "minLength": 1},
                 ]
             }
+        if spec["type"] == "vertex_groups":
+            value_schema = {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 16,
+                "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": "integer",
+                                "minimum": -(2**63),
+                                "maximum": 2**63 - 1,
+                            },
+                            {"type": "string", "minLength": 1},
+                        ]
+                    },
+                },
+            }
+        if "multiple_of" in spec:
+            value_schema["multipleOf"] = spec["multiple_of"]
         if "choices" in spec:
             value_schema["enum"] = spec["choices"]
         parameters[name] = {"anyOf": [value_schema, {"type": "null"}]}

@@ -21,23 +21,29 @@ namespace graph
 		GPUArray<T> count;
 		GPUArray<T> queue;
 		GPUArray<MarkType> mark; // mark if a node or edge is present in the graph
-		GPUArray<GraphQueue_d<T, MarkType>> *device_queue;
+		GPUArray<GraphQueue_d<T, MarkType>> *device_queue = nullptr;
 		int capacity;
 
 		void Create(AllocationTypeEnum at, uint cap, int devId)
 		{
 			capacity = cap;
 			count.initialize("Queue Count", at, 1, devId);
-			count.setSingle(0, 0, true);
 			queue.initialize("Queue data", at, capacity, devId);
 			mark.initialize("Queue Mark", at, capacity, devId);
 
 			device_queue = new GPUArray<GraphQueue_d<T, MarkType>>();
 			device_queue->initialize("Device Queue", unified, 1, devId);
 
-			count.switch_to_gpu();
-			queue.switch_to_gpu();
-			mark.switch_to_gpu();
+			// GPU allocations already have device storage. Copying their unused
+			// host mirrors here would overwrite initialized flags with garbage.
+			if (at == cpuonly)
+			{
+				count.switch_to_gpu(devId);
+				queue.switch_to_gpu(devId);
+				mark.switch_to_gpu(devId);
+			}
+			count.setSingle(0, 0, true);
+			mark.setAll(false, true);
 
 			device_queue->gdata()[0].count = count.gdata();
 			device_queue->gdata()[0].queue = queue.gdata();

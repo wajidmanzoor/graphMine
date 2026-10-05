@@ -6,5 +6,6 @@ var searchData=
   ['elim2_5fsaveres_3',['elim2_saveres',['../d2/d82/motzkin__cuda_8cu.html#a0f3ba6fab240b2fa22639a94979a88ba',1,'motzkin_cuda.cu']]],
   ['elim2gpu_4',['elim2GPU',['../d2/d82/motzkin__cuda_8cu.html#a51f4bcc2855d09c294301e159bee19e0',1,'motzkin_cuda.cu']]],
   ['elim_5fcuda_5',['elim_cuda',['../d2/d82/motzkin__cuda_8cu.html#a37f764313408a6504a0028a1ccf1dadc',1,'motzkin_cuda.cu']]],
-  ['elim_5foneblockgpu_6',['elim_oneblockGPU',['../d2/d82/motzkin__cuda_8cu.html#ad3546f5b4d476b74feffba7521f49d01',1,'motzkin_cuda.cu']]]
+  ['elim_5foneblockgpu_6',['elim_oneblockGPU',['../d2/d82/motzkin__cuda_8cu.html#ad3546f5b4d476b74feffba7521f49d01',1,'motzkin_cuda.cu']]],
+  ['exact_5fcuda_2ecuh_7',['exact_cuda.cuh',['../d6/deb/exact__cuda_8cuh.html',1,'']]]
 ];

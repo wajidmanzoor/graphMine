@@ -1,0 +1,9 @@
+{
+  "architecture": "89",
+  "archive_sha256": "cd2bce2925bf88b2dee2f6b21a31bd4c3f4160fc9085664ecdb495f4356aabbc",
+  "binary": "clean-poison-v2/build/cuda-pkt-offload-opt",
+  "binary_sha256": "41886f91b16cad86c99c1e9680f9b7a23261dca171a5616708fda1ced5862cb4",
+  "patch_sha256": "a6bd9731b1221d0a46a8e459c51f3b6bd6bd3757ef799ee932f351065418841d",
+  "poison_allocations": true,
+  "upstream_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1"
+}

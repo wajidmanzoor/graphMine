@@ -1,0 +1,62 @@
+{
+  "binary": "build/cuda-pkt-offload-opt",
+  "binary_sha256": "55e635ab0e7cfba6ac38346526520bf9cab95dff3ea30855a04bf1e075ef7b28",
+  "cases": [
+    {
+      "case": "original-medium",
+      "edges": 511,
+      "exit_code": 0,
+      "expected_histogram": {
+        "2": 280,
+        "3": 67,
+        "6": 45,
+        "7": 63,
+        "8": 56
+      },
+      "input_sha256": "ad297e97586b242b9491464f7fa88b053f98b956bb0604bcc4d30962201822c1",
+      "observed_histogram": {
+        "2": 280,
+        "3": 67,
+        "6": 45,
+        "7": 63,
+        "8": 56
+      },
+      "omp_threads": 1,
+      "passed": true,
+      "repeat": 0,
+      "sanitizer": "racecheck",
+      "sanitizer_clean": true,
+      "seconds": 1.27902,
+      "vertices": 240
+    },
+    {
+      "case": "original-small",
+      "edges": 20,
+      "exit_code": 0,
+      "expected_histogram": {
+        "2": 2,
+        "3": 8,
+        "5": 10
+      },
+      "input_sha256": "b78a458bdb5dfcfba3455a8d9f934d77bc0f966f364271953a5e90a88d2c718c",
+      "observed_histogram": {
+        "2": 2,
+        "3": 8,
+        "5": 10
+      },
+      "omp_threads": 1,
+      "passed": true,
+      "repeat": 0,
+      "sanitizer": "racecheck",
+      "sanitizer_clean": true,
+      "seconds": 0.91661,
+      "vertices": 12
+    }
+  ],
+  "gpu": "1",
+  "networkx_version": "2.8.8",
+  "passed": 2,
+  "seed": 20261004,
+  "suite": "smoke",
+  "total": 2
+}

@@ -1,0 +1,18 @@
+{
+  "implementation": "CDS",
+  "commit": "3e704f98cf873336e2cf789570774039c8d6f092",
+  "upstream_url": "https://github.com/wajidmanzoor/CDS",
+  "license_status": "No explicit license in the pinned upstream checkout",
+  "patch_sha256": "d96df403616b5a98b31f955df371c7db5e36f9b6a15dc477ca5a75ffd68a610a",
+  "patched_source_sha256": {
+    "cudaCode/CMakeLists.txt": "76d04e40a0826bf5f8fe6d32c1f4c752c0931cb6515dbff33f95b141d36e395a",
+    "cudaCode/inc/common.h": "e0684d4a8ea0d2cdd10e9646c8dfc587837064e87ec186db0de0babc1851b94b",
+    "cudaCode/inc/helpers.cuh": "71b6af4dc17fe9b7ad26dbf677d97b194f8493a15947030ea8b9e8588970bafd",
+    "cudaCode/main.cu": "81b92b217c13c1b8fe23cef4cf69f25093daf875dc1df671a63cea98f95018da",
+    "cudaCode/src/gpuMemoryAllocation.cu": "8881098c596db7c1ddf4f1fa01b7b3ad773c717f024941b19c99a971936fa410",
+    "cudaCode/src/graph.cpp": "73cc81a0856c0f3a5c4b095130b9680394eff7575fdced08f039843b1e96529a",
+    "cudaCode/src/helpers.cu": "5322a1ba7e25aab9cb2f3c12824a2b36b585e0b27b67e253d7b53c95b9224fbf",
+    "cudaCode/inc/exactFlow.cuh": "b5361dd75ef75465598d10b4b38a5eba3c49f45e0b235cd7ad31c031638da3d3"
+  },
+  "baseline_binary_sha256": "b24e46b63ee4441ac78ae99eb4a35a2e6a43171cb1612e2700c29d9be1dd36f7"
+}

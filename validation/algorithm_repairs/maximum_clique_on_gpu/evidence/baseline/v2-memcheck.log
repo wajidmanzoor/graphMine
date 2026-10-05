@@ -1,0 +1,48 @@
+========= COMPUTE-SANITIZER
+Max Core = 2
+[1;32m[17:37:02] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[17:37:02] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[17:37:02] VRAM usage: 705953792 B
+[0m[1;32m[17:37:02] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 3
+[1;32m[17:37:02] Max directed degree: 3, max undirected degree: 3
+[0m[1;32m[17:37:02] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[17:37:02] VRAM usage: 703856640 B
+[0m[1;32m[17:37:02] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+========= Invalid __global__ read of size 4 bytes
+=========     at atomicCASBool(bool *, bool, bool)+0x640 in utils.cuh:90
+=========     by thread (10,0,0) in block (0,0,0)
+=========     Address 0x78d9f6200428 is out of bounds
+=========     and is inside the nearest allocation at 0x78d9f6200400 of size 41 bytes
+=========         Device Frame: void add_to_queue_1_no_dup<unsigned int>(graphmine_maximum_clique_on_gpu_upstream::GraphQueue_d<T1, bool> &, T1)+0x610 in kcore.cuh:74
+=========         Device Frame: void process_degree<unsigned int, int>(T1, T1, T2 *, graphmine_maximum_clique_on_gpu_upstream::GraphQueue_d<T1, bool> &, graphmine_maximum_clique_on_gpu_upstream::GraphQueue_d<T1, bool> &, T1)+0x5d0 in kcore.cuh:96
+=========         Device Frame: void kernel_partition_level_next<unsigned int, int, (int)256, (int)32>(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<T1>, int, bool *, T2 *, graphmine_maximum_clique_on_gpu_upstream::GraphQueue_d<T1, bool>, graphmine_maximum_clique_on_gpu_upstream::GraphQueue_d<T1, bool> &, graphmine_maximum_clique_on_gpu_upstream::GraphQueue_d<T1, bool> &, int, T1, T1 *, T1 *)+0x390 in kcore.cuh:385
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0xb92b7] in probe-v2
+=========         Host Frame: graphmine_maximum_clique_on_gpu_upstream::SingleGPU_Kcore<unsigned int, int>::findKcoreIncremental_async(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<unsigned int>&, unsigned long, unsigned long) [clone .isra.0] [0x15af6] in probe-v2
+=========         Host Frame: graphmine::detail::run_maximum_clique_on_gpu(graphmine::CsrGraph const&, int, unsigned int) [0x1885b] in probe-v2
+=========         Host Frame: graphmine::MaximumClique::run(graphmine::Graph const&) const [0x49678] in probe-v2
+=========         Host Frame: main [0x1031a] in probe-v2
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaDeviceSynchronize.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: graphmine_maximum_clique_on_gpu_upstream::SingleGPU_Kcore<unsigned int, int>::findKcoreIncremental_async(graphmine_maximum_clique_on_gpu_upstream::COOCSRGraph_d<unsigned int>&, unsigned long, unsigned long) [clone .isra.0] [0x15afd] in probe-v2
+=========         Host Frame: graphmine::detail::run_maximum_clique_on_gpu(graphmine::CsrGraph const&, int, unsigned int) [0x1885b] in probe-v2
+=========         Host Frame: graphmine::MaximumClique::run(graphmine::Graph const&) const [0x49678] in probe-v2
+=========         Host Frame: main [0x1031a] in probe-v2
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaFree.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: graphmine_maximum_clique_on_gpu_upstream::SingleGPU_Kcore<unsigned int, int>::~SingleGPU_Kcore() [0x2a4fb] in probe-v2
+=========         Host Frame: graphmine::detail::run_maximum_clique_on_gpu(graphmine::CsrGraph const&, int, unsigned int) [clone .cold] [0xcf13] in probe-v2
+=========         Host Frame: graphmine::MaximumClique::run(graphmine::Graph const&) const [0x49678] in probe-v2
+=========         Host Frame: main [0x1031a] in probe-v2
+========= 
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Maximum-Clique-on-GPU CUDA failure at /home/wajid/projects/graphDatabaseAgent/problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/code/include/cgarray.cuh:98: unspecified launch failure
+========= Error: process didn't terminate successfully
+========= Target application returned an error
+========= LEAK SUMMARY: 0 bytes leaked in 0 allocations
+========= ERROR SUMMARY: 3 errors

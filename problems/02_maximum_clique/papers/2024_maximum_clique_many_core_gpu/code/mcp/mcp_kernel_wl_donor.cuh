@@ -264,10 +264,15 @@ __global__ void mcp_kernel_l1_wl_donor_psanse(
 		}
 
 		__syncthreads();
-		if (threadIdx.x == 0 && sh.state == 2)
+		// Every thread observes the old state before thread zero changes it.
+		if (sh.state == 2)
 		{
-			sh.state = 1;
-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			__syncthreads();
+			if (threadIdx.x == 0)
+			{
+				sh.state = 1;
+				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			}
 		}
 		__syncthreads();
 	}
@@ -530,10 +535,15 @@ __global__ void mcp_kernel_l1_wl_donor_tomita(
 		}
 
 		__syncthreads();
-		if (threadIdx.x == 0 && sh.state == 2)
+		// Every thread observes the old state before thread zero changes it.
+		if (sh.state == 2)
 		{
-			sh.state = 1;
-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			__syncthreads();
+			if (threadIdx.x == 0)
+			{
+				sh.state = 1;
+				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			}
 		}
 		__syncthreads();
 	}
@@ -797,10 +807,15 @@ __global__ void mcp_kernel_l1_wl_donor_psanse_recolor(
 		}
 
 		__syncthreads();
-		if (threadIdx.x == 0 && sh.state == 2)
+		// Every thread observes the old state before thread zero changes it.
+		if (sh.state == 2)
 		{
-			sh.state = 1;
-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			__syncthreads();
+			if (threadIdx.x == 0)
+			{
+				sh.state = 1;
+				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			}
 		}
 		__syncthreads();
 	}
@@ -1060,10 +1075,15 @@ __global__ void mcp_kernel_l1_wl_donor_tomita_renumber(
 		}
 
 		__syncthreads();
-		if (threadIdx.x == 0 && sh.state == 2)
+		// Every thread observes the old state before thread zero changes it.
+		if (sh.state == 2)
 		{
-			sh.state = 1;
-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			__syncthreads();
+			if (threadIdx.x == 0)
+			{
+				sh.state = 1;
+				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			}
 		}
 		__syncthreads();
 	}
@@ -1333,10 +1353,15 @@ __global__ void mcp_kernel_l1_wl_donor_reduce(
 		}
 
 		__syncthreads();
-		if (threadIdx.x == 0 && sh.state == 2)
+		// Every thread observes the old state before thread zero changes it.
+		if (sh.state == 2)
 		{
-			sh.state = 1;
-			queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			__syncthreads();
+			if (threadIdx.x == 0)
+			{
+				sh.state = 1;
+				queue_enqueue(queue, tickets, head, tail, CB, sh.sm_block_id);
+			}
 		}
 		__syncthreads();
 	}

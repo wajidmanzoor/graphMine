@@ -1,5 +1,6 @@
 var dir_9f38090ec579826ed427c3acd56f3458 =
 [
+    [ "expansion", "dir_02ac32d69a12c2d2555d655378cf3058.html", "dir_02ac32d69a12c2d2555d655378cf3058" ],
     [ "maximal_cliques", "dir_fa80045a526b87db3d94d6708ef3b028.html", "dir_fa80045a526b87db3d94d6708ef3b028" ],
     [ "betweenness_centrality_backend.hpp", "d8/d41/betweenness__centrality__backend_8hpp.html", "d8/d41/betweenness__centrality__backend_8hpp" ],
     [ "community_detection_backend.hpp", "d1/d3e/community__detection__backend_8hpp.html", "d1/d3e/community__detection__backend_8hpp" ],

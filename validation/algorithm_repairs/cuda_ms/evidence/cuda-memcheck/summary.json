@@ -1,0 +1,27 @@
+{
+  "runs": 12,
+  "passed": 12,
+  "failures": 0,
+  "exit_code": 0,
+  "sanitizer": "memcheck",
+  "sanitizer_clean": true,
+  "output_lines": 12,
+  "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+  "input_sha256": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+  "command": [
+    "compute-sanitizer",
+    "--leak-check",
+    "full",
+    "--tool",
+    "memcheck",
+    "--error-exitcode",
+    "86",
+    "--log-file",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-memcheck/sanitizer.log",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-memcheck/input.txt",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-memcheck/observed.txt"
+  ],
+  "gpu": 1,
+  "elapsed_s": 0.7733143400400877
+}

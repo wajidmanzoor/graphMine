@@ -1,0 +1,75 @@
+{
+  "cuda": [
+    "Cuda compilation tools, release 12.8, V12.8.93",
+    "Build cuda_12.8.r12.8/compiler.35583870_0"
+  ],
+  "edge_assignments": 915102,
+  "gpu": "NVIDIA RTX 6000 Ada Generation, 570.211.01",
+  "numerical_runs": 2691,
+  "python": "3.12.3",
+  "sanitizer_runs": 14,
+  "scope": "AccTD cuda-pkt-offload-opt executable, SM89, sorted symmetric simple undirected CSR, ordering org",
+  "sha256": {
+    "build.py": "7e59fbe326d613450c670b87b95d57e085c575ed462d4b0d56b543b5f6f69713",
+    "fix-only.patch": "fc3dac295032f4050c95710727e8404b2f69309190565e7808a76db75d74566a",
+    "provenance.json": "d5454c8ff7915bfe3f9cad12bcc9a20b5ba4b5e910dcb3be01423c10b1d65d20",
+    "repair.patch": "a6bd9731b1221d0a46a8e459c51f3b6bd6bd3757ef799ee932f351065418841d",
+    "validate.py": "5b8004bfdfe5a3f60fea28b9fd21944e70524af907cdb1bb0e2a240eb4199800"
+  },
+  "tests": {
+    "boundary-memcheck": {
+      "binary_sha256": "55e635ab0e7cfba6ac38346526520bf9cab95dff3ea30855a04bf1e075ef7b28",
+      "edge_assignments": 36,
+      "passed": 4,
+      "total": 4
+    },
+    "full": {
+      "binary_sha256": "55e635ab0e7cfba6ac38346526520bf9cab95dff3ea30855a04bf1e075ef7b28",
+      "edge_assignments": 445890,
+      "passed": 1831,
+      "total": 1831
+    },
+    "original-initcheck": {
+      "binary_sha256": "55e635ab0e7cfba6ac38346526520bf9cab95dff3ea30855a04bf1e075ef7b28",
+      "edge_assignments": 531,
+      "passed": 2,
+      "total": 2
+    },
+    "original-memcheck": {
+      "binary_sha256": "55e635ab0e7cfba6ac38346526520bf9cab95dff3ea30855a04bf1e075ef7b28",
+      "edge_assignments": 531,
+      "passed": 2,
+      "total": 2
+    },
+    "original-racecheck": {
+      "binary_sha256": "55e635ab0e7cfba6ac38346526520bf9cab95dff3ea30855a04bf1e075ef7b28",
+      "edge_assignments": 531,
+      "passed": 2,
+      "total": 2
+    },
+    "original-synccheck": {
+      "binary_sha256": "55e635ab0e7cfba6ac38346526520bf9cab95dff3ea30855a04bf1e075ef7b28",
+      "edge_assignments": 531,
+      "passed": 2,
+      "total": 2
+    },
+    "poison-stress": {
+      "binary_sha256": "41886f91b16cad86c99c1e9680f9b7a23261dca171a5616708fda1ced5862cb4",
+      "edge_assignments": 396762,
+      "passed": 708,
+      "total": 708
+    },
+    "recount-memcheck": {
+      "binary_sha256": "2694f3c76064e2ff7a429b549ea87a01826c3c69464c82317638e296fa97bf96",
+      "edge_assignments": 531,
+      "passed": 2,
+      "total": 2
+    },
+    "recount-tests": {
+      "binary_sha256": "2694f3c76064e2ff7a429b549ea87a01826c3c69464c82317638e296fa97bf96",
+      "edge_assignments": 72450,
+      "passed": 152,
+      "total": 152
+    }
+  }
+}

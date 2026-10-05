@@ -69,6 +69,50 @@ int main() {
   require(search_result.value().optimal,
           "Maximum-Clique-on-GPU search should be exact");
 
+  // The application audit's eight-cycle with chord 0--2 improves the
+  // preprocessing bound from two to three. Exercise witness ownership,
+  // external string IDs, isolates, and repeated use in the same process.
+  std::vector<graphmine::ExternalId> chord_vertices;
+  for (int v = 0; v < 10; ++v)
+    chord_vertices.emplace_back(std::string("device-") + std::to_string(v));
+  std::vector<std::pair<graphmine::ExternalId, graphmine::ExternalId>> chord_edges;
+  for (int v = 0; v < 8; ++v)
+    chord_edges.emplace_back(chord_vertices[v], chord_vertices[(v + 1) % 8]);
+  chord_edges.emplace_back(chord_vertices[0], chord_vertices[2]);
+  const auto chord = graphmine::Graph::from_edges(
+      "cycle-chord-native-regression", chord_vertices, chord_edges);
+  for (int repetition = 0; repetition < 4; ++repetition) {
+    const auto result = search_algorithm.run(chord);
+    require(result.ok(), result.status().message().c_str());
+    require(result.value().maximum_size == 3 && result.value().optimal,
+            "cycle-with-chord maximum size mismatch");
+    require(result.value().cliques.size() == 1 && result.value().cliques[0].size() == 3,
+            "cycle-with-chord witness size mismatch");
+    for (const auto& vertex : result.value().cliques[0])
+      require(vertex == chord_vertices[0] || vertex == chord_vertices[1] || vertex == chord_vertices[2],
+              "cycle-with-chord external witness mapping mismatch");
+  }
+  auto invalid_bound_options = search_options;
+  invalid_bound_options.known_lower_bound = 4;
+  require(!graphmine::MaximumClique(invalid_bound_options).run(chord).ok(),
+          "unverified lower bound must not fabricate a larger clique");
+
+  // A lower-core triangle precedes a higher-core bipartite component. The
+  // reduction must apply one permutation to vertex names and row lengths.
+  std::vector<graphmine::ExternalId> mixed_vertices;
+  for (int v = 0; v < 14; ++v) mixed_vertices.emplace_back(v);
+  std::vector<std::pair<graphmine::ExternalId, graphmine::ExternalId>> mixed_edges;
+  for (int v = 0; v < 8; ++v) mixed_edges.emplace_back(v, (v + 1) % 8);
+  mixed_edges.emplace_back(0, 2);
+  for (int u = 8; u < 11; ++u)
+    for (int v = 11; v < 14; ++v) mixed_edges.emplace_back(u, v);
+  const auto mixed = graphmine::Graph::from_edges(
+      "maximum-clique-mixed-core-regression", mixed_vertices, mixed_edges);
+  const auto mixed_result = search_algorithm.run(mixed);
+  require(mixed_result.ok(), mixed_result.status().message().c_str());
+  require(mixed_result.value().maximum_size == 3 && mixed_result.value().optimal,
+          "core-sorted reduction lost the lower-core maximum clique");
+
   graphmine::MaximumCliqueOptions ties_options;
   ties_options.backend =
       graphmine::MaximumCliqueBackend::gpu_maximum_clique;
@@ -81,8 +125,8 @@ int main() {
   require(ties_result.value().cliques.size() == 5,
           "GPUMaximumClique did not return every tied cycle edge");
 
-  // Seeded application audit: CUDA-MS finds a three-clique here, while
-  // {2, 4, 6, 7} is a four-clique. Its relaxation mask must not certify three.
+  // The old CUDA-MS relaxation returned three. Completed GPU search must
+  // recover the four-clique {2, 4, 6, 7} and certify it.
   const std::vector<graphmine::ExternalId> audit_vertices = {0, 1, 2, 3, 4, 5, 6, 7, 8};
   const std::vector<std::pair<graphmine::ExternalId, graphmine::ExternalId>> audit_edges = {
       {0, 1}, {0, 2}, {0, 3}, {0, 8}, {1, 2}, {1, 4}, {1, 8}, {2, 4},
@@ -102,10 +146,8 @@ int main() {
             "relaxation mask incorrectly reduced the certified upper bound");
     require(!result.value().optimal || result.value().maximum_size == 4,
             "a non-maximum clique was certified as optimal");
-    if (backend != graphmine::MaximumCliqueBackend::cuda_ms) {
-      require(result.value().maximum_size == 4 && result.value().optimal,
-              "exact backend failed the seeded four-clique regression");
-    }
+    require(result.value().maximum_size == 4 && result.value().optimal,
+            "exact backend failed the seeded four-clique regression");
   }
   return 0;
 }

@@ -1,5 +1,8 @@
 var annotated_dup =
 [
+    [ "anonymous_namespace{exact_cuda.cuh}", "dd/dad/namespaceanonymous__namespace_02exact__cuda_8cuh_03.html", [
+      [ "ms_device_buffer", "de/dc0/structanonymous__namespace_02exact__cuda_8cuh_03_1_1ms__device__buffer.html", "de/dc0/structanonymous__namespace_02exact__cuda_8cuh_03_1_1ms__device__buffer" ]
+    ] ],
     [ "arguments", "d6/d2e/structarguments.html", "d6/d2e/structarguments" ],
     [ "cpu_clique_data", "d7/df4/structcpu__clique__data.html", "d7/df4/structcpu__clique__data" ],
     [ "cuda_clique_data", "d8/d55/structcuda__clique__data.html", "d8/d55/structcuda__clique__data" ],

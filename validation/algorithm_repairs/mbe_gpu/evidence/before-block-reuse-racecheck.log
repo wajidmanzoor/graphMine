@@ -1,0 +1,8 @@
+========= COMPUTE-SANITIZER
+========= Error: Race reported between Write access at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x300 in IterFinderGpu.cu:554
+=========     and Read access at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x3bf0 in IterFinderGpu.cu:622 [4 hazards]
+========= 
+========= Error: Race reported between Write access at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x310 in IterFinderGpu.cu:555
+=========     and Read access at IterFinderKernel_2(CSRBiGraph, int *, unsigned long long *, int *, double)+0x3c20 in IterFinderGpu.cu:624 [4 hazards]
+========= 
+========= RACECHECK SUMMARY: 2 hazards displayed (2 errors, 0 warnings)

@@ -1,0 +1,16 @@
+{
+  "paper_id": "2020_accelerating_truss_heterogeneous",
+  "title": "Accelerating Truss Decomposition on Heterogeneous Processors",
+  "year": 2020,
+  "venue": "PVLDB",
+  "doi": "10.14778/3401960.3401971",
+  "publication_url": "https://www.vldb.org/pvldb/vol13/p1751-che.pdf",
+  "pdf_url": "https://www.vldb.org/pvldb/vol13/p1751-che.pdf",
+  "code_url": "https://github.com/RapidsAtHKUST/AccTrussDecomposition",
+  "semantic_fit": "exact",
+  "gpu_scope": "CPU-GPU heterogeneous k-truss decomposition.",
+  "notes": null,
+  "problem_id": "k_truss_decomposition",
+  "problem_dir": "08_k_truss_decomposition",
+  "research_cutoff": "2026-09-30"
+}

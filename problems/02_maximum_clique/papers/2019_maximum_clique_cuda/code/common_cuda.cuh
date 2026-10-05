@@ -31,12 +31,12 @@ template <unsigned int blockSize, typename t,  void (*op)(t *, int, int)> __devi
     if (blockSize >= 256) { if (tid < 128) { op(sdata, tid, tid + 128); } __syncthreads(); }
     if (blockSize >= 128) { if (tid < 64)  { op(sdata, tid, tid + 64 ); } __syncthreads(); }
 
-    if (blockSize >=  64) { if (tid < 32)  { op(sdata, tid, tid + 32); } }
-    if (blockSize >=  32) { if (tid < 16)  { op(sdata, tid, tid + 16); } }
-    if (blockSize >=  16) { if (tid <  8)  { op(sdata, tid, tid +  8); } }
-    if (blockSize >=   8) { if (tid <  4)  { op(sdata, tid, tid +  4); } }
-    if (blockSize >=   4) { if (tid <  2)  { op(sdata, tid, tid +  2); } }
-    if (blockSize >=   2) { if (tid <  1)  { op(sdata, tid, tid +  1); } }
+    if (blockSize >=  64) { if (tid < 32)  { op(sdata, tid, tid + 32); } __syncthreads(); }
+    if (blockSize >=  32) { if (tid < 16)  { op(sdata, tid, tid + 16); } __syncthreads(); }
+    if (blockSize >=  16) { if (tid <  8)  { op(sdata, tid, tid +  8); } __syncthreads(); }
+    if (blockSize >=   8) { if (tid <  4)  { op(sdata, tid, tid +  4); } __syncthreads(); }
+    if (blockSize >=   4) { if (tid <  2)  { op(sdata, tid, tid +  2); } __syncthreads(); }
+    if (blockSize >=   2) { if (tid <  1)  { op(sdata, tid, tid +  1); } __syncthreads(); }
 }
 
 template <unsigned int blockSize, typename t> inline __device__ void min_reduce(t *data, int pos1, int pos2)
@@ -61,12 +61,12 @@ template <unsigned int blockSize, typename t> __device__ void reduce_sum(t *sdat
     if (blockSize >= 256) { if (tid < 128) { sdata[tid]+=sdata[tid + 128]; } __syncthreads(); }
     if (blockSize >= 128) { if (tid < 64)  { sdata[tid]+=sdata[tid + 64 ]; } __syncthreads(); }
 
-    if (blockSize >=  64) { if (tid < 32)  { sdata[tid]+=sdata[tid + 32]; } }
-    if (blockSize >=  32) { if (tid < 16)  { sdata[tid]+=sdata[tid + 16]; } }
-    if (blockSize >=  16) { if (tid <  8)  { sdata[tid]+=sdata[tid +  8]; } }
-    if (blockSize >=   8) { if (tid <  4)  { sdata[tid]+=sdata[tid +  4]; } }
-    if (blockSize >=   4) { if (tid <  2)  { sdata[tid]+=sdata[tid +  2]; } }
-    if (blockSize >=   2) { if (tid <  1)  { sdata[tid]+=sdata[tid +  1]; } }
+    if (blockSize >=  64) { if (tid < 32)  { sdata[tid]+=sdata[tid + 32]; } __syncthreads(); }
+    if (blockSize >=  32) { if (tid < 16)  { sdata[tid]+=sdata[tid + 16]; } __syncthreads(); }
+    if (blockSize >=  16) { if (tid <  8)  { sdata[tid]+=sdata[tid +  8]; } __syncthreads(); }
+    if (blockSize >=   8) { if (tid <  4)  { sdata[tid]+=sdata[tid +  4]; } __syncthreads(); }
+    if (blockSize >=   4) { if (tid <  2)  { sdata[tid]+=sdata[tid +  2]; } __syncthreads(); }
+    if (blockSize >=   2) { if (tid <  1)  { sdata[tid]+=sdata[tid +  1]; } __syncthreads(); }
 }
 
 template <unsigned int blockSize, typename t> __device__ void reduce_max(t *sdata, unsigned int tid)
@@ -76,12 +76,12 @@ template <unsigned int blockSize, typename t> __device__ void reduce_max(t *sdat
     if (blockSize >= 256) { if (tid < 128) { if(sdata[tid + 128] > sdata[tid]) sdata[tid]=sdata[tid + 128]; } __syncthreads(); }
     if (blockSize >= 128) { if (tid < 64)  { if(sdata[tid + 64 ] > sdata[tid]) sdata[tid]=sdata[tid + 64 ]; } __syncthreads(); }
 
-    if (blockSize >=  64) { if (tid < 32)  { if(sdata[tid + 32] > sdata[tid]) sdata[tid]=sdata[tid + 32]; } }
-    if (blockSize >=  32) { if (tid < 16)  { if(sdata[tid + 16] > sdata[tid]) sdata[tid]=sdata[tid + 16]; } }
-    if (blockSize >=  16) { if (tid <  8)  { if(sdata[tid +  8] > sdata[tid]) sdata[tid]=sdata[tid +  8]; } }
-    if (blockSize >=   8) { if (tid <  4)  { if(sdata[tid +  4] > sdata[tid]) sdata[tid]=sdata[tid +  4]; } }
-    if (blockSize >=   4) { if (tid <  2)  { if(sdata[tid +  2] > sdata[tid]) sdata[tid]=sdata[tid +  2]; } }
-    if (blockSize >=   2) { if (tid <  1)  { if(sdata[tid +  1] > sdata[tid]) sdata[tid]=sdata[tid +  1]; } }
+    if (blockSize >=  64) { if (tid < 32)  { if(sdata[tid + 32] > sdata[tid]) sdata[tid]=sdata[tid + 32]; } __syncthreads(); }
+    if (blockSize >=  32) { if (tid < 16)  { if(sdata[tid + 16] > sdata[tid]) sdata[tid]=sdata[tid + 16]; } __syncthreads(); }
+    if (blockSize >=  16) { if (tid <  8)  { if(sdata[tid +  8] > sdata[tid]) sdata[tid]=sdata[tid +  8]; } __syncthreads(); }
+    if (blockSize >=   8) { if (tid <  4)  { if(sdata[tid +  4] > sdata[tid]) sdata[tid]=sdata[tid +  4]; } __syncthreads(); }
+    if (blockSize >=   4) { if (tid <  2)  { if(sdata[tid +  2] > sdata[tid]) sdata[tid]=sdata[tid +  2]; } __syncthreads(); }
+    if (blockSize >=   2) { if (tid <  1)  { if(sdata[tid +  1] > sdata[tid]) sdata[tid]=sdata[tid +  1]; } __syncthreads(); }
 }
 
 template <unsigned int blockSize, typename t, bool with_last> __device__ void prefixscan(t *data, int tid)
@@ -124,9 +124,11 @@ template <unsigned int blockSize, typename t, bool with_last> __device__ void pr
         }
     }
 
+    __syncthreads();
     if(with_last) {
         if(tid==blockSize-1) data[2*blockSize]+=data[tid+blockSize];
     }
+    __syncthreads();
 }
 
 #endif

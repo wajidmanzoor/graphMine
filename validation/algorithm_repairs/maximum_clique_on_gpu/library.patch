@@ -1,0 +1,197 @@
+diff --git a/library/src/backends/maximum_clique_on_gpu_backend.cu b/library/src/backends/maximum_clique_on_gpu_backend.cu
+index 8dd18ed..db4c40a 100644
+--- a/library/src/backends/maximum_clique_on_gpu_backend.cu
++++ b/library/src/backends/maximum_clique_on_gpu_backend.cu
+@@ -211,7 +211,8 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
+     // vertex set is always available if no larger clique exists.
+     (void)known_lower_bound;
+     GraphMineMaximumCliqueOnGpuConfig config{};
+-    config.mt = MAINTASK::MCP;
++    // Only the evaluation path publishes clique vertices as well as its size.
++    config.mt = MAINTASK::MCP_EVAL;
+     config.deviceId = device_id;
+     config.block_size = 64;
+     config.warp_parallel = false;
+@@ -272,10 +273,6 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
+ 
+     UpstreamArray compact_degrees("Compact reduced degrees", unified,
+                                   reduced_vertex_count, device_id);
+-    graphmine_maximum_clique_on_gpu_cub_select(
+-        reduced_degrees.gdata(), compact_degrees.gdata(), flags.gdata(),
+-        vertex_count, device_id);
+-    reduced_degrees.freeGPU();
+ 
+     UpstreamArray indices("Original indices", unified, vertex_count,
+                           device_id);
+@@ -291,8 +288,10 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
+ 
+     UpstreamArray reduced_core_numbers("Reduced core numbers", gpu,
+                                        reduced_vertex_count, device_id);
++    UpstreamArray unsorted_core_numbers("Unsorted core numbers", gpu,
++                                        reduced_vertex_count, device_id);
+     graphmine_maximum_clique_on_gpu_cub_select(
+-        kcore.coreNumber.gdata(), reduced_core_numbers.gdata(), flags.gdata(),
++        kcore.coreNumber.gdata(), unsorted_core_numbers.gdata(), flags.gdata(),
+         vertex_count, device_id);
+     flags.freeGPU();
+ 
+@@ -300,34 +299,25 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
+                             device_id);
+     void* temporary_storage = nullptr;
+     std::size_t temporary_storage_bytes = 0;
+-    cub::DeviceRadixSort::SortPairsDescending(
++    CUDA_RUNTIME(cub::DeviceRadixSort::SortPairsDescending(
+         temporary_storage, temporary_storage_bytes,
+-        reduced_core_numbers.gdata(), reduced_core_numbers.gdata(),
+-        temporary_old_names.gdata(), old_names.gdata(), reduced_vertex_count);
++        unsorted_core_numbers.gdata(), reduced_core_numbers.gdata(),
++        temporary_old_names.gdata(), old_names.gdata(), reduced_vertex_count));
+     CUDA_RUNTIME(cudaMalloc(&temporary_storage, temporary_storage_bytes));
+-    cub::DeviceRadixSort::SortPairsDescending(
++    CUDA_RUNTIME(cub::DeviceRadixSort::SortPairsDescending(
+         temporary_storage, temporary_storage_bytes,
+-        reduced_core_numbers.gdata(), reduced_core_numbers.gdata(),
+-        temporary_old_names.gdata(), old_names.gdata(), reduced_vertex_count);
++        unsorted_core_numbers.gdata(), reduced_core_numbers.gdata(),
++        temporary_old_names.gdata(), old_names.gdata(), reduced_vertex_count));
+     CUDA_RUNTIME(cudaFree(temporary_storage));
+     temporary_old_names.freeGPU();
++    unsorted_core_numbers.freeGPU();
+ 
+-    // Preserve the artifact's second key/value ordering step exactly.
+-    temporary_storage = nullptr;
+-    temporary_storage_bytes = 0;
+-    cub::DeviceRadixSort::SortPairsDescending(
+-        temporary_storage, temporary_storage_bytes,
+-        reduced_core_numbers.gdata(), reduced_core_numbers.gdata(),
+-        compact_degrees.gdata(), compact_degrees.gdata(),
+-        reduced_vertex_count);
+-    CUDA_RUNTIME(cudaMalloc(&temporary_storage, temporary_storage_bytes));
+-    cub::DeviceRadixSort::SortPairsDescending(
+-        temporary_storage, temporary_storage_bytes,
+-        reduced_core_numbers.gdata(), reduced_core_numbers.gdata(),
+-        compact_degrees.gdata(), compact_degrees.gdata(),
+-        reduced_vertex_count);
+-    CUDA_RUNTIME(cudaFree(temporary_storage));
+-    CUDA_RUNTIME(cudaDeviceSynchronize());
++    // Apply exactly the same permutation to degrees as to vertex names.
++    // Sorting already sorted keys a second time leaves degrees misaligned.
++    execKernel((gather_by_index_kernel<DataType>), blocks, block_size,
++               device_id, false, reduced_degrees.gdata(), old_names.gdata(),
++               compact_degrees.gdata(), reduced_vertex_count);
++    reduced_degrees.freeGPU();
+ 
+     DeviceGraphStorage reduced;
+     reduced.value.numNodes = reduced_vertex_count;
+@@ -362,15 +352,21 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
+ 
+     temporary_storage = nullptr;
+     temporary_storage_bytes = 0;
+-    cub::DeviceSegmentedRadixSort::SortKeys(
++    UpstreamArray sorted_neighbors("Sorted neighbors", gpu,
++                                    reduced_edge_count, device_id);
++    CUDA_RUNTIME(cub::DeviceSegmentedRadixSort::SortKeys(
+         temporary_storage, temporary_storage_bytes, reduced.value.colInd,
+-        reduced.value.colInd, reduced_edge_count, reduced_vertex_count,
+-        reduced.value.rowPtr, reduced.value.rowPtr + 1);
++        sorted_neighbors.gdata(), reduced_edge_count, reduced_vertex_count,
++        reduced.value.rowPtr, reduced.value.rowPtr + 1));
+     CUDA_RUNTIME(cudaMalloc(&temporary_storage, temporary_storage_bytes));
+-    cub::DeviceSegmentedRadixSort::SortKeys(
++    CUDA_RUNTIME(cub::DeviceSegmentedRadixSort::SortKeys(
+         temporary_storage, temporary_storage_bytes, reduced.value.colInd,
+-        reduced.value.colInd, reduced_edge_count, reduced_vertex_count,
+-        reduced.value.rowPtr, reduced.value.rowPtr + 1);
++        sorted_neighbors.gdata(), reduced_edge_count, reduced_vertex_count,
++        reduced.value.rowPtr, reduced.value.rowPtr + 1));
++    CUDA_RUNTIME(cudaMemcpy(reduced.value.colInd, sorted_neighbors.gdata(),
++                            sizeof(DataType) * reduced_edge_count,
++                            cudaMemcpyDeviceToDevice));
++    sorted_neighbors.freeGPU();
+     CUDA_RUNTIME(cudaFree(temporary_storage));
+     CUDA_RUNTIME(cudaDeviceSynchronize());
+ 
+@@ -425,6 +421,11 @@ MaximumCliqueBackendResult run_maximum_clique_on_gpu(
+       clique.clear();
+       clique.reserve(solver.Cmax_size);
+       for (std::uint32_t i = 0; i < solver.Cmax_size; ++i) {
++        if (reduced_clique[i] >= reduced_vertex_count) {
++          std::free(reduced_clique);
++          std::free(original_names);
++          throw std::runtime_error("search returned an invalid reduced vertex");
++        }
+         const auto original_vertex = original_names[reduced_clique[i]];
+         if (original_vertex != 0) clique.push_back(original_vertex - 1U);
+       }
+diff --git a/library/src/problems/maximum_clique.cpp b/library/src/problems/maximum_clique.cpp
+index e6623b3..a90f275 100644
+--- a/library/src/problems/maximum_clique.cpp
++++ b/library/src/problems/maximum_clique.cpp
+@@ -83,10 +83,10 @@ Provenance maximum_clique_provenance(MaximumCliqueBackend backend) {
+           "original parallel greedy preprocessing + clique-merging search";
+       break;
+     case MaximumCliqueBackend::maximum_clique_on_gpu:
+-      provenance.backend_version = "Maximum-Clique-on-GPU artifact";
++      provenance.backend_version = "Maximum-Clique-on-GPU artifact (2026-10-04 repair)";
+       provenance.source_commit = "62708c588219";
+       provenance.execution_path =
+-          "original k-core heuristic, reduction, and GPU branch-and-bound";
++          "repaired k-core preprocessing and reduction + GPU branch-and-bound with clique witness";
+       break;
+     case MaximumCliqueBackend::automatic:
+       break;
+diff --git a/library/tests/maximum_clique_test.cpp b/library/tests/maximum_clique_test.cpp
+index 0de1c7d..1c40f23 100644
+--- a/library/tests/maximum_clique_test.cpp
++++ b/library/tests/maximum_clique_test.cpp
+@@ -69,6 +69,50 @@ int main() {
+   require(search_result.value().optimal,
+           "Maximum-Clique-on-GPU search should be exact");
+ 
++  // The application audit's eight-cycle with chord 0--2 improves the
++  // preprocessing bound from two to three. Exercise witness ownership,
++  // external string IDs, isolates, and repeated use in the same process.
++  std::vector<graphmine::ExternalId> chord_vertices;
++  for (int v = 0; v < 10; ++v)
++    chord_vertices.emplace_back(std::string("device-") + std::to_string(v));
++  std::vector<std::pair<graphmine::ExternalId, graphmine::ExternalId>> chord_edges;
++  for (int v = 0; v < 8; ++v)
++    chord_edges.emplace_back(chord_vertices[v], chord_vertices[(v + 1) % 8]);
++  chord_edges.emplace_back(chord_vertices[0], chord_vertices[2]);
++  const auto chord = graphmine::Graph::from_edges(
++      "cycle-chord-native-regression", chord_vertices, chord_edges);
++  for (int repetition = 0; repetition < 4; ++repetition) {
++    const auto result = search_algorithm.run(chord);
++    require(result.ok(), result.status().message().c_str());
++    require(result.value().maximum_size == 3 && result.value().optimal,
++            "cycle-with-chord maximum size mismatch");
++    require(result.value().cliques.size() == 1 && result.value().cliques[0].size() == 3,
++            "cycle-with-chord witness size mismatch");
++    for (const auto& vertex : result.value().cliques[0])
++      require(vertex == chord_vertices[0] || vertex == chord_vertices[1] || vertex == chord_vertices[2],
++              "cycle-with-chord external witness mapping mismatch");
++  }
++  auto invalid_bound_options = search_options;
++  invalid_bound_options.known_lower_bound = 4;
++  require(!graphmine::MaximumClique(invalid_bound_options).run(chord).ok(),
++          "unverified lower bound must not fabricate a larger clique");
++
++  // A lower-core triangle precedes a higher-core bipartite component. The
++  // reduction must apply one permutation to vertex names and row lengths.
++  std::vector<graphmine::ExternalId> mixed_vertices;
++  for (int v = 0; v < 14; ++v) mixed_vertices.emplace_back(v);
++  std::vector<std::pair<graphmine::ExternalId, graphmine::ExternalId>> mixed_edges;
++  for (int v = 0; v < 8; ++v) mixed_edges.emplace_back(v, (v + 1) % 8);
++  mixed_edges.emplace_back(0, 2);
++  for (int u = 8; u < 11; ++u)
++    for (int v = 11; v < 14; ++v) mixed_edges.emplace_back(u, v);
++  const auto mixed = graphmine::Graph::from_edges(
++      "maximum-clique-mixed-core-regression", mixed_vertices, mixed_edges);
++  const auto mixed_result = search_algorithm.run(mixed);
++  require(mixed_result.ok(), mixed_result.status().message().c_str());
++  require(mixed_result.value().maximum_size == 3 && mixed_result.value().optimal,
++          "core-sorted reduction lost the lower-core maximum clique");
++
+   graphmine::MaximumCliqueOptions ties_options;
+   ties_options.backend =
+       graphmine::MaximumCliqueBackend::gpu_maximum_clique;

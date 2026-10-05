@@ -1,0 +1,8 @@
+Graph file: /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/fixtures/audit-9.col nodes: 9 edges: 16
+Mode: single iteration
+Alpha: 0.500000
+GPU: 
+clique size: 4 nodes:
+2 4 6 7 
+GPU time (us): 17035
+GPU time (s): 0.017

@@ -12,7 +12,9 @@ var dir_a0347133d6174c67ea4ea2425a7f4dcc =
     [ "maximal_cliques_test.cpp", "d1/d8b/maximal__cliques__test_8cpp.html", "d1/d8b/maximal__cliques__test_8cpp" ],
     [ "maximum_clique_test.cpp", "d1/d56/maximum__clique__test_8cpp.html", "d1/d56/maximum__clique__test_8cpp" ],
     [ "quasi_cliques_test.cpp", "d3/d68/quasi__cliques__test_8cpp.html", "d3/d68/quasi__cliques__test_8cpp" ],
+    [ "repaired_algorithms_test.cpp", "d8/d7c/repaired__algorithms__test_8cpp.html", "d8/d7c/repaired__algorithms__test_8cpp" ],
     [ "subgraph_isomorphism_test.cpp", "d9/d0f/subgraph__isomorphism__test_8cpp.html", "d9/d0f/subgraph__isomorphism__test_8cpp" ],
     [ "temporal_motif_mining_test.cpp", "d7/d86/temporal__motif__mining__test_8cpp.html", "d7/d86/temporal__motif__mining__test_8cpp" ],
-    [ "triangle_counting_test.cpp", "de/d21/triangle__counting__test_8cpp.html", "de/d21/triangle__counting__test_8cpp" ]
+    [ "triangle_counting_test.cpp", "de/d21/triangle__counting__test_8cpp.html", "de/d21/triangle__counting__test_8cpp" ],
+    [ "validated_expansion_test.cpp", "d2/d93/validated__expansion__test_8cpp.html", "d2/d93/validated__expansion__test_8cpp" ]
 ];

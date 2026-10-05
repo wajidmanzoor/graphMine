@@ -233,10 +233,10 @@ def test_application_review_unavailable_operation_precedes_clarification(
     case = make_case(example)
     decision = deepcopy(case["expected"])
     decision.update(
-        problem_id="k_truss_decomposition",
+        problem_id="graphlet_counting",
         operation_id=None,
         supported=False,
-        ambiguity=["Which k should I use?"],
+        ambiguity=["Which graphlet sizes should I use?"],
     )
     case.update(expected=decision, behavior="unsupported", operation_id=None)
     strict, reviewed = review_generation(

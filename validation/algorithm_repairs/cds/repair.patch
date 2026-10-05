@@ -1,0 +1,1651 @@
+diff --git a/cudaCode/CMakeLists.txt b/cudaCode/CMakeLists.txt
+index 05bef13..903b2ac 100644
+--- a/cudaCode/CMakeLists.txt
++++ b/cudaCode/CMakeLists.txt
+@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.10)
+ project(CDS LANGUAGES CXX CUDA)
+ 
+ # A100 uses SM 80
+-set(CMAKE_CUDA_ARCHITECTURES 80)
++if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
++  set(CMAKE_CUDA_ARCHITECTURES 80)
++endif()
++set(CMAKE_CXX_STANDARD 17)
++set(CMAKE_CUDA_STANDARD 17)
+ 
+ # Enable modern CUDA features
+ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+@@ -17,7 +21,7 @@ add_executable(main
+ 
+ # Extended lambda and better default stream
+ target_compile_options(main PRIVATE
+-    $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>
++    $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda;-UNDEBUG>
+     $<$<COMPILE_LANGUAGE:CUDA>:--default-stream per-thread>
+ )
+ 
+diff --git a/cudaCode/inc/common.h b/cudaCode/inc/common.h
+index f10f6ba..d0ea7b9 100644
+--- a/cudaCode/inc/common.h
++++ b/cudaCode/inc/common.h
+@@ -38,6 +38,7 @@
+ using namespace std;
+ 
+ typedef unsigned int ui;
++using FlowCapacity = unsigned long long;
+ typedef unsigned short ushort;
+ typedef unsigned char uchar;
+ 
+@@ -123,11 +124,11 @@ typedef struct {
+ 
+ typedef struct {
+   ui *height;
+-  double *excess;
++  FlowCapacity *excess;
+   ui *offset;
+   ui *neighbors;
+-  double *capacity;
+-  double *flow;
++  FlowCapacity *capacity;
++  FlowCapacity *flow;
+   ui *flowIndex;
+ 
+ } deviceFlowNetworkPointers;
+diff --git a/cudaCode/inc/helpers.cuh b/cudaCode/inc/helpers.cuh
+index 4316088..e11b72b 100644
+--- a/cudaCode/inc/helpers.cuh
++++ b/cudaCode/inc/helpers.cuh
+@@ -37,7 +37,7 @@ __global__ void writeEdgeCliques(deviceGraphPointers G, deviceDAGpointer D,
+                                  ui trieSize, ui totalWarps);
+ __global__ void countCliques(deviceDAGpointer D,
+                              cliqueLevelDataPointer levelData,
+-                             ui *globalCounter, ui maxBitMask, ui totalTasks,
++                             FlowCapacity *globalCounter, ui maxBitMask, ui totalTasks,
+                              ui totalWarps);
+ 
+ __global__ void sortTrieData(deviceGraphPointers G,
+@@ -96,11 +96,6 @@ __global__ void rearrangeCliqueData(deviceComponentPointers conComp,
+                                     ui totaLCliques, ui k, ui newTotaLCliques,
+                                     ui totalThreads);
+ 
+-__global__ void getLbUbandSize(deviceComponentPointers conComp, ui *compCounter,
+-                               double *lowerBound, double *upperBound,
+-                               ui *ccOffset, ui *neighborSize,
+-                               ui totalComponenets, ui k, double maxDensity);
+-
+ __global__ void createFlowNetworkOffset(deviceFlowNetworkPointers flowNetwork,
+                                         deviceComponentPointers conComp,
+                                         deviceCliquesPointer finalCliqueData,
+@@ -109,29 +104,6 @@ __global__ void createFlowNetworkOffset(deviceFlowNetworkPointers flowNetwork,
+ __global__ void createFlowNetwork(deviceFlowNetworkPointers flowNetwork,
+                                   deviceComponentPointers conComp,
+                                   deviceCliquesPointer finalCliqueData,
+-                                  ui *compCounter, double *upperBound,
+-                                  double *lowerBound, ui *counter, ui iter,
++                                  ui *compCounter, FlowCapacity numerator, FlowCapacity denominator,
++                                  FlowCapacity infinite, ui *counter, ui iter,
+                                   ui k, ui t);
+-
+-__global__ void entropyBasedUB(deviceFlowNetworkPointers flowNetwork,
+-                               deviceComponentPointers conComp,
+-                               deviceCliquesPointer finalCliqueData,
+-                               ui *compCounter, double *minSupport,
+-                               double *componentCliques, ui iter, ui k);
+-
+-__global__ void preFlow(deviceFlowNetworkPointers flowNetwork,
+-                        deviceComponentPointers conComp, ui *compCounter,
+-                        double *totalExcess, ui iter);
+-__global__ void pushRelabel(deviceFlowNetworkPointers flowNetwork,
+-                            deviceComponentPointers conComp, ui *compCounter,
+-                            double *totalExcess, ui *activeNodes, ui iter,
+-                            ui *solved);
+-__global__ void globalRelabel(deviceFlowNetworkPointers flowNetwork,
+-                              deviceComponentPointers conComp, ui *compCounter,
+-                              ui k, ui iter, ui *capLeft);
+-__global__ void updateFlownetwork(deviceFlowNetworkPointers flowNetwork,
+-                                  deviceComponentPointers conComp,
+-                                  deviceCliquesPointer finalCliqueData,
+-                                  ui *compCounter, double *upperBound,
+-                                  double *lowerBound, ui *gpuConverged, ui k,
+-                                  ui t, ui iter);
+\ No newline at end of file
+diff --git a/cudaCode/main.cu b/cudaCode/main.cu
+index 54b4f40..4db8d81 100644
+--- a/cudaCode/main.cu
++++ b/cudaCode/main.cu
+@@ -16,6 +16,10 @@
+ #include <thrust/unique.h>
+ 
+ #include <chrono>
++#include "./inc/exactFlow.cuh"
++#ifndef CDS_CAPACITY_SCALE
++#define CDS_CAPACITY_SCALE 1ULL
++#endif
+ 
+ bool DEBUG = false;
+ 
+@@ -64,8 +68,8 @@ ui listAllCliques(const Graph &graph, deviceGraphPointers &deviceGraph,
+ 
+   // Get max out degree in DAG.
+   thrust::device_ptr<ui> dev_degree(deviceDAG.degree);
+-  auto max_iter = thrust::max_element(dev_degree, dev_degree + graph.n);
+-  int maxDegree = *max_iter;
++  ui maxDegree = thrust::reduce(dev_degree, dev_degree + graph.n, 0U,
++                                thrust::maximum<ui>());
+ 
+   // Allocates memory for intermediate results of the clique listing algorithm,
+   // including partial cliques, candidate extensions for each partial clique,
+@@ -154,7 +158,7 @@ ui listAllCliques(const Graph &graph, deviceGraphPointers &deviceGraph,
+     chkerr(cudaMemset(levelData.temp, 0, (TOTAL_WARPS + 1) * sizeof(ui)));
+     chkerr(cudaMemset(levelData.offsetPartition, 0, (offsetSize) * sizeof(ui)));
+     chkerr(cudaMemset(levelData.validNeighMaskPartition, 0,
+-                      (partialSize * maxBitMask) * sizeof(ui)));
++                      maskSize * sizeof(ui)));
+     cudaDeviceSynchronize();
+ 
+     // Add verticies to partial cliques from initial kernel.
+@@ -171,7 +175,7 @@ ui listAllCliques(const Graph &graph, deviceGraphPointers &deviceGraph,
+ 
+     chkerr(cudaMemset(levelData.offset, 0, offsetSize * sizeof(ui)));
+     chkerr(cudaMemset(levelData.validNeighMask, 0,
+-                      partialSize * maxBitMask * sizeof(ui)));
++                      maskSize * sizeof(ui)));
+     cudaDeviceSynchronize();
+ 
+     // write partial cliques, candidates and valid neighbor bitmask from virtual
+@@ -192,34 +196,29 @@ ui listAllCliques(const Graph &graph, deviceGraphPointers &deviceGraph,
+ 
+   chkerr(cudaFree(labels));
+ 
+-  // Total Cliques
+-  ui *totalCliques;
+-  chkerr(cudaMalloc((void **)&totalCliques, sizeof(ui)));
+-  chkerr(cudaMemset(totalCliques, 0, sizeof(ui)));
+-  cudaDeviceSynchronize();
+-
+-  countCliques<<<BLK_NUMS, BLK_DIM>>>(deviceDAG, levelData, totalCliques,
++  // Count in 64 bits, then enforce the existing trie/index capacity before
++  // any narrowing or allocation.
++  FlowCapacity *countedCliques;
++  chkerr(cudaMalloc((void **)&countedCliques, sizeof(FlowCapacity)));
++  chkerr(cudaMemset(countedCliques, 0, sizeof(FlowCapacity)));
++  countCliques<<<BLK_NUMS, BLK_DIM>>>(deviceDAG, levelData, countedCliques,
+                                       maxBitMask, totalTasks, TOTAL_WARPS);
+-  cudaDeviceSynchronize();
+-  CUDA_CHECK_ERROR("Count Num Cliques");
+-
+-  // Total Cliques
+-  ui tt;
+-  chkerr(cudaMemcpy(&tt, totalCliques, sizeof(ui), cudaMemcpyDeviceToHost));
+-  cudaDeviceSynchronize();
+-  if (tt == 0) {
++  chkerr(cudaGetLastError());
++  FlowCapacity count64;
++  chkerr(cudaMemcpy(&count64, countedCliques, sizeof(FlowCapacity), cudaMemcpyDeviceToHost));
++  chkerr(cudaFree(countedCliques));
++  if (count64 > unsigned(INT_MAX) / k)
++    throw std::runtime_error("Clique trie exceeds supported indexing range");
++  ui tt = ui(count64);
++  if (!tt) {
+     freeLevelData(levelData);
+-
+     freeDAG(deviceDAG);
+-    return tt;
++    return 0;
+   }
+-
+-  // Stores Final k-cliques of the graph.
+   memoryAllocationTrie(cliqueData, tt, k);
+-
++  ui *totalCliques;
++  chkerr(cudaMalloc((void **)&totalCliques, sizeof(ui)));
+   chkerr(cudaMemset(totalCliques, 0, sizeof(ui)));
+-  cudaDeviceSynchronize();
+-
+   size_t sharedMemoryFinal = WARPS_EACH_BLK * sizeof(ui);
+ 
+   // Set status to of each clique to -2, representing not a valid clique.
+@@ -240,6 +239,7 @@ ui listAllCliques(const Graph &graph, deviceGraphPointers &deviceGraph,
+     CUDA_CHECK_ERROR("Generate Full Cliques");
+   }
+ 
++  chkerr(cudaFree(totalCliques));
+   // Actual total cliques in the graph.
+ 
+   freeLevelData(levelData);
+@@ -567,333 +567,165 @@ double dynamicExactAlgo(const Graph &graph, deviceGraphPointers &deviceGraph,
+   CUDA_CHECK_ERROR("Rearrange Clique Data");
+   freeTrie(cliqueData);
+ 
+-  double *bounds;
+-  chkerr(cudaMalloc((void **)&bounds, 2 * totalComponents * sizeof(double)));
+-  double *upperBound = bounds;
+-  double *lowerBound = bounds + totalComponents;
+ 
+-  int max_int = thrust::reduce(
+-      thrust::device_pointer_cast(deviceGraph.cliqueCore),
+-      thrust::device_pointer_cast(deviceGraph.cliqueCore + graph.n), 0,
+-      thrust::maximum<int>());
+-
+-  double maxDensity1 = static_cast<double>(max_int);
+-
+-  ui *flownetworkSize;
+-  ui *flownetworkNeighSize;
+-  chkerr(
+-      cudaMalloc((void **)&flownetworkSize, totalComponents * sizeof(double)));
+-  chkerr(cudaMalloc((void **)&flownetworkNeighSize,
+-                    totalComponents * sizeof(double)));
+-
+-  getLbUbandSize<<<BLK_NUMS, BLK_DIM>>>(
+-      conComp, compCounter, lowerBound, upperBound, flownetworkSize,
+-      flownetworkNeighSize, totalComponents, k, maxDensity1);
+-  cudaDeviceSynchronize();
+-  CUDA_CHECK_ERROR("Get UB LU and Size");
+-
+-  // Get iterator to max element
+-  auto max_iter = thrust::max_element(
+-      thrust::device_pointer_cast(lowerBound),
+-      thrust::device_pointer_cast(lowerBound + totalComponents));
+-
+-  // Get max value by dereferencing iterator
+-  double max_lowerBound = *max_iter;
+-
+-  // Get index by pointer arithmetic
+-  int argmax = max_iter - thrust::device_pointer_cast(lowerBound);
+-
+-  // cout << " max lb " << max_lowerBound << endl;
+-
+-  thrust::fill(thrust::device_pointer_cast(lowerBound),
+-               thrust::device_pointer_cast(lowerBound + totalComponents),
+-               max_lowerBound);
+-
+-  int iter = 0;
+-  ui *gpuConverged, *capLeft;
+-  chkerr(cudaMalloc((void **)&gpuConverged, sizeof(ui)));
+-  chkerr(cudaMalloc((void **)&capLeft, sizeof(ui)));
+-
+-  double *minSupport, *componentCliques;
+-  double CPUminSupport = 0.0;
+-  double CPUcompCliques = 0.0;
+-  chkerr(cudaMalloc((void **)&minSupport, sizeof(double)));
+-  chkerr(cudaMalloc((void **)&componentCliques, sizeof(double)));
+-
+-  ui cpuConverged = 0;
+-
+-  ui from, to;
+-  chkerr(cudaMemcpy(&from, conComp.componentOffset + argmax, sizeof(ui),
+-                    cudaMemcpyDeviceToHost));
+-  chkerr(cudaMemcpy(&to, conComp.componentOffset + argmax + 1, sizeof(ui),
+-                    cudaMemcpyDeviceToHost));
+-
+-  double cpuMaxDensity = 0;
+-
+-  double DSD_density = static_cast<double>(max_lowerBound);
+-
+-  // cout << " start Density " << DSD_density << endl;
+-  ui cpuCapLeft;
+-
+-  while (iter < totalComponents) {
+-
+-    ui vertexSize, neighborSize;
+-    chkerr(cudaMemcpy(&vertexSize, flownetworkSize + iter, sizeof(ui),
+-                      cudaMemcpyDeviceToHost));
+-
+-    chkerr(cudaMemcpy(&neighborSize, flownetworkNeighSize + iter, sizeof(ui),
+-                      cudaMemcpyDeviceToHost));
+-    double ub, lb;
+-    chkerr(cudaMemcpy(&ub, upperBound + iter, sizeof(double),
+-                      cudaMemcpyDeviceToHost));
+-    chkerr(cudaMemcpy(&lb, lowerBound + iter, sizeof(double),
+-                      cudaMemcpyDeviceToHost));
+-    lbArray.push_back(lb);
+-    ubArray.push_back(ub);
+-
+-    ub = min(maxDensity1, ub);
+-    chkerr(cudaMemcpy(upperBound + iter, &ub, sizeof(double),
+-                      cudaMemcpyHostToDevice));
+-
+-    // cout << "lb " << lb << " ub " << ub << endl;
+-    if (ub > DSD_density) {
+-      ui start, end, total;
+-      chkerr(cudaMemcpy(&start, conComp.componentOffset + iter, sizeof(ui),
+-                        cudaMemcpyDeviceToHost));
+-      chkerr(cudaMemcpy(&end, conComp.componentOffset + iter + 1, sizeof(ui),
+-                        cudaMemcpyDeviceToHost));
+-      total = end - start;
+-      // cout << "Component Size " << total << endl;
+-      memoryAllocationFlowNetwork(flowNetwork, vertexSize, neighborSize);
+-
+-      thrust::fill(thrust::device_pointer_cast(flowNetwork.offset + 1),
+-                   thrust::device_pointer_cast(flowNetwork.offset + total + 1),
+-                   2);
+-      createFlowNetworkOffset<<<BLK_NUMS, BLK_DIM>>>(
+-          flowNetwork, conComp, finalCliqueData, compCounter, iter, k,
+-          newTotaLCliques);
+-      cudaDeviceSynchronize();
+-      CUDA_CHECK_ERROR("Create Flow Network Offset");
+-
+-      thrust::inclusive_scan(
+-          thrust::device_pointer_cast(flowNetwork.offset),
+-          thrust::device_pointer_cast(flowNetwork.offset + vertexSize + 1),
+-          thrust::device_pointer_cast(flowNetwork.offset));
+-
+-      CPUminSupport = 0.0;
+-      CPUcompCliques = 0.0;
+-      chkerr(cudaMemcpy(componentCliques, &CPUcompCliques, sizeof(double),
+-                        cudaMemcpyHostToDevice));
+-      chkerr(cudaMemcpy(minSupport, &CPUminSupport, sizeof(double),
+-                        cudaMemcpyHostToDevice));
+-
+-      entropyBasedUB<<<BLK_NUMS, BLK_DIM>>>(
+-          flowNetwork, conComp, finalCliqueData, compCounter, minSupport,
+-          componentCliques, iter, k);
+-      cudaDeviceSynchronize();
+-      CUDA_CHECK_ERROR("Get Entropy Based Upper Bound");
+-      chkerr(cudaMemcpy(&CPUminSupport, minSupport, sizeof(double),
+-                        cudaMemcpyDeviceToHost));
+-      chkerr(cudaMemcpy(&CPUcompCliques, componentCliques, sizeof(double),
+-                        cudaMemcpyDeviceToHost));
+-
+-      double eub = CPUcompCliques * CPUminSupport;
+-      eubArray.push_back(eub);
+-
+-      ub = min(eub, ub);
+-      chkerr(cudaMemcpy(upperBound + iter, &ub, sizeof(double),
+-                        cudaMemcpyHostToDevice));
+-
+-      ui *counter;
+-      chkerr(cudaMalloc((void **)&counter, total * sizeof(ui)));
+-      chkerr(cudaMemset(counter, 0, total * sizeof(ui)));
+-
+-      createFlowNetwork<<<BLK_NUMS, BLK_DIM>>>(
+-          flowNetwork, conComp, finalCliqueData, compCounter, upperBound,
+-          lowerBound, counter, iter, k, newTotaLCliques);
+-      cudaDeviceSynchronize();
+-      CUDA_CHECK_ERROR("Create Flow Network");
+-      chkerr(cudaFree(counter));
+-
+-      double *totalExcess;
+-      chkerr(cudaMalloc((void **)&totalExcess, sizeof(double)));
+-
+-      double hostSourceExcess, hostSinkExcess, hostTotalExcess;
+-
+-      int device = -1;
+-      cudaGetDevice(&device);
+-      cudaDeviceProp deviceProp;
+-      cudaGetDeviceProperties(&deviceProp, device);
+-      dim3 num_blocks(deviceProp.multiProcessorCount * NUM_BLKS_PER_SM);
+-      dim3 block_size(BLK_DIM);
+-      size_t sharedMemSize = 3 * block_size.x * sizeof(int);
+-      ui *activeNodes;
+-      chkerr(cudaMalloc((void **)&activeNodes, neighborSize * sizeof(ui)));
+-      ui *solved;
+-      chkerr(cudaMalloc((void **)&solved, sizeof(ui)));
+-
+-      void *pushRelabelKernelArgs[] = {&flowNetwork, &conComp,     &compCounter,
+-                                       &totalExcess, &activeNodes, &iter,
+-                                       &solved};
+-
+-      void *globalRelabelKernelArgs[] = {&flowNetwork, &conComp, &compCounter,
+-                                         &k,           &iter,    &capLeft};
+-
+-      void *updateFlownetworkKernelArgs[] = {
+-          &flowNetwork,     &conComp,    &finalCliqueData, &compCounter,
+-          &upperBound,      &lowerBound, &gpuConverged,    &k,
+-          &newTotaLCliques, &iter};
+-
+-      chkerr(cudaMemset(gpuConverged, 0, sizeof(ui)));
+-      cpuConverged = 0;
+-      // ui boro = 0;
+-      while (!cpuConverged) {
+-        // cout << "Level " << boro << endl;
+-        // boro++;
+-        chkerr(cudaMemcpy(&ub, upperBound + iter, sizeof(double),
+-                          cudaMemcpyDeviceToHost));
+-        chkerr(cudaMemcpy(&lb, lowerBound + iter, sizeof(double),
+-                          cudaMemcpyDeviceToHost));
+-
+-        chkerr(cudaMemset(totalExcess, 0, sizeof(double)));
+-        preFlow<<<BLK_NUMS, BLK_DIM>>>(flowNetwork, conComp, compCounter,
+-                                       totalExcess, iter);
+-        cudaDeviceSynchronize();
+-        CUDA_CHECK_ERROR("Preflow send");
+-
+-        chkerr(cudaMemcpy(&hostSourceExcess,
+-                          flowNetwork.excess + vertexSize - 2, sizeof(double),
+-                          cudaMemcpyDeviceToHost));
+-        chkerr(cudaMemcpy(&hostSinkExcess, flowNetwork.excess + vertexSize - 1,
+-                          sizeof(double), cudaMemcpyDeviceToHost));
+-        chkerr(cudaMemcpy(&hostTotalExcess, totalExcess, sizeof(double),
+-                          cudaMemcpyDeviceToHost));
+-        double epsilon = 1e-2; // Tolerance = 0.01
+-        int sameValueNum = 0;
+-        double lastSinkExcess = 0;
+-
+-        while (abs((hostSourceExcess + hostSinkExcess) - hostTotalExcess) >
+-               epsilon) {
+-          if (earlyStop > -1) {
+-            /*cout << "last " << lastSinkExcess << " curr " << hostSinkExcess
+-                 << " num " << sameValueNum << endl;*/
+-            if (abs(lastSinkExcess - hostSinkExcess) < epsilon) {
+-              sameValueNum++;
+-            } else {
+-              lastSinkExcess = hostSinkExcess;
+-              sameValueNum = 0;
+-            }
+-            if (sameValueNum == earlyStop) {
+-              break;
+-            }
+-          }
+-
+-          /*cout << "Total Excess " << hostTotalExcess << " sink excess "
+-               << hostSinkExcess << endl;*/
+-          // cout << "------------------------------------------" << endl;
+-          chkerr(cudaMemset(solved, 0, sizeof(ui)));
+-
+-          cudaLaunchCooperativeKernel((void *)pushRelabel, num_blocks,
+-                                      block_size, pushRelabelKernelArgs,
+-                                      sharedMemSize, 0);
+-          cudaDeviceSynchronize();
+-          CUDA_CHECK_ERROR("Push Relabel");
+-
+-          chkerr(cudaMemcpy(&hostSourceExcess,
+-                            flowNetwork.excess + vertexSize - 2, sizeof(double),
+-                            cudaMemcpyDeviceToHost));
+-          chkerr(cudaMemcpy(&hostSinkExcess,
+-                            flowNetwork.excess + vertexSize - 1, sizeof(double),
+-                            cudaMemcpyDeviceToHost));
+-          chkerr(cudaMemcpy(&hostTotalExcess, totalExcess, sizeof(double),
+-                            cudaMemcpyDeviceToHost));
+-          // ui activeVertexCount;
+-          ui cpuSolved;
+-          chkerr(cudaMemcpy(&cpuSolved, solved, sizeof(ui),
+-                            cudaMemcpyDeviceToHost));
+-
+-          if (cpuSolved) {
+-            break;
+-          }
+-          cpuCapLeft = 1;
+-          chkerr(cudaMemcpy(capLeft, &cpuCapLeft, sizeof(ui),
+-                            cudaMemcpyHostToDevice));
+-          cudaLaunchCooperativeKernel((void *)globalRelabel, num_blocks,
+-                                      block_size, globalRelabelKernelArgs, 0,
+-                                      nullptr);
+-          cudaDeviceSynchronize();
+-          CUDA_CHECK_ERROR("Global Relabel");
+-
+-          chkerr(cudaMemcpy(&cpuCapLeft, capLeft, sizeof(ui),
+-                            cudaMemcpyDeviceToHost));
+-          if (cpuCapLeft) {
+-            break;
+-          }
+-
+-          // break;
+-        }
+-
+-        cudaLaunchCooperativeKernel((void *)updateFlownetwork, num_blocks,
+-                                    block_size, updateFlownetworkKernelArgs, 0,
+-                                    nullptr);
+-        cudaDeviceSynchronize();
+-        CUDA_CHECK_ERROR("Update  flow Network");
+-        chkerr(cudaMemcpy(flowNetwork.flow, flowNetwork.capacity,
+-                          (neighborSize) * sizeof(double),
+-                          cudaMemcpyDeviceToDevice));
+-
+-        chkerr(cudaMemcpy(&cpuConverged, gpuConverged, sizeof(ui),
+-                          cudaMemcpyDeviceToHost));
+-        chkerr(cudaMemcpy(&cpuMaxDensity, lowerBound + iter, sizeof(double),
+-                          cudaMemcpyDeviceToHost));
+-
+-        if (cpuMaxDensity > DSD_density) {
+-          DSD_density = cpuMaxDensity;
++  // Retain the original IDs and the GPU-enumerated clique incidence. Host
++  // work below evaluates a CUDA min-cut witness; it never solves a cut.
++  std::vector<ui> offsets(totalComponents + 1), counts(totalComponents + 1);
++  std::vector<ui> mapping(vertexCount), original(vertexCount);
++  std::vector<ui> reverse(vertexCount), cliques(size_t(k) * newTotaLCliques);
++  chkerr(cudaMemcpy(offsets.data(), conComp.componentOffset, offsets.size() * sizeof(ui), cudaMemcpyDeviceToHost));
++  chkerr(cudaMemcpy(counts.data(), compCounter, counts.size() * sizeof(ui), cudaMemcpyDeviceToHost));
++  chkerr(cudaMemcpy(mapping.data(), conComp.mapping, mapping.size() * sizeof(ui), cudaMemcpyDeviceToHost));
++  chkerr(cudaMemcpy(reverse.data(), conComp.reverseMapping, reverse.size() * sizeof(ui), cudaMemcpyDeviceToHost));
++  chkerr(cudaMemcpy(original.data(), densestCore.mapping, original.size() * sizeof(ui), cudaMemcpyDeviceToHost));
++  chkerr(cudaMemcpy(cliques.data(), finalCliqueData.trie, cliques.size() * sizeof(ui), cudaMemcpyDeviceToHost));
++
++  ui bestCount = 0, bestSize = 1;
++  std::vector<ui> best{0};
++  for (ui c = 0; c < totalComponents; ++c) {
++    ui size = offsets[c + 1] - offsets[c], count = counts[c + 1] - counts[c];
++    if (FlowCapacity(count) * bestSize > FlowCapacity(bestCount) * size) {
++      bestCount = count;
++      bestSize = size;
++      best.clear();
++      for (ui u = offsets[c]; u < offsets[c + 1]; ++u) best.push_back(original[mapping[u]]);
++    }
++  }
++  size_t decisions = 0;
++  for (ui c = 0; c < totalComponents; ++c) {
++    const ui vertices = offsets[c + 1] - offsets[c];
++    const ui count = counts[c + 1] - counts[c];
++    // A nonzero k-clique density uses at least k vertices. This integer
++    // bound is valid for every subset, unlike the former entropy estimate.
++    if (FlowCapacity(count) * bestSize <= FlowCapacity(bestCount) * k) continue;
++    FlowCapacity nodes64 = FlowCapacity(vertices) + count + 2;
++    FlowCapacity edges64 = 2ULL * count * k + 4ULL * vertices;
++    if (nodes64 >= UINT_MAX / 2 || edges64 > UINT_MAX)
++      throw std::runtime_error("CDS flow network exceeds 32-bit indexing");
++    ui nodes = ui(nodes64), edges = ui(edges64);
++    memoryAllocationFlowNetwork(flowNetwork, nodes, edges);
++    chkerr(cudaMemset(flowNetwork.offset, 0, size_t(nodes + 1) * sizeof(ui)));
++    thrust::fill(thrust::device_pointer_cast(flowNetwork.offset + 1),
++                 thrust::device_pointer_cast(flowNetwork.offset + vertices + 1), 2);
++    createFlowNetworkOffset<<<BLK_NUMS, BLK_DIM>>>(flowNetwork, conComp,
++        finalCliqueData, compCounter, c, k, newTotaLCliques);
++    chkerr(cudaGetLastError());
++    thrust::inclusive_scan(thrust::device_pointer_cast(flowNetwork.offset),
++        thrust::device_pointer_cast(flowNetwork.offset + nodes + 1),
++        thrust::device_pointer_cast(flowNetwork.offset));
++    ui *edgeCounter;
++    chkerr(cudaMalloc((void **)&edgeCounter, size_t(vertices) * sizeof(ui)));
++    while (true) {
++      ui divisor = std::gcd(bestCount, bestSize);
++      unsigned __int128 p128 = (unsigned __int128)(bestCount / divisor) * CDS_CAPACITY_SCALE;
++      unsigned __int128 q128 = (unsigned __int128)(bestSize / divisor) * CDS_CAPACITY_SCALE;
++      if (!CDS_CAPACITY_SCALE || p128 > ULLONG_MAX || q128 > ULLONG_MAX)
++        throw std::runtime_error("CDS capacity scale exceeds integer range");
++      FlowCapacity p = p128, q = q128;
++      unsigned __int128 capacity128 = (unsigned __int128)k * q * count;
++      if (capacity128 > ULLONG_MAX / 4 || p128 * k > ULLONG_MAX / 4)
++        throw std::runtime_error("CDS exact capacity range exceeded");
++      FlowCapacity sourceCapacity = FlowCapacity(capacity128), infinite = sourceCapacity + 1;
++      chkerr(cudaMemset(edgeCounter, 0, size_t(vertices) * sizeof(ui)));
++      createFlowNetwork<<<BLK_NUMS, BLK_DIM>>>(flowNetwork, conComp,
++          finalCliqueData, compCounter, p, q, infinite, edgeCounter, c, k, newTotaLCliques);
++      chkerr(cudaGetLastError());
++      auto result = cds_exact::maxflow(flowNetwork, vertices, nodes, sourceCapacity);
++      ++decisions;
++      cout << "Flow Certificate component=" << c << " numerator=" << p
++           << " denominator=" << q << " capacity=" << sourceCapacity
++           << " value=" << result.value << " rounds=" << result.rounds << '\n';
++      if (result.value == sourceCapacity) break;
++      std::vector<bool> selected(vertices, false);
++      for (ui u : result.selected) selected[u] = true;
++      ui selectedCount = 0;
++      for (ui i = counts[c]; i < counts[c + 1]; ++i) {
++        bool contained = true;
++        for (ui j = 0; j < k; ++j) {
++          ui u = reverse[cliques[size_t(j) * newTotaLCliques + i]];
++          if (u < offsets[c] || u >= offsets[c + 1])
++            throw std::runtime_error("Clique crosses connected components");
++          contained = contained && selected[u - offsets[c]];
+         }
++        selectedCount += contained;
+       }
+-
+-      cudaFree(totalExcess);
+-      freeFlownetwork(flowNetwork);
++      __int128 gain = (__int128)q * selectedCount - (__int128)p * result.selected.size();
++      if (gain <= 0 || (unsigned __int128)(gain * k) != sourceCapacity - result.value)
++        throw std::runtime_error("Exact min-cut witness failed its density check");
++      bestCount = selectedCount;
++      bestSize = result.selected.size();
++      best.clear();
++      for (ui u : result.selected) best.push_back(original[mapping[offsets[c] + u]]);
++      // Dinkelbach update: the next ratio is a feasible, strictly denser
++      // witness. Stop only when a completed integer flow proves no gain.
+     }
+-    iter++;
++    chkerr(cudaFree(edgeCounter));
++    freeFlownetwork(flowNetwork);
+   }
+-
+-  cout << "Final Max Density " << DSD_density << endl;
+-  return maxDensity1;
++  chkerr(cudaFree(compCounter));
++  chkerr(cudaFree(counter));
++  cds_exact::printResult(k, bestCount, best, decisions);
++  return thrust::reduce(thrust::device_pointer_cast(deviceGraph.cliqueCore),
++      thrust::device_pointer_cast(deviceGraph.cliqueCore + graph.n), 0, thrust::maximum<int>());
+ }
+ 
+-int main(int argc, const char *argv[]) {
++int run(int argc, const char *argv[]) {
+   if (argc != 8) {
+     cout << "Server wrong input parameters!" << endl;
+     exit(1);
+   }
++  auto parseUnsigned = [](const char *text) -> ui {
++    string value(text);
++    if (value.empty() || value.find_first_not_of("0123456789") != string::npos)
++      throw std::invalid_argument("Expected an unsigned integer argument");
++    unsigned long long parsed = std::stoull(value);
++    if (parsed > UINT_MAX) throw std::out_of_range("Integer argument exceeds UINT_MAX");
++    return ui(parsed);
++  };
+   string filepath =
+       argv[1]; //  Path to the graph file. The graph should be represented as
+                //  an adjacency list with space separators
+   // string motifPath = argv[2]; // Path to motif file. The motif should be
+   // represented as edge list with space sperators. Not used yet
+-  ui k = atoi(argv[2]);      // The clique we are intrested in.
+-  ui pSize = atoi(argv[3]);  // Virtual Partition size for storing partial
++  ui k = parseUnsigned(argv[2]);      // The clique we are intrested in.
++  ui pSize = parseUnsigned(argv[3]);  // Virtual Partition size for storing partial
+                              // cliques in Listing Algorithm
+-  ui cpSize = atoi(argv[4]); // Virtual Partition size for storing Candidates
++  ui cpSize = parseUnsigned(argv[4]); // Virtual Partition size for storing Candidates
+                              // of PC in Listing Algorithm
+   ui glBufferSize =
+-      atoi(argv[5]); // Buffer to store the vertices that need to be removed
++      parseUnsigned(argv[5]); // Buffer to store the vertices that need to be removed
+                      // in clique core decompose peeling algorithm
+-  ui partitionSize = atoi(argv[6]); // Virtual Partition to store the active
++  ui partitionSize = parseUnsigned(argv[6]); // Virtual Partition to store the active
+                                     // node of each flownetwork
+   // ui t = atoi(argv[8]);             // Total Number of cliques.
+ 
+-  int earlyStop = atoi(argv[7]);
++  int earlyStop = string(argv[7]) == "-1" ? -1 : 0;
+ 
+-  // Read Graph as a adcajency List.
++  if (size_t(TOTAL_WARPS) * max(pSize, cpSize) > INT_MAX ||
++      size_t(BLK_NUMS) * glBufferSize > INT_MAX)
++    throw std::out_of_range("Scratch buffer indexing exceeds INT_MAX");
++  // Read Graph as an adjacency list.
++  if (k < 2 || !pSize || !cpSize || !glBufferSize || !partitionSize || earlyStop != -1) {
++    cerr << "Require k >= 2, positive buffer sizes, and earlyStop=-1 for exact results" << endl;
++    return 2;
++  }
+   Graph graph = Graph(filepath);
++  if (graph.n == 0 || graph.m == 0 || k > graph.n) {
++    cds_exact::printResult(k, 0, graph.n ? vector<ui>{0} : vector<ui>{});
++    cout << "Total Cliques=0" << endl;
++    return 0;
++  }
+ 
+   // Stores the listing order based on core values:
+   // vertices with higher core values are assigned lower (better) ranks.
+   vector<ui> listingOrder;
+   listingOrder.resize(graph.n);
+   graph.getListingOrder(listingOrder);
++  if (graph.kmax < k - 1) {
++    cds_exact::printResult(k, 0, {0});
++    cout << "Total Cliques=0" << endl;
++    return 0;
++  }
+ 
+   // Structure to store the graph on device
+   memoryAllocationGraph(deviceGraph, graph);
+@@ -972,6 +804,9 @@ int main(int argc, const char *argv[]) {
+         }
+       }
+     }
++    chkerr(cudaFree(cliqueCount));
++    delete[] cc;
++    freeDAG(deviceDAG);
+     coreDecomEnd = std::chrono::high_resolution_clock::now();
+     coreDecom_ms = coreDecomEnd - cliqueListEnd;
+ 
+@@ -981,6 +816,12 @@ int main(int argc, const char *argv[]) {
+     cliqueListEnd = std::chrono::high_resolution_clock::now();
+     cliqueList_ms = cliqueListEnd - dagEnd;
+ 
++    if (!totalCliques) {
++      freeGraph(deviceGraph);
++      cds_exact::printResult(k, 0, {0});
++      cout << "Total Cliques=0" << endl;
++      return 0;
++    }
+     cliqueCoreDecompose(graph, deviceGraph, cliqueData, maxCore, maxDensity,
+                         coreSize, coreTotalCliques, glBufferSize, k,
+                         totalCliques);
+@@ -1033,7 +874,6 @@ int main(int argc, const char *argv[]) {
+                          edgecount, k, totalCliques, k_prime);
+   }*/
+ 
+-  freeDensestCore(densestCore);
+ 
+   // Structure to store connected components
+   memoryAllocationComponent(conComp, vertexCount, newEdgeCount);
+@@ -1063,6 +903,7 @@ int main(int argc, const char *argv[]) {
+   auto end = std::chrono::high_resolution_clock::now();
+   std::chrono::duration<double, std::milli> duration_ms = end - start;
+ 
++  freeDensestCore(densestCore);
+   freeComponents(conComp);
+   freeGraph(deviceGraph);
+   freeTrie(finalCliqueData);
+@@ -1104,4 +945,13 @@ int main(int argc, const char *argv[]) {
+   cout << endl;
+ 
+   return 0;
+-}
+\ No newline at end of file
++}
++
++int main(int argc, const char *argv[]) {
++  try {
++    return run(argc, argv);
++  } catch (const std::exception &error) {
++    std::cerr << "CDS error: " << error.what() << std::endl;
++    return 2;
++  }
++}
+diff --git a/cudaCode/src/gpuMemoryAllocation.cu b/cudaCode/src/gpuMemoryAllocation.cu
+index c08ec68..992befa 100644
+--- a/cudaCode/src/gpuMemoryAllocation.cu
++++ b/cudaCode/src/gpuMemoryAllocation.cu
+@@ -18,6 +18,7 @@ void memoryAllocationGraph(deviceGraphPointers &G, Graph &graph) {
+                     cudaMemcpyHostToDevice));
+ 
+   chkerr(cudaMalloc((void **)&(G.cliqueDegree), n * sizeof(ui)));
++  chkerr(cudaMemset(G.cliqueDegree, 0, n * sizeof(ui)));
+   chkerr(cudaMalloc((void **)&(G.cliqueCore), n * sizeof(int)));
+   chkerr(cudaMalloc((void **)&(G.cliqueCorePeelSequence), n * sizeof(ui)));
+   chkerr(cudaMalloc((void **)&(G.density), n * sizeof(double)));
+@@ -106,8 +107,8 @@ void memoryAllocationDensestCore(densestCorePointer &C, ui n, ui density,
+   // chkerr(cudaMalloc((void**)&(C.cliqueCore), n * sizeof(ui)));
+ 
+   chkerr(cudaMalloc((void **)&(C.density), n * sizeof(double)));
+-  chkerr(
+-      cudaMemcpy(C.density, &density, sizeof(double), cudaMemcpyHostToDevice));
++  double densityValue = density;
++  chkerr(cudaMemcpy(C.density, &densityValue, sizeof(double), cudaMemcpyHostToDevice));
+ 
+   chkerr(cudaMalloc((void **)&(C.n), sizeof(ui)));
+   chkerr(cudaMemcpy(C.n, &n, sizeof(ui), cudaMemcpyHostToDevice));
+@@ -136,16 +137,16 @@ void memoryAllocationFlowNetwork(deviceFlowNetworkPointers &flowNetwork,
+ 
+   chkerr(cudaMalloc((void **)&(flowNetwork.height), (vertexSize) * sizeof(ui)));
+   chkerr(cudaMalloc((void **)&(flowNetwork.excess),
+-                    (vertexSize) * sizeof(double)));
++                    (vertexSize) * sizeof(FlowCapacity)));
+ 
+   chkerr(cudaMalloc((void **)&(flowNetwork.offset),
+                     (vertexSize + 1) * sizeof(ui)));
+   chkerr(
+       cudaMalloc((void **)&(flowNetwork.neighbors), neighborSize * sizeof(ui)));
+   chkerr(cudaMalloc((void **)&(flowNetwork.capacity),
+-                    neighborSize * sizeof(double)));
++                    neighborSize * sizeof(FlowCapacity)));
+   chkerr(
+-      cudaMalloc((void **)&(flowNetwork.flow), neighborSize * sizeof(double)));
++      cudaMalloc((void **)&(flowNetwork.flow), neighborSize * sizeof(FlowCapacity)));
+ 
+   chkerr(
+       cudaMalloc((void **)&(flowNetwork.flowIndex), neighborSize * sizeof(ui)));
+@@ -169,6 +170,7 @@ void freeComponents(deviceComponentPointers &C) {
+   chkerr(cudaFree(C.componentOffset));
+   chkerr(cudaFree(C.components));
+   chkerr(cudaFree(C.mapping));
++  chkerr(cudaFree(C.reverseMapping));
+ }
+ 
+ void freeTrie(deviceCliquesPointer &C) {
+@@ -197,6 +199,7 @@ void freeLevelData(cliqueLevelDataPointer &L) {
+ }
+ 
+ void freeDensestCore(densestCorePointer &C) {
++  chkerr(cudaFree(C.reverseMap));
+   chkerr(cudaFree(C.mapping));
+   chkerr(cudaFree(C.offset));
+   chkerr(cudaFree(C.neighbors));
+diff --git a/cudaCode/src/graph.cpp b/cudaCode/src/graph.cpp
+index 02df884..a8dc52c 100644
+--- a/cudaCode/src/graph.cpp
++++ b/cudaCode/src/graph.cpp
+@@ -1,41 +1,56 @@
+ #include "../inc/graph.h"
++#include <stdexcept>
+ 
+ Graph::Graph() {
+   // Default constructor implementation
+ }
+ 
+ Graph::Graph(std::string path) {
+-  std::string buffer;
+-  std::ifstream inputFile(path, std::ios::in);
+-
+-  if (!inputFile.is_open()) {
+-    std::cout << "Graph file Open Failed " << std::endl;
+-    exit(1);
+-  } else {
+-    std::string line;
+-    std::getline(inputFile, line);
+-    std::istringstream iss(line);
+-    iss >> n >> m;
+-
+-    offset.resize(n + 1, 0);
+-    neighbors.resize(2 * m);
+-    degree.resize(n);
+-    int vertex, neigh;
+-    while (std::getline(inputFile, line)) {
+-      std::istringstream iss(line);
+-      iss >> vertex;
+-      while (iss >> neigh) {
+-        if (vertex == neigh)
+-          continue;
+-        neighbors[offset[vertex] + offset[vertex + 1]] = neigh;
+-        offset[vertex + 1]++;
+-      }
+-      degree[vertex] = offset[vertex + 1];
+-      offset[vertex + 1] += offset[vertex];
++  std::ifstream input(path);
++  if (!input) throw std::runtime_error("Cannot open graph file");
++  std::string line, extra;
++  unsigned long long vertices, edges;
++  if (!std::getline(input, line)) throw std::runtime_error("Missing graph header");
++  std::istringstream header(line);
++  if (!(header >> vertices >> edges) || (header >> extra) ||
++      vertices >= INT_MAX || edges > INT_MAX / 2)
++    throw std::runtime_error("Invalid graph header or CSR indexing range");
++  n = ui(vertices);
++  m = ui(edges);
++  offset.resize(size_t(n) + 1, 0);
++  degree.resize(n);
++  neighbors.reserve(size_t(2) * m);
++  for (ui v = 0; v < n; ++v) {
++    if (!std::getline(input, line)) throw std::runtime_error("Missing adjacency row");
++    std::istringstream row(line);
++    unsigned long long vertex, neighbor;
++    if (!(row >> vertex) || vertex != v)
++      throw std::runtime_error("Adjacency rows must be ordered from 0 to n-1");
++    bool first = true;
++    ui previous = 0;
++    while (row >> neighbor) {
++      if (neighbor >= n || neighbor == v || (!first && neighbor <= previous) ||
++          neighbors.size() >= size_t(2) * m)
++        throw std::runtime_error("Require sorted, distinct, in-range neighbors without self-loops");
++      neighbors.push_back(ui(neighbor));
++      previous = ui(neighbor);
++      first = false;
+     }
++    if (!row.eof()) throw std::runtime_error("Invalid adjacency token");
++    offset[v + 1] = neighbors.size();
++    degree[v] = offset[v + 1] - offset[v];
+   }
+-
+-  inputFile.close();
++  while (std::getline(input, line))
++    if (line.find_first_not_of(" \t\r") != std::string::npos)
++      throw std::runtime_error("Unexpected adjacency row");
++  if (neighbors.size() != size_t(2) * m)
++    throw std::runtime_error("Edge count does not match adjacency rows");
++  for (ui v = 0; v < n; ++v)
++    for (ui i = offset[v]; i < offset[v + 1]; ++i) {
++      ui u = neighbors[i];
++      if (!std::binary_search(neighbors.begin() + offset[u], neighbors.begin() + offset[u + 1], v))
++        throw std::runtime_error("Adjacency must be symmetric");
++    }
+   std::cout << "n=" << n << ", m=" << m << std::endl;
+ }
+ void Graph::getListingOrder(std::vector<ui> &arr) {
+diff --git a/cudaCode/src/helpers.cu b/cudaCode/src/helpers.cu
+index bbcb2ac..6b04610 100644
+--- a/cudaCode/src/helpers.cu
++++ b/cudaCode/src/helpers.cu
+@@ -10,105 +10,6 @@
+ using namespace cooperative_groups;
+ namespace cg = cooperative_groups;
+ 
+-__device__ double fact(ui k) {
+-  double res = 1;
+-  int i = k;
+-  while (i > 1) {
+-    res = res * i;
+-    i--;
+-  }
+-  return res;
+-}
+-
+-inline __device__ void
+-scan_active_vertices(int totalFlow, ui total, ui source, ui sink,
+-                     deviceFlowNetworkPointers flowNetwork, ui *activeNodes) {
+-  unsigned int idx = (blockIdx.x * blockDim.x) + threadIdx.x;
+-  grid_group grid = this_grid();
+-
+-  /* Initialize the avq_size */
+-  if (idx == 0) {
+-    globalCounter = 0;
+-  }
+-  grid.sync();
+-
+-  /* Stride scan the V set */
+-  for (int u = idx; u < totalFlow; u += blockDim.x * gridDim.x) {
+-    if (flowNetwork.excess[u] > 1e-6 && flowNetwork.height[u] < 2 * total &&
+-        u != source && u != sink) {
+-      activeNodes[atomicAdd(&globalCounter, 1)] = u;
+-    }
+-  }
+-}
+-
+-template <unsigned int tileSize>
+-inline __device__ int
+-tiled_search_neighbor(cg::thread_block_tile<tileSize> tile, int pos,
+-                      int *sheight, int *svid, int *svidx, int *v_index,
+-                      int totalFlow, ui source, ui sink,
+-                      deviceFlowNetworkPointers flowNetwork, ui *activeNodes) {
+-  unsigned int idx = tile.thread_rank(); // 0~31
+-  ui u = activeNodes[pos];
+-  int degree = flowNetwork.offset[u + 1] - flowNetwork.offset[u];
+-  int num_iters = (int)ceilf((float)degree / (float)tileSize);
+-
+-  int minH = INF;
+-  int minV = -1;
+-
+-  /* Initialize the shared memory */
+-  sheight[threadIdx.x] = INF;
+-  svid[threadIdx.x] = -1;
+-  svidx[threadIdx.x] = -2;
+-  tile.sync();
+-
+-  for (int i = 0; i < num_iters; i++) {
+-    ui v_pos, v;
+-    if (i * tileSize + idx < degree) {
+-      v_pos = flowNetwork.offset[u] + i * tileSize + idx;
+-      v = flowNetwork.neighbors[v_pos];
+-      if ((flowNetwork.flow[v_pos] > 1e-6) && (v != source)) {
+-        sheight[threadIdx.x] = flowNetwork.height[v];
+-        svid[threadIdx.x] = v;
+-        svidx[threadIdx.x] = v_pos;
+-      } else {
+-        sheight[threadIdx.x] = INF;
+-        svid[threadIdx.x] = -1;
+-        svidx[threadIdx.x] = -1;
+-      }
+-    } else {
+-      sheight[threadIdx.x] = INF;
+-      svid[threadIdx.x] = -1;
+-      svidx[threadIdx.x] = -1;
+-    }
+-    tile.sync();
+-    for (unsigned int s = tile.size() / 2; s > 0; s >>= 1) {
+-      if (idx < s) {
+-        if ((sheight[threadIdx.x] > sheight[threadIdx.x + s])) {
+-          sheight[threadIdx.x] = sheight[threadIdx.x + s];
+-          svid[threadIdx.x] = svid[threadIdx.x + s];
+-          svidx[threadIdx.x] = svidx[threadIdx.x + s];
+-        }
+-      }
+-      tile.sync();
+-    }
+-    tile.sync();
+-    if (idx == 0) {
+-      if (minH >
+-          sheight[threadIdx.x]) { // The address of the first thread in the tile
+-        minH = sheight[threadIdx.x];
+-        minV = svid[threadIdx.x];
+-        *v_index = svidx[threadIdx.x];
+-      }
+-    }
+-    tile.sync();
+-    svid[threadIdx.x] = -1;
+-    sheight[threadIdx.x] = INF;
+-    tile.sync();
+-  }
+-  tile.sync();
+-  return minV;
+-}
+-
+ __global__ void generateDegreeDAG(deviceGraphPointers G, deviceDAGpointer D,
+                                   ui *listingOrder, ui n, ui m, ui totalWarps) {
+   int idx = blockIdx.x * blockDim.x + threadIdx.x;
+@@ -240,6 +141,7 @@ __global__ void listIntialCliques(deviceDAGpointer D,
+       if (!(old & mask)) {
+         ui loc = atomicAdd(&counter[threadIdx.x / warpSize], 1);
+ 
++        assert(size_t(cOff) + loc < cpSize && "initial candidate partition overflow");
+         warpCandidates[cOff + loc] = neigh;
+         /*printf(" warp id %d i %d v %d vertex offset %d candidate off %d loc %d
+            " "candidate %d \n", warpId, i, vertex, vOff, cOff, loc, neigh);*/
+@@ -249,6 +151,7 @@ __global__ void listIntialCliques(deviceDAGpointer D,
+     __syncwarp();
+ 
+     if (laneId == 0 && counter[threadIdx.x / warpSize] > 0) {
++      assert(*warpCount < psize / (k - 1) && "initial clique partition overflow");
+       size_t w = (size_t)(*warpCount) * (k - 1) + level;
+       warpPartialCliques[w] = vertex;
+       *warpCount += 1;
+@@ -435,6 +338,7 @@ __global__ void listMidCliques(deviceDAGpointer D,
+           if (!(old & mask)) {
+             // This neighbor wasn't set before
+             ui loc = atomicAdd(&counter[threadIdx.x / warpSize], 1);
++            assert(size_t(writeOffset) + loc < cpSize && "candidate partition overflow");
+             warpCandidates[writeOffset + loc] = neigh;
+           }
+         }
+@@ -443,6 +347,7 @@ __global__ void listMidCliques(deviceDAGpointer D,
+       __syncwarp();
+ 
+       if (laneId == 0 && counter[threadIdx.x / warpSize] > 0) {
++        assert(*warpCount < pSize / (k - 1) && "clique partition overflow");
+         size_t w = (size_t)(*warpCount) * (k - 1) + level;
+         warpPartialCliques[w] = candidate;
+ 
+@@ -679,10 +584,7 @@ __global__ void processNodesByWarp(deviceGraphPointers G,
+       continue; // this warp won't have to do anything
+ 
+     if (threadIdx.x == 0) {
+-      base += WARPS_EACH_BLK;
+-      if (regTail < base)
+-        ;
+-      base = regTail;
++      base = min(base + WARPS_EACH_BLK, regTail);
+     }
+ 
+     // vertex to be removed
+@@ -694,7 +596,7 @@ __global__ void processNodesByWarp(deviceGraphPointers G,
+     for (ui j = laneId; j < totalCliques; j += warpSize) {
+ 
+       // if valid clique and not removed yet
+-      if (cliqueData.status[j] == -1) {
++      if (atomicAdd(&cliqueData.status[j], 0) == -1) {
+ 
+         // flag to check if vertex found in the clique
+         bool found = false;
+@@ -711,8 +613,7 @@ __global__ void processNodesByWarp(deviceGraphPointers G,
+           w++;
+         }
+ 
+-        if (found) {
+-          cliqueData.status[j] = level;
++        if (found && atomicCAS(&cliqueData.status[j], -1, int(level)) == -1) {
+           // iter throught the clique verticies
+           for (ui x = 0; x < k; x++) {
+ 
+@@ -723,17 +624,18 @@ __global__ void processNodesByWarp(deviceGraphPointers G,
+               continue;
+ 
+             // decreament its core value by 1
+-            int a = atomicSub(&G.cliqueCore[u], 1);
+-
+-            // if core value is less than level, update to level.
+-            if (a - 1 < level) {
+-              atomicExch(&G.cliqueCore[u], level);
+-            }
+-            // if core value is level, add to glbuffer so can be removed in
+-            // this level.
+-            if (a == level + 1) {
+-              ui loc = atomicAdd(&bufTail, 1);
+-              glBuffer[loc] = u;
++            int a = atomicAdd(&G.cliqueCore[u], 0);
++            while (a > int(level)) {
++              int previous = atomicCAS(&G.cliqueCore[u], a, a - 1);
++              if (previous == a) {
++                if (a == int(level) + 1) {
++                  ui loc = atomicAdd(&bufTail, 1);
++                  assert(loc < glBufferSize && "core peeling queue overflow");
++                  glBuffer[loc] = u;
++                }
++                break;
++              }
++              a = previous;
+             }
+           }
+ 
+@@ -1097,7 +999,7 @@ __global__ void rearrangeCliqueData(deviceComponentPointers conComp,
+ 
+ __global__ void countCliques(deviceDAGpointer D,
+                              cliqueLevelDataPointer levelData,
+-                             ui *globalCounter, ui maxBitMask, ui totalTasks,
++                             FlowCapacity *globalCounter, ui maxBitMask, ui totalTasks,
+                              ui totalWarps) {
+   /* Find Total number of cliques in the graph by counting the valid
+      neighbors. Each warp processes on partial clique. */
+@@ -1112,7 +1014,7 @@ __global__ void countCliques(deviceDAGpointer D,
+     int start = levelData.offset[i];
+     int totalCandidates = levelData.offset[i + 1] - start;
+ 
+-    int count = 0;
++    FlowCapacity count = 0;
+ 
+     for (int j = laneId; j < totalCandidates; j += warpSize) {
+       int degree = D.degree[levelData.candidates[start + j]];
+@@ -1136,40 +1038,6 @@ __global__ void countCliques(deviceDAGpointer D,
+   }
+ }
+ 
+-__global__ void getLbUbandSize(deviceComponentPointers conComp, ui *compCounter,
+-                               double *lowerBound, double *upperBound,
+-                               ui *ccOffset, ui *neighborSize,
+-                               ui totalComponenets, ui k, double maxDensity) {
+-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+-  if (idx == 0) {
+-    ccOffset[idx] = 0;
+-    neighborSize[idx] = 0;
+-  }
+-
+-  for (ui i = idx; i < totalComponenets; i += TOTAL_THREAD) {
+-    ui totalCliques = compCounter[i + 1] - compCounter[i];
+-    ui totalSize = conComp.componentOffset[i + 1] - conComp.componentOffset[i];
+-    double lb = (double)(totalCliques) / totalSize;
+-    lowerBound[i] = lb;
+-
+-    double ub = DINF;
+-
+-    double dem = pow(fact(k), 1.0 / k);
+-    double num = pow(totalCliques, (k - 1.0) / k);
+-    ub = num / dem;
+-    upperBound[i] = ub;
+-
+-    if (ub > lb) {
+-      ccOffset[i] = totalCliques + totalSize + 2;
+-      neighborSize[i] = (2 * totalCliques * k + 4 * totalSize);
+-
+-    } else {
+-      ccOffset[i + 1] = 0;
+-      neighborSize[i + 1] = 0;
+-    }
+-  }
+-}
+-
+ __global__ void createFlowNetworkOffset(deviceFlowNetworkPointers flowNetwork,
+                                         deviceComponentPointers conComp,
+                                         deviceCliquesPointer finalCliqueData,
+@@ -1209,8 +1077,8 @@ __global__ void createFlowNetworkOffset(deviceFlowNetworkPointers flowNetwork,
+ __global__ void createFlowNetwork(deviceFlowNetworkPointers flowNetwork,
+                                   deviceComponentPointers conComp,
+                                   deviceCliquesPointer finalCliqueData,
+-                                  ui *compCounter, double *upperBound,
+-                                  double *lowerBound, ui *counter, ui iter,
++                                  ui *compCounter, FlowCapacity numerator, FlowCapacity denominator,
++                                  FlowCapacity infinite, ui *counter, ui iter,
+                                   ui k, ui t) {
+ 
+   int idx = blockIdx.x * blockDim.x + threadIdx.x;
+@@ -1220,14 +1088,14 @@ __global__ void createFlowNetwork(deviceFlowNetworkPointers flowNetwork,
+   ui total = end - start;
+   ui startClique = compCounter[iter];
+   ui totalCliques = compCounter[iter + 1] - compCounter[iter];
+-  double alpha = (upperBound[iter] + lowerBound[iter]) / 2;
++
+   for (ui i = idx; i < total; i += TOTAL_THREAD) {
+ 
+     // vertex to sink forward -- (1)
+     ui foffset = flowNetwork.offset[i];
+     flowNetwork.neighbors[foffset] = total + totalCliques + 1;
+-    flowNetwork.capacity[foffset] = alpha * k;
+-    flowNetwork.flow[foffset] = alpha * k;
++    flowNetwork.capacity[foffset] = FlowCapacity(numerator) * k;
++    flowNetwork.flow[foffset] = FlowCapacity(numerator) * k;
+     // index of backward edge
+     flowNetwork.flowIndex[foffset] =
+         flowNetwork.offset[total + totalCliques + 1] + i;
+@@ -1236,8 +1104,8 @@ __global__ void createFlowNetwork(deviceFlowNetworkPointers flowNetwork,
+     ui foffset1 = flowNetwork.offset[total + totalCliques];
+     flowNetwork.neighbors[foffset1 + i] = i;
+     ui cliqueDegree = flowNetwork.offset[i + 1] - flowNetwork.offset[i] - 2;
+-    flowNetwork.capacity[foffset1 + i] = cliqueDegree;
+-    flowNetwork.flow[foffset1 + i] = cliqueDegree;
++    flowNetwork.capacity[foffset1 + i] = FlowCapacity(cliqueDegree) * denominator;
++    flowNetwork.flow[foffset1 + i] = FlowCapacity(cliqueDegree) * denominator;
+ 
+     flowNetwork.flowIndex[foffset1 + i] = flowNetwork.offset[i + 1] - 1;
+ 
+@@ -1270,8 +1138,8 @@ __global__ void createFlowNetwork(deviceFlowNetworkPointers flowNetwork,
+       ui foffset = flowNetwork.offset[u];
+       ui loc = atomicAdd(&counter[u], 1);
+       flowNetwork.neighbors[foffset + loc + 1] = total + i;
+-      flowNetwork.capacity[foffset + loc + 1] = 1;
+-      flowNetwork.flow[foffset + loc + 1] = 1;
++      flowNetwork.capacity[foffset + loc + 1] = denominator;
++      flowNetwork.flow[foffset + loc + 1] = denominator;
+ 
+       // index of backward clique to vertex
+       flowNetwork.flowIndex[foffset + loc + 1] =
+@@ -1280,260 +1148,10 @@ __global__ void createFlowNetwork(deviceFlowNetworkPointers flowNetwork,
+       // clique to vertex backward -- (2)
+       ui foffset1 = flowNetwork.offset[total + i];
+       flowNetwork.neighbors[foffset1 + j] = u;
+-      flowNetwork.capacity[foffset1 + j] = DINF;
+-      flowNetwork.flow[foffset1 + j] = DINF;
++      flowNetwork.capacity[foffset1 + j] = infinite;
++      flowNetwork.flow[foffset1 + j] = infinite;
+       // index to foward
+       flowNetwork.flowIndex[foffset1 + j] = foffset + loc + 1;
+     }
+   }
+ }
+-
+-__global__ void entropyBasedUB(deviceFlowNetworkPointers flowNetwork,
+-                               deviceComponentPointers conComp,
+-                               deviceCliquesPointer finalCliqueData,
+-                               ui *compCounter, double *minSupport,
+-                               double *componentCliques, ui iter, ui k) {
+-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+-  __shared__ double blockSum;
+-  if (threadIdx.x == 0)
+-    blockSum = 0.0;
+-  __syncthreads();
+-
+-  ui start = conComp.componentOffset[iter];
+-  ui end = conComp.componentOffset[iter + 1];
+-  ui total = end - start;
+-  // ui startClique = compCounter[iter];
+-  ui totalCliques = compCounter[iter + 1] - compCounter[iter];
+-
+-  double localsum = 0;
+-  double denom = (double)k * (double)totalCliques;
+-  for (ui i = idx; i < total; i += TOTAL_THREAD) {
+-    ui cliqueDegree = flowNetwork.offset[i + 1] - flowNetwork.offset[i] - 2;
+-    double pv = ((double)cliqueDegree) / denom;
+-    double pv2 = pv * pv;
+-    localsum += pv2;
+-    // printf("idx %d e %d s %d clique deg %d pv %f pv2 %f local %f
+-    // \n",idx,flowNetwork.offset[i +
+-    // 1],flowNetwork.offset[i],cliqueDegree,pv,pv2,localsum);
+-  }
+-  atomicAdd(&blockSum, localsum);
+-  __syncthreads();
+-
+-  // one thread per block adds block sum to global
+-  if (threadIdx.x == 0) {
+-    // printf("blck %d shared %f total %f \n",blockIdx.x,blockSum,*minSupport);
+-    atomicAdd(minSupport, blockSum);
+-  }
+-  if (idx == 0) {
+-    *componentCliques = (double)totalCliques;
+-  }
+-}
+-
+-__global__ void preFlow(deviceFlowNetworkPointers flowNetwork,
+-                        deviceComponentPointers conComp, ui *compCounter,
+-                        double *totalExcess, ui iter) {
+-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+-
+-  ui start = conComp.componentOffset[iter];
+-  ui end = conComp.componentOffset[iter + 1];
+-  ui total = end - start;
+-  ui totalCliques = compCounter[iter + 1] - compCounter[iter];
+-
+-  ui source = total + totalCliques;
+-  for (ui i = idx; i < (total + totalCliques + 2); i += TOTAL_THREAD) {
+-    flowNetwork.height[i] =
+-        (i == source) ? (total + totalCliques + 2) : (i < total ? 1 : 0);
+-    flowNetwork.excess[i] = 0;
+-  }
+-
+-  ui nStart = flowNetwork.offset[total + totalCliques];
+-
+-  for (ui i = idx; i < total; i += TOTAL_THREAD) {
+-    ui neigh = flowNetwork.neighbors[nStart + i];
+-    if (flowNetwork.capacity[nStart + i] > 1e-6) {
+-      flowNetwork.flow[nStart + i] = 0.0;
+-      ui backIndex = flowNetwork.flowIndex[nStart + i];
+-      flowNetwork.flow[backIndex] = flowNetwork.capacity[nStart + i];
+-      flowNetwork.excess[neigh] += flowNetwork.capacity[nStart + i];
+-      atomicAdd(totalExcess, flowNetwork.capacity[nStart + i]);
+-      /*printf("idx %d v %d forward %d backIndex%d \n", i, neigh, nStart + i,
+-             backIndex);*/
+-      if (flowNetwork.excess[neigh] > 1e-6) {
+-        ui sinkoffset = flowNetwork.offset[i];
+-        if (flowNetwork.capacity[sinkoffset] > 1e-6) {
+-          double flow =
+-              min(flowNetwork.excess[neigh], flowNetwork.flow[sinkoffset]);
+-          flowNetwork.flow[sinkoffset] -= flow;
+-          ui backIndex1 = flowNetwork.flowIndex[sinkoffset];
+-          flowNetwork.flow[backIndex1] += flow;
+-          flowNetwork.excess[neigh] -= flow;
+-          atomicAdd(&flowNetwork.excess[total + totalCliques + 1], flow);
+-          /*printf("idx %d v %d source %d forward %d backIndex%d \n", i, neigh,
+-                 sinkoffset, sinkoffset, backIndex1);*/
+-        }
+-      }
+-    }
+-  }
+-}
+-
+-__global__ void pushRelabel(deviceFlowNetworkPointers flowNetwork,
+-                            deviceComponentPointers conComp, ui *compCounter,
+-                            double *totalExcess, ui *activeNodes, ui iter,
+-                            ui *solved) {
+-
+-  grid_group grid = this_grid();
+-  cg::thread_block block = cg::this_thread_block();
+-  const int tileSize = 32;
+-  cg::thread_block_tile<tileSize> tile = cg::tiled_partition<tileSize>(block);
+-  int numTilesPerBlock = (blockDim.x + tileSize - 1) / tileSize;
+-  int numTilesPerGrid = numTilesPerBlock * gridDim.x;
+-  int tileIdx = blockIdx.x * numTilesPerBlock + block.thread_rank() / tileSize;
+-
+-  int minV = -1;
+-  // bool vinReverse = false;
+-  int v_index = -1;
+-  ui start = conComp.componentOffset[iter];
+-  ui end = conComp.componentOffset[iter + 1];
+-  ui total = end - start;
+-  // ui startClique = compCounter[iter];
+-  ui totalCliques = compCounter[iter + 1] - compCounter[iter];
+-  int totalFlow = total + totalCliques + 2;
+-  int cycle = 2 * total;
+-  extern __shared__ int SharedMemory[];
+-  int *sheight = SharedMemory;
+-  int *svid = (int *)&SharedMemory[blockDim.x];
+-  int *svidx = (int *)&svid[blockDim.x];
+-  ui source = totalFlow - 2;
+-  ui sink = totalFlow - 1;
+-
+-  while (cycle > 0) {
+-    scan_active_vertices(totalFlow, total, source, sink, flowNetwork,
+-                         activeNodes);
+-
+-    grid.sync();
+-
+-    if (globalCounter == 0) {
+-      break;
+-    }
+-    v_index = -1;
+-    grid.sync();
+-
+-    for (int i = tileIdx; i < globalCounter; i += numTilesPerGrid) {
+-      ui u = activeNodes[i];
+-
+-      minV = tiled_search_neighbor<tileSize>(tile, i, sheight, svid, svidx,
+-                                             &v_index, totalFlow, source, sink,
+-                                             flowNetwork, activeNodes);
+-
+-      tile.sync();
+-      if (tile.thread_rank() == 0) {
+-
+-        if (minV == -1) {
+-          flowNetwork.height[u] = totalFlow;
+-        } else {
+-          if (flowNetwork.height[u] > flowNetwork.height[minV]) {
+-            double d;
+-            if (flowNetwork.excess[u] > flowNetwork.flow[v_index]) {
+-              d = flowNetwork.flow[v_index];
+-            } else {
+-              d = flowNetwork.excess[u];
+-            }
+-            atomicAdd(&flowNetwork.flow[v_index], -d);
+-            atomicAdd(&flowNetwork.flow[flowNetwork.flowIndex[v_index]], d);
+-
+-            atomicAdd(&flowNetwork.excess[minV], d);
+-            atomicAdd(&flowNetwork.excess[u], -d);
+-          } else {
+-            flowNetwork.height[u] = flowNetwork.height[minV] + 1;
+-          }
+-        }
+-      }
+-      tile.sync();
+-    }
+-    grid.sync();
+-    cycle = cycle - 1;
+-  }
+-  if (threadIdx.x == 0 &&
+-      blockIdx.x == 0) { // Only the first thread in the first block
+-    // printf("final counter %d \n", globalCounter);
+-    if (globalCounter == 0) {
+-      *solved = 1;
+-    }
+-  }
+-}
+-
+-__global__ void globalRelabel(deviceFlowNetworkPointers flowNetwork,
+-                              deviceComponentPointers conComp, ui *compCounter,
+-                              ui k, ui iter, ui *capLeft) {
+-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+-  grid_group grid = this_grid();
+-
+-  ui start = conComp.componentOffset[iter];
+-  ui end = conComp.componentOffset[iter + 1];
+-  ui total = end - start;
+-  ui totalCliques = compCounter[iter + 1] - compCounter[iter];
+-
+-  for (ui i = idx; i < total; i += TOTAL_THREAD) {
+-    ui vertexOffset = flowNetwork.offset[i];
+-    // printf("idx %d v %d offset %d\n", idx, i, vertexOffset);
+-    if (flowNetwork.flow[vertexOffset] > 1e-6) {
+-      flowNetwork.height[i] = 1;
+-      atomicCAS(capLeft, 1, 0);
+-    }
+-  }
+-
+-  grid.sync();
+-  if (idx == 0) {
+-    flowNetwork.height[total + totalCliques + 1] = 0;
+-    // printf("sink loc %d \n", total + totalCliques + 1);
+-
+-    // printf("source loc %d \n", total + totalCliques);
+-  }
+-}
+-
+-__global__ void updateFlownetwork(deviceFlowNetworkPointers flowNetwork,
+-                                  deviceComponentPointers conComp,
+-                                  deviceCliquesPointer finalCliqueData,
+-                                  ui *compCounter, double *upperBound,
+-                                  double *lowerBound, ui *gpuConverged, ui k,
+-                                  ui t, ui iter) {
+-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+-  grid_group grid = this_grid();
+-
+-  ui start = conComp.componentOffset[iter];
+-  ui end = conComp.componentOffset[iter + 1];
+-  ui total = end - start;
+-  // ui cliqueStart = compCounter[iter];
+-  ui totalCliques = compCounter[iter + 1] - compCounter[iter];
+-  ui tFlow = total + totalCliques + 2;
+-
+-  double bais = 1.0 / (total * (total - 1));
+-  bais = max(0.1, bais);
+-  double temp = static_cast<double>(totalCliques) * k;
+-  double alpha = (upperBound[iter] + lowerBound[iter]) / 2;
+-
+-  if (idx == 0) {
+-    if (fabs(flowNetwork.excess[tFlow - 1] - temp) < 1e-1) {
+-      upperBound[iter] = alpha;
+-      // printf("\n uper Bound Changes \n");
+-
+-    } else {
+-      lowerBound[iter] = alpha;
+-      // printf("\n lower Bound Changes \n");
+-    }
+-
+-    if ((upperBound[iter] - lowerBound[iter]) < bais) {
+-      *gpuConverged = 1;
+-    }
+-  }
+-  grid.sync();
+-
+-  if (!(*gpuConverged)) {
+-    alpha = (upperBound[iter] + lowerBound[iter]) / 2;
+-
+-    for (ui i = idx; i < total; i += TOTAL_THREAD) {
+-      ui vertexOffset = flowNetwork.offset[i];
+-      flowNetwork.capacity[vertexOffset] = alpha * k;
+-    }
+-  }
+-}
+\ No newline at end of file
+diff --git a/cudaCode/inc/exactFlow.cuh b/cudaCode/inc/exactFlow.cuh
+new file mode 100644
+index 0000000..feae0ef
+--- /dev/null
++++ b/cudaCode/inc/exactFlow.cuh
+@@ -0,0 +1,187 @@
++#pragma once
++
++#include <numeric>
++#include <stdexcept>
++
++// Capacities are integers throughout. At density p/q the existing CDS
++// reduction has cut capacity k*q*C - k*(q*C(S) - p*|S|).
++// Kernel boundaries separate initialization, pushes and height updates.
++namespace cds_exact {
++
++__global__ void initialize(deviceFlowNetworkPointers f, ui vertices, ui nodes) {
++  for (ui u = blockIdx.x * blockDim.x + threadIdx.x; u < nodes;
++       u += blockDim.x * gridDim.x) {
++    f.height[u] = u == nodes - 2 ? nodes : (u < vertices ? 1 : 0);
++    f.excess[u] = 0;
++  }
++}
++
++__global__ void saturateSource(deviceFlowNetworkPointers f, ui vertices,
++                               ui source) {
++  for (ui u = blockIdx.x * blockDim.x + threadIdx.x; u < vertices;
++       u += blockDim.x * gridDim.x) {
++    ui edge = f.offset[source] + u;
++    FlowCapacity value = f.capacity[edge];
++    f.flow[edge] = 0;
++    f.flow[f.flowIndex[edge]] = value;
++    f.excess[u] = value;
++  }
++}
++
++__global__ void push(deviceFlowNetworkPointers f, ui nodes) {
++  for (ui u = blockIdx.x * blockDim.x + threadIdx.x; u < nodes - 2;
++       u += blockDim.x * gridDim.x) {
++    // Other vertices may send excess to u during this phase. Only u spends
++    // its excess. Frozen heights prevent simultaneous opposite pushes.
++    FlowCapacity available = atomicAdd(f.excess + u, 0ULL);
++    for (ui e = f.offset[u]; available && e < f.offset[u + 1]; ++e) {
++      ui v = f.neighbors[e];
++      if (f.height[u] != f.height[v] + 1) continue;
++      FlowCapacity residual = atomicAdd(f.flow + e, 0ULL);
++      FlowCapacity amount = available < residual ? available : residual;
++      if (!amount) continue;
++      atomicAdd(f.flow + e, 0ULL - amount);
++      atomicAdd(f.flow + f.flowIndex[e], amount);
++      atomicAdd(f.excess + u, 0ULL - amount);
++      atomicAdd(f.excess + v, amount);
++      available -= amount;
++    }
++  }
++}
++
++__global__ void relabel(deviceFlowNetworkPointers f, ui nodes, ui *nextHeight,
++                        ui *active) {
++  for (ui u = blockIdx.x * blockDim.x + threadIdx.x; u < nodes;
++       u += blockDim.x * gridDim.x) {
++    ui height = f.height[u];
++    if (u < nodes - 2 && f.excess[u]) {
++      ui minimum = UINT_MAX;
++      for (ui e = f.offset[u]; e < f.offset[u + 1]; ++e)
++        if (f.flow[e]) minimum = min(minimum, f.height[f.neighbors[e]]);
++      assert(minimum != UINT_MAX);
++      height = minimum + 1;
++      assert(height >= f.height[u] && height < 2ULL * nodes);
++      atomicExch(active, 1U);
++    }
++    nextHeight[u] = height;
++  }
++}
++
++__global__ void reach(deviceFlowNetworkPointers f, ui nodes, ui *reachable,
++                      ui *changed) {
++  for (ui u = blockIdx.x * blockDim.x + threadIdx.x; u < nodes;
++       u += blockDim.x * gridDim.x) {
++    if (!atomicAdd(reachable + u, 0U)) continue;
++    for (ui e = f.offset[u]; e < f.offset[u + 1]; ++e)
++      if (f.flow[e] && atomicCAS(reachable + f.neighbors[e], 0U, 1U) == 0)
++        atomicExch(changed, 1U);
++  }
++}
++
++__global__ void resetDistances(deviceFlowNetworkPointers f, ui nodes) {
++  for (ui u = blockIdx.x * blockDim.x + threadIdx.x; u < nodes;
++       u += blockDim.x * gridDim.x)
++    f.height[u] = u == nodes - 1 ? 0 : (u == nodes - 2 ? nodes : 2 * nodes);
++}
++
++__global__ void relaxDistances(deviceFlowNetworkPointers f, ui nodes, ui *changed) {
++  for (ui u = blockIdx.x * blockDim.x + threadIdx.x; u < nodes - 2;
++       u += blockDim.x * gridDim.x) {
++    ui distance = atomicAdd(f.height + u, 0U);
++    for (ui e = f.offset[u]; e < f.offset[u + 1]; ++e)
++      if (f.flow[e])
++        distance = min(distance, atomicAdd(f.height + f.neighbors[e], 0U) + 1);
++    if (atomicMin(f.height + u, distance) > distance) atomicExch(changed, 1U);
++  }
++}
++
++struct FlowResult {
++  FlowCapacity value;
++  size_t rounds;
++  std::vector<ui> selected;
++};
++
++inline FlowResult maxflow(deviceFlowNetworkPointers &f, ui vertices, ui nodes,
++                          FlowCapacity sourceCapacity) {
++  const ui threads = 128;
++  const ui blocks = std::min(1024U, (nodes + threads - 1) / threads);
++  ui *nextHeight, *active, *reachable;
++  chkerr(cudaMalloc((void **)&nextHeight, size_t(nodes) * sizeof(ui)));
++  chkerr(cudaMalloc((void **)&active, sizeof(ui)));
++  chkerr(cudaMalloc((void **)&reachable, size_t(nodes) * sizeof(ui)));
++  initialize<<<blocks, threads>>>(f, vertices, nodes);
++  saturateSource<<<blocks, threads>>>(f, vertices, nodes - 2);
++  ui hostActive = 1;
++  size_t rounds = 0;
++  while (hostActive) {
++    if (rounds % 128 == 0) {
++      // Exact residual distances to the sink, or to the source plus nodes,
++      // accelerate both delivery and the return of excess from a cut.
++      resetDistances<<<blocks, threads>>>(f, nodes);
++      ui changed = 1;
++      while (changed) {
++        chkerr(cudaMemset(active, 0, sizeof(ui)));
++        relaxDistances<<<blocks, threads>>>(f, nodes, active);
++        chkerr(cudaGetLastError());
++        chkerr(cudaMemcpy(&changed, active, sizeof(ui), cudaMemcpyDeviceToHost));
++      }
++    }
++    // Checking every eight rounds reduces transfers. Once there is no active
++    // vertex, subsequent rounds leave the completed flow unchanged.
++    for (int step = 0; step < 8; ++step) {
++      push<<<blocks, threads>>>(f, nodes);
++      chkerr(cudaMemset(active, 0, sizeof(ui)));
++      relabel<<<blocks, threads>>>(f, nodes, nextHeight, active);
++      std::swap(f.height, nextHeight);
++      ++rounds;
++    }
++    chkerr(cudaGetLastError());
++    chkerr(cudaMemcpy(&hostActive, active, sizeof(ui), cudaMemcpyDeviceToHost));
++  }
++  FlowCapacity terminalExcess[2];
++  chkerr(cudaMemcpy(terminalExcess, f.excess + nodes - 2,
++                    sizeof(terminalExcess), cudaMemcpyDeviceToHost));
++  if (terminalExcess[0] > sourceCapacity ||
++      terminalExcess[1] != sourceCapacity - terminalExcess[0])
++    throw std::runtime_error("Flow conservation check failed");
++  FlowResult result{terminalExcess[1], rounds, {}};
++  if (result.value < sourceCapacity) {
++    chkerr(cudaMemset(reachable, 0, size_t(nodes) * sizeof(ui)));
++    ui one = 1;
++    chkerr(cudaMemcpy(reachable + nodes - 2, &one, sizeof(ui), cudaMemcpyHostToDevice));
++    hostActive = 1;
++    while (hostActive) {
++      chkerr(cudaMemset(active, 0, sizeof(ui)));
++      reach<<<blocks, threads>>>(f, nodes, reachable, active);
++      chkerr(cudaGetLastError());
++      chkerr(cudaMemcpy(&hostActive, active, sizeof(ui), cudaMemcpyDeviceToHost));
++    }
++    std::vector<ui> reached(nodes);
++    chkerr(cudaMemcpy(reached.data(), reachable, size_t(nodes) * sizeof(ui),
++                      cudaMemcpyDeviceToHost));
++    if (reached.back()) throw std::runtime_error("Residual source-to-sink path remains");
++    for (ui u = 0; u < vertices; ++u)
++      if (reached[u]) result.selected.push_back(u);
++  }
++  chkerr(cudaFree(nextHeight));
++  chkerr(cudaFree(active));
++  chkerr(cudaFree(reachable));
++  return result;
++}
++
++inline void printResult(ui k, ui count, std::vector<ui> selected,
++                        size_t decisions = 0) {
++  std::sort(selected.begin(), selected.end());
++  double density = selected.empty() ? 0.0 : double(count) / selected.size();
++  std::cout << std::setprecision(17) << "Final Max Density " << density << '\n';
++  std::cout << "CDS_RESULT {\"k\":" << k << ",\"density\":" << density
++            << ",\"clique_count\":" << count << ",\"vertex_count\":" << selected.size()
++            << ",\"optimal\":true,\"flow_decisions\":" << decisions << ",\"vertices\":[";
++  for (size_t i = 0; i < selected.size(); ++i) {
++    if (i) std::cout << ',';
++    std::cout << selected[i];
++  }
++  std::cout << "]}" << std::endl;
++}
++
++} // namespace cds_exact

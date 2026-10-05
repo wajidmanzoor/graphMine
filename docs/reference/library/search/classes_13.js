@@ -1,4 +1,11 @@
 var searchData=
 [
-  ['wetricupstreamerror_0',['WetricUpstreamError',['../d8/dc2/classanonymous__namespace_02wetric_8cu_03_1_1WetricUpstreamError.html',1,'anonymous_namespace{wetric.cu}']]]
+  ['vertexcentralityscore_0',['VertexCentralityScore',['../da/dc4/structgraphmine_1_1VertexCentralityScore.html',1,'graphmine']]],
+  ['vertexcommunityassignment_1',['VertexCommunityAssignment',['../d5/d72/structgraphmine_1_1VertexCommunityAssignment.html',1,'graphmine']]],
+  ['vertexcomponent_2',['VertexComponent',['../d8/d26/structgraphmine_1_1VertexComponent.html',1,'graphmine']]],
+  ['vertexcorenumber_3',['VertexCoreNumber',['../d1/de8/structgraphmine_1_1VertexCoreNumber.html',1,'graphmine']]],
+  ['vertexkcliquecount_4',['VertexKCliqueCount',['../d1/d8d/structgraphmine_1_1VertexKCliqueCount.html',1,'graphmine']]],
+  ['vertexmapping_5',['VertexMapping',['../d9/d1c/structgraphmine_1_1VertexMapping.html',1,'graphmine']]],
+  ['vertexrecord_6',['VertexRecord',['../d3/de8/structgraphmine_1_1VertexRecord.html',1,'graphmine']]],
+  ['vertextrianglecount_7',['VertexTriangleCount',['../d7/d02/structgraphmine_1_1VertexTriangleCount.html',1,'graphmine']]]
 ];

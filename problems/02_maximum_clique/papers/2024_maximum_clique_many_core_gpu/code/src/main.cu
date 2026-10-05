@@ -178,8 +178,6 @@ int main(int argc, char **argv)
     indices.initialize("Indices from 0 to n", AllocationTypeEnum::unified, n, config.deviceId);
     
 
-    CUBSelect(red_degrees.gdata(), red_degrees_flagged.gdata(), d_flags.gdata(), n, config.deviceId);
-    red_degrees.freeGPU();
 
     // Array of inidces generate
     execKernel((generateIndices_kernel<DataType>), blocks, block_size, config.deviceId, false, indices.gdata(), n);
@@ -193,48 +191,35 @@ int main(int argc, char **argv)
     
     core_numbers_red.initialize("Core Numbers Reduced", AllocationTypeEnum::gpu, n_red, config.deviceId);
 
-    CUBSelect(kcore.coreNumber.gdata(), core_numbers_red.gdata(), d_flags.gdata(), n, config.deviceId);
+    graph::GPUArray<DataType> unsorted_core_numbers("Unsorted core numbers", gpu, n_red, config.deviceId);
+    CUBSelect(kcore.coreNumber.gdata(), unsorted_core_numbers.gdata(), d_flags.gdata(), n, config.deviceId);
 
     // Sort Indeces
     void *d_temp_storage = nullptr;
     size_t temp_storage_bytes = 0;
-    cub::DeviceRadixSort::SortPairsDescending(
+    CUDA_RUNTIME(cub::DeviceRadixSort::SortPairsDescending(
               d_temp_storage, temp_storage_bytes,
-               core_numbers_red.gdata(), core_numbers_red.gdata(),
-                d_temp_old_name.gdata(), d_oldName.gdata(), n_red);
+               unsorted_core_numbers.gdata(), core_numbers_red.gdata(),
+                d_temp_old_name.gdata(), d_oldName.gdata(), n_red));
     // Allocate temporary storage
     CUDA_RUNTIME(cudaMalloc(&d_temp_storage, temp_storage_bytes));
    
     // Run sorting operation
-    cub::DeviceRadixSort::SortPairsDescending(
+    CUDA_RUNTIME(cub::DeviceRadixSort::SortPairsDescending(
               d_temp_storage, temp_storage_bytes,
-               core_numbers_red.gdata(), core_numbers_red.gdata(),
-                d_temp_old_name.gdata(), d_oldName.gdata(), n_red);
+               unsorted_core_numbers.gdata(), core_numbers_red.gdata(),
+                d_temp_old_name.gdata(), d_oldName.gdata(), n_red));
     cudaFree(d_temp_storage);
 
     cudaDeviceSynchronize();
     d_temp_old_name.freeGPU();
-
-    CUBSelect(kcore.coreNumber.gdata(), core_numbers_red.gdata(), d_flags.gdata(), n, config.deviceId);
+    unsorted_core_numbers.freeGPU();
     d_flags.freeGPU();
 
-    d_temp_storage = nullptr;
-    temp_storage_bytes = 0;
-    cub::DeviceRadixSort::SortPairsDescending(
-              d_temp_storage, temp_storage_bytes,
-               core_numbers_red.gdata(), core_numbers_red.gdata(),
-                red_degrees_flagged.gdata(), red_degrees_flagged.gdata(), n_red);
-    // Allocate temporary storage
-    CUDA_RUNTIME(cudaMalloc(&d_temp_storage, temp_storage_bytes));
-   
-    // Run sorting operation
-    cub::DeviceRadixSort::SortPairsDescending(
-              d_temp_storage, temp_storage_bytes,
-               core_numbers_red.gdata(), core_numbers_red.gdata(),
-                red_degrees_flagged.gdata(), red_degrees_flagged.gdata(), n_red);
-    cudaFree(d_temp_storage);
-
-    cudaDeviceSynchronize();
+    execKernel((gather_by_index_kernel<DataType>), blocks, block_size,
+               config.deviceId, false, red_degrees.gdata(), d_oldName.gdata(),
+               red_degrees_flagged.gdata(), n_red);
+    red_degrees.freeGPU();
 
     // Graph allocation
     red_gd->numNodes = n_red;
@@ -261,10 +246,13 @@ int main(int argc, char **argv)
 
     d_temp_storage = NULL;
     temp_storage_bytes = 0;
-    cub::DeviceSegmentedRadixSort::SortKeys(d_temp_storage, temp_storage_bytes, red_gd->colInd, red_gd->colInd, m_red, n_red, red_gd->rowPtr, red_gd->rowPtr + 1);
+    graph::GPUArray<DataType> sorted_neighbors("Sorted neighbors", gpu, m_red, config.deviceId);
+    CUDA_RUNTIME(cub::DeviceSegmentedRadixSort::SortKeys(d_temp_storage, temp_storage_bytes, red_gd->colInd, sorted_neighbors.gdata(), m_red, n_red, red_gd->rowPtr, red_gd->rowPtr + 1));
     // Allocate temporary storage
     cudaMalloc(&d_temp_storage, temp_storage_bytes);
-    cub::DeviceSegmentedRadixSort::SortKeys(d_temp_storage, temp_storage_bytes, red_gd->colInd, red_gd->colInd, m_red, n_red, red_gd->rowPtr, red_gd->rowPtr + 1);
+    CUDA_RUNTIME(cub::DeviceSegmentedRadixSort::SortKeys(d_temp_storage, temp_storage_bytes, red_gd->colInd, sorted_neighbors.gdata(), m_red, n_red, red_gd->rowPtr, red_gd->rowPtr + 1));
+    CUDA_RUNTIME(cudaMemcpy(red_gd->colInd, sorted_neighbors.gdata(), m_red * uint64(sizeof(DataType)), cudaMemcpyDeviceToDevice));
+    sorted_neighbors.freeGPU();
     cudaFree(d_temp_storage);
     
     cudaDeviceSynchronize();
@@ -323,9 +311,11 @@ int main(int argc, char **argv)
   if(config.mt == MAINTASK::MCP || config.mt == MAINTASK::MCP_EVAL) {
 
     vector<graph::MultiGPU_MCP<DataType>> mcp;
+    // Solver instances own CUDA streams; do not copy temporary owners.
+    mcp.reserve(config.gpus.size());
 
     for (int i = 0; i < config.gpus.size(); i++)
-      mcp.push_back(graph::MultiGPU_MCP<DataType>(config.gpus[i], i, config.gpus.size(), core_numbers_red.gdata(), maxCore));
+      mcp.emplace_back(config.gpus[i], i, config.gpus.size(), core_numbers_red.gdata(), maxCore);
 
     Timer mcp_timer;
 

@@ -1,5 +1,6 @@
 #include "graphmine/problems/validated_expansion.hpp"
-#include <boost/json/src.hpp>
+#include "graphmine/problems/repaired_algorithms.hpp"
+#include <boost/json.hpp>
 
 #include <algorithm>
 #include <charconv>
@@ -1478,9 +1479,58 @@ json::object run_expansion(const std::string& operation, Arguments& arguments, c
     expansion_backend(common,"gdlog");graphmine::ReachabilityOptions options;isolated_options(options,arguments,common);arguments.finish();auto result=graphmine::TransitiveClosure(options).run(graph);
     return result_json(result,common.execution.collect_statistics,[](const graphmine::ReachabilityOutput& out){json::array pairs;for(const auto& pair:out.reachable_pairs)pairs.push_back(json::object{{"source",id_json(pair.source)},{"target",id_json(pair.target)}});return json::object{{"transitive_closure_edges",std::move(pairs)},{"reachable_pair_count",out.reachable_pair_count},{"reachability_results",json::array{}},{"complete",out.complete}};});
   }
-  expansion_backend(common,"graphminer");graphmine::ButterflyOptions options;options.execution=common.execution;arguments.finish();
+  if(common.backend!="auto" && common.backend!="graphminer" && common.backend!="gamma-butterfly")throw UsageError("unknown butterfly backend");
+  if(common.allow_directed_projection)throw UsageError("butterfly counting requires an undirected graph");
+  graphmine::ButterflyOptions options;isolated_options(options,arguments,common);options.backend=common.backend;arguments.finish();
   auto result=invoke_backend([&]{return graphmine::ButterflyCounting(options).run(graph);});
   return result_json(result,common.execution.collect_statistics,[](const graphmine::ButterflyOutput& out){return json::object{{"butterfly_count",out.butterfly_count},{"complete",out.complete}};});
+}
+
+json::object run_repaired(const std::string& operation, Arguments& arguments, const CommonOptions& common) {
+  auto graph=read_graph(common.graph_path);
+  if(operation=="k-truss") {
+    expansion_backend(common,"acctd");graphmine::KTrussOptions options;isolated_options(options,arguments,common);arguments.finish();
+    auto result=graphmine::KTruss(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::KTrussOutput& out){
+      json::array edges;for(const auto& e:out.truss_number_by_edge)edges.push_back(json::object{{"edge",id_json(e.edge)},{"truss_number",e.truss_number}});
+      return json::object{{"truss_number_by_edge",std::move(edges)},{"maximum_truss_number",out.maximum_truss_number}};
+    });
+  }
+  if(operation=="densest-subgraph") {
+    expansion_backend(common,"cds");graphmine::DensestSubgraphOptions options;isolated_options(options,arguments,common);arguments.finish();
+    auto result=graphmine::DensestSubgraph(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::DensestSubgraphOutput& out){return json::object{{"vertices",ids_json(out.vertices)},{"density",out.density},{"induced_edge_value",out.induced_edge_value},{"optimal",out.optimal}};});
+  }
+  if(operation=="maximal-biclique-counting") {
+    expansion_backend(common,"mbe-gpu");graphmine::MaximalBicliqueCountingOptions options;isolated_options(options,arguments,common);arguments.finish();
+    auto result=graphmine::MaximalBicliqueCounting(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::MaximalBicliqueCountingOutput& out){return json::object{{"total_count",out.total_count},{"complete",out.complete}};});
+  }
+  if(operation=="personalized-pagerank") {
+    expansion_backend(common,"kpar");graphmine::PersonalizedPageRankOptions options;isolated_options(options,arguments,common);
+    options.seed_vertex=argument_id(arguments.required("seed-vertex"));options.top_k=parse_integer<std::uint32_t>(arguments.required("top-k"),"top-k",1);
+    if(parse_double(arguments.required("restart-probability"),"restart-probability")!=0.2)throw UsageError("kPAR requires explicit restart-probability 0.2");
+    if(auto value=arguments.optional("solution-quality"))if(*value!="approximate")throw UsageError("kPAR exposes approximate scores only");
+    if(auto value=arguments.optional("epsilon"))options.epsilon=parse_double(*value,"epsilon");
+    if(auto value=arguments.optional("random-seed"))options.random_seed=parse_integer<std::uint32_t>(*value,"random-seed",0);
+    arguments.finish();auto result=graphmine::PersonalizedPageRank(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::PersonalizedPageRankOutput& out){json::array ranking;for(const auto& v:out.ranked_vertices)ranking.push_back(json::object{{"vertex",id_json(v.vertex)},{"score",v.score},{"rank",v.rank}});return json::object{{"ranked_vertices",std::move(ranking)},{"restart_probability_used",out.restart_probability_used},{"complete",out.complete},{"approximate",out.approximate},{"epsilon_used",out.epsilon_used},{"error_bound",nullptr},{"error_bound_certified",out.error_bound_certified}};});
+  }
+  if(operation=="group-steiner-tree") {
+    expansion_backend(common,"gpu4gst");graphmine::GroupSteinerTreeOptions options;isolated_options(options,arguments,common);
+    boost::system::error_code error;auto groups=json::parse(arguments.required("groups"),error);if(error)throw UsageError("groups must be a JSON array of vertex-ID arrays");
+    for(const auto& group:require_array(groups,"groups")){std::vector<ExternalId> members;for(const auto& id:require_array(group,"group"))members.push_back(parse_external_id(id,"group vertex"));options.groups.push_back(std::move(members));}
+    arguments.finish();auto result=graphmine::GroupSteinerTree(options).run(graph);
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::GroupSteinerTreeOutput& out){return json::object{{"tree_edges",ids_json(out.tree_edges)},{"tree_weight",out.tree_weight},{"selected_vertices",ids_json(out.selected_vertices)},{"feasible",out.feasible},{"optimal",out.optimal}};});
+  }
+  expansion_backend(common,"superfuser");graphmine::InfluenceMaximizationOptions options;isolated_options(options,arguments,common);
+  if(arguments.required("diffusion-model")!="independent_cascade")throw UsageError("SuperFuser supports independent_cascade only");
+  options.seed_set_size=parse_integer<std::uint32_t>(arguments.required("seed-set-size"),"seed-set-size",1);
+  if(auto value=arguments.optional("sample-count"))options.sample_count=parse_integer<std::uint32_t>(*value,"sample-count",32);
+  if(auto value=arguments.optional("random-seed"))options.random_seed=parse_integer<std::uint64_t>(*value,"random-seed",0);
+  if(arguments.flag("require-guarantee"))throw UsageError("SuperFuser does not certify an approximation guarantee");
+  arguments.finish();auto result=graphmine::InfluenceMaximization(options).run(graph);
+  return result_json(result,common.execution.collect_statistics,[](const graphmine::InfluenceMaximizationOutput& out){json::array prefixes;for(auto value:out.prefix_spread)prefixes.push_back(value);return json::object{{"seed_set",ids_json(out.seed_set)},{"expected_spread",out.expected_spread},{"guarantee_met",out.guarantee_met},{"sample_count",out.sample_count},{"prefix_spread",std::move(prefixes)},{"diffusion_model","independent_cascade"}};});
 }
 
 using BackendProvider = std::function<std::vector<graphmine::BackendInfo>()>;
@@ -1494,11 +1544,17 @@ struct OperationDescriptor {
 
 const std::vector<OperationDescriptor>& operations() {
   static const std::vector<OperationDescriptor> values = {
+      {"k-truss","k_truss_decomposition","graphmine run k-truss --graph GRAPH.json [--backend acctd]",graphmine::KTruss::backends},
+      {"densest-subgraph","densest_subgraph","graphmine run densest-subgraph --graph GRAPH.json [--backend cds]",graphmine::DensestSubgraph::backends},
+      {"maximal-biclique-counting","maximal_biclique_enumeration","graphmine run maximal-biclique-counting --graph GRAPH.json [--backend mbe-gpu] (count only; attributes.side = left|right)",graphmine::MaximalBicliqueCounting::backends},
+      {"personalized-pagerank","personalized_pagerank_rwr","graphmine run personalized-pagerank --graph GRAPH.json --seed-vertex ID --top-k N --restart-probability 0.2 [--epsilon 0.01] [--random-seed N]",graphmine::PersonalizedPageRank::backends},
+      {"group-steiner-tree","group_steiner_tree","graphmine run group-steiner-tree --graph GRAPH.json --groups '[[ID,...],...]' [--backend gpu4gst]",graphmine::GroupSteinerTree::backends},
+      {"influence-maximization","influence_maximization","graphmine run influence-maximization --graph GRAPH.json --diffusion-model independent_cascade --seed-set-size N [--sample-count 256] [--random-seed N]",graphmine::InfluenceMaximization::backends},
       {"connected-components","connected_components","graphmine run connected-components --graph GRAPH.json --connectivity-mode weakly_connected|strongly_connected [--backend ecl-scc] [--timeout-seconds N]",graphmine::ConnectedComponents::backends},
       {"max-flow-min-cut","max_flow_min_cut","graphmine run max-flow-min-cut --graph GRAPH.json --source ID --sink ID [--unit-capacity] [--backend ecl-maxflow] [--timeout-seconds N]",graphmine::MaxFlowMinCut::backends},
       {"linear-assignment","bipartite_matching_assignment","graphmine run linear-assignment --graph GRAPH.json [--backend hungarian-cuda] [--timeout-seconds N] (complete square minimum-cost perfect assignment, <=64 per side, integer costs 0..999)",graphmine::LinearAssignment::backends},
       {"transitive-closure","transitive_closure_reachability","graphmine run transitive-closure --graph GRAPH.json [--backend gdlog] [--timeout-seconds N] (reflexive closure; <=1024 vertices)",graphmine::TransitiveClosure::backends},
-      {"butterfly-counting","butterfly_counting_bipartite","graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",graphmine::ButterflyCounting::backends},
+      {"butterfly-counting","butterfly_counting_bipartite","graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer|gamma-butterfly] (global count only; undirected bipartite graph)",graphmine::ButterflyCounting::backends},
       {"maximal-cliques", "maximal_clique_enumeration",
        "graphmine run maximal-cliques --graph GRAPH.json [--backend "
        "auto|mce-gpu|g2-aimd|rdmce] [--minimum-clique-size N] "
@@ -1647,6 +1703,8 @@ json::object validate_graph_json(const graphmine::Graph& graph) {
 
 json::object run_operation(const std::string& operation, Arguments& arguments,
                            const CommonOptions& common) {
+  if(operation=="k-truss" || operation=="densest-subgraph" || operation=="maximal-biclique-counting" || operation=="personalized-pagerank" || operation=="group-steiner-tree" || operation=="influence-maximization")
+    return run_repaired(operation,arguments,common);
   if(operation=="connected-components" || operation=="max-flow-min-cut" || operation=="linear-assignment" || operation=="transitive-closure" || operation=="butterfly-counting")
     return run_expansion(operation,arguments,common);
   if (operation == "maximal-cliques") {

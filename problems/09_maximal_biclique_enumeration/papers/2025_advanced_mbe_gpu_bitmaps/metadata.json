@@ -1,0 +1,16 @@
+{
+  "paper_id": "2025_advanced_mbe_gpu_bitmaps",
+  "title": "Advanced Maximal Biclique Enumeration on GPUs Using Bitmaps",
+  "year": 2025,
+  "venue": "IEEE Transactions on Computers",
+  "doi": "10.1109/TC.2025.3566898",
+  "publication_url": "https://doi.org/10.1109/TC.2025.3566898",
+  "pdf_url": "https://shuibing9420.github.io/assets/pdf/GMBE%2BTC25.pdf",
+  "code_url": "https://github.com/fhxu00/MBE-GPU",
+  "semantic_fit": "exact",
+  "gpu_scope": "Bitmap-optimized GPU maximal-biclique enumeration.",
+  "notes": "The linked repository is the authors' GMBE code line; inspect its README/branches to determine whether every GMBE+ optimization is present.",
+  "problem_id": "maximal_biclique_enumeration",
+  "problem_dir": "09_maximal_biclique_enumeration",
+  "research_cutoff": "2026-09-30"
+}

@@ -1,0 +1,695 @@
+diff --git a/Makefile b/Makefile
+index 5ea5a73..8578830 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,13 +1,14 @@
+ NVCC=nvcc
+-NVCCFLAGS=-gencode arch=compute_70,code=sm_70 #--ptxas-options=-v
++CUDA_ARCH ?= sm_89
++NVCCFLAGS ?= -arch=$(CUDA_ARCH) -lineinfo
+ CXX=g++
+ CXXFLAGS=-O3 -std=c++11 #-fopemmp -Iinclude
+ DEBUGFLAGS=#-G -g
+ DEPENDENCY=accessMode.cuh graph.cuh utils.h embedding.cuh expand.cuh log.h clock.h
+ all: kcl fsm sm
+ 
+-sm : sm.cu ${DEPENDENCY} queryGraph.cuh log.o
+-	${NVCC} sm.cu log.o -O3 ${NVCCFLAGS} ${DEBUGFLAGS} -o sm -std=c++11
++sm : sm.cu ${DEPENDENCY} queryGraph.cuh checked_expand.cuh sm_input.h log.o
++	${NVCC} sm.cu log.o -O2 ${NVCCFLAGS} ${DEBUGFLAGS} -o sm -std=c++17
+ kcl : kcl.cu ${DEPENDENCY} log.o
+ 	${NVCC} kcl.cu log.o -O3 ${NVCCFLAGS} ${DEBUGFLAGS} -o kcl -std=c++11
+ fsm : fsm.cu ${DEPENDENCY} aggregrate.cuh log.o
+diff --git a/embedding.cuh b/embedding.cuh
+index d6dfc29..5412c17 100644
+--- a/embedding.cuh
++++ b/embedding.cuh
+@@ -39,7 +39,7 @@ public:
+ 	~EmbeddingList() {}
+ 	void init(OffsetT initial_size, unsigned max_size , mem_type mem_tp, bool use_edge_label, bool use_dag = true) {
+ 		last_level = 0;
+-		assert(max_size > 1);
++		assert(max_size >= 1);
+ 		assert(mem_tp < 2);
+ 		memory_type = mem_tp;
+ 		max_level = max_size;
+@@ -67,7 +67,7 @@ public:
+ 		switch (memory_type) {
+ 			case GPU_MEM:
+ 				check_cuda_error(cudaMalloc((void **)&h_vid_lists[0], nnz * sizeof(KeyT)));
+-				check_cuda_error(cudaMemset(h_vid_lists[0]+nnz-32, -1, sizeof(KeyT)*32));
++				if (nnz) check_cuda_error(cudaMemset(h_vid_lists[0]+nnz-32, -1, sizeof(KeyT)*32));
+ 				//check_cuda_error(cudaMalloc((void **)&h_idx_lists[0], nnz * sizeof(KeyT)));
+ 				if (enable_elabel) {
+ 					check_cuda_error(cudaMalloc((void **)&h_edge_infos[0], nnz * sizeof(label_type)));
+@@ -230,8 +230,8 @@ public:
+ 				check_cuda_error(cudaMalloc((void **)&h_vid_lists[last_level], size * sizeof(KeyT)));
+ 				check_cuda_error(cudaMalloc((void **)&h_idx_lists[last_level], size * sizeof(emb_off_type)));
+ 				//TODO: here we set size of frontiers multiple of 32
+-				check_cuda_error(cudaMemset(h_vid_lists[last_level]+size-32, -1, sizeof(KeyT)*32));
+-				check_cuda_error(cudaMemset(h_idx_lists[last_level]+size-32, 0, sizeof(emb_off_type)*32));
++				if (size) check_cuda_error(cudaMemset(h_vid_lists[last_level]+size-32, -1, sizeof(KeyT)*32));
++				if (size) check_cuda_error(cudaMemset(h_idx_lists[last_level]+size-32, 0, sizeof(emb_off_type)*32));
+ 				if (enable_elabel) {
+ 					check_cuda_error(cudaMalloc((void **)&h_edge_infos[last_level], size * sizeof(label_type)));
+ 					check_cuda_error(cudaMemset(h_edge_infos[last_level]+size-32, -1,sizeof(label_type)*32));
+@@ -321,24 +321,40 @@ public:
+ 		mem_head = 0;
+ 	}
+ 	void clean() {
+-		reset_level();
+-		free(h_vid_lists);
+-		free(h_idx_lists);
+-		check_cuda_error(cudaFree(all_vid));
+-		check_cuda_error(cudaFree(all_idx));
+-		if(enable_elabel) {
+-			free(h_edge_infos);
+-			check_cuda_error(cudaFree(all_einfo));
+-		}
+-	}
+-	void copy_to_level(int l, KeyT *copy_src, int dst_off, int copy_size) {
++        if (memory_type == GPU_MEM) {
++            for (unsigned i = 0; i < max_level; ++i) {
++                check_cuda_error(cudaFree(h_vid_lists[i]));
++                check_cuda_error(cudaFree(h_idx_lists[i]));
++                if (enable_elabel) check_cuda_error(cudaFree(h_edge_infos[i]));
++            }
++        } else {
++            check_cuda_error(cudaFree(all_vid));
++            check_cuda_error(cudaFree(all_idx));
++            if (enable_elabel) check_cuda_error(cudaFree(all_einfo));
++            all_vid = nullptr; all_idx = nullptr; all_einfo = nullptr;
++        }
++        check_cuda_error(cudaFree(d_vid_lists));
++        check_cuda_error(cudaFree(d_idx_lists));
++        free(h_vid_lists); free(h_idx_lists);
++        if (enable_elabel) {
++            check_cuda_error(cudaFree(d_edge_infos));
++            free(h_edge_infos);
++        }
++        delete[] sizes;
++        mem_head = 0;
++    }
++	void copy_to_level(int l, KeyT *copy_src, emb_off_type dst_off, emb_off_type copy_size) {
+ 		assert(l <= last_level);
+ 		KeyT *dst = h_vid_lists[l];
+-		check_cuda_error(cudaMemcpy(dst + dst_off, copy_src, sizeof(KeyT)*copy_size, cudaMemcpyDeviceToHost));
++		check_cuda_error(cudaMemcpy(dst + dst_off, copy_src, sizeof(KeyT)*copy_size, cudaMemcpyDefault));
+ 	}//for now, this is only used as the first layer of emblist.	
+ 	__host__ __device__ inline void get_embedding(unsigned level, emb_off_type pos, KeyT *emb) {
+ 		KeyT vid = get_vid(level, pos);
+ 		emb[level] = vid;
++		if (vid == 0xffffffff) {
++			while (level > 0) emb[--level] = 0xffffffff;
++			return;
++		}
+ 		while (level > 0) {
+ 			pos = get_idx(level, pos);
+ 			level --;
+diff --git a/expand.cuh b/expand.cuh
+index 856d439..cc61703 100644
+--- a/expand.cuh
++++ b/expand.cuh
+@@ -197,8 +197,9 @@ __device__ inline void pre_merge(CSRGraph g, expand_constraint ec, uint8_t min_n
+ //TODO we have not use COALESCED and ALIGNED memory access yet
+ //TODO parameter control to save more registers for the program
+ //TODO the register split can be detected using nvprof with flag  --ptx?????
++template<typename CountT>
+ __global__ void extend_alloc(EmbeddingList emb, int level, CSRGraph g,  
+-							 expand_constraint ec, uint32_t* emb_row_off, 
++							 expand_constraint ec, CountT* emb_row_off, 
+ 							 emb_off_type base_off, uint32_t f_size) {
+ 	//TODO: here we use a warp to deal with an embedding, later we can try dynamic work distribution methods:
+ 	//while the workload of an embedding is heavy, use a block instead. (WARP VOTE MECHANISM)
+@@ -211,15 +212,16 @@ __global__ void extend_alloc(EmbeddingList emb, int level, CSRGraph g,
+ 		KeyT vid = sh_emb[threadIdx.x][level];
+ 		if (vid == 0xffffffff)
+ 		    continue;
+-		uint32_t local_count = 0;
++		CountT local_count = 0;
+ 		//__threadfence_block();
+-		OffsetT row_begin = g.edge_begin(vid);
+-		uint32_t adj_size = g.edge_end(vid) - row_begin;
++		const KeyT anchor = ec.nbr_size ? sh_emb[threadIdx.x][ec.nbrs & 0xff] : 0;
++		OffsetT row_begin = ec.nbr_size ? g.edge_begin(anchor) : 0;
++		uint32_t adj_size = ec.nbr_size ? g.getDegree(anchor) : g.nnodes;
+ 		//TODO for now we have not carry out the adjacency check, and we plan to use this constraint to reduce the candidate size of emb_validation_check in the future. If the minimum list length of several lists to be merged is less than a threshold, we merge all the adjacency lists at first to get L0,and then intetersect it with the below list adj, to get final results. For now, we use the naive methods: intersect the adj with several other adjacency list respectively.
+ 		//TODO here for the expand process we only consider expanding from the last element in emb 
+-		KeyT *adj = g.getAdjListofSrc(vid, row_begin);
++		KeyT *adj = ec.nbr_size ? g.getAdjListofSrc(anchor, row_begin) : nullptr;
+ 		for (uint32_t e = threadIdx.x&31; e < adj_size; e += 32) {
+-			KeyT dst = adj[e];
++			KeyT dst = ec.nbr_size ? adj[e] : e;
+ 			if (emb_validation_check(sh_emb[threadIdx.x], g, level, ec, dst))
+ 				local_count += 1;
+ 		}
+@@ -236,15 +238,16 @@ __global__ void extend_alloc(EmbeddingList emb, int level, CSRGraph g,
+ 	} 
+ 	return ;
+ }
++template<typename CountT>
+ __global__ void extend_insert_indevice(EmbeddingList emb, int level, CSRGraph g,  
+-							 		   expand_constraint ec, uint32_t* emb_row_off, 
++							 		   expand_constraint ec, CountT* emb_row_off, 
+ 							 		   emb_off_type read_base_off, 
+ 									   uint32_t f_size, KeyT *vid_cache, emb_off_type *idx_cache) {
+ 	//TODO: here we use a warp to deal with an embedding, later we can try dynamic work distribution methods:
+ 	//while the workload of an embedding is heavy, use a block instead. (WARP VOTE MECHANISM)
+ 	uint32_t total_warp = (blockDim.x*gridDim.x)>>5;
+ 	__shared__ KeyT sh_emb[BLOCK_SIZE][embedding_max_length];
+-	__shared__ KeyT sh_base_off[BLOCK_SIZE/32];
++	__shared__ CountT sh_base_off[BLOCK_SIZE/32];
+ 	uint32_t lane_id = threadIdx.x%32;
+ 	for (uint32_t _i = (threadIdx.x + blockIdx.x * blockDim.x)>>5; _i < f_size; _i += total_warp) {
+ 		emb_off_type i = read_base_off + _i;
+@@ -256,23 +259,25 @@ __global__ void extend_insert_indevice(EmbeddingList emb, int level, CSRGraph g,
+ 		//__threadfence();
+ 		if (vid == 0xffffffff)	
+ 		    continue;
+-		OffsetT row_begin = g.edge_begin(vid);
+-		uint32_t adj_size = g.edge_end(vid) - row_begin;
++		const KeyT anchor = ec.nbr_size ? sh_emb[threadIdx.x][ec.nbrs & 0xff] : 0;
++		OffsetT row_begin = ec.nbr_size ? g.edge_begin(anchor) : 0;
++		uint32_t adj_size = ec.nbr_size ? g.getDegree(anchor) : g.nnodes;
+ 		//TODO for now we have not carry out the adjacency check, and we plan to use this constraint to reduce the candidate size of emb_validation_check in the future. If the minimum list length of several lists to be merged is less than a threshold, we merge all the adjacency lists at first to get L0,and then intetersect it with the below list adj, to get final results. For now, we use the naive methods: intersect the adj with several other adjacency list respectively.
+ 		//TODO here for the expand process we only consider expanding from the last element in emb 
+-		KeyT *adj = g.getAdjListofSrc(vid, row_begin);
++		KeyT *adj = ec.nbr_size ? g.getAdjListofSrc(anchor, row_begin) : nullptr;
+ 		for (uint32_t e = threadIdx.x&31; e < (adj_size+31)/32*32; e += 32) {
+ 			//WARNING : if this is ok if not all threads are active for warp reduce?
+-			KeyT dst = (e < adj_size) ? adj[e] : 0xffffffff;
++			KeyT dst = (e < adj_size) ? (ec.nbr_size ? adj[e] : e) : 0xffffffff;
+ 			uint32_t result = 0, value = 0;
+ 			uint32_t check_result = (emb_validation_check(sh_emb[threadIdx.x], g, level, ec, dst) == true)? 1: 0;
+ 			value += check_result;
+ 			warp_reduce(lane_id, value, result);
+ 			if (check_result) {
+-				uint32_t pos = sh_base_off[threadIdx.x>>5] + result;
++				CountT pos = sh_base_off[threadIdx.x>>5] + result;
+ 				vid_cache[pos] = dst;
+ 				idx_cache[pos] = i;
+ 			}
++			__syncwarp();
+ 			if(lane_id == 31)
+ 				sh_base_off[threadIdx.x>>5] += (result + value);
+ 			__syncwarp();
+diff --git a/graph.cuh b/graph.cuh
+index b1af92b..a5e0151 100644
+--- a/graph.cuh
++++ b/graph.cuh
+@@ -250,6 +250,7 @@ public:
+     }
+ 
+     file.read((char*)(&nedges), 8);
++    if (nedges == 0) { file.close(); return; }
+     //file.read((char*)(&typeT), 8);
+     //edge_data_type *edge_label_h;
+ 
+diff --git a/queryGraph.cuh b/queryGraph.cuh
+index 2f313d4..9f4a6d4 100644
+--- a/queryGraph.cuh
++++ b/queryGraph.cuh
+@@ -1,78 +1,61 @@
+-#include<iostream>
+-#include<stdlib.h>
+-#include<vector>
++#pragma once
++#include <fstream>
++#include <vector>
++#include <set>
++#include <algorithm>
++#include <stdexcept>
+ #include "utils.h"
+-#include<fstream>
+-#include<string.h>
+-using namespace std;
+-class queryGraph{
++
++class queryGraph {
+ public:
+-	uint32_t vertex_num;
+-	vector<uint8_t> vertex_label;
+-	vector<vector<uint32_t>> adj_list;
+-	vector<vector<uint32_t>> order_list;
+-	vector<uint32_t> core;
+-	vector<uint32_t> satellite;
+-	void readFromFile(const char filename []) {
+-		std::ifstream file_read;
+-		file_read.open(filename, std::ios::in);
+-		file_read >> vertex_num;
+-		//cout << vertex_num << endl;
+-		for (uint32_t i = 0; i < vertex_num; i ++) {
+-			uint32_t label_now;
+-			file_read >> label_now;
+-			//cout << label_now << " ";
+-			vertex_label.push_back((uint8_t)label_now);
+-		}
+-		//cout << endl;
+-		for (uint32_t i = 0; i < vertex_num; i ++) {
+-			vector<uint32_t> v;
+-			uint32_t nbr_size;
+-			file_read >> nbr_size;
+-			//cout << nbr_size << " ";
+-			uint32_t nbr_now;
+-			for (uint32_t j = 0; j < nbr_size; j ++) {
+-				file_read >> nbr_now;
+-				//cout << nbr_now << " ";
+-				v.push_back(nbr_now);
+-			}
+-			adj_list.push_back(v);
+-			//cout << endl;
+-		}
+-		for (uint32_t i = 0; i < vertex_num; i ++) {
+-			vector<uint32_t> v;
+-			uint32_t nbr_size;
+-			file_read >> nbr_size;
+-			//cout << nbr_size << " ";
+-			uint32_t order_nbr_now;
+-			for (uint32_t j = 0; j < nbr_size; j ++) {
+-				file_read >> order_nbr_now;
+-				//cout << order_nbr_now << " ";
+-				v.push_back(order_nbr_now);
+-			}
+-			order_list.push_back(v);
+-			//cout << endl;
+-		}
+-		file_read.close();
+-		for (uint32_t i = 0; i < vertex_num; i ++) {
+-			if (adj_list[i].size() > 1) {
+-				core.push_back(i);
+-			}
+-			else {
+-				satellite.push_back(i);
+-			}
+-		}
+-		return ;
+-	}
+-	void clear() {
+-		for (uint32_t i = 0; i < vertex_num; i ++) {
+-			adj_list[i].clear();
+-			order_list[i].clear();
+-		}
+-		adj_list.clear();
+-		order_list.clear();
+-		core.clear();
+-		satellite.clear();
+-		return ;
+-	}
++    uint32_t vertex_num = 0;
++    std::vector<uint8_t> vertex_label;
++    std::vector<std::vector<uint32_t>> adj_list, order_list;
++    std::vector<uint32_t> core, satellite;
++
++    void readFromFile(const char* filename) {
++        clear();
++        std::ifstream input(filename);
++        if (!(input >> vertex_num) || vertex_num == 0 || vertex_num > embedding_max_length)
++            throw std::runtime_error("query size must be between 1 and 7");
++        vertex_label.resize(vertex_num);
++        adj_list.resize(vertex_num); order_list.resize(vertex_num);
++        for (auto& label : vertex_label) {
++            unsigned value;
++            if (!(input >> value) || value > 255) throw std::runtime_error("invalid query label");
++            label = value;
++        }
++        auto read_rows = [&](std::vector<std::vector<uint32_t>>& rows) {
++            for (unsigned v = 0; v < vertex_num; ++v) {
++                unsigned count;
++                if (!(input >> count) || count >= vertex_num) throw std::runtime_error("invalid query row size");
++                std::set<unsigned> seen;
++                for (unsigned i = 0; i < count; ++i) {
++                    unsigned neighbor;
++                    if (!(input >> neighbor) || neighbor >= vertex_num || neighbor == v || !seen.insert(neighbor).second)
++                        throw std::runtime_error("invalid query neighbor");
++                    rows[v].push_back(neighbor);
++                }
++                std::sort(rows[v].begin(), rows[v].end());
++            }
++        };
++        read_rows(adj_list); read_rows(order_list);
++        std::string extra;
++        if (input >> extra) throw std::runtime_error("unexpected query data");
++        for (unsigned v = 0; v < vertex_num; ++v) {
++            for (unsigned u : adj_list[v])
++                if (!std::binary_search(adj_list[u].begin(), adj_list[u].end(), v))
++                    throw std::runtime_error("query adjacency must be symmetric");
++            core.push_back(v); // Match leaves and isolated query vertices too.
++        }
++        // Ordering pairs constrain the later vertex by (degree, ID), as in GAMMA.
++        std::set<std::pair<unsigned,unsigned>> ordering;
++        for (unsigned v = 0; v < vertex_num; ++v)
++            for (unsigned u : order_list[v]) ordering.insert(std::minmax(v,u));
++        order_list.assign(vertex_num, {});
++        for (auto pair : ordering) order_list[pair.second].push_back(pair.first);
++    }
++    void clear() {
++        vertex_num=0; vertex_label.clear(); adj_list.clear(); order_list.clear(); core.clear(); satellite.clear();
++    }
+ };
+diff --git a/sm.cu b/sm.cu
+index 37f9549..18d67d3 100644
+--- a/sm.cu
++++ b/sm.cu
+@@ -1,155 +1,90 @@
+-#include <stdlib.h>
+-#include <iostream>
+ #include "utils.h"
+-#include "accessMode.cuh"
+-#include "expand.cuh"
++#include "checked_expand.cuh"
+ #include "queryGraph.cuh"
+-#include <cuda_runtime.h>
+-
+-using namespace std;
+-__global__ void set_validation(CSRGraph g, uint8_t *valid_candi, uint32_t nnodes, uint8_t lab, uint32_t min_deg) {
+-	uint32_t tid = threadIdx.x + blockDim.x*blockIdx.x;
+-	for (uint32_t i = tid; i < nnodes; i += (blockDim.x*gridDim.x)) {
+-		if (g.getDegree(i) >= min_deg && g.getData(i) == lab)
+-			valid_candi[i] = 1;
+-	}
+-	return ;
+-}
+-int main(int argc, char *argv[]) {
+-	if (argc < 4) {
+-		printf("usage: ./sm ($data_graph) ($query_graph) graph_mt debug\n");
+-		return 0;
+-	}
+-	if (string(argv[argc-1]) != "debug") {
+-		log_set_quiet(true);
+-	}
+-	Clock start("Start");
+-	//assert(k <= embedding_max_length);
+-	queryGraph Gquery;
+-	Gquery.readFromFile(argv[2]);
+-	std::string file_name = argv[1];
+-	CSRGraph data_graph;
+-	mem_type mt_emb = (mem_type)1;//0 GPU 1 Unified 2 Zero 3 Combine
+-	mem_type mt_graph = (mem_type)atoi(argv[3]);
+-	if (mt_graph > 1)
+-		check_cuda_error(cudaSetDeviceFlags(cudaDeviceMapHost));
+-	data_graph.read(file_name, true, mt_graph);//for sm. we should definitely read vertex labels
+-	log_info(start.start());
+-	log_info(start.count("nedges %lu, nnodes %d", data_graph.get_nedges(), data_graph.get_nnodes()));
+-	EmbeddingList emb_list;
+-	uint32_t nnodes = data_graph.get_nnodes();
+-	uint64_t nedges = data_graph.get_nedges();
++#include "sm_input.h"
++#include <iostream>
+ 
+-	uint8_t query_node = Gquery.core[0];
+-	uint8_t q_label = Gquery.vertex_label[query_node];
+-	uint32_t q_deg = Gquery.adj_list[query_node].size();
+-	
+-	KeyT *seq, *results; 
+-	cudaMalloc((void **)&seq, sizeof(KeyT)*nnodes);
+-	check_cuda_error(cudaMalloc((void **)&results, sizeof(KeyT)*nnodes));
+-	check_cuda_error(cudaMemset(results, -1, sizeof(KeyT)*nnodes));
+-	uint8_t *valid_candi;
+-	check_cuda_error(cudaMalloc((void **)&valid_candi, sizeof(uint8_t)*nnodes));
+-	check_cuda_error(cudaMemset(valid_candi, 0, sizeof(uint8_t)*nnodes));
+-	set_validation<<<10000, 256>>>(data_graph, valid_candi, nnodes, q_label, q_deg);
+-	thrust::sequence(thrust::device, seq, seq + nnodes);
+-	uint32_t valid_node_num = thrust::copy_if(thrust::device, seq, seq + nnodes, valid_candi, results, is_valid())- results;
+-	check_cuda_error(cudaDeviceSynchronize());
+-	emb_list.init(valid_node_num, Gquery.core.size(), mt_emb, false);
+-	emb_list.copy_to_level(0, results, 0, valid_node_num);
+-	check_cuda_error(cudaFree(seq));
+-	check_cuda_error(cudaFree(valid_candi));
+-	check_cuda_error(cudaFree(results));
++struct SmGraphOwner {
++    CSRGraph graph;
++    ~SmGraphOwner() { graph.clean(); }
++};
++struct SmScratch {
++    KeyT *sequence=nullptr, *candidates=nullptr;
++    uint8_t* valid=nullptr;
++    ~SmScratch() {
++        check_cuda_error(cudaFree(sequence));
++        check_cuda_error(cudaFree(candidates));
++        check_cuda_error(cudaFree(valid));
++    }
++};
+ 
++static void report_matches(emb_off_type count) {
++    log_info("valid emb number is %lu", count);
++    std::cout << "matching_embeddings: " << count << "\n";
++}
+ 
+-	//emb_list.init(nnodes, Gquery.core.size(), mt_emb, false);//TODO: need better initialization strategy: take degree and vertex label into consideration
+-	log_info(start.count("embedding initialization done!"));
+-	//TODO: here we plan to add a optimizer to determine expand order, expand constraint, and so on.
+-	//set the first level
+-	//KeyT *seq = (KeyT*)malloc(sizeof(KeyT)*nnodes);
+-	//thrust::sequence(thrust::host, seq, seq + nnodes);
+-	//emb_list.copy_to_level(0, seq, 0, nnodes);
+-	//free(seq);
+-	//log_info("the valid num of layer 0 is %lu",emb_list.check_valid_num(0));
+-	//set the second level
+-	//emb_list.add_level(nedges);
+-	//expand for every vertex in the query graph
+-	access_mode_controller access_controller;
+-	access_controller.set_vertex_page_border(data_graph);
+-	log_info(start.count("access controller initalization done!"));
+-	Clock Expand("Expand");
+-	log_info(Expand.start());
+-	/*for (uint32_t i = 0; i < Gquery.vertex_num; i ++) {
+-		cout << "here is vertex " << i << ":" << endl;
+-		cout << "nbr ";
+-		for (uint32_t j = 0; j < Gquery.adj_list[i].size(); j ++) {
+-			cout << Gquery.adj_list[i][j] << " ";
+-		}
+-		cout << "order nbr:";
+-		for (uint32_t j = 0; j < Gquery.order_list[i].size(); j ++) {
+-			cout << Gquery.order_list[i][j] << " ";
+-		}
+-		cout << endl;
+-	}
+-	for (uint32_t i = 0; i < Gquery.core.size(); i ++)
+-		cout << (uint32_t)Gquery.core[i] << " ";
+-	cout << endl;
+-	for (uint32_t i = 0; i < Gquery.satellite.size(); i ++)
+-		cout << (uint32_t)Gquery.satellite[i] << " ";
+-	cout << endl;*/
++__global__ void set_validation(CSRGraph g, uint8_t* valid, uint32_t n, uint8_t label, uint32_t degree) {
++    for (uint64_t v = threadIdx.x + blockDim.x*blockIdx.x; v < n; v += uint64_t(blockDim.x)*gridDim.x)
++        if (g.getDegree(v) >= degree && (label == 255 || g.getData(v) == label)) valid[v] = 1;
++}
+ 
+-	for (int i = 1; i < Gquery.core.size(); i ++) {
+-		//construct the expand constraint
+-		uint64_t _nbrs = 0, _order_nbr = 0;
+-		//int8_t *_order_nbr_cmp = new int8_t [i];
+-		uint32_t query_node = Gquery.core[i];
+-		//cout << "the query node now is " << query_node << endl;
+-		uint32_t e_nbr_size = 0, e_order_nbr_size = 0;
+-		for (uint32_t j = 0; j < Gquery.adj_list[query_node].size(); j ++) {
+-			uint32_t cur_nbr = Gquery.adj_list[query_node][j];
+-			//cout << query_node << " " << cur_nbr << " " ; cout << Gquery.adj_list[query_node][j];
+-			if (query_node > Gquery.adj_list[query_node][j]) {//here we use id as matching order, resulting in this
+-				_nbrs = _nbrs | ((cur_nbr&0xff) << (j*8));
+-				e_nbr_size ++;
+-			}
+-			//cout  << " " << e_nbr_size << endl;
+-		}
+-		for (uint32_t j = 0; j < Gquery.order_list[query_node].size(); j ++) {
+-			if (query_node > Gquery.order_list[query_node][j]) {
+-				_order_nbr = _order_nbr | ((Gquery.order_list[query_node][j]&0xff) << (j*8));
+-				e_order_nbr_size ++;
+-			}
+-		}
+-		expand_constraint ec((node_data_type)Gquery.vertex_label[query_node], Gquery.adj_list[query_node].size(),
+-							 _nbrs, e_nbr_size, 
+-							 (emb_order)1, _order_nbr, e_order_nbr_size);
+-		//cout << "adjacency list and order list length is " << e_nbr_size << " " << e_order_nbr_size << endl;
+-		//expand
+-		log_info(Expand.count("for the %dth iteration, start expand... ...",i));
+-		bool write_back = (i == Gquery.core.size()-1) ? false : true;
+-		expand_dynamic(data_graph, emb_list, i, ec, write_back);
+-		//expand_in_batch(data_graph, emb_list, i, ec);
+-		log_info(Expand.count("for the %dth iteration, end expand",i));
+-		//log_info("the valid num of layer %d is %lu", i, results);
+-		//set access mode
+-		if (mt_graph == 3) {
+-			Expand.pause();
+-			access_controller.cal_access_mode_by_EL(data_graph, ec, emb_list);
+-			Expand.goon();
+-		}
+-		log_info(Expand.count("for the %dth iteration, end set access mode",i));
+-		//delete ec;
+-	}
+-	log_info(Expand.count("end expand"));
+-	log_info(start.count("k-clique count ends."));
+-	//#TODO copy the results back to CPU and check the results;
+-	//CSRGraph data_graph_h;
+-	//data_graph.copy_to_cpu(data_graph_h);
+-	//#show the results in data_graph_h
+-	//printf("the numbers of the matched subgraph is %lu\n", emb_list.size(Gquery.core.size()-1));
+-	emb_list.clean();
+-	access_controller.clean();
+-	data_graph.clean();
+-	return 0;
++// Kept separately to let the regression driver batch real CLI invocations.
++int gamma_match_main(int argc, char** argv) {
++    try {
++        if (argc < 4 || argc > 5 || (argc == 5 && std::string(argv[4]) != "debug"))
++            throw std::runtime_error("usage: sm GRAPH_PREFIX QUERY_FILE MEMORY_MODE[0..3] [debug]");
++        const std::string mode(argv[3]);
++        if (mode.size() != 1 || mode[0] < '0' || mode[0] > '3') throw std::runtime_error("invalid memory mode");
++        log_set_quiet(argc != 5);
++        queryGraph pattern;
++        pattern.readFromFile(argv[2]);
++        const uint32_t n = validate_sm_graph(argv[1]);
++        if (!n || n < pattern.vertex_num) { report_matches(0); return 0; }
++        SmGraphOwner owner;
++        CSRGraph& graph = owner.graph;
++        graph.read(argv[1], true, static_cast<mem_type>(mode[0]-'0'));
++        SmScratch scratch;
++        KeyT *&sequence = scratch.sequence, *&candidates = scratch.candidates;
++        uint8_t*& valid = scratch.valid;
++        check_cuda_error(cudaMalloc(&sequence, sizeof(KeyT)*n));
++        check_cuda_error(cudaMalloc(&candidates, sizeof(KeyT)*n));
++        check_cuda_error(cudaMalloc(&valid, n));
++        check_cuda_error(cudaMemset(valid, 0, n));
++        set_validation<<<std::min<uint64_t>(4096,(uint64_t(n)+255)/256),256>>>(graph,valid,n,pattern.vertex_label[0],pattern.adj_list[0].size());
++        check_cuda_error(cudaGetLastError());
++        thrust::sequence(thrust::device, sequence, sequence+n);
++        const uint32_t candidate_count = thrust::copy_if(thrust::device, sequence, sequence+n, valid, candidates, is_valid())-candidates;
++        check_cuda_error(cudaFree(sequence)); check_cuda_error(cudaFree(valid));
++        sequence=nullptr; valid=nullptr;
++        emb_off_type result = candidate_count;
++        if (candidate_count && pattern.vertex_num > 1) {
++            EmbeddingList embeddings;
++            embeddings.init(candidate_count, pattern.vertex_num, GPU_MEM, false);
++            embeddings.copy_to_level(0, candidates, 0, candidate_count);
++            try {
++                for (unsigned level=1; level<pattern.vertex_num; ++level) {
++                    uint64_t neighbors=0, ordering=0;
++                    uint8_t neighbor_count=0, order_count=0;
++                    for (unsigned v : pattern.adj_list[level]) if (v<level)
++                        neighbors |= uint64_t(v) << (8*neighbor_count++);
++                    for (unsigned v : pattern.order_list[level])
++                        ordering |= uint64_t(v) << (8*order_count++);
++                    expand_constraint constraint(pattern.vertex_label[level], pattern.adj_list[level].size(),
++                        neighbors, neighbor_count, DEGREE, ordering, order_count);
++                    result = expand_checked(graph,embeddings,level,constraint,level+1<pattern.vertex_num);
++                    log_info("level %u: valid emb number is %lu", level, result);
++                    if (!result) break;
++                }
++            } catch (...) { embeddings.clean(); throw; }
++            embeddings.clean();
++        }
++        report_matches(result);
++        return 0;
++    } catch (const std::exception& error) {
++        std::cerr << "GAMMA: " << error.what() << "\n";
++        return 1;
++    }
+ }
+-	
++#ifndef GAMMA_NO_MAIN
++int main(int argc, char** argv) { return gamma_match_main(argc,argv); }
++#endif
+diff --git a/checked_expand.cuh b/checked_expand.cuh
+new file mode 100644
+index 0000000..c250083
+--- /dev/null
++++ b/checked_expand.cuh
+@@ -0,0 +1,43 @@
++#pragma once
++#include <limits>
++#include <stdexcept>
++#include "expand.cuh"
++
++struct CheckedCountSum {
++    __host__ __device__ emb_off_type operator()(emb_off_type a, emb_off_type b) const {
++        return ~emb_off_type(0) - a < b ? ~emb_off_type(0) : a + b;
++    }
++};
++
++// Use GAMMA's full injectivity/label/adjacency validator in both passes.
++// The final level is reduced without materializing its embeddings.
++emb_off_type expand_checked(CSRGraph& graph, EmbeddingList& embeddings, unsigned level,
++                            expand_constraint constraints, bool write_back) {
++    const emb_off_type count = embeddings.size(level - 1);
++    if (!count) return 0;
++    if (count > std::numeric_limits<uint32_t>::max())
++        throw std::runtime_error("intermediate frontier exceeds the kernel's 32-bit input range");
++    emb_off_type* offsets = nullptr;
++    check_cuda_error(cudaMalloc(&offsets, (count + 1) * sizeof(emb_off_type)));
++    check_cuda_error(cudaMemset(offsets, 0, (count + 1) * sizeof(emb_off_type)));
++    const unsigned blocks = std::min<emb_off_type>(4096, (count + BLOCK_SIZE/32 - 1)/(BLOCK_SIZE/32));
++    extend_alloc<<<blocks,BLOCK_SIZE>>>(embeddings, level-1, graph, constraints, offsets, 0, count);
++    check_cuda_error(cudaGetLastError());
++    thrust::exclusive_scan(thrust::device, offsets, offsets + count + 1, offsets,
++                           emb_off_type(0), CheckedCountSum());
++    emb_off_type result = 0;
++    check_cuda_error(cudaMemcpy(&result, offsets + count, sizeof(result), cudaMemcpyDeviceToHost));
++    if (result == ~emb_off_type(0)) {
++        check_cuda_error(cudaFree(offsets));
++        throw std::runtime_error("embedding count exceeds 64-bit range");
++    }
++    if (write_back && result) {
++        embeddings.add_level(result, level);
++        extend_insert_indevice<<<blocks,BLOCK_SIZE>>>(embeddings, level-1, graph, constraints, offsets, 0, count,
++            embeddings.get_vid_list_by_mem_controller()[level], embeddings.get_idx_list_by_mem_controller()[level]);
++        check_cuda_error(cudaGetLastError());
++        check_cuda_error(cudaDeviceSynchronize());
++    }
++    check_cuda_error(cudaFree(offsets));
++    return result;
++}
+diff --git a/sm_input.h b/sm_input.h
+new file mode 100644
+index 0000000..33d49b7
+--- /dev/null
++++ b/sm_input.h
+@@ -0,0 +1,49 @@
++#pragma once
++#include <fstream>
++#include <vector>
++#include <stdexcept>
++#include <limits>
++
++// Validate the binary CSR before the legacy loader copies it to CUDA memory.
++template<typename T>
++std::vector<T> read_sm_binary(std::ifstream& in, uint64_t count) {
++    if (count > std::numeric_limits<size_t>::max()/sizeof(T)) throw std::runtime_error("input is too large");
++    const auto begin = in.tellg();
++    in.seekg(0,std::ios::end);
++    const auto end = in.tellg();
++    if (begin < 0 || end < begin || uint64_t(end-begin) != count*sizeof(T))
++        throw std::runtime_error("truncated or oversized binary graph file");
++    in.seekg(begin);
++    std::vector<T> data(count);
++    if (count && !in.read(reinterpret_cast<char*>(data.data()),count*sizeof(T)))
++        throw std::runtime_error("cannot read graph data");
++    return data;
++}
++
++uint32_t validate_sm_graph(const std::string& prefix) {
++    std::ifstream col(prefix+".col",std::ios::binary), dst(prefix+".dst",std::ios::binary), labels(prefix+".vlabel",std::ios::binary);
++    uint32_t n=0, label_n=0;
++    uint64_t m=0;
++    if (!col.read(reinterpret_cast<char*>(&n),sizeof(n)) || n==UINT32_MAX ||
++        !dst.read(reinterpret_cast<char*>(&m),sizeof(m)) ||
++        !labels.read(reinterpret_cast<char*>(&label_n),sizeof(label_n)) || label_n!=n)
++        throw std::runtime_error("missing or invalid CSR/label header");
++    const auto offsets=read_sm_binary<uint64_t>(col,uint64_t(n)+1);
++    const auto edges=read_sm_binary<uint32_t>(dst,m);
++    read_sm_binary<uint8_t>(labels,n);
++    if (offsets.front()!=0 || offsets.back()!=m) throw std::runtime_error("invalid CSR endpoints");
++    for (uint32_t v=0; v<n; ++v) {
++        if (offsets[v]>offsets[v+1] || offsets[v+1]>m || offsets[v+1]-offsets[v]>UINT32_MAX)
++            throw std::runtime_error("invalid CSR row offsets");
++        for (uint64_t j=offsets[v]; j<offsets[v+1]; ++j)
++            if (edges[j]>=n || edges[j]==v || (j>offsets[v] && edges[j]<=edges[j-1]))
++                throw std::runtime_error("CSR rows must be sorted, unique, loop-free and in range");
++    }
++    for (uint32_t v=0; v<n; ++v)
++        for (uint64_t j=offsets[v]; j<offsets[v+1]; ++j) {
++            const uint32_t u=edges[j];
++            if (!std::binary_search(edges.begin()+offsets[u],edges.begin()+offsets[u+1],v))
++                throw std::runtime_error("data graph must be undirected");
++        }
++    return n;
++}

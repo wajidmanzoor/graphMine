@@ -1,0 +1,841 @@
+{
+  "totals": {
+    "numerical": 31830,
+    "cuda_sanitizer": 88,
+    "rejections": 30
+  },
+  "graphs": 2772,
+  "max_vertices": 2049,
+  "max_edges": 32896,
+  "manifest_sha256": "c7743aac9a3db57f23db7d7f099b875b4171eb9f3663d8d51bf21183d2843a13",
+  "repair_sha256": "87742e68a5679cb29e0aa8415b74596d0369c90a9d41494e39235c6254471c02",
+  "baseline": {
+    "optimized_binary_sha256": "7a7c38f07f8b9b85318834a539be56641efe72465f925ba30711bc638f6ec26a",
+    "debug_binary_sha256": "6924782014fbf9741b352635b873693bd5d79b5a750367fedabc94e26136475c",
+    "optimized_source_sha256": {
+      "random.c": "bb638de325156e777e02c12feb198fa776bf44c32862ff02b8b5d533af6325a5",
+      "motzkin.c": "f6237b8b988d8fa434899806dae53d7cc56f0c2c1b5cab159250628169357bf3",
+      "simple_macros.h": "7abae708cd17b245962913ede624dea78e7d2f0840283eb05dc0f22c2da77048",
+      "parsers.c": "8d579b158d5123979530e4f7634216bae9ee513757e9f60740045b37ab1f931c",
+      "cudams.h": "e798ef889414035aa71a33e1ea95e1cbb0d40e27e16571798108c27cb04da768",
+      "motzkin_cuda.cu": "bdd69add9394c85223e33ca810a32bcbefdda2a54a11fef0616f72c78646d5f5",
+      "bitops.h": "b0ca141ddedba697fda3215115d94f28b9b1ad5461b42200f2aeb51467d68a9b",
+      "arrays.c": "00c44c8bc32e88b28a3d2ef51c946595efe085c5ecf01c9a8f7a2780c1bdf1a1",
+      "motzkin_cpu.c": "79d44d6c2bb88831515520eea545d9ae330f8435ab32b58e1279a5a5d9d53174",
+      "motzkin_cpu.h": "16d0199547a9719342931754b75477966ec13cf30740f0f87dd26018565dfffd",
+      "motzkin_cuda.h": "75868c119fbfe29c11d762c67fffd4e91a2818def00c7fe2e2c1cb4983f01a2f",
+      "bitops.c": "cb483d9c9d19c235f048ddf6c33f8711770f9c5e1af86faed73648414871dcb6",
+      "find_cliques.c": "139776cc93f382b9faee129f46d8f4136d6bdf4ea898acb507891ebb90f4433a",
+      "random.h": "3bff6954979c14e0bc9fb91015c208cd648a3896c93a3f65de148c8245c66a2b",
+      "arrays.h": "5d5856e293385de2d15797abeb58d657fef8b456686c938f0e0e03c244f9dfc7",
+      "parsers.h": "6228c6d7e979a5c0894698d5ea4284f8428400b01f16b9861d5f0189513ef488",
+      "common_cuda.cuh": "ec8fd44f6c24294309beacff1ecc0fd4525fb9ade56742ffe2d3568b24531086"
+    }
+  },
+  "builds": {
+    "clean-asan": {
+      "find_cliques": "2b91364964982c7b1961cdb5edd7db3582d6b6078a441a0429a595525b277b3f",
+      "raw_probe": "fc33aa03d326de504e4152e11d550ccbd1e90cfbd0f903f6cc36fbf747336c14",
+      "native_probe": "2b5d27c232d4fa6bec2b588ae9d443b014b21dbd1f820ee30a177cf680706894"
+    },
+    "clean-cold": {
+      "find_cliques": "c3dbf564a2c8ae6d3b098629ee67459c03c01a0d22b7afcc8fa488f91e02815c",
+      "raw_probe": "0f8b3f83279ae20924d18f4a6f1f713d5804f06cb6a1a40fc70846e4e6de6c41",
+      "native_probe": "a49b33f98fb71ce966e3955dfe0d1e7f017f2e496a891b418b1f7859d66d7057"
+    },
+    "clean-normal": {
+      "find_cliques": "cc3cf12820c00c86bf1851fe33725d102fc4908329c3aa88e0d4d6b588e37ec7",
+      "raw_probe": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+      "native_probe": "da14a7ca3eee9038d5286b9923b996143668319f6663ae076e1bed4f72832111"
+    },
+    "clean-poison": {
+      "find_cliques": "ea290313683bffe8579a6a15d7dcf20ba71aa3a6de0d3f8e5150d5ad312d228a",
+      "raw_probe": "d150d89e21e2a2d1df37c565dff7c16bb17f9340d5bec69eeaf8fea0545fffdc",
+      "native_probe": "cb3139c1208e1b37238aefc88b4c5ef7edc1812f6f4a0ea4b50a7a4abb16e14f"
+    }
+  },
+  "suites": {
+    "production-native": {
+      "summary": {
+        "runs": 2232,
+        "passed": 2232,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": null,
+        "sanitizer_clean": true,
+        "output_lines": 2232,
+        "binary_sha256": "f7e9c0fb0df74f62d1d5c32ebf5424eddb104b62b47f8385fb8f5e7d1853f2e2",
+        "input_sha256": "112fc08a7077df664dd703cc38e79b7d6e393055c641a0187bd32acd3c515c33",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/production-probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/production-native/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/production-native/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 7.9879060834646225
+      },
+      "uncompressed_sha256": {
+        "input.txt": "112fc08a7077df664dd703cc38e79b7d6e393055c641a0187bd32acd3c515c33",
+        "observed.txt": "1972c97066b858ad6946efa97c95085d4db117c6a03ffb7aecceba03b699436c",
+        "records.json": "385e558d38e26aba492755e1cf8ee21db8f1e95eb42de422db2257a856974c6a",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "dfbed1a6c5c0074c9e305ac6ed729261941860362fd540ff0d4f5506e0085bfa"
+      }
+    },
+    "asan": {
+      "summary": {
+        "runs": 2772,
+        "passed": 2772,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": null,
+        "sanitizer_clean": true,
+        "output_lines": 2772,
+        "binary_sha256": "fc33aa03d326de504e4152e11d550ccbd1e90cfbd0f903f6cc36fbf747336c14",
+        "input_sha256": "fd7b94540f4e7ce5c32451b3c2eb50ac4d5c6e1cf153e552af3ec95ae8b2638f",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-asan/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/asan/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/asan/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 4.516637863591313
+      },
+      "uncompressed_sha256": {
+        "input.txt": "fd7b94540f4e7ce5c32451b3c2eb50ac4d5c6e1cf153e552af3ec95ae8b2638f",
+        "observed.txt": "3a29e9d66ef868c8a76b71abc76513d96563cde93720ad00dcf924ae8118dfd4",
+        "records.json": "5a20ad899f37c63f6df7be72e5c9790b3209cc8ee05d22e64382318ed6e043ac",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "8559bcfa379525c9c5d5195007d5501a3e4f33aec29901a4f331e459e07b19e5"
+      }
+    },
+    "asan-native": {
+      "summary": {
+        "runs": 2232,
+        "passed": 2232,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": null,
+        "sanitizer_clean": true,
+        "output_lines": 2232,
+        "binary_sha256": "2b5d27c232d4fa6bec2b588ae9d443b014b21dbd1f820ee30a177cf680706894",
+        "input_sha256": "112fc08a7077df664dd703cc38e79b7d6e393055c641a0187bd32acd3c515c33",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-asan/native_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/asan-native/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/asan-native/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 5.426417328417301
+      },
+      "uncompressed_sha256": {
+        "input.txt": "112fc08a7077df664dd703cc38e79b7d6e393055c641a0187bd32acd3c515c33",
+        "observed.txt": "d7eca73e1bd91c2e2c0a86f285fbd6f7b5ba66e63931339f134a78e0643cc58b",
+        "records.json": "6f7d664cc1ee053234575b785060a5ee682e1de6123f17fc636ccf292ad8765f",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "16cb30cc5eb07b81ceb0756bfd0ad6782f48cceedc0bcaa208854368b54d2ed8"
+      }
+    },
+    "cli": {
+      "summary": {
+        "numerical": 66,
+        "rejections": 30,
+        "passed": 96,
+        "failures": [],
+        "binary_sha256": "cc3cf12820c00c86bf1851fe33725d102fc4908329c3aa88e0d4d6b588e37ec7"
+      },
+      "uncompressed_sha256": {
+        "audit-9-0.log": "e27fd91ac444411bf8120e357883400e0662fa239d03ece3db5436d9acb393ab",
+        "audit-9-1.log": "23e2a6a27e997e390660c9cda045151945d11d62ac62ffc8f0985b3ce4c0f799",
+        "audit-9-2.log": "de052d69495c8437cb3bad06801964eddd243fcd02156cefb29d49552fca0319",
+        "audit-9-3.log": "d2ef22a69f619a6595d9f1bfdc0dc85b7b8a4c559e164188ac7b982467ac89b9",
+        "audit-9-4.log": "b1fad7214ae29e3eb390d65c8d0d8fd4332da8cb68ee8d8286b65451e09f374a",
+        "audit-9-5.log": "d8ecd75fa97ce1357b53eddb5aa8cc2e04d9e188a5d01ec9789265dd43b0115c",
+        "audit-9.col": "982e026ee730a1fe881525a6fd6302617ca57a4982e9d2ea640c82f1e54faf85",
+        "bipartite-17-0.log": "07d2a5b5272e31bd72a24fed3e3966b337d9ac334bcc6b3b3ab7c320278c729d",
+        "bipartite-17-1.log": "b008aed1b2e87bc64bff36d0db55b4c4d7db596bbf4e5d888ab2f167165123e1",
+        "bipartite-17-2.log": "f56a7350e7fa9d2e09ce80e16fe2e48411c045e66c0d6588c20752dde24546a0",
+        "bipartite-17-3.log": "61d83e7fb894faa8d6d02065116555fd1f9b8a5fc09c237634896492b4059f67",
+        "bipartite-17-4.log": "d3c7bce4539c727c1be9f11ec93a747cdebe88a73df930b5220359903ca260a7",
+        "bipartite-17-5.log": "815aaed6ba1670302936019b00471bc891966f8b31e9cc7e1134c9fe36ed8878",
+        "bipartite-17.col": "2b123f61f07121452236128cd483bbb60ff09a1dce40dc7830363cded8c6fb75",
+        "complete-33-0.log": "0f90e96ba523f95e1f8363cad441e194bc20b7398066112f559c20bbdea21da0",
+        "complete-33-1.log": "54e4b26cb3ae6e1f5eacc30073e1ea3cbbaa45ae51317d29a377a6690352177d",
+        "complete-33-2.log": "bfa8af8f45108bfa7bf2cd8253c1aed210ce4d1c1c751171864fa3dbfb41ffa6",
+        "complete-33-3.log": "8cefdf8e64aaa50a011b2987d6672b0af25229638147c4880e78cb565b16a845",
+        "complete-33-4.log": "6379e01d9afd66bef4a70003056595c5507938c514c21957d413b37947aaac6c",
+        "complete-33-5.log": "05477a794e4fd060f1c6f0166f99c9a9d468fd69dedac7147455a002c01ffcbc",
+        "complete-33.col": "975b0ab1171b068fbdd3957ca4d897e9188634d712ed9151b222b4df0304fa01",
+        "complete-65-0.log": "76107411f1a1e339e48ddc18d06b2831e9be47210c65cd5e51ebd7b086aa410e",
+        "complete-65-1.log": "e85bb3e65859d79c18a6897395d4e1c3041e1adeb84efb32762606beb234c5a7",
+        "complete-65-2.log": "1a494a6ae6730f3d28919e409f2d90d43372d077caa04ff35fa9116f3a5e6d1d",
+        "complete-65-3.log": "b159987641a82bb1f7ec5076f273937fcc2e9d98965a1d3fca92d7700cfb28d6",
+        "complete-65-4.log": "e29af51541cf382930135d9afcc9534576c553ea4131024efdf0e8849fa78027",
+        "complete-65-5.log": "2646eef2e309bcee16e2c4cb5a0031f7e6b7067392a9b076f16af4162c7443ae",
+        "complete-65.col": "985d8c911a7ba55fcc929a0c6990b55de5bc9ff8b1b107e951078882467fa514",
+        "cycle-33-0.log": "ef44e40805fe8898450321dc510a1dae6d4e08b4245a95d6c049ddb55d354870",
+        "cycle-33-1.log": "c84b38f3faa194438ef989c5d4648cb608da23cb9f9a672e462af3455e92d7bb",
+        "cycle-33-2.log": "7401cfb1bb36a65acdb5d74ae2e3d9840c1899119ca3773d30c8aa8717f51b90",
+        "cycle-33-3.log": "649a7e878aab50000fee122f4aadb7e7f936ec3f504ad3559b1ee77512869072",
+        "cycle-33-4.log": "7d5fc337954cd47281a7880303eda9ec33ed977da24456556ac212cf45a0ce2d",
+        "cycle-33-5.log": "4ec4ecafc4bc26c775afe46542b8fd7faf850dc02409ce620e95567ffcb64a7f",
+        "cycle-33.col": "e51369fedb17a669ce043df485f0814e5b9322bdd30349e1d5c7feb2d1b51907",
+        "empty-0-0.log": "2487cabc9d1730ea464a7e4c96b54f4e2de099e3703bf70c78f06ac2c556b37e",
+        "empty-0-1.log": "9ad442122990ddf26688a834d9f6a7e8feb78587b19b9c51d2cab2448957828c",
+        "empty-0-2.log": "2d1b32f36172c7fe8f7bbc5481bfa4c9c0e36622b4be84907e7d10919566a0a6",
+        "empty-0-3.log": "3d40308e0793db6e2efa9e8b380723b68f8e095ef1c73c2c4ff8504324743fe5",
+        "empty-0-4.log": "c850afb574a6852d3fe8207b7412f9fa0a464b51b66af102d818701860e69680",
+        "empty-0-5.log": "2ea09bd904e8dcb54974cc33d02147cf9cc1baa193d31485c1dacd047f2f720c",
+        "empty-0.col": "cfcb1c1e1fb57df522dd3520565c77ebc67e04a68f4ae876ffd53137dc10c103",
+        "empty-1-0.log": "3833904f20478ce3e2380b8d64400257eb125f10b5958419c97b8465f343e167",
+        "empty-1-1.log": "de09ca6a28de674e0b6fa4dcef66df1f187b8d78f0233bbf13b06e6db22e07e8",
+        "empty-1-2.log": "84722cc0f3862aad6eda6d4458098a02734679ee3333e55c774678e99bbe7647",
+        "empty-1-3.log": "3feed10d5f779af4313eab7061f86c181000ded45add716631ec4eaebfab58d8",
+        "empty-1-4.log": "64f535f5bd67db6529d2ff0b84fabb5467157b482f2fa2fb8bd8da6127daa9f7",
+        "empty-1-5.log": "3b54214705c1363d742841f6deb699b1c23c28803bf6a18a8993ff9cac0b1cb4",
+        "empty-1.col": "8c41dd24711d6ba234d240c6dae154feb438210193e9476166aa45813655b392",
+        "empty-65-0.log": "d30572941431b264a6f3c579053ef0ac260d9c620e83c1a35e1e9e034b2942c9",
+        "empty-65-1.log": "dfbc6681e8ccf7d15220eb6ace9fa1d4e44659c6435506b0e85e3fa021eea7d2",
+        "empty-65-2.log": "14f9b519b135238ea87011eba34c9522a2ec70c2b61c6b3aa27e4e2a22651a3c",
+        "empty-65-3.log": "db58ea12addb665e22370ede1e60bfc7ef5572fccc04ac5b88bb7f707dfcb58e",
+        "empty-65-4.log": "aa3bba648ac8068040583c640508045dc6c29fa351dcaac3daff8a9e0e67f644",
+        "empty-65-5.log": "cfd430936d787b168b17ddc90f309e2e2457c499a7675610d0e19bd6d557d5f1",
+        "empty-65.col": "259e619ad6eca11f00306ac9d7ebef17ae2fc9fa9abc4ac2109656b93bd611fc",
+        "invalid-0.col": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "invalid-0.log": "42465005bcbd0c7d673be996a6ec4e44851831a52f17e5ae8cea76d958685e07",
+        "invalid-1.col": "8d624f9a9f4ae2c0eb80a1c9c029ca4aab88e0ca3769e92598e2246e1123a391",
+        "invalid-1.log": "42465005bcbd0c7d673be996a6ec4e44851831a52f17e5ae8cea76d958685e07",
+        "invalid-10.col": "6545b3feee4e99123995ff226f9dbaae6c981bb70bc85da302b764500a984914",
+        "invalid-10.log": "a45ec91a60d10e08be7f784db4a119f1582ba7a723368356cb151a7eb5ac6ebb",
+        "invalid-11.col": "7069a9db55e4f73b797c93d7b0547e99534cbefda354d4d925a0c61224e64f80",
+        "invalid-11.log": "a45ec91a60d10e08be7f784db4a119f1582ba7a723368356cb151a7eb5ac6ebb",
+        "invalid-12.col": "53ac533a50b599cb706389083b95dead70af9e3688fcb259967bf449ada733dd",
+        "invalid-12.log": "18eb257316c85be05c6bc013cdfb2fadbae8fdb62cdc8f7be661a65789258217",
+        "invalid-13.col": "7050f1426f1f8c503aaacb99bebf63c3e8641a4cbe6cac1f6e45ce64f7d4f2ba",
+        "invalid-13.log": "a45ec91a60d10e08be7f784db4a119f1582ba7a723368356cb151a7eb5ac6ebb",
+        "invalid-14.col": "4609dbb91f8e8d3e086bf1c12ece07053770d6541295772bbd50d58f998c2914",
+        "invalid-14.log": "15648ca58af5a02fe6335846f9e02ca8337684f1b9964ca409453cb11b056dbc",
+        "invalid-15.col": "25134723ac3c13e3c2aebf86366daaa4353ee751690b681fa9892262ef967a12",
+        "invalid-15.log": "42eff6cec8395b61423abd513abf696ba81707259772f597ca0a2377c0a0957e",
+        "invalid-16.col": "f8d17633a993bf031e4f40c39e979febd5d329d5e031977c41ea13d468bc8750",
+        "invalid-16.log": "15648ca58af5a02fe6335846f9e02ca8337684f1b9964ca409453cb11b056dbc",
+        "invalid-17.col": "fa552cb0e5ff9b92638eb9cf83ec46ddb8483abb1df4dad89d4889acccb4c74c",
+        "invalid-17.log": "15648ca58af5a02fe6335846f9e02ca8337684f1b9964ca409453cb11b056dbc",
+        "invalid-18.col": "e215e74afd62a1a362123e4a61f4f13bb09d3b87890451f4a82dcf95f9e3dcbe",
+        "invalid-18.log": "15648ca58af5a02fe6335846f9e02ca8337684f1b9964ca409453cb11b056dbc",
+        "invalid-19.col": "33f5c2333d7f5144275f307b9cc50f696d7127df994c133cae3d18d5c47e5b32",
+        "invalid-19.log": "6343962777403011048993344463caa75a206af7464ff80d3029da6c9982b966",
+        "invalid-2.col": "10b80c521f2a55336f4a4e1f8cf9989aae15ded275f3156704dc40bdf1850043",
+        "invalid-2.log": "15648ca58af5a02fe6335846f9e02ca8337684f1b9964ca409453cb11b056dbc",
+        "invalid-3.col": "aea69d96f2089998c46cbf2ef03f0e5ba562f1febae00e32da9f274378515f5a",
+        "invalid-3.log": "15648ca58af5a02fe6335846f9e02ca8337684f1b9964ca409453cb11b056dbc",
+        "invalid-4.col": "91678d07b5981e870de4b69fba9745e509f67084e4b74656a4585407cbdc1fc8",
+        "invalid-4.log": "15648ca58af5a02fe6335846f9e02ca8337684f1b9964ca409453cb11b056dbc",
+        "invalid-5.col": "8221f1ea1f1a5748cf4bc7943bf6a676f202dec4697eb420b9b83d2160d82ae6",
+        "invalid-5.log": "42465005bcbd0c7d673be996a6ec4e44851831a52f17e5ae8cea76d958685e07",
+        "invalid-6.col": "45b1cb3ea29d7612128a483bf0a2d745385cbc74c89ac5732a3ece61ea93fb0e",
+        "invalid-6.log": "a45ec91a60d10e08be7f784db4a119f1582ba7a723368356cb151a7eb5ac6ebb",
+        "invalid-7.col": "e7e8848279028c2b370a54404aa8077fe90b21bf6349cd62032e8ee3573e8f78",
+        "invalid-7.log": "a45ec91a60d10e08be7f784db4a119f1582ba7a723368356cb151a7eb5ac6ebb",
+        "invalid-8.col": "1012c65b72f3f544e13c2f266988ce0c3a8acef3fc0b7479c8b55c7565f2292f",
+        "invalid-8.log": "a45ec91a60d10e08be7f784db4a119f1582ba7a723368356cb151a7eb5ac6ebb",
+        "invalid-9.col": "7db6c5f184a8d5a52301521e5a4a868bcaee0bc682dde7b0aa751efd2004aeca",
+        "invalid-9.log": "a45ec91a60d10e08be7f784db4a119f1582ba7a723368356cb151a7eb5ac6ebb",
+        "multipartite-4-9-0.log": "33d4a5d3e6a1e39e54714899c7d727adb3bbd90e48994721b0b336669f28cc04",
+        "multipartite-4-9-1.log": "b510b53c81c66a7f3e2bb0c14c2dd6340a4f90de1c5dafc5c9a307c58877a0d1",
+        "multipartite-4-9-2.log": "1d02a4f1c2657a244e3b7da2bfc4ec13af03d4589a326ae6ac982fb4d80a6558",
+        "multipartite-4-9-3.log": "6a6e9eb6b2df3ab8c4eecc660290d64a18336303977ca29fff06039468bd24d8",
+        "multipartite-4-9-4.log": "d2972802889278798b7569ebab741ed854b3cc7e255a2e49a901eb7a5d2ff2af",
+        "multipartite-4-9-5.log": "9695fd1d0632104682b0028ad0aebfd846c03e93a27d9744491c7f2dd833611c",
+        "multipartite-4-9.col": "5f3492d9605b40717b23ddd27ead6df82471a05fa7da9fb15bb8019ccedb19b0",
+        "option-0.log": "6799712a5b09e81c9dede192c7c9619c6990d985609e52ce99d8188b58ebfa2e",
+        "option-1.log": "6799712a5b09e81c9dede192c7c9619c6990d985609e52ce99d8188b58ebfa2e",
+        "option-2.log": "6799712a5b09e81c9dede192c7c9619c6990d985609e52ce99d8188b58ebfa2e",
+        "option-3.log": "6799712a5b09e81c9dede192c7c9619c6990d985609e52ce99d8188b58ebfa2e",
+        "option-4.log": "6ba2bc53fb0a67b0d6e41ecbf78b4b2661a2fb420bb6c6990533d3bf5f0326bd",
+        "option-5.log": "7ab8b17ed9fa8cd9824f93238bf7bd8334e57c0bf674b4878338d4562a8691cc",
+        "option-6.log": "cf22576de77d5ba3e74ac6df202869445680eecc993c682bc8c3b124a13feac8",
+        "option-7.log": "f72bf73df2811bd5b60f896bf0daf87c8485359739a8a79e38ee5a0972f66a94",
+        "option-8.log": "bec94ae78836be018bdefd4fcc16ca5c33ee877969a556588f5f79e45f426190",
+        "option-9.log": "22e56fa22f9ccebab0f8fbfaadc1595850d1d738a55f63df1bb02d0e33b17a35",
+        "planted-2049-0.log": "2049b8bbb37baae97e2aa1cec6bd19ae6786dc069a0dc74bac6432b63a28bc1b",
+        "planted-2049-1.log": "16e4a8898f348b1422fefe6f43f2a5feb204d58e5feb52806a5c03a14dbee479",
+        "planted-2049-2.log": "76c2ab4cc200a485688d48cc60a158b25aa91ba8d242ba0134d4a9bfcb1203a1",
+        "planted-2049-3.log": "4fc564fc9e8cefa7e6bcbe2854db13fff157b7155768c75c4cc9c2356af5b6ae",
+        "planted-2049-4.log": "3ffdcfb019a2c8cb2af1dea705bb0ebae110744a1792fa4df69766bca6a6473b",
+        "planted-2049-5.log": "de33b35cad02bcd92d456ee0b0c03c611561d5470719af60c2f1e9fdc97e2042",
+        "planted-2049.col": "9dbdd1c6e6e5e1f9666f9cbf8209bd3f1750d3744b9abf557f29de8b5303b4c3",
+        "records.json": "e2daa979778c16534dca0c8f227d590d1980cc980a0c0b9838dea50bf5e64a72",
+        "star-129-0.log": "3b854caf30a36e6aa0ed8a8b95de83a3b51e00b8c44cb88a68ace76d8fbd7218",
+        "star-129-1.log": "715bf6dcb00c4b1bb4ff9472c9f75def8ffe0286c3b302f784468bde0dde8d87",
+        "star-129-2.log": "c8b086d3462611e65113e4845d6627a4a4320aee5427bc9b40e61e068236092a",
+        "star-129-3.log": "30659b6be4c2f42ca8ec02e05664a96aad702be08a24ff70b63516f45423c226",
+        "star-129-4.log": "71c777637ec1ad3b6e0b598aa77515ca6ade6dad48c5cf4b8ca47c8ce8d88956",
+        "star-129-5.log": "cd7cec95eaa8652b9b4fe3a49af76953d0e57b0e0b1249c5fe4e24b91fadf86b",
+        "star-129.col": "89b1dd869afa177c99aadf50323b348109847a9cd43b2b7100490961b24151db",
+        "summary.json": "5fe4257b305d305dcf2d4fd735ef5c1f3a27fdb512ef586f211c85a5864e257d"
+      }
+    },
+    "cold": {
+      "summary": {
+        "runs": 2772,
+        "passed": 2772,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": null,
+        "sanitizer_clean": true,
+        "output_lines": 2772,
+        "binary_sha256": "0f8b3f83279ae20924d18f4a6f1f713d5804f06cb6a1a40fc70846e4e6de6c41",
+        "input_sha256": "fd7b94540f4e7ce5c32451b3c2eb50ac4d5c6e1cf153e552af3ec95ae8b2638f",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-cold/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 0.9088136982172728
+      },
+      "uncompressed_sha256": {
+        "input.txt": "fd7b94540f4e7ce5c32451b3c2eb50ac4d5c6e1cf153e552af3ec95ae8b2638f",
+        "observed.txt": "77e108eeedb2b79236f065c11e5f59b4e91be33759465bb6f09963c273dfbbb8",
+        "records.json": "e916b435beb409c968f9d4cfcb6906745a4c2d56eb4a8d4a4a199703d7175374",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "b3b5f0ad43653127bc9e745215d6a91c38311b743fda909fe709e2fa2a3db0b5"
+      }
+    },
+    "cold-initcheck": {
+      "summary": {
+        "runs": 4,
+        "passed": 4,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "initcheck",
+        "sanitizer_clean": true,
+        "output_lines": 4,
+        "binary_sha256": "0f8b3f83279ae20924d18f4a6f1f713d5804f06cb6a1a40fc70846e4e6de6c41",
+        "input_sha256": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-initcheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-cold/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-initcheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-initcheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 0.4693931248039007
+      },
+      "uncompressed_sha256": {
+        "input.txt": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+        "observed.txt": "a3543c6d6aacec167626bc88824504c98876acf447acc439e92776493f16cdc7",
+        "records.json": "7af5ded7e74d36dd8a27c31f664fce76023f8a4eaa829ac886948f8820196c18",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+        "summary.json": "20b0776037531f0e1d98d04f3df0ccb8ff7dc159d794d8dd39a7dbf9a7a76a88"
+      }
+    },
+    "cold-memcheck": {
+      "summary": {
+        "runs": 4,
+        "passed": 4,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "memcheck",
+        "sanitizer_clean": true,
+        "output_lines": 4,
+        "binary_sha256": "0f8b3f83279ae20924d18f4a6f1f713d5804f06cb6a1a40fc70846e4e6de6c41",
+        "input_sha256": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+        "command": [
+          "compute-sanitizer",
+          "--leak-check",
+          "full",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-memcheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-cold/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-memcheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-memcheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 0.46980047784745693
+      },
+      "uncompressed_sha256": {
+        "input.txt": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+        "observed.txt": "e448c16d87ba632b88ea1aba5240ba44df47a332abd4df80c2d1a3f61c17ca51",
+        "records.json": "cffea30c048ed0b6e1ee2e4fbcbd6fe0326622f90afb07aedde6bfa649cd3354",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "be43266a7d902f3876c503fc344bb7ca8b0dc750da7ca06ce64389b6b8a019db",
+        "summary.json": "3e0fbd8d3b02a98c69f365c876eca86af1895718fc80aa48e7f0a5b9ff1d86ec"
+      }
+    },
+    "cold-racecheck": {
+      "summary": {
+        "runs": 4,
+        "passed": 4,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "racecheck",
+        "sanitizer_clean": true,
+        "output_lines": 4,
+        "binary_sha256": "0f8b3f83279ae20924d18f4a6f1f713d5804f06cb6a1a40fc70846e4e6de6c41",
+        "input_sha256": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "racecheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-racecheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-cold/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-racecheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-racecheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 0.8696859423071146
+      },
+      "uncompressed_sha256": {
+        "input.txt": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+        "observed.txt": "e448c16d87ba632b88ea1aba5240ba44df47a332abd4df80c2d1a3f61c17ca51",
+        "records.json": "cffea30c048ed0b6e1ee2e4fbcbd6fe0326622f90afb07aedde6bfa649cd3354",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+        "summary.json": "9818f78fe1829945e72b2244c6fa0fcc46a53a24f166af1b8e7120d14407f5ce"
+      }
+    },
+    "cold-synccheck": {
+      "summary": {
+        "runs": 4,
+        "passed": 4,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "synccheck",
+        "sanitizer_clean": true,
+        "output_lines": 4,
+        "binary_sha256": "0f8b3f83279ae20924d18f4a6f1f713d5804f06cb6a1a40fc70846e4e6de6c41",
+        "input_sha256": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "synccheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-synccheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-cold/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-synccheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cold-synccheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 0.4196259584277868
+      },
+      "uncompressed_sha256": {
+        "input.txt": "8bdbee4010ea436a0b0e846c9137a3d3d519767494b1c3a06e698b3df497b3cb",
+        "observed.txt": "636311f8143d15b4768b8d2b710c0ebe2a1f4b8a1c13d4955914aaea24265ed1",
+        "records.json": "baedfd9afefbd5a2aff12a56ba3fde620a4f05d5ba6c9faf8f7fc1d3f06df667",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+        "summary.json": "14e983e1ff7e90514978ee12ce7d5dfc10d711d41bc322494da799e676bd4f4c"
+      }
+    },
+    "cuda-initcheck": {
+      "summary": {
+        "runs": 12,
+        "passed": 12,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "initcheck",
+        "sanitizer_clean": true,
+        "output_lines": 12,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-initcheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-initcheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-initcheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 0.7726569473743439
+      },
+      "uncompressed_sha256": {
+        "input.txt": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+        "observed.txt": "76f75792b4f76e8c60b3f1a265b2ca444e55d1fed4834779f5a9fdb5a68c4782",
+        "records.json": "12fd83c83e0db74fde5965a6b18e039e0537d450172c1e4d9f98eb732ada898d",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+        "summary.json": "c3080e8abeba74ef969f343c131e9e33228f809661e9d36a5572257f97f60900"
+      }
+    },
+    "cuda-memcheck": {
+      "summary": {
+        "runs": 12,
+        "passed": 12,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "memcheck",
+        "sanitizer_clean": true,
+        "output_lines": 12,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+        "command": [
+          "compute-sanitizer",
+          "--leak-check",
+          "full",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-memcheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-memcheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-memcheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 0.7733143400400877
+      },
+      "uncompressed_sha256": {
+        "input.txt": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+        "observed.txt": "76f75792b4f76e8c60b3f1a265b2ca444e55d1fed4834779f5a9fdb5a68c4782",
+        "records.json": "12fd83c83e0db74fde5965a6b18e039e0537d450172c1e4d9f98eb732ada898d",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "be43266a7d902f3876c503fc344bb7ca8b0dc750da7ca06ce64389b6b8a019db",
+        "summary.json": "75b4cec24d8858736dd017476646cd5f2a434c19568beafc2d94b94648b0279b"
+      }
+    },
+    "cuda-racecheck": {
+      "summary": {
+        "runs": 12,
+        "passed": 12,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "racecheck",
+        "sanitizer_clean": true,
+        "output_lines": 12,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "racecheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-racecheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-racecheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-racecheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 20.65514333732426
+      },
+      "uncompressed_sha256": {
+        "input.txt": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+        "observed.txt": "76f75792b4f76e8c60b3f1a265b2ca444e55d1fed4834779f5a9fdb5a68c4782",
+        "records.json": "12fd83c83e0db74fde5965a6b18e039e0537d450172c1e4d9f98eb732ada898d",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+        "summary.json": "d8e3f56d606900966d0bcc7fca49e1eeb728e45655706811596bd9d7f532cf53"
+      }
+    },
+    "cuda-synccheck": {
+      "summary": {
+        "runs": 12,
+        "passed": 12,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "synccheck",
+        "sanitizer_clean": true,
+        "output_lines": 12,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "synccheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-synccheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-synccheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/cuda-synccheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 1.1226055696606636
+      },
+      "uncompressed_sha256": {
+        "input.txt": "653c1f32512c19f9c5d4dadc44c2bc7e75b3ef40d145ec618b4ac68834dc3420",
+        "observed.txt": "76f75792b4f76e8c60b3f1a265b2ca444e55d1fed4834779f5a9fdb5a68c4782",
+        "records.json": "12fd83c83e0db74fde5965a6b18e039e0537d450172c1e4d9f98eb732ada898d",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+        "summary.json": "6290fb10ded02dde11ae01da9f5c9b67d450a03c68c1e8622816d3d16dd40a71"
+      }
+    },
+    "modes-initcheck": {
+      "summary": {
+        "runs": 6,
+        "passed": 6,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "initcheck",
+        "sanitizer_clean": true,
+        "output_lines": 6,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "adc223a7418857fe7e2ba3cc009c6d8c46352e6127f084409b6a4bbd2ba09a35",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-initcheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-initcheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-initcheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 1.292630398645997
+      },
+      "uncompressed_sha256": {
+        "input.txt": "adc223a7418857fe7e2ba3cc009c6d8c46352e6127f084409b6a4bbd2ba09a35",
+        "observed.txt": "ff585a31f7ed5bf0c2120bd9736c3ae4bf83ba023b7b77bc3f2db4aea67403e8",
+        "records.json": "90f7996f19bb74d7adf1143d3b188939078f424a65af3c84e9ca3e215e7ee569",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+        "summary.json": "65c97caae514b36a9fae20d43b56897ef4c9a1bb2f47d8d48fcf67a54b8c4b4e"
+      }
+    },
+    "modes-memcheck": {
+      "summary": {
+        "runs": 6,
+        "passed": 6,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "memcheck",
+        "sanitizer_clean": true,
+        "output_lines": 6,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "adc223a7418857fe7e2ba3cc009c6d8c46352e6127f084409b6a4bbd2ba09a35",
+        "command": [
+          "compute-sanitizer",
+          "--leak-check",
+          "full",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-memcheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-memcheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-memcheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 1.870931027457118
+      },
+      "uncompressed_sha256": {
+        "input.txt": "adc223a7418857fe7e2ba3cc009c6d8c46352e6127f084409b6a4bbd2ba09a35",
+        "observed.txt": "ff585a31f7ed5bf0c2120bd9736c3ae4bf83ba023b7b77bc3f2db4aea67403e8",
+        "records.json": "90f7996f19bb74d7adf1143d3b188939078f424a65af3c84e9ca3e215e7ee569",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "be43266a7d902f3876c503fc344bb7ca8b0dc750da7ca06ce64389b6b8a019db",
+        "summary.json": "e6b9860f0ec925ba6d6e03386eb3ee72aa878600e4e18d1105d24cd2e2c7bfc0"
+      }
+    },
+    "modes-racecheck": {
+      "summary": {
+        "runs": 6,
+        "passed": 6,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "racecheck",
+        "sanitizer_clean": true,
+        "output_lines": 6,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "adc223a7418857fe7e2ba3cc009c6d8c46352e6127f084409b6a4bbd2ba09a35",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "racecheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-racecheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-racecheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-racecheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 118.07481349259615
+      },
+      "uncompressed_sha256": {
+        "input.txt": "adc223a7418857fe7e2ba3cc009c6d8c46352e6127f084409b6a4bbd2ba09a35",
+        "observed.txt": "ff585a31f7ed5bf0c2120bd9736c3ae4bf83ba023b7b77bc3f2db4aea67403e8",
+        "records.json": "90f7996f19bb74d7adf1143d3b188939078f424a65af3c84e9ca3e215e7ee569",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4",
+        "summary.json": "cb3822c08880068f659a7051f68065742fed3a0e66b9d9069531eaa5da89f380"
+      }
+    },
+    "modes-synccheck": {
+      "summary": {
+        "runs": 6,
+        "passed": 6,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": "synccheck",
+        "sanitizer_clean": true,
+        "output_lines": 6,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "adc223a7418857fe7e2ba3cc009c6d8c46352e6127f084409b6a4bbd2ba09a35",
+        "command": [
+          "compute-sanitizer",
+          "--tool",
+          "synccheck",
+          "--error-exitcode",
+          "86",
+          "--log-file",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-synccheck/sanitizer.log",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-synccheck/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/modes-synccheck/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 3.5741370134055614
+      },
+      "uncompressed_sha256": {
+        "input.txt": "adc223a7418857fe7e2ba3cc009c6d8c46352e6127f084409b6a4bbd2ba09a35",
+        "observed.txt": "ff585a31f7ed5bf0c2120bd9736c3ae4bf83ba023b7b77bc3f2db4aea67403e8",
+        "records.json": "90f7996f19bb74d7adf1143d3b188939078f424a65af3c84e9ca3e215e7ee569",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+        "summary.json": "4e286e50e3119855eb017200e5612bdb4103c528cc84f34347fc2f58a38cc5b3"
+      }
+    },
+    "native": {
+      "summary": {
+        "runs": 2232,
+        "passed": 2232,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": null,
+        "sanitizer_clean": true,
+        "output_lines": 2232,
+        "binary_sha256": "da14a7ca3eee9038d5286b9923b996143668319f6663ae076e1bed4f72832111",
+        "input_sha256": "112fc08a7077df664dd703cc38e79b7d6e393055c641a0187bd32acd3c515c33",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/native_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/native/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/native/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 4.1191519889980555
+      },
+      "uncompressed_sha256": {
+        "input.txt": "112fc08a7077df664dd703cc38e79b7d6e393055c641a0187bd32acd3c515c33",
+        "observed.txt": "d7eca73e1bd91c2e2c0a86f285fbd6f7b5ba66e63931339f134a78e0643cc58b",
+        "records.json": "6f7d664cc1ee053234575b785060a5ee682e1de6123f17fc636ccf292ad8765f",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "dda68a62202ccd5360fe9709d1d0962a7555ce90b5d3e3b2de7f40cee52dd805"
+      }
+    },
+    "normal-modes": {
+      "summary": {
+        "runs": 16632,
+        "passed": 16632,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": null,
+        "sanitizer_clean": true,
+        "output_lines": 16632,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "c56253d2500f930f20dba9029de564ef21b99cd4635e5726fd826ddc701880f5",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/normal-modes/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/normal-modes/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 454.39512442052364
+      },
+      "uncompressed_sha256": {
+        "input.txt": "c56253d2500f930f20dba9029de564ef21b99cd4635e5726fd826ddc701880f5",
+        "observed.txt": "3761f98248ff005ca4eae6d7851c24c1291fef401235d4e924a1251623516720",
+        "records.json": "0403e2fa5021f26b8335c5ab20124cc7d2fea9f83a8704f293b4eeb8e87395b2",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "c97f33527df7956123745d9e0eb70787436e333be504603de8ece0d24e8cb4d0"
+      }
+    },
+    "poison": {
+      "summary": {
+        "runs": 2772,
+        "passed": 2772,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": null,
+        "sanitizer_clean": true,
+        "output_lines": 2772,
+        "binary_sha256": "d150d89e21e2a2d1df37c565dff7c16bb17f9340d5bec69eeaf8fea0545fffdc",
+        "input_sha256": "fd7b94540f4e7ce5c32451b3c2eb50ac4d5c6e1cf153e552af3ec95ae8b2638f",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-poison/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/poison/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/poison/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 4.215503856539726
+      },
+      "uncompressed_sha256": {
+        "input.txt": "fd7b94540f4e7ce5c32451b3c2eb50ac4d5c6e1cf153e552af3ec95ae8b2638f",
+        "observed.txt": "3a29e9d66ef868c8a76b71abc76513d96563cde93720ad00dcf924ae8118dfd4",
+        "records.json": "5a20ad899f37c63f6df7be72e5c9790b3209cc8ee05d22e64382318ed6e043ac",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "c6567d3eb5eb7f2af6533e1464fd81c59fe87ef7e111669794c0eb02f48f1695"
+      }
+    },
+    "repeated": {
+      "summary": {
+        "runs": 120,
+        "passed": 120,
+        "failures": 0,
+        "exit_code": 0,
+        "sanitizer": null,
+        "sanitizer_clean": true,
+        "output_lines": 120,
+        "binary_sha256": "d75deff0786b07c4cd2399b1d5217862d7f174e2264c7ff351505a135769d47b",
+        "input_sha256": "e5767c75074595a59c626d000d21290bb910fb10ebcdee657ce1cadd4356504d",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/clean-normal/raw_probe",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/repeated/input.txt",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cuda_ms/_work/verified/repeated/observed.txt"
+        ],
+        "gpu": 1,
+        "elapsed_s": 0.8773917146027088
+      },
+      "uncompressed_sha256": {
+        "input.txt": "e5767c75074595a59c626d000d21290bb910fb10ebcdee657ce1cadd4356504d",
+        "observed.txt": "f19b781281354e11ad4720620e957d8e446fd8c4c7e02b98af08fe627c5087cc",
+        "records.json": "0150ce0c2bc03f43fc2f1eda175a968b3c81dfa5431f945c78154492a7d8c331",
+        "run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "9cd0db4e2242ee33bae58adc39639366582f6e2392ba83347393e06d13502044"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+n=12, m=20
+Max Degree=5
+Final Max Density 1.73333
+Total Cliques=20
+Densest Core Density=2
+Total Components=1
+
+DAG Time =2.4388 ms
+Clique Listing Time =0.037797 ms
+Core Decompose Time =0.078228 ms
+Densest Core Time =0.129956 ms
+Prune Time =0.07302 ms
+Connected Component Time =0.306553 ms
+Exact Time =2.53825 ms
+Time taken=5.60262 ms
+
+Mac Clique Core=4
+lb=1.66667 
+ub=3.16228 
+eub=1.8 

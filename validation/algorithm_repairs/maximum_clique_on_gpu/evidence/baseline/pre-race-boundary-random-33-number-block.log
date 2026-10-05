@@ -1,0 +1,34 @@
+========= COMPUTE-SANITIZER
+========= Error: Race reported between Read access at int mcp::add_to_iset_tomita<unsigned int, (unsigned int)64, (unsigned int)32>(mcp::LOCAL_HANDLE<T1> &, mcp::SHARED_HANDLE<T1, T2, T3> &, const int &, int &, const int &, const T1 &)+0x2750 in mcp_utils.cuh:4300
+=========     and Write access at int mcp::add_to_iset_tomita<unsigned int, (unsigned int)64, (unsigned int)32>(mcp::LOCAL_HANDLE<T1> &, mcp::SHARED_HANDLE<T1, T2, T3> &, const int &, int &, const int &, const T1 &)+0x2900 in mcp_utils.cuh:4307 [111 hazards]
+========= 
+========= Warning: Race reported between Read access at int mcp::add_to_iset_tomita<unsigned int, (unsigned int)64, (unsigned int)32>(mcp::LOCAL_HANDLE<T1> &, mcp::SHARED_HANDLE<T1, T2, T3> &, const int &, int &, const int &, const T1 &)+0x7050 in mcp_utils.cuh:4300
+=========     and Write access at int mcp::add_to_iset_tomita<unsigned int, (unsigned int)64, (unsigned int)32>(mcp::LOCAL_HANDLE<T1> &, mcp::SHARED_HANDLE<T1, T2, T3> &, const int &, int &, const int &, const T1 &)+0x7200 in mcp_utils.cuh:4307 [31 hazards]
+========= 
+[0mWelcome ---------------------
+    Main Task = mcp
+    Source Graph = /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/modes-racecheck/boundary-random-33.bel
+    Device ID(s) = 0
+    Coloring Algorithm = NUMBER
+    Lower Bound Max Clique = 0
+    Parallelism = Blocks
+-----------------------------
+[1;32m[18:02:24] Read graph time: 0.553349 s
+[0m[1;32m[18:02:24] n = 34 and m = 620
+[0m[1;32m[18:02:24] Transfer Time: 0.000338 s
+[0mMax Core = 14
+[1;32m[18:02:25] Degeneracy ordering time: 0.338717 s
+[0m[1;32m[18:02:25] Heuristic clique size: 8
+[0m[1;32m[18:02:25] Reducing the graph and reversing the degeneracy order..
+[0m[1;32m[18:02:25] Reduced to n = 33 and m = 620
+[0m[1;32m[18:02:26] CSR Recreation time: 0.902739 s
+[0m[1;32m[18:02:26] Max directed degree: 20, max undirected degree: 27
+[0m[1;32m[18:02:26] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:02:26] VRAM usage: 1120468992 B
+[0m[1;32m[18:02:26] Launching search kernel with grid size: 3408, and block size: 64
+[0mFinished Launching Instance 0.
+[1;32m[18:02:26] search time 0.393984 s
+[0mFound a maximum clique of size 8.
+[1;32m[18:02:26] Total time: 2.190433 s
+[0mDone ...
+========= RACECHECK SUMMARY: 2 hazards displayed (1 error, 1 warning)

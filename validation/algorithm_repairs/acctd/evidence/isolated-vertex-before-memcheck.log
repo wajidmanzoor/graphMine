@@ -1,0 +1,26 @@
+========= COMPUTE-SANITIZER
+========= Invalid __global__ read of size 4 bytes
+=========     at bmp_bsr_kernel(unsigned int *, int *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int *, int *, unsigned int *, unsigned int *, unsigned int *)+0x390 in cuda_tc.cu:142
+=========     by thread (0,0,0) in block (7,0,0)
+=========     Address 0x7c465a001048 is out of bounds
+=========     and is 1 bytes after the nearest allocation at 0x7c465a001000 of size 72 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: cudaLaunchKernel [0x9c457] in flags-fixed
+=========         Host Frame: invoke_tc_bmp_gpu(graph_t*, int*) in cuda_tc.cu:289 [0xc6ec9] in flags-fixed
+=========         Host Frame: int AbstractPKT<IterHelper::TrussDecompositionMergeBased()::{lambda(int)#1}>(graph_t*, int*&, Edge*&, IterHelper&, IterHelper::TrussDecompositionMergeBased()::{lambda(int)#1}) [clone ._omp_fn.1] in iter_helper.h:187 [0xb2328] in flags-fixed
+=========         Host Frame: GOMP_parallel [0x18976] in libgomp.so.1
+=========         Host Frame: int AbstractPKT<IterHelper::TrussDecompositionMergeBased()::{lambda(int)#1}>(graph_t*, int*&, Edge*&, IterHelper&, IterHelper::TrussDecompositionMergeBased()::{lambda(int)#1}) [clone .isra.0] in iter_helper.h:176 [0xb0d35] in flags-fixed
+=========         Host Frame: TrussDecompositionLevelsCPU(graph_t&, int*&, Edge*&, unsigned int*&, unsigned int*&, unsigned int*&, int*&, Edge*&) in iter_helper.cpp:568 [0xb0e66] in flags-fixed
+=========         Host Frame: main in main.cu:107 [0xdd3f] in flags-fixed
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaEventSynchronize.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: invoke_tc_bmp_gpu(graph_t*, int*) in cuda_tc.cu:289 [0xc6617] in flags-fixed
+=========         Host Frame: int AbstractPKT<IterHelper::TrussDecompositionMergeBased()::{lambda(int)#1}>(graph_t*, int*&, Edge*&, IterHelper&, IterHelper::TrussDecompositionMergeBased()::{lambda(int)#1}) [clone ._omp_fn.1] in iter_helper.h:187 [0xb2328] in flags-fixed
+=========         Host Frame: GOMP_parallel [0x18976] in libgomp.so.1
+=========         Host Frame: int AbstractPKT<IterHelper::TrussDecompositionMergeBased()::{lambda(int)#1}>(graph_t*, int*&, Edge*&, IterHelper&, IterHelper::TrussDecompositionMergeBased()::{lambda(int)#1}) [clone .isra.0] in iter_helper.h:176 [0xb0d35] in flags-fixed
+=========         Host Frame: TrussDecompositionLevelsCPU(graph_t&, int*&, Edge*&, unsigned int*&, unsigned int*&, unsigned int*&, int*&, Edge*&) in iter_helper.cpp:568 [0xb0e66] in flags-fixed
+=========         Host Frame: main in main.cu:107 [0xdd3f] in flags-fixed
+========= 
+========= Target application returned an error
+========= ERROR SUMMARY: 2 errors

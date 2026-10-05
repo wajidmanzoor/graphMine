@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['find_5fcliques_2ec_0',['find_cliques.c',['../d7/d2b/find__cliques_8c.html',1,'']]]
+  ['exact_5fcuda_2ecuh_0',['exact_cuda.cuh',['../d6/deb/exact__cuda_8cuh.html',1,'']]]
 ];

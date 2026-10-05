@@ -1,0 +1,20 @@
+{
+  "binary_sha256": "baf1149b20e55f678aa7164d20613f84bc3d83e1a257ce5bf352a5731ed0dca5",
+  "runs": [
+    {
+      "repeat": 0,
+      "exit_code": 0,
+      "histogram": "[280, 64, 3, 0, 43, 65, 54, 2]\n"
+    },
+    {
+      "repeat": 1,
+      "exit_code": 0,
+      "histogram": "[280, 64, 3, 0, 43, 65, 54, 2]\n"
+    },
+    {
+      "repeat": 2,
+      "exit_code": 0,
+      "histogram": "[280, 64, 3, 0, 43, 65, 54, 2]\n"
+    }
+  ]
+}

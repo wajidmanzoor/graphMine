@@ -1,0 +1,442 @@
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh:4,
+                 from /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/kcore.cuh:10,
+                 from /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu:10:
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/../include/queue.cuh:19:83: warning: backslash and newline separated by space
+   19 |   {                                                                               \
+      |                                                                                    
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/../include/queue.cuh:29:83: warning: backslash and newline separated by space
+   29 |     }                                                                             \
+      |                                                                                    
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/../include/queue.cuh:165:52: warning: backslash-newline at end of file
+  165 | #define waiting_blocks(queue, tickets, head, tail) \
+      |                                                     
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(546): warning #83-D: type qualifier specified more than once
+    GLOBAL_HANDLE<T> &gh, const T& num_divs_local, const T const* encode, const T& max_clq)
+                                                           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(756): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(756): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(779): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(779): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(803): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(803): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(828): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(863): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(895): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(931): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(931): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(999): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(999): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1054): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1054): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1106): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1106): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1516): warning #83-D: type qualifier specified more than once
+                            bool empty(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                    ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1540): warning #83-D: type qualifier specified more than once
+                            bool empty_w(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                      ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1551): warning #83-D: type qualifier specified more than once
+                            T popc(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1582): warning #83-D: type qualifier specified more than once
+      const T &lim, const int& last_choosen_index, const T const*col)
+                                                           ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1618): warning #83-D: type qualifier specified more than once
+      const T &lim, const int& last_choosen_index, const T const*col)
+                                                           ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1655): warning #83-D: type qualifier specified more than once
+      const int &lim, const int& last_choosen_index, const T const*col)
+                                                             ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1866): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, T* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1893): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1893): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, const T const* cur_bl)
+                                                ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1907): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1950): warning #83-D: type qualifier specified more than once
+      const int& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                            ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1993): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(2040): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5132): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl)
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5259): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl, T * cur_bl)
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5331): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5376): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5429): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl
+              ^
+
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh:4,
+                 from /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/kcore.cuh:10,
+                 from /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu:10:
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/../include/queue.cuh:19:83: warning: backslash and newline separated by space
+   19 |   {                                                                               \
+      |                                                                                    
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/../include/queue.cuh:29:83: warning: backslash and newline separated by space
+   29 |     }                                                                             \
+      |                                                                                    
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/../include/queue.cuh:165:52: warning: backslash-newline at end of file
+  165 | #define waiting_blocks(queue, tickets, head, tail) \
+      |                                                     
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(546): warning #83-D: type qualifier specified more than once
+    GLOBAL_HANDLE<T> &gh, const T& num_divs_local, const T const* encode, const T& max_clq)
+                                                           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(756): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(756): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(779): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(779): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(803): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(803): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al, T* cur_pl)
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(828): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(863): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(895): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(931): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(931): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(999): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(999): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1054): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1054): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1106): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1106): warning #83-D: type qualifier specified more than once
+      const T const* cur_bl, const T const* cur_al,
+                                     ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1516): warning #83-D: type qualifier specified more than once
+                            bool empty(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                    ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1540): warning #83-D: type qualifier specified more than once
+                            bool empty_w(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                      ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1551): warning #83-D: type qualifier specified more than once
+                            T popc(LOCAL_HANDLE<T> &lh, const T const* set, const T size)
+                                                                ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1582): warning #83-D: type qualifier specified more than once
+      const T &lim, const int& last_choosen_index, const T const*col)
+                                                           ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1618): warning #83-D: type qualifier specified more than once
+      const T &lim, const int& last_choosen_index, const T const*col)
+                                                           ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1655): warning #83-D: type qualifier specified more than once
+      const int &lim, const int& last_choosen_index, const T const*col)
+                                                             ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1866): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, T* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1893): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, const T const* cur_bl)
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1893): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl, T* cur_al, const T const* cur_bl)
+                                                ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1907): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1950): warning #83-D: type qualifier specified more than once
+      const int& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                            ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(1993): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(2040): warning #83-D: type qualifier specified more than once
+      const T& level_pointer_index, const T &lim, const T const* cur_bl)
+                                                          ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5132): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl)
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5259): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl, T * cur_bl)
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5331): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5376): warning #83-D: type qualifier specified more than once
+      const T& num_divs_local, const int level, const T const* cur_pl
+                                                        ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5429): warning #83-D: type qualifier specified more than once
+      const T const* cur_pl
+              ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(27): warning #20013-D: calling a constexpr __host__ function("size") from a __host__ __device__ function("nnz") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+       colInd_.size() == rowInd_.size()
+               ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::nnz() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 43 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(27): warning #20013-D: calling a constexpr __host__ function("size") from a __host__ __device__ function("nnz") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+       colInd_.size() == rowInd_.size()
+                                 ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::nnz() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 43 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(28): warning #20013-D: calling a constexpr __host__ function("size") from a __host__ __device__ function("nnz") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+        return colInd_.size();
+                       ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::nnz() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 43 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(27): warning #20015-D: calling a constexpr __host__ function from a __host__ __device__ function is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+       colInd_.size() == rowInd_.size()
+                   ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::nnz() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 43 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(27): warning #20015-D: calling a constexpr __host__ function from a __host__ __device__ function is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+       colInd_.size() == rowInd_.size()
+                                     ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::nnz() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 43 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(28): warning #20015-D: calling a constexpr __host__ function from a __host__ __device__ function is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+        return colInd_.size();
+                           ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::nnz() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 43 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(33): warning #20013-D: calling a constexpr __host__ function("size") from a __host__ __device__ function("num_rows") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+        if (rowPtr_.size() == 0)
+                    ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::num_rows() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 42 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(39): warning #20013-D: calling a constexpr __host__ function("size") from a __host__ __device__ function("num_rows") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+          return rowPtr_.size() - 1;
+                         ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::num_rows() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 42 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(33): warning #20015-D: calling a constexpr __host__ function from a __host__ __device__ function is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+        if (rowPtr_.size() == 0)
+                        ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::num_rows() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 42 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(39): warning #20015-D: calling a constexpr __host__ function from a __host__ __device__ function is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+          return rowPtr_.size() - 1;
+                             ^
+          detected during instantiation of "uint64 graph::CSRCOO<Index, Vector>::num_rows() const [with Index=DataType, Vector=std::vector<DataType, std::allocator<DataType>>]" at line 42 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/kcore.cuh(868): warning #177-D: variable "dimBlock" was declared but never referenced
+     constexpr int dimBlock = 64;
+                   ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/kcore.cuh(364): warning #177-D: variable "partitionsPerBlock" was declared but never referenced
+   const size_t partitionsPerBlock = BD / P;
+                ^
+          detected during instantiation of "void graph::SingleGPU_Kcore<T, PeelT>::findKcoreIncremental_async(graph::COOCSRGraph_d<T> &, size_t, size_t) [with T=DataType, PeelT=PeelType]" at line 100 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/kcore.cuh(366): warning #177-D: variable "_warpIdx" was declared but never referenced
+   const int _warpIdx = threadIdx.x / P;
+             ^
+          detected during instantiation of "void graph::SingleGPU_Kcore<T, PeelT>::findKcoreIncremental_async(graph::COOCSRGraph_d<T> &, size_t, size_t) [with T=DataType, PeelT=PeelType]" at line 100 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(163): warning #177-D: variable "_warpIdx" was declared but never referenced
+      const int _warpIdx = threadIdx.x / CPARTSIZE;
+                ^
+          detected during:
+            instantiation of "void mcp_kernel_l1_wl_donor_psanse<T,BLOCK_DIM_X,CPARTSIZE>(mcp::GLOBAL_HANDLE<T>, uint32_t *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *) [with T=DataType, BLOCK_DIM_X=128U, CPARTSIZE=32U]" at line 206 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../mcp/mcp.cuh
+            instantiation of "void graph::MultiGPU_MCP<T>::mcp_search<PSIZE>(graph::COOCSRGraph_d<T> &, Config) [with T=DataType, PSIZE=32]" at line 325 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(192): warning #177-D: variable "_warpIdx" was declared but never referenced
+      const int _warpIdx = threadIdx.x / CPARTSIZE;
+                ^
+          detected during:
+            instantiation of "void mcp_kernel_l1_wl_donor_psanse<T,BLOCK_DIM_X,CPARTSIZE>(mcp::GLOBAL_HANDLE<T>, uint32_t *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *) [with T=DataType, BLOCK_DIM_X=128U, CPARTSIZE=32U]" at line 206 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../mcp/mcp.cuh
+            instantiation of "void graph::MultiGPU_MCP<T>::mcp_search<PSIZE>(graph::COOCSRGraph_d<T> &, Config) [with T=DataType, PSIZE=32]" at line 325 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/../mcp/mcp_utils.cuh(5336): warning #177-D: variable "inserted" was declared but never referenced
+              bool inserted;
+                   ^
+          detected during:
+            instantiation of "void mcp_kernel_l1_wl_donor_tomita<T,BLOCK_DIM_X,CPARTSIZE>(mcp::GLOBAL_HANDLE<T>, uint32_t *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *, cuda::__4::atomic<uint32_t, cuda::std::__4::thread_scope_device> *) [with T=DataType, BLOCK_DIM_X=64U, CPARTSIZE=32U]" at line 252 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../mcp/mcp.cuh
+            instantiation of "void graph::MultiGPU_MCP<T>::mcp_search<PSIZE>(graph::COOCSRGraph_d<T> &, Config) [with T=DataType, PSIZE=32]" at line 325 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(27): warning #20013-D: calling a constexpr __host__ function("std::vector<unsigned int, ::std::allocator<unsigned int> > ::size() const") from a __host__ __device__ function("graph::CSRCOO<unsigned int,     ::std::vector<unsigned int, ::std::allocator<unsigned int> > > ::nnz const") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(27): warning #20013-D: calling a constexpr __host__ function("std::vector<unsigned int, ::std::allocator<unsigned int> > ::size() const") from a __host__ __device__ function("graph::CSRCOO<unsigned int,     ::std::vector<unsigned int, ::std::allocator<unsigned int> > > ::nnz const") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(28): warning #20013-D: calling a constexpr __host__ function("std::vector<unsigned int, ::std::allocator<unsigned int> > ::size() const") from a __host__ __device__ function("graph::CSRCOO<unsigned int,     ::std::vector<unsigned int, ::std::allocator<unsigned int> > > ::nnz const") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(33): warning #20013-D: calling a constexpr __host__ function("std::vector<unsigned int, ::std::allocator<unsigned int> > ::size() const") from a __host__ __device__ function("graph::CSRCOO<unsigned int,     ::std::vector<unsigned int, ::std::allocator<unsigned int> > > ::num_rows const") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/csrcoo.cuh(39): warning #20013-D: calling a constexpr __host__ function("std::vector<unsigned int, ::std::allocator<unsigned int> > ::size() const") from a __host__ __device__ function("graph::CSRCOO<unsigned int,     ::std::vector<unsigned int, ::std::allocator<unsigned int> > > ::num_rows const") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_reduceIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_reduceIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_reduceIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_psanseIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_psanseIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z31mcp_kernel_l1_wl_donor_w_psanseIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj1024ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z29mcp_kernel_l1_wl_donor_reduceIjLj64ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj1024ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z38mcp_kernel_l1_wl_donor_tomita_renumberIjLj64ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj1024ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z37mcp_kernel_l1_wl_donor_psanse_recolorIjLj64ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj1024ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj512ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj256ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj128ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z29mcp_kernel_l1_wl_donor_tomitaIjLj64ELj32EEvN3mcp13GLOBAL_HANDLEIT_EEPjPN4cuda3__46atomicIjLNS5_3std3__412thread_scopeE1EEESC_SC_ is out of range. minnctapersm will be ignored
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/logger.h: In instantiation of ‘void Log(LogPriorityEnum, const char*, Args ...) [with bool NEWLINE = true; Args = {}]’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/main.cu:113:4:   required from here
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/source/src/../include/logger.h:33:7: warning: format not a string literal and no format arguments [-Wformat-security]
+   33 |   printf(f, args...);
+      |   ~~~~^~~~~~~~~~~~

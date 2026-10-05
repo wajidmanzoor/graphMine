@@ -1,0 +1,10 @@
+{
+  "architecture": "89",
+  "archive_sha256": "cd2bce2925bf88b2dee2f6b21a31bd4c3f4160fc9085664ecdb495f4356aabbc",
+  "binary": "recount/build/cuda-pkt-offload-opt",
+  "binary_sha256": "2694f3c76064e2ff7a429b549ea87a01826c3c69464c82317638e296fa97bf96",
+  "force_recount": true,
+  "patch_sha256": "a6bd9731b1221d0a46a8e459c51f3b6bd6bd3757ef799ee932f351065418841d",
+  "poison_allocations": true,
+  "upstream_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1"
+}

@@ -1,0 +1,6 @@
+{
+  "parallel_mcp_on_gpus": "66cf3318075ef81afbdfd900babb658a4dc7f82bcb5b9ae4f63a35221fa192e1",
+  "workspace-maximum_clique.cpp": "6311baec9e0c4704631c676383f86a836814b618617901a84169bb2685f13f6f",
+  "graphmine": "4b518740cae38c7d4c6669a828c9e778549dda1d222ae29977d5392ef31c0fab",
+  "maximum_clique_on_gpu_backend.cu": "d8201c4561000b52896ad5aa10dffb2788f9659d8f3e9a4f29a92b5ecc20c0b0"
+}

@@ -55,6 +55,8 @@ def build_answer(
     events: list[dict[str, Any]] = []
     selected: set[str] = set()
     metrics: dict[str, Any] = {}
+    edge_rows: list[dict[str, Any]] = []
+    answer_edge_ids: set[str] | None = None
 
     def fact(statement: str, value: Any, source: str, kind: str = "computed") -> None:
         facts.append(
@@ -120,7 +122,119 @@ def build_answer(
             }
         )
 
-    if operation == "connected-components":
+    if operation == "k-truss":
+        values = output["truss_number_by_edge"]
+        metrics.update(
+            maximum_truss_number=output["maximum_truss_number"],
+            normalized_edge_count=len(values),
+        )
+        answer_edge_ids = {identity(item["edge"]) for item in values}
+        for item in values:
+            edge = edge_by_id[identity(item["edge"])]
+            selected.update((identity(edge["source"]), identity(edge["target"])))
+            edge_rows.append(
+                {
+                    "Original edge ID": edge["id"],
+                    "Source": node(edge["source"])["label"],
+                    "Target": node(edge["target"])["label"],
+                    "Truss number": item["truss_number"],
+                }
+            )
+        fact(
+            f"Computed truss numbers for {len(values)} normalized relationships; the maximum is {output['maximum_truss_number']}.",
+            metrics,
+            "output.truss_number_by_edge",
+        )
+        limitations.append(
+            "Self-loops are removed and parallel undirected relationships are collapsed before decomposition."
+        )
+    elif operation == "densest-subgraph":
+        metrics.update(
+            density=output["density"],
+            induced_edge_value=output["induced_edge_value"],
+            optimal=output["optimal"],
+        )
+        add_group("densest", output["vertices"])
+        fact(
+            f"The densest returned group has {len(output['vertices'])} entities and {output['induced_edge_value']} normalized relationships, with edge density {output['density']:g}.",
+            metrics,
+            "output",
+        )
+        limitations.append(
+            "Density is the number of undirected edges divided by the number of vertices; this profile uses unweighted edges and no fixed group size."
+        )
+    elif operation == "maximal-biclique-counting":
+        metrics.update(total_count=output["total_count"], complete=output["complete"])
+        fact(
+            f"Counted {output['total_count']} nonempty maximal bicliques across the two declared groups.",
+            metrics,
+            "output.total_count",
+        )
+        limitations.append(
+            "This operation returns a count only; the individual bicliques and their members were not materialized."
+        )
+    elif operation == "personalized-pagerank":
+        rows = [
+            node(item["vertex"], score=item["score"], rank=item["rank"])
+            for item in output["ranked_vertices"]
+        ]
+        selected.update(row["key"] for row in rows)
+        metrics.update(
+            returned_entities=len(rows),
+            restart_probability_used=output["restart_probability_used"],
+            epsilon_used=output["epsilon_used"],
+            approximate=output["approximate"],
+            error_bound_certified=output["error_bound_certified"],
+        )
+        fact(
+            f"Returned {len(rows)} entities ranked by approximate personalized PageRank from {node(plan.parameters['seed_vertex'])['label']}, with restart probability 0.2.",
+            metrics,
+            "output.ranked_vertices",
+        )
+        limitations.append(
+            "Scores use outgoing unweighted links and one seed. The sampling tolerance is not a certified per-run error bound; only the requested top ranks are returned."
+        )
+    elif operation == "group-steiner-tree":
+        metrics.update(feasible=output["feasible"], optimal=output["optimal"])
+        answer_edge_ids = {identity(value) for value in output["tree_edges"]}
+        if output["feasible"]:
+            metrics["tree_weight"] = output["tree_weight"]
+            add_group("tree", output["selected_vertices"])
+            fact(
+                f"Found a minimum-cost tree of total cost {output['tree_weight']} that meets every requested group.",
+                metrics,
+                "output",
+            )
+        else:
+            fact(
+                "No connected tree can meet every requested group in this graph.",
+                metrics,
+                "output.feasible",
+            )
+        limitations.append(
+            "This profile minimizes nonnegative integer edge costs without a hop limit, for at most 16 groups."
+        )
+    elif operation == "influence-maximization":
+        rows = [
+            node(value, rank=index + 1)
+            for index, value in enumerate(output["seed_set"])
+        ]
+        selected.update(row["key"] for row in rows)
+        metrics.update(
+            seed_count=len(rows),
+            expected_spread=output["expected_spread"],
+            sample_count=output["sample_count"],
+            guarantee_met=output["guarantee_met"],
+        )
+        fact(
+            f"Selected {len(rows)} seeds with estimated spread {output['expected_spread']:g} under the independent-cascade model.",
+            metrics,
+            "output",
+        )
+        limitations.append(
+            "Spread is estimated using independent holdout samples. This result has no certified approximation ratio or confidence interval."
+        )
+    elif operation == "connected-components":
         membership = defaultdict(list)
         for item in output["component_assignment"]:
             membership[item["component"]].append(item["vertex"])
@@ -562,6 +676,7 @@ def build_answer(
         if identity(edge["source"]) in selected
         and identity(edge["target"]) in selected
         and (event_ids is None or identity(edge["id"]) in event_ids)
+        and (answer_edge_ids is None or identity(edge["id"]) in answer_edge_ids)
     ]
     view_edges = [
         {
@@ -581,7 +696,7 @@ def build_answer(
             ),
         ),
     )
-    if not complete:
+    if not complete and operation != "personalized-pagerank":
         limitations.append(
             "Returned instances are incomplete; membership and attribute summaries describe only the materialized matches."
         )
@@ -589,7 +704,12 @@ def build_answer(
         limitations.append(
             f"The network view displays {len(view_nodes)} of {len(rows)} answer entities and {len(view_edges)} of {len(answer_edges)} answer connections."
         )
-    if operation in {"max-flow-min-cut", "linear-assignment"}:
+    if operation in {
+        "max-flow-min-cut",
+        "linear-assignment",
+        "group-steiner-tree",
+        "influence-maximization",
+    }:
         if plan.parameters.get("unit_capacity"):
             limitations.append(
                 "Each relationship was assigned capacity one as requested; original weights were not used."
@@ -618,6 +738,7 @@ def build_answer(
         "rows": rows,
         "events": events,
         "tables": answer_tables(rows, groups),
+        "edge_rows": edge_rows,
         "network": {
             "nodes": view_nodes,
             "edges": view_edges,

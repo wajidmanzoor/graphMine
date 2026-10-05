@@ -1,10 +1,12 @@
 # GraphMine intelligent agent
 
-The [2026-10-04 catalog expansion](../docs/ALGORITHM_EXPANSION.md) adds all 37
-problem definitions and five executable profiles (18 operations total). Expanded
-routing uses the base model with explicit profile contracts; no retraining is
-required by this integration. The local LLM was offline during validation, so
-new natural-language accuracy is not yet measured.
+The agent recognizes all **37 problem definitions** and exposes **24 operations
+across 22 families**, including the [nine repaired integrations](../library/docs/repaired_algorithms.md).
+The current JSON contracts use `repaired-37-v2`; expanded routing uses the base
+model with explicit profile restrictions. No model retraining or new measurement
+of natural-language routing accuracy is claimed. The [integration report](../validation/repaired_library/REPORT.md)
+records native and agent API tests. The earlier [catalog expansion](../docs/ALGORITHM_EXPANSION.md)
+remains available as a historical record.
 
 This service turns the validated GraphMine library into a private-LAN research
 system. A browser sends domain-specific questions and files to FastAPI. One

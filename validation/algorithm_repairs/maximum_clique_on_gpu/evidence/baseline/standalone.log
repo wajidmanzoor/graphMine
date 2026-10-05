@@ -1,0 +1,28 @@
+[0mWelcome ---------------------
+    Main Task = mcp-eval
+    Source Graph = /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/fixtures/cycle_chords-01.bel
+    Device ID(s) = 0
+    Coloring Algorithm = San Segundo
+    Lower Bound Max Clique = 0
+    Parallelism = Blocks
+-----------------------------
+[1;32m[17:31:16] Read graph time: 0.103630 s
+[0m[1;32m[17:31:16] n = 9 and m = 18
+[0m[1;32m[17:31:16] Transfer Time: 0.000158 s
+[0mMax Core = 2
+[1;32m[17:31:16] Degeneracy ordering time: 0.016040 s
+[0m[1;32m[17:31:16] Heuristic clique size: 2
+[0m[1;32m[17:31:16] Reducing the graph and reversing the degeneracy order..
+[0m[1;32m[17:31:16] Reduced to n = 8 and m = 18
+[0m[1;32m[17:31:16] CSR Recreation time: 0.002269 s
+[0m[1;32m[17:31:16] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[17:31:16] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[17:31:16] VRAM usage: 655622144 B
+[0m[1;32m[17:31:16] Launching search kernel with grid size: 3408, and block size: 64
+[0mFinished Launching Instance 0.
+Found clique of size 3.
+[1;32m[17:31:16] search time 0.006528 s
+[0mw(G') = {2, 1, 0}.
+Found a maximum clique of size 3.
+[1;32m[17:31:16] Total time: 0.129549 s
+[0mDone ...

@@ -1,0 +1,300 @@
+[
+  {
+    "name": "native-regression",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine",
+      "run",
+      "maximum-clique",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/fixtures/cycle_chords-01.json",
+      "--backend",
+      "maximum-clique-on-gpu"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "native-api-test",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/library/build/graphmine_maximum_clique_test"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "full",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "full",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/full",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "core",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "core",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/core_probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/core",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "bounds",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "bounds",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/bounds",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "stress",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "stress",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/stress",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "linked-full",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "full",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/native-linked-probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/linked-full",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "memcheck",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "sanitizer",
+      "--tool",
+      "memcheck",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/memcheck",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "racecheck",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "sanitizer",
+      "--tool",
+      "racecheck",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/racecheck",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "initcheck",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "sanitizer",
+      "--tool",
+      "initcheck",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "synccheck",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "sanitizer",
+      "--tool",
+      "synccheck",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/synccheck",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "poison-full",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "full",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-dirty/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/poison-full",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "poison-core",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "core",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-dirty/core_probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/poison-core",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "asan-full",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/validate.py",
+      "--suite",
+      "full",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-asan/probe",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/asan-full",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "standalone",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/standalone_suite.py",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/parallel_mcp_on_gpus",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/standalone",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "modes-memcheck",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/standalone_suite.py",
+      "--tool",
+      "memcheck",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/parallel_mcp_on_gpus",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/modes-memcheck",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "modes-racecheck",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/standalone_suite.py",
+      "--tool",
+      "racecheck",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/parallel_mcp_on_gpus",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/modes-racecheck",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "modes-initcheck",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/standalone_suite.py",
+      "--tool",
+      "initcheck",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/parallel_mcp_on_gpus",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/modes-initcheck",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "modes-synccheck",
+    "command": [
+      "python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/standalone_suite.py",
+      "--tool",
+      "synccheck",
+      "--binary",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/parallel_mcp_on_gpus",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/modes-synccheck",
+      "--gpu",
+      "1"
+    ],
+    "exit": 0
+  }
+]

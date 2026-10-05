@@ -20,7 +20,7 @@ __global__ void init_asc(T *data, CntType count)
 }
 
 template <typename T, typename PeelT>
-__global__ void filter_window(PeelT *edge_sup, T count, bool *in_bucket, T low, T high)
+__global__ void filter_window(PeelT *edge_sup, T count, uint32_t *in_bucket, T low, T high)
 {
 	auto gtid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (gtid < count)
@@ -33,7 +33,7 @@ __global__ void filter_window(PeelT *edge_sup, T count, bool *in_bucket, T low, 
 template <typename T, typename PeelT>
 __global__ void filter_with_random_append(
 		T *bucket_buf, T count, PeelT *EdgeSupport,
-		bool *in_curr, T *curr, T *curr_cnt, T ref, T span)
+		uint32_t *in_curr, T *curr, T *curr_cnt, T ref, T span)
 {
 	auto gtid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (gtid < count)
@@ -49,7 +49,7 @@ __global__ void filter_with_random_append(
 }
 
 template <typename T, typename PeelT>
-__global__ void update_priority(graph::GraphQueue_d<T, bool> current, T priority, T *nodePriority, T *coreNumber)
+__global__ void update_priority(graph::GraphQueue_d<T, uint32_t> current, T priority, T *nodePriority, T *coreNumber)
 {
 	auto gtid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (gtid < current.count[0])
@@ -61,7 +61,7 @@ __global__ void update_priority(graph::GraphQueue_d<T, bool> current, T priority
 }
 
 template <typename T>
-__device__ void add_to_queue_1(graph::GraphQueue_d<T, bool> &q, T element)
+__device__ void add_to_queue_1(graph::GraphQueue_d<T, uint32_t> &q, T element)
 {
 	auto insert_idx = atomicAdd(q.count, 1);
 	q.queue[insert_idx] = element;
@@ -69,9 +69,9 @@ __device__ void add_to_queue_1(graph::GraphQueue_d<T, bool> &q, T element)
 }
 
 template <typename T>
-__device__ void add_to_queue_1_no_dup(graph::GraphQueue_d<T, bool> &q, T element)
+__device__ void add_to_queue_1_no_dup(graph::GraphQueue_d<T, uint32_t> &q, T element)
 {
-	auto old_token = atomicCASBool(q.mark + element, 0, 1);
+	auto old_token = atomicCAS(q.mark + element, 0U, 1U);
 	if (!old_token)
 	{
 		auto insert_idx = atomicAdd(q.count, 1);
@@ -82,8 +82,8 @@ __device__ void add_to_queue_1_no_dup(graph::GraphQueue_d<T, bool> &q, T element
 template <typename T, typename PeelT>
 __forceinline__ __device__ void process_degree(
 		T nodeId, T level, PeelT *nodeDegree,
-		graph::GraphQueue_d<T, bool> &next,
-		graph::GraphQueue_d<T, bool> &bucket,
+		graph::GraphQueue_d<T, uint32_t> &next,
+		graph::GraphQueue_d<T, uint32_t> &bucket,
 		T bucket_level_end_)
 {
 	auto cur = atomicSub(&nodeDegree[nodeId], 1);
@@ -168,6 +168,15 @@ __global__ void generateIndices_kernel(T* array , T maxIndex)
 		// Get just vertex whose core number greater than lb
 		array[j] = j;
 	}	
+}
+
+template <typename T>
+__global__ void gather_by_index_kernel(const T *values, const T *indices,
+                                      T *output, T count)
+{
+	for (uint64 i = threadIdx.x + uint64(blockIdx.x) * blockDim.x;
+	     i < count; i += uint64(blockDim.x) * gridDim.x)
+		output[i] = values[indices[i]];
 }
 
 template <typename T>
@@ -344,9 +353,9 @@ __global__ void
 kernel_partition_level_next(
 		graph::COOCSRGraph_d<T> g,
 		int level, bool *processed, PeelT *nodeDegree,
-		graph::GraphQueue_d<T, bool> current,
-		graph::GraphQueue_d<T, bool> &next,
-		graph::GraphQueue_d<T, bool> &bucket,
+		graph::GraphQueue_d<T, uint32_t> current,
+		graph::GraphQueue_d<T, uint32_t> &next,
+		graph::GraphQueue_d<T, uint32_t> &bucket,
 		int bucket_level_end_,
 		T priority,
 		T *nodePriority,
@@ -384,8 +393,8 @@ __global__ void
 kernel_partition_remove_vertices(
 		graph::COOCSRGraph_d<T> g,
 		PeelT *nodeDegree,
-		graph::GraphQueue_d<T, bool> kcore,
-		graph::GraphQueue_d<T, bool> clique,
+		graph::GraphQueue_d<T, uint32_t> kcore,
+		graph::GraphQueue_d<T, uint32_t> clique,
 		PeelT min_degree)
 {
 	const size_t partitionsPerBlock = BD / P;
@@ -418,7 +427,7 @@ template <typename T, typename PeelT>
 __global__ void
 kernel_partition_remove_vertex(
 		graph::COOCSRGraph_d<T> g,
-		graph::GraphQueue_d<T, bool> kcore,
+		graph::GraphQueue_d<T, uint32_t> kcore,
 		PeelT *nodeDegree,
 		T node
 	)
@@ -435,8 +444,8 @@ template <typename T, typename PeelT, int BD, int P>
 __global__ void
 kernel_update_marks(
 		graph::COOCSRGraph_d<T> g,
-		graph::GraphQueue_d<T, bool> &kcore,
-		graph::GraphQueue_d<T, bool> clique)
+		graph::GraphQueue_d<T, uint32_t> &kcore,
+		graph::GraphQueue_d<T, uint32_t> clique)
 {
 	const auto gx = (blockDim.x * blockIdx.x + threadIdx.x);
 
@@ -453,8 +462,8 @@ __global__ void
 kernel_fill_candidates_vertex(
 		graph::COOCSRGraph_d<T> g,
 		PeelT *nodeDegree,
-		graph::GraphQueue_d<T, bool> kcore,
-		graph::GraphQueue_d<PeelT, bool> &degree
+		graph::GraphQueue_d<T, uint32_t> kcore,
+		graph::GraphQueue_d<PeelT, uint32_t> &degree
 )
 {
 	auto gtid = (blockDim.x * blockIdx.x) + threadIdx.x;
@@ -476,9 +485,9 @@ __global__ void
 kernel_fill_candidates_vertex(
 		graph::COOCSRGraph_d<T> g,
 		PeelT *nodeDegree,
-		graph::GraphQueue_d<T, bool> kcore,
-		graph::GraphQueue_d<PeelT, bool> &degree,
-		graph::GraphQueue_d<T, bool> &currents
+		graph::GraphQueue_d<T, uint32_t> kcore,
+		graph::GraphQueue_d<PeelT, uint32_t> &degree,
+		graph::GraphQueue_d<T, uint32_t> &currents
 )
 {
 	auto gtid = (blockDim.x * blockIdx.x) + threadIdx.x;
@@ -502,9 +511,9 @@ __global__ void
 kernel_fill_candidates_vertex_from_clique(
 		graph::COOCSRGraph_d<T> g,
 		PeelT *nodeDegree,
-		graph::GraphQueue_d<T, bool> kcore,
-		graph::GraphQueue_d<T, bool> clique,
-		graph::GraphQueue_d<PeelT, bool> &degree
+		graph::GraphQueue_d<T, uint32_t> kcore,
+		graph::GraphQueue_d<T, uint32_t> clique,
+		graph::GraphQueue_d<PeelT, uint32_t> &degree
 )
 {
 	auto gtid = (blockDim.x * blockIdx.x) + threadIdx.x;
@@ -528,8 +537,8 @@ __global__ void
 kernel_get_minimum_degree_vertices(
 		graph::COOCSRGraph_d<T> g,
 		PeelT *nodeDegree,
-		graph::GraphQueue_d<T, bool> kcore,
-		graph::GraphQueue_d<T, bool> &clique,
+		graph::GraphQueue_d<T, uint32_t> kcore,
+		graph::GraphQueue_d<T, uint32_t> &clique,
 		PeelT min_degree
 )
 {
@@ -551,7 +560,7 @@ __global__ void
 kernel_fill_max_core_vertices (
 		graph::COOCSRGraph_d<T> g,
 		T *coreNumber,
-		graph::GraphQueue_d<T, bool> &kcore,
+		graph::GraphQueue_d<T, uint32_t> &kcore,
 		int max_core
 )
 {
@@ -574,7 +583,7 @@ template <typename T, typename PeelT, uint BLOCK_DIM_X, uint CPARTSIZE>
 __global__ void
 kernel_compute_degree_kcore(
 		graph::COOCSRGraph_d<T> g,
-		graph::GraphQueue_d<T, bool> kcore,
+		graph::GraphQueue_d<T, uint32_t> kcore,
 		PeelT* nodeDegree
 )
 {
@@ -601,7 +610,7 @@ template <typename T, typename PeelT, uint BLOCK_DIM_X, uint CPARTSIZE>
 __global__ void
 kernel_get_min_degree_vert(
 		graph::COOCSRGraph_d<T> g,
-		graph::GraphQueue_d<T, bool> current,
+		graph::GraphQueue_d<T, uint32_t> current,
 		PeelT* nodeDegree
 )
 {
@@ -664,19 +673,11 @@ namespace graph
 		// Same Function for any comutation
 		void bucket_scan(
 				GPUArray<PeelT> nodeDegree, T node_num, int level,
-				GraphQueue<T, bool> &current,
+				GraphQueue<T, uint32_t> &current,
 				GPUArray<T> asc,
-				GraphQueue<T, bool> &bucket,
+				GraphQueue<T, uint32_t> &bucket,
 				int &bucket_level_end_)
 		{
-			static bool is_first = true;
-			if (is_first)
-			{
-				current.mark.setAll(false, true);
-				bucket.mark.setAll(false, true);
-				is_first = false;
-			}
-
 			const size_t block_size = 128;
 
 			if (level == bucket_level_end_)
@@ -710,14 +711,14 @@ namespace graph
 
 		void find_heur_clique(COOCSRGraph_d<T> &g)
 		{
-			graph::GraphQueue<T, bool> kcore_q;
+			graph::GraphQueue<T, uint32_t> kcore_q;
 			kcore_q.Create(gpu, g.numNodes, dev_);
 			kcore_q.mark.setAll(false, true);
 			kcore_q.count.setSingle(0, 0, true);
 
-			graph::GraphQueue<PeelT, bool> degree_q;
+			graph::GraphQueue<PeelT, uint32_t> degree_q;
 			degree_q.Create(gpu, g.numNodes, dev_);
-			graph::GraphQueue<T, bool> currents_q;
+			graph::GraphQueue<T, uint32_t> currents_q;
 			currents_q.Create(gpu, g.numNodes, dev_);
 			
 			GPUArray<PeelT> _nodeDegree;
@@ -770,7 +771,7 @@ namespace graph
 					cudaMemcpy(h_out, d_out, sizeof(cub::KeyValuePair<int, PeelT>), ::cudaMemcpyDeviceToHost);
 					auto argmin = h_out->key;
 					cudaFree(d_out);
-					free(h_out);	
+					delete h_out;
 					min_degree.setSingle(0, degree_q.queue.getSingle(argmin), true);
 					node.setSingle(0, currents_q.queue.getSingle(argmin), true);
 				}
@@ -806,6 +807,8 @@ namespace graph
 			min_degree.freeGPU();
 			node.freeGPU();
 			_nodeDegree.freeGPU();
+			remaining.freeGPU();
+			degree_q.free();
 			currents_q.free();
 			kcore_q.free();
 			degree_q.free();
@@ -869,13 +872,13 @@ namespace graph
 			int level = 0;
 			int bucket_level_end_ = level;
 			// Lets apply queues and buckets
-			graph::GraphQueue<T, bool> bucket_q;
+			graph::GraphQueue<T, uint32_t> bucket_q;
 			bucket_q.Create(gpu, g.numNodes, dev_);
 
-			graph::GraphQueue<T, bool> current_q;
+			graph::GraphQueue<T, uint32_t> current_q;
 			current_q.Create(gpu, g.numNodes, dev_);
 
-			graph::GraphQueue<T, bool> next_q;
+			graph::GraphQueue<T, uint32_t> next_q;
 			next_q.Create(gpu, g.numNodes, dev_);
 			next_q.mark.setAll(false, true);
 

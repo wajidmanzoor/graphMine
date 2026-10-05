@@ -1,4 +1,28 @@
 var searchData=
 [
-  ['normalizationsummary_0',['NormalizationSummary',['../dd/dd7/structgraphmine_1_1NormalizationSummary.html',1,'graphmine']]]
+  ['managedarena_0',['ManagedArena',['../d8/db2/classgraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1_1ManagedArena.html',1,'graphmine::detail::anonymous_namespace{cumbe.cu}']]],
+  ['matchstate_1',['MatchState',['../d2/df5/structgraphmine_1_1anonymous__namespace_02graph__motifs_8cpp_03_1_1MatchState.html',1,'graphmine::anonymous_namespace{graph_motifs.cpp}']]],
+  ['materializedinstances_2',['MaterializedInstances',['../d3/d52/structgraphmine_1_1anonymous__namespace_02temporal__motif__mining_8cpp_03_1_1MaterializedInstances.html',1,'graphmine::anonymous_namespace{temporal_motif_mining.cpp}']]],
+  ['materializedmotif_3',['MaterializedMotif',['../db/d44/structgraphmine_1_1anonymous__namespace_02graph__motifs_8cpp_03_1_1MaterializedMotif.html',1,'graphmine::anonymous_namespace{graph_motifs.cpp}']]],
+  ['maxflowmincut_4',['MaxFlowMinCut',['../d2/d8c/classgraphmine_1_1MaxFlowMinCut.html',1,'graphmine']]],
+  ['maxflowoptions_5',['MaxFlowOptions',['../de/dff/structgraphmine_1_1MaxFlowOptions.html',1,'graphmine']]],
+  ['maxflowoutput_6',['MaxFlowOutput',['../d8/d14/structgraphmine_1_1MaxFlowOutput.html',1,'graphmine']]],
+  ['maximalbiclique_7',['MaximalBiclique',['../de/dbb/structgraphmine_1_1MaximalBiclique.html',1,'graphmine']]],
+  ['maximalbicliquebackendresult_8',['MaximalBicliqueBackendResult',['../d5/d30/structgraphmine_1_1detail_1_1MaximalBicliqueBackendResult.html',1,'graphmine::detail']]],
+  ['maximalbicliquecounting_9',['MaximalBicliqueCounting',['../dc/dea/classgraphmine_1_1MaximalBicliqueCounting.html',1,'graphmine']]],
+  ['maximalbicliquecountingoptions_10',['MaximalBicliqueCountingOptions',['../d0/da0/structgraphmine_1_1MaximalBicliqueCountingOptions.html',1,'graphmine']]],
+  ['maximalbicliquecountingoutput_11',['MaximalBicliqueCountingOutput',['../d7/d79/structgraphmine_1_1MaximalBicliqueCountingOutput.html',1,'graphmine']]],
+  ['maximalbicliqueoptions_12',['MaximalBicliqueOptions',['../db/da5/structgraphmine_1_1MaximalBicliqueOptions.html',1,'graphmine']]],
+  ['maximalbicliqueoutput_13',['MaximalBicliqueOutput',['../dc/dda/structgraphmine_1_1MaximalBicliqueOutput.html',1,'graphmine']]],
+  ['maximalbicliques_14',['MaximalBicliques',['../d5/d7c/classgraphmine_1_1MaximalBicliques.html',1,'graphmine']]],
+  ['maximalcliqueoptions_15',['MaximalCliqueOptions',['../d9/de3/structgraphmine_1_1MaximalCliqueOptions.html',1,'graphmine']]],
+  ['maximalcliqueoutput_16',['MaximalCliqueOutput',['../df/d8e/structgraphmine_1_1MaximalCliqueOutput.html',1,'graphmine']]],
+  ['maximalcliques_17',['MaximalCliques',['../da/d53/classgraphmine_1_1MaximalCliques.html',1,'graphmine']]],
+  ['maximumclique_18',['MaximumClique',['../d6/dbf/classgraphmine_1_1MaximumClique.html',1,'graphmine']]],
+  ['maximumcliquebackendresult_19',['MaximumCliqueBackendResult',['../d7/da5/structgraphmine_1_1detail_1_1MaximumCliqueBackendResult.html',1,'graphmine::detail']]],
+  ['maximumcliqueoptions_20',['MaximumCliqueOptions',['../d4/d0f/structgraphmine_1_1MaximumCliqueOptions.html',1,'graphmine']]],
+  ['maximumcliqueoutput_21',['MaximumCliqueOutput',['../d4/d82/structgraphmine_1_1MaximumCliqueOutput.html',1,'graphmine']]],
+  ['mentity_22',['MEntity',['../d1/dbf/structMEntity.html',1,'']]],
+  ['motifvertexmapping_23',['MotifVertexMapping',['../d1/d1f/structgraphmine_1_1MotifVertexMapping.html',1,'graphmine']]],
+  ['motifvertexparticipation_24',['MotifVertexParticipation',['../d2/dda/structgraphmine_1_1MotifVertexParticipation.html',1,'graphmine']]]
 ];

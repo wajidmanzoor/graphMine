@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "prefix": "/tmp/graphmine-repaired-install",
+  "optional_dependency_prefix": "/tmp/pggc-deps/install",
+  "consumers": [
+    "graphmine_install_consumer",
+    "graphmine_repaired_install_consumer"
+  ],
+  "worker_directory": "/tmp/graphmine-repaired-install/libexec/graphmine",
+  "cuda_visible_devices": "1",
+  "cli_checks": {
+    "status": "passed",
+    "checks": 49,
+    "passed": 49,
+    "failures": 0,
+    "rejection_checks": 21,
+    "suite": "quick",
+    "binary_sha256": "b18babf302965e4c038faa19f1cd6374149033761a03312077738d76ceb6d508"
+  },
+  "evidence": [
+    "consumer-configure.log",
+    "consumer-build.log",
+    "consumer-run.log"
+  ]
+}

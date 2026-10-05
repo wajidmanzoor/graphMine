@@ -1,0 +1,26 @@
+$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Fri_Feb_21_20:23:50_PST_2025
+Cuda compilation tools, release 12.8, V12.8.93
+Build cuda_12.8.r12.8/compiler.35583870_0
+$ compute-sanitizer --version
+NVIDIA (R) Compute Sanitizer
+Copyright (c) 2020-2025 NVIDIA Corporation
+Version 2025.1.0.0 (build 35583870) (public-release)
+$ cmake --version
+cmake version 3.28.3
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+$ g++ --version
+g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ nvidia-smi --query-gpu=index,name,driver_version,compute_cap,memory.total --format=csv,noheader
+0, NVIDIA RTX 6000 Ada Generation, 570.211.01, 8.9, 49140 MiB
+1, NVIDIA RTX 6000 Ada Generation, 570.211.01, 8.9, 49140 MiB
+$ python3 -c import sys,networkx; print(sys.version); print("NetworkX",networkx.__version__)
+3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]
+NetworkX 2.8.8

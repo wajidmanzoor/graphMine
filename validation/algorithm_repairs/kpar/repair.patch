@@ -1,0 +1,838 @@
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -1,46 +1,14 @@
+-SHELL = /bin/sh
+-CUDA_INSTALL_PATH ?= /usr/local/cuda-10.0
++NVCC ?= nvcc
++CUDA_ARCH ?= sm_89
++NVCCFLAGS ?= -O2 -lineinfo
++INCLUDES = -I. -Ialgo -Imodel -Iutil
++HEADERS = $(wildcard *.h algo/*.cuh model/*.h model/*.cuh util/*.h util/*.cuh)
+ 
+-NVCC = nvcc
++.PHONY: all build clean
++all build: kpar
+ 
+-CPP := g++
+-CC := gcc
+-LINK := g++ -fPIC
+-
+-INCLUDE = -I. -I.. -I./algo -I./model -I./util -I./cub 
+-LIBS = #-lm 
+-CFLAGS += -std=c++11 -lcurand -lm -lgsl -lgslcblas 
+-#P100
+-#CFLAGS += -gencode arch=compute_60,code=sm_60 
+-#K80
+-CFLAGS += -gencode arch=compute_35,code=sm_35
+-CFLAGS += -O3 -w
+-CFLAGS += -use_fast_math
+-CFLAGS += -ftemplate-backtrace-limit=0
+-CFLAGS += --default-stream per-thread
+-
+-CUDA_NVCC_FLAGS =--expt-relaxed-constexpr # for compute_60
+-
+-all: kpar
+-build: kpar
+-
+-debug: CXXFLAGS +=-DDEBUG -g -G
+-debug: CFLAGS +=-DDEBUG -g -G
+-debug: kpar
+-
+-OBJ = $(patsubst %.cu,%.o,$(wildcard *.cu)) $(patsubst %.cpp,%.o,$(wildcard *.cpp)) $(patsubst %.cu,%.o,$(wildcard ./util/*.cu)) $(patsubst %.c,%.o,$(wildcard ./util/SFMT-src-1.4.1/SFMT.c))
+-
+-%.o: %.c 
+-	$(NVCC) $< $(CFLAGS) $(CUDA_NVCC_FLAGS) $(INCLUDE) -c -o $@
+-
+-%.o: %.cpp 
+-	$(NVCC) $< $(CFLAGS) $(CUDA_NVCC_FLAGS) $(INCLUDE) -c -o $@
+-
+-%.o: %.cu
+-	$(NVCC) $< $(CFLAGS) $(CUDA_NVCC_FLAGS) $(INCLUDE) -c -o $@
+-	
+-kpar: $(OBJ)
+-	$(NVCC) $(CFLAGS) $(CUDA_NVCC_FLAGS) $(INCLUDE) -o $@ $^ $(LIBS)
++kpar: main.cu $(HEADERS)
++	$(NVCC) main.cu $(INCLUDES) -std=c++17 -arch=$(CUDA_ARCH) $(NVCCFLAGS) --expt-relaxed-constexpr --default-stream per-thread -o $@
+ 
+ clean:
+-	rm -rf kpar *.o util/*.o
++	rm -f kpar
+--- a/src/algo/GtopkRrw.cuh
++++ b/src/algo/GtopkRrw.cuh
+@@ -48,6 +48,7 @@
+ void SortKeyValuePairsDesc(int numItems, ValueType *reserveAsKeyIn, ValueType *reserveAsKeyOut,
+ 		IndexType *vidsAsValueIn, IndexType *vidsAsValueOut, void *d_temp_storage_cand_sort,
+ 		size_t temp_storage_cand_sort_bytes) {
++	if (numItems <= 1) return;
+ 	cub::DeviceRadixSort::SortPairsDescending(d_temp_storage_cand_sort, temp_storage_cand_sort_bytes, reserveAsKeyIn, reserveAsKeyOut, vidsAsValueIn, vidsAsValueOut, numItems);
+ }
+ 
+@@ -57,14 +58,14 @@
+ 
+ 	IndexType num_blocks = calc_num_blocks<IndexType>(ppr->cand_highrrw_actual_size, BLOCK_SIZE);
+ 	//unflag the highrrwnodes in d_cand_flags, since they are already regarded as candidates in the 1st part of d_cand_total_set
+-	UnflagHighrrwNodes<IndexType> <<<num_blocks, BLOCK_SIZE>>>(ppr->d_cand_total_set, ppr->cand_highrrw_actual_size, ppr->d_cand_flags);
++	if (num_blocks) UnflagHighrrwNodes<IndexType> <<<num_blocks, BLOCK_SIZE>>>(ppr->d_cand_total_set, ppr->cand_highrrw_actual_size, ppr->d_cand_flags);
+ 
+ 	//Get candidate pool set: find all flagged vertices and store into d_cand_pool_set, with size d_cand_pool_actual_size
+ 	cub::DeviceSelect::Flagged(ppr->d_temp_storage_for_flags, ppr->temp_storage_bytes_for_flags, ppr->d_vertices, ppr->d_cand_flags, ppr->d_cand_pool_set, ppr->d_cand_pool_actual_size, ppr->num_vertices);
+ 	CUDA_CHECK(cudaMemcpy(ppr->cand_pool_actual_size, ppr->d_cand_pool_actual_size, sizeof(int), cudaMemcpyDeviceToHost));
+ 	ppr->cand_total_actual_size = ppr->cand_pool_actual_size[0] + ppr->cand_highrrw_actual_size;
+ 	num_blocks = calc_num_blocks<IndexType>(ppr->cand_total_actual_size, BLOCK_SIZE);
+-	CollectCandidateScores<IndexType, ValueType> <<<num_blocks, BLOCK_SIZE>>>(ppr->d_scores, ppr->d_cand_total_set, ppr->d_cand_pool_actual_size, ppr->d_cand_actual_size_highrrw, ppr->d_cand_total_scores);
++	if (num_blocks) CollectCandidateScores<IndexType, ValueType> <<<num_blocks, BLOCK_SIZE>>>(ppr->d_scores, ppr->d_cand_total_set, ppr->d_cand_pool_actual_size, ppr->d_cand_actual_size_highrrw, ppr->d_cand_total_scores);
+ }
+ 
+ template<typename IndexType, typename ValueType>
+@@ -320,7 +321,6 @@
+ 			size_t actual_stripe_size = MIN(remaining, NUM_TILES_IN_BLOCK);
+ 			//process a tile
+ 			IndexType tile_idx = thread_id / TILE_SIZE;
+-			int isNextFrontier = 0;
+ 			if (tile_idx < actual_stripe_size) {
+ 
+ 				neighbor_begin_tile = shared_neighbor_begins[tile_idx];
+@@ -497,6 +497,7 @@
+ 				neighbor_offset += block_size;
+ 			}
+ 		}
++		__syncthreads();
+ 		frontier_idx += frontiers_offset_grid;
+ 	}
+ }
+@@ -724,8 +725,9 @@
+ }
+ 
+ bool checkIfStop(PprDataD* ppr, ValueType ubScoreOfUnprocessed) {
++	if (ppr->cand_k_scores.size() < static_cast<size_t>(config.k)) return false;
+ 	int posOfMinValidLB = ppr->getPosOfLBAtLeastDeltaMin();
+-	if (posOfMinValidLB < 0) return false;
++	if (posOfMinValidLB < config.k-1) return false;
+ 
+ 	double minValidLB = std::get<1>(ppr->cand_k_scores[posOfMinValidLB]);
+ 	ValueType epsPrimeUbscore = compEpsPrimeHost(ubScoreOfUnprocessed);
+@@ -751,12 +753,35 @@
+ 		ppr->residuals[ppr->source] = 0.0;
+ 		ppr->scores[ppr->source] = 1.0;
+ 		ppr->frontier_cnt[0] = 0;
++		CUDA_CHECK(cudaMemcpy(ppr->d_cand_total_scores, ppr->scores, sizeof(ValueType)*g->num_vertices, cudaMemcpyHostToDevice));
++		CUDA_CHECK(cudaMemcpy(ppr->d_cand_total_set, ppr->vertices, sizeof(IndexType)*g->num_vertices, cudaMemcpyHostToDevice));
++		ppr->processedSize = g->num_vertices;
+ 		return ;
+ 	}
+ 
+ 	int iteration = 0;
+ 	int fpIteration = 1;
+ 	bool isStopping = false;
++	if (std::find(g->degrees, g->degrees + g->num_vertices, 0) != g->degrees + g->num_vertices) {
++		// Offline walks restart dangling vertices at their own walk origin. That
++		// index is not a linear decomposition of PPR restarting at the query seed.
++		// Finish the existing GPU forward push instead, with a total residual
++		// bound of 1e-13. No CPU PageRank or seed-dependent sampled index is used.
++		double weighted_degree = 0;
++		for (int v = 0; v < g->num_vertices; ++v)
++			weighted_degree += (double)g->degrees[v] * rwIndex->rmax_scale_per_vtx[v];
++		config.rmax = 1e-13 / std::max(1.0, weighted_degree);
++		config.cand_fp_th = 0;
++		do {
++			GetFrontiersForNewSettings(ppr, g, rwIndex);
++			if (!ppr->frontier_cnt[0]) break;
++			ForwardPush_ITR<IndexType,ValueType>(g, ppr, rwIndex, fpIteration);
++		} while (true);
++		CUDA_CHECK(cudaMemcpy(ppr->d_cand_total_scores, ppr->d_reserves, sizeof(ValueType)*g->num_vertices, cudaMemcpyDeviceToDevice));
++		CUDA_CHECK(cudaMemcpy(ppr->d_cand_total_set, ppr->d_vertices, sizeof(IndexType)*g->num_vertices, cudaMemcpyDeviceToDevice));
++		ppr->processedSize = g->num_vertices;
++		return;
++	}
+ 	rrw_itr_setting(g->num_vertices, g->num_edges, iteration);
+ 	int maxIterations = 1 + ceil(log(config.delta_init / config.delta_min) / log(2.0));
+ 	while (iteration < maxIterations) {
+@@ -779,7 +804,7 @@
+ 
+ 		getAllCandidatesAndUpdateMaxReserveThres<IndexType, ValueType>(ppr);
+ 
+-		if (ppr->cand_total_actual_size <= config.k) {
++		if (ppr->cand_total_actual_size == 0) {
+ 			iteration++;
+ 			rrw_itr_setting(g->num_vertices, g->num_edges, iteration);
+ 			continue;
+@@ -787,7 +812,7 @@
+ 
+ 		ValueType kthScore = 0, ubScoreOfUnprocessed = 9999999999;
+ 		num_blocks = calc_num_blocks<IndexType>(highRrwIdx->num_total_srcPairs, BLOCK_SIZE_HIRRW);
+-		CompScoresOfHighRrwNodes<IndexType, ValueType> <<<num_blocks, BLOCK_SIZE_HIRRW>>>(
++		if (num_blocks) CompScoresOfHighRrwNodes<IndexType, ValueType> <<<num_blocks, BLOCK_SIZE_HIRRW>>>(
+ 				ppr->d_cand_total_scores, highRrwIdx->d_all_srcs, highRrwIdx->d_all_freqs, highRrwIdx->d_all_idxes_in_candset,
+ 				highRrwIdx->num_total_srcPairs, rwIndex->d_num_rws_per_vtx, ppr->d_residuals_for_rw);
+ 
+@@ -856,6 +881,25 @@
+ 		iteration++;
+ 		rrw_itr_setting(g->num_vertices, g->num_edges, iteration);
+ 	}
++	if (!isStopping || ppr->processedSize < config.k) {
++		// The threshold schedule can end with fewer than k candidates, especially
++		// on small graphs or k near n. Score the full complement before exporting.
++		CUDA_CHECK(cudaMemcpy(ppr->d_scores, ppr->d_reserves, sizeof(ValueType)*g->num_vertices, cudaMemcpyDeviceToDevice));
++		CUDA_CHECK(cudaMemcpy(ppr->d_residuals_for_rw, ppr->d_residuals, sizeof(ValueType)*g->num_vertices, cudaMemcpyDeviceToDevice));
++		CUDA_CHECK(cudaMemset(ppr->d_cand_flags, 1, g->num_vertices));
++		int blocks = calc_num_blocks<IndexType>(g->num_vertices, 1024);
++		UpdateAlphaResidualToReserve<IndexType,ValueType><<<blocks,1024>>>(ppr->d_scores,ppr->d_residuals_for_rw,g->num_vertices,ALPHA_DEFAULT,0,ppr->d_cand_flags);
++		getAllCandidatesAndUpdateMaxReserveThres<IndexType,ValueType>(ppr);
++		blocks = calc_num_blocks<IndexType>(highRrwIdx->num_total_srcPairs, BLOCK_SIZE_HIRRW);
++		if (blocks) CompScoresOfHighRrwNodes<IndexType,ValueType><<<blocks,BLOCK_SIZE_HIRRW>>>(ppr->d_cand_total_scores,highRrwIdx->d_all_srcs,highRrwIdx->d_all_freqs,highRrwIdx->d_all_idxes_in_candset,highRrwIdx->num_total_srcPairs,rwIndex->d_num_rws_per_vtx,ppr->d_residuals_for_rw);
++		const int count = ppr->cand_pool_actual_size[0];
++		if (count) {
++			const int bytes = NUM_TILES_IN_BLOCK_RW*(2*sizeof(unll)+sizeof(ValueType)+2*sizeof(IndexType));
++			blocks = calc_num_blocks<IndexType>(count*TILE_SIZE_RW,BLOCK_SIZE_RW);
++			ComputePprByRrw<IndexType,ValueType><<<blocks,BLOCK_SIZE_RW,bytes>>>(ppr->d_cand_pool_set,ppr->d_cand_pool_scores,count,rwIndex->d_src_begin_pos_per_vtx,rwIndex->d_rw_srcs_per_vtx,rwIndex->d_sigFreq_begin_pos_per_vtx,rwIndex->d_sigFreqs_per_vtx,rwIndex->d_num_rws_per_vtx,ppr->d_residuals_for_rw);
++		}
++		ppr->processedSize = g->num_vertices;
++	}
+ }
+ 
+ #endif /* GTOPKRRW_CUH_ */
+--- a/src/algo_setting.h
++++ b/src/algo_setting.h
+@@ -14,25 +14,25 @@
+ extern Config config;
+ 
+ static void precompute_setting(int n, long long m) {
+-	config.pfail = log(2.0) + 2.0 * log((double) n) + log(log((double) n));
++	config.pfail = log(2.0) + 2.0 * log((double) std::max(2, n)) + log(log((double) std::max(2, n)));
+ 
+ 	config.delta_scale = config.pre_delta_scale;
+ 
+ 	config.delta = config.delta_scale / (double) n;
+-	config.rmax = config.epsilon * sqrt(config.delta / (2.0 * config.epsilon / 3.0 + 2.0) / m / config.pfail);
++	config.rmax = config.epsilon * sqrt(config.delta / (2.0 * config.epsilon / 3.0 + 2.0) / std::max(1LL, m) / config.pfail);
+ 
+ 	config.pre_delta *= config.pre_delta_scale;
+ 	config.rho = 1.0 / ((2.0 * config.epsilon / 3.0 + 2.0) * config.pfail / (config.epsilon * config.epsilon * config.pre_delta));
+ }
+ 
+ static void rrw_itr_setting(int n, long long m, int iteration) {
+-	config.pfail = log(2.0) + 2.0 * log((double) n) + log(log((double) n));
++	config.pfail = log(2.0) + 2.0 * log((double) std::max(2, n)) + log(log((double) std::max(2, n)));
+ 
+ 
+ 	if (config.delta_scale_bound < config.pre_delta_scale) config.delta_scale_bound = config.pre_delta_scale;
+ 	config.delta_min = config.delta_scale_bound / (double) n;
+ 
+-	config.delta_init = 1.0/6.0/(double)config.k/log((double)n);
++	config.delta_init = 1.0/6.0/(double)config.k/log((double)std::max(2,n));
+ //OR	config.delta_init = 1.0/10.0/(double)config.k/log((double)n); //both are ok
+ 
+ 	if (config.delta_init < config.delta_min) config.delta_init = config.delta_min;
+@@ -41,7 +41,7 @@
+ 	config.delta = config.delta_init / pow(2, iteration);
+ 
+ 	if (config.delta < config.delta_min) config.delta = config.delta_min;
+-	config.rmax = config.epsilon * sqrt(config.delta / (2.0 * config.epsilon / 3.0 + 2.0) / m / config.pfail);
++	config.rmax = config.epsilon * sqrt(config.delta / (2.0 * config.epsilon / 3.0 + 2.0) / std::max(1LL, m) / config.pfail);
+ 	config.cand_fp_th = config.delta;
+ 
+ //OFFLINE parameters
+--- a/src/main.cu
++++ b/src/main.cu
+@@ -10,81 +10,91 @@
+ #include "query.h"
+ 
+ static void init_parameter(Config &config, const Graph &graph) {
++	// Bind offline samples to the exact directed multigraph.
++	unll signature = 14695981039346656037ULL;
++	auto mix = [&](unsigned int value) {
++		for (int i = 0; i < 4; ++i) {
++			signature = (signature ^ (value & 255)) * 1099511628211ULL;
++			value >>= 8;
++		}
++	};
++	mix(graph.num_vertices);
++	mix(graph.num_edges);
++	for (int v = 0; v < graph.num_vertices; ++v) {
++		mix(graph.degrees[v]);
++		for (int neighbor : graph.g[v]) mix(neighbor);
++	}
++	config.graph_signature = signature;
+ 	config.delta = 1.0 / (ValueType) graph.num_vertices;
+ 	config.pre_delta = 1.0 / (ValueType) graph.num_vertices;
+ 	config.pfail = 1.0 / (ValueType) graph.num_vertices;
+ 	config.dbar = ValueType(graph.num_edges) / ValueType(graph.num_vertices);
+ }
+ 
++static int parse_integer(const std::string& text) {
++    size_t used = 0;
++    long long value = std::stoll(text, &used);
++    if (used != text.size() || value < 0 || value > std::numeric_limits<int>::max())
++        throw std::runtime_error("invalid integer: " + text);
++    return static_cast<int>(value);
++}
++
+ int main(int argc, char** argv) {
+-	program_start(argc, argv);
+-
+-	config.graph_alias = "dblp";
+-	for (int i = 0; i < argc; i++) {
+-		std::string help_str = ""
+-				"kpar query  [options]\n"
+-				"kpar indexing  [options]\n"
+-				"options: --gpu_idx <0> --dataset <dblp> --query_size <100> --epsilon <0.5> --k <100>\n";
+-
+-		if (std::string(argv[i]) == "--help") {
+-			std::cerr << help_str << std::endl;
+-			exit(0);
+-		}
+-	}
+-
+-	config.action = argv[1];
+-	std::cout << "action: " << config.action << std::endl;
+-
+-	for (int i = 0; i < argc; i++) {
+-		if (std::string(argv[i]) == "--dataset") {
+-			config.graph_alias = argv[i + 1];
+-		}
+-	}
+-
+-	for (int i = 0; i < argc; i++) {
+-		std::string arg = argv[i];
+-		if (arg == "--epsilon") {
+-			config.epsilon = atof(argv[i + 1]);
+-		}
+-		else if (arg == "--query_size") {
+-			config.query_size = atoi(argv[i + 1]);
+-		}
+-		else if (arg == "--gpu_idx") {
+-			config.gpu_idx = atoi(argv[i + 1]);
+-		}
+-		else if (arg == "--k") {
+-			config.k = atoi(argv[i + 1]);
+-		}
+-		else if (arg == "--dataset") {
+-			// pass
+-		}else if (arg.substr(0, 2) == "--") {
+-			std::cerr << "command not recognize " << arg << std::endl;
+-			exit(1);
+-		}
+-	}
+-
+-	int devicesCount;
+-	cudaGetDeviceCount(&devicesCount);
+-	for (int deviceIndex = 0; deviceIndex < devicesCount; ++deviceIndex) {
+-		cudaDeviceProp deviceProperties;
+-		cudaGetDeviceProperties(&deviceProperties, deviceIndex);
+-	}
+-	CUDA_CHECK(cudaSetDevice(config.gpu_idx));
+-	std::cout << "set GPU " << config.gpu_idx << std::endl;
+-	if (config.action == QUERY) {
+-		config.graph_location = config.get_graph_folder();
+-		GraphD *graph = new GraphD(config.graph_location);
+-		graph->CudaInitGraph();
+-		init_parameter(config, *graph);
+-		query(graph);
+-		delete graph;
+-	} else if (config.action == PRECOMP_RW) {
+-		config.graph_location = config.get_graph_folder();
+-		Graph graph(config.graph_location);
+-		init_parameter(config, graph);
+-		precompute_setting(graph.num_vertices, graph.num_edges);
+-		RWIndex rwIndex;
+-		rwIndex.build(graph);
+-	}
+-	return 0;
++    try {
++        if (argc < 2) throw std::runtime_error("usage: kpar indexing|query [options]");
++        if (std::string(argv[1]) == "--help") {
++            std::cout << "kpar indexing|query --dataset NAME [--prefix ../data/] "
++                         "[--epsilon 0.5] [--k 100] [--query_size 100] [--gpu_idx 0] "
++                         "[--seed 20261004] [--highrrw-size 10000] [--shard-size 3000]\n";
++            return 0;
++        }
++        config.action = argv[1];
++        if (config.action != QUERY && config.action != PRECOMP_RW)
++            throw std::runtime_error("unknown action");
++        config.graph_alias = "dblp";
++        for (int i = 2; i < argc; i += 2) {
++            const std::string arg = argv[i];
++            if (i + 1 == argc) throw std::runtime_error("missing option value: " + arg);
++            const std::string value = argv[i + 1];
++            if (arg == "--dataset") config.graph_alias = value;
++            else if (arg == "--prefix") config.prefix = value + FILESEP;
++            else if (arg == "--epsilon") {
++                size_t used = 0;
++                config.epsilon = std::stod(value, &used);
++                if (used != value.size() || !std::isfinite(config.epsilon) ||
++                    config.epsilon <= 0 || config.epsilon >= 1)
++                    throw std::runtime_error("epsilon must be finite and strictly between 0 and 1");
++            } else if (arg == "--query_size") config.query_size = parse_integer(value);
++            else if (arg == "--gpu_idx") config.gpu_idx = parse_integer(value);
++            else if (arg == "--k") config.k = parse_integer(value);
++            else if (arg == "--seed") config.seed = parse_integer(value);
++            else if (arg == "--highrrw-size") config.highrrw_size = parse_integer(value);
++            else if (arg == "--shard-size") config.shard_size = parse_integer(value);
++            else throw std::runtime_error("unknown option: " + arg);
++        }
++        if (!config.k || !config.query_size || !config.shard_size || config.graph_alias.empty())
++            throw std::runtime_error("k, query_size and shard-size must be positive");
++        config.graph_location = config.get_graph_folder();
++        if (config.action == QUERY) {
++            int count = 0;
++            CUDA_CHECK(cudaGetDeviceCount(&count));
++            if (config.gpu_idx >= count) throw std::runtime_error("GPU index out of range");
++            CUDA_CHECK(cudaSetDevice(config.gpu_idx));
++            GraphD graph(config.graph_location);
++            graph.CudaInitGraph();
++            init_parameter(config, graph);
++            config.k = std::min(config.k, graph.num_vertices);
++            query(&graph);
++        } else {
++            Graph graph(config.graph_location);
++            init_parameter(config, graph);
++            precompute_setting(graph.num_vertices, graph.num_edges);
++            RWIndex rwIndex;
++            rwIndex.build(graph);
++        }
++        return 0;
++    } catch (const std::exception& e) {
++        std::cerr << "kPAR: " << e.what() << "\n";
++        return 1;
++    }
+ }
+--- a/src/model/Graph.h
++++ b/src/model/Graph.h
+@@ -32,18 +32,17 @@
+ 	void init_nm() {
+ 		std::string attribute_file = data_folder + FILESEP + "attribute.txt";
+ 		std::ifstream attr(attribute_file.c_str());
+-		std::string line1, line2;
+-		char c;
+-		while (true) {
+-			attr >> c;
+-			if (c == '=') break;
+-		}
+-		attr >> num_vertices;
+-		while (true) {
+-			attr >> c;
+-			if (c == '=') break;
+-		}
+-		attr >> num_edges;
++		char key, equals;
++		long long n, m;
++		if (!(attr >> key >> equals >> n) || key != 'n' || equals != '=' ||
++		    !(attr >> key >> equals >> m) || key != 'm' || equals != '=' ||
++		    n <= 0 || n >= std::numeric_limits<int>::max() || m < 0 ||
++		    m > std::numeric_limits<int>::max())
++			throw std::runtime_error("attribute.txt requires n>0 and m>=0 in 32-bit range");
++		std::string extra;
++		if (attr >> extra) throw std::runtime_error("unexpected graph attributes");
++		num_vertices = n;
++		num_edges = m;
+ 	}
+ 
+ 	void init_graph() {
+@@ -52,12 +51,17 @@
+ 		g = std::vector<std::vector<IndexType> >(num_vertices, std::vector<IndexType>());
+ 
+ 		//load graph
+-		FILE *fin = fopen(graph_file.c_str(), "r");
+-		IndexType t1, t2;
+-		while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
+-			if (t1 == t2) continue;
++		std::ifstream fin(graph_file);
++		if (!fin) throw std::runtime_error("cannot open graph.txt");
++		for (int i = 0; i < num_edges; ++i) {
++			long long t1, t2;
++			if (!(fin >> t1 >> t2) || t1 < 0 || t1 >= num_vertices || t2 < 0 || t2 >= num_vertices)
++				throw std::runtime_error("invalid edge or edge count in graph.txt");
++			// Retain self loops and parallel edges: both affect transition probabilities.
+ 			g[t1].push_back(t2);
+ 		}
++		std::string extra;
++		if (fin >> extra) throw std::runtime_error("graph.txt exceeds declared edge count");
+ 
+ 		for (IndexType vid = 0; vid < num_vertices; vid++) {
+ 			std::sort(g[vid].begin(), g[vid].end());
+--- a/src/model/PprData.h
++++ b/src/model/PprData.h
+@@ -79,8 +79,7 @@
+ 		cand_pool_actual_size[0] = 0;
+ 		cand_pre_alloc_num = num_vertices;
+ 		//ATTENTION if the graph is too large, estimate to assign a smaller value to cand_pre_alloc_num as follows, to save some GPU memory.
+-		if (num_vertices > 20000000)
+-			cand_pre_alloc_num = num_vertices / 10;
++		// Every vertex can qualify; an estimated tenth-sized buffer can overflow.
+ 		cand_total_scores = new ValueType[cand_pre_alloc_num];
+ 
+ 		flags = new unsigned char[num_vertices];
+--- a/src/model/PprDataD.cuh
++++ b/src/model/PprDataD.cuh
+@@ -4,7 +4,7 @@
+ 
+ #include "PprData.h"
+ #include "GraphD.cuh"
+-#include "../cub/cub.cuh"
++#include <cub/cub.cuh>
+ 
+ class PprDataD: public PprData {
+ public:
+--- a/src/model/RWIndex.h
++++ b/src/model/RWIndex.h
+@@ -85,9 +85,14 @@
+ 
+ 		//get original num rws needed per node
+ 		for (int vtxid = 0; vtxid < graph.num_vertices; vtxid++) {
+-			IndexType num_rw = ceil((double) (graph.g[vtxid].size()) * config.rmax / config.rho * (1.0 - ALPHA_DEFAULT));
++			double requested = graph.g[vtxid].empty() ? 0 : ceil((double)graph.g[vtxid].size() * config.rmax / config.rho * (1.0 - ALPHA_DEFAULT));
++			if (!std::isfinite(requested) || requested > std::numeric_limits<IndexType>::max())
++				throw std::runtime_error("epsilon requires more samples than the index can represent");
++			IndexType num_rw = requested;
+ 			num_rws_per_vtx[vtxid] = num_rw;
+ 			total_num_rws[0] += num_rw;
++			if (total_num_rws[0] > std::numeric_limits<IndexType>::max())
++				throw std::runtime_error("random-walk frequency exceeds 32-bit index capacity");
+ 		}
+ 
+ 		if (config.rw_inc_percent > 0) {
+@@ -101,12 +106,15 @@
+ 			int cntMoreRws = 0;
+ 			for (int rank = 0; rank < graph.num_vertices; ++rank) {
+ 				//nodes are already ranked by score, read them and increase their number of random walks to be done until the budget is reached.
+-				prfile >> vid;
+-				prfile >> score;
+-				prfile >> outdeg;
+-				prfile >> indeg;
++				// This optional optimization must not read an uninitialized vertex
++				// when the PR/outdegree ranking file is absent or ends early.
++				if (!(prfile >> vid >> score >> outdeg >> indeg)) break;
++				if (vid < 0 || vid >= graph.num_vertices || outdeg <= 0)
++					throw std::runtime_error("invalid PR/outdegree ranking record");
+ 
+ 				IndexType num_rw_old = num_rws_per_vtx[vid];
++				if (num_rw_old > std::numeric_limits<IndexType>::max() / 4)
++					throw std::runtime_error("ranked sample count exceeds index capacity");
+ 				IndexType num_rw_new = config.ifactor * num_rw_old;
+ 				if (config.ifactor == 1) num_rw_new *= 2;
+ 				else if (outdeg == 1) num_rw_new *= 2;
+@@ -124,6 +132,8 @@
+ 			total_num_rws[0] = 0;
+ 			for (int source = 0; source < graph.num_vertices; source++) {
+ 				total_num_rws[0] += (unll) num_rws_per_vtx[source];
++				if (total_num_rws[0] > std::numeric_limits<IndexType>::max())
++					throw std::runtime_error("ranked frequency exceeds 32-bit index capacity");
+ 			}
+ 		}
+ 
+@@ -131,8 +141,7 @@
+ 		for (int source = 0; source < graph.num_vertices; source++) {
+ 			rw_begin_pos_per_vtx[source + 1] = (unll) num_rws_per_vtx[source] + (unll) rw_begin_pos_per_vtx[source];
+ 		}
+-		std::random_device rd;
+-		std::mt19937 rand_gen(rd());
++		std::mt19937 rand_gen(config.seed);
+ 		std::uniform_real_distribution<> dist(0.0, 1.0);
+ 		rw_dsts_per_vtx = new IndexType[total_num_rws[0]];
+ 		for (int source = 0; source < graph.num_vertices; source++) {
+@@ -261,7 +270,7 @@
+ 		std::string filename = config.graph_location + rw_idx_reverse_filename;
+ 		if (!file_exists_test(filename)) {
+ 			std::cerr << filename << "rw_idx file does not exist" << std::endl;
+-			return;
++			throw std::runtime_error("random-walk index is missing");
+ 		}
+ 		loadReverseInternal(filename, numVertices);
+ 	}
+@@ -275,10 +284,16 @@
+ 			vtxFreqPairs.push_back(std::make_pair(vid, freq_sum_per_vtx[vid]));
+ 		}
+ 		std::sort(vtxFreqPairs.begin(), vtxFreqPairs.end(), sortBySecondDesc<IndexType, IndexType>);
+-		rrw_freq_ub = vtxFreqPairs[config.highrrw_size].second;
+-		cand_actual_size_highrrw = 0;
+-		for (cand_actual_size_highrrw = 0; cand_actual_size_highrrw < vtxFreqPairs.size(); ++cand_actual_size_highrrw) {
+-			if (vtxFreqPairs[cand_actual_size_highrrw].second <= rrw_freq_ub) break;
++		if (config.highrrw_size >= numVertices) {
++			// There is no unprocessed remainder when every vertex fits.
++			rrw_freq_ub = 0;
++			cand_actual_size_highrrw = numVertices;
++		} else {
++			rrw_freq_ub = vtxFreqPairs[config.highrrw_size].second;
++			cand_actual_size_highrrw = 0;
++			while (cand_actual_size_highrrw < numVertices &&
++			       vtxFreqPairs[cand_actual_size_highrrw].second > rrw_freq_ub)
++				++cand_actual_size_highrrw;
+ 		}
+ 		nodes_highrrw = new IndexType[cand_actual_size_highrrw];
+ 		for (int i = 0; i < cand_actual_size_highrrw; ++i) {
+@@ -388,6 +403,10 @@
+ private:
+ 	void outputReverseIndexToFile(const std::string& filename, int numVertices) {
+ 		std::ofstream outputfile(filename);
++		outputfile.exceptions(std::ios::failbit | std::ios::badbit);
++		outputfile << "KPAR2 " << numVertices << " " << config.graph_signature << " "
++		           << std::setprecision(17) << config.epsilon << " " << config.alpha << " "
++		           << config.pre_delta_scale << "\n";
+ 		outputfile << total_num_src_pairs << std::endl;
+ 		outputfile << total_num_sigFreqs << std::endl;
+ 		for (int i = 0; i < numVertices; ++i) {
+@@ -441,8 +460,22 @@
+ 
+ 	void loadReverseInternal(const std::string& filename, int numVertices) {
+ 		std::ifstream rrw_file(filename);
++		std::string format;
++		int indexed_n;
++		unll signature;
++		double epsilon, alpha, scale;
++		if (!(rrw_file >> format) || format != "KPAR2" ||
++		    !(rrw_file >> indexed_n >> signature >> epsilon >> alpha >> scale) ||
++		    indexed_n != numVertices || signature != config.graph_signature ||
++		    epsilon != config.epsilon || alpha != config.alpha || scale != config.pre_delta_scale)
++			throw std::runtime_error("incompatible random-walk index; rebuild with this graph and epsilon");
++		rrw_file.exceptions(std::ios::failbit | std::ios::badbit);
+ 		rrw_file >> total_num_src_pairs;
+ 		rrw_file >> total_num_sigFreqs;
++		if (total_num_src_pairs > (unll)numVertices*numVertices ||
++		    total_num_src_pairs > std::filesystem::file_size(filename) ||
++		    total_num_sigFreqs > total_num_src_pairs)
++			throw std::runtime_error("invalid random-walk index dimensions");
+ 		num_rws_per_vtx = new IndexType[numVertices];
+ 		for (int i = 0; i < numVertices; ++i) {
+ 			rrw_file >> num_rws_per_vtx[i];
+@@ -487,6 +520,38 @@
+ 		for (unll i = 0; i < total_num_sigFreqs; ++i) {
+ 			rrw_file >> sigFreqs_per_vtx[i];
+ 		}
++		if (src_begin_pos_per_vtx[0] != 0 || sigFreq_begin_pos_per_vtx[0] != 0 ||
++		    src_begin_pos_per_vtx[numVertices] != total_num_src_pairs ||
++		    sigFreq_begin_pos_per_vtx[numVertices] != total_num_sigFreqs)
++			throw std::runtime_error("invalid random-walk index offsets");
++		std::vector<unll> walks(numVertices, 0);
++		for (int v = 0; v < numVertices; ++v) {
++			const unll begin = src_begin_pos_per_vtx[v], end = src_begin_pos_per_vtx[v+1];
++			const unll sig = sigFreq_begin_pos_per_vtx[v], sigend = sigFreq_begin_pos_per_vtx[v+1];
++			if (begin > end || end > total_num_src_pairs || sig > sigend || sigend > total_num_sigFreqs ||
++			    num_rws_per_vtx[v] < 0 || rmax_scale_per_vtx[v] < 1 ||
++			    num_srcs_per_vtx[v] < 0 || (unll)num_srcs_per_vtx[v] != end-begin ||
++			    num_sigFreqs_per_vtx[v] < 0 || (unll)num_sigFreqs_per_vtx[v] != sigend-sig || sigend-sig > end-begin)
++				throw std::runtime_error("invalid random-walk index row");
++			unll sum = 0;
++			std::set<int> seen;
++			for (unll i = begin; i < end; ++i) {
++				const int source = rw_srcs_per_vtx[i];
++				const int freq = i-begin < sigend-sig ? sigFreqs_per_vtx[sig+i-begin] : 1;
++				if (source < 0 || source >= numVertices || freq < 1 || !seen.insert(source).second)
++					throw std::runtime_error("invalid random-walk index entry");
++				sum += freq;
++				walks[source] += freq;
++			}
++			if (freq_sum_per_vtx[v] < 0 || sum != (unll)freq_sum_per_vtx[v])
++				throw std::runtime_error("invalid random-walk index frequency sum");
++		}
++		for (int v = 0; v < numVertices; ++v)
++			if (walks[v] != (unll)num_rws_per_vtx[v])
++				throw std::runtime_error("random-walk index loses sample mass");
++		rrw_file.exceptions(std::ios::badbit);
++		std::string extra;
++		if (rrw_file >> extra) throw std::runtime_error("unexpected index data");
+ 		std::cout << "loaded index from " << filename << std::endl;
+ 	}
+ };
+--- a/src/query.h
++++ b/src/query.h
+@@ -7,24 +7,26 @@
+ #include "util/GPUTimer.cuh"
+ 
+ bool descScore(const std::pair<IndexType, ValueType> &a, const std::pair<IndexType, ValueType> &b) {
+-	return a.second > b.second;
++	return a.second == b.second ? a.first < b.first : a.second > b.second;
+ }
+ 
+ template<typename IndexType, typename ValueType>
+ std::vector<std::pair<IndexType, ValueType>> getTopkResult(IndexType source, ValueType* d_candidate_scores,
+ 		IndexType* d_candidate_set, int cand_size, std::string filename) {
+ 
+-	ValueType *h_candidate_scores = new ValueType[cand_size];
+-	IndexType *h_candidate_set = new IndexType[cand_size];
++	if (cand_size < config.k) throw std::runtime_error("incomplete candidate result");
++	std::vector<ValueType> h_candidate_scores(cand_size);
++	std::vector<IndexType> h_candidate_set(cand_size);
+ 
+-	CUDA_CHECK(cudaMemcpy(h_candidate_scores, d_candidate_scores, sizeof(ValueType) * cand_size, cudaMemcpyDeviceToHost));
+-	CUDA_CHECK(cudaMemcpy(h_candidate_set, d_candidate_set, sizeof(IndexType) * cand_size, cudaMemcpyDeviceToHost));
++	CUDA_CHECK(cudaMemcpy(h_candidate_scores.data(), d_candidate_scores, sizeof(ValueType) * cand_size, cudaMemcpyDeviceToHost));
++	CUDA_CHECK(cudaMemcpy(h_candidate_set.data(), d_candidate_set, sizeof(IndexType) * cand_size, cudaMemcpyDeviceToHost));
+ 
+ 	std::vector<std::pair<IndexType, ValueType>> topks;
+ 
+ 	for (int idx = 0; idx < cand_size; ++idx) {
+ 		ValueType score = h_candidate_scores[idx];
+ 		IndexType vid = h_candidate_set[idx];
++		if (!std::isfinite(score) || score < 0) throw std::runtime_error("invalid candidate score");
+ 		topks.push_back(std::make_pair(vid, score));
+ 	}
+ 
+@@ -32,16 +34,15 @@
+ 
+ 	std::ofstream outfile;
+ 	outfile.open(filename);
++	if (!outfile) throw std::runtime_error("cannot write query result");
+ 	int cnt = 0;
+ 	for (auto& scorepair : topks) {
+ 		outfile << scorepair.first << " " << std::fixed << std::setprecision(12) << scorepair.second << "\n";
+ 		outfile.flush();
+ 		cnt++;
+-		if (cnt > config.k) break;
++		if (cnt >= config.k) break;
+ 	}
+ 	outfile.close();
+-	delete[] h_candidate_scores;
+-	delete[] h_candidate_set;
+ 	return topks;
+ }
+ 
+@@ -51,17 +52,17 @@
+ 	unsigned int query_size = sources.size();
+ 	query_size = min(query_size, config.query_size);
+ 	config.query_size = query_size;
++	for (IndexType source : sources)
++		if (source < 0 || source >= graph->num_vertices) throw std::runtime_error("query vertex out of range");
+ 
+ 	GPUTimer timer;
+ 	timer.CreateEvents();
+ 
+-	RWIndexD *rwidxD = NULL;
+-	HighRrwIndex *highRrwIdxD = NULL;
+-	rwidxD = new RWIndexD();
++	std::unique_ptr<RWIndexD> rwidxD(new RWIndexD());
+ 	rwidxD->LoadReverseHost(graph->num_vertices);
+ 	//ATTENTION: Below process of building HighRrwIndex can be moved to offline since it is reused for all queries.
+ 	rwidxD->GetHighRrwNodes(graph->num_vertices);
+-	highRrwIdxD = new HighRrwIndex(rwidxD);
++	std::unique_ptr<HighRrwIndex> highRrwIdxD(new HighRrwIndex(rwidxD.get()));
+ 	rwidxD->removeHighRrwNodes(graph->num_vertices);
+ 	rwidxD->CudaAllocInitReverseRWIndex(graph->num_vertices);
+ 
+@@ -70,12 +71,12 @@
+ 	float total_elapsed_time = 0;
+ 	for (int idx = 0; idx < query_size; idx++) {
+ 		IndexType source = sources[idx];
+-		if (graph->degrees[source] > 0) {
+-			PprDataD *ppr = new PprDataD(source, graph->num_vertices);
++		{
++			std::unique_ptr<PprDataD> ppr(new PprDataD(source, graph->num_vertices));
+ 			ppr->CudaInitPprDataRrw(rwidxD->nodes_highrrw, rwidxD->cand_actual_size_highrrw);
+ 
+ 			timer.StartTimer();
+-			kPAR<IndexType, ValueType>(graph, ppr, rwidxD, highRrwIdxD);
++			kPAR<IndexType, ValueType>(graph, ppr.get(), rwidxD.get(), highRrwIdxD.get());
+ 			timer.EndTimer();
+ 
+ 			float timePerQuery = timer.GetElapsedMilliSeconds();
+@@ -88,12 +89,9 @@
+ 			std::string resultFilename = kFolder + std::to_string(source) + ".txt";
+ 			getTopkResult<IndexType, ValueType>(ppr->source, ppr->d_cand_total_scores, ppr->d_cand_total_set, ppr->processedSize, resultFilename);
+ 
+-			delete ppr;
+ 		}
+ 	}
+ 	std::cout <<"k=" << config.k << ": " << total_elapsed_time / query_size << " ms\n";
+-	delete rwidxD;
+-	delete highRrwIdxD;
+ }
+ 
+ #endif /* QUERY_H_ */
+--- a/src/util/CudaUtil.cuh
++++ b/src/util/CudaUtil.cuh
+@@ -2,8 +2,8 @@
+ #define CUDAUTIL_CUH_
+ 
+ #include <iostream>
+-#include "cub/util_allocator.cuh"
+-#include "cub/device/device_reduce.cuh"
++#include <cub/util_allocator.cuh>
++#include <cub/device/device_reduce.cuh>
+ using namespace cub;
+ 
+ __device__ double static atomicExch(double* address, double val) {
+--- a/src/util/config.h
++++ b/src/util/config.h
+@@ -16,6 +16,15 @@
+ #include <unordered_map>
+ #include <utility>
+ #include <iomanip>
++#include <random>
++#include <set>
++#include <map>
++#include <tuple>
++#include <cmath>
++#include <stdexcept>
++#include <filesystem>
++#include <limits>
++#include <memory>
+ #include "CudaUtil.cuh"
+ 
+ typedef int IndexType;
+@@ -43,8 +52,8 @@
+ static const size_t BLOCK_SIZE_HIRRW = 1024;
+ 
+ template<typename IndexType>
+-static IndexType calc_num_blocks(IndexType total_items, IndexType items_per_block) {
+-	IndexType num_blocks = (total_items + items_per_block - 1) / items_per_block;
++static IndexType calc_num_blocks(unll total_items, unll items_per_block) {
++	unll num_blocks = (total_items + items_per_block - 1) / items_per_block;
+ 	size_t max_num_blocks = TOTAL_THREADS_GPU / items_per_block;
+ 	if (max_num_blocks < num_blocks) num_blocks = max_num_blocks;
+ 	return num_blocks;
+@@ -75,7 +84,8 @@
+ 	double delta_scale_bound = 1;
+ 
+ 	ValueType pre_delta = 0;
+-	ValueType pre_delta_scale = 16;
++	// Resolve scores down to 1/n; 16/n is too coarse for small graphs and large k.
++	ValueType pre_delta_scale = 1;
+ 
+ 	ValueType alpha = ALPHA_DEFAULT;
+ 
+@@ -98,6 +108,8 @@
+ 
+ 	int rw_inc_percent = 20;
+ 	int ifactor = 2;// or 4
++	unsigned int seed = 20261004;
++	unll graph_signature = 0;
+ };
+ 
+ static Config config;
+--- a/src/util/util.h
++++ b/src/util/util.h
+@@ -36,25 +36,25 @@
+ }
+ 
+ void CreatePath(const std::string &s) {
+-	std::string cmd = "mkdir -p " + s;
+-	const int dir_err = system(cmd.c_str());
+-	if (-1 == dir_err) {
+-		printf("Error creating directory!");
+-		exit(1);
+-	}
++	std::filesystem::create_directories(s);
+ }
+ template<typename IndexType>
+ void load_queries(std::vector<IndexType>& queries) {
+ 	std::string filename = config.graph_location + "queries.txt";
+ 	if (!file_exists_test(filename)) {
+ 		std::cerr << "query file does not exist, please generate ss query files first" << std::endl;
+-		exit(0);
++		throw std::runtime_error("missing queries.txt");
+ 	}
+ 	std::ifstream queryfile(filename);
+-	IndexType v;
+-	while (queryfile >> v) {
+-		queries.push_back(v);
++	std::string token;
++	while (queryfile >> token) {
++		size_t used = 0;
++		long long v = std::stoll(token, &used);
++		if (used != token.size() || v < 0 || v > std::numeric_limits<IndexType>::max())
++			throw std::runtime_error("invalid query vertex");
++		queries.push_back(static_cast<IndexType>(v));
+ 	}
++	if (!queryfile.eof() || queries.empty()) throw std::runtime_error("invalid or empty queries.txt");
+ 	std::cout << "loaded queries from " << filename << std::endl;
+ }
+ 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project(GraphMineInstallConsumer LANGUAGES CXX)
 
-find_package(GraphMine 0.1 REQUIRED COMPONENTS
+find_package(GraphMine 1.0 REQUIRED COMPONENTS
   maximal_cliques
   maximum_clique
   k_core
@@ -15,6 +15,8 @@ find_package(GraphMine 0.1 REQUIRED COMPONENTS
   graph_motifs
   temporal_motif_mining
   community_detection
+  validated_expansion
+  repaired_algorithms
 )
 
 add_executable(graphmine_install_consumer main.cpp)
@@ -33,4 +35,10 @@ target_link_libraries(graphmine_install_consumer
     GraphMine::graph_motifs
     GraphMine::temporal_motif_mining
     GraphMine::community_detection
+    GraphMine::validated_expansion
+    GraphMine::repaired_algorithms
 )
+
+add_executable(graphmine_repaired_install_consumer ../repaired_algorithms_test.cpp)
+target_link_libraries(graphmine_repaired_install_consumer PRIVATE
+  GraphMine::repaired_algorithms GraphMine::validated_expansion)

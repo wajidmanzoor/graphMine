@@ -32,6 +32,8 @@ def value_for(specification: dict) -> object:
         return max(0.0, specification.get("minimum", 0.0))
     if specification["type"] == "boolean":
         return False
+    if specification["type"] == "vertex_groups":
+        return [[0], ["0"]]
     return "value"
 
 
@@ -39,7 +41,7 @@ def test_catalog_has_full_problem_operation_and_domain_context(
     catalog: Catalog,
 ) -> None:
     assert len(catalog.problems) == 37
-    assert len(catalog.instructions) == 18
+    assert len(catalog.instructions) == 24
     assert len(catalog.domains) == 9
     assert catalog.domain("fraud_detection").name == "Fraud and financial crime"
     assert all(

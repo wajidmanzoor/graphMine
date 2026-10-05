@@ -188,32 +188,11 @@
       "sample_count": 9
     },
     "maximum-clique": {
-      "global_ranked_backends": [
-        "cuda-ms",
-        "maximum-clique-on-gpu",
-        "gpu-maximum-clique"
-      ],
-      "global_median_wall_ms": {
-        "cuda-ms": 278.59661,
-        "gpu-maximum-clique": 287.870156,
-        "maximum-clique-on-gpu": 279.818323
-      },
-      "buckets": {
-        "tiny:dense:undirected:static": {
-          "ranked_backends": [
-            "cuda-ms",
-            "maximum-clique-on-gpu",
-            "gpu-maximum-clique"
-          ],
-          "median_wall_ms": {
-            "cuda-ms": 278.59661,
-            "gpu-maximum-clique": 287.870156,
-            "maximum-clique-on-gpu": 279.818323
-          },
-          "sample_count": 9
-        }
-      },
-      "sample_count": 9
+      "global_ranked_backends": [],
+      "global_median_wall_ms": {},
+      "buckets": {},
+      "sample_count": 0,
+      "note": "Pre-repair timings retired. Correctness re-audited in validation/repaired_library; no post-repair performance ranking has been trained. Use the instruction default or an explicit compiled backend."
     },
     "quasi-cliques": {
       "global_ranked_backends": [

@@ -1,0 +1,46 @@
+{
+  "commit": "3e704f98cf873336e2cf789570774039c8d6f092",
+  "patch_sha256": "d96df403616b5a98b31f955df371c7db5e36f9b6a15dc477ca5a75ffd68a610a",
+  "archive_sha256": "908fa3108a5763e7f20e29ebaf84ef1222cf252b85db89142de266489ff68404",
+  "commands": [
+    [
+      "cmake",
+      "-S",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-wide/source/cudaCode",
+      "-B",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-wide/build",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_CUDA_ARCHITECTURES=89",
+      "-DCMAKE_CUDA_FLAGS=-lineinfo -DCDS_CAPACITY_SCALE=1099511627776ULL"
+    ],
+    [
+      "cmake",
+      "--build",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-wide/build",
+      "--parallel",
+      "4"
+    ]
+  ],
+  "gpu": 1,
+  "architecture": 89,
+  "capacity_scale": 1099511627776,
+  "poison_allocations": false,
+  "compiled_source_sha256": {
+    "cudaCode/.vscode/settings.json": "bd2db85213ff4f708c66d9035b9ff7a5a785bcb5f6037c8e0f4ec9857ee5251a",
+    "cudaCode/CMakeLists.txt": "76d04e40a0826bf5f8fe6d32c1f4c752c0931cb6515dbff33f95b141d36e395a",
+    "cudaCode/data/test.txt": "bc907c17bf8cbd44b251212685a935d2a4c5004ac46fb9db00c4fe3e5cfd2c29",
+    "cudaCode/inc/common.h": "e0684d4a8ea0d2cdd10e9646c8dfc587837064e87ec186db0de0babc1851b94b",
+    "cudaCode/inc/exactFlow.cuh": "b5361dd75ef75465598d10b4b38a5eba3c49f45e0b235cd7ad31c031638da3d3",
+    "cudaCode/inc/gpuMemoryAllocation.cuh": "135877206ca4275252eb4f7227fd92e78faa6aeb6c5a52ca6200fed07486bfdd",
+    "cudaCode/inc/graph.h": "b28035ece5214040361d1cb60a991fd9882fdaa12bee83471f2eba875a8aa2f6",
+    "cudaCode/inc/helpers.cuh": "71b6af4dc17fe9b7ad26dbf677d97b194f8493a15947030ea8b9e8588970bafd",
+    "cudaCode/main.cu": "81b92b217c13c1b8fe23cef4cf69f25093daf875dc1df671a63cea98f95018da",
+    "cudaCode/src/common.cpp": "7dbd6c5297ffe2b6fa1546a871ecf439bb7750a9fcdbf73c8e3b9b8f1126588b",
+    "cudaCode/src/gpuMemoryAllocation.cu": "8881098c596db7c1ddf4f1fa01b7b3ad773c717f024941b19c99a971936fa410",
+    "cudaCode/src/graph.cpp": "73cc81a0856c0f3a5c4b095130b9680394eff7575fdced08f039843b1e96529a",
+    "cudaCode/src/helpers.cu": "5322a1ba7e25aab9cb2f3c12824a2b36b585e0b27b67e253d7b53c95b9224fbf",
+    "cudaCode/utils/cuda_utils.cuh": "f74078e116b1a34312313e864ffff1c62220546773dc16c0151a1dac68a26066"
+  },
+  "binary": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/cds/_work/clean-wide/build/main",
+  "binary_sha256": "46bbcf7f3f07c244e21ce6bbce019da5a273029d8358528ebd17fc19bf8e1f72"
+}

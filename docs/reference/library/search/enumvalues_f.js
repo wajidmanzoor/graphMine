@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['tot_0',['tot',['../d8/d4c/namespacegraphmine.html#af0d35e25d2793f0e6c896bdc5052b213a0b080119cbf1138edfa9132471e1a661',1,'graphmine']]],
-  ['total_5fcount_1',['total_count',['../d8/d4c/namespacegraphmine.html#a94524e491ec7b56f47de6fe62d92b1eda34421e038313479a3f2109ee717982e0',1,'graphmine::total_count'],['../d8/d4c/namespacegraphmine.html#acddb9b577bf2b64d7d0a797bcda51f2fa34421e038313479a3f2109ee717982e0',1,'graphmine::total_count'],['../d8/d4c/namespacegraphmine.html#a4a58e3e904127ef16ecee46fe256759ca34421e038313479a3f2109ee717982e0',1,'graphmine::total_count']]],
-  ['turbo_5fbc_2',['turbo_bc',['../d8/d4c/namespacegraphmine.html#a665e96164d84f812c8f958dd3c96605faf1943d9d41a357575fda023860dd1b31',1,'graphmine']]]
+  ['ranking_0',['ranking',['../d8/d4c/namespacegraphmine.html#a51ec37e6a86373ca89d14a10dff0efb6aee240fe51687ee66cca7493aedcc3c24',1,'graphmine']]],
+  ['rdmce_1',['rdmce',['../d8/d4c/namespacegraphmine.html#a3b7ce33ac8417dc87cb49c2fb3132289af94f801f7e88ad8449c27aafdd5a7fac',1,'graphmine']]],
+  ['requested_5fcore_5fedges_2',['requested_core_edges',['../d8/d4c/namespacegraphmine.html#aaa5743f55973978a65ad222634019c82aeaf56059ab88d3a65810aba40a615d52',1,'graphmine']]],
+  ['requested_5fcore_5fvertices_3',['requested_core_vertices',['../d8/d4c/namespacegraphmine.html#aaa5743f55973978a65ad222634019c82ae7b92a59d16f9f7b9bfb84df4c5650fe',1,'graphmine']]],
+  ['resource_5fexhausted_4',['resource_exhausted',['../d8/d4c/namespacegraphmine.html#a13a72827a8e941729e8d424aedf9a3fcaf4c1197058f696c2a362915e5413633d',1,'graphmine']]],
+  ['right_5',['RIGHT',['../dd/da5/relation_8cuh.html#ad1a2a8d06b56690726ae797f4efa18abaec8379af7490bb9eaaf579cf17876f38',1,'relation.cuh']]]
 ];

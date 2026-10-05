@@ -1,0 +1,40 @@
+[
+  {
+    "case": "cycle_16",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/baseline-kpar",
+      "query",
+      "--gpu_idx",
+      "0",
+      "--dataset",
+      "cycle_16",
+      "--query_size",
+      "1",
+      "--epsilon",
+      "0.5",
+      "--k",
+      "4"
+    ],
+    "exit_code": 0,
+    "output": "0 0.205629499534\n1 0.165629499534\n2 0.129407374884\n3 0.106622124651\n4 0.086142124651\n"
+  },
+  {
+    "case": "cycle_64",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/kpar/_work/baseline-kpar",
+      "query",
+      "--gpu_idx",
+      "0",
+      "--dataset",
+      "cycle_64",
+      "--query_size",
+      "1",
+      "--epsilon",
+      "0.5",
+      "--k",
+      "4"
+    ],
+    "exit_code": 0,
+    "output": ""
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-04",
+  "python": "3.12.3",
+  "networkx": "2.8.8",
+  "gcc": "13.3.0",
+  "cmake": "cmake version 3.28.3",
+  "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+  "compute_sanitizer": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.1.0.0 (build 35583870) (public-release)",
+  "gpu": {
+    "index": 1,
+    "name": "NVIDIA RTX 6000 Ada Generation",
+    "compute_capability": "8.9",
+    "driver": "570.211.01"
+  }
+}

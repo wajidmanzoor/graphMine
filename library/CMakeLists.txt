@@ -540,7 +540,7 @@ if(GRAPHMINE_HAS_CUDAMS)
   )
   target_compile_features(graphmine_backend_cuda_ms PUBLIC cxx_std_17)
   target_compile_options(graphmine_backend_cuda_ms PRIVATE
-    $<$<COMPILE_LANGUAGE:C>:-ffast-math;-fopenmp>
+    $<$<COMPILE_LANGUAGE:C>:-fopenmp>
   )
   set_target_properties(graphmine_backend_cuda_ms PROPERTIES
     C_STANDARD 99
@@ -1859,6 +1859,7 @@ set_target_properties(graphmine_maximal_cliques PROPERTIES
   POSITION_INDEPENDENT_CODE ON
 )
 
+include(cmake/RepairedAlgorithms.cmake)
 include(cmake/ValidatedExpansion.cmake)
 
 if(GRAPHMINE_BUILD_CLI)
@@ -1877,6 +1878,8 @@ if(GRAPHMINE_BUILD_CLI)
     PRIVATE GRAPHMINE_VERSION="${PROJECT_VERSION}"
   )
   target_link_libraries(graphmine_cli PRIVATE
+    GraphMine::repaired_algorithms
+    graphmine_json
     GraphMine::validated_expansion
     GraphMine::maximal_cliques
     GraphMine::maximum_clique
@@ -1905,6 +1908,10 @@ endif()
 
 if(GRAPHMINE_BUILD_TESTS)
   enable_testing()
+  add_executable(graphmine_repaired_algorithms_test tests/repaired_algorithms_test.cpp)
+  target_link_libraries(graphmine_repaired_algorithms_test PRIVATE GraphMine::repaired_algorithms GraphMine::validated_expansion)
+  add_test(NAME graphmine_repaired_algorithms_test COMMAND graphmine_repaired_algorithms_test)
+  set_tests_properties(graphmine_repaired_algorithms_test PROPERTIES TIMEOUT 120)
   add_executable(graphmine_validated_expansion_test tests/validated_expansion_test.cpp)
   target_link_libraries(graphmine_validated_expansion_test PRIVATE GraphMine::validated_expansion)
   add_test(NAME graphmine_validated_expansion_test COMMAND graphmine_validated_expansion_test)

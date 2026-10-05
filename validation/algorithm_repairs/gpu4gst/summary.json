@@ -1,0 +1,115 @@
+{
+  "status": "passed",
+  "totals": {
+    "numerical_checks": 93322,
+    "cuda_sanitizer_checks": 536,
+    "rejection_checks": 228
+  },
+  "suites": {
+    "numerical": {
+      "status": "passed",
+      "cases": 1207,
+      "checks": 45901,
+      "witnesses": 38021,
+      "failures": 0,
+      "seconds": 108.5,
+      "process_exit": 0
+    },
+    "repeat": {
+      "status": "passed",
+      "cases": 330,
+      "checks": 1410,
+      "witnesses": 1380,
+      "failures": 0,
+      "seconds": 33.521,
+      "process_exit": 0
+    },
+    "memcheck": {
+      "status": "passed",
+      "cases": 18,
+      "checks": 134,
+      "witnesses": 130,
+      "failures": 0,
+      "seconds": 2.078,
+      "process_exit": 0
+    },
+    "initcheck": {
+      "status": "passed",
+      "cases": 18,
+      "checks": 134,
+      "witnesses": 130,
+      "failures": 0,
+      "seconds": 1.777,
+      "process_exit": 0
+    },
+    "racecheck": {
+      "status": "passed",
+      "cases": 18,
+      "checks": 134,
+      "witnesses": 130,
+      "failures": 0,
+      "seconds": 54.636,
+      "process_exit": 0
+    },
+    "synccheck": {
+      "status": "passed",
+      "cases": 18,
+      "checks": 134,
+      "witnesses": 130,
+      "failures": 0,
+      "seconds": 5.082,
+      "process_exit": 0
+    },
+    "asan": {
+      "status": "passed",
+      "cases": 1207,
+      "checks": 45901,
+      "witnesses": 38021,
+      "failures": 0,
+      "seconds": 112.013,
+      "process_exit": 0
+    },
+    "cli": {
+      "status": "passed",
+      "positive_checks": 27,
+      "positive_invocations": 10,
+      "rejections": 57,
+      "failures": 0,
+      "binary_sha256": "4eaf29278a326fa0bc913681d24056ffa452b2ddf5efba5f9d7a6e3df49123c1"
+    },
+    "asan-cli": {
+      "status": "passed",
+      "positive_checks": 27,
+      "positive_invocations": 10,
+      "rejections": 57,
+      "failures": 0,
+      "binary_sha256": "90d2eb55429d49f7307b877017e1e2d080e118d9f94b5b20effe5313256752db"
+    }
+  },
+  "production": {
+    "status": "passed",
+    "checks": 56,
+    "rejections": 114,
+    "failures": 0,
+    "builds": {
+      "make": {
+        "status": "passed",
+        "positive_checks": 27,
+        "positive_invocations": 10,
+        "rejections": 57,
+        "failures": 0,
+        "binary_sha256": "74c965b5460b4a0ec40a648f23b7b0c438e3875dfc4f75de4d589f3cec8725b0"
+      },
+      "cmake": {
+        "status": "passed",
+        "positive_checks": 27,
+        "positive_invocations": 10,
+        "rejections": 57,
+        "failures": 0,
+        "binary_sha256": "46c3429d068e60cb3b4bce7ce908917f0043d5571118c5145dce82a837b9c80a"
+      }
+    },
+    "production_binary_sha256": "74c965b5460b4a0ec40a648f23b7b0c438e3875dfc4f75de4d589f3cec8725b0"
+  },
+  "gpu": "physical GPU 1, NVIDIA RTX 6000 Ada Generation (SM 89)"
+}

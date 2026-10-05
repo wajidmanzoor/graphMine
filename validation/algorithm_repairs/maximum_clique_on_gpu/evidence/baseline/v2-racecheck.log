@@ -1,0 +1,28 @@
+========= COMPUTE-SANITIZER
+Max Core = 2
+[1;32m[17:37:06] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[17:37:06] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[17:37:06] VRAM usage: 666107904 B
+[0m[1;32m[17:37:06] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 3
+[1;32m[17:37:07] Max directed degree: 3, max undirected degree: 3
+[0m[1;32m[17:37:07] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[17:37:07] VRAM usage: 664010752 B
+[0m[1;32m[17:37:07] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 33
+[1;32m[17:37:09] Max directed degree: 33, max undirected degree: 33
+[0m[1;32m[17:37:09] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[17:37:09] VRAM usage: 668205056 B
+[0m[1;32m[17:37:09] Launching search kernel with grid size: 3408, and block size: 64
+[0mMax Core = 14
+[1;32m[17:37:11] Max directed degree: 19, max undirected degree: 25
+[0m[1;32m[17:37:11] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[17:37:11] VRAM usage: 661913600 B
+[0m[1;32m[17:37:11] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 6.
+========= Warning: Race reported between Read access at void mcp_kernel_l1_wl_donor_psanse<unsigned int, (unsigned int)64, (unsigned int)32>(mcp::GLOBAL_HANDLE<T1>, unsigned int *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *)+0xa5c0 in mcp_kernel_wl_donor.cuh:267
+=========     and Write access at void mcp_kernel_l1_wl_donor_psanse<unsigned int, (unsigned int)64, (unsigned int)32>(mcp::GLOBAL_HANDLE<T1>, unsigned int *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *, cuda::__4::atomic<unsigned int, (cuda::std::__4::thread_scope)1> *)+0xa640 in mcp_kernel_wl_donor.cuh:269 [32 hazards]
+========= 
+========= RACECHECK SUMMARY: 1 hazard displayed (0 errors, 1 warning)

@@ -16,4 +16,11 @@ agent/.env
 benchmark-results/
 .graphmine-domain-evaluation/
 .graphmine-learning/
+library/repaired-workers/
+# Repaired workers are built from pinned external checkouts, not redistributed.
+problems/21_personalized_pagerank_rwr/papers/2020_kpar/code/
+problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/code/
+problems/27_group_steiner_tree/papers/2025_gpu4gst/code/
+problems/28_influence_maximization/papers/2021_superfuser/code/
+problems/02_maximum_clique/papers/2019_maximum_clique_cuda/code/find_cliques
 agent/frontend/node_modules/

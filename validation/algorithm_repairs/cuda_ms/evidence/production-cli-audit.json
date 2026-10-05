@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "provenance": {
+    "problem": "maximum_clique",
+    "backend": "cuda-ms",
+    "backend_version": "CUDA-MS artifact (2026-10-04 exact completion repair)",
+    "source_commit": "a0b6b00a1f67",
+    "execution_path": "repaired CUDA-MS relaxation + completed GPU coloring branch-and-bound + clique witness"
+  },
+  "warnings": [],
+  "statistics": {
+    "end_to_end_ms": 1.22310992E2,
+    "backend_ms": 2.0525843E1,
+    "output_materialization_ms": 0E0
+  },
+  "output": {
+    "maximum_size": 4,
+    "cliques": [
+      [
+        "vertex:2",
+        "vertex:4",
+        "vertex:6",
+        "vertex:7"
+      ]
+    ],
+    "optimal": true
+  }
+}

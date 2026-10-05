@@ -27,7 +27,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="../../graphmine-mark.svg"/></td>
   <td id="projectalign">
-   <div id="projectname">GraphMine library code reference<span id="projectnumber">&#160;0.1.0</span>
+   <div id="projectname">GraphMine library code reference<span id="projectnumber">&#160;1.0.0</span>
    </div>
    <div id="projectbrief">Function-level C++ and CUDA documentation</div>
   </td>
@@ -147,7 +147,7 @@ $(document).ready(function(){initNavTree('d9/d0f/subgraph__isomorphism__test_8cp
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>               {1, 4}, {2, 3}, {2, 4}, {3, 4}, {4, 5}, {5, 6},</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>               {5, 7}, {6, 7}, {7, 8}, {8, 9}, {8, 10}, {8, 11},</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>               {9, 10}, {10, 11}};</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keyword">const</span> <span class="keyword">auto</span> data =</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_typedef" href="../../de/d13/HungarianCUDA_8cu.html#a22ff508a3503fc0c2112ce920e55e646">data</a> =</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>      <a class="code hl_function" href="../../d5/d9f/classgraphmine_1_1Graph.html#a0a2f80140c5540f3a2e48b84889d7050">graphmine::Graph::from_edges</a>(<span class="stringliteral">&quot;validation-small&quot;</span>, vertices, edges);</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keyword">const</span> <span class="keyword">auto</span> triangle =</div>
@@ -168,7 +168,7 @@ $(document).ready(function(){initNavTree('d9/d0f/subgraph__isomorphism__test_8cp
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>       std::vector&lt;std::pair&lt;const graphmine::Graph*, std::uint64_t&gt;&gt;{</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>           {&amp;triangle, 78}, {&amp;clique4, 120}, {&amp;cycle4, 128},</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>           {&amp;diamond, 124}}) {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">const</span> <span class="keyword">auto</span> result = algorithm.<a class="code hl_function" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html#a9ff67324682e6a0c3fd226015a41aacc">run</a>(data, *expected.first);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">const</span> <span class="keyword">auto</span> result = algorithm.<a class="code hl_function" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html#a9ff67324682e6a0c3fd226015a41aacc">run</a>(<a class="code hl_typedef" href="../../de/d13/HungarianCUDA_8cu.html#a22ff508a3503fc0c2112ce920e55e646">data</a>, *expected.first);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_function" href="../../d8/dc8/namespaceanonymous__namespace_02subgraph__isomorphism__test_8cpp_03.html#a10b7017abe0f91f87713cb5afac154d8">require</a>(result.ok(), result.status().message().c_str());</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_function" href="../../d8/dc8/namespaceanonymous__namespace_02subgraph__isomorphism__test_8cpp_03.html#a10b7017abe0f91f87713cb5afac154d8">require</a>(result.value().count == expected.second,</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="stringliteral">&quot;gMatch count differed from the validated reference&quot;</span>);</div>
@@ -179,7 +179,7 @@ $(document).ready(function(){initNavTree('d9/d0f/subgraph__isomorphism__test_8cp
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  options.optional_outputs =</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>      <a class="code hl_enumvalue" href="../../d8/d4c/namespacegraphmine.html#a9df06b73a1b6c962131299a07ef99086ad92c36790b760c97028d13be94ae39ce">graphmine::SubgraphIsomorphismOptionalOutput::embeddings</a>;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keyword">const</span> <span class="keyword">auto</span> materialized =</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>      <a class="code hl_class" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html">graphmine::SubgraphIsomorphism</a>(options).<a class="code hl_function" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html#a9ff67324682e6a0c3fd226015a41aacc">run</a>(data, triangle);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>      <a class="code hl_class" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html">graphmine::SubgraphIsomorphism</a>(options).<a class="code hl_function" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html#a9ff67324682e6a0c3fd226015a41aacc">run</a>(<a class="code hl_typedef" href="../../de/d13/HungarianCUDA_8cu.html#a22ff508a3503fc0c2112ce920e55e646">data</a>, triangle);</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <a class="code hl_function" href="../../d8/dc8/namespaceanonymous__namespace_02subgraph__isomorphism__test_8cpp_03.html#a10b7017abe0f91f87713cb5afac154d8">require</a>(materialized.ok(), materialized.status().message().c_str());</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  <a class="code hl_function" href="../../d8/dc8/namespaceanonymous__namespace_02subgraph__isomorphism__test_8cpp_03.html#a10b7017abe0f91f87713cb5afac154d8">require</a>(materialized.value().count == 78 &amp;&amp;</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>              materialized.value().embeddings.has_value() &amp;&amp;</div>
@@ -189,7 +189,7 @@ $(document).ready(function(){initNavTree('d9/d0f/subgraph__isomorphism__test_8cp
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  options.result_limit = 5;</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keyword">const</span> <span class="keyword">auto</span> limited =</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      <a class="code hl_class" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html">graphmine::SubgraphIsomorphism</a>(options).<a class="code hl_function" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html#a9ff67324682e6a0c3fd226015a41aacc">run</a>(data, triangle);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      <a class="code hl_class" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html">graphmine::SubgraphIsomorphism</a>(options).<a class="code hl_function" href="../../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html#a9ff67324682e6a0c3fd226015a41aacc">run</a>(<a class="code hl_typedef" href="../../de/d13/HungarianCUDA_8cu.html#a22ff508a3503fc0c2112ce920e55e646">data</a>, triangle);</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <a class="code hl_function" href="../../d8/dc8/namespaceanonymous__namespace_02subgraph__isomorphism__test_8cpp_03.html#a10b7017abe0f91f87713cb5afac154d8">require</a>(limited.ok(), limited.status().message().c_str());</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  <a class="code hl_function" href="../../d8/dc8/namespaceanonymous__namespace_02subgraph__isomorphism__test_8cpp_03.html#a10b7017abe0f91f87713cb5afac154d8">require</a>(limited.value().count == 78 &amp;&amp;</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>              limited.value().embeddings-&gt;size() == 5 &amp;&amp;</div>
@@ -198,6 +198,7 @@ $(document).ready(function(){initNavTree('d9/d0f/subgraph__isomorphism__test_8cp
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
 </div>
+<div class="ttc" id="aHungarianCUDA_8cu_html_a22ff508a3503fc0c2112ce920e55e646"><div class="ttname"><a href="../../de/d13/HungarianCUDA_8cu.html#a22ff508a3503fc0c2112ce920e55e646">data</a></div><div class="ttdeci">int data</div><div class="ttdef"><b>Definition</b> <a href="../../de/d13/HungarianCUDA_8cu_source.html#l00122">HungarianCUDA.cu:122</a></div></div>
 <div class="ttc" id="aclassgraphmine_1_1ExternalId_html"><div class="ttname"><a href="../../df/d4c/classgraphmine_1_1ExternalId.html">graphmine::ExternalId</a></div><div class="ttdef"><b>Definition</b> <a href="../../d9/de9/graph_8hpp_source.html#l00014">graph.hpp:14</a></div></div>
 <div class="ttc" id="aclassgraphmine_1_1Graph_html"><div class="ttname"><a href="../../d5/d9f/classgraphmine_1_1Graph.html">graphmine::Graph</a></div><div class="ttdef"><b>Definition</b> <a href="../../d9/de9/graph_8hpp_source.html#l00167">graph.hpp:167</a></div></div>
 <div class="ttc" id="aclassgraphmine_1_1Graph_html_a0a2f80140c5540f3a2e48b84889d7050"><div class="ttname"><a href="../../d5/d9f/classgraphmine_1_1Graph.html#a0a2f80140c5540f3a2e48b84889d7050">graphmine::Graph::from_edges</a></div><div class="ttdeci">static Graph from_edges(std::string graph_id, std::vector&lt; ExternalId &gt; vertices, const std::vector&lt; std::pair&lt; ExternalId, ExternalId &gt; &gt; &amp;edges, bool directed=false)</div><div class="ttdoc">Builds a minimal canonical graph from vertex IDs and endpoint pairs.</div><div class="ttdef"><b>Definition</b> <a href="../../d7/d75/graph_8cpp_source.html#l00088">graph.cpp:88</a></div></div>

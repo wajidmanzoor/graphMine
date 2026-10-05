@@ -1,0 +1,390 @@
+{
+  "suite": "sanitizer",
+  "tool": "initcheck",
+  "binary_sha256": "f73a12f8fc35b4990432afda69f64ad5a215bcd27c71d5eb50be4eec32b64706",
+  "manifest_sha256": "efa37d994b67ef059c38eeefeb88823cd9c73ba398cfa8c71bf60a461d56bb4e",
+  "gpu": 1,
+  "cases": 12,
+  "passed": 12,
+  "failed": 0,
+  "elapsed_seconds": 5.746247021481395,
+  "results": [
+    {
+      "id": "00000-cycle_chords-01",
+      "graph": "cycle_chords-01",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "00001-mixed-core",
+      "graph": "mixed-core",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "00002-random-medium-000",
+      "graph": "random-medium-000",
+      "expected": 4,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        10,
+        11,
+        13
+      ]
+    },
+    {
+      "id": "00003-random-medium-001",
+      "graph": "random-medium-001",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        7,
+        14
+      ]
+    },
+    {
+      "id": "00004-complete-33",
+      "graph": "complete-33",
+      "expected": 33,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32
+      ]
+    },
+    {
+      "id": "00005-cycle-65",
+      "graph": "cycle-65",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        49,
+        50
+      ]
+    },
+    {
+      "id": "00006-bipartite-33",
+      "graph": "bipartite-33",
+      "expected": 2,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        59,
+        27
+      ]
+    },
+    {
+      "id": "00007-multipartite-5-13",
+      "graph": "multipartite-5-13",
+      "expected": 5,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        12,
+        25,
+        29,
+        51,
+        61
+      ]
+    },
+    {
+      "id": "00008-regular-64-5",
+      "graph": "regular-64-5",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        14,
+        31,
+        48
+      ]
+    },
+    {
+      "id": "00009-boundary-random-33",
+      "graph": "boundary-random-33",
+      "expected": 8,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        1,
+        8,
+        11,
+        17,
+        23,
+        24,
+        27,
+        29
+      ]
+    },
+    {
+      "id": "00010-boundary-random-65",
+      "graph": "boundary-random-65",
+      "expected": 7,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        63,
+        9,
+        16,
+        49,
+        23,
+        53,
+        37
+      ]
+    },
+    {
+      "id": "00011-low-core-optimum-17",
+      "graph": "low-core-optimum-17",
+      "expected": 3,
+      "status": "pass",
+      "error": null,
+      "witness": [
+        2,
+        1,
+        0
+      ]
+    }
+  ],
+  "batches": [
+    {
+      "id": "00000",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00000.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00000.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "ed7bc673cfaf7cb696e6bd94ac50e3b3d87b7b4438824ad7adfd9f46d6a39861"
+    },
+    {
+      "id": "00001",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00001.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00001.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "a3596547dd75de19b0d28486a6604296f593e07186c8b4135330ba386f1107cf"
+    },
+    {
+      "id": "00002",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00002.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00002.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "7c510eaa5574c4c3121d2f1cf4f00e26c801ba7df290048e6ebc437a80af583c"
+    },
+    {
+      "id": "00003",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00003.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00003.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "7ae5c63f458397972f148ed30d42498564e5616e00490e8c431bc4fa436168e0"
+    },
+    {
+      "id": "00004",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00004.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00004.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "919dad3067ecc581d0c918529ee1949cc1fe9ad875a7c9a53c49e850275b0073"
+    },
+    {
+      "id": "00005",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00005.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00005.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "f2286fc0d9c9ae7c8744ae7711f6b1a2adf614f4688808a5ed82db9aab980b88"
+    },
+    {
+      "id": "00006",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00006.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00006.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "cecf8f4b25eea3c5450113561df846105877849b2cf831b071d5aab897ed7b09"
+    },
+    {
+      "id": "00007",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00007.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00007.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "ead6a548c4564374a2ac51fc8454662328baa8289518171de60767a68755af69"
+    },
+    {
+      "id": "00008",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00008.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00008.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "ede34f4090f90dab0336d1b13c333b8e9ffc349361ab6fac700056a5209da4ad"
+    },
+    {
+      "id": "00009",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00009.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00009.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "a900af63e390b58c5f265581d50466fc6e5977ed3ba6e9f8d8f6819e7e071a75"
+    },
+    {
+      "id": "00010",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00010.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00010.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "8e5c18794b27e4e31b0e85f2a288e4562b5a64bdc6f8b52bc3cc138d12c86536"
+    },
+    {
+      "id": "00011",
+      "command": [
+        "compute-sanitizer",
+        "--tool",
+        "initcheck",
+        "--error-exitcode",
+        "97",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified/probe",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00011.txt",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/maximum_clique_on_gpu/_work/verified-results/initcheck/00011.out"
+      ],
+      "exit": 0,
+      "timeout": false,
+      "log_sha256": "636f23e9ee06a0dad08e3997720fe846cad428f23029ae912f9348c8bc8f20ff"
+    }
+  ]
+}

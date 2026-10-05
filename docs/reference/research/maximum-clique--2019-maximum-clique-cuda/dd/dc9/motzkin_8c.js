@@ -1,5 +1,6 @@
 var motzkin_8c =
 [
+    [ "_GNU_SOURCE", "dd/dc9/motzkin_8c.html#a369266c24eacffb87046522897a570d5", null ],
     [ "apply_mask_clique", "dd/dc9/motzkin_8c.html#ac0fa35bfda494229b993548d16187093", null ],
     [ "BASE_WEIGHT", "dd/dc9/motzkin_8c.html#af9774fa2b3095e41b5101ab94e7ff7cf", null ],
     [ "clear_clique", "dd/dc9/motzkin_8c.html#ac587354215e19297f832019459c2bdb1", null ],
@@ -25,6 +26,7 @@ var motzkin_8c =
     [ "graph_clique_multi_cpu", "dd/dc9/motzkin_8c.html#a2b260c933e30f2500706f4f847ac9b89", null ],
     [ "graph_clique_multi_cuda", "dd/dc9/motzkin_8c.html#a07e932cea75dde4f1b3f250ede82a939", null ],
     [ "is_clique_extendable", "dd/dc9/motzkin_8c.html#a6d425324489b88931b9809f56b9bd3b0", null ],
+    [ "order_by_weight", "dd/dc9/motzkin_8c.html#a062c6c2e2319cc6b6df3a41febabd06f", null ],
     [ "simple_alphas", "dd/dc9/motzkin_8c.html#a3754a92d09bc0203b79d4d9ced285608", null ],
     [ "vec_sim", "dd/dc9/motzkin_8c.html#adcd31b5a0f5749deb9e823af5f7d3083", null ],
     [ "vec_to_mask", "dd/dc9/motzkin_8c.html#a005e56e35544e594505d1d78164c8d45", null ],

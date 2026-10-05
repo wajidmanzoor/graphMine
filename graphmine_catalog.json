@@ -10,21 +10,24 @@
     "backend_registry": "catalog/backend_registry.json",
     "artifact_sources": "catalog/artifact_sources.json",
     "expansion_profiles": "catalog/expansion_profiles.json",
+    "repaired_profiles": "catalog/repaired_profiles.json",
+    "repaired_integration": "validation/repaired_library/REPORT.md",
     "expansion_screening": "validation/gpu_correctness_expansion/results/summary.json",
     "regeneration_command": "node tools/build_catalog.mjs"
   },
   "scope": {
     "catalog_problem_count": 37,
-    "library_supported_problem_count": 17,
-    "library_unsupported_problem_count": 20,
-    "runnable_operation_count": 18,
-    "validated_backend_count": 31,
+    "library_supported_problem_count": 22,
+    "library_unsupported_problem_count": 15,
+    "runnable_operation_count": 24,
+    "validated_backend_count": 38,
     "passing_validation_workload_count": 24,
     "validated_expansion_profile_count": 5,
+    "validated_repaired_backend_count": 9,
     "operation_count_note": "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations."
   },
   "routing": {
-    "contract_version": "expanded-37-v1",
+    "contract_version": "repaired-37-v2",
     "model_policy": "Supply this catalog to the base router. The frozen legacy routing adapter was evaluated on the earlier 20-problem contract; do not silently extend its evaluation claims.",
     "workflow": [
       {
@@ -130,6 +133,7 @@
     "recommended": true,
     "binary": "graphmine",
     "build": [
+      "python3 library/tools/prepare_repaired_workers.py --fetch --gpu 1",
       "cmake -S library -B library/build -DCMAKE_BUILD_TYPE=Release -DGRAPHMINE_BUILD_CLI=ON",
       "cmake --build library/build --parallel --target graphmine_cli"
     ],
@@ -413,7 +417,7 @@
   },
   "validation": {
     "source": "validation/gpu_correctness/results/results.json",
-    "selection_rule": "Baseline validated backends plus the explicitly bounded profiles passing validation/gpu_correctness_expansion/results/library_expansion.json. Broader problem specifications do not imply support for unlisted modes.",
+    "selection_rule": "Validated baseline and expansion profiles plus the nine repaired integrations in validation/repaired_library. Only each explicit executable profile is supported.",
     "classification_policy": {
       "artifact_mismatch": "The pinned linked source snapshot is not an implementation of the paper's claimed problem.",
       "build_blocked": "The pinned artifact cannot build because a required tool/dependency is unavailable.",
@@ -561,7 +565,180 @@
           ]
         }
       }
-    }
+    },
+    "repaired_profiles": [
+      {
+        "problem_id": "k_truss_decomposition",
+        "backend_id": "acctd",
+        "operation_id": "k-truss",
+        "repair_directory": "acctd",
+        "validation": {
+          "workload_id": "repaired_acctd",
+          "implementation": "acctd",
+          "status": "validated_profile",
+          "note": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/acctd/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2020_accelerating_truss_heterogeneous"
+          ]
+        }
+      },
+      {
+        "problem_id": "densest_subgraph",
+        "backend_id": "cds",
+        "operation_id": "densest-subgraph",
+        "repair_directory": "cds",
+        "validation": {
+          "workload_id": "repaired_cds",
+          "implementation": "cds",
+          "status": "validated_profile",
+          "note": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/cds/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2026_bound_tightened_dsd"
+          ]
+        }
+      },
+      {
+        "problem_id": "maximal_biclique_enumeration",
+        "backend_id": "mbe-gpu",
+        "operation_id": "maximal-biclique-counting",
+        "repair_directory": "mbe_gpu",
+        "validation": {
+          "workload_id": "repaired_mbe-gpu",
+          "implementation": "mbe-gpu",
+          "status": "validated_profile",
+          "note": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/mbe_gpu/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2023_efficient_mbe_gpus"
+          ]
+        }
+      },
+      {
+        "problem_id": "personalized_pagerank_rwr",
+        "backend_id": "kpar",
+        "operation_id": "personalized-pagerank",
+        "repair_directory": "kpar",
+        "validation": {
+          "workload_id": "repaired_kpar",
+          "implementation": "kpar",
+          "status": "validated_profile",
+          "note": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/kpar/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2020_kpar"
+          ]
+        }
+      },
+      {
+        "problem_id": "group_steiner_tree",
+        "backend_id": "gpu4gst",
+        "operation_id": "group-steiner-tree",
+        "repair_directory": "gpu4gst",
+        "validation": {
+          "workload_id": "repaired_gpu4gst",
+          "implementation": "gpu4gst",
+          "status": "validated_profile",
+          "note": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/gpu4gst/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2025_gpu4gst"
+          ]
+        }
+      },
+      {
+        "problem_id": "influence_maximization",
+        "backend_id": "superfuser",
+        "operation_id": "influence-maximization",
+        "repair_directory": "superfuser",
+        "validation": {
+          "workload_id": "repaired_superfuser",
+          "implementation": "superfuser",
+          "status": "validated_profile",
+          "note": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/superfuser/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2021_superfuser"
+          ]
+        }
+      },
+      {
+        "problem_id": "butterfly_counting_bipartite",
+        "backend_id": "gamma-butterfly",
+        "operation_id": "butterfly-counting",
+        "repair_directory": "gamma_butterfly",
+        "validation": {
+          "workload_id": "repaired_gamma-butterfly",
+          "implementation": "gamma-butterfly",
+          "status": "validated_profile",
+          "note": "Exact global butterfly count on an undirected graph with declared sides; C4 injective embedding count divided by eight. No participation, listing, or core decomposition.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/gamma_butterfly/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2022_gamma_reuse"
+          ]
+        }
+      },
+      {
+        "problem_id": "maximum_clique",
+        "backend_id": "cuda-ms",
+        "operation_id": "maximum-clique",
+        "repair_directory": "cuda_ms",
+        "validation": {
+          "workload_id": "repaired_cuda-ms",
+          "implementation": "cuda-ms",
+          "status": "validated_profile",
+          "note": "Exact single maximum-clique witness; single GPU; no all-ties mode.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/cuda_ms/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2019_maximum_clique_cuda"
+          ]
+        }
+      },
+      {
+        "problem_id": "maximum_clique",
+        "backend_id": "maximum-clique-on-gpu",
+        "operation_id": "maximum-clique",
+        "repair_directory": "maximum_clique_on_gpu",
+        "validation": {
+          "workload_id": "repaired_maximum-clique-on-gpu",
+          "implementation": "maximum-clique-on-gpu",
+          "status": "validated_profile",
+          "note": "Exact single maximum-clique witness; single GPU; no all-ties mode.",
+          "checks": {
+            "standalone_report": "validation/algorithm_repairs/maximum_clique_on_gpu/README.md",
+            "public_api_suite": "validation/repaired_library/results/native-summary.json"
+          },
+          "paper_artifacts": [
+            "2024_maximum_clique_many_core_gpu"
+          ]
+        }
+      }
+    ]
   },
   "problem_index": {
     "maximal_clique_enumeration": {
@@ -603,8 +780,10 @@
     "densest_subgraph": {
       "name": "Densest Subgraph",
       "category": "dense_structure_mining",
-      "library_status": "no_validated_backend",
-      "operation_ids": [],
+      "library_status": "validated",
+      "operation_ids": [
+        "densest-subgraph"
+      ],
       "problem_ref": "#/problems/4"
     },
     "densest_k_subgraph": {
@@ -626,8 +805,10 @@
     "k_truss_decomposition": {
       "name": "k-Truss Decomposition",
       "category": "dense_structure_mining",
-      "library_status": "no_validated_backend",
-      "operation_ids": [],
+      "library_status": "validated",
+      "operation_ids": [
+        "k-truss"
+      ],
       "problem_ref": "#/problems/7"
     },
     "maximal_biclique_enumeration": {
@@ -635,7 +816,8 @@
       "category": "dense_structure_mining",
       "library_status": "validated",
       "operation_ids": [
-        "maximal-bicliques"
+        "maximal-bicliques",
+        "maximal-biclique-counting"
       ],
       "problem_ref": "#/problems/8"
     },
@@ -732,8 +914,10 @@
     "personalized_pagerank_rwr": {
       "name": "Personalized PageRank and Random Walk with Restart",
       "category": "community_and_structural_analysis",
-      "library_status": "no_validated_backend",
-      "operation_ids": [],
+      "library_status": "validated",
+      "operation_ids": [
+        "personalized-pagerank"
+      ],
       "problem_ref": "#/problems/20"
     },
     "max_flow_min_cut": {
@@ -778,15 +962,19 @@
     "group_steiner_tree": {
       "name": "Group Steiner Tree",
       "category": "dense_structure_mining",
-      "library_status": "no_validated_backend",
-      "operation_ids": [],
+      "library_status": "validated",
+      "operation_ids": [
+        "group-steiner-tree"
+      ],
       "problem_ref": "#/problems/26"
     },
     "influence_maximization": {
       "name": "Influence Maximization under Diffusion Models",
       "category": "predictive_and_unusual_structure_mining",
-      "library_status": "no_validated_backend",
-      "operation_ids": [],
+      "library_status": "validated",
+      "operation_ids": [
+        "influence-maximization"
+      ],
       "problem_ref": "#/problems/27"
     },
     "simrank_vertex_similarity": {
@@ -995,9 +1183,52 @@
     "butterfly-counting": {
       "research_problem_id": "butterfly_counting_bipartite",
       "backends": [
-        "graphminer"
+        "graphminer",
+        "gamma-butterfly"
       ],
       "operation_ref": "#/operations/17"
+    },
+    "k-truss": {
+      "research_problem_id": "k_truss_decomposition",
+      "backends": [
+        "acctd"
+      ],
+      "operation_ref": "#/operations/18"
+    },
+    "densest-subgraph": {
+      "research_problem_id": "densest_subgraph",
+      "backends": [
+        "cds"
+      ],
+      "operation_ref": "#/operations/19"
+    },
+    "maximal-biclique-counting": {
+      "research_problem_id": "maximal_biclique_enumeration",
+      "backends": [
+        "mbe-gpu"
+      ],
+      "operation_ref": "#/operations/20"
+    },
+    "personalized-pagerank": {
+      "research_problem_id": "personalized_pagerank_rwr",
+      "backends": [
+        "kpar"
+      ],
+      "operation_ref": "#/operations/21"
+    },
+    "group-steiner-tree": {
+      "research_problem_id": "group_steiner_tree",
+      "backends": [
+        "gpu4gst"
+      ],
+      "operation_ref": "#/operations/22"
+    },
+    "influence-maximization": {
+      "research_problem_id": "influence_maximization",
+      "backends": [
+        "superfuser"
+      ],
+      "operation_ref": "#/operations/23"
     }
   },
   "problems": [
@@ -1986,11 +2217,20 @@
         "unconstrained densest subgraph"
       ],
       "library_support": {
-        "available": false,
-        "status": "no_validated_backend",
-        "operation_ids": [],
-        "validated_backend_count": 0,
-        "reason": "No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it."
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "densest-subgraph"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "densest-subgraph",
+            "supported_profile": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode."
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
       },
       "validation_workloads": [
         {
@@ -2956,11 +3196,20 @@
         "triangle-supported edge decomposition"
       ],
       "library_support": {
-        "available": false,
-        "status": "no_validated_backend",
-        "operation_ids": [],
-        "validated_backend_count": 0,
-        "reason": "No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it."
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "k-truss"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "k-truss",
+            "supported_profile": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID."
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
       },
       "validation_workloads": [
         {
@@ -3196,10 +3445,18 @@
         "available": true,
         "status": "validated",
         "operation_ids": [
-          "maximal-bicliques"
+          "maximal-bicliques",
+          "maximal-biclique-counting"
         ],
-        "validated_backend_count": 1,
-        "reason": "At least one implementation passed the GPU correctness validation and is exposed by GraphMine."
+        "validated_backend_count": 2,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "maximal-biclique-counting",
+            "supported_profile": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode."
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
       },
       "validation_workloads": [
         {
@@ -5963,11 +6220,20 @@
         "seed-relative node importance"
       ],
       "library_support": {
-        "available": false,
-        "status": "no_validated_backend",
-        "operation_ids": [],
-        "validated_backend_count": 0,
-        "reason": "2020_kpar: Returns five rows for k=4; the 64-cycle run also omits the highest-score source. Score tolerance alone is insufficient."
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "personalized-pagerank"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "personalized-pagerank",
+            "supported_profile": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion."
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
       },
       "validation_workloads": [],
       "expansion_screening": [
@@ -6416,7 +6682,7 @@
         "operation_ids": [
           "butterfly-counting"
         ],
-        "validated_backend_count": 1,
+        "validated_backend_count": 2,
         "validation_scope": "bounded_profiles_only",
         "profiles": [
           {
@@ -7244,11 +7510,20 @@
         "minimum-cost tree connecting at least one member of each group"
       ],
       "library_support": {
-        "available": false,
-        "status": "no_validated_backend",
-        "operation_ids": [],
-        "validated_backend_count": 0,
-        "reason": "2021_gpusteiner_kmb: 8/8 singleton-group tree fixtures: cost and complete returned edge set checked. General group Steiner and approximation guarantees unverified. 2022_gpu_vlsi_gst: 2/2 singleton-group path costs. General group coverage and certificate checks remain missing; no explicit license detected. 2025_gpu4gst: Both 8- and 64-vertex path queries time out after 20 seconds, even after selecting the available GPU. No returned tree witness; no explicit license detected."
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "group-steiner-tree"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "group-steiner-tree",
+            "supported_profile": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint."
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
       },
       "validation_workloads": [],
       "expansion_screening": [
@@ -7439,11 +7714,20 @@
         "independent cascade or linear threshold influence"
       ],
       "library_support": {
-        "available": false,
-        "status": "no_validated_backend",
-        "operation_ids": [],
-        "validated_backend_count": 0,
-        "reason": "2020_curipples: CMake cannot find spdlog; dependency set is not installed. No algorithm correctness claim. 2021_gim: 18/18 probability-one IC screens meet the predeclared 0.63 quality threshold. General probabilities, LT semantics and failure bounds remain unvalidated. 2021_superfuser: 17/18 probability-one screens meet the 0.63 target. One 64-chain run selects vertex 25 (spread 39/64, below the test threshold). This is a failed quality screen, not a proof that every heuristic run is invalid. 2024_difuser: No local executable GPU implementation to validate."
+        "available": true,
+        "status": "validated",
+        "operation_ids": [
+          "influence-maximization"
+        ],
+        "validated_backend_count": 1,
+        "validation_scope": "bounded_profiles_only",
+        "profiles": [
+          {
+            "operation_id": "influence-maximization",
+            "supported_profile": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution."
+          }
+        ],
+        "reason": "Only the listed profiles are executable; broader research modes remain unsupported."
       },
       "validation_workloads": [],
       "expansion_screening": [
@@ -9563,6 +9847,7 @@
         "cliques",
         "optimal"
       ],
+      "validation_report": "validation/repaired_library/REPORT.md",
       "problem_contract_ref": "#/problems/1",
       "problem_inputs": [
         "return_all_ties",
@@ -9605,40 +9890,14 @@
             "dense_adjacency"
           ],
           "validation": {
-            "workload_id": "maximum-clique-cuda-ms-2019",
-            "implementation": "CUDA-MS",
-            "status": "pass",
-            "note": "Maximum sizes matched and the returned vertex sets were independently checked as cliques.",
-            "checks": [
-              {
-                "evidence": "run_logs/cuda_ms_small.log",
-                "expected": 5,
-                "name": "small maximum-clique size",
-                "observed": 5,
-                "passed": true
-              },
-              {
-                "evidence": "run_logs/cuda_ms_small.log",
-                "expected": true,
-                "name": "small reported vertices form a clique",
-                "observed": true,
-                "passed": true
-              },
-              {
-                "evidence": "run_logs/cuda_ms_medium.log",
-                "expected": 8,
-                "name": "medium maximum-clique size",
-                "observed": 8,
-                "passed": true
-              },
-              {
-                "evidence": "run_logs/cuda_ms_medium.log",
-                "expected": true,
-                "name": "medium reported vertices form a clique",
-                "observed": true,
-                "passed": true
-              }
-            ]
+            "workload_id": "repaired_cuda-ms",
+            "implementation": "cuda-ms",
+            "status": "validated_profile",
+            "note": "Exact single maximum-clique witness; single GPU; no all-ties mode.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/cuda_ms/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
           },
           "source_artifacts": [
             {
@@ -9713,26 +9972,14 @@
             "multi_gpu_upstream"
           ],
           "validation": {
-            "workload_id": "maximum-clique-many-core-2024",
-            "implementation": "Maximum-Clique-on-GPU",
-            "status": "pass",
-            "note": "Maximum sizes matched on both graphs.",
-            "checks": [
-              {
-                "evidence": "run_logs/maximum_clique_2024_small.log",
-                "expected": 5,
-                "name": "small maximum-clique size",
-                "observed": 5,
-                "passed": true
-              },
-              {
-                "evidence": "run_logs/maximum_clique_2024_medium.log",
-                "expected": 8,
-                "name": "medium maximum-clique size",
-                "observed": 8,
-                "passed": true
-              }
-            ]
+            "workload_id": "repaired_maximum-clique-on-gpu",
+            "implementation": "maximum-clique-on-gpu",
+            "status": "validated_profile",
+            "note": "Exact single maximum-clique witness; single GPU; no all-ties mode.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/maximum_clique_on_gpu/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
           },
           "source_artifacts": [
             {
@@ -13236,10 +13483,14 @@
       "cpp_header": "graphmine/problems/validated_expansion.hpp",
       "cmake_component": "GraphMine::validated_expansion",
       "backends": [
-        "graphminer"
+        "graphminer",
+        "gamma-butterfly"
       ],
-      "command": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",
-      "parameters": [],
+      "command": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer|gamma-butterfly] (global count only; undirected bipartite graph)",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
       "optional_output_flags": {},
       "required_outputs": [
         "butterfly_count",
@@ -13267,9 +13518,12 @@
         ]
       },
       "cli": {
-        "command_example": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",
+        "command_example": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer|gamma-butterfly] (global count only; undirected bipartite graph)",
         "required_auxiliary_inputs": [],
-        "parameters": [],
+        "parameters": [
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
         "optional_output_flags": {}
       },
       "backend_details": [
@@ -13307,6 +13561,625 @@
               "license_note": null,
               "metadata_path": "problems/23_butterfly_counting_bipartite/papers/2022_g2miner_reuse/metadata.json",
               "vendored_code_root": "problems/11_graph_motif_counting/papers/2022_g2miner/code"
+            }
+          ]
+        },
+        {
+          "id": "gamma-butterfly",
+          "display_name": "gamma-butterfly",
+          "problem": "butterfly_counting_bipartite",
+          "source_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+          "validated": true,
+          "capabilities": [
+            "exact global butterfly count from injective unlabelled C4 embeddings / 8",
+            "declared bipartite sides; single GPU; no listing or alpha/beta cores"
+          ],
+          "validation": {
+            "workload_id": "repaired_gamma-butterfly",
+            "implementation": "gamma-butterfly",
+            "status": "validated_profile",
+            "note": "Exact global butterfly count on an undirected graph with declared sides; C4 injective embedding count divided by eight. No participation, listing, or core decomposition.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/gamma_butterfly/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "butterfly_counting_bipartite",
+              "paper_id": "2022_gamma_reuse",
+              "title": "A Graph Pattern Mining Framework for Large Graphs on GPU",
+              "year": 2024,
+              "venue": "The VLDB Journal",
+              "publication_url": "https://doi.org/10.1007/s00778-024-00883-8",
+              "code_url": "https://github.com/pkumod/GAMMA",
+              "code_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+              "license_file": null,
+              "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+              "source_distribution": "external_checkout",
+              "repair_report": "validation/algorithm_repairs/gamma_butterfly/README.md",
+              "repair_manifest": "validation/algorithm_repairs/gamma_butterfly/manifest.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "k-truss",
+      "research_problem_id": "k_truss_decomposition",
+      "cpp_class": "graphmine::KTruss",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "acctd"
+      ],
+      "command": "graphmine run k-truss --graph GRAPH.json [--backend acctd]",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "truss_number_by_edge",
+        "maximum_truss_number"
+      ],
+      "validated_profile": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID.",
+      "validation_report": "validation/repaired_library/REPORT.md",
+      "problem_contract_ref": "#/problems/7",
+      "problem_inputs": [
+        "requested_k"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::KTruss",
+        "options_type": "graphmine::KTrussOptions",
+        "cmake_component": "GraphMine::repaired_algorithms",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run k-truss --graph GRAPH.json [--backend acctd]",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "acctd",
+          "display_name": "acctd",
+          "problem": "k_truss_decomposition",
+          "source_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1",
+          "validated": true,
+          "capabilities": [
+            "exact full per-edge truss decomposition; single GPU",
+            "unweighted undirected; loops removed; parallel edges use smallest external edge ID"
+          ],
+          "validation": {
+            "workload_id": "repaired_acctd",
+            "implementation": "acctd",
+            "status": "validated_profile",
+            "note": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/acctd/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "k_truss_decomposition",
+              "paper_id": "2020_accelerating_truss_heterogeneous",
+              "title": "Accelerating Truss Decomposition on Heterogeneous Processors",
+              "year": 2020,
+              "venue": "PVLDB",
+              "publication_url": "https://www.vldb.org/pvldb/vol13/p1751-che.pdf",
+              "code_url": "https://github.com/RapidsAtHKUST/AccTrussDecomposition",
+              "code_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1",
+              "license_file": "code/msp/LICENSE.txt",
+              "license_note": null,
+              "source_distribution": "external_checkout",
+              "repair_report": "validation/algorithm_repairs/acctd/README.md",
+              "repair_manifest": "validation/algorithm_repairs/acctd/provenance.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "densest-subgraph",
+      "research_problem_id": "densest_subgraph",
+      "cpp_class": "graphmine::DensestSubgraph",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "cds"
+      ],
+      "command": "graphmine run densest-subgraph --graph GRAPH.json [--backend cds]",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "vertices",
+        "density",
+        "induced_edge_value",
+        "optimal"
+      ],
+      "validated_profile": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+      "validation_report": "validation/repaired_library/REPORT.md",
+      "problem_contract_ref": "#/problems/4",
+      "problem_inputs": [
+        "weight_mode",
+        "minimum_vertices",
+        "solution_quality"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::DensestSubgraph",
+        "options_type": "graphmine::DensestSubgraphOptions",
+        "cmake_component": "GraphMine::repaired_algorithms",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run densest-subgraph --graph GRAPH.json [--backend cds]",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "cds",
+          "display_name": "cds",
+          "problem": "densest_subgraph",
+          "source_commit": "3e704f98cf873336e2cf789570774039c8d6f092",
+          "validated": true,
+          "capabilities": [
+            "exact unweighted edge density |E(S)|/|S| with vertex witness",
+            "single GPU; nonempty undirected graph; no cardinality or weighted objective"
+          ],
+          "validation": {
+            "workload_id": "repaired_cds",
+            "implementation": "cds",
+            "status": "validated_profile",
+            "note": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/cds/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "densest_subgraph",
+              "paper_id": "2026_bound_tightened_dsd",
+              "title": "Bound-Tightened Densest Subgraph Discovery on GPU",
+              "year": 2026,
+              "venue": "PACMMOD / SIGMOD 2026",
+              "publication_url": "https://doi.org/10.1145/3802023",
+              "code_url": "https://github.com/wajidmanzoor/CDS",
+              "code_commit": "3e704f98cf873336e2cf789570774039c8d6f092",
+              "license_file": null,
+              "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+              "source_distribution": "external_checkout",
+              "repair_report": "validation/algorithm_repairs/cds/README.md",
+              "repair_manifest": "validation/algorithm_repairs/cds/provenance.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "maximal-biclique-counting",
+      "research_problem_id": "maximal_biclique_enumeration",
+      "cpp_class": "graphmine::MaximalBicliqueCounting",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "mbe-gpu"
+      ],
+      "command": "graphmine run maximal-biclique-counting --graph GRAPH.json [--backend mbe-gpu] (count only; attributes.side = left|right)",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "total_count",
+        "complete"
+      ],
+      "validated_profile": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode.",
+      "validation_report": "validation/repaired_library/REPORT.md",
+      "problem_contract_ref": "#/problems/8",
+      "problem_inputs": [
+        "left_partition",
+        "right_partition",
+        "minimum_left_size",
+        "minimum_right_size",
+        "result_limit"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::MaximalBicliqueCounting",
+        "options_type": "graphmine::MaximalBicliqueCountingOptions",
+        "cmake_component": "GraphMine::repaired_algorithms",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run maximal-biclique-counting --graph GRAPH.json [--backend mbe-gpu] (count only; attributes.side = left|right)",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "mbe-gpu",
+          "display_name": "mbe-gpu",
+          "problem": "maximal_biclique_enumeration",
+          "source_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
+          "validated": true,
+          "capabilities": [
+            "exact nonempty maximal-biclique count; scheduled single-GPU variant",
+            "declared bipartite sides; no vertex-set listing, size filter, bitmap or multi-GPU mode"
+          ],
+          "validation": {
+            "workload_id": "repaired_mbe-gpu",
+            "implementation": "mbe-gpu",
+            "status": "validated_profile",
+            "note": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/mbe_gpu/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "maximal_biclique_enumeration",
+              "paper_id": "2023_efficient_mbe_gpus",
+              "title": "Efficient Maximal Biclique Enumeration on GPUs",
+              "year": 2023,
+              "venue": "SC 2023",
+              "publication_url": "https://doi.org/10.1145/3581784.3607059",
+              "code_url": "https://github.com/fhxu00/MBE-GPU",
+              "code_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
+              "license_file": null,
+              "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+              "source_distribution": "external_checkout",
+              "repair_report": "validation/algorithm_repairs/mbe_gpu/README.md",
+              "repair_manifest": "validation/algorithm_repairs/mbe_gpu/provenance.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "personalized-pagerank",
+      "research_problem_id": "personalized_pagerank_rwr",
+      "cpp_class": "graphmine::PersonalizedPageRank",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "kpar"
+      ],
+      "command": "graphmine run personalized-pagerank --graph GRAPH.json --seed-vertex ID --top-k N --restart-probability 0.2 [--epsilon 0.01] [--random-seed N]",
+      "parameters": [
+        "--seed-vertex",
+        "--top-k",
+        "--restart-probability",
+        "--solution-quality",
+        "--epsilon",
+        "--random-seed",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "ranked_vertices",
+        "restart_probability_used",
+        "complete",
+        "approximate",
+        "epsilon_used",
+        "error_bound",
+        "error_bound_certified"
+      ],
+      "validated_profile": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion.",
+      "validation_report": "validation/repaired_library/REPORT.md",
+      "problem_contract_ref": "#/problems/20",
+      "problem_inputs": [
+        "seed_vertices",
+        "restart_probability",
+        "direction_mode",
+        "weight_mode",
+        "dangling_policy",
+        "top_k",
+        "solution_quality",
+        "convergence_tolerance",
+        "exclude_seeds_from_output"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::PersonalizedPageRank",
+        "options_type": "graphmine::PersonalizedPageRankOptions",
+        "cmake_component": "GraphMine::repaired_algorithms",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run personalized-pagerank --graph GRAPH.json --seed-vertex ID --top-k N --restart-probability 0.2 [--epsilon 0.01] [--random-seed N]",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--seed-vertex",
+          "--top-k",
+          "--restart-probability",
+          "--solution-quality",
+          "--epsilon",
+          "--random-seed",
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "kpar",
+          "display_name": "kpar",
+          "problem": "personalized_pagerank_rwr",
+          "source_commit": "v1.0:791987a738faf84d0fcab882b2f74cbb2efd4451ac9888b80e0d120ea6421916",
+          "validated": true,
+          "capabilities": [
+            "approximate top-k PPR; single seed; restart probability 0.2",
+            "directed unweighted outgoing multigraph; dangling mass returns to seed; no certified error bound"
+          ],
+          "validation": {
+            "workload_id": "repaired_kpar",
+            "implementation": "kpar",
+            "status": "validated_profile",
+            "note": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/kpar/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "personalized_pagerank_rwr",
+              "paper_id": "2020_kpar",
+              "title": "Realtime Top-k Personalized PageRank over Large Graphs on GPUs",
+              "year": 2020,
+              "venue": "PVLDB 13(1)",
+              "publication_url": "https://vldb.org/pvldb/vol13/p15-shi.pdf",
+              "code_url": "https://github.com/jmshi123/kPAR",
+              "code_commit": "31acf04abb62d8829234379617bbdca6168cbe67",
+              "license_file": "code/LICENSE",
+              "license_note": null,
+              "source_distribution": "external_checkout",
+              "repair_report": "validation/algorithm_repairs/kpar/README.md",
+              "repair_manifest": "validation/algorithm_repairs/kpar/manifest.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group-steiner-tree",
+      "research_problem_id": "group_steiner_tree",
+      "cpp_class": "graphmine::GroupSteinerTree",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "gpu4gst"
+      ],
+      "command": "graphmine run group-steiner-tree --graph GRAPH.json --groups '[[ID,...],...]' [--backend gpu4gst]",
+      "parameters": [
+        "--groups",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "tree_edges",
+        "tree_weight",
+        "selected_vertices",
+        "feasible",
+        "optimal"
+      ],
+      "validated_profile": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint.",
+      "validation_report": "validation/repaired_library/REPORT.md",
+      "problem_contract_ref": "#/problems/26",
+      "problem_inputs": [
+        "groups",
+        "required_vertices",
+        "solution_quality"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::GroupSteinerTree",
+        "options_type": "graphmine::GroupSteinerTreeOptions",
+        "cmake_component": "GraphMine::repaired_algorithms",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run group-steiner-tree --graph GRAPH.json --groups '[[ID,...],...]' [--backend gpu4gst]",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--groups",
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "gpu4gst",
+          "display_name": "gpu4gst",
+          "problem": "group_steiner_tree",
+          "source_commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+          "validated": true,
+          "capabilities": [
+            "exact undirected group Steiner tree; 1..16 nonempty groups; full tree certificate",
+            "nonnegative integer edge weights <=2^53-1; cost bound below 2^58; single GPU"
+          ],
+          "validation": {
+            "workload_id": "repaired_gpu4gst",
+            "implementation": "gpu4gst",
+            "status": "validated_profile",
+            "note": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/gpu4gst/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "group_steiner_tree",
+              "paper_id": "2025_gpu4gst",
+              "title": "Fast Optimal Group Steiner Tree Search using GPUs",
+              "year": 2025,
+              "venue": "Proc. ACM Manag. Data (SIGMOD) 3(6), article 327",
+              "publication_url": "https://dl.acm.org/doi/10.1145/3769792",
+              "code_url": "https://github.com/toziki/GPU4GST-sigmod",
+              "code_commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+              "license_file": null,
+              "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+              "source_distribution": "external_checkout",
+              "repair_report": "validation/algorithm_repairs/gpu4gst/README.md",
+              "repair_manifest": "validation/algorithm_repairs/gpu4gst/manifest.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "influence-maximization",
+      "research_problem_id": "influence_maximization",
+      "cpp_class": "graphmine::InfluenceMaximization",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "superfuser"
+      ],
+      "command": "graphmine run influence-maximization --graph GRAPH.json --diffusion-model independent_cascade --seed-set-size N [--sample-count 256] [--random-seed N]",
+      "parameters": [
+        "--diffusion-model",
+        "--seed-set-size",
+        "--sample-count",
+        "--random-seed",
+        "--require-guarantee",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "seed_set",
+        "expected_spread",
+        "guarantee_met",
+        "sample_count",
+        "prefix_spread",
+        "diffusion_model"
+      ],
+      "validated_profile": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution.",
+      "validation_report": "validation/repaired_library/REPORT.md",
+      "problem_contract_ref": "#/problems/27",
+      "problem_inputs": [
+        "diffusion_model",
+        "seed_set_size",
+        "vertex_thresholds",
+        "estimation_method",
+        "approximation_guarantee",
+        "failure_probability"
+      ],
+      "cpp": {
+        "header": "graphmine/problems/repaired_algorithms.hpp",
+        "class": "graphmine::InfluenceMaximization",
+        "options_type": "graphmine::InfluenceMaximizationOptions",
+        "cmake_component": "GraphMine::repaired_algorithms",
+        "lifecycle": [
+          "construct options",
+          "construct algorithm object",
+          "optionally call supports(graph)",
+          "call run(...) and inspect ExecutionResult"
+        ]
+      },
+      "cli": {
+        "command_example": "graphmine run influence-maximization --graph GRAPH.json --diffusion-model independent_cascade --seed-set-size N [--sample-count 256] [--random-seed N]",
+        "required_auxiliary_inputs": [],
+        "parameters": [
+          "--diffusion-model",
+          "--seed-set-size",
+          "--sample-count",
+          "--random-seed",
+          "--require-guarantee",
+          "--timeout-seconds N",
+          "--worker-directory PATH"
+        ],
+        "optional_output_flags": {}
+      },
+      "backend_details": [
+        {
+          "id": "superfuser",
+          "display_name": "superfuser",
+          "problem": "influence_maximization",
+          "source_commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+          "validated": true,
+          "capabilities": [
+            "approximate independent-cascade seed selection; guarantee_met=false",
+            "explicit edge probabilities; independent holdout spread; single GPU; no linear threshold"
+          ],
+          "validation": {
+            "workload_id": "repaired_superfuser",
+            "implementation": "superfuser",
+            "status": "validated_profile",
+            "note": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution.",
+            "checks": {
+              "standalone_report": "validation/algorithm_repairs/superfuser/README.md",
+              "public_api_suite": "validation/repaired_library/results/native-summary.json"
+            }
+          },
+          "source_artifacts": [
+            {
+              "problem_id": "influence_maximization",
+              "paper_id": "2021_superfuser",
+              "title": "Fast and Parallel Influence Maximization using Fused Sampling and Memory Access Regularization",
+              "year": 2021,
+              "venue": "IEEE Transactions on Parallel and Distributed Systems",
+              "publication_url": "https://github.com/ggokturk/infuser",
+              "code_url": "https://github.com/ggokturk/infuser",
+              "code_commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+              "license_file": null,
+              "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+              "source_distribution": "external_checkout",
+              "repair_report": "validation/algorithm_repairs/superfuser/README.md",
+              "repair_manifest": "validation/algorithm_repairs/superfuser/manifest.json"
             }
           ]
         }
@@ -13671,6 +14544,111 @@
       "license_note": null,
       "metadata_path": "problems/35_connected_components/papers/2023_eclscc/metadata.json",
       "vendored_code_root": "library/src/backends/expansion/upstream/ecl_scc"
+    },
+    {
+      "problem_id": "k_truss_decomposition",
+      "paper_id": "2020_accelerating_truss_heterogeneous",
+      "title": "Accelerating Truss Decomposition on Heterogeneous Processors",
+      "year": 2020,
+      "venue": "PVLDB",
+      "publication_url": "https://www.vldb.org/pvldb/vol13/p1751-che.pdf",
+      "code_url": "https://github.com/RapidsAtHKUST/AccTrussDecomposition",
+      "code_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1",
+      "license_file": "code/msp/LICENSE.txt",
+      "license_note": null,
+      "source_distribution": "external_checkout",
+      "repair_report": "validation/algorithm_repairs/acctd/README.md",
+      "repair_manifest": "validation/algorithm_repairs/acctd/provenance.json"
+    },
+    {
+      "problem_id": "densest_subgraph",
+      "paper_id": "2026_bound_tightened_dsd",
+      "title": "Bound-Tightened Densest Subgraph Discovery on GPU",
+      "year": 2026,
+      "venue": "PACMMOD / SIGMOD 2026",
+      "publication_url": "https://doi.org/10.1145/3802023",
+      "code_url": "https://github.com/wajidmanzoor/CDS",
+      "code_commit": "3e704f98cf873336e2cf789570774039c8d6f092",
+      "license_file": null,
+      "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+      "source_distribution": "external_checkout",
+      "repair_report": "validation/algorithm_repairs/cds/README.md",
+      "repair_manifest": "validation/algorithm_repairs/cds/provenance.json"
+    },
+    {
+      "problem_id": "maximal_biclique_enumeration",
+      "paper_id": "2023_efficient_mbe_gpus",
+      "title": "Efficient Maximal Biclique Enumeration on GPUs",
+      "year": 2023,
+      "venue": "SC 2023",
+      "publication_url": "https://doi.org/10.1145/3581784.3607059",
+      "code_url": "https://github.com/fhxu00/MBE-GPU",
+      "code_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
+      "license_file": null,
+      "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+      "source_distribution": "external_checkout",
+      "repair_report": "validation/algorithm_repairs/mbe_gpu/README.md",
+      "repair_manifest": "validation/algorithm_repairs/mbe_gpu/provenance.json"
+    },
+    {
+      "problem_id": "personalized_pagerank_rwr",
+      "paper_id": "2020_kpar",
+      "title": "Realtime Top-k Personalized PageRank over Large Graphs on GPUs",
+      "year": 2020,
+      "venue": "PVLDB 13(1)",
+      "publication_url": "https://vldb.org/pvldb/vol13/p15-shi.pdf",
+      "code_url": "https://github.com/jmshi123/kPAR",
+      "code_commit": "31acf04abb62d8829234379617bbdca6168cbe67",
+      "license_file": "code/LICENSE",
+      "license_note": null,
+      "source_distribution": "external_checkout",
+      "repair_report": "validation/algorithm_repairs/kpar/README.md",
+      "repair_manifest": "validation/algorithm_repairs/kpar/manifest.json"
+    },
+    {
+      "problem_id": "group_steiner_tree",
+      "paper_id": "2025_gpu4gst",
+      "title": "Fast Optimal Group Steiner Tree Search using GPUs",
+      "year": 2025,
+      "venue": "Proc. ACM Manag. Data (SIGMOD) 3(6), article 327",
+      "publication_url": "https://dl.acm.org/doi/10.1145/3769792",
+      "code_url": "https://github.com/toziki/GPU4GST-sigmod",
+      "code_commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+      "license_file": null,
+      "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+      "source_distribution": "external_checkout",
+      "repair_report": "validation/algorithm_repairs/gpu4gst/README.md",
+      "repair_manifest": "validation/algorithm_repairs/gpu4gst/manifest.json"
+    },
+    {
+      "problem_id": "influence_maximization",
+      "paper_id": "2021_superfuser",
+      "title": "Fast and Parallel Influence Maximization using Fused Sampling and Memory Access Regularization",
+      "year": 2021,
+      "venue": "IEEE Transactions on Parallel and Distributed Systems",
+      "publication_url": "https://github.com/ggokturk/infuser",
+      "code_url": "https://github.com/ggokturk/infuser",
+      "code_commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+      "license_file": null,
+      "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+      "source_distribution": "external_checkout",
+      "repair_report": "validation/algorithm_repairs/superfuser/README.md",
+      "repair_manifest": "validation/algorithm_repairs/superfuser/manifest.json"
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "paper_id": "2022_gamma_reuse",
+      "title": "A Graph Pattern Mining Framework for Large Graphs on GPU",
+      "year": 2024,
+      "venue": "The VLDB Journal",
+      "publication_url": "https://doi.org/10.1007/s00778-024-00883-8",
+      "code_url": "https://github.com/pkumod/GAMMA",
+      "code_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+      "license_file": null,
+      "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
+      "source_distribution": "external_checkout",
+      "repair_report": "validation/algorithm_repairs/gamma_butterfly/README.md",
+      "repair_manifest": "validation/algorithm_repairs/gamma_butterfly/manifest.json"
     }
   ]
 }

@@ -26,11 +26,20 @@ var NAVTREE =
 [
   [ "GraphMine research code", "index.html", [
     [ "Implementation of a Maximum Clique Search Procedure on CUDA", "index.html", "index" ],
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Typedefs", "namespacemembers_type.html", null ]
+      ] ]
+    ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
+        [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
@@ -50,7 +59,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"d7/df4/structcpu__clique__data.html"
+"d7/df4/structcpu__clique__data.html#a128c93376d9cbe385cef3da9a691daee"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

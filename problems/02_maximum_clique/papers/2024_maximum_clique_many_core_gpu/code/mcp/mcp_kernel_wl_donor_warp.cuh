@@ -64,7 +64,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_psanse(
 	}
 	__syncthreads();
 
-	while (sh.state != 100)
+	while (true)
 	{
 		// If First Level or begin
 		if (sh.state == 0)
@@ -84,7 +84,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_psanse(
 				if (laneIdx == 0)
 				{
 					//printf("First level terminated\n");
-					sh.state = 1; // finish
+					if (threadIdx.x == 0) sh.state = 1; // finish
 					wsh[warpIdx].state = 1;
 					queue_enqueue(queue, tickets, head, tail, WARPS, wsh[warpIdx].sm_warp_id);
 				}
@@ -223,6 +223,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_psanse(
 							queue_caller(queue, tickets, head, tail));
 			}
 			__syncwarp();
+			if (wsh[warpIdx].state == 100) break;
 			continue;
 		}
 		else if (sh.state == 1 && wsh[warpIdx].state == 2) // Get work from queue at first level
@@ -388,6 +389,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_psanse(
 	}
 
 		
+	__syncthreads();
 	// Collect statistics	
 	if (gh.verbose && threadIdx.x == 0)
 	{
@@ -461,7 +463,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_reduce(
 	}
 	__syncthreads();
 
-	while (sh.state != 100)
+	while (true)
 	{
 		// If First Level or begin
 		if (sh.state == 0)
@@ -481,7 +483,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_reduce(
 				if (laneIdx == 0)
 				{
 					//printf("First level terminated\n");
-					sh.state = 1; // finish
+					if (threadIdx.x == 0) sh.state = 1; // finish
 					wsh[warpIdx].state = 1;
 					queue_enqueue(queue, tickets, head, tail, WARPS, wsh[warpIdx].sm_warp_id);
 				}
@@ -626,6 +628,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_reduce(
 							queue_caller(queue, tickets, head, tail));
 			}
 			__syncwarp();
+			if (wsh[warpIdx].state == 100) break;
 			continue;
 		}
 		else if (sh.state == 1 && wsh[warpIdx].state == 2) // Get work from queue at first level
@@ -789,6 +792,7 @@ __global__ void mcp_kernel_l1_wl_donor_w_reduce(
 
 	}
 		
+	__syncthreads();
 	// Collect statistics	
 	if (gh.verbose && threadIdx.x == 0)
 	{

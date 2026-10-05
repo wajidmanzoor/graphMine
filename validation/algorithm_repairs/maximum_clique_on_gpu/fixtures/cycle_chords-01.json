@@ -1,0 +1,177 @@
+{
+  "graph": {
+    "id": "synthetic-records",
+    "directed": false,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false,
+    "attributes": {
+      "description": "Fictional devices. A link means they have a direct network connection. Year is recorded on each relationship. Names and regions are descriptive, not analysis instructions."
+    }
+  },
+  "vertices": [
+    {
+      "id": "device-447-0",
+      "label": "Device A",
+      "type": "device",
+      "attributes": {
+        "region": "South",
+        "tenure_years": 3
+      }
+    },
+    {
+      "id": "device-656-1",
+      "label": "Device B",
+      "type": "device",
+      "attributes": {
+        "region": "South",
+        "tenure_years": 1
+      }
+    },
+    {
+      "id": "device-875-2",
+      "label": "Device C",
+      "type": "device",
+      "attributes": {
+        "region": "North",
+        "tenure_years": 7
+      }
+    },
+    {
+      "id": "device-661-3",
+      "label": "Device D",
+      "type": "device",
+      "attributes": {
+        "region": "North",
+        "tenure_years": 9
+      }
+    },
+    {
+      "id": "device-303-4",
+      "label": "Device E",
+      "type": "device",
+      "attributes": {
+        "region": "South",
+        "tenure_years": 6
+      }
+    },
+    {
+      "id": "device-435-5",
+      "label": "Device F",
+      "type": "device",
+      "attributes": {
+        "region": "North",
+        "tenure_years": 10
+      }
+    },
+    {
+      "id": "device-696-6",
+      "label": "Device G",
+      "type": "device",
+      "attributes": {
+        "region": "North",
+        "tenure_years": 12
+      }
+    },
+    {
+      "id": "device-228-7",
+      "label": "Device H",
+      "type": "device",
+      "attributes": {
+        "region": "South",
+        "tenure_years": 1
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "relationship-0",
+      "source": "device-447-0",
+      "target": "device-656-1",
+      "type": "relationship",
+      "attributes": {
+        "year": 2025,
+        "source_system": "synthetic-demo"
+      }
+    },
+    {
+      "id": "relationship-1",
+      "source": "device-447-0",
+      "target": "device-875-2",
+      "type": "relationship",
+      "attributes": {
+        "year": 2026,
+        "source_system": "synthetic-demo"
+      }
+    },
+    {
+      "id": "relationship-2",
+      "source": "device-447-0",
+      "target": "device-228-7",
+      "type": "relationship",
+      "attributes": {
+        "year": 2026,
+        "source_system": "synthetic-demo"
+      }
+    },
+    {
+      "id": "relationship-3",
+      "source": "device-656-1",
+      "target": "device-875-2",
+      "type": "relationship",
+      "attributes": {
+        "year": 2025,
+        "source_system": "synthetic-demo"
+      }
+    },
+    {
+      "id": "relationship-4",
+      "source": "device-875-2",
+      "target": "device-661-3",
+      "type": "relationship",
+      "attributes": {
+        "year": 2026,
+        "source_system": "synthetic-demo"
+      }
+    },
+    {
+      "id": "relationship-5",
+      "source": "device-661-3",
+      "target": "device-303-4",
+      "type": "relationship",
+      "attributes": {
+        "year": 2026,
+        "source_system": "synthetic-demo"
+      }
+    },
+    {
+      "id": "relationship-6",
+      "source": "device-303-4",
+      "target": "device-435-5",
+      "type": "relationship",
+      "attributes": {
+        "year": 2025,
+        "source_system": "synthetic-demo"
+      }
+    },
+    {
+      "id": "relationship-7",
+      "source": "device-435-5",
+      "target": "device-696-6",
+      "type": "relationship",
+      "attributes": {
+        "year": 2026,
+        "source_system": "synthetic-demo"
+      }
+    },
+    {
+      "id": "relationship-8",
+      "source": "device-696-6",
+      "target": "device-228-7",
+      "type": "relationship",
+      "attributes": {
+        "year": 2026,
+        "source_system": "synthetic-demo"
+      }
+    }
+  ]
+}

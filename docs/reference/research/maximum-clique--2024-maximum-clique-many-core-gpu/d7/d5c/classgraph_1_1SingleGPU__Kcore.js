@@ -4,7 +4,7 @@ var classgraph_1_1SingleGPU__Kcore =
     [ "SingleGPU_Kcore", "d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a4410d2e7536f598ec96ae7eb67803bc9", null ],
     [ "~SingleGPU_Kcore", "d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a22238ca2d00f24b3712cfce1d39e2d5a", null ],
     [ "AscendingGpu", "d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a17e7466d3ac6d7f23f9de4f9972664bd", null ],
-    [ "bucket_scan", "d7/d5c/classgraph_1_1SingleGPU__Kcore.html#ab031664cff4def7a0d621e04441f76c7", null ],
+    [ "bucket_scan", "d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a2427e0c24fbecd15dca6e2b71dca3a46", null ],
     [ "count", "d7/d5c/classgraph_1_1SingleGPU__Kcore.html#ab04b01351f7972bd2d65eb90b14041b5", null ],
     [ "device", "d7/d5c/classgraph_1_1SingleGPU__Kcore.html#ae5baeef03b75e39abb0fe0e09ee156d1", null ],
     [ "find_heur_clique", "d7/d5c/classgraph_1_1SingleGPU__Kcore.html#a0e0be973b3ff6f3e16244c618e349c58", null ],

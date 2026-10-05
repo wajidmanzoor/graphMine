@@ -1,0 +1,23 @@
+{
+  "archive_url": "https://github.com/jmshi123/kPAR/releases/download/v1.0/kPAR.zip",
+  "archive_sha256": "791987a738faf84d0fcab882b2f74cbb2efd4451ac9888b80e0d120ea6421916",
+  "patch_sha256": "75f364c862f8dd0a3e1658690649dd9b7592439ff6d423ed3718637b1a77d93e",
+  "source_sha256": {
+    "Makefile": "5b8abebadde316903f5cf2f9b9567a688882975d67356acbbb411995b5517eb9",
+    "algo/GtopkRrw.cuh": "f5afb81b1973baf96747282dda15be9a569acdd75e1b84fe2063df59a52496d4",
+    "algo_setting.h": "6e90a6b6f4cfc561a590c34ceef30d9fd5208995a12aa84072050868a9aa009d",
+    "main.cu": "554d1fa92642557e48f07afe5636cd501a259c06a6d198d432d9494d758012a2",
+    "model/Graph.h": "e38228a9611a317f52676d6f0efda349b5dcb4a26742db22dadd955846dffadc",
+    "model/GraphD.cuh": "6ae414b1b373cbbcdb96b1028d40e89e80471ff0c7594c2d4ef7c28696f2377f",
+    "model/HighRrwIndex.cuh": "ad1f6212d76fd7ef1375c4fa12f543124ffd1c2d2b58b98a5008c776cb23b04e",
+    "model/PprData.h": "13b0b2728f5efe0a8546c7920872c5ff1e8d85d57d03d82b8b886519d6d1cbe5",
+    "model/PprDataD.cuh": "70fa1f18555d99e9dbf087711bc42014f1e54c61fdf4bc16312b883102d721df",
+    "model/RWIndex.h": "96736e0393b97401ad176ef653a5834456b617e6b329ee3d755ecd7c2726d1e4",
+    "model/RWIndexD.cuh": "b32fb17e2fbe33ed0f2ccd9943c1e4baefee16c5dd62be7aab42902c4fcf6e48",
+    "query.h": "b4c7a9f5f6aa39c2a58c041f83260465b6e9b555d1aa61207f5ecc5897fb4c61",
+    "util/CudaUtil.cuh": "455a5cd6ef26d7e844aca341a4a71de2b519032769663011192986b821b55d4d",
+    "util/GPUTimer.cuh": "2a84d3ff3d99aa9d7feb35d28dad20445f90a598812e306537d2854f3189ef81",
+    "util/config.h": "b82a2a07632e86f61cb7fc5960afe9277dd15d51f21343648dbc97dc06add454",
+    "util/util.h": "b7adbeb677e330a8a2f9fc5a49080dccb217857f52d69b7190a188cfc945049e"
+  }
+}

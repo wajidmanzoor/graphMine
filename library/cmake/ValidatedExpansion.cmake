@@ -3,7 +3,8 @@ add_library(GraphMine::validated_expansion ALIAS graphmine_validated_expansion)
 target_include_directories(graphmine_validated_expansion PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(graphmine_validated_expansion PUBLIC graphmine_core PRIVATE graphmine_graph_motifs)
+target_include_directories(graphmine_validated_expansion PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(graphmine_validated_expansion PUBLIC graphmine_core PRIVATE graphmine_graph_motifs graphmine_repaired_algorithms)
 target_compile_features(graphmine_validated_expansion PUBLIC cxx_std_17)
 set_target_properties(graphmine_validated_expansion PROPERTIES EXPORT_NAME validated_expansion POSITION_INDEPENDENT_CODE ON)
 

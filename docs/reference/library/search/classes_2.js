@@ -9,5 +9,8 @@ var searchData=
   ['communitydetectionbackendresult_6',['CommunityDetectionBackendResult',['../d5/d6b/structgraphmine_1_1detail_1_1CommunityDetectionBackendResult.html',1,'graphmine::detail']]],
   ['communitydetectionoptions_7',['CommunityDetectionOptions',['../d8/d90/structgraphmine_1_1CommunityDetectionOptions.html',1,'graphmine']]],
   ['communitydetectionoutput_8',['CommunityDetectionOutput',['../d1/d3d/structgraphmine_1_1CommunityDetectionOutput.html',1,'graphmine']]],
-  ['csrgraph_9',['CsrGraph',['../d8/de1/structgraphmine_1_1CsrGraph.html',1,'graphmine']]]
+  ['connectedcomponents_9',['ConnectedComponents',['../d2/d40/classgraphmine_1_1ConnectedComponents.html',1,'graphmine']]],
+  ['connectedcomponentsoptions_10',['ConnectedComponentsOptions',['../d9/d72/structgraphmine_1_1ConnectedComponentsOptions.html',1,'graphmine']]],
+  ['connectedcomponentsoutput_11',['ConnectedComponentsOutput',['../db/dd3/structgraphmine_1_1ConnectedComponentsOutput.html',1,'graphmine']]],
+  ['csrgraph_12',['CsrGraph',['../d8/de1/structgraphmine_1_1CsrGraph.html',1,'graphmine']]]
 ];

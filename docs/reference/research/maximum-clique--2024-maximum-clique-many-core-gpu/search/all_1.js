@@ -2,8 +2,8 @@ var searchData=
 [
   ['a_0',['a',['../db/d03/structmcp_1_1GLOBAL__HANDLE.html#a75ff125ec12d0886a7bd7fc31559cebf',1,'mcp::GLOBAL_HANDLE::A'],['../d3/d70/classgraph_1_1MultiGPU__MCP.html#aa70471d31a99fdfe8d6c5b7bbcb2dc4b',1,'graph::MultiGPU_MCP::A']]],
   ['add_5fto_5fiset_5ftomita_1',['add_to_iset_tomita',['../d9/d3b/namespacemcp.html#a9509bb997858b2cbd20b807226c250ff',1,'mcp']]],
-  ['add_5fto_5fqueue_5f1_2',['add_to_queue_1',['../d9/d00/kcore_8cuh.html#a5cb1a81c511f5fbb5f3d6bc4d500e719',1,'kcore.cuh']]],
-  ['add_5fto_5fqueue_5f1_5fno_5fdup_3',['add_to_queue_1_no_dup',['../d9/d00/kcore_8cuh.html#a6be72a70ad39c6d075ef07da10781720',1,'kcore.cuh']]],
+  ['add_5fto_5fqueue_5f1_2',['add_to_queue_1',['../d9/d00/kcore_8cuh.html#a2446204276fa580f2fe3b3d22e7f2c28',1,'kcore.cuh']]],
+  ['add_5fto_5fqueue_5f1_5fno_5fdup_3',['add_to_queue_1_no_dup',['../d9/d00/kcore_8cuh.html#a7488a4892fc124ce33029c62fe35fa25',1,'kcore.cuh']]],
   ['al_4',['al',['../df/d18/structmcp_1_1WARP__SHARED__HANDLE.html#ab19f67b6e861b303e287ce7301c82b3f',1,'mcp::WARP_SHARED_HANDLE::al'],['../d8/dd0/structmcp_1_1SHARED__HANDLE.html#a8d4b8ece91d85863e9ba9f5c1d0523e6',1,'mcp::SHARED_HANDLE::al']]],
   ['allocationtypeenum_5',['AllocationTypeEnum',['../d5/d64/defs_8h.html#a4d7a4530d2ebff4988e7a9a62e930d53',1,'defs.h']]],
   ['and_20source_20provenance_6',['Paper and source provenance',['../index.html#autotoc_md3',1,'']]],

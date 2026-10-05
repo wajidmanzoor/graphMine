@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['operationdescriptor_0',['OperationDescriptor',['../d8/d88/structanonymous__namespace_02graphmine_8cpp_03_1_1OperationDescriptor.html',1,'anonymous_namespace{graphmine.cpp}']]]
+  ['network_0',['Network',['../de/d83/structgraphmine_1_1anonymous__namespace_02validated__expansion_8cpp_03_1_1Network.html',1,'graphmine::anonymous_namespace{validated_expansion.cpp}']]],
+  ['normalizationsummary_1',['NormalizationSummary',['../dd/dd7/structgraphmine_1_1NormalizationSummary.html',1,'graphmine']]]
 ];

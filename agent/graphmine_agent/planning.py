@@ -5,6 +5,7 @@ from typing import Any
 
 from .catalog import Catalog, OperationContract
 from .models import ApplicationIntent, ExecutionPlan, RouteDecision
+from .profiles import DIRECTION_PRESERVING_OPERATIONS, EXPANSION_OPERATIONS
 
 APPLICATION_PREPROCESSING = {
     "attribute_filters": {
@@ -15,7 +16,7 @@ APPLICATION_PREPROCESSING = {
         "requires_kernel_weight_support": False,
     },
     "empty_selection": "A valid result, not missing information; complete the requested analysis with the selected scope.",
-    "weighted_computation": "Only max-flow-min-cut (nonnegative integer edge capacities) and linear-assignment (integer costs 0..999 in a complete square bipartite graph) use numeric weights. Select the exact field with weight_attribute and weight_usage=other. Weighted path lengths, centrality and grouping remain unsupported.",
+    "weighted_computation": "Numeric weights are supported for max-flow-min-cut capacities, linear-assignment costs, group-steiner-tree integer edge costs, and influence-maximization activation probabilities in [0,1]. Select the exact field with weight_attribute. Other weighted analyses remain unsupported; a strength is not automatically a probability.",
 }
 
 
@@ -91,11 +92,32 @@ def application_capability_errors(
     weighted = (
         intent.requires_edge_weights or intent.weight_attribute or intent.weight_usage
     )
-    if weighted and operation_id not in {"max-flow-min-cut", "linear-assignment"}:
+    if weighted and operation_id not in {
+        "max-flow-min-cut",
+        "linear-assignment",
+        "group-steiner-tree",
+        "influence-maximization",
+    }:
         errors.append(
             "This question needs connection costs or strengths to affect the calculation, "
             "but this analysis does not use those values. Adding cost data would "
             "not enable that calculation. I have not run an unweighted substitute."
+        )
+    if (
+        weighted
+        and operation_id == "influence-maximization"
+        and intent.weight_usage in {"path_length", "strength"}
+    ):
+        errors.append(
+            "Influence maximization needs explicit activation probabilities, not path lengths or uncalibrated strengths."
+        )
+    if (
+        weighted
+        and operation_id == "group-steiner-tree"
+        and intent.weight_usage == "strength"
+    ):
+        errors.append(
+            "Group Steiner tree minimizes edge costs; relationship strength cannot be substituted for cost."
         )
     if (
         weighted
@@ -108,13 +130,7 @@ def application_capability_errors(
     if (
         intent.requires_direction
         and operation_id
-        and operation_id
-        not in {
-            "temporal-motif-mining",
-            "connected-components",
-            "max-flow-min-cut",
-            "transitive-closure",
-        }
+        and operation_id not in DIRECTION_PRESERVING_OPERATIONS
     ):
         errors.append(
             "This calculation cannot preserve which way each relationship points. "
@@ -239,6 +255,19 @@ def _value_matches(value: Any, specification: dict[str, Any]) -> bool:
             and not isinstance(value, bool)
             and -(2**63) <= value < 2**63
         )
+    if kind == "vertex_groups":
+        return (
+            isinstance(value, list)
+            and 1 <= len(value) <= 16
+            and all(
+                isinstance(group, list)
+                and bool(group)
+                and all(
+                    _value_matches(vertex, {"type": "vertex_id"}) for vertex in group
+                )
+                for group in value
+            )
+        )
     return False
 
 
@@ -341,6 +370,10 @@ class PlanValidator:
                 errors.append(
                     f"parameter {name} must be one of {specification['choices']}"
                 )
+            if "multiple_of" in specification and value % specification["multiple_of"]:
+                errors.append(
+                    f"parameter {name} must be a multiple of {specification['multiple_of']}"
+                )
             required_output = specification.get("requires_output")
             if required_output and required_output not in plan.optional_outputs:
                 errors.append(f"parameter {name} requires output {required_output}")
@@ -418,13 +451,10 @@ class PlanValidator:
                     f"backend {effective_backend} requires {name}={expected!r}"
                 )
 
-        if operation.instruction.get("validated_profile") and operation.id in {
-            "connected-components",
-            "max-flow-min-cut",
-            "linear-assignment",
-            "transitive-closure",
-            "butterfly-counting",
-        }:
+        if (
+            operation.instruction.get("validated_profile")
+            and operation.id in EXPANSION_OPERATIONS
+        ):
             if plan.allow_directed_projection:
                 errors.append(
                     "This profile does not accept directed projection; use the graph's declared direction."

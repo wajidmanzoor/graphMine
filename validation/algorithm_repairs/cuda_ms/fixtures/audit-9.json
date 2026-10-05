@@ -1,0 +1,119 @@
+{
+  "graph": {
+    "id": "cuda-ms-audit-9",
+    "directed": false,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false
+  },
+  "vertices": [
+    {
+      "id": "vertex:0"
+    },
+    {
+      "id": "vertex:1"
+    },
+    {
+      "id": "vertex:2"
+    },
+    {
+      "id": "vertex:3"
+    },
+    {
+      "id": "vertex:4"
+    },
+    {
+      "id": "vertex:5"
+    },
+    {
+      "id": "vertex:6"
+    },
+    {
+      "id": "vertex:7"
+    },
+    {
+      "id": "vertex:8"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "source": "vertex:0",
+      "target": "vertex:1"
+    },
+    {
+      "id": "e1",
+      "source": "vertex:0",
+      "target": "vertex:2"
+    },
+    {
+      "id": "e2",
+      "source": "vertex:0",
+      "target": "vertex:3"
+    },
+    {
+      "id": "e3",
+      "source": "vertex:0",
+      "target": "vertex:8"
+    },
+    {
+      "id": "e4",
+      "source": "vertex:1",
+      "target": "vertex:2"
+    },
+    {
+      "id": "e5",
+      "source": "vertex:1",
+      "target": "vertex:4"
+    },
+    {
+      "id": "e6",
+      "source": "vertex:1",
+      "target": "vertex:8"
+    },
+    {
+      "id": "e7",
+      "source": "vertex:2",
+      "target": "vertex:4"
+    },
+    {
+      "id": "e8",
+      "source": "vertex:2",
+      "target": "vertex:6"
+    },
+    {
+      "id": "e9",
+      "source": "vertex:2",
+      "target": "vertex:7"
+    },
+    {
+      "id": "e10",
+      "source": "vertex:3",
+      "target": "vertex:5"
+    },
+    {
+      "id": "e11",
+      "source": "vertex:4",
+      "target": "vertex:6"
+    },
+    {
+      "id": "e12",
+      "source": "vertex:4",
+      "target": "vertex:7"
+    },
+    {
+      "id": "e13",
+      "source": "vertex:5",
+      "target": "vertex:7"
+    },
+    {
+      "id": "e14",
+      "source": "vertex:5",
+      "target": "vertex:8"
+    },
+    {
+      "id": "e15",
+      "source": "vertex:6",
+      "target": "vertex:7"
+    }
+  ]
+}

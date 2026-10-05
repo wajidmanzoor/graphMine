@@ -312,7 +312,7 @@ __device__ __forceinline__ void wait_for_donor_warp_(
     else if (queue_full(queue, tickets, head, tail, WARPS))
     {
       warp_shared_state = 100;
-      block_shared_state = 100;
+      // Each warp exits independently; do not race on the block state.
       break;
     }
   } while (ns = my_sleep(ns));
@@ -1110,7 +1110,7 @@ __device__ __forceinline__ void do_warp_fork_shared(
   for (T j = 0; j < wsh.Xx_aux_sz; j++)
   {
     if (laneIdx == 0)
-      queue_wait_ticket(sh.queue, sh.tickets, sh.head, sh.tail, NUMPART, wsh.worker_pos, wsh.shared_other_sm_warp_id);
+      shared_queue_wait_ticket(sh.queue, sh.tickets, sh.head, sh.tail, NUMPART, wsh.worker_pos, wsh.shared_other_sm_warp_id);
     __syncwarp();
 
 
@@ -1457,6 +1457,7 @@ __device__ __forceinline__ void prepare_fork(SHARED_HANDLE<T, BLOCK_DIM_X, CPART
 template <typename T, uint BLOCK_DIM_X, uint CPARTSIZE>
 __device__ __forceinline__ void prepare_warp_fork_(LOCAL_HANDLE<T> &lh, WARP_SHARED_HANDLE<T, BLOCK_DIM_X, CPARTSIZE> &wsh)
 {
+  __syncwarp();
   if (laneIdx == 0)
   {
     wsh.Xx_aux_sz = 0;
@@ -2201,10 +2202,11 @@ __device__ __forceinline__ bool reduce(
       const T ri_idx = 1 << (idx & 0x1F);
       if ((sh.to_bl[block_idx] & ri_idx) > 0)
       {
-
+        __syncthreads();
         if (sh.degree[idx] < k - 1 || sh.degree[idx] >= mod_R - 4)
         {
           bool rule_1 = sh.degree[idx] < k - 1;
+          __syncthreads();
           if (rule_1)
           {
             // remove u from G
@@ -3071,10 +3073,11 @@ __device__ __forceinline__ bool reduce_second_level(
       const T ri_idx = 1 << (idx & 0x1F);
       if ((sh.to_bl[block_idx] & ri_idx) > 0)
       {
-
+        __syncthreads();
         if (sh.degree[idx] < k - 1 || sh.degree[idx] >= mod_R - 4)
         {
           bool rule_1 = sh.degree[idx] < k - 1;
+          __syncthreads();
           if (rule_1)
           {
             // remove u from G
@@ -3672,10 +3675,11 @@ __device__ __forceinline__ bool warp_reduce(
       const T ri_idx = 1 << (idx & 0x1F);
       if ((wsh.to_col[block_idx] & ri_idx) > 0)
       {
-
+        __syncwarp();
         if (wsh.degree[idx] < k[warpIdx] - 1 || wsh.degree[idx] >= mod_R[warpIdx] - 4)
         {
           const bool rule_1 = wsh.degree[idx] < k[warpIdx] - 1;
+          __syncwarp();
           if (rule_1)
           {
             // remove u from G
@@ -4297,7 +4301,9 @@ __device__ __forceinline__ int add_to_iset_tomita(
 
   __syncthreads();
 
-  if (threadIdx.x == 0 && !inserted && k < ub) // Create a new Iset
+  const bool create_iset = !inserted && k < ub;
+  __syncthreads();
+  if (threadIdx.x == 0 && create_iset) // Create a new Iset
   {
     const T li = index >> 5;
     const T ri = 1 << (index & 0x1F);

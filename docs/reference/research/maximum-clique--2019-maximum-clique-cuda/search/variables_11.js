@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['x_0',['x',['../df/d0c/structisZero__data.html#aa8717fb48ba1ec76ff2eb126038bf3b2',1,'isZero_data::x'],['../d0/d06/structisZeroOrOne__data.html#a715d260d4045c6e3b23a5b8dffde1e93',1,'isZeroOrOne_data::x']]],
-  ['x0_1',['x0',['../d7/df4/structcpu__clique__data.html#a4e0b0062aa379ca7134ce50d05e5cd0d',1,'cpu_clique_data']]],
-  ['x1_2',['x1',['../d7/df4/structcpu__clique__data.html#aebe8176c92cd3e4d0a0510330331dae1',1,'cpu_clique_data']]],
-  ['x_5fpitch_3',['x_pitch',['../d8/d55/structcuda__clique__data.html#ab049631d1cee05e61bb59fadcb46f316',1,'cuda_clique_data']]]
+  ['zero_0',['zero',['../d6/d2e/structarguments.html#a1ff796473e1d0d5f7e5bde6a0eb424cd',1,'arguments::zero'],['../df/d0c/structisZero__data.html#a10510d32e7b43907a98898bef2c91058',1,'isZero_data::zero'],['../d0/d06/structisZeroOrOne__data.html#a2f1148df9203be63d16c3da6e73b21c4',1,'isZeroOrOne_data::zero'],['../d8/d55/structcuda__clique__data.html#a2b8b5a1a70b81eca98b855edcff1e5c6',1,'cuda_clique_data::zero']]],
+  ['zero_5fdone_1',['zero_done',['../d6/ded/structcuda__clique__instance.html#a0337844840e8b3b3fafd9b1b347d976f',1,'cuda_clique_instance']]],
+  ['zero_5fstream_2',['zero_stream',['../d8/d55/structcuda__clique__data.html#af71f66d5f3936174ac35bf6f1ad0e5c4',1,'cuda_clique_data']]]
 ];

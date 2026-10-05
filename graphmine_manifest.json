@@ -3,16 +3,17 @@
   "manifest_id": "graphmine_validated_library_v1",
   "library_version": "1.0.0",
   "scope": {
-    "research_problem_count": 17,
-    "runnable_operation_count": 18,
-    "validated_backend_count": 31,
-    "selection_rule": "Baseline validated backends plus the explicitly bounded profiles passing validation/gpu_correctness_expansion/results/library_expansion.json. Broader problem specifications do not imply support for unlisted modes.",
-    "operation_count_note": "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations."
+    "research_problem_count": 22,
+    "runnable_operation_count": 24,
+    "validated_backend_count": 38,
+    "selection_rule": "Validated baseline and expansion profiles plus the nine repaired integrations in validation/repaired_library. Only each explicit executable profile is supported.",
+    "operation_count_note": "Triangle and dynamic-triangle operations share a family; maximal-biclique enumeration and count-only operations also share a family."
   },
   "build_once_run_many": {
     "recommended": true,
     "binary": "graphmine",
     "build": [
+      "python3 library/tools/prepare_repaired_workers.py --fetch --gpu 1",
       "cmake -S library -B library/build -DCMAKE_BUILD_TYPE=Release -DGRAPHMINE_BUILD_CLI=ON",
       "cmake --build library/build --parallel --target graphmine_cli"
     ],
@@ -212,7 +213,8 @@
         "maximum_size",
         "cliques",
         "optimal"
-      ]
+      ],
+      "validation_report": "validation/repaired_library/REPORT.md"
     },
     {
       "id": "k-cliques",
@@ -603,10 +605,14 @@
       "cpp_header": "graphmine/problems/validated_expansion.hpp",
       "cmake_component": "GraphMine::validated_expansion",
       "backends": [
-        "graphminer"
+        "graphminer",
+        "gamma-butterfly"
       ],
-      "command": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer] (global count only; undirected bipartite graph)",
-      "parameters": [],
+      "command": "graphmine run butterfly-counting --graph GRAPH.json [--backend graphminer|gamma-butterfly] (global count only; undirected bipartite graph)",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
       "optional_output_flags": {},
       "required_outputs": [
         "butterfly_count",
@@ -614,11 +620,169 @@
       ],
       "validated_profile": "exact global count only; declared bipartite sides",
       "validation_report": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"
+    },
+    {
+      "id": "k-truss",
+      "research_problem_id": "k_truss_decomposition",
+      "cpp_class": "graphmine::KTruss",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "acctd"
+      ],
+      "command": "graphmine run k-truss --graph GRAPH.json [--backend acctd]",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "truss_number_by_edge",
+        "maximum_truss_number"
+      ],
+      "validated_profile": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID.",
+      "validation_report": "validation/repaired_library/REPORT.md"
+    },
+    {
+      "id": "densest-subgraph",
+      "research_problem_id": "densest_subgraph",
+      "cpp_class": "graphmine::DensestSubgraph",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "cds"
+      ],
+      "command": "graphmine run densest-subgraph --graph GRAPH.json [--backend cds]",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "vertices",
+        "density",
+        "induced_edge_value",
+        "optimal"
+      ],
+      "validated_profile": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+      "validation_report": "validation/repaired_library/REPORT.md"
+    },
+    {
+      "id": "maximal-biclique-counting",
+      "research_problem_id": "maximal_biclique_enumeration",
+      "cpp_class": "graphmine::MaximalBicliqueCounting",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "mbe-gpu"
+      ],
+      "command": "graphmine run maximal-biclique-counting --graph GRAPH.json [--backend mbe-gpu] (count only; attributes.side = left|right)",
+      "parameters": [
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "total_count",
+        "complete"
+      ],
+      "validated_profile": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode.",
+      "validation_report": "validation/repaired_library/REPORT.md"
+    },
+    {
+      "id": "personalized-pagerank",
+      "research_problem_id": "personalized_pagerank_rwr",
+      "cpp_class": "graphmine::PersonalizedPageRank",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "kpar"
+      ],
+      "command": "graphmine run personalized-pagerank --graph GRAPH.json --seed-vertex ID --top-k N --restart-probability 0.2 [--epsilon 0.01] [--random-seed N]",
+      "parameters": [
+        "--seed-vertex",
+        "--top-k",
+        "--restart-probability",
+        "--solution-quality",
+        "--epsilon",
+        "--random-seed",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "ranked_vertices",
+        "restart_probability_used",
+        "complete",
+        "approximate",
+        "epsilon_used",
+        "error_bound",
+        "error_bound_certified"
+      ],
+      "validated_profile": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion.",
+      "validation_report": "validation/repaired_library/REPORT.md"
+    },
+    {
+      "id": "group-steiner-tree",
+      "research_problem_id": "group_steiner_tree",
+      "cpp_class": "graphmine::GroupSteinerTree",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "gpu4gst"
+      ],
+      "command": "graphmine run group-steiner-tree --graph GRAPH.json --groups '[[ID,...],...]' [--backend gpu4gst]",
+      "parameters": [
+        "--groups",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "tree_edges",
+        "tree_weight",
+        "selected_vertices",
+        "feasible",
+        "optimal"
+      ],
+      "validated_profile": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint.",
+      "validation_report": "validation/repaired_library/REPORT.md"
+    },
+    {
+      "id": "influence-maximization",
+      "research_problem_id": "influence_maximization",
+      "cpp_class": "graphmine::InfluenceMaximization",
+      "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
+      "cmake_component": "GraphMine::repaired_algorithms",
+      "backends": [
+        "superfuser"
+      ],
+      "command": "graphmine run influence-maximization --graph GRAPH.json --diffusion-model independent_cascade --seed-set-size N [--sample-count 256] [--random-seed N]",
+      "parameters": [
+        "--diffusion-model",
+        "--seed-set-size",
+        "--sample-count",
+        "--random-seed",
+        "--require-guarantee",
+        "--timeout-seconds N",
+        "--worker-directory PATH"
+      ],
+      "optional_output_flags": {},
+      "required_outputs": [
+        "seed_set",
+        "expected_spread",
+        "guarantee_met",
+        "sample_count",
+        "prefix_spread",
+        "diffusion_model"
+      ],
+      "validated_profile": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution.",
+      "validation_report": "validation/repaired_library/REPORT.md"
     }
   ],
   "included_problem_specs": [
     {
-      "source": "../../problems/01_maximal_clique_enumeration/problem.json",
+      "source": "problems/01_maximal_clique_enumeration/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "maximal_clique_enumeration",
@@ -716,7 +880,7 @@
       }
     },
     {
-      "source": "../../problems/02_maximum_clique/problem.json",
+      "source": "problems/02_maximum_clique/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "maximum_clique",
@@ -813,7 +977,7 @@
       }
     },
     {
-      "source": "../../problems/03_k_clique_counting_enumeration/problem.json",
+      "source": "problems/03_k_clique_counting_enumeration/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "k_clique_counting_enumeration",
@@ -921,7 +1085,7 @@
       }
     },
     {
-      "source": "../../problems/04_quasi_clique_mining/problem.json",
+      "source": "problems/04_quasi_clique_mining/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "quasi_clique_mining",
@@ -1027,7 +1191,129 @@
       }
     },
     {
-      "source": "../../problems/07_k_core_decomposition/problem.json",
+      "source": "problems/05_densest_subgraph/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "densest_subgraph",
+        "name": "Densest Subgraph",
+        "category": "dense_structure_mining",
+        "problem_statement": "Find a nonempty vertex subset maximizing total induced edge value divided by the number of selected vertices.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "optional_nonnegative",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges by summing nonnegative weights; use unit weight when weight_mode=unweighted."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "Use unit edge values or nonnegative input weights."
+          },
+          {
+            "name": "minimum_vertices",
+            "type": "integer",
+            "required": false,
+            "default": 1,
+            "constraints": "value >= 1",
+            "description": "Minimum permitted result size; values above one define a constrained variant."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether an approximation is permitted."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "vertices",
+            "type": "array<vertex_id>",
+            "description": "Selected nonempty vertex set."
+          },
+          {
+            "name": "density",
+            "type": "number",
+            "description": "Total induced edge value divided by selected vertex count."
+          },
+          {
+            "name": "induced_edge_value",
+            "type": "number",
+            "description": "Induced edge count or weight sum."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified solution-quality bound for an approximate result."
+          },
+          {
+            "name": "induced_edges",
+            "type": "array<edge_id>",
+            "description": "Edges with both endpoints selected."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Maximize induced_edge_value / |S| over permitted nonempty vertex sets S.",
+          "exactness": "Exact mode requires optimal=true; approximate mode must disclose its bound when known.",
+          "duplicate_policy": "Return one optimum unless tied solutions are explicitly added later.",
+          "ordering": "Vertex order is irrelevant."
+        },
+        "validation_rules": [
+          "All induced edge values are recomputed from the normalized graph.",
+          "Reported density equals induced_edge_value divided by result size.",
+          "All edge weights are nonnegative in weighted mode."
+        ],
+        "edge_cases": [
+          "An edgeless nonempty graph has density zero.",
+          "Multiple distinct subsets may attain the same optimum.",
+          "An empty input graph has no feasible nonempty solution."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "objective agreement with exact oracle",
+            "feasibility",
+            "optimality or approximation gap"
+          ],
+          "performance": [
+            "end-to-end time",
+            "solver time",
+            "peak memory",
+            "edges processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/07_k_core_decomposition/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "k_core_decomposition",
@@ -1122,7 +1408,102 @@
       }
     },
     {
-      "source": "../../problems/09_maximal_biclique_enumeration/problem.json",
+      "source": "problems/08_k_truss_decomposition/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "k_truss_decomposition",
+        "name": "k-Truss Decomposition",
+        "category": "dense_structure_mining",
+        "problem_statement": "Assign every edge the largest k for which it belongs to a maximal subgraph where each edge participates in at least k-2 triangles within that subgraph.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges into one undirected edge."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "requested_k",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 2",
+            "description": "Optionally materialize one k-truss in addition to the full decomposition."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "truss_number_by_edge",
+            "type": "map<edge_id,integer>",
+            "description": "Largest k-truss containing each normalized edge."
+          },
+          {
+            "name": "maximum_truss_number",
+            "type": "integer",
+            "description": "Largest truss number assigned to any edge, or zero for an edgeless graph."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "requested_truss_edges",
+            "type": "array<edge_id>",
+            "description": "Edges with truss number at least requested_k."
+          },
+          {
+            "name": "requested_truss_vertices",
+            "type": "array<vertex_id>",
+            "description": "Endpoints of requested_truss_edges."
+          },
+          {
+            "name": "initial_support_by_edge",
+            "type": "map<edge_id,integer>",
+            "description": "Triangle support before iterative peeling."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Compute the complete edge truss decomposition using the k-2 support convention.",
+          "exactness": "All truss numbers are exact.",
+          "duplicate_policy": "Each normalized edge has exactly one truss number.",
+          "ordering": "Edge removal order may vary while truss numbers remain invariant."
+        },
+        "validation_rules": [
+          "Every edge in a returned k-truss has support at least k-2 within that truss.",
+          "No edge belongs to a truss above its reported number.",
+          "Requested truss edges are exactly those with truss number at least requested_k."
+        ],
+        "edge_cases": [
+          "Edges in no triangle have truss number two.",
+          "A triangle's three edges have truss number three.",
+          "An edgeless graph produces an empty map and maximum_truss_number zero."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "per-edge equality with oracle",
+            "support-condition violations",
+            "requested-truss equality"
+          ],
+          "performance": [
+            "end-to-end time",
+            "decomposition time",
+            "peak memory",
+            "support updates per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/09_maximal_biclique_enumeration/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "maximal_biclique_enumeration",
@@ -1240,7 +1621,7 @@
       }
     },
     {
-      "source": "../../problems/10_triangle_counting_listing/problem.json",
+      "source": "problems/10_triangle_counting_listing/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "triangle_counting_listing",
@@ -1357,7 +1738,7 @@
       }
     },
     {
-      "source": "../../problems/11_graph_motif_counting/problem.json",
+      "source": "problems/11_graph_motif_counting/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "graph_motif_counting",
@@ -1479,7 +1860,7 @@
       }
     },
     {
-      "source": "../../problems/13_subgraph_isomorphism/problem.json",
+      "source": "problems/13_subgraph_isomorphism/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "subgraph_isomorphism",
@@ -1598,7 +1979,7 @@
       }
     },
     {
-      "source": "../../problems/15_temporal_motif_mining/problem.json",
+      "source": "problems/15_temporal_motif_mining/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "temporal_motif_mining",
@@ -1724,7 +2105,7 @@
       }
     },
     {
-      "source": "../../problems/16_community_detection/problem.json",
+      "source": "problems/16_community_detection/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "community_detection",
@@ -1858,7 +2239,7 @@
       }
     },
     {
-      "source": "../../problems/18_centrality_influential_node_mining/problem.json",
+      "source": "problems/18_centrality_influential_node_mining/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "centrality_influential_node_mining",
@@ -2013,106 +2394,188 @@
       }
     },
     {
-      "source": "../../problems/35_connected_components/problem.json",
+      "source": "problems/21_personalized_pagerank_rwr/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "connected_components",
-        "name": "Connected Components (Weakly and Strongly Connected)",
+        "problem_id": "personalized_pagerank_rwr",
+        "name": "Personalized PageRank and Random Walk with Restart",
         "category": "community_and_structural_analysis",
-        "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",
+        "problem_statement": "Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
           "schema_ref": "../graph_input.schema.json",
           "cardinality": "single_graph",
           "requirements": {
             "direction": "directed_or_undirected",
-            "weights": "ignored",
+            "weights": "optional_nonnegative",
             "timestamps": "ignored",
             "vertex_attributes": "ignored",
             "edge_attributes": "ignored"
           },
           "normalization": [
-            "Remove self-loops; they never change component membership.",
-            "Collapse parallel edges between the same pair to one edge.",
-            "When connectivity_mode=weakly_connected, treat every edge as undirected regardless of input direction."
+            "Preserve direction unless undirected_projection is requested.",
+            "Remove self-loops unless self_loop_policy keeps them.",
+            "Collapse parallel edges by summing nonnegative weights; use unit weight when weight_mode=unweighted.",
+            "Handle dangling vertices (zero out-degree) per the declared dangling_policy."
           ]
         },
         "problem_inputs": [
           {
-            "name": "connectivity_mode",
-            "type": "enum",
+            "name": "seed_vertices",
+            "type": "array<vertex_id>_or_map<vertex_id,number>",
             "required": true,
+            "constraints": "nonempty; weights nonnegative and not all zero",
+            "description": "Restart distribution. A plain array means a uniform restart distribution over the listed vertices."
+          },
+          {
+            "name": "restart_probability",
+            "type": "number",
+            "required": false,
+            "default": 0.15,
+            "constraints": "0 < value < 1",
+            "description": "Probability of teleporting back to the seed distribution at each step (alpha)."
+          },
+          {
+            "name": "direction_mode",
+            "type": "enum",
+            "required": false,
+            "default": "outgoing",
             "allowed_values": [
-              "weakly_connected",
-              "strongly_connected"
+              "outgoing",
+              "incoming",
+              "undirected_projection"
             ],
-            "description": "Weak connectivity ignores edge direction; strong connectivity requires a directed path in both directions and is only meaningful (and may differ from weak) on a directed graph."
+            "description": "Walk direction for directed input; incoming computes Personalized PageRank with respect to reverse edges."
+          },
+          {
+            "name": "weight_mode",
+            "type": "enum",
+            "required": false,
+            "default": "unweighted",
+            "allowed_values": [
+              "unweighted",
+              "edge_weight"
+            ],
+            "description": "Use uniform or weighted transition probabilities out of each vertex."
+          },
+          {
+            "name": "dangling_policy",
+            "type": "enum",
+            "required": false,
+            "default": "redistribute_to_seeds",
+            "allowed_values": [
+              "redistribute_to_seeds",
+              "redistribute_uniformly",
+              "self_loop"
+            ],
+            "description": "How probability mass at zero-out-degree vertices is redistributed."
+          },
+          {
+            "name": "top_k",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Return only the highest-scoring vertices while retaining score-completeness metadata."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact_or_converged",
+            "allowed_values": [
+              "exact_or_converged",
+              "approximate"
+            ],
+            "description": "Whether power iteration to a convergence tolerance, or an approximate method (e.g. forward push, random walks) with disclosed error, is permitted."
+          },
+          {
+            "name": "convergence_tolerance",
+            "type": "number",
+            "required": false,
+            "default": 1e-09,
+            "constraints": "value > 0",
+            "description": "L1 residual threshold for declaring convergence in exact_or_converged mode."
+          },
+          {
+            "name": "exclude_seeds_from_output",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Whether seed vertices themselves are omitted from ranked output."
           }
         ],
         "required_outputs": [
           {
-            "name": "component_assignment",
-            "type": "map<vertex_id,integer>",
-            "description": "Component index assigned to every vertex."
+            "name": "ranked_vertices",
+            "type": "array<object>",
+            "description": "Vertex ID, PPR/RWR score, and rank ordered by descending score."
           },
           {
-            "name": "component_count",
-            "type": "integer",
-            "description": "Number of distinct components."
+            "name": "restart_probability_used",
+            "type": "number",
+            "description": "Resolved alpha actually used."
           },
           {
-            "name": "component_sizes",
-            "type": "array<integer>",
-            "description": "Vertex count of each component, indexed by component number."
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether every eligible vertex was scored and ranking was not truncated by top_k."
           }
         ],
         "optional_outputs": [
           {
-            "name": "largest_component_id",
-            "type": "integer",
-            "description": "Component number with the most vertices."
+            "name": "converged",
+            "type": "boolean",
+            "description": "Whether the iterative solver met convergence_tolerance."
           },
           {
-            "name": "largest_component_size",
+            "name": "iterations",
             "type": "integer",
-            "description": "Vertex count of the largest component."
+            "description": "Iterations or pushes performed."
+          },
+          {
+            "name": "error_bound",
+            "type": "number",
+            "description": "Disclosed per-vertex or aggregate error bound for approximate mode."
           }
         ],
         "solution_semantics": {
-          "objective": "Assign every vertex a component_assignment such that two vertices share a component index if and only if they are connected under connectivity_mode, and components are maximal.",
-          "exactness": "This problem is always solved exactly; component identity is a decidable equivalence relation with no approximate mode.",
-          "duplicate_policy": "Each vertex belongs to exactly one component.",
-          "ordering": "Component indices are canonically numbered by ascending smallest-member vertex ID, so results are directly comparable across independent runs or implementations."
+          "objective": "Compute the stationary distribution of the restart random walk defined by seed_vertices, restart_probability, direction_mode, and weight_mode, then rank vertices by that probability.",
+          "exactness": "exact_or_converged requires the L1 residual below convergence_tolerance; approximate mode must disclose its error_bound.",
+          "duplicate_policy": "Each eligible vertex appears at most once.",
+          "ordering": "Descending score with a stable vertex-ID tie break."
         },
         "validation_rules": [
-          "Two vertices share a component_assignment value if and only if they are connected under connectivity_mode in the normalized graph.",
-          "component_count equals the number of distinct values in component_assignment.",
-          "component_sizes[i] equals the number of vertices assigned to component i, and the entries sum to the total vertex count.",
-          "Component numbering follows the ascending-smallest-member-vertex-ID convention."
+          "Scores sum to 1 over all vertices (or within numerical tolerance) before any top_k truncation.",
+          "Scores are non-negative.",
+          "Every seed vertex exists in the normalized graph.",
+          "Recomputing scores from score_definition and the normalized transition matrix matches reported values within tolerance.",
+          "Dangling-vertex mass is redistributed exactly as declared by dangling_policy."
         ],
         "edge_cases": [
-          "An isolated vertex forms its own singleton component.",
-          "An edgeless graph has every vertex in its own singleton component, so component_count equals the vertex count.",
-          "connectivity_mode=strongly_connected on a graph requested as an undirected projection degenerates to the same result as weakly_connected.",
-          "A self-loop does not merge a vertex with any other vertex."
+          "A seed vertex with no outgoing edges under direction_mode still receives restart mass.",
+          "Seed weights that do not sum to one are normalized before use.",
+          "An isolated seed vertex in an otherwise edgeless graph places all mass on itself.",
+          "restart_probability close to 1 makes the result nearly identical to the seed distribution; close to 0 makes it close to global PageRank."
         ],
         "evaluation_metrics": {
           "correctness": [
-            "component-assignment agreement with an exhaustive BFS/DFS (weak) or Tarjan/Kosaraju (strong) oracle on small/medium fixtures",
-            "component-count and size consistency",
-            "canonical-numbering compliance"
+            "L1/L2 score error versus a power-iteration oracle",
+            "rank agreement at top_k",
+            "mass-conservation check"
           ],
           "performance": [
             "end-to-end time",
             "compute time",
             "peak memory",
-            "edges processed per second"
+            "iterations or pushes",
+            "queries per second for repeated single-seed queries"
           ]
         }
       }
     },
     {
-      "source": "../../problems/22_max_flow_min_cut/problem.json",
+      "source": "problems/22_max_flow_min_cut/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "max_flow_min_cut",
@@ -2263,7 +2726,409 @@
       }
     },
     {
-      "source": "../../problems/31_bipartite_matching_assignment/problem.json",
+      "source": "problems/23_butterfly_counting_bipartite/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "butterfly_counting_bipartite",
+        "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+        "category": "pattern_and_motif_mining",
+        "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques, i.e. (2,2)-bicliques) globally and per vertex/edge, and optionally decompose the graph into (alpha,beta)-cores by butterfly-based degeneracy.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected_bipartite",
+            "weights": "ignored",
+            "timestamps": "ignored",
+            "vertex_attributes": "required_side_label",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject edges whose endpoints share the same declared side.",
+            "Remove self-loops (impossible in valid bipartite input; reject if present).",
+            "Collapse parallel edges between the same pair to one edge.",
+            "Every vertex must have a side label in {left, right}; isolated vertices on either side are retained."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "default": "count",
+            "allowed_values": [
+              "count",
+              "per_vertex",
+              "per_edge",
+              "alpha_beta_core"
+            ],
+            "description": "Return a global count, per-vertex/per-edge participation counts, or a full (alpha,beta)-core decomposition."
+          },
+          {
+            "name": "alpha",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Left-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible alpha."
+          },
+          {
+            "name": "beta",
+            "type": "integer_or_null",
+            "required": false,
+            "default": null,
+            "constraints": "null or value >= 1",
+            "description": "Right-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible beta."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether a sampling-based approximate butterfly count with a disclosed bound is permitted."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "butterfly_count",
+            "type": "integer",
+            "description": "Total number of distinct butterflies (unordered 2x2 complete bipartite subgraphs) in the graph."
+          },
+          {
+            "name": "complete",
+            "type": "boolean",
+            "description": "Whether the count/decomposition covers the entire input graph without sampling truncation."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "per_vertex_butterfly_count",
+            "type": "map<vertex_id,integer>",
+            "description": "Butterflies each vertex participates in; present when mode=per_vertex."
+          },
+          {
+            "name": "per_edge_butterfly_count",
+            "type": "map<edge_id,integer>",
+            "description": "Butterflies each edge (as a wedge pair) participates in; present when mode=per_edge."
+          },
+          {
+            "name": "alpha_beta_core_assignment",
+            "type": "map<vertex_id,object>",
+            "description": "Per-vertex maximal (alpha,beta) coordinates; present when mode=alpha_beta_core."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified relative error bound for an approximate count."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Enumerate or count every 4-cycle formed by two left vertices and two right vertices that are all pairwise connected (a butterfly), with no induced-subgraph requirement beyond the four required edges.",
+          "exactness": "Exact mode requires every butterfly to be counted exactly once; approximate mode must disclose its bound.",
+          "duplicate_policy": "Each unordered set of 2 left + 2 right vertices forming a butterfly is counted once regardless of discovery order.",
+          "ordering": "Not applicable for global count; per_vertex and per_edge outputs are unordered maps."
+        },
+        "validation_rules": [
+          "butterfly_count recomputes from the normalized bipartite adjacency via independent wedge-based counting.",
+          "Sum of per_vertex_butterfly_count over one side, divided by 2, is internally consistent with butterfly_count.",
+          "alpha_beta_core_assignment vertices retain at least alpha (left) or beta (right) butterfly-degree within their assigned core.",
+          "No edge with same-side endpoints is present in the normalized graph."
+        ],
+        "edge_cases": [
+          "A graph with no 4-cycles has butterfly_count zero.",
+          "A complete bipartite graph K(m,n) has the closed-form C(m,2)*C(n,2) butterflies, usable as a correctness check.",
+          "Isolated vertices contribute zero to every count.",
+          "alpha=1,beta=1 core reduces to vertices with degree >= 1 on each side that share at least one butterfly."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "exact count agreement with brute-force wedge oracle on small/medium fixtures",
+            "per-vertex/per-edge sum consistency",
+            "core-assignment validity"
+          ],
+          "performance": [
+            "end-to-end time",
+            "wedge-construction time",
+            "peak memory",
+            "butterflies counted per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/27_group_steiner_tree/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "group_steiner_tree",
+        "name": "Group Steiner Tree",
+        "category": "dense_structure_mining",
+        "problem_statement": "Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "undirected",
+            "weights": "required_nonnegative",
+            "timestamps": "ignored",
+            "vertex_attributes": "ignored",
+            "edge_attributes": "ignored"
+          },
+          "normalization": [
+            "Reject directed input unless an explicit undirected projection is requested.",
+            "Remove self-loops.",
+            "Collapse parallel edges by keeping the minimum nonnegative weight.",
+            "Reject negative edge weights."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "groups",
+            "type": "array<array<vertex_id>>",
+            "required": true,
+            "constraints": "at least one group; every group nonempty; groups may overlap and may share vertices with each other",
+            "description": "Each group must contribute at least one vertex to the returned tree."
+          },
+          {
+            "name": "required_vertices",
+            "type": "array<vertex_id>_or_null",
+            "required": false,
+            "default": null,
+            "description": "Optional vertices (e.g. single-terminal requirements) that must appear in the tree regardless of group membership; equivalent to singleton groups."
+          },
+          {
+            "name": "solution_quality",
+            "type": "enum",
+            "required": false,
+            "default": "exact",
+            "allowed_values": [
+              "exact",
+              "approximate"
+            ],
+            "description": "Whether a certified-approximation result (e.g. a 2-approximation) with a disclosed ratio is permitted instead of an exact minimum."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "tree_edges",
+            "type": "array<edge_id>",
+            "description": "Edges forming the returned connected subtree."
+          },
+          {
+            "name": "tree_weight",
+            "type": "number",
+            "description": "Sum of weights of tree_edges."
+          },
+          {
+            "name": "selected_vertices",
+            "type": "array<vertex_id>",
+            "description": "Vertices spanned by tree_edges, including at least one representative per group."
+          },
+          {
+            "name": "optimal",
+            "type": "boolean",
+            "description": "Whether global optimality was proven."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "group_representatives",
+            "type": "map<integer,vertex_id>",
+            "description": "The specific vertex chosen to satisfy each group index, when a group has multiple qualifying vertices in the tree."
+          },
+          {
+            "name": "approximation_bound",
+            "type": "number",
+            "description": "Certified worst-case ratio to optimal for an approximate result."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Minimize tree_weight over connected subtrees of the normalized graph that contain at least one vertex from every group in groups and every vertex in required_vertices.",
+          "exactness": "Exact mode requires optimal=true; approximate mode must disclose approximation_bound.",
+          "duplicate_policy": "Multiple minimum-weight trees may exist; return one unless alternates are explicitly requested.",
+          "ordering": "tree_edges and selected_vertices are unordered sets."
+        },
+        "validation_rules": [
+          "tree_edges forms a single connected acyclic subgraph (a tree) in the normalized graph.",
+          "Every group in groups has at least one vertex in selected_vertices.",
+          "Every vertex in required_vertices is in selected_vertices.",
+          "tree_weight equals the sum of tree_edges weights.",
+          "Reported optimal=true matches independent verification against an exhaustive oracle on small fixtures."
+        ],
+        "edge_cases": [
+          "A single group containing the whole vertex set reduces to the cheapest single vertex, with an empty tree_edges and tree_weight zero.",
+          "Groups that already share a common vertex may be satisfied by a single-vertex tree.",
+          "Disconnected graphs where some group is entirely unreachable from another group make the instance infeasible; this must be reported rather than silently returning a partial tree.",
+          "Overlapping groups may be satisfied by the same vertex without double-selecting it."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "tree-weight agreement with exact oracle on small/medium fixtures",
+            "connectivity and acyclicity check",
+            "group-coverage completeness"
+          ],
+          "performance": [
+            "end-to-end time",
+            "search time",
+            "peak memory",
+            "groups processed per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/28_influence_maximization/problem.json",
+      "spec": {
+        "schema_version": "1.0.0",
+        "problem_id": "influence_maximization",
+        "name": "Influence Maximization under Diffusion Models",
+        "category": "predictive_and_unusual_structure_mining",
+        "problem_statement": "Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated.",
+        "graph_input": {
+          "format": "canonical_edge_list_v1",
+          "schema_ref": "../graph_input.schema.json",
+          "cardinality": "single_graph",
+          "requirements": {
+            "direction": "directed",
+            "weights": "required_as_influence_probability_or_threshold_input",
+            "timestamps": "ignored",
+            "vertex_attributes": "optional_as_threshold",
+            "edge_attributes": "optional"
+          },
+          "normalization": [
+            "Treat edge weight as the independent-cascade activation probability, or as linear-threshold edge weight depending on diffusion_model.",
+            "Reject edge weight outside [0,1] for independent_cascade.",
+            "Collapse parallel edges per diffusion_model's combination rule (declared explicitly, since probabilities do not sum like capacities).",
+            "Remove self-loops; they do not affect diffusion."
+          ]
+        },
+        "problem_inputs": [
+          {
+            "name": "diffusion_model",
+            "type": "enum",
+            "required": true,
+            "allowed_values": [
+              "independent_cascade",
+              "linear_threshold"
+            ],
+            "description": "Stochastic process governing how activation spreads from seeds."
+          },
+          {
+            "name": "seed_set_size",
+            "type": "integer",
+            "required": true,
+            "constraints": "value >= 1",
+            "description": "Number of seed vertices to select (the budget k)."
+          },
+          {
+            "name": "vertex_thresholds",
+            "type": "map<vertex_id,number>_or_null",
+            "required": false,
+            "default": null,
+            "description": "Per-vertex activation thresholds for linear_threshold; null means thresholds are drawn uniformly at random per the model's standard definition."
+          },
+          {
+            "name": "estimation_method",
+            "type": "enum",
+            "required": false,
+            "default": "reverse_influence_sampling",
+            "allowed_values": [
+              "reverse_influence_sampling",
+              "monte_carlo_simulation"
+            ],
+            "description": "Technique used to estimate expected spread while selecting seeds."
+          },
+          {
+            "name": "approximation_guarantee",
+            "type": "number",
+            "required": false,
+            "default": 0.63,
+            "constraints": "0 < value <= 1",
+            "description": "Target multiplicative approximation ratio to the optimal expected spread (e.g. 1 - 1/e for the standard greedy guarantee)."
+          },
+          {
+            "name": "failure_probability",
+            "type": "number",
+            "required": false,
+            "default": 0.001,
+            "constraints": "0 < value < 1",
+            "description": "Allowed probability that the returned seed set fails to meet approximation_guarantee, under the sampling method's own randomness."
+          }
+        ],
+        "required_outputs": [
+          {
+            "name": "seed_set",
+            "type": "array<vertex_id>",
+            "description": "Selected seed vertices, with cardinality equal to seed_set_size."
+          },
+          {
+            "name": "expected_spread",
+            "type": "number",
+            "description": "Estimated expected number of activated vertices when diffusion starts from seed_set."
+          },
+          {
+            "name": "guarantee_met",
+            "type": "boolean",
+            "description": "Whether the returned seed_set is certified to meet approximation_guarantee under failure_probability."
+          }
+        ],
+        "optional_outputs": [
+          {
+            "name": "marginal_gains",
+            "type": "array<number>",
+            "description": "Estimated marginal expected-spread gain contributed by each seed, in selection order."
+          },
+          {
+            "name": "sample_count",
+            "type": "integer",
+            "description": "Number of reverse-reachable sets or Monte Carlo simulations used to produce the estimate."
+          },
+          {
+            "name": "confidence_interval",
+            "type": "object",
+            "description": "Statistical interval around expected_spread for the estimation method used."
+          }
+        ],
+        "solution_semantics": {
+          "objective": "Choose seed_set of size seed_set_size maximizing expected_spread under diffusion_model, where expected_spread is the expectation over the model's randomness of the number of eventually-activated vertices.",
+          "exactness": "Exact computation of expected_spread is #P-hard in general; guarantee_met=true requires the disclosed approximation_guarantee and failure_probability to hold under the estimation_method's established theoretical bounds.",
+          "duplicate_policy": "seed_set contains each vertex at most once.",
+          "ordering": "seed_set has no required output ordering unless marginal_gains is returned, in which case order reflects the greedy selection sequence."
+        },
+        "validation_rules": [
+          "seed_set has exactly seed_set_size distinct vertices that exist in the graph.",
+          "expected_spread is non-negative and at most the total vertex count.",
+          "Re-estimating expected_spread for the returned seed_set via independent simulation falls within confidence_interval or a stated tolerance.",
+          "vertex_thresholds, when supplied, are all within [0,1] for linear_threshold."
+        ],
+        "edge_cases": [
+          "seed_set_size greater than or equal to the vertex count makes expected_spread equal to the vertex count.",
+          "A graph with no edges gives expected_spread equal to seed_set_size regardless of diffusion_model.",
+          "All edge probabilities zero under independent_cascade gives expected_spread equal to seed_set_size.",
+          "Disconnected components require seeds to be distributed to maximize total spread, not concentrated in one component."
+        ],
+        "evaluation_metrics": {
+          "correctness": [
+            "expected-spread estimate agreement with high-sample-count simulation oracle",
+            "cardinality and feasibility checks",
+            "guarantee validity under disclosed sampling parameters"
+          ],
+          "performance": [
+            "end-to-end time",
+            "sampling/simulation time",
+            "peak memory",
+            "reverse-reachable sets or simulations per second"
+          ]
+        }
+      }
+    },
+    {
+      "source": "problems/31_bipartite_matching_assignment/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "bipartite_matching_assignment",
@@ -2408,7 +3273,7 @@
       }
     },
     {
-      "source": "../../problems/33_transitive_closure_reachability/problem.json",
+      "source": "problems/33_transitive_closure_reachability/problem.json",
       "spec": {
         "schema_version": "1.0.0",
         "problem_id": "transitive_closure_reachability",
@@ -2531,136 +3396,100 @@
       }
     },
     {
-      "source": "../../problems/23_butterfly_counting_bipartite/problem.json",
+      "source": "problems/35_connected_components/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "butterfly_counting_bipartite",
-        "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
-        "category": "pattern_and_motif_mining",
-        "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques, i.e. (2,2)-bicliques) globally and per vertex/edge, and optionally decompose the graph into (alpha,beta)-cores by butterfly-based degeneracy.",
+        "problem_id": "connected_components",
+        "name": "Connected Components (Weakly and Strongly Connected)",
+        "category": "community_and_structural_analysis",
+        "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
           "schema_ref": "../graph_input.schema.json",
           "cardinality": "single_graph",
           "requirements": {
-            "direction": "undirected_bipartite",
+            "direction": "directed_or_undirected",
             "weights": "ignored",
             "timestamps": "ignored",
-            "vertex_attributes": "required_side_label",
+            "vertex_attributes": "ignored",
             "edge_attributes": "ignored"
           },
           "normalization": [
-            "Reject edges whose endpoints share the same declared side.",
-            "Remove self-loops (impossible in valid bipartite input; reject if present).",
+            "Remove self-loops; they never change component membership.",
             "Collapse parallel edges between the same pair to one edge.",
-            "Every vertex must have a side label in {left, right}; isolated vertices on either side are retained."
+            "When connectivity_mode=weakly_connected, treat every edge as undirected regardless of input direction."
           ]
         },
         "problem_inputs": [
           {
-            "name": "mode",
+            "name": "connectivity_mode",
             "type": "enum",
-            "required": false,
-            "default": "count",
+            "required": true,
             "allowed_values": [
-              "count",
-              "per_vertex",
-              "per_edge",
-              "alpha_beta_core"
+              "weakly_connected",
+              "strongly_connected"
             ],
-            "description": "Return a global count, per-vertex/per-edge participation counts, or a full (alpha,beta)-core decomposition."
-          },
-          {
-            "name": "alpha",
-            "type": "integer_or_null",
-            "required": false,
-            "default": null,
-            "constraints": "null or value >= 1",
-            "description": "Left-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible alpha."
-          },
-          {
-            "name": "beta",
-            "type": "integer_or_null",
-            "required": false,
-            "default": null,
-            "constraints": "null or value >= 1",
-            "description": "Right-side degeneracy parameter when mode=alpha_beta_core; null means decompose for all feasible beta."
-          },
-          {
-            "name": "solution_quality",
-            "type": "enum",
-            "required": false,
-            "default": "exact",
-            "allowed_values": [
-              "exact",
-              "approximate"
-            ],
-            "description": "Whether a sampling-based approximate butterfly count with a disclosed bound is permitted."
+            "description": "Weak connectivity ignores edge direction; strong connectivity requires a directed path in both directions and is only meaningful (and may differ from weak) on a directed graph."
           }
         ],
         "required_outputs": [
           {
-            "name": "butterfly_count",
-            "type": "integer",
-            "description": "Total number of distinct butterflies (unordered 2x2 complete bipartite subgraphs) in the graph."
+            "name": "component_assignment",
+            "type": "map<vertex_id,integer>",
+            "description": "Component index assigned to every vertex."
           },
           {
-            "name": "complete",
-            "type": "boolean",
-            "description": "Whether the count/decomposition covers the entire input graph without sampling truncation."
+            "name": "component_count",
+            "type": "integer",
+            "description": "Number of distinct components."
+          },
+          {
+            "name": "component_sizes",
+            "type": "array<integer>",
+            "description": "Vertex count of each component, indexed by component number."
           }
         ],
         "optional_outputs": [
           {
-            "name": "per_vertex_butterfly_count",
-            "type": "map<vertex_id,integer>",
-            "description": "Butterflies each vertex participates in; present when mode=per_vertex."
+            "name": "largest_component_id",
+            "type": "integer",
+            "description": "Component number with the most vertices."
           },
           {
-            "name": "per_edge_butterfly_count",
-            "type": "map<edge_id,integer>",
-            "description": "Butterflies each edge (as a wedge pair) participates in; present when mode=per_edge."
-          },
-          {
-            "name": "alpha_beta_core_assignment",
-            "type": "map<vertex_id,object>",
-            "description": "Per-vertex maximal (alpha,beta) coordinates; present when mode=alpha_beta_core."
-          },
-          {
-            "name": "approximation_bound",
-            "type": "number",
-            "description": "Certified relative error bound for an approximate count."
+            "name": "largest_component_size",
+            "type": "integer",
+            "description": "Vertex count of the largest component."
           }
         ],
         "solution_semantics": {
-          "objective": "Enumerate or count every 4-cycle formed by two left vertices and two right vertices that are all pairwise connected (a butterfly), with no induced-subgraph requirement beyond the four required edges.",
-          "exactness": "Exact mode requires every butterfly to be counted exactly once; approximate mode must disclose its bound.",
-          "duplicate_policy": "Each unordered set of 2 left + 2 right vertices forming a butterfly is counted once regardless of discovery order.",
-          "ordering": "Not applicable for global count; per_vertex and per_edge outputs are unordered maps."
+          "objective": "Assign every vertex a component_assignment such that two vertices share a component index if and only if they are connected under connectivity_mode, and components are maximal.",
+          "exactness": "This problem is always solved exactly; component identity is a decidable equivalence relation with no approximate mode.",
+          "duplicate_policy": "Each vertex belongs to exactly one component.",
+          "ordering": "Component indices are canonically numbered by ascending smallest-member vertex ID, so results are directly comparable across independent runs or implementations."
         },
         "validation_rules": [
-          "butterfly_count recomputes from the normalized bipartite adjacency via independent wedge-based counting.",
-          "Sum of per_vertex_butterfly_count over one side, divided by 2, is internally consistent with butterfly_count.",
-          "alpha_beta_core_assignment vertices retain at least alpha (left) or beta (right) butterfly-degree within their assigned core.",
-          "No edge with same-side endpoints is present in the normalized graph."
+          "Two vertices share a component_assignment value if and only if they are connected under connectivity_mode in the normalized graph.",
+          "component_count equals the number of distinct values in component_assignment.",
+          "component_sizes[i] equals the number of vertices assigned to component i, and the entries sum to the total vertex count.",
+          "Component numbering follows the ascending-smallest-member-vertex-ID convention."
         ],
         "edge_cases": [
-          "A graph with no 4-cycles has butterfly_count zero.",
-          "A complete bipartite graph K(m,n) has the closed-form C(m,2)*C(n,2) butterflies, usable as a correctness check.",
-          "Isolated vertices contribute zero to every count.",
-          "alpha=1,beta=1 core reduces to vertices with degree >= 1 on each side that share at least one butterfly."
+          "An isolated vertex forms its own singleton component.",
+          "An edgeless graph has every vertex in its own singleton component, so component_count equals the vertex count.",
+          "connectivity_mode=strongly_connected on a graph requested as an undirected projection degenerates to the same result as weakly_connected.",
+          "A self-loop does not merge a vertex with any other vertex."
         ],
         "evaluation_metrics": {
           "correctness": [
-            "exact count agreement with brute-force wedge oracle on small/medium fixtures",
-            "per-vertex/per-edge sum consistency",
-            "core-assignment validity"
+            "component-assignment agreement with an exhaustive BFS/DFS (weak) or Tarjan/Kosaraju (strong) oracle on small/medium fixtures",
+            "component-count and size consistency",
+            "canonical-numbering compliance"
           ],
           "performance": [
             "end-to-end time",
-            "wedge-construction time",
+            "compute time",
             "peak memory",
-            "butterflies counted per second"
+            "edges processed per second"
           ]
         }
       }

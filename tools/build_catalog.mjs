@@ -17,6 +17,7 @@ const runtimeManifest = readJson("graphmine_manifest.json");
 const backendRegistry = readJson("catalog/backend_registry.json");
 const artifactSources = readJson("catalog/artifact_sources.json");
 const expansion = readJson("catalog/expansion_profiles.json");
+const repairs = readJson("catalog/repaired_profiles.json");
 const expansionScreening = readJson(expansion.screening_source);
 const validationResults = readJson(
   "validation/gpu_correctness/results/results.json",
@@ -261,6 +262,12 @@ for (const workload of validationResults.workloads) {
 }
 
 function validationForBackend(problemId, backendId) {
+  const repaired = repairs.backends.find((entry) => entry.problem_id === problemId && entry.backend_id === backendId);
+  if (repaired) {
+    const evidence = readJson(repairs.public_api_evidence);
+    assert(evidence.status === "passed" && evidence.failures === 0, "Repaired profiles require a passing native integration report");
+    return repaired.validation;
+  }
   const profile = Object.values(expansion.operations).find(
     (entry) => entry.problem_id === problemId && entry.backend_id === backendId,
   );
@@ -294,7 +301,7 @@ const operations = runtimeManifest.operations.map((operation) => {
     (entry) => entry.spec.problem_id === operation.research_problem_id,
   );
   assert.notEqual(problemPosition, -1);
-  const cpp = cppContracts[operation.id] || expansion.operations[operation.id]?.cpp;
+  const cpp = cppContracts[operation.id] || expansion.operations[operation.id]?.cpp || repairs.operations[operation.id]?.cpp;
   assert(cpp, `Missing C++ contract for ${operation.id}`);
 
   const backendDetails = operation.backends.map((backendId) => {
@@ -371,7 +378,7 @@ const problems = problemSources.map(({ source, spec }) => {
   const screening = expansionScreening.artifacts.filter(
     (entry) => entry.problem_dir === path.basename(path.dirname(source)),
   );
-  const profiles = problemOperations.filter((operation) => expansion.operations[operation.id])
+  const profiles = problemOperations.filter((operation) => expansion.operations[operation.id] || repairs.operations[operation.id])
     .map((operation) => ({ operation_id: operation.id, supported_profile: operation.validated_profile }));
 
   return {
@@ -448,6 +455,8 @@ const catalog = {
     backend_registry: "catalog/backend_registry.json",
     artifact_sources: "catalog/artifact_sources.json",
     expansion_profiles: "catalog/expansion_profiles.json",
+    repaired_profiles: "catalog/repaired_profiles.json",
+    repaired_integration: repairs.integration_report,
     expansion_screening: expansion.screening_source,
     regeneration_command: "node tools/build_catalog.mjs",
   },
@@ -459,11 +468,12 @@ const catalog = {
     validated_backend_count: validatedBackendCount,
     passing_validation_workload_count: passingWorkloadCount,
     validated_expansion_profile_count: Object.keys(expansion.operations).length,
+    validated_repaired_backend_count: repairs.backends.length,
     operation_count_note:
       "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations.",
   },
   routing: {
-    contract_version: expansion.routing_contract_version,
+    contract_version: repairs.routing_contract_version,
     model_policy: "Supply this catalog to the base router. The frozen legacy routing adapter was evaluated on the earlier 20-problem contract; do not silently extend its evaluation claims.",
     workflow: [
       {
@@ -575,6 +585,7 @@ const catalog = {
     summary: validationResults.summary,
     expansion_source: expansion.screening_source,
     expansion_profiles: expansion.operations,
+    repaired_profiles: repairs.backends,
   },
   problem_index: problemIndex,
   operation_index: operationIndex,

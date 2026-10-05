@@ -1,16 +1,11 @@
 var searchData=
 [
-  ['temporalmotifbackendevent_0',['TemporalMotifBackendEvent',['../de/d8f/structgraphmine_1_1detail_1_1TemporalMotifBackendEvent.html',1,'graphmine::detail']]],
-  ['temporalmotifbackendinput_1',['TemporalMotifBackendInput',['../d7/d38/structgraphmine_1_1detail_1_1TemporalMotifBackendInput.html',1,'graphmine::detail']]],
-  ['temporalmotifbackendresult_2',['TemporalMotifBackendResult',['../d7/d22/structgraphmine_1_1detail_1_1TemporalMotifBackendResult.html',1,'graphmine::detail']]],
-  ['temporalmotifinstance_3',['TemporalMotifInstance',['../d6/da3/structgraphmine_1_1TemporalMotifInstance.html',1,'graphmine']]],
-  ['temporalmotifmining_4',['TemporalMotifMining',['../d5/d31/classgraphmine_1_1TemporalMotifMining.html',1,'graphmine']]],
-  ['temporalmotifoptions_5',['TemporalMotifOptions',['../dd/d7d/structgraphmine_1_1TemporalMotifOptions.html',1,'graphmine']]],
-  ['temporalmotifoutput_6',['TemporalMotifOutput',['../df/d62/structgraphmine_1_1TemporalMotifOutput.html',1,'graphmine']]],
-  ['trianglebackendresult_7',['TriangleBackendResult',['../d6/da3/structgraphmine_1_1detail_1_1TriangleBackendResult.html',1,'graphmine::detail']]],
-  ['trianglecounting_8',['TriangleCounting',['../dd/dfb/classgraphmine_1_1TriangleCounting.html',1,'graphmine']]],
-  ['trianglematerialization_9',['TriangleMaterialization',['../da/d67/structgraphmine_1_1anonymous__namespace_02triangle__counting_8cpp_03_1_1TriangleMaterialization.html',1,'graphmine::anonymous_namespace{triangle_counting.cpp}']]],
-  ['triangleoptions_10',['TriangleOptions',['../d5/d85/structgraphmine_1_1TriangleOptions.html',1,'graphmine']]],
-  ['triangleoutput_11',['TriangleOutput',['../da/d11/structgraphmine_1_1TriangleOutput.html',1,'graphmine']]],
-  ['triangleupdate_12',['TriangleUpdate',['../dc/dd6/structgraphmine_1_1TriangleUpdate.html',1,'graphmine']]]
+  ['scopedbackendoutputsilence_0',['ScopedBackendOutputSilence',['../de/d42/classanonymous__namespace_02graphmine_8cpp_03_1_1ScopedBackendOutputSilence.html',1,'anonymous_namespace{graphmine.cpp}']]],
+  ['sides_1',['Sides',['../d1/de4/structgraphmine_1_1anonymous__namespace_02repaired__algorithms_8cpp_03_1_1Sides.html',1,'graphmine::anonymous_namespace{repaired_algorithms.cpp}']]],
+  ['status_2',['Status',['../d9/d6a/classgraphmine_1_1Status.html',1,'graphmine']]],
+  ['subgraphisomorphism_3',['SubgraphIsomorphism',['../dc/dc5/classgraphmine_1_1SubgraphIsomorphism.html',1,'graphmine']]],
+  ['subgraphisomorphismbackendresult_4',['SubgraphIsomorphismBackendResult',['../d7/d70/structgraphmine_1_1detail_1_1SubgraphIsomorphismBackendResult.html',1,'graphmine::detail']]],
+  ['subgraphisomorphismoptions_5',['SubgraphIsomorphismOptions',['../df/da3/structgraphmine_1_1SubgraphIsomorphismOptions.html',1,'graphmine']]],
+  ['subgraphisomorphismoutput_6',['SubgraphIsomorphismOutput',['../d4/dd8/structgraphmine_1_1SubgraphIsomorphismOutput.html',1,'graphmine']]],
+  ['supportreport_7',['SupportReport',['../d1/d6a/structgraphmine_1_1SupportReport.html',1,'graphmine']]]
 ];

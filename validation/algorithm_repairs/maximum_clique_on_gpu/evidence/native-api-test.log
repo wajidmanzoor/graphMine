@@ -1,0 +1,43 @@
+Max Core = 4
+Max Core = 2
+[1;32m[18:13:10] Max directed degree: 2, max undirected degree: 2
+[0m[1;32m[18:13:10] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:13:10] VRAM usage: 693370880 B
+[0m[1;32m[18:13:10] Launching search kernel with grid size: 3408, and block size: 64
+[0mMax Core = 2
+[1;32m[18:13:10] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[18:13:10] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:13:10] VRAM usage: 691273728 B
+[0m[1;32m[18:13:10] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 2
+[1;32m[18:13:10] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[18:13:10] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:13:10] VRAM usage: 689176576 B
+[0m[1;32m[18:13:10] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 2
+[1;32m[18:13:10] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[18:13:10] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:13:10] VRAM usage: 687079424 B
+[0m[1;32m[18:13:10] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 2
+[1;32m[18:13:10] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[18:13:10] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:13:10] VRAM usage: 684982272 B
+[0m[1;32m[18:13:10] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 2
+[1;32m[18:13:10] Max directed degree: 2, max undirected degree: 3
+[0m[1;32m[18:13:10] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:13:10] VRAM usage: 682885120 B
+[0m[1;32m[18:13:10] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 3
+[1;32m[18:13:10] Max directed degree: 3, max undirected degree: 3
+[0m[1;32m[18:13:10] Max blocks per SM: 24, SMs: 142
+[0m[1;32m[18:13:10] VRAM usage: 680787968 B
+[0m[1;32m[18:13:10] Launching search kernel with grid size: 3408, and block size: 64
+[0mFound clique of size 3.
+Max Core = 3

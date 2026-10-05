@@ -1,0 +1,68 @@
+{
+  "status": "repaired_profiles_passed",
+  "date": "2026-10-05",
+  "scope": "Nine repaired executable profiles; other backend results are separate.",
+  "cuda_visible_devices": "1",
+  "routing_contract_version": "repaired-37-v2",
+  "native": {
+    "status": "passed",
+    "checks": 372,
+    "passed": 372,
+    "failures": 0,
+    "rejection_checks": 21,
+    "suite": "full",
+    "binary_sha256": "b18babf302965e4c038faa19f1cd6374149033761a03312077738d76ceb6d508"
+  },
+  "cuda_memcheck": {
+    "status": "passed",
+    "checks": 9,
+    "passed": 9,
+    "failures": 0,
+    "rejection_checks": 0,
+    "suite": "sanitizer",
+    "binary_sha256": "b18babf302965e4c038faa19f1cd6374149033761a03312077738d76ceb6d508"
+  },
+  "agent_tests": {
+    "tests": 387,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "expansion_regressions": {
+    "passed": 99,
+    "total": 99
+  },
+  "cpu_ctest": {
+    "passed": 6,
+    "disabled": 17,
+    "failed": 0
+  },
+  "gpu_ctest": {
+    "passed": 22,
+    "failed": 1,
+    "failure": "unchanged gMatch backend CUDA out of memory with approximately 20599 MiB free on GPU 1"
+  },
+  "worker_sha256": {
+    "acctd": "fa8e7c159d87dce9747639b167ae969e6a2cbc51004ad10808be59f3e24bb256",
+    "mbe-gpu": "cef3bc8a416acc5f66948f73c976b38ef8adb6281f193871b73957c322252f91",
+    "cds": "43bb52b4d6593ef2fc9ae2b10605f469f40519e62c096970d85ca7a5d9e499fc",
+    "kpar": "0836723b0089583fab623097427e0030ddabb83cf6bedb56056a94bfd530b24d",
+    "gamma-butterfly": "ef14a0ea5f9236b2d59933aaa39b7eb6af3ced5fcc215b931276500961452cd6",
+    "gpu4gst": "1b8e6ab0d692711535095455305a5f4472aa1e4f0aa23ff3150475b2dc9f191f",
+    "superfuser": "49acea3e10c81380b315a3dde14f7bdb7429c7298b2d4af1ab79f690818f668a"
+  },
+  "contract_sha256": {
+    "graphmine_catalog.json": "9c5614dfbe5564bc628adc8457c2d5f358eb398a395b6b76032bae58cea1f90e",
+    "graphmine_manifest.json": "f8b060102cbc0dcdb3642b6d41b56ae273f5e9878fb9bc657e97604b23aa8226",
+    "agent/program_instructions.json": "ebe7a08540cdbce68ce1753edbe418e64601c389c1adb77e01c5779b6449cba8",
+    "agent/schemas/chat-request.schema.json": "13a272c66c930ef221ab286a89a431d4730cc0ca145ff970facceab6b302e37c",
+    "agent/schemas/chat-response.schema.json": "82847e80a0006b2ae937aa9b7636dfdddd910d17922acfb43bd2159107707d97",
+    "agent/schemas/execution-plan.schema.json": "cca0868c1aa68afe65fe61bd300eb0865f400508f1ee742c9540dccb2b2d7ff0",
+    "agent/schemas/feedback-create.schema.json": "53f7ef05b2c10058ed600e431397d03a3f0f49369cc47f0c38a02f591252629b",
+    "agent/schemas/feedback-record.schema.json": "42c50529178f4a3a7f8128554847661313d203bdd9bf8d87d701dd3c6fe43ecb",
+    "agent/schemas/interpretation.schema.json": "4c8f509864117aa3720f85ce5436492cfb8964273ef067f5605dbb4f3a9d6dea",
+    "agent/schemas/plan-request.schema.json": "9a87707316714b80dc2c72cb09583fc81709ef1fc7bac227fe46b9e8ae7dda91",
+    "agent/schemas/planning-outcome.schema.json": "4699f42978ceb0fb84e706cd46d3a5706c10abd1b6840fd274ffb2b83c4b1825",
+    "agent/schemas/result-record.schema.json": "a9e12f843059f36b4bc027e908c39ae9a0fe5211c6b5eb34d3e723fa69c8672f"
+  }
+}

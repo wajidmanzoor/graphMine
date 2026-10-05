@@ -1,0 +1,41 @@
+{
+  "commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+  "remote": "https://github.com/pkumod/GAMMA",
+  "patch_sha256": "e1397103bf47c23fcaa75c8b27b07cf1454da9b76e11a55c277d002581e7864c",
+  "base_sha256": {
+    "Makefile": "f96588e55f9056bd626a5df01bfbcca5065adad26a700d97d276ba8bb9e04d18",
+    "accessMode.cuh": "57da545c080e8c6ffea31666aab4da8c86ff4f4c81eaa3406544aebeae6c5656",
+    "aggregrate.cuh": "ca9ef1b414fe55e9bac3b0aa536c31a5acd7787e89d171027e948cf1c3057799",
+    "checked_expand.cuh": null,
+    "clock.h": "8cc90722b1a65a6ce7ba9136971b25569bd553bcc99388358fd388887c05a548",
+    "embedding.cuh": "56820700eda0bfe2425d8c134ef61cb251f59e07df994357a371cb79ec8aa665",
+    "expand.cuh": "c87d19d4be27e38c74a9e9e96bffe9eb02a98d9fd109134745ead8b655a92256",
+    "fsm.cu": "716815ef83314167e90321253f9c8f243cdf9dc43cadaa39e2cb41fd71ca2ffb",
+    "graph.cuh": "99761d42244ff33d25746ea60e7e279ad5b689d255300a0416410b3c35a69583",
+    "kcl.cu": "bfb11e48698f0887bfa9f86cbcc5a40dfe4767d54ebc4ab5cb9cc67a452f1470",
+    "log.cpp": "b2b3b2630a83f36b3abc0de553aa9f06df60c3758faf6ec9d599a5229c7fa19c",
+    "log.h": "91aef3a2557cbec4062d3968a477c409783aa516085adb8bae9b68c4012d3dad",
+    "queryGraph.cuh": "ca02f86c657eb0391054a38ab3713fe4df2c20092ec170a07fbceff7c3e5a328",
+    "sm.cu": "704cb5fd20d0aa3efb095c3c4bb1436124310d1035791a915309a968dac7caa3",
+    "sm_input.h": null,
+    "utils.h": "1dc7b91f0c9d709e594cf8615ec08bb8d732100c96c715d94f36aa601a9b913f"
+  },
+  "source_sha256": {
+    "Makefile": "0bb224282003c8def9f1cd9ae8e30b679607765b987ff58450a794f5fd987e58",
+    "accessMode.cuh": "57da545c080e8c6ffea31666aab4da8c86ff4f4c81eaa3406544aebeae6c5656",
+    "aggregrate.cuh": "ca9ef1b414fe55e9bac3b0aa536c31a5acd7787e89d171027e948cf1c3057799",
+    "checked_expand.cuh": "d757e1e975d9584c6ab5f3ec709c9d4f8d256cd860795b28e84010a8c0189af0",
+    "clock.h": "8cc90722b1a65a6ce7ba9136971b25569bd553bcc99388358fd388887c05a548",
+    "embedding.cuh": "ed35b1c34db61f0fb9e63b053136fd758a0cf712f0cf22237646d3f04fecb3ed",
+    "expand.cuh": "40b1afde779d4536bcaed3d8f32d70ca98081e33c9c456e6749bfd2bdd79b04d",
+    "fsm.cu": "716815ef83314167e90321253f9c8f243cdf9dc43cadaa39e2cb41fd71ca2ffb",
+    "graph.cuh": "270c84a5b0e638e3e68d932970fa4b9eaa40874c399a4bdc64da3bb43736a544",
+    "kcl.cu": "bfb11e48698f0887bfa9f86cbcc5a40dfe4767d54ebc4ab5cb9cc67a452f1470",
+    "log.cpp": "b2b3b2630a83f36b3abc0de553aa9f06df60c3758faf6ec9d599a5229c7fa19c",
+    "log.h": "91aef3a2557cbec4062d3968a477c409783aa516085adb8bae9b68c4012d3dad",
+    "queryGraph.cuh": "fbe0b96dd60fd6503ec01318c07b9ac152bf7c896f657bb006fab24e9c552d09",
+    "sm.cu": "42f3377eb457b6b62f1c73c8a6576f84406602e39ceeb481d28c62c688fbb077",
+    "sm_input.h": "0487da055cc2a457113bbbf5f455a31f478ce98d1c756c9bbb4963da507efa8a",
+    "utils.h": "1dc7b91f0c9d709e594cf8615ec08bb8d732100c96c715d94f36aa601a9b913f"
+  }
+}

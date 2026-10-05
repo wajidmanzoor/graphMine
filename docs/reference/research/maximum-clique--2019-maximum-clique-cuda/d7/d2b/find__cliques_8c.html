@@ -104,6 +104,9 @@ $(document).ready(function(){initNavTree('d7/d2b/find__cliques_8c.html','../../'
 <code>#include &lt;time.h&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;errno.h&gt;</code><br />
+<code>#include &lt;limits.h&gt;</code><br />
+<code>#include &lt;math.h&gt;</code><br />
 <code>#include &lt;argp.h&gt;</code><br />
 <code>#include &quot;sys/time.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="../../d5/dba/simple__macros_8h_source.html">simple_macros.h</a>&quot;</code><br />
@@ -120,32 +123,76 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a5555814d1dc8a371f67c856145d8d233" id="r_a5555814d1dc8a371f67c856145d8d233"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">long</a> int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a5555814d1dc8a371f67c856145d8d233">get_timestamp</a> ()</td></tr>
+<tr class="memitem:a624ee04b3bdfe8138d81bf9774142f51" id="r_a624ee04b3bdfe8138d81bf9774142f51"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a624ee04b3bdfe8138d81bf9774142f51">float_option</a> (const char *arg, struct argp_state *state)</td></tr>
+<tr class="separator:a624ee04b3bdfe8138d81bf9774142f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5555814d1dc8a371f67c856145d8d233" id="r_a5555814d1dc8a371f67c856145d8d233"><td class="memItemLeft" align="right" valign="top">long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a5555814d1dc8a371f67c856145d8d233">get_timestamp</a> ()</td></tr>
 <tr class="separator:a5555814d1dc8a371f67c856145d8d233"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60ce7636b78b6b2d944aaef6864ce1ed" id="r_a60ce7636b78b6b2d944aaef6864ce1ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a60ce7636b78b6b2d944aaef6864ce1ed">init_cuda</a> (<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">void</a>)</td></tr>
+<tr class="memitem:a60ce7636b78b6b2d944aaef6864ce1ed" id="r_a60ce7636b78b6b2d944aaef6864ce1ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a60ce7636b78b6b2d944aaef6864ce1ed">init_cuda</a> (void)</td></tr>
 <tr class="separator:a60ce7636b78b6b2d944aaef6864ce1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c04138a5bfe5d72780bb7e82a18e627" id="r_a3c04138a5bfe5d72780bb7e82a18e627"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a> (int <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">argc</a>, <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a> **<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">argv</a>)</td></tr>
+<tr class="memitem:a95ce31f05fc8f80270d675943b762956" id="r_a95ce31f05fc8f80270d675943b762956"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a95ce31f05fc8f80270d675943b762956">integer_option</a> (const char *arg, struct argp_state *state)</td></tr>
+<tr class="separator:a95ce31f05fc8f80270d675943b762956"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c04138a5bfe5d72780bb7e82a18e627" id="r_a3c04138a5bfe5d72780bb7e82a18e627"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a> (int argc, char **argv)</td></tr>
 <tr class="separator:a3c04138a5bfe5d72780bb7e82a18e627"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35ee63236273ebb9325c444cacf00159" id="r_a35ee63236273ebb9325c444cacf00159"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">static</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">error_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a35ee63236273ebb9325c444cacf00159">parse_opt</a> (int <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">key</a>, <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a> *<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">arg</a>, <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">struct</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">argp_state</a> *<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">state</a>)</td></tr>
+<tr class="memitem:a35ee63236273ebb9325c444cacf00159" id="r_a35ee63236273ebb9325c444cacf00159"><td class="memItemLeft" align="right" valign="top">static error_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a35ee63236273ebb9325c444cacf00159">parse_opt</a> (int key, char *arg, struct argp_state *state)</td></tr>
 <tr class="separator:a35ee63236273ebb9325c444cacf00159"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:ab70c96531b1b652d70c221cfaf3207f3" id="r_ab70c96531b1b652d70c221cfaf3207f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">static</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">struct</a> argp&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#ab70c96531b1b652d70c221cfaf3207f3">argp</a> = { <a class="el" href="../../d7/d2b/find__cliques_8c.html#abc1fd3a47aea6a8944038c9100eb9135">options</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#a35ee63236273ebb9325c444cacf00159">parse_opt</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#a91b08784b3668a8a1fbe2eec1947fb9d">args_doc</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5">doc</a> }</td></tr>
+<tr class="memitem:ab70c96531b1b652d70c221cfaf3207f3" id="r_ab70c96531b1b652d70c221cfaf3207f3"><td class="memItemLeft" align="right" valign="top">static struct argp&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#ab70c96531b1b652d70c221cfaf3207f3">argp</a> = { <a class="el" href="../../d7/d2b/find__cliques_8c.html#abc1fd3a47aea6a8944038c9100eb9135">options</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#a35ee63236273ebb9325c444cacf00159">parse_opt</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#a91b08784b3668a8a1fbe2eec1947fb9d">args_doc</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5">doc</a> }</td></tr>
 <tr class="separator:ab70c96531b1b652d70c221cfaf3207f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa037e59f26a80a8a2e35e6f2364004d" id="r_aaa037e59f26a80a8a2e35e6f2364004d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">const</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#aaa037e59f26a80a8a2e35e6f2364004d">argp_program_bug_address</a> = &quot;&lt;pawel@<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">bioexploratorium.pl</a>&gt;&quot;</td></tr>
+<tr class="memitem:aaa037e59f26a80a8a2e35e6f2364004d" id="r_aaa037e59f26a80a8a2e35e6f2364004d"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#aaa037e59f26a80a8a2e35e6f2364004d">argp_program_bug_address</a> = &quot;&lt;pawel@bioexploratorium.pl&gt;&quot;</td></tr>
 <tr class="separator:aaa037e59f26a80a8a2e35e6f2364004d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62f73ea01c816f1996aed4c66f57c4fb" id="r_a62f73ea01c816f1996aed4c66f57c4fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">const</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a62f73ea01c816f1996aed4c66f57c4fb">argp_program_version</a> = &quot;find_cliques&quot;</td></tr>
+<tr class="memitem:a62f73ea01c816f1996aed4c66f57c4fb" id="r_a62f73ea01c816f1996aed4c66f57c4fb"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a62f73ea01c816f1996aed4c66f57c4fb">argp_program_version</a> = &quot;find_cliques&quot;</td></tr>
 <tr class="memdesc:a62f73ea01c816f1996aed4c66f57c4fb"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="../../d7/d2b/find__cliques_8c.html">find_cliques.c</a>  <br /></td></tr>
 <tr class="separator:a62f73ea01c816f1996aed4c66f57c4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91b08784b3668a8a1fbe2eec1947fb9d" id="r_a91b08784b3668a8a1fbe2eec1947fb9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">static</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a91b08784b3668a8a1fbe2eec1947fb9d">args_doc</a> [] = &quot;[--DIMACSbin|--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSascii</a>] GRAPH\n--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">anneal</a> [--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSbin</a>|--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSascii</a>] GRAPH\n--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">atten</a>[=<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">NUM</a>] [--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">max</a>-<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">res</a>=<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">NUM</a>] [--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSbin</a>|--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSascii</a>] <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">GRAPH&quot;</a></td></tr>
+<tr class="memitem:a91b08784b3668a8a1fbe2eec1947fb9d" id="r_a91b08784b3668a8a1fbe2eec1947fb9d"><td class="memItemLeft" align="right" valign="top">static char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#a91b08784b3668a8a1fbe2eec1947fb9d">args_doc</a> [] = &quot;[--DIMACSbin|--DIMACSascii] GRAPH\n--anneal [--DIMACSbin|--DIMACSascii] GRAPH\n--atten[=NUM] [--max-res=NUM] [--DIMACSbin|--DIMACSascii] GRAPH&quot;</td></tr>
 <tr class="separator:a91b08784b3668a8a1fbe2eec1947fb9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6164deb8a824f8cb2b9147cfc3174f5" id="r_af6164deb8a824f8cb2b9147cfc3174f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">static</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5">doc</a> [] = &quot;A <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">program</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">searching</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">for</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">the</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">largest</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">clique</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">in</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">a</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">graph</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">using</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">a</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">iterative</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">approach</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">based</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">on</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">the</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">Motzkin</a>-<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">Straus</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">theorem.&quot;</a></td></tr>
+<tr class="memitem:af6164deb8a824f8cb2b9147cfc3174f5" id="r_af6164deb8a824f8cb2b9147cfc3174f5"><td class="memItemLeft" align="right" valign="top">static char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5">doc</a> [] = &quot;A program searching for the largest clique in a graph using a iterative approach based on the Motzkin-Straus theorem.&quot;</td></tr>
 <tr class="separator:af6164deb8a824f8cb2b9147cfc3174f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc1fd3a47aea6a8944038c9100eb9135" id="r_abc1fd3a47aea6a8944038c9100eb9135"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">static</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">struct</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">argp_option</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#abc1fd3a47aea6a8944038c9100eb9135">options</a> []</td></tr>
+<tr class="memitem:abc1fd3a47aea6a8944038c9100eb9135" id="r_abc1fd3a47aea6a8944038c9100eb9135"><td class="memItemLeft" align="right" valign="top">static struct argp_option&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d2b/find__cliques_8c.html#abc1fd3a47aea6a8944038c9100eb9135">options</a> []</td></tr>
 <tr class="separator:abc1fd3a47aea6a8944038c9100eb9135"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a624ee04b3bdfe8138d81bf9774142f51" name="a624ee04b3bdfe8138d81bf9774142f51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a624ee04b3bdfe8138d81bf9774142f51">&#9670;&#160;</a></span>float_option()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static float float_option </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>arg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct argp_state *&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00092">92</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00102">parse_opt()</a>.</p>
+
+</div>
+</div>
 <a id="a5555814d1dc8a371f67c856145d8d233" name="a5555814d1dc8a371f67c856145d8d233"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5555814d1dc8a371f67c856145d8d233">&#9670;&#160;</a></span>get_timestamp()</h2>
 
@@ -153,7 +200,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">long</a> int get_timestamp </td>
+          <td class="memname">long int get_timestamp </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -161,9 +208,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00166">166</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00189">189</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00174">main()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00197">main()</a>.</p>
 
 </div>
 </div>
@@ -174,20 +221,60 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">void</a> init_cuda </td>
+          <td class="memname">void init_cuda </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">void</a>&#160;</td>
+          <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l01298">1298</a> of file <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html">motzkin_cuda.cu</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l01230">1230</a> of file <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html">motzkin_cuda.cu</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l00058">cuda_device</a>, <a class="el" href="../../dc/de5/random_8c_source.html#l00050">int_ran()</a>, <a class="el" href="../../d4/d25/common__cuda_8cuh_source.html#l00072">reduce_max()</a>, and <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l00074">threaddev</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l00063">checkCUDAError()</a>, and <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l00059">cuda_device</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00817">graph_clique_multi_cuda()</a>, and <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00174">main()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00786">graph_clique_cuda()</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00853">graph_clique_multi_cuda()</a>, and <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00197">main()</a>.</p>
+
+</div>
+</div>
+<a id="a95ce31f05fc8f80270d675943b762956" name="a95ce31f05fc8f80270d675943b762956"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95ce31f05fc8f80270d675943b762956">&#9670;&#160;</a></span>integer_option()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int integer_option </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>arg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct argp_state *&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00082">82</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00102">parse_opt()</a>.</p>
 
 </div>
 </div>
@@ -206,7 +293,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a> **&#160;</td>
+          <td class="paramtype">char **&#160;</td>
           <td class="paramname"><em>argv</em>&#160;</td>
         </tr>
         <tr>
@@ -217,9 +304,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00174">174</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00197">197</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00068">arguments::alpha</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00070">arguments::alpha_auto</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00069">arguments::alpha_step</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00164">argp</a>, <a class="el" href="../../dd/dc2/bitops_8h_source.html#l00034">BIT_TEST</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00073">arguments::cpu</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00076">arguments::file_format</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00166">get_timestamp()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00072">arguments::gpu</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00774">graph_clique_cpu()</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00783">graph_clique_cuda()</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00808">graph_clique_multi_cpu()</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00817">graph_clique_multi_cuda()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00065">arguments::graph_file</a>, <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l01298">init_cuda()</a>, <a class="el" href="../../d3/d8e/bitops_8c_source.html#l00132">mask_size()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00071">arguments::max_masks</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00067">arguments::max_res</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00074">arguments::max_unsolved</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00066">arguments::mode</a>, <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l01431">mode()</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00028">MODE_REPL</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00029">MODE_REPL_ANNEAL</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00031">MODE_REPL_ANNEAL_AUTO</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00030">MODE_REPL_ATTEN</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00032">MODE_REPL_ATTEN_AUTO</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00027">MODE_REPL_UNBIASED</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00046">quiet</a>, <a class="el" href="../../dc/d50/parsers_8c_source.html#l00199">read_graph_adjmat()</a>, <a class="el" href="../../dc/d50/parsers_8c_source.html#l00126">read_graph_DIMACS_ascii()</a>, <a class="el" href="../../dc/d50/parsers_8c_source.html#l00066">read_graph_DIMACS_bin()</a>, and <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00075">arguments::zero</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00071">arguments::alpha</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00073">arguments::alpha_auto</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00072">arguments::alpha_step</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00187">argp</a>, <a class="el" href="../../dd/dc2/bitops_8h_source.html#l00034">BIT_TEST</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00076">arguments::cpu</a>, <a class="el" href="../../d5/d00/arrays_8c_source.html#l00125">destroy_array()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00079">arguments::file_format</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00189">get_timestamp()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00075">arguments::gpu</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00777">graph_clique_cpu()</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00786">graph_clique_cuda()</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00844">graph_clique_multi_cpu()</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00853">graph_clique_multi_cuda()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00068">arguments::graph_file</a>, <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l01230">init_cuda()</a>, <a class="el" href="../../d3/d8e/bitops_8c_source.html#l00114">mask_free()</a>, <a class="el" href="../../d3/d8e/bitops_8c_source.html#l00132">mask_size()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00074">arguments::max_masks</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00070">arguments::max_res</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00077">arguments::max_unsolved</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00069">arguments::mode</a>, <a class="el" href="../../d2/d82/motzkin__cuda_8cu_source.html#l01358">mode()</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00028">MODE_REPL</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00029">MODE_REPL_ANNEAL</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00031">MODE_REPL_ANNEAL_AUTO</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00030">MODE_REPL_ATTEN</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00032">MODE_REPL_ATTEN_AUTO</a>, <a class="el" href="../../da/d98/cudams_8h_source.html#l00027">MODE_REPL_UNBIASED</a>, <a class="el" href="../../dd/dc9/motzkin_8c_source.html#l00049">quiet</a>, <a class="el" href="../../dc/d50/parsers_8c_source.html#l00179">read_graph_adjmat()</a>, <a class="el" href="../../dc/d50/parsers_8c_source.html#l00135">read_graph_DIMACS_ascii()</a>, <a class="el" href="../../dc/d50/parsers_8c_source.html#l00068">read_graph_DIMACS_bin()</a>, and <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00078">arguments::zero</a>.</p>
 
 </div>
 </div>
@@ -233,7 +320,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">static</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">error_t</a> parse_opt </td>
+          <td class="memname">static error_t parse_opt </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>key</em>, </td>
@@ -241,13 +328,13 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a> *&#160;</td>
+          <td class="paramtype">char *&#160;</td>
           <td class="paramname"><em>arg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">struct</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">argp_state</a> *&#160;</td>
+          <td class="paramtype">struct argp_state *&#160;</td>
           <td class="paramname"><em>state</em>&#160;</td>
         </tr>
         <tr>
@@ -263,9 +350,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00079">79</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00102">102</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00068">arguments::alpha</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00070">arguments::alpha_auto</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00069">arguments::alpha_step</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00073">arguments::cpu</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00076">arguments::file_format</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00072">arguments::gpu</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00065">arguments::graph_file</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00071">arguments::max_masks</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00067">arguments::max_res</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00074">arguments::max_unsolved</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00066">arguments::mode</a>, and <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00075">arguments::zero</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00071">arguments::alpha</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00073">arguments::alpha_auto</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00072">arguments::alpha_step</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00076">arguments::cpu</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00079">arguments::file_format</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00092">float_option()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00075">arguments::gpu</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00068">arguments::graph_file</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00082">integer_option()</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00074">arguments::max_masks</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00070">arguments::max_res</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00077">arguments::max_unsolved</a>, <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00069">arguments::mode</a>, and <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00078">arguments::zero</a>.</p>
 
 </div>
 </div>
@@ -280,7 +367,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">struct</a> argp argp = { <a class="el" href="../../d7/d2b/find__cliques_8c.html#abc1fd3a47aea6a8944038c9100eb9135">options</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#a35ee63236273ebb9325c444cacf00159">parse_opt</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#a91b08784b3668a8a1fbe2eec1947fb9d">args_doc</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5">doc</a> }</td>
+          <td class="memname">struct argp argp = { <a class="el" href="../../d7/d2b/find__cliques_8c.html#abc1fd3a47aea6a8944038c9100eb9135">options</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#a35ee63236273ebb9325c444cacf00159">parse_opt</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#a91b08784b3668a8a1fbe2eec1947fb9d">args_doc</a>, <a class="el" href="../../d7/d2b/find__cliques_8c.html#af6164deb8a824f8cb2b9147cfc3174f5">doc</a> }</td>
         </tr>
       </table>
   </td>
@@ -290,9 +377,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00164">164</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00187">187</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00174">main()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00197">main()</a>.</p>
 
 </div>
 </div>
@@ -303,12 +390,12 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">const</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a>* argp_program_bug_address = &quot;&lt;pawel@<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">bioexploratorium.pl</a>&gt;&quot;</td>
+          <td class="memname">const char* argp_program_bug_address = &quot;&lt;pawel@bioexploratorium.pl&gt;&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00042">42</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00045">45</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
 </div>
 </div>
@@ -319,7 +406,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">const</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a>* argp_program_version = &quot;find_cliques&quot;</td>
+          <td class="memname">const char* argp_program_version = &quot;find_cliques&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -331,7 +418,7 @@ Variables</h2></td></tr>
 <p>CUDA-MS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
 <p>You should have received a copy of the GNU General Public License along with CUDA-MS. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00041">41</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00044">44</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
 </div>
 </div>
@@ -345,7 +432,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a> args_doc[] = &quot;[--DIMACSbin|--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSascii</a>] GRAPH\n--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">anneal</a> [--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSbin</a>|--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSascii</a>] GRAPH\n--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">atten</a>[=<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">NUM</a>] [--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">max</a>-<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">res</a>=<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">NUM</a>] [--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSbin</a>|--<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">DIMACSascii</a>] <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">GRAPH&quot;</a></td>
+          <td class="memname">char args_doc[] = &quot;[--DIMACSbin|--DIMACSascii] GRAPH\n--anneal [--DIMACSbin|--DIMACSascii] GRAPH\n--atten[=NUM] [--max-res=NUM] [--DIMACSbin|--DIMACSascii] GRAPH&quot;</td>
         </tr>
       </table>
   </td>
@@ -355,7 +442,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00046">46</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00049">49</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
 </div>
 </div>
@@ -369,7 +456,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">char</a> doc[] = &quot;A <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">program</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">searching</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">for</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">the</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">largest</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">clique</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">in</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">a</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">graph</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">using</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">a</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">iterative</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">approach</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">based</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">on</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">the</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">Motzkin</a>-<a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">Straus</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">theorem.&quot;</a></td>
+          <td class="memname">char doc[] = &quot;A program searching for the largest clique in a graph using a iterative approach based on the Motzkin-Straus theorem.&quot;</td>
         </tr>
       </table>
   </td>
@@ -379,7 +466,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00044">44</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00047">47</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
 </div>
 </div>
@@ -393,7 +480,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">struct</a> <a class="el" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">argp_option</a> options[]</td>
+          <td class="memname">struct argp_option options[]</td>
         </tr>
       </table>
   </td>
@@ -403,7 +490,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">    {<span class="stringliteral">&quot;atten&quot;</span>           , <span class="charliteral">&#39;t&#39;</span>, <span class="stringliteral">&quot;NUM&quot;</span>     , <a class="code hl_function" href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">OPTION_ARG_OPTIONAL</a>, <span class="stringliteral">&quot;Enable attenuation scheme. Optionally number of iterations can be given (default: 10).&quot;</span>},</div>
+<div class="line">    {<span class="stringliteral">&quot;atten&quot;</span>           , <span class="charliteral">&#39;t&#39;</span>, <span class="stringliteral">&quot;NUM&quot;</span>     , OPTION_ARG_OPTIONAL, <span class="stringliteral">&quot;Enable attenuation scheme. Optionally number of iterations can be given (default: 10).&quot;</span>},</div>
 <div class="line">    {<span class="stringliteral">&quot;anneal&quot;</span>          , <span class="charliteral">&#39;n&#39;</span>, 0         , 0, <span class="stringliteral">&quot;Enable annealing scheme.&quot;</span> },</div>
 <div class="line">    {<span class="stringliteral">&quot;alpha&quot;</span>           , <span class="charliteral">&#39;a&#39;</span>, <span class="stringliteral">&quot;NUM|auto&quot;</span>, 0, <span class="stringliteral">&quot;Value of paramerer alpha (default: auto). When &#39;auto&#39; is given in annealing and attenuation modes a size of maximal clique is estimated based on a graph size and density, for single iteration 0.5 is taken.&quot;</span>},</div>
 <div class="line">    {<span class="stringliteral">&quot;alpha-step&quot;</span>      , <span class="charliteral">&#39;s&#39;</span>, <span class="stringliteral">&quot;NUM&quot;</span>     , 0, <span class="stringliteral">&quot;Minimal difference between consecutive values in automatic determination of alpha values (default: 0).&quot;</span>},</div>
@@ -416,9 +503,8 @@ Variables</h2></td></tr>
 <div class="line">    {<span class="stringliteral">&quot;DIMACSascii&quot;</span>     ,  2 , 0         , 0, <span class="stringliteral">&quot;Load graph in DIMACS ASCII format.&quot;</span> },</div>
 <div class="line">    { 0 }</div>
 <div class="line">}</div>
-<div class="ttc" id="acommon__cuda_8cuh_html_af078f51f4d2e1cbd5daadc10f096572a"><div class="ttname"><a href="../../d4/d25/common__cuda_8cuh.html#af078f51f4d2e1cbd5daadc10f096572a">reduce_max</a></div><div class="ttdeci">void reduce_max(t *sdata, unsigned int tid)</div><div class="ttdef"><b>Definition</b> <a href="../../d4/d25/common__cuda_8cuh_source.html#l00072">common_cuda.cuh:72</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00048">48</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d2b/find__cliques_8c_source.html#l00051">51</a> of file <a class="el" href="../../d7/d2b/find__cliques_8c_source.html">find_cliques.c</a>.</p>
 
 </div>
 </div>

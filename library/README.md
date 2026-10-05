@@ -37,11 +37,18 @@ status. It never silently substitutes a different algorithm.
 | `MaxFlowMinCut` | ECL-MaxFlow |
 | `LinearAssignment` | HungarianGPU |
 | `TransitiveClosure` | GDlog |
-| `ButterflyCounting` | GraphMiner |
+| `ButterflyCounting` | GraphMiner, GAMMA butterfly |
+| `KTruss` | AccTD |
+| `DensestSubgraph` | CDS (edge density) |
+| `MaximalBicliqueCounting` | MBE-GPU (count only) |
+| `PersonalizedPageRank` | kPAR (approximate, restart 0.2) |
+| `GroupSteinerTree` | GPU4GST / TrimCDP-WB |
+| `InfluenceMaximization` | SuperFuser (independent cascade, approximate) |
 
-See [the bounded expansion profiles](docs/validated_expansion.md) and
+See [the nine repaired integrations](docs/repaired_algorithms.md),
+[the bounded expansion profiles](docs/validated_expansion.md) and
 [agent catalog/routing integration](../docs/ALGORITHM_EXPANSION.md) before using
-the five new APIs.
+their supported API profiles.
 
 The GPU artifact supplies each required count, score, clique, partition, or
 core result. When an artifact is count-only, optional instances are
@@ -51,13 +58,20 @@ and restored external vertex and edge IDs.
 
 Validation is fixture-scoped, not a universal correctness guarantee. The
 2026-10-03 synthetic application audit found that CUDA-MS could report a
-three-clique as optimal on a graph containing a four-clique. Its local
-relaxation mask no longer tightens the certified coloring bound; callers must
-inspect `optimal`, not assume every returned clique is a global maximum.
-Maximum-Clique-on-GPU also reproducibly aborts on one eight-vertex cycle-with-chord
-fixture; that adapter remains unrepaired. The Python agent quarantines both
-backends and uses GPUMaximumClique for this operation. Native-library/CLI callers
-should explicitly select `gpu-maximum-clique` until those adapters are re-audited.
+three-clique as optimal on a graph containing a four-clique. The 2026-10-04
+CUDA-MS repair adds completed GPU coloring branch-and-bound after the
+relaxation initializer, returning an exact single clique and original vertex
+IDs. Local relaxation masks are never used as global upper bounds. See the
+[CUDA-MS repair and replay](../validation/algorithm_repairs/cuda_ms/README.md).
+The eight-vertex cycle-with-chord abort in Maximum-Clique-on-GPU was repaired
+on 2026-10-04, together with witness recording, graph reduction, queue
+initialization, and kernel synchronization defects. Its native adapter now
+returns the correct three-clique with original vertex IDs. See the
+[repair and independent retesting record](../validation/algorithm_repairs/maximum_clique_on_gpu/README.md).
+Rebuild `graphmine_cli` to use the corrected executable. The Python agent
+now permits these repaired backends after the [application re-audit](../validation/repaired_library/REPORT.md).
+Its default maximum-clique backend remains GPUMaximumClique, and stale
+pre-repair timing rankings have been retired.
 See [the independent audit record](../agent/evaluation/reports/synthetic-learning-2026-10-03.json).
 
 Temporal mining currently exposes the exact query that passed validation:
@@ -73,6 +87,7 @@ enabled component. Compile it once, then select the operation and validated
 backend with arguments for each query:
 
 ```bash
+python3 library/tools/prepare_repaired_workers.py --fetch --gpu 1
 cmake -S library -B library/build -DCMAKE_BUILD_TYPE=Release \
   -DGRAPHMINE_BUILD_CLI=ON
 cmake --build library/build --parallel --target graphmine_cli
@@ -90,7 +105,7 @@ library/build/graphmine run triangle-counting \
 ```
 
 `graphmine --version` prints the native release version. `graphmine list`
-reports that version, all 18 operations, and whether each of the 31 registered
+reports that version, all 24 operations, and whether each of the 38 registered
 backend choices is compiled in the current binary. `graphmine
 describe OPERATION --pretty` reports the exact invocation. All graph, query,
 and motif files use `canonical_edge_list_v1`; results are JSON. Optional
@@ -99,7 +114,7 @@ not produced accidentally.
 
 The compact runtime contract is
 [`manifests/graphmine_manifest.json`](manifests/graphmine_manifest.json). It
-contains the 17 supported problem specifications, canonical input contract,
+contains the 22 supported problem specifications, canonical input contract,
 auxiliary-input formats, every backend choice, parameters, output flags,
 required outputs, and ready-to-run commands. Static and dynamic triangle
 counting are separate operations within the same research problem.
@@ -107,7 +122,7 @@ counting are separate operations within the same research problem.
 For problem identification and query planning, use the richer
 [`manifests/graphmine_catalog.json`](manifests/graphmine_catalog.json). It
 embeds all 37 authoritative `problems/*/problem.json` contracts exactly and
-links the 17 supported problems to C++ types, CLI arguments, backend
+links the 22 supported problems to C++ types, CLI arguments, backend
 capabilities, source provenance, and passing validation evidence. Unsupported
 problems are explicitly marked `no_validated_backend` rather than being routed
 to a superficially similar operation.

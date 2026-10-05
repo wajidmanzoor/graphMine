@@ -1,0 +1,16 @@
+{
+  "paper_id": "2023_efficient_mbe_gpus",
+  "title": "Efficient Maximal Biclique Enumeration on GPUs",
+  "year": 2023,
+  "venue": "SC 2023",
+  "doi": "10.1145/3581784.3607059",
+  "publication_url": "https://doi.org/10.1145/3581784.3607059",
+  "pdf_url": "https://shuibing9420.github.io/assets/pdf/gmbe-sc23.pdf",
+  "code_url": "https://github.com/fhxu00/MBE-GPU",
+  "semantic_fit": "exact",
+  "gpu_scope": "GPU maximal-biclique enumeration.",
+  "notes": null,
+  "problem_id": "maximal_biclique_enumeration",
+  "problem_dir": "09_maximal_biclique_enumeration",
+  "research_cutoff": "2026-09-30"
+}

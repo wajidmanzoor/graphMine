@@ -1,0 +1,523 @@
+{
+  "manifest": {
+    "commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+    "remote": "https://github.com/toziki/GPU4GST-sigmod",
+    "prefix": "code/TrimCDP-WB",
+    "patch_sha256": "13b242dbce3b1ca51a369feac823b306e488ef2a86e02b1b29454bbac0ccb6d0",
+    "base_sha256": {
+      "code/TrimCDP-WB/CMakeLists.txt": "648c969960daf1d610c16aebfbd32ef6b84b8b87f365bd6edac945af9ad97b35",
+      "code/TrimCDP-WB/Makefile": null,
+      "code/TrimCDP-WB/include/barrier.cuh": "eb4054a2b1fb12a9792b3e1c877047d72b92ad1046a6e12ebfbf91a9dc5c875c",
+      "code/TrimCDP-WB/include/gpu_graph.cuh": "353f06eb3c00a4644daa0f090c5e2dce8ebc9c40b65d5cdd0ce499ae6f6cbfec",
+      "code/TrimCDP-WB/include/graph.h": "219b7d63fb22fa94f80b809fe04d6793c4437fc04863576dd71817ef92b35de0",
+      "code/TrimCDP-WB/include/graph.hpp": "be19f699f61821f6674ddad863b69b2af44fbc7f2d8d67da174237ea978cc4e3",
+      "code/TrimCDP-WB/include/header.h": "332b762de6e010bc7058b417d8bed0de7f7ae8a3cc9f52559f894b2259df1cb8",
+      "code/TrimCDP-WB/include/hist.h": "a661ecf78b863ba151a12748dfc901c37729bfa2ef8b8e443ea63c9a987974e5",
+      "code/TrimCDP-WB/include/mapper.cuh": "4065c441d0a808662e7bba7fe2fc22a509bad0a5c52fd0a5a7cd1d6de4650e9b",
+      "code/TrimCDP-WB/include/mapper_enactor.cuh": "2e7aa0a467312b32c43c9aab8b13fcf36046c0202a26209a8c0287d1b8b53c5d",
+      "code/TrimCDP-WB/include/meta_data.cuh": "07165a1f4db5a124df6c89e177e829d0f1ddab1912dea064518af686b1bfcb9a",
+      "code/TrimCDP-WB/include/parse_string.h": "95531f603da35642f5902a08cbc8a9aab0b7e52a5fe0a8820faec6839b203d84",
+      "code/TrimCDP-WB/include/prefix_scan.cuh": "c91f105ec1e251a6dd68a1a4a338c883f25a0bc18ec825f2ecf3b5c946c16781",
+      "code/TrimCDP-WB/include/read_group.hpp": "da4cfa16654749b4e32d33ed3ea89ec261178e4617928f20671b2ae05a4706f6",
+      "code/TrimCDP-WB/include/reducer.cuh": "cb27b3ff4fc7a000db833568e2672dc280062ce2f51f0e305f637010443b2dbe",
+      "code/TrimCDP-WB/include/reducer_enactor.cuh": "cc60ef88c85dc5d36197e437a4501482ce1d7f226dbf7f9ec2f967eb44802e51",
+      "code/TrimCDP-WB/include/util.h": "6fc928037d3cacacacd5105cb17b600263618188ecd70be0b1d1a8859ad8c601",
+      "code/TrimCDP-WB/include/witness.hpp": null,
+      "code/TrimCDP-WB/include/wtime.h": "0b3b9506400db63dd963c2a77b3680a07b0fb9d3c2e195e0f119908171ebf40c",
+      "code/TrimCDP-WB/src/GSTnonHop.cu": "41868bf76e10081b5ff4dd45ad4b3184705e71b192183acea65c654a62b34247"
+    },
+    "source_sha256": {
+      "code/TrimCDP-WB/CMakeLists.txt": "f1542ca5838380196215bc7d305a99d753fce277ffd7a295c3292b7b2fa7eccd",
+      "code/TrimCDP-WB/Makefile": "78821d676f9faa2ae06e2206028431518c13eeee43b45fd6931f442d34e14894",
+      "code/TrimCDP-WB/include/barrier.cuh": "a5bad95cca79ffb2bf8af683f6db7cc00ffd3c03bd8290cfacf899b9711548c8",
+      "code/TrimCDP-WB/include/gpu_graph.cuh": "aa34a0e8f9751769ef04e2500e4c064ddb657a71fb263758390fcd85779d6bc4",
+      "code/TrimCDP-WB/include/graph.h": "08909a7ce4449db4d567cbdd13fa76404231ecdcc2e44256d871616798f0eae5",
+      "code/TrimCDP-WB/include/graph.hpp": "8be1f28bde85d9d19da4ce583748173f2b742b709fcb0e9ce2024e37cfb5349c",
+      "code/TrimCDP-WB/include/header.h": "320b29f95b026c368b5182642c39c31e5564d48ee4115896aff02ac553f0a371",
+      "code/TrimCDP-WB/include/hist.h": "a661ecf78b863ba151a12748dfc901c37729bfa2ef8b8e443ea63c9a987974e5",
+      "code/TrimCDP-WB/include/mapper.cuh": "2df52f627ab6d6e25bab529fca1858a7dc7f994259dca8652d32868cbe1ef7e3",
+      "code/TrimCDP-WB/include/mapper_enactor.cuh": "b12fafa67abb1aaa7b7833013eeaa2efb12e4a7f2fd3740e870ded88a4c10e7a",
+      "code/TrimCDP-WB/include/meta_data.cuh": "5070762cf3c0ad17c6eaa7c41b855a1b095479b2fb658df9a56436685572cbae",
+      "code/TrimCDP-WB/include/parse_string.h": "95531f603da35642f5902a08cbc8a9aab0b7e52a5fe0a8820faec6839b203d84",
+      "code/TrimCDP-WB/include/prefix_scan.cuh": "b98032a6bef2e78f27eaf757abc3e52fab442a91d54d60ce7806054ce8dbb93f",
+      "code/TrimCDP-WB/include/read_group.hpp": "1801a8e7d0462b5b2bae86751f210ffc3726c9ebde8933fe67166914cab39c6c",
+      "code/TrimCDP-WB/include/reducer.cuh": "1104dfbe1bf69b12b15a33e0956899ad3e7c8191c9de712730b28e9b205154aa",
+      "code/TrimCDP-WB/include/reducer_enactor.cuh": "cc60ef88c85dc5d36197e437a4501482ce1d7f226dbf7f9ec2f967eb44802e51",
+      "code/TrimCDP-WB/include/util.h": "6fc928037d3cacacacd5105cb17b600263618188ecd70be0b1d1a8859ad8c601",
+      "code/TrimCDP-WB/include/witness.hpp": "d5fc2ade10e650fa43030b4986c0860d119f5282400171baf1fc61d558e21608",
+      "code/TrimCDP-WB/include/wtime.h": "0b3b9506400db63dd963c2a77b3680a07b0fb9d3c2e195e0f119908171ebf40c",
+      "code/TrimCDP-WB/src/GSTnonHop.cu": "8a519298e0a9da21eccbb6b33697012e096a47ec37d11264155964a36ac8ab06"
+    }
+  },
+  "historical_baseline_sha256": "3731090daeea1415eeefdd79cfcf8f974311f888f4c6c89a73421b2eceda327e",
+  "fresh_baseline_sha256": "463a643eb656b96d97f880f4d16063e9280f9bc2ac1801868db40f360dab4483",
+  "normal_build": {
+    "manifest": {
+      "commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+      "remote": "https://github.com/toziki/GPU4GST-sigmod",
+      "prefix": "code/TrimCDP-WB",
+      "patch_sha256": "13b242dbce3b1ca51a369feac823b306e488ef2a86e02b1b29454bbac0ccb6d0",
+      "base_sha256": {
+        "code/TrimCDP-WB/CMakeLists.txt": "648c969960daf1d610c16aebfbd32ef6b84b8b87f365bd6edac945af9ad97b35",
+        "code/TrimCDP-WB/Makefile": null,
+        "code/TrimCDP-WB/include/barrier.cuh": "eb4054a2b1fb12a9792b3e1c877047d72b92ad1046a6e12ebfbf91a9dc5c875c",
+        "code/TrimCDP-WB/include/gpu_graph.cuh": "353f06eb3c00a4644daa0f090c5e2dce8ebc9c40b65d5cdd0ce499ae6f6cbfec",
+        "code/TrimCDP-WB/include/graph.h": "219b7d63fb22fa94f80b809fe04d6793c4437fc04863576dd71817ef92b35de0",
+        "code/TrimCDP-WB/include/graph.hpp": "be19f699f61821f6674ddad863b69b2af44fbc7f2d8d67da174237ea978cc4e3",
+        "code/TrimCDP-WB/include/header.h": "332b762de6e010bc7058b417d8bed0de7f7ae8a3cc9f52559f894b2259df1cb8",
+        "code/TrimCDP-WB/include/hist.h": "a661ecf78b863ba151a12748dfc901c37729bfa2ef8b8e443ea63c9a987974e5",
+        "code/TrimCDP-WB/include/mapper.cuh": "4065c441d0a808662e7bba7fe2fc22a509bad0a5c52fd0a5a7cd1d6de4650e9b",
+        "code/TrimCDP-WB/include/mapper_enactor.cuh": "2e7aa0a467312b32c43c9aab8b13fcf36046c0202a26209a8c0287d1b8b53c5d",
+        "code/TrimCDP-WB/include/meta_data.cuh": "07165a1f4db5a124df6c89e177e829d0f1ddab1912dea064518af686b1bfcb9a",
+        "code/TrimCDP-WB/include/parse_string.h": "95531f603da35642f5902a08cbc8a9aab0b7e52a5fe0a8820faec6839b203d84",
+        "code/TrimCDP-WB/include/prefix_scan.cuh": "c91f105ec1e251a6dd68a1a4a338c883f25a0bc18ec825f2ecf3b5c946c16781",
+        "code/TrimCDP-WB/include/read_group.hpp": "da4cfa16654749b4e32d33ed3ea89ec261178e4617928f20671b2ae05a4706f6",
+        "code/TrimCDP-WB/include/reducer.cuh": "cb27b3ff4fc7a000db833568e2672dc280062ce2f51f0e305f637010443b2dbe",
+        "code/TrimCDP-WB/include/reducer_enactor.cuh": "cc60ef88c85dc5d36197e437a4501482ce1d7f226dbf7f9ec2f967eb44802e51",
+        "code/TrimCDP-WB/include/util.h": "6fc928037d3cacacacd5105cb17b600263618188ecd70be0b1d1a8859ad8c601",
+        "code/TrimCDP-WB/include/witness.hpp": null,
+        "code/TrimCDP-WB/include/wtime.h": "0b3b9506400db63dd963c2a77b3680a07b0fb9d3c2e195e0f119908171ebf40c",
+        "code/TrimCDP-WB/src/GSTnonHop.cu": "41868bf76e10081b5ff4dd45ad4b3184705e71b192183acea65c654a62b34247"
+      },
+      "source_sha256": {
+        "code/TrimCDP-WB/CMakeLists.txt": "f1542ca5838380196215bc7d305a99d753fce277ffd7a295c3292b7b2fa7eccd",
+        "code/TrimCDP-WB/Makefile": "78821d676f9faa2ae06e2206028431518c13eeee43b45fd6931f442d34e14894",
+        "code/TrimCDP-WB/include/barrier.cuh": "a5bad95cca79ffb2bf8af683f6db7cc00ffd3c03bd8290cfacf899b9711548c8",
+        "code/TrimCDP-WB/include/gpu_graph.cuh": "aa34a0e8f9751769ef04e2500e4c064ddb657a71fb263758390fcd85779d6bc4",
+        "code/TrimCDP-WB/include/graph.h": "08909a7ce4449db4d567cbdd13fa76404231ecdcc2e44256d871616798f0eae5",
+        "code/TrimCDP-WB/include/graph.hpp": "8be1f28bde85d9d19da4ce583748173f2b742b709fcb0e9ce2024e37cfb5349c",
+        "code/TrimCDP-WB/include/header.h": "320b29f95b026c368b5182642c39c31e5564d48ee4115896aff02ac553f0a371",
+        "code/TrimCDP-WB/include/hist.h": "a661ecf78b863ba151a12748dfc901c37729bfa2ef8b8e443ea63c9a987974e5",
+        "code/TrimCDP-WB/include/mapper.cuh": "2df52f627ab6d6e25bab529fca1858a7dc7f994259dca8652d32868cbe1ef7e3",
+        "code/TrimCDP-WB/include/mapper_enactor.cuh": "b12fafa67abb1aaa7b7833013eeaa2efb12e4a7f2fd3740e870ded88a4c10e7a",
+        "code/TrimCDP-WB/include/meta_data.cuh": "5070762cf3c0ad17c6eaa7c41b855a1b095479b2fb658df9a56436685572cbae",
+        "code/TrimCDP-WB/include/parse_string.h": "95531f603da35642f5902a08cbc8a9aab0b7e52a5fe0a8820faec6839b203d84",
+        "code/TrimCDP-WB/include/prefix_scan.cuh": "b98032a6bef2e78f27eaf757abc3e52fab442a91d54d60ce7806054ce8dbb93f",
+        "code/TrimCDP-WB/include/read_group.hpp": "1801a8e7d0462b5b2bae86751f210ffc3726c9ebde8933fe67166914cab39c6c",
+        "code/TrimCDP-WB/include/reducer.cuh": "1104dfbe1bf69b12b15a33e0956899ad3e7c8191c9de712730b28e9b205154aa",
+        "code/TrimCDP-WB/include/reducer_enactor.cuh": "cc60ef88c85dc5d36197e437a4501482ce1d7f226dbf7f9ec2f967eb44802e51",
+        "code/TrimCDP-WB/include/util.h": "6fc928037d3cacacacd5105cb17b600263618188ecd70be0b1d1a8859ad8c601",
+        "code/TrimCDP-WB/include/witness.hpp": "d5fc2ade10e650fa43030b4986c0860d119f5282400171baf1fc61d558e21608",
+        "code/TrimCDP-WB/include/wtime.h": "0b3b9506400db63dd963c2a77b3680a07b0fb9d3c2e195e0f119908171ebf40c",
+        "code/TrimCDP-WB/src/GSTnonHop.cu": "8a519298e0a9da21eccbb6b33697012e096a47ec37d11264155964a36ac8ab06"
+      }
+    },
+    "commands": [
+      [
+        "nvcc",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-build/source/code/TrimCDP-WB/src/GSTnonHop.cu",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-build/source/code/TrimCDP-WB/include",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-build/source/code/TrimCDP-WB/src",
+        "-std=c++17",
+        "--extended-lambda",
+        "-arch=sm_89",
+        "-O2",
+        "-lineinfo",
+        "-o",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-build/TrimCDP-WB"
+      ],
+      [
+        "nvcc",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/probe.cu",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-build/source/code/TrimCDP-WB/include",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-build/source/code/TrimCDP-WB/src",
+        "-std=c++17",
+        "--extended-lambda",
+        "-arch=sm_89",
+        "-O2",
+        "-lineinfo",
+        "-o",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-build/probe"
+      ]
+    ],
+    "binaries": {
+      "TrimCDP-WB": "4eaf29278a326fa0bc913681d24056ffa452b2ddf5efba5f9d7a6e3df49123c1",
+      "probe": "725a94c920d73de5277c561b8de3a3b0db29af752193086578a1437035fe34ea"
+    },
+    "asan": false,
+    "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n"
+  },
+  "asan_build": {
+    "manifest": {
+      "commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+      "remote": "https://github.com/toziki/GPU4GST-sigmod",
+      "prefix": "code/TrimCDP-WB",
+      "patch_sha256": "13b242dbce3b1ca51a369feac823b306e488ef2a86e02b1b29454bbac0ccb6d0",
+      "base_sha256": {
+        "code/TrimCDP-WB/CMakeLists.txt": "648c969960daf1d610c16aebfbd32ef6b84b8b87f365bd6edac945af9ad97b35",
+        "code/TrimCDP-WB/Makefile": null,
+        "code/TrimCDP-WB/include/barrier.cuh": "eb4054a2b1fb12a9792b3e1c877047d72b92ad1046a6e12ebfbf91a9dc5c875c",
+        "code/TrimCDP-WB/include/gpu_graph.cuh": "353f06eb3c00a4644daa0f090c5e2dce8ebc9c40b65d5cdd0ce499ae6f6cbfec",
+        "code/TrimCDP-WB/include/graph.h": "219b7d63fb22fa94f80b809fe04d6793c4437fc04863576dd71817ef92b35de0",
+        "code/TrimCDP-WB/include/graph.hpp": "be19f699f61821f6674ddad863b69b2af44fbc7f2d8d67da174237ea978cc4e3",
+        "code/TrimCDP-WB/include/header.h": "332b762de6e010bc7058b417d8bed0de7f7ae8a3cc9f52559f894b2259df1cb8",
+        "code/TrimCDP-WB/include/hist.h": "a661ecf78b863ba151a12748dfc901c37729bfa2ef8b8e443ea63c9a987974e5",
+        "code/TrimCDP-WB/include/mapper.cuh": "4065c441d0a808662e7bba7fe2fc22a509bad0a5c52fd0a5a7cd1d6de4650e9b",
+        "code/TrimCDP-WB/include/mapper_enactor.cuh": "2e7aa0a467312b32c43c9aab8b13fcf36046c0202a26209a8c0287d1b8b53c5d",
+        "code/TrimCDP-WB/include/meta_data.cuh": "07165a1f4db5a124df6c89e177e829d0f1ddab1912dea064518af686b1bfcb9a",
+        "code/TrimCDP-WB/include/parse_string.h": "95531f603da35642f5902a08cbc8a9aab0b7e52a5fe0a8820faec6839b203d84",
+        "code/TrimCDP-WB/include/prefix_scan.cuh": "c91f105ec1e251a6dd68a1a4a338c883f25a0bc18ec825f2ecf3b5c946c16781",
+        "code/TrimCDP-WB/include/read_group.hpp": "da4cfa16654749b4e32d33ed3ea89ec261178e4617928f20671b2ae05a4706f6",
+        "code/TrimCDP-WB/include/reducer.cuh": "cb27b3ff4fc7a000db833568e2672dc280062ce2f51f0e305f637010443b2dbe",
+        "code/TrimCDP-WB/include/reducer_enactor.cuh": "cc60ef88c85dc5d36197e437a4501482ce1d7f226dbf7f9ec2f967eb44802e51",
+        "code/TrimCDP-WB/include/util.h": "6fc928037d3cacacacd5105cb17b600263618188ecd70be0b1d1a8859ad8c601",
+        "code/TrimCDP-WB/include/witness.hpp": null,
+        "code/TrimCDP-WB/include/wtime.h": "0b3b9506400db63dd963c2a77b3680a07b0fb9d3c2e195e0f119908171ebf40c",
+        "code/TrimCDP-WB/src/GSTnonHop.cu": "41868bf76e10081b5ff4dd45ad4b3184705e71b192183acea65c654a62b34247"
+      },
+      "source_sha256": {
+        "code/TrimCDP-WB/CMakeLists.txt": "f1542ca5838380196215bc7d305a99d753fce277ffd7a295c3292b7b2fa7eccd",
+        "code/TrimCDP-WB/Makefile": "78821d676f9faa2ae06e2206028431518c13eeee43b45fd6931f442d34e14894",
+        "code/TrimCDP-WB/include/barrier.cuh": "a5bad95cca79ffb2bf8af683f6db7cc00ffd3c03bd8290cfacf899b9711548c8",
+        "code/TrimCDP-WB/include/gpu_graph.cuh": "aa34a0e8f9751769ef04e2500e4c064ddb657a71fb263758390fcd85779d6bc4",
+        "code/TrimCDP-WB/include/graph.h": "08909a7ce4449db4d567cbdd13fa76404231ecdcc2e44256d871616798f0eae5",
+        "code/TrimCDP-WB/include/graph.hpp": "8be1f28bde85d9d19da4ce583748173f2b742b709fcb0e9ce2024e37cfb5349c",
+        "code/TrimCDP-WB/include/header.h": "320b29f95b026c368b5182642c39c31e5564d48ee4115896aff02ac553f0a371",
+        "code/TrimCDP-WB/include/hist.h": "a661ecf78b863ba151a12748dfc901c37729bfa2ef8b8e443ea63c9a987974e5",
+        "code/TrimCDP-WB/include/mapper.cuh": "2df52f627ab6d6e25bab529fca1858a7dc7f994259dca8652d32868cbe1ef7e3",
+        "code/TrimCDP-WB/include/mapper_enactor.cuh": "b12fafa67abb1aaa7b7833013eeaa2efb12e4a7f2fd3740e870ded88a4c10e7a",
+        "code/TrimCDP-WB/include/meta_data.cuh": "5070762cf3c0ad17c6eaa7c41b855a1b095479b2fb658df9a56436685572cbae",
+        "code/TrimCDP-WB/include/parse_string.h": "95531f603da35642f5902a08cbc8a9aab0b7e52a5fe0a8820faec6839b203d84",
+        "code/TrimCDP-WB/include/prefix_scan.cuh": "b98032a6bef2e78f27eaf757abc3e52fab442a91d54d60ce7806054ce8dbb93f",
+        "code/TrimCDP-WB/include/read_group.hpp": "1801a8e7d0462b5b2bae86751f210ffc3726c9ebde8933fe67166914cab39c6c",
+        "code/TrimCDP-WB/include/reducer.cuh": "1104dfbe1bf69b12b15a33e0956899ad3e7c8191c9de712730b28e9b205154aa",
+        "code/TrimCDP-WB/include/reducer_enactor.cuh": "cc60ef88c85dc5d36197e437a4501482ce1d7f226dbf7f9ec2f967eb44802e51",
+        "code/TrimCDP-WB/include/util.h": "6fc928037d3cacacacd5105cb17b600263618188ecd70be0b1d1a8859ad8c601",
+        "code/TrimCDP-WB/include/witness.hpp": "d5fc2ade10e650fa43030b4986c0860d119f5282400171baf1fc61d558e21608",
+        "code/TrimCDP-WB/include/wtime.h": "0b3b9506400db63dd963c2a77b3680a07b0fb9d3c2e195e0f119908171ebf40c",
+        "code/TrimCDP-WB/src/GSTnonHop.cu": "8a519298e0a9da21eccbb6b33697012e096a47ec37d11264155964a36ac8ab06"
+      }
+    },
+    "commands": [
+      [
+        "nvcc",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-asan-build/source/code/TrimCDP-WB/src/GSTnonHop.cu",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-asan-build/source/code/TrimCDP-WB/include",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-asan-build/source/code/TrimCDP-WB/src",
+        "-std=c++17",
+        "--extended-lambda",
+        "-arch=sm_89",
+        "-O2",
+        "-lineinfo",
+        "-Xcompiler=-fsanitize=address",
+        "-Xcompiler=-fsanitize=undefined",
+        "-Xcompiler=-fno-omit-frame-pointer",
+        "-o",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-asan-build/TrimCDP-WB"
+      ],
+      [
+        "nvcc",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/probe.cu",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-asan-build/source/code/TrimCDP-WB/include",
+        "-I/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-asan-build/source/code/TrimCDP-WB/src",
+        "-std=c++17",
+        "--extended-lambda",
+        "-arch=sm_89",
+        "-O2",
+        "-lineinfo",
+        "-Xcompiler=-fsanitize=address",
+        "-Xcompiler=-fsanitize=undefined",
+        "-Xcompiler=-fno-omit-frame-pointer",
+        "-o",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/algorithm_repairs/gpu4gst/_work/final-asan-build/probe"
+      ]
+    ],
+    "binaries": {
+      "TrimCDP-WB": "90d2eb55429d49f7307b877017e1e2d080e118d9f94b5b20effe5313256752db",
+      "probe": "ff9961a7cdc9a7bbb654caf5e0fe1eb9bd6d07c48a368a90be6790336c793eb9"
+    },
+    "asan": true,
+    "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n"
+  },
+  "production": {
+    "status": "passed",
+    "checks": 56,
+    "rejections": 114,
+    "failures": 0,
+    "builds": {
+      "make": {
+        "status": "passed",
+        "positive_checks": 27,
+        "positive_invocations": 10,
+        "rejections": 57,
+        "failures": 0,
+        "binary_sha256": "74c965b5460b4a0ec40a648f23b7b0c438e3875dfc4f75de4d589f3cec8725b0"
+      },
+      "cmake": {
+        "status": "passed",
+        "positive_checks": 27,
+        "positive_invocations": 10,
+        "rejections": 57,
+        "failures": 0,
+        "binary_sha256": "46c3429d068e60cb3b4bce7ce908917f0043d5571118c5145dce82a837b9c80a"
+      }
+    },
+    "production_binary_sha256": "74c965b5460b4a0ec40a648f23b7b0c438e3875dfc4f75de4d589f3cec8725b0"
+  },
+  "evidence": {
+    "evidence/numerical-summary.json.gz": {
+      "raw_sha256": "49bcdcb339e2c140f50c827912254eba8220b15dcec45d2f2db4be90eac4bcd1",
+      "gzip_sha256": "dc59f4a39be760a780e8188b388f2a73700b194427fbc1b3e10ce006465b46c7"
+    },
+    "evidence/numerical-results.json.gz": {
+      "raw_sha256": "aced7edf99862cc96eb6d85a9faaaeaba6a39ce3a313160040a5d98696e50d1c",
+      "gzip_sha256": "b00122b52bebca7643d372d53f5537e5fca6a5cd6b317e47c7889eb9abc78006"
+    },
+    "evidence/numerical-commands.txt.gz": {
+      "raw_sha256": "bf0959eb48b33300c339f3e1715485cbaf502965b10362e2e2248c887ab26e94",
+      "gzip_sha256": "1e0c525abf76b7513bec9e753c97525eec0439b2ac3b84ac47ecdb4f9cd7db48"
+    },
+    "evidence/numerical-invocation.json.gz": {
+      "raw_sha256": "3230c2cd82147ecbaf34f365ca8bb45137a06340ceb5df5c67210843d776143a",
+      "gzip_sha256": "2038b041fd0dddb8ad4d0c52e938dda36ef892d726d66a8d023061ee3b79eaa4"
+    },
+    "evidence/numerical-run.log.gz": {
+      "raw_sha256": "4f2ab658e52d2e5ea7a446313a6129e2ae329b2fa4b974b47398fe6971497811",
+      "gzip_sha256": "b1da3958eebffe59bee7c4c387fc5d1d9ca5101cf80003309e38eb3db7c617b7"
+    },
+    "evidence/repeat-summary.json.gz": {
+      "raw_sha256": "1a528961511ca17546eb25a9177a55b09d0938b2a6aa11e31fe05b722883f0ba",
+      "gzip_sha256": "f646b12229aeecc44f539fa0d5ad7f2eca74cb7cafca86aedfee616c933e23e2"
+    },
+    "evidence/repeat-results.json.gz": {
+      "raw_sha256": "19006ada38df042eabf84bc91015bcdc43a9824963791fb7c81b41cee8b50520",
+      "gzip_sha256": "23f79098570f621f48710c13e7a7ea2b667e2b575ff10e1cadede0f22767b77a"
+    },
+    "evidence/repeat-commands.txt.gz": {
+      "raw_sha256": "f3d083e520aac5a4a6cc121a25201cc152bdb65bb59f7c6391c87eee5e13d803",
+      "gzip_sha256": "c9034e40327463fcc50b440ed83ae7aebce56499977c2dd2da2c8e6d4db25c17"
+    },
+    "evidence/repeat-invocation.json.gz": {
+      "raw_sha256": "3230c2cd82147ecbaf34f365ca8bb45137a06340ceb5df5c67210843d776143a",
+      "gzip_sha256": "2038b041fd0dddb8ad4d0c52e938dda36ef892d726d66a8d023061ee3b79eaa4"
+    },
+    "evidence/repeat-run.log.gz": {
+      "raw_sha256": "3a29703e0829b310c899502b1a0645e60acef1cee166736b5b967b5f9c6a0473",
+      "gzip_sha256": "61ecf56d19e7a834638c346600535bbab7b1c0c02b19192c03f50041a9082a73"
+    },
+    "evidence/memcheck-summary.json.gz": {
+      "raw_sha256": "93adb69f75cea4bc2fd25aeeeadb016f305d2ba82ac70b5e4e774fb9e27085b9",
+      "gzip_sha256": "5c118e24d3ba5637b1e03a32c86da8476509151f8752ca2e5fa6a07f14c3b988"
+    },
+    "evidence/memcheck-results.json.gz": {
+      "raw_sha256": "15b5aa575487778e6eb7afceee4357690ae48d36adbb8002c6541ea41c9ed86b",
+      "gzip_sha256": "d8e87e988a75b5be2653a22d34acde06b5741964dd6d7141adc35fe546494315"
+    },
+    "evidence/memcheck-commands.txt.gz": {
+      "raw_sha256": "35e665d1ded4f936c752048abe537aa3e5d6eac72111276af3be3d498d8dd7e5",
+      "gzip_sha256": "1b6b05c329ff109a84b135cc2ce65e07ff288cf22c820233848c55d22483fc1a"
+    },
+    "evidence/memcheck-invocation.json.gz": {
+      "raw_sha256": "5f93dbfd8bbccb38a136a98f03ce68576ee24f8804972bd4e0563e93203a0f81",
+      "gzip_sha256": "568a8e60cb6a77baddde78c43b6b5affd5c9f6fb4f1b376d001796a41fea4b88"
+    },
+    "evidence/memcheck-run.log.gz": {
+      "raw_sha256": "50b89f7ce261f28f179961bd7c2b4979a4be1e4a85d29d645e4740a43b36f33d",
+      "gzip_sha256": "eb4ae607a2eba58e64c84546ec90c8846076eacc2a56b5f8dd68855e7eee979c"
+    },
+    "evidence/initcheck-summary.json.gz": {
+      "raw_sha256": "b3e63200b30ce1d604a6d4902f3a6877c1fa4200e4914d1ed479c33f2a941fc8",
+      "gzip_sha256": "9d626fc09a1f4e717c32a94ca6c57aed079ff1861dd1b7b9c8fc3d35a66d5840"
+    },
+    "evidence/initcheck-results.json.gz": {
+      "raw_sha256": "15b5aa575487778e6eb7afceee4357690ae48d36adbb8002c6541ea41c9ed86b",
+      "gzip_sha256": "d8e87e988a75b5be2653a22d34acde06b5741964dd6d7141adc35fe546494315"
+    },
+    "evidence/initcheck-commands.txt.gz": {
+      "raw_sha256": "70629a7ed2aba0c0fb4eedf8a22de983129bd9e10f88eb0631b03deed9899915",
+      "gzip_sha256": "0236f14560c65b27824ab76edb246b096819b45203eb35d145baa3b6c670fe19"
+    },
+    "evidence/initcheck-invocation.json.gz": {
+      "raw_sha256": "acc1ffc18890ab63881a5755fd8f9052f64fed35c610b169c6d618078ce09794",
+      "gzip_sha256": "f03c9c6aaf4da7e52816593b139d39ad934ffc7a939a0fdffa865e88b6d89bde"
+    },
+    "evidence/initcheck-run.log.gz": {
+      "raw_sha256": "562cc8edd9469c9121a5acdcca0314d5df29ed6ac5edd141a626c59c9b874655",
+      "gzip_sha256": "2efa277a7be4530b28ed6b34caf02af82929d22074a30c67a4f4b4f74cebc1ce"
+    },
+    "evidence/racecheck-summary.json.gz": {
+      "raw_sha256": "66430c600e4a59b7f26113b236562af0b6e46fba2b72cc8268396c3f1e05f46c",
+      "gzip_sha256": "2ddcab7f0b4401c23bf66189ef4062529ce0b322148a04957f5021c0fb506cdf"
+    },
+    "evidence/racecheck-results.json.gz": {
+      "raw_sha256": "15b5aa575487778e6eb7afceee4357690ae48d36adbb8002c6541ea41c9ed86b",
+      "gzip_sha256": "d8e87e988a75b5be2653a22d34acde06b5741964dd6d7141adc35fe546494315"
+    },
+    "evidence/racecheck-commands.txt.gz": {
+      "raw_sha256": "0559596d204d092866f82897e5e77cd5daefade60bf9b3ab5029d106b83e7346",
+      "gzip_sha256": "f2a9b87928578ace2d4b872023d20f5205f55092d3a5be365778f18a44288dbd"
+    },
+    "evidence/racecheck-invocation.json.gz": {
+      "raw_sha256": "1694c8238f2a8e4a62b82ab749c64690cc1557b59394495f6761b0fce42ce5c6",
+      "gzip_sha256": "74a498488dd36a220e9f98fb4d96ed96690d0e51de8d534510d2c3a713c6dc33"
+    },
+    "evidence/racecheck-run.log.gz": {
+      "raw_sha256": "a5eb70f7965d8480b51d8acb7863de0271c1bd83548afd41d066139abc6d1a46",
+      "gzip_sha256": "5a92c2ec6e9a7a6c6bc179dce4e6e6a889bb24bdc5e650e03a6b268c76a81ee3"
+    },
+    "evidence/synccheck-summary.json.gz": {
+      "raw_sha256": "ca28b0abd4c077e080607517c7d45404ee1c27c38149ca5c39df184091b74233",
+      "gzip_sha256": "1f064a40b6295adb6f16cb32a78f336f6a5b4d61fa40d59b572e005130c612bc"
+    },
+    "evidence/synccheck-results.json.gz": {
+      "raw_sha256": "15b5aa575487778e6eb7afceee4357690ae48d36adbb8002c6541ea41c9ed86b",
+      "gzip_sha256": "d8e87e988a75b5be2653a22d34acde06b5741964dd6d7141adc35fe546494315"
+    },
+    "evidence/synccheck-commands.txt.gz": {
+      "raw_sha256": "b32b4537ba8caca7730eb1f9e7d795763c88e44ab52467c54bc65e7dd092cd7f",
+      "gzip_sha256": "9203363ff76bdb9a9d4815f512087b72db0716ba454fb30a4172afa480945a6c"
+    },
+    "evidence/synccheck-invocation.json.gz": {
+      "raw_sha256": "99653b7853d699844c0ce80c28f5bbb3e46ed8a32bda355b1fba4c7c956dff8f",
+      "gzip_sha256": "deccfd70ced29fef0c446637583ab80f11d8956fba4571c5b419a2e84f46b258"
+    },
+    "evidence/synccheck-run.log.gz": {
+      "raw_sha256": "94b80b9890701b908600aabef2fed36755e22b1a8059ad252d8e5eb56b229ee5",
+      "gzip_sha256": "afa75da42d9abeb898b41b81f806c053f1b5ba61539ef67af72cb4142ebd0de8"
+    },
+    "evidence/asan-summary.json.gz": {
+      "raw_sha256": "a7c7fbfa5c2d80d435102509aa348d1eecb60cc6d7d8da3bb2c232e0eaefdd8c",
+      "gzip_sha256": "138d971225bb3dd0a3b96562c7599899b8c06504506ba5f7253c3855912900e9"
+    },
+    "evidence/asan-results.json.gz": {
+      "raw_sha256": "aced7edf99862cc96eb6d85a9faaaeaba6a39ce3a313160040a5d98696e50d1c",
+      "gzip_sha256": "b00122b52bebca7643d372d53f5537e5fca6a5cd6b317e47c7889eb9abc78006"
+    },
+    "evidence/asan-commands.txt.gz": {
+      "raw_sha256": "94bedd35c7ec2de9cc7301b5973f3b4c0ccaacb4997a998fae567a9d8b755fa5",
+      "gzip_sha256": "41ae72410d6229d9f973475228af55061830fc2849239aa9fc8cda9d303a69d8"
+    },
+    "evidence/asan-invocation.json.gz": {
+      "raw_sha256": "ab87f9ebd95c3366e13073343de38ff6cf32311b7dc35171869adb3f912d737f",
+      "gzip_sha256": "54a5626ac21dccda044971edef5d3545afeb24770af7b032a2aa3f537b41bf86"
+    },
+    "evidence/asan-run.log.gz": {
+      "raw_sha256": "934623179ca6d30b8bf134b2b82f1635266f2ec798f809dfb54734dce669d06d",
+      "gzip_sha256": "e487db5d578fd705c8384f71f4dc1c599ad5775cad82d79d6c4743674ce09ef1"
+    },
+    "evidence/cli-summary.json.gz": {
+      "raw_sha256": "58ac55e00c26c7576769777b1addb5a010eedb4651db79b4b59b04ee2217f431",
+      "gzip_sha256": "e4eb82f3701d128821c25af77202edca03b9a0148473891d26f4ad5faa0701f6"
+    },
+    "evidence/cli-results.json.gz": {
+      "raw_sha256": "c41eb725194505573c79e1fc7f0e6f6566209f465b25d09308a4b967c5f6e34f",
+      "gzip_sha256": "6fb73a506c6b2964b3c6f3d97adc492d39e26ba1b7212079be769fd66ce7700f"
+    },
+    "evidence/cli-diagnostics.txt.gz": {
+      "raw_sha256": "714c25fca9fffe0bfabb86ebd79954a0d1b7b8653bace83ef94ead62d78714d2",
+      "gzip_sha256": "56caf004dc399daa78de143d331ab6345e6b97d458bc1f1cc815928a160aaf0f"
+    },
+    "evidence/asan-cli-summary.json.gz": {
+      "raw_sha256": "cbf6c8e833ae3bd68aa2fda793a4782b1cbcc1a588b816a17f8afd0b181a92de",
+      "gzip_sha256": "284d5592e2f9cc679296fb85eb4c467b2bbc2f61697bae30202a78a2ee932f30"
+    },
+    "evidence/asan-cli-results.json.gz": {
+      "raw_sha256": "0de29d5891f51dafcdf8b1cc3923e782e4294c97ff171b195e0b1183eeb47351",
+      "gzip_sha256": "8e9d118f46d741639a258183d7bf15545e474cf0ddd8aab74bafdbef02e2f27d"
+    },
+    "evidence/asan-cli-diagnostics.txt.gz": {
+      "raw_sha256": "595b5e559a6aab642f2b40429923feaab74ff59da1789143fd0b9b3f5b2a1b67",
+      "gzip_sha256": "77c395721126a0fa59cb492f8fd320c6521a2307012a56bf3afe1409b781dd77"
+    },
+    "evidence/numerical-corpus.json.gz": {
+      "raw_sha256": "8d3cedf4efa293facb2b4004ab2f5cacc73f24e9d5dde8a1124510e7eb598c8c",
+      "gzip_sha256": "49ca04960da65c673a73eb987614925a05703dece3f9f0d59a833f4eb3ac5862"
+    },
+    "evidence/repeat-corpus.json.gz": {
+      "raw_sha256": "db42c5f2164e0256f47c0cc778060267fcf059c249ea0a07d9254d5998e15f27",
+      "gzip_sha256": "2ea858871e124ae4e10b3e39dec2816ef8fdccb7f7d2c5ee35f69f650cfd5945"
+    },
+    "evidence/memcheck-corpus.json.gz": {
+      "raw_sha256": "c4a3da16430bb7d5f832d07018b0aea60c731717a7cb626b5184f523a79c3890",
+      "gzip_sha256": "a4f11b6d717f68f7e3429cb2a34172a08b350db3e9a7d9fbeda00081436de45c"
+    },
+    "evidence/final-build-build.json.gz": {
+      "raw_sha256": "20e49c0f7eb650251b3c0dd0b27588b66e48e8124b4387350d513614a037d5db",
+      "gzip_sha256": "95cbfc178a9cc24216d23326e316013da76f1a1e231a2baaf03b3a70a2127c61"
+    },
+    "evidence/final-build-TrimCDP-WB-build.log.gz": {
+      "raw_sha256": "859cfa7a6f561e0774dc4537673e66d84ae224f799ef114dd6b48bd03a171cd8",
+      "gzip_sha256": "6acd56f43ea06355add9c096b9ff9d28e0d6de4e9b826281de741df98b6bd45d"
+    },
+    "evidence/final-build-probe-build.log.gz": {
+      "raw_sha256": "859cfa7a6f561e0774dc4537673e66d84ae224f799ef114dd6b48bd03a171cd8",
+      "gzip_sha256": "6acd56f43ea06355add9c096b9ff9d28e0d6de4e9b826281de741df98b6bd45d"
+    },
+    "evidence/final-asan-build-build.json.gz": {
+      "raw_sha256": "67c49f50d396b572f1d7bacbb3b49f8ee9ee38b75e37031150368636bd817983",
+      "gzip_sha256": "a2797fd77f6071d109b3dda36feed28ce58a36a4505801c69bda2389d1625bbd"
+    },
+    "evidence/final-asan-build-TrimCDP-WB-build.log.gz": {
+      "raw_sha256": "23048fa9e3e6e5816fab2ee3271126cf9ac9dc6e02e1d751fe6382883b5ec1d9",
+      "gzip_sha256": "eb33a9238959f2412339bfd4b7f952c867405411b8f94b9e7e75786327d9ab89"
+    },
+    "evidence/final-asan-build-probe-build.log.gz": {
+      "raw_sha256": "23048fa9e3e6e5816fab2ee3271126cf9ac9dc6e02e1d751fe6382883b5ec1d9",
+      "gzip_sha256": "eb33a9238959f2412339bfd4b7f952c867405411b8f94b9e7e75786327d9ab89"
+    },
+    "evidence/native-cmake-build.log.gz": {
+      "raw_sha256": "7c623259d8e1204e4cc2ec77ee7ba11f1c0e2846d60e79039df86dd14e66b2f1",
+      "gzip_sha256": "e667c6ad16e622c57f04dcc98226c547e8b4b956c8b75e410aeefc0e2e49aecb"
+    },
+    "evidence/native-make-build.log.gz": {
+      "raw_sha256": "06d06d291ae24901b7744f35a02cbc8cc0cd1086801078d23c7c47208bc58bdf",
+      "gzip_sha256": "699a96d73dac1537f3edcd811c3cc7a89ee9f51f12d7df7eba4dc9a09a341210"
+    },
+    "evidence/baseline-fresh-build.log.gz": {
+      "raw_sha256": "591b209409c16007a216cc9bfe8a1de713859088edf8a18778910b4231460906",
+      "gzip_sha256": "50d25ec1f57254eb3e2292af706c4a8243bdab3a1bac9a2817cd503f9b3869b1"
+    },
+    "evidence/baseline-fresh.json.gz": {
+      "raw_sha256": "13bc4068b890b636dfba8ff68a09799f33cb2957422e2a76468a876dddcc6b3d",
+      "gzip_sha256": "4b6510b5ea6bed0747cff9844540d7b114891e22614ec55067af174c20eefc5b"
+    },
+    "evidence/explore-summary.json.gz": {
+      "raw_sha256": "52f47872605072516e0f6eed5780e455524d0943309673786ad71d051b2d5180",
+      "gzip_sha256": "32d4168c5a51c61141fcacc4cc515f64a0974625da3fc68a20c774a6e99ff526"
+    },
+    "evidence/explore-stage2-summary.json.gz": {
+      "raw_sha256": "6e93da431eb890c5c71da66f31bbf7b5e410557b9b9922686c7a499d204fec6c",
+      "gzip_sha256": "6b03991c9a426f1d1e82155d271017622742483fbdb2abdac96878ad16eea559"
+    },
+    "evidence/explore-stage3-summary.json.gz": {
+      "raw_sha256": "a13e2d366e21b2d4b4c3c6a1ffda5db8593dc5d2033274659f37b17c86b8b6a1",
+      "gzip_sha256": "fd93fa7eccac77d631b26e3e99dfb7a98537f43d9ef9bb04c91dda78f315a7c1"
+    },
+    "evidence/explore-stage4-summary.json.gz": {
+      "raw_sha256": "a13e2d366e21b2d4b4c3c6a1ffda5db8593dc5d2033274659f37b17c86b8b6a1",
+      "gzip_sha256": "fd93fa7eccac77d631b26e3e99dfb7a98537f43d9ef9bb04c91dda78f315a7c1"
+    },
+    "evidence/intermediate-completion-summary.json.gz": {
+      "raw_sha256": "01da1ab091353c01da5abf1cd29627734e73931b99235aaed1db4fb31580564b",
+      "gzip_sha256": "c4bcd5111e791c68760d82ff4b7840be9fdbc4473fcfdbe5418058570f8f9a8b"
+    },
+    "evidence/intermediate-completion-results.json.gz": {
+      "raw_sha256": "5cfeb88571f7c1a1a348c814654ffa955d2e8b3646403ca0bf8c6de82347646e",
+      "gzip_sha256": "8fb227e46adf65e54b13be8c6e50fa7a5895273c010d2a3f82593ce51a283eb2"
+    },
+    "evidence/intermediate-weighted-failure.log.gz": {
+      "raw_sha256": "e57e390dd9bf74e1c7a16ca08ba62e95016a7974146626b26e79ee9c2f9ad2fc",
+      "gzip_sha256": "d49cd9a1df54aedf4f89f45cf7c4a11363d315caf41da52e52f7976cc0e17c34"
+    },
+    "evidence/completion-counterexample.json.gz": {
+      "raw_sha256": "c9d251e897e48e38fda998d115ceac0007570410a0b5c049d2983c481af05207",
+      "gzip_sha256": "c28e169afcf0b68772aa0f75be89968e3cd86e7ae3e198268a45c6683864f609"
+    },
+    "evidence/production-summary.json.gz": {
+      "raw_sha256": "ad242ac8729e137ff9b9b83eeb2ba927fa6ad75263d17caa2129739373caac2e",
+      "gzip_sha256": "978ffc3e6800128bf4140275291f82721e19b0a0ac9ccc8bf59f25842272e257"
+    },
+    "evidence/production-results.json.gz": {
+      "raw_sha256": "5f68849dcebe106c6a132acd88c26d731c3c8eb213182714a2123dbff293eaea",
+      "gzip_sha256": "d2fdf3a552ecc079f6dce06405189fe514d482f327d0d52f0a43899b7bd0a789"
+    },
+    "evidence/production-make-results.json.gz": {
+      "raw_sha256": "77d586c21864559b8a3278a324bf00ceeca1d79432d1a31537457664bdcb34a3",
+      "gzip_sha256": "0b3baa7403abfa5c84260c57db06e6b2e8134624bb96b1295d118732302e5e8c"
+    },
+    "evidence/production-cmake-results.json.gz": {
+      "raw_sha256": "a25691d0f0a415d62b161edcdc2953094be52e1ba79c51ec30b71f8678efc35c",
+      "gzip_sha256": "a1e63724ddf6708653c9349a2204f3e9908b8f69d3f03543f8e264c5d4c567ae"
+    }
+  }
+}

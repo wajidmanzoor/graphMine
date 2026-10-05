@@ -46,7 +46,7 @@
     {
       "id": "maximum-clique",
       "problem_id": "maximum_clique",
-      "default_backend": "cuda-ms",
+      "default_backend": "gpu-maximum-clique",
       "parameters": {
         "return_all_ties": {
           "flag": "--return-all-ties",
@@ -665,6 +665,216 @@
       "visualization_candidates": [
         "table",
         "metric_cards"
+      ]
+    },
+    {
+      "id": "k-truss",
+      "problem_id": "k_truss_decomposition",
+      "default_backend": "acctd",
+      "parameters": {},
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "truss_number_by_edge",
+        "maximum_truss_number"
+      ],
+      "validated_profile": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID.",
+      "visualization_candidates": [
+        "table",
+        "metric_cards",
+        "network"
+      ]
+    },
+    {
+      "id": "densest-subgraph",
+      "problem_id": "densest_subgraph",
+      "default_backend": "cds",
+      "parameters": {},
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "vertices",
+        "density",
+        "induced_edge_value",
+        "optimal"
+      ],
+      "validated_profile": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+      "visualization_candidates": [
+        "table",
+        "metric_cards",
+        "network"
+      ]
+    },
+    {
+      "id": "maximal-biclique-counting",
+      "problem_id": "maximal_biclique_enumeration",
+      "default_backend": "mbe-gpu",
+      "parameters": {},
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "total_count",
+        "complete"
+      ],
+      "validated_profile": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode.",
+      "visualization_candidates": [
+        "table",
+        "metric_cards",
+        "network"
+      ]
+    },
+    {
+      "id": "personalized-pagerank",
+      "problem_id": "personalized_pagerank_rwr",
+      "default_backend": "kpar",
+      "parameters": {
+        "seed_vertex": {
+          "flag": "--seed-vertex",
+          "type": "vertex_id",
+          "required": true
+        },
+        "top_k": {
+          "flag": "--top-k",
+          "type": "integer",
+          "required": true,
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "restart_probability": {
+          "flag": "--restart-probability",
+          "type": "number",
+          "required": true,
+          "choices": [
+            0.2
+          ]
+        },
+        "solution_quality": {
+          "flag": "--solution-quality",
+          "type": "string",
+          "default": "approximate",
+          "choices": [
+            "approximate"
+          ]
+        },
+        "epsilon": {
+          "flag": "--epsilon",
+          "type": "number",
+          "default": 0.01,
+          "minimum": 0.01,
+          "maximum": 0.5
+        },
+        "random_seed": {
+          "flag": "--random-seed",
+          "type": "integer",
+          "default": 20261004,
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      },
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "ranked_vertices",
+        "restart_probability_used",
+        "complete",
+        "approximate",
+        "epsilon_used",
+        "error_bound",
+        "error_bound_certified"
+      ],
+      "validated_profile": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion.",
+      "visualization_candidates": [
+        "table",
+        "metric_cards",
+        "network"
+      ]
+    },
+    {
+      "id": "group-steiner-tree",
+      "problem_id": "group_steiner_tree",
+      "default_backend": "gpu4gst",
+      "parameters": {
+        "groups": {
+          "flag": "--groups",
+          "type": "vertex_groups",
+          "required": true
+        }
+      },
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "tree_edges",
+        "tree_weight",
+        "selected_vertices",
+        "feasible",
+        "optimal"
+      ],
+      "validated_profile": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint.",
+      "visualization_candidates": [
+        "table",
+        "metric_cards",
+        "network"
+      ]
+    },
+    {
+      "id": "influence-maximization",
+      "problem_id": "influence_maximization",
+      "default_backend": "superfuser",
+      "parameters": {
+        "diffusion_model": {
+          "flag": "--diffusion-model",
+          "type": "string",
+          "required": true,
+          "choices": [
+            "independent_cascade"
+          ]
+        },
+        "seed_set_size": {
+          "flag": "--seed-set-size",
+          "type": "integer",
+          "required": true,
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "sample_count": {
+          "flag": "--sample-count",
+          "type": "integer",
+          "default": 256,
+          "minimum": 32,
+          "maximum": 65536,
+          "multiple_of": 32
+        },
+        "random_seed": {
+          "flag": "--random-seed",
+          "type": "integer",
+          "default": 42,
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "require_guarantee": {
+          "flag": "--require-guarantee",
+          "type": "boolean",
+          "default": false,
+          "choices": [
+            false
+          ]
+        }
+      },
+      "optional_outputs": {},
+      "auxiliary_inputs": {},
+      "required_outputs": [
+        "seed_set",
+        "expected_spread",
+        "guarantee_met",
+        "sample_count",
+        "prefix_spread",
+        "diffusion_model"
+      ],
+      "validated_profile": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution.",
+      "visualization_candidates": [
+        "table",
+        "metric_cards",
+        "network"
       ]
     }
   ]

@@ -1,10 +1,5 @@
 var searchData=
 [
-  ['partitionmetrics_0',['PartitionMetrics',['../df/ddd/structgraphmine_1_1anonymous__namespace_02community__detection_8cpp_03_1_1PartitionMetrics.html',1,'graphmine::anonymous_namespace{community_detection.cpp}']]],
-  ['partitionview_1',['PartitionView',['../df/d78/structgraphmine_1_1anonymous__namespace_02maximal__bicliques_8cpp_03_1_1PartitionView.html',1,'graphmine::anonymous_namespace{maximal_bicliques.cpp}']]],
-  ['preparedevent_2',['PreparedEvent',['../d7/d17/structgraphmine_1_1anonymous__namespace_02temporal__motif__mining_8cpp_03_1_1PreparedEvent.html',1,'graphmine::anonymous_namespace{temporal_motif_mining.cpp}']]],
-  ['preparedtemporalgraph_3',['PreparedTemporalGraph',['../d8/ddd/structgraphmine_1_1anonymous__namespace_02temporal__motif__mining_8cpp_03_1_1PreparedTemporalGraph.html',1,'graphmine::anonymous_namespace{temporal_motif_mining.cpp}']]],
-  ['preparedupdatebatch_4',['PreparedUpdateBatch',['../d2/d8c/structgraphmine_1_1anonymous__namespace_02dynamic__triangle__counting_8cpp_03_1_1PreparedUpdateBatch.html',1,'graphmine::anonymous_namespace{dynamic_triangle_counting.cpp}']]],
-  ['propertyvalue_5',['PropertyValue',['../d7/d73/classgraphmine_1_1PropertyValue.html',1,'graphmine']]],
-  ['provenance_6',['Provenance',['../d2/dba/structgraphmine_1_1Provenance.html',1,'graphmine']]]
+  ['operationdescriptor_0',['OperationDescriptor',['../d8/d88/structanonymous__namespace_02graphmine_8cpp_03_1_1OperationDescriptor.html',1,'anonymous_namespace{graphmine.cpp}']]],
+  ['output_1',['Output',['../df/df1/structOutput.html',1,'']]]
 ];

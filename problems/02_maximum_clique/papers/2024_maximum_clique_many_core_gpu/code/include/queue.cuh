@@ -51,12 +51,12 @@ __device__ __forceinline__ uint32_t my_sleep(uint32_t ns)
     const uint32_t target = ticket % queue_size;                              \
     const uint32_t ticket_target = ticket / queue_size * 2;                   \
     uint32_t ns = 8;                                                          \
-    while (tickets[target].load(cuda::memory_order_relaxed) != ticket_target) \
+    while (tickets[target].fetch_add(0, cuda::memory_order_acquire) != ticket_target) \
       ns = my_sleep(ns);                                                      \
-    while (tickets[target].load(cuda::memory_order_acquire) != ticket_target) \
+    while (tickets[target].fetch_add(0, cuda::memory_order_acquire) != ticket_target) \
       ns = my_sleep(ns);                                                      \
-    queue[target] = val;                                                      \
-    tickets[target].store(ticket_target + 1, cuda::memory_order_release);     \
+    atomicExch(&queue[target], val);                                                      \
+    tickets[target].exchange(ticket_target + 1, cuda::memory_order_release);     \
   } while (0)
 
 #define queue_dequeue(queue, tickets, head, tail, queue_size, fork, qidx, count)          \
@@ -90,6 +90,21 @@ __device__ __forceinline__ uint32_t my_sleep(uint32_t ns)
     res = queue[target];                                                      \
     tickets[target].store(ticket_target + 1, cuda::memory_order_release);     \
   } while (0)
+
+#define shared_queue_wait_ticket(queue, tickets, head, tail, queue_size, qidx, res)  \
+  do                                                                          \
+  {                                                                           \
+    const uint32_t target = qidx % queue_size;                                \
+    const uint32_t ticket_target = qidx / queue_size * 2 + 1;                 \
+    uint32_t ns = 8;                                                          \
+    while (tickets[target].fetch_add(0, cuda::memory_order_acquire) != ticket_target) \
+      ns = my_sleep(ns);                                                      \
+    while (tickets[target].fetch_add(0, cuda::memory_order_acquire) != ticket_target) \
+      ns = my_sleep(ns);                                                      \
+    res = atomicAdd(&queue[target], 0U);                                                      \
+    tickets[target].exchange(ticket_target + 1, cuda::memory_order_release);     \
+  } while (0)
+
 
 #define queue_try_wait_ticket(queue, tickets, head, tail, queue_size, qidx, res, available) \
   do                                                                                        \
