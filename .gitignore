@@ -24,3 +24,10 @@ problems/27_group_steiner_tree/papers/2025_gpu4gst/code/
 problems/28_influence_maximization/papers/2021_superfuser/code/
 problems/02_maximum_clique/papers/2019_maximum_clique_cuda/code/find_cliques
 agent/frontend/node_modules/
+
+# Keep training, data collection, and deployment documentation local.
+/agent/CLI.md
+/agent/evaluation/FINETUNING_PROGRESS.md
+/agent/IMPROVEMENT_PLAN.md
+/agent/README.md
+/deploy/README.md

@@ -63,7 +63,7 @@ for component-level C++ usage, optional dependencies, and tests.
 
 ## Intelligent LAN system
 
-The [agent service](agent/README.md) adds a domain-first conversational layer
+The [agent service](agent/) adds a domain-first conversational layer
 without moving correctness decisions into the language model. One local Qwen
 instance produces schema-constrained plans and result interpretations; a
 deterministic orchestrator validates every request against the problem catalog
@@ -86,8 +86,8 @@ deploy/smoke-v1.sh     # terminal 3, after Qwen is ready
 ```
 
 Then open `http://GPU_SERVER_LAN_IP:8000` from the research computer and enter
-the generated token through the UI settings button. The detailed operator and
-recovery guide is [`deploy/README.md`](deploy/README.md).
+the generated token through the UI settings button. Deployment scripts are
+available in [`deploy/`](deploy/).
 
 ## Problem-first catalog
 
