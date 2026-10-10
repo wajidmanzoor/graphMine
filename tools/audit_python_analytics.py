@@ -20,9 +20,9 @@ def audit():
     library = ROOT / "python/graphmine"
     reports = []
     for name in (
-        "cpu-record-queries",
-        "gpu-0-record-queries",
-        "gpu-1-record-queries",
+        "cpu-native-wrapper",
+        "gpu-0-native-wrapper",
+        "gpu-1-native-wrapper",
     ):
         xml = ROOT / "validation/python_analytics" / f"{name}.xml"
         metadata_path = xml.with_name(xml.name + ".metadata.json")

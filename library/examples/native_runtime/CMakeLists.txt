@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.24)
+project(NativeConsumer LANGUAGES C CXX)
+find_package(GraphMineRuntime CONFIG REQUIRED)
+add_executable(cpp_consumer main.cpp)
+target_link_libraries(cpp_consumer PRIVATE GraphMine::runtime)
+add_executable(c_consumer main.c)
+target_link_libraries(c_consumer PRIVATE GraphMine::runtime)

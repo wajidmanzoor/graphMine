@@ -1,0 +1,170 @@
+cmake_minimum_required(VERSION 3.24)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  project(GraphMineRuntime VERSION 2.0.0 LANGUAGES CXX)
+  include(GNUInstallDirs)
+  include(CTest)
+  add_library(graphmine_runtime_core STATIC ../src/core/graph.cpp)
+  target_include_directories(graphmine_runtime_core PUBLIC ../include)
+  target_compile_features(graphmine_runtime_core PUBLIC cxx_std_17)
+  set_target_properties(graphmine_runtime_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set(GRAPHMINE_RUNTIME_CORE graphmine_runtime_core)
+else()
+  set(GRAPHMINE_RUNTIME_CORE graphmine_core)
+endif()
+
+option(GRAPHMINE_NATIVE_CUGRAPH "Link native libcugraph without Python" OFF)
+option(GRAPHMINE_NATIVE_CUDF "Read CSV files through native libcudf" OFF)
+set(GRAPHMINE_LIBCUGRAPH_ROOT "" CACHE PATH "Native libcugraph prefix with include and lib64")
+set(GRAPHMINE_LIBCUDF_ROOT "" CACHE PATH "Native libcudf prefix with include and lib64")
+set(GRAPHMINE_RAPIDS_INCLUDE_DIRS "" CACHE STRING "Native RAPIDS, RMM and CCCL include directories")
+set(GRAPHMINE_RAPIDS_LIBRARY_DIRS "" CACHE STRING "Native RAPIDS dependent shared-library directories")
+set(GRAPHMINE_RAPIDS_ROOT "" CACHE PATH "Optional directory containing unpacked native RAPIDS distributions")
+if(GRAPHMINE_RAPIDS_ROOT)
+  set(GRAPHMINE_LIBCUGRAPH_ROOT "${GRAPHMINE_RAPIDS_ROOT}/libcugraph")
+  set(GRAPHMINE_LIBCUDF_ROOT "${GRAPHMINE_RAPIDS_ROOT}/libcudf")
+  set(GRAPHMINE_RAPIDS_INCLUDE_DIRS
+      "${GRAPHMINE_RAPIDS_ROOT}/libcudf/include/rapids"
+      "${GRAPHMINE_RAPIDS_ROOT}/librmm/include/rapids"
+      "${GRAPHMINE_RAPIDS_ROOT}/librmm/include"
+      "${GRAPHMINE_RAPIDS_ROOT}/rapids_logger/include"
+      "${GRAPHMINE_RAPIDS_ROOT}/nvidia/cuda_runtime/include")
+  file(GLOB GRAPHMINE_RAPIDS_LIBRARY_DIRS LIST_DIRECTORIES TRUE
+       "${GRAPHMINE_RAPIDS_ROOT}/nvidia/*/lib"
+       "${GRAPHMINE_RAPIDS_ROOT}/nvidia/*/lib64")
+  foreach(dependency IN ITEMS libcugraph libcudf librmm libraft libcuvs libkvikio rapids_logger)
+    list(APPEND GRAPHMINE_RAPIDS_LIBRARY_DIRS "${GRAPHMINE_RAPIDS_ROOT}/${dependency}/lib64")
+  endforeach()
+endif()
+find_path(GRAPHMINE_RUNTIME_BOOST_INCLUDE boost/json.hpp REQUIRED)
+find_package(OpenSSL REQUIRED COMPONENTS Crypto)
+
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/problem_families.json" GRAPHMINE_NATIVE_TAXONOMY)
+file(GLOB_RECURSE GRAPHMINE_RUNTIME_HASH_INPUTS CONFIGURE_DEPENDS
+     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+     "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
+list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS
+     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/problem_families.json"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../src/core/graph.cpp"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../src/core/json.cpp")
+foreach(header IN ITEMS graph.hpp runtime.hpp runtime_c.h backend.hpp execution.hpp status.hpp)
+  list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS "${CMAKE_CURRENT_SOURCE_DIR}/../include/graphmine/${header}")
+endforeach()
+if(TARGET graphmine_triangle_counting)
+  list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS
+       "${CMAKE_CURRENT_SOURCE_DIR}/../include/graphmine/problems/triangle_counting.hpp"
+       "${CMAKE_CURRENT_SOURCE_DIR}/../src/problems/triangle_counting.cpp"
+       "${CMAKE_CURRENT_SOURCE_DIR}/../src/backends/triangle_backend.hpp")
+  foreach(backend IN ITEMS tot wetric)
+    string(TOUPPER "${backend}" upper)
+    if(GRAPHMINE_HAS_${upper})
+      list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS "${CMAKE_CURRENT_SOURCE_DIR}/../src/backends/${backend}.cu")
+      file(GLOB_RECURSE upstream_inputs CONFIGURE_DEPENDS
+           "${GRAPHMINE_${upper}_ROOT}/*.h" "${GRAPHMINE_${upper}_ROOT}/*.hpp"
+           "${GRAPHMINE_${upper}_ROOT}/*.cuh" "${GRAPHMINE_${upper}_ROOT}/*.cu")
+      list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS ${upstream_inputs})
+    else()
+      list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS "${CMAKE_CURRENT_SOURCE_DIR}/../src/backends/${backend}_stub.cpp")
+    endif()
+  endforeach()
+endif()
+list(SORT GRAPHMINE_RUNTIME_HASH_INPUTS)
+set(GRAPHMINE_NATIVE_SOURCE_DIGEST "")
+foreach(path IN LISTS GRAPHMINE_RUNTIME_HASH_INPUTS)
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${path}")
+  file(SHA256 "${path}" hash)
+  file(RELATIVE_PATH relative "${CMAKE_CURRENT_SOURCE_DIR}/.." "${path}")
+  string(APPEND GRAPHMINE_NATIVE_SOURCE_DIGEST "${relative}:${hash}\n")
+endforeach()
+string(SHA256 GRAPHMINE_NATIVE_SOURCE_SHA256 "${GRAPHMINE_NATIVE_SOURCE_DIGEST}")
+configure_file(catalog_data.hpp.in generated/catalog_data.hpp @ONLY)
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/native-source-hashes.txt" "${GRAPHMINE_NATIVE_SOURCE_DIGEST}")
+
+add_library(graphmine_runtime SHARED runtime.cpp registry.cpp json_graph.cpp c_api.cpp
+            families/traversal.cpp families/patterns.cpp ../src/core/json.cpp)
+add_library(GraphMine::runtime ALIAS graphmine_runtime)
+target_compile_features(graphmine_runtime PUBLIC cxx_std_17)
+target_include_directories(graphmine_runtime PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/generated"
+          "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
+target_link_libraries(graphmine_runtime PRIVATE ${GRAPHMINE_RUNTIME_CORE} OpenSSL::Crypto)
+set_target_properties(graphmine_runtime PROPERTIES VERSION 2.0.0 SOVERSION 1 EXPORT_NAME runtime)
+if(GRAPHMINE_NATIVE_CUGRAPH OR GRAPHMINE_NATIVE_CUDF OR GRAPHMINE_HAS_TOT OR GRAPHMINE_HAS_WETRIC)
+  find_package(CUDAToolkit REQUIRED)
+  target_sources(graphmine_runtime PRIVATE cuda_device.cpp)
+  target_link_libraries(graphmine_runtime PRIVATE CUDA::cudart)
+else()
+  target_sources(graphmine_runtime PRIVATE device_stub.cpp)
+endif()
+if(TARGET graphmine_triangle_counting)
+  target_link_libraries(graphmine_runtime PRIVATE graphmine_triangle_counting)
+  target_compile_definitions(graphmine_runtime PRIVATE GRAPHMINE_NATIVE_ORIGINAL_TRIANGLES=1)
+endif()
+if(GRAPHMINE_NATIVE_CUGRAPH)
+  find_package(CUDAToolkit REQUIRED)
+  find_path(GRAPHMINE_CUGRAPH_INCLUDE cugraph_c/graph.h HINTS "${GRAPHMINE_LIBCUGRAPH_ROOT}/include" REQUIRED)
+  find_library(GRAPHMINE_CUGRAPH_LIBRARY cugraph_c HINTS "${GRAPHMINE_LIBCUGRAPH_ROOT}/lib64" "${GRAPHMINE_LIBCUGRAPH_ROOT}/lib" REQUIRED)
+  target_sources(graphmine_runtime PRIVATE cugraph.cpp)
+  target_include_directories(graphmine_runtime PRIVATE "${GRAPHMINE_CUGRAPH_INCLUDE}")
+  target_link_libraries(graphmine_runtime PRIVATE "${GRAPHMINE_CUGRAPH_LIBRARY}" CUDA::cudart)
+  # Native wheels carry normal ELF libraries. Explicit dependency directories
+  # support them without importing their Python distributions at runtime.
+else()
+  target_sources(graphmine_runtime PRIVATE gpu_stub.cpp)
+endif()
+if(GRAPHMINE_NATIVE_CUDF)
+  find_package(CUDAToolkit REQUIRED)
+  find_path(GRAPHMINE_CUDF_INCLUDE cudf/io/csv.hpp HINTS "${GRAPHMINE_LIBCUDF_ROOT}/include" REQUIRED)
+  find_library(GRAPHMINE_CUDF_LIBRARY cudf HINTS "${GRAPHMINE_LIBCUDF_ROOT}/lib64" "${GRAPHMINE_LIBCUDF_ROOT}/lib" REQUIRED)
+  target_sources(graphmine_runtime PRIVATE io/cudf_csv.cpp)
+  target_compile_features(graphmine_runtime PRIVATE cxx_std_20)
+  target_include_directories(graphmine_runtime PRIVATE "${GRAPHMINE_CUDF_INCLUDE}" ${GRAPHMINE_RAPIDS_INCLUDE_DIRS})
+  target_link_libraries(graphmine_runtime PRIVATE "${GRAPHMINE_CUDF_LIBRARY}" CUDA::cudart)
+else()
+  target_sources(graphmine_runtime PRIVATE io_stub.cpp)
+endif()
+if(GRAPHMINE_NATIVE_CUGRAPH OR GRAPHMINE_NATIVE_CUDF)
+  # Some native RAPIDS distributions use a local-only RUNPATH. Declare their
+  # sibling libraries as direct dependencies so a standalone process finds
+  # them through this library's configured search paths, without Python preload.
+  set(GRAPHMINE_RAPIDS_DIRECT_DEPENDENCIES "")
+  foreach(name IN ITEMS librmm.so librapids_logger.so libraft.so libcuvs.so libkvikio.so libnvcomp.so.5 libnvJitLink.so.12)
+    foreach(directory IN LISTS GRAPHMINE_RAPIDS_LIBRARY_DIRS)
+      if(EXISTS "${directory}/${name}")
+        list(APPEND GRAPHMINE_RAPIDS_DIRECT_DEPENDENCIES "${directory}/${name}")
+        break()
+      endif()
+    endforeach()
+  endforeach()
+  target_link_libraries(graphmine_runtime PRIVATE "-Wl,--no-as-needed"
+      ${GRAPHMINE_RAPIDS_DIRECT_DEPENDENCIES} "-Wl,--as-needed")
+  foreach(directory IN LISTS GRAPHMINE_RAPIDS_LIBRARY_DIRS)
+    target_link_options(graphmine_runtime PUBLIC "LINKER:-rpath-link,${directory}")
+  endforeach()
+  set_property(TARGET graphmine_runtime APPEND PROPERTY BUILD_RPATH "${GRAPHMINE_RAPIDS_LIBRARY_DIRS}")
+  set_property(TARGET graphmine_runtime APPEND PROPERTY INSTALL_RPATH "${GRAPHMINE_RAPIDS_LIBRARY_DIRS}")
+  target_link_options(graphmine_runtime PRIVATE "LINKER:--disable-new-dtags")
+endif()
+
+add_executable(graphmine_native_cli cli.cpp ../src/core/json.cpp)
+target_include_directories(graphmine_native_cli PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
+target_link_libraries(graphmine_native_cli PRIVATE GraphMine::runtime)
+set_target_properties(graphmine_native_cli PROPERTIES OUTPUT_NAME graphmine-native INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+install(TARGETS graphmine_runtime graphmine_native_cli EXPORT GraphMineRuntimeTargets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ../include/graphmine/runtime.hpp ../include/graphmine/runtime_c.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/graphmine)
+install(FILES ../manifests/problem_families.json DESTINATION ${CMAKE_INSTALL_DATADIR}/graphmine)
+install(EXPORT GraphMineRuntimeTargets NAMESPACE GraphMine:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GraphMineRuntime)
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" "include(\"\${CMAKE_CURRENT_LIST_DIR}/GraphMineRuntimeTargets.cmake\")\n")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GraphMineRuntime)
+
+if(BUILD_TESTING OR GRAPHMINE_BUILD_TESTS)
+  add_executable(graphmine_runtime_test tests/runtime_test.cpp ../src/core/json.cpp)
+  target_include_directories(graphmine_runtime_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
+  target_link_libraries(graphmine_runtime_test PRIVATE GraphMine::runtime)
+  add_test(NAME graphmine_runtime_contracts COMMAND graphmine_runtime_test contracts)
+  add_test(NAME graphmine_runtime_bfs_cpu COMMAND graphmine_runtime_test bfs cpu)
+  add_test(NAME graphmine_runtime_triangles_cpu COMMAND graphmine_runtime_test triangles cpp)
+endif()

@@ -1,0 +1,558 @@
+{
+  "schema_version": 1,
+  "scope": "Authoritative native and wrapper problem/family taxonomy; membership is not execution or validation evidence.",
+  "families": [
+    {
+      "id": "centrality",
+      "title": "Centrality"
+    },
+    {
+      "id": "cliques",
+      "title": "Cliques"
+    },
+    {
+      "id": "coloring",
+      "title": "Coloring"
+    },
+    {
+      "id": "communities",
+      "title": "Communities"
+    },
+    {
+      "id": "community",
+      "title": "Community"
+    },
+    {
+      "id": "comparison",
+      "title": "Comparison"
+    },
+    {
+      "id": "connectivity",
+      "title": "Connectivity"
+    },
+    {
+      "id": "construction",
+      "title": "Construction"
+    },
+    {
+      "id": "cores",
+      "title": "Cores"
+    },
+    {
+      "id": "data_preparation",
+      "title": "Data Preparation"
+    },
+    {
+      "id": "dense_structures",
+      "title": "Dense Structures"
+    },
+    {
+      "id": "embeddings",
+      "title": "Embeddings"
+    },
+    {
+      "id": "flow",
+      "title": "Flow"
+    },
+    {
+      "id": "independent_sets",
+      "title": "Independent Sets"
+    },
+    {
+      "id": "layout",
+      "title": "Layout"
+    },
+    {
+      "id": "learning",
+      "title": "Learning"
+    },
+    {
+      "id": "matching",
+      "title": "Matching"
+    },
+    {
+      "id": "motifs",
+      "title": "Motifs"
+    },
+    {
+      "id": "optimization",
+      "title": "Optimization"
+    },
+    {
+      "id": "partitioning",
+      "title": "Partitioning"
+    },
+    {
+      "id": "pattern_mining",
+      "title": "Pattern Mining"
+    },
+    {
+      "id": "query",
+      "title": "Query"
+    },
+    {
+      "id": "sampling",
+      "title": "Sampling"
+    },
+    {
+      "id": "similarity",
+      "title": "Similarity"
+    },
+    {
+      "id": "spectral",
+      "title": "Spectral"
+    },
+    {
+      "id": "statistics",
+      "title": "Statistics"
+    },
+    {
+      "id": "subgraphs",
+      "title": "Subgraphs"
+    },
+    {
+      "id": "temporal",
+      "title": "Temporal"
+    },
+    {
+      "id": "topology",
+      "title": "Topology"
+    },
+    {
+      "id": "traversal",
+      "title": "Traversal"
+    },
+    {
+      "id": "trees",
+      "title": "Trees"
+    }
+  ],
+  "problems": [
+    {
+      "id": "maximal_clique_enumeration",
+      "name": "Maximal Clique Enumeration",
+      "family": "cliques",
+      "contract": "problems/01_maximal_clique_enumeration/problem.json"
+    },
+    {
+      "id": "maximum_clique",
+      "name": "Maximum Clique",
+      "family": "cliques",
+      "contract": "problems/02_maximum_clique/problem.json"
+    },
+    {
+      "id": "k_clique_counting_enumeration",
+      "name": "k-Clique Counting and Enumeration",
+      "family": "cliques",
+      "contract": "problems/03_k_clique_counting_enumeration/problem.json"
+    },
+    {
+      "id": "quasi_clique_mining",
+      "name": "Quasi-Clique Mining",
+      "family": "dense_structures",
+      "contract": "problems/04_quasi_clique_mining/problem.json"
+    },
+    {
+      "id": "densest_subgraph",
+      "name": "Densest Subgraph",
+      "family": "dense_structures",
+      "contract": "problems/05_densest_subgraph/problem.json"
+    },
+    {
+      "id": "densest_k_subgraph",
+      "name": "Densest k-Subgraph",
+      "family": "dense_structures",
+      "contract": "problems/06_densest_k_subgraph/problem.json"
+    },
+    {
+      "id": "k_core_decomposition",
+      "name": "k-Core Decomposition",
+      "family": "cores",
+      "contract": "problems/07_k_core_decomposition/problem.json"
+    },
+    {
+      "id": "k_truss_decomposition",
+      "name": "k-Truss Decomposition",
+      "family": "cores",
+      "contract": "problems/08_k_truss_decomposition/problem.json"
+    },
+    {
+      "id": "maximal_biclique_enumeration",
+      "name": "Maximal Biclique Enumeration",
+      "family": "dense_structures",
+      "contract": "problems/09_maximal_biclique_enumeration/problem.json"
+    },
+    {
+      "id": "triangle_counting_listing",
+      "name": "Triangle Counting and Listing",
+      "family": "motifs",
+      "contract": "problems/10_triangle_counting_listing/problem.json"
+    },
+    {
+      "id": "graph_motif_counting",
+      "name": "Graph Motif Counting",
+      "family": "pattern_mining",
+      "contract": "problems/11_graph_motif_counting/problem.json"
+    },
+    {
+      "id": "graphlet_counting",
+      "name": "Graphlet Counting",
+      "family": "pattern_mining",
+      "contract": "problems/12_graphlet_counting/problem.json"
+    },
+    {
+      "id": "subgraph_isomorphism",
+      "name": "Subgraph Isomorphism and Pattern Matching",
+      "family": "pattern_mining",
+      "contract": "problems/13_subgraph_isomorphism/problem.json"
+    },
+    {
+      "id": "frequent_subgraph_mining",
+      "name": "Frequent Subgraph Mining",
+      "family": "pattern_mining",
+      "contract": "problems/14_frequent_subgraph_mining/problem.json"
+    },
+    {
+      "id": "temporal_motif_mining",
+      "name": "Temporal Motif Mining",
+      "family": "pattern_mining",
+      "contract": "problems/15_temporal_motif_mining/problem.json"
+    },
+    {
+      "id": "community_detection",
+      "name": "Disjoint Community Detection",
+      "family": "communities",
+      "contract": "problems/16_community_detection/problem.json"
+    },
+    {
+      "id": "overlapping_community_detection",
+      "name": "Overlapping Community Detection by k-Clique Percolation",
+      "family": "community",
+      "contract": "problems/17_overlapping_community_detection/problem.json"
+    },
+    {
+      "id": "centrality_influential_node_mining",
+      "name": "Centrality and Influential-Node Mining",
+      "family": "centrality",
+      "contract": "problems/18_centrality_influential_node_mining/problem.json"
+    },
+    {
+      "id": "link_prediction",
+      "name": "Link Prediction",
+      "family": "similarity",
+      "contract": "problems/19_link_prediction/problem.json"
+    },
+    {
+      "id": "graph_anomaly_detection",
+      "name": "Graph Anomaly Detection",
+      "family": "statistics",
+      "contract": "problems/20_graph_anomaly_detection/problem.json"
+    },
+    {
+      "id": "personalized_pagerank_rwr",
+      "name": "Personalized PageRank and Random Walk with Restart",
+      "family": "centrality",
+      "contract": "problems/21_personalized_pagerank_rwr/problem.json"
+    },
+    {
+      "id": "max_flow_min_cut",
+      "name": "Maximum Flow and Minimum s-t Cut",
+      "family": "flow",
+      "contract": "problems/22_max_flow_min_cut/problem.json"
+    },
+    {
+      "id": "butterfly_counting_bipartite",
+      "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+      "family": "pattern_mining",
+      "contract": "problems/23_butterfly_counting_bipartite/problem.json"
+    },
+    {
+      "id": "graph_edit_distance_mcs",
+      "name": "Graph Edit Distance and Maximum Common Subgraph",
+      "family": "comparison",
+      "contract": "problems/24_graph_edit_distance_mcs/problem.json"
+    },
+    {
+      "id": "network_alignment",
+      "name": "Pairwise Network Alignment",
+      "family": "comparison",
+      "contract": "problems/25_network_alignment/problem.json"
+    },
+    {
+      "id": "hop_constrained_cycle_path_enumeration",
+      "name": "Hop-Constrained Simple Path and Cycle Enumeration",
+      "family": "traversal",
+      "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json"
+    },
+    {
+      "id": "group_steiner_tree",
+      "name": "Group Steiner Tree",
+      "family": "optimization",
+      "contract": "problems/27_group_steiner_tree/problem.json"
+    },
+    {
+      "id": "influence_maximization",
+      "name": "Influence Maximization under Diffusion Models",
+      "family": "centrality",
+      "contract": "problems/28_influence_maximization/problem.json"
+    },
+    {
+      "id": "simrank_vertex_similarity",
+      "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+      "family": "similarity",
+      "contract": "problems/29_simrank_vertex_similarity/problem.json"
+    },
+    {
+      "id": "balanced_graph_partitioning",
+      "name": "Balanced k-Way Graph Partitioning",
+      "family": "partitioning",
+      "contract": "problems/30_balanced_graph_partitioning/problem.json"
+    },
+    {
+      "id": "bipartite_matching_assignment",
+      "name": "Bipartite Matching and Linear Assignment",
+      "family": "matching",
+      "contract": "problems/31_bipartite_matching_assignment/problem.json"
+    },
+    {
+      "id": "signed_network_structural_balance",
+      "name": "Signed Network Structural Balance and Frustration Minimization",
+      "family": "partitioning",
+      "contract": "problems/32_signed_network_structural_balance/problem.json"
+    },
+    {
+      "id": "transitive_closure_reachability",
+      "name": "Transitive Closure and Reachability Indexing",
+      "family": "traversal",
+      "contract": "problems/33_transitive_closure_reachability/problem.json"
+    },
+    {
+      "id": "entity_resolution_blocking",
+      "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
+      "family": "data_preparation",
+      "contract": "problems/34_entity_resolution_blocking/problem.json"
+    },
+    {
+      "id": "connected_components",
+      "name": "Connected Components (Weakly and Strongly Connected)",
+      "family": "connectivity",
+      "contract": "problems/35_connected_components/problem.json"
+    },
+    {
+      "id": "graph_layout_force_directed",
+      "name": "Force-Directed Graph Layout",
+      "family": "layout",
+      "contract": "problems/36_graph_layout_force_directed/problem.json"
+    },
+    {
+      "id": "null_model_significance_testing",
+      "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+      "family": "statistics",
+      "contract": "problems/37_null_model_significance_testing/problem.json"
+    },
+    {
+      "id": "breadth_first_search",
+      "name": "Breadth-First Search and Unweighted Shortest Paths",
+      "family": "traversal",
+      "contract": "problems/38_breadth_first_search/problem.json"
+    },
+    {
+      "id": "single_source_shortest_paths",
+      "name": "Weighted Single-Source Shortest Paths",
+      "family": "traversal",
+      "contract": "problems/39_single_source_shortest_paths/problem.json"
+    },
+    {
+      "id": "many_source_shortest_paths",
+      "name": "Many-Source and All-Pairs Shortest Distances",
+      "family": "traversal",
+      "contract": "problems/40_many_source_shortest_paths/problem.json"
+    },
+    {
+      "id": "spanning_tree_forest",
+      "name": "Minimum and Maximum Spanning Trees and Forests",
+      "family": "trees",
+      "contract": "problems/41_spanning_tree_forest/problem.json"
+    },
+    {
+      "id": "maximal_independent_set",
+      "name": "Maximal Independent Set",
+      "family": "independent_sets",
+      "contract": "problems/42_maximal_independent_set/problem.json"
+    },
+    {
+      "id": "vertex_coloring",
+      "name": "Vertex Coloring",
+      "family": "coloring",
+      "contract": "problems/43_vertex_coloring/problem.json"
+    },
+    {
+      "id": "general_graph_weighted_matching",
+      "name": "General-Graph Weighted Matching",
+      "family": "matching",
+      "contract": "problems/44_general_graph_weighted_matching/problem.json"
+    },
+    {
+      "id": "topological_sort",
+      "name": "Topological Sorting and DAG Levels",
+      "family": "traversal",
+      "contract": "problems/45_topological_sort/problem.json"
+    },
+    {
+      "id": "random_walk_generation",
+      "name": "Graph Random-Walk Generation",
+      "family": "sampling",
+      "contract": "problems/46_random_walk_generation/problem.json"
+    },
+    {
+      "id": "neighborhood_sampling",
+      "name": "Neighborhood Sampling",
+      "family": "sampling",
+      "contract": "problems/47_neighborhood_sampling/problem.json"
+    },
+    {
+      "id": "induced_subgraph_ego_extraction",
+      "name": "Induced Subgraph and Ego-Network Extraction",
+      "family": "subgraphs",
+      "contract": "problems/48_induced_subgraph_ego_extraction/problem.json"
+    },
+    {
+      "id": "seeded_local_community_detection",
+      "name": "Seeded Local Community Detection",
+      "family": "communities",
+      "contract": "problems/49_seeded_local_community_detection/problem.json"
+    },
+    {
+      "id": "node_embedding",
+      "name": "Node Embedding",
+      "family": "embeddings",
+      "contract": "problems/50_node_embedding/problem.json"
+    },
+    {
+      "id": "knowledge_graph_embedding",
+      "name": "Knowledge-Graph Embedding",
+      "family": "embeddings",
+      "contract": "problems/51_knowledge_graph_embedding/problem.json"
+    },
+    {
+      "id": "node_classification_regression",
+      "name": "Node Classification and Regression",
+      "family": "learning",
+      "contract": "problems/52_node_classification_regression/problem.json"
+    },
+    {
+      "id": "graph_classification_regression",
+      "name": "Graph Classification and Regression",
+      "family": "learning",
+      "contract": "problems/53_graph_classification_regression/problem.json"
+    },
+    {
+      "id": "hypergraph_partitioning",
+      "name": "Balanced Hypergraph Partitioning",
+      "family": "partitioning",
+      "contract": "problems/54_hypergraph_partitioning/problem.json"
+    },
+    {
+      "id": "spectral_graph_sparsification",
+      "name": "Spectral Graph Sparsification",
+      "family": "construction",
+      "contract": "problems/55_spectral_graph_sparsification/problem.json"
+    },
+    {
+      "id": "biconnected_components",
+      "name": "Biconnected Components, Articulation Points and Bridges",
+      "family": "connectivity",
+      "contract": "problems/56_biconnected_components/problem.json"
+    },
+    {
+      "id": "temporal_fastest_paths",
+      "name": "Temporal Fastest and Earliest-Arrival Paths",
+      "family": "temporal",
+      "contract": "problems/57_temporal_fastest_paths/problem.json"
+    },
+    {
+      "id": "top_k_critical_paths_dag",
+      "name": "Top-k Critical Paths in DAGs",
+      "family": "traversal",
+      "contract": "problems/58_top_k_critical_paths_dag/problem.json"
+    },
+    {
+      "id": "graph_signal_denoising",
+      "name": "Graph Signal Denoising and Trend Filtering",
+      "family": "spectral",
+      "contract": "problems/59_graph_signal_denoising/problem.json"
+    },
+    {
+      "id": "graph_based_geolocation",
+      "name": "Graph-Based Geolocation",
+      "family": "learning",
+      "contract": "problems/60_graph_based_geolocation/problem.json"
+    },
+    {
+      "id": "widest_paths",
+      "name": "Single-Source Widest Paths",
+      "family": "traversal",
+      "contract": "problems/61_widest_paths/problem.json"
+    },
+    {
+      "id": "graph_coarsening",
+      "name": "Graph Coarsening and Quotient Construction",
+      "family": "construction",
+      "contract": "problems/62_graph_coarsening/problem.json"
+    },
+    {
+      "id": "graph_laplacian_eigenpairs",
+      "name": "Graph Laplacian Eigenpairs",
+      "family": "spectral",
+      "contract": "problems/63_graph_laplacian_eigenpairs/problem.json"
+    },
+    {
+      "id": "knn_graph_construction",
+      "name": "k-Nearest-Neighbor Graph Construction",
+      "family": "construction",
+      "contract": "problems/64_knn_graph_construction/problem.json"
+    },
+    {
+      "id": "hypergraph_node_learning",
+      "name": "Hypergraph Node Classification and Regression",
+      "family": "learning",
+      "contract": "problems/65_hypergraph_node_learning/problem.json"
+    },
+    {
+      "id": "maximum_independent_set",
+      "name": "Maximum Independent Set",
+      "family": "independent_sets",
+      "contract": "problems/66_maximum_independent_set/problem.json"
+    },
+    {
+      "id": "persistent_homology",
+      "name": "Flag-Complex Persistent Homology",
+      "family": "topology",
+      "contract": "problems/67_persistent_homology/problem.json"
+    },
+    {
+      "id": "single_graph_frequent_subgraph_mining",
+      "name": "Frequent Subgraphs in One Labeled Graph",
+      "family": "pattern_mining",
+      "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json"
+    },
+    {
+      "id": "minimum_vertex_cover",
+      "name": "Minimum Vertex Cover",
+      "family": "independent_sets",
+      "contract": "problems/69_minimum_vertex_cover/problem.json"
+    },
+    {
+      "id": "graph_condensation",
+      "name": "Learned Graph Condensation",
+      "family": "learning",
+      "contract": "problems/70_graph_condensation/problem.json"
+    },
+    {
+      "id": "graph_record_queries",
+      "name": "Canonical graph record queries",
+      "family": "query",
+      "contract": null
+    }
+  ]
+}

@@ -21,7 +21,9 @@ template<typename BitMat>
 size_t count_triangles_on_tensors(const BitMat& A_bmp, const BitMat& B_bmp, const BitMat& M_bmp)
 {
     if (A_bmp.num_entries == 0 || B_bmp.num_entries == 0) {
+#ifndef GRAPHMINE_LIBRARY
         printf("Empty matrix multiplication input. Exiting...\n");
+#endif
         return 0;
     }
 
@@ -71,7 +73,9 @@ size_t count_triangles_on_tensors(const BitMat& A_bmp, const BitMat& B_bmp, cons
         throw std::runtime_error("total_mm_count exceeds maximum value representable by PosType");
     }
     if (total_mm_count == 0) {
+#ifndef GRAPHMINE_LIBRARY
         printf("Empty matrix multiplication result. Exiting...\n");
+#endif
         return 0;
     }
     // std::cout << "total_mm_count " << total_mm_count << std::endl;
@@ -308,7 +312,9 @@ size_t count_triangles_on_tensors(const BitMat& A_bmp, const BitMat& B_bmp, cons
                                         raw_C_sums);
 
     my_timer.stop();
+#ifndef GRAPHMINE_LIBRARY
     printf("[Kernel] time: %lf ms\n", my_timer.elapsed());
+#endif
 
     CHECK_CUDA(cudaPeekAtLastError());
     CHECK_CUDA(cudaDeviceSynchronize());

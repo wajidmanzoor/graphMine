@@ -713,6 +713,7 @@ if(GRAPHMINE_HAS_TOT)
   target_compile_options(graphmine_backend_tot PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda;--expt-relaxed-constexpr>
   )
+  target_compile_definitions(graphmine_backend_tot PRIVATE GRAPHMINE_LIBRARY)
   target_compile_features(graphmine_backend_tot PUBLIC cxx_std_17)
   set_target_properties(graphmine_backend_tot PROPERTIES
     # The pinned ToT headers use std::string::ends_with internally. This is
@@ -2191,3 +2192,9 @@ install(FILES
 install(DIRECTORY examples/data/
   DESTINATION ${CMAKE_INSTALL_DATADIR}/graphmine/examples
 )
+
+option(GRAPHMINE_BUILD_NATIVE_RUNTIME
+       "Build the shared C++/CUDA runtime, C ABI and standalone CLI" ON)
+if(GRAPHMINE_BUILD_NATIVE_RUNTIME)
+  add_subdirectory(runtime)
+endif()

@@ -1,0 +1,2037 @@
+{
+  "schema_version": 1,
+  "scope": "Native runtime migration checkpoint; not a complete architecture migration or application gate",
+  "native_formal_problem_count": 2,
+  "formal_problem_count": 70,
+  "cpu_runtime_operations": [
+    "breadth-first-search",
+    "triangle-counting"
+  ],
+  "standalone_core_requires_python": false,
+  "application_uses_native_runtime": false,
+  "remaining_native_profile_migration_required": true,
+  "builds": {
+    "cpu": {
+      "build_directory": "/tmp/graphmine-native-cpu",
+      "catalog": {
+        "schema_version": 1,
+        "scope": "Authoritative native and wrapper problem/family taxonomy; membership is not execution or validation evidence.",
+        "families": [
+          {
+            "id": "centrality",
+            "title": "Centrality",
+            "operations": []
+          },
+          {
+            "id": "cliques",
+            "title": "Cliques",
+            "operations": []
+          },
+          {
+            "id": "coloring",
+            "title": "Coloring",
+            "operations": []
+          },
+          {
+            "id": "communities",
+            "title": "Communities",
+            "operations": []
+          },
+          {
+            "id": "community",
+            "title": "Community",
+            "operations": []
+          },
+          {
+            "id": "comparison",
+            "title": "Comparison",
+            "operations": []
+          },
+          {
+            "id": "connectivity",
+            "title": "Connectivity",
+            "operations": []
+          },
+          {
+            "id": "construction",
+            "title": "Construction",
+            "operations": []
+          },
+          {
+            "id": "cores",
+            "title": "Cores",
+            "operations": []
+          },
+          {
+            "id": "data_preparation",
+            "title": "Data Preparation",
+            "operations": []
+          },
+          {
+            "id": "dense_structures",
+            "title": "Dense Structures",
+            "operations": []
+          },
+          {
+            "id": "embeddings",
+            "title": "Embeddings",
+            "operations": []
+          },
+          {
+            "id": "flow",
+            "title": "Flow",
+            "operations": []
+          },
+          {
+            "id": "independent_sets",
+            "title": "Independent Sets",
+            "operations": []
+          },
+          {
+            "id": "layout",
+            "title": "Layout",
+            "operations": []
+          },
+          {
+            "id": "learning",
+            "title": "Learning",
+            "operations": []
+          },
+          {
+            "id": "matching",
+            "title": "Matching",
+            "operations": []
+          },
+          {
+            "id": "motifs",
+            "title": "Motifs",
+            "operations": [
+              "triangle-counting"
+            ]
+          },
+          {
+            "id": "optimization",
+            "title": "Optimization",
+            "operations": []
+          },
+          {
+            "id": "partitioning",
+            "title": "Partitioning",
+            "operations": []
+          },
+          {
+            "id": "pattern_mining",
+            "title": "Pattern Mining",
+            "operations": []
+          },
+          {
+            "id": "query",
+            "title": "Query",
+            "operations": []
+          },
+          {
+            "id": "sampling",
+            "title": "Sampling",
+            "operations": []
+          },
+          {
+            "id": "similarity",
+            "title": "Similarity",
+            "operations": []
+          },
+          {
+            "id": "spectral",
+            "title": "Spectral",
+            "operations": []
+          },
+          {
+            "id": "statistics",
+            "title": "Statistics",
+            "operations": []
+          },
+          {
+            "id": "subgraphs",
+            "title": "Subgraphs",
+            "operations": []
+          },
+          {
+            "id": "temporal",
+            "title": "Temporal",
+            "operations": []
+          },
+          {
+            "id": "topology",
+            "title": "Topology",
+            "operations": []
+          },
+          {
+            "id": "traversal",
+            "title": "Traversal",
+            "operations": [
+              "breadth-first-search"
+            ]
+          },
+          {
+            "id": "trees",
+            "title": "Trees",
+            "operations": []
+          }
+        ],
+        "problems": [
+          {
+            "id": "maximal_clique_enumeration",
+            "name": "Maximal Clique Enumeration",
+            "family": "cliques",
+            "contract": "problems/01_maximal_clique_enumeration/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "maximum_clique",
+            "name": "Maximum Clique",
+            "family": "cliques",
+            "contract": "problems/02_maximum_clique/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "k_clique_counting_enumeration",
+            "name": "k-Clique Counting and Enumeration",
+            "family": "cliques",
+            "contract": "problems/03_k_clique_counting_enumeration/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "quasi_clique_mining",
+            "name": "Quasi-Clique Mining",
+            "family": "dense_structures",
+            "contract": "problems/04_quasi_clique_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "densest_subgraph",
+            "name": "Densest Subgraph",
+            "family": "dense_structures",
+            "contract": "problems/05_densest_subgraph/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "densest_k_subgraph",
+            "name": "Densest k-Subgraph",
+            "family": "dense_structures",
+            "contract": "problems/06_densest_k_subgraph/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "k_core_decomposition",
+            "name": "k-Core Decomposition",
+            "family": "cores",
+            "contract": "problems/07_k_core_decomposition/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "k_truss_decomposition",
+            "name": "k-Truss Decomposition",
+            "family": "cores",
+            "contract": "problems/08_k_truss_decomposition/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "maximal_biclique_enumeration",
+            "name": "Maximal Biclique Enumeration",
+            "family": "dense_structures",
+            "contract": "problems/09_maximal_biclique_enumeration/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "triangle_counting_listing",
+            "name": "Triangle Counting and Listing",
+            "family": "motifs",
+            "contract": "problems/10_triangle_counting_listing/problem.json",
+            "operations": [
+              "triangle-counting"
+            ],
+            "runtime_integration": "implemented"
+          },
+          {
+            "id": "graph_motif_counting",
+            "name": "Graph Motif Counting",
+            "family": "pattern_mining",
+            "contract": "problems/11_graph_motif_counting/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graphlet_counting",
+            "name": "Graphlet Counting",
+            "family": "pattern_mining",
+            "contract": "problems/12_graphlet_counting/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "subgraph_isomorphism",
+            "name": "Subgraph Isomorphism and Pattern Matching",
+            "family": "pattern_mining",
+            "contract": "problems/13_subgraph_isomorphism/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "frequent_subgraph_mining",
+            "name": "Frequent Subgraph Mining",
+            "family": "pattern_mining",
+            "contract": "problems/14_frequent_subgraph_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "temporal_motif_mining",
+            "name": "Temporal Motif Mining",
+            "family": "pattern_mining",
+            "contract": "problems/15_temporal_motif_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "community_detection",
+            "name": "Disjoint Community Detection",
+            "family": "communities",
+            "contract": "problems/16_community_detection/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "overlapping_community_detection",
+            "name": "Overlapping Community Detection by k-Clique Percolation",
+            "family": "community",
+            "contract": "problems/17_overlapping_community_detection/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "centrality_influential_node_mining",
+            "name": "Centrality and Influential-Node Mining",
+            "family": "centrality",
+            "contract": "problems/18_centrality_influential_node_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "link_prediction",
+            "name": "Link Prediction",
+            "family": "similarity",
+            "contract": "problems/19_link_prediction/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_anomaly_detection",
+            "name": "Graph Anomaly Detection",
+            "family": "statistics",
+            "contract": "problems/20_graph_anomaly_detection/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "personalized_pagerank_rwr",
+            "name": "Personalized PageRank and Random Walk with Restart",
+            "family": "centrality",
+            "contract": "problems/21_personalized_pagerank_rwr/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "max_flow_min_cut",
+            "name": "Maximum Flow and Minimum s-t Cut",
+            "family": "flow",
+            "contract": "problems/22_max_flow_min_cut/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "butterfly_counting_bipartite",
+            "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+            "family": "pattern_mining",
+            "contract": "problems/23_butterfly_counting_bipartite/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_edit_distance_mcs",
+            "name": "Graph Edit Distance and Maximum Common Subgraph",
+            "family": "comparison",
+            "contract": "problems/24_graph_edit_distance_mcs/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "network_alignment",
+            "name": "Pairwise Network Alignment",
+            "family": "comparison",
+            "contract": "problems/25_network_alignment/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "hop_constrained_cycle_path_enumeration",
+            "name": "Hop-Constrained Simple Path and Cycle Enumeration",
+            "family": "traversal",
+            "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "group_steiner_tree",
+            "name": "Group Steiner Tree",
+            "family": "optimization",
+            "contract": "problems/27_group_steiner_tree/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "influence_maximization",
+            "name": "Influence Maximization under Diffusion Models",
+            "family": "centrality",
+            "contract": "problems/28_influence_maximization/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "simrank_vertex_similarity",
+            "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+            "family": "similarity",
+            "contract": "problems/29_simrank_vertex_similarity/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "balanced_graph_partitioning",
+            "name": "Balanced k-Way Graph Partitioning",
+            "family": "partitioning",
+            "contract": "problems/30_balanced_graph_partitioning/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "bipartite_matching_assignment",
+            "name": "Bipartite Matching and Linear Assignment",
+            "family": "matching",
+            "contract": "problems/31_bipartite_matching_assignment/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "signed_network_structural_balance",
+            "name": "Signed Network Structural Balance and Frustration Minimization",
+            "family": "partitioning",
+            "contract": "problems/32_signed_network_structural_balance/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "transitive_closure_reachability",
+            "name": "Transitive Closure and Reachability Indexing",
+            "family": "traversal",
+            "contract": "problems/33_transitive_closure_reachability/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "entity_resolution_blocking",
+            "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
+            "family": "data_preparation",
+            "contract": "problems/34_entity_resolution_blocking/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "connected_components",
+            "name": "Connected Components (Weakly and Strongly Connected)",
+            "family": "connectivity",
+            "contract": "problems/35_connected_components/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_layout_force_directed",
+            "name": "Force-Directed Graph Layout",
+            "family": "layout",
+            "contract": "problems/36_graph_layout_force_directed/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "null_model_significance_testing",
+            "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+            "family": "statistics",
+            "contract": "problems/37_null_model_significance_testing/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "breadth_first_search",
+            "name": "Breadth-First Search and Unweighted Shortest Paths",
+            "family": "traversal",
+            "contract": "problems/38_breadth_first_search/problem.json",
+            "operations": [
+              "breadth-first-search"
+            ],
+            "runtime_integration": "implemented"
+          },
+          {
+            "id": "single_source_shortest_paths",
+            "name": "Weighted Single-Source Shortest Paths",
+            "family": "traversal",
+            "contract": "problems/39_single_source_shortest_paths/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "many_source_shortest_paths",
+            "name": "Many-Source and All-Pairs Shortest Distances",
+            "family": "traversal",
+            "contract": "problems/40_many_source_shortest_paths/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "spanning_tree_forest",
+            "name": "Minimum and Maximum Spanning Trees and Forests",
+            "family": "trees",
+            "contract": "problems/41_spanning_tree_forest/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "maximal_independent_set",
+            "name": "Maximal Independent Set",
+            "family": "independent_sets",
+            "contract": "problems/42_maximal_independent_set/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "vertex_coloring",
+            "name": "Vertex Coloring",
+            "family": "coloring",
+            "contract": "problems/43_vertex_coloring/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "general_graph_weighted_matching",
+            "name": "General-Graph Weighted Matching",
+            "family": "matching",
+            "contract": "problems/44_general_graph_weighted_matching/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "topological_sort",
+            "name": "Topological Sorting and DAG Levels",
+            "family": "traversal",
+            "contract": "problems/45_topological_sort/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "random_walk_generation",
+            "name": "Graph Random-Walk Generation",
+            "family": "sampling",
+            "contract": "problems/46_random_walk_generation/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "neighborhood_sampling",
+            "name": "Neighborhood Sampling",
+            "family": "sampling",
+            "contract": "problems/47_neighborhood_sampling/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "induced_subgraph_ego_extraction",
+            "name": "Induced Subgraph and Ego-Network Extraction",
+            "family": "subgraphs",
+            "contract": "problems/48_induced_subgraph_ego_extraction/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "seeded_local_community_detection",
+            "name": "Seeded Local Community Detection",
+            "family": "communities",
+            "contract": "problems/49_seeded_local_community_detection/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "node_embedding",
+            "name": "Node Embedding",
+            "family": "embeddings",
+            "contract": "problems/50_node_embedding/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "knowledge_graph_embedding",
+            "name": "Knowledge-Graph Embedding",
+            "family": "embeddings",
+            "contract": "problems/51_knowledge_graph_embedding/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "node_classification_regression",
+            "name": "Node Classification and Regression",
+            "family": "learning",
+            "contract": "problems/52_node_classification_regression/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_classification_regression",
+            "name": "Graph Classification and Regression",
+            "family": "learning",
+            "contract": "problems/53_graph_classification_regression/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "hypergraph_partitioning",
+            "name": "Balanced Hypergraph Partitioning",
+            "family": "partitioning",
+            "contract": "problems/54_hypergraph_partitioning/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "spectral_graph_sparsification",
+            "name": "Spectral Graph Sparsification",
+            "family": "construction",
+            "contract": "problems/55_spectral_graph_sparsification/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "biconnected_components",
+            "name": "Biconnected Components, Articulation Points and Bridges",
+            "family": "connectivity",
+            "contract": "problems/56_biconnected_components/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "temporal_fastest_paths",
+            "name": "Temporal Fastest and Earliest-Arrival Paths",
+            "family": "temporal",
+            "contract": "problems/57_temporal_fastest_paths/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "top_k_critical_paths_dag",
+            "name": "Top-k Critical Paths in DAGs",
+            "family": "traversal",
+            "contract": "problems/58_top_k_critical_paths_dag/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_signal_denoising",
+            "name": "Graph Signal Denoising and Trend Filtering",
+            "family": "spectral",
+            "contract": "problems/59_graph_signal_denoising/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_based_geolocation",
+            "name": "Graph-Based Geolocation",
+            "family": "learning",
+            "contract": "problems/60_graph_based_geolocation/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "widest_paths",
+            "name": "Single-Source Widest Paths",
+            "family": "traversal",
+            "contract": "problems/61_widest_paths/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_coarsening",
+            "name": "Graph Coarsening and Quotient Construction",
+            "family": "construction",
+            "contract": "problems/62_graph_coarsening/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_laplacian_eigenpairs",
+            "name": "Graph Laplacian Eigenpairs",
+            "family": "spectral",
+            "contract": "problems/63_graph_laplacian_eigenpairs/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "knn_graph_construction",
+            "name": "k-Nearest-Neighbor Graph Construction",
+            "family": "construction",
+            "contract": "problems/64_knn_graph_construction/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "hypergraph_node_learning",
+            "name": "Hypergraph Node Classification and Regression",
+            "family": "learning",
+            "contract": "problems/65_hypergraph_node_learning/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "maximum_independent_set",
+            "name": "Maximum Independent Set",
+            "family": "independent_sets",
+            "contract": "problems/66_maximum_independent_set/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "persistent_homology",
+            "name": "Flag-Complex Persistent Homology",
+            "family": "topology",
+            "contract": "problems/67_persistent_homology/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "single_graph_frequent_subgraph_mining",
+            "name": "Frequent Subgraphs in One Labeled Graph",
+            "family": "pattern_mining",
+            "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "minimum_vertex_cover",
+            "name": "Minimum Vertex Cover",
+            "family": "independent_sets",
+            "contract": "problems/69_minimum_vertex_cover/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_condensation",
+            "name": "Learned Graph Condensation",
+            "family": "learning",
+            "contract": "problems/70_graph_condensation/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_record_queries",
+            "name": "Canonical graph record queries",
+            "family": "query",
+            "contract": null,
+            "operations": [],
+            "runtime_integration": "pending"
+          }
+        ],
+        "operations": [
+          {
+            "id": "breadth-first-search",
+            "problem_id": "breadth_first_search",
+            "family": "traversal",
+            "title": "Connections within a number of steps",
+            "description": "Minimum hop distances with explicit independent or nearest-source searches. Preserve direction; discard loops and collapse duplicate arcs; weights are ignored. IDs are signed int64 or strings.",
+            "input_kind": "graph",
+            "parameters": {
+              "sources": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "source_mode": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "independent",
+                "choices": [
+                  "independent",
+                  "nearest_source"
+                ]
+              },
+              "depth_limit": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null,
+                "minimum": 0,
+                "maximum": 4294967295
+              },
+              "return_predecessors": {
+                "kind": "boolean",
+                "required": false,
+                "nullable": false,
+                "default": true
+              }
+            },
+            "output_ports": {
+              "vertices": {
+                "type": "vertex_set",
+                "availability": "runtime_checked"
+              },
+              "distances": {
+                "type": "table",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": false
+              }
+            ],
+            "quality": "exact",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          },
+          {
+            "id": "triangle-counting",
+            "problem_id": "triangle_counting_listing",
+            "family": "motifs",
+            "title": "Count or list triangles",
+            "description": "Count three-vertex cliques of an undirected graph. Discard loops and collapse duplicate edges; weights are ignored. GPU enumeration uses native CPU materialization with count verification.",
+            "input_kind": "graph",
+            "parameters": {
+              "mode": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "count",
+                "choices": [
+                  "count",
+                  "enumerate"
+                ]
+              },
+              "result_limit": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null,
+                "minimum": 1
+              }
+            },
+            "output_ports": {
+              "count": {
+                "type": "scalar",
+                "availability": "runtime_checked"
+              },
+              "groups": {
+                "type": "vertex_groups",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "tot",
+                "device": "gpu",
+                "compiled": false
+              },
+              {
+                "id": "wetric",
+                "device": "gpu",
+                "compiled": false
+              }
+            ],
+            "quality": "exact",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          }
+        ],
+        "abi_version": 1,
+        "implementation_sha256": "4425c0ac5185256b5fb6b6c38d11cc6214b723d84b6e205831b94bf7f3db5c73",
+        "python_runtime_required": false,
+        "file_readers": [
+          {
+            "id": "libcudf-csv",
+            "compiled": false,
+            "device": "gpu"
+          }
+        ]
+      },
+      "source_files": {
+        "library/include/graphmine/backend.hpp": "17b312f520a4248d54a3d8538ea682c645d31b0e5457eab13df9149266a71f0f",
+        "library/include/graphmine/execution.hpp": "1dc47c6bc045d329664064e9765cc4251c86780c10fb9110811411135dbbeca7",
+        "library/include/graphmine/graph.hpp": "890475c335325be9394de4e939d0c110f569cee1a1d49c36681e539c4d6ec966",
+        "library/include/graphmine/runtime.hpp": "63febdb063f65c6479b5e86ab040c538e8e85212252a6a1931cb66960fb19d30",
+        "library/include/graphmine/runtime_c.h": "228af698dd32fe186ecb8a12570b4f69bc494f73d6976cb4ef2c616e4b27acd7",
+        "library/include/graphmine/status.hpp": "d6466420780b543df013ba6eb1a4dfddf9980626ed552e2a18f37a627577233d",
+        "library/manifests/problem_families.json": "7c5c7945fd3fb3089b8e5f9e1bc0c0e7a52d564065f3a9361a1489ca2372b9d9",
+        "library/src/core/graph.cpp": "adda75f2932369d622bd010a80c95f405242f26390f19054f71ac6fae658f8bf",
+        "library/src/core/json.cpp": "154e142cf081b143e69a2f8afa9362cf52dc74597ecc9f4ff5c0f765af4d4459",
+        "library/runtime/CMakeLists.txt": "e0114eb1044e655ce79258b58758ee1972d2a04606818aced6d6c4c36aaad00e",
+        "library/runtime/c_api.cpp": "ee34caa2f97ddec7423578d9e39a863cb1ebee9cd5a938a8c9da798211959db8",
+        "library/runtime/catalog_data.hpp.in": "ad79634357bd6cf719c495febcaa342a08789ed50d501c9cdfe57c359033ee6c",
+        "library/runtime/cli.cpp": "bc6a15542fd020d2f62fd4aa5b6daee983994b0bb9a4d3feed567aaffcc26514",
+        "library/runtime/cuda_device.cpp": "d19b2a91f1f284324a86be83a1ca4d0241d00be881c2460fccc70884f8ce6a1c",
+        "library/runtime/cugraph.cpp": "5e8117cb4cb4caebd377f282fed64c773d256125f77a800119ef71603fce033e",
+        "library/runtime/device_stub.cpp": "ab753eb75b6156a9854bc0b5d448819d7bd8e78f980979446db4cbbed2d17c71",
+        "library/runtime/families/patterns.cpp": "4a5aff96d263a27cda0e159e34395180c5539ba8ccc12ee3933cac5599e49712",
+        "library/runtime/families/traversal.cpp": "340f4daa73e358cd2b20ff22a307ff509cfd74c7131c32170e80221f4d892ee3",
+        "library/runtime/gpu_stub.cpp": "cc4b7a3af0692ea7ffe36dc14a319d8c26509c08e17b134bdaf9d961822f2d46",
+        "library/runtime/internal.hpp": "d35851784e09a1e0d5597c4b61cb279b82a156804446ec829f35ad636ff3546b",
+        "library/runtime/io/cudf_csv.cpp": "31d8ec480054596ef6c778ea619251849d006eebf6d8a45ee7b29bb38227e5a0",
+        "library/runtime/io_stub.cpp": "199c1f514a463c93615285a797abe8696e29a6d7c4fc0c11936ef0fe1821c2f0",
+        "library/runtime/json_graph.cpp": "ec351b5f76510b09be256dc72b11f0fb5eefd7b8ff5f0f4e3f57561bbff1b009",
+        "library/runtime/registry.cpp": "19c57795ca2b1748ad6be5238d95e4edf720d2ba2958e4740724dc1ea7d36c57",
+        "library/runtime/runtime.cpp": "983d2efdc5075342166ded0ceef95a6ca019f32de07d96d6211e9e2a96477462",
+        "library/runtime/tests/runtime_test.cpp": "30c4c6a83abaf3a46dd2fa27acdff2553d3cd40097bc1f353767600fdca6b201"
+      },
+      "binaries": {
+        "libgraphmine_runtime.so": "5ad98ae4d0f232aa37f03b8fa24357aaace6565fafe019817c38489349817d23",
+        "graphmine-native": "11d2b85a22e8f7ff1df31c709f66129cf8cdffa4314828d1d929daf3081cd45b",
+        "graphmine_runtime_test": "af5322252aebe3a6aff678d4d26f20639cf5bb3ede2d168932aa05a465c4ecfd"
+      },
+      "native_dependencies": [
+        "/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6"
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x000072f5384c4000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x000072f537e00000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000072f537a00000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000072f5383df000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000072f537600000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000072f537d17000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000072f5384c6000)\n"
+    },
+    "gpu": {
+      "build_directory": "/tmp/graphmine-native-staged-build/runtime",
+      "catalog": {
+        "schema_version": 1,
+        "scope": "Authoritative native and wrapper problem/family taxonomy; membership is not execution or validation evidence.",
+        "families": [
+          {
+            "id": "centrality",
+            "title": "Centrality",
+            "operations": []
+          },
+          {
+            "id": "cliques",
+            "title": "Cliques",
+            "operations": []
+          },
+          {
+            "id": "coloring",
+            "title": "Coloring",
+            "operations": []
+          },
+          {
+            "id": "communities",
+            "title": "Communities",
+            "operations": []
+          },
+          {
+            "id": "community",
+            "title": "Community",
+            "operations": []
+          },
+          {
+            "id": "comparison",
+            "title": "Comparison",
+            "operations": []
+          },
+          {
+            "id": "connectivity",
+            "title": "Connectivity",
+            "operations": []
+          },
+          {
+            "id": "construction",
+            "title": "Construction",
+            "operations": []
+          },
+          {
+            "id": "cores",
+            "title": "Cores",
+            "operations": []
+          },
+          {
+            "id": "data_preparation",
+            "title": "Data Preparation",
+            "operations": []
+          },
+          {
+            "id": "dense_structures",
+            "title": "Dense Structures",
+            "operations": []
+          },
+          {
+            "id": "embeddings",
+            "title": "Embeddings",
+            "operations": []
+          },
+          {
+            "id": "flow",
+            "title": "Flow",
+            "operations": []
+          },
+          {
+            "id": "independent_sets",
+            "title": "Independent Sets",
+            "operations": []
+          },
+          {
+            "id": "layout",
+            "title": "Layout",
+            "operations": []
+          },
+          {
+            "id": "learning",
+            "title": "Learning",
+            "operations": []
+          },
+          {
+            "id": "matching",
+            "title": "Matching",
+            "operations": []
+          },
+          {
+            "id": "motifs",
+            "title": "Motifs",
+            "operations": [
+              "triangle-counting"
+            ]
+          },
+          {
+            "id": "optimization",
+            "title": "Optimization",
+            "operations": []
+          },
+          {
+            "id": "partitioning",
+            "title": "Partitioning",
+            "operations": []
+          },
+          {
+            "id": "pattern_mining",
+            "title": "Pattern Mining",
+            "operations": []
+          },
+          {
+            "id": "query",
+            "title": "Query",
+            "operations": []
+          },
+          {
+            "id": "sampling",
+            "title": "Sampling",
+            "operations": []
+          },
+          {
+            "id": "similarity",
+            "title": "Similarity",
+            "operations": []
+          },
+          {
+            "id": "spectral",
+            "title": "Spectral",
+            "operations": []
+          },
+          {
+            "id": "statistics",
+            "title": "Statistics",
+            "operations": []
+          },
+          {
+            "id": "subgraphs",
+            "title": "Subgraphs",
+            "operations": []
+          },
+          {
+            "id": "temporal",
+            "title": "Temporal",
+            "operations": []
+          },
+          {
+            "id": "topology",
+            "title": "Topology",
+            "operations": []
+          },
+          {
+            "id": "traversal",
+            "title": "Traversal",
+            "operations": [
+              "breadth-first-search"
+            ]
+          },
+          {
+            "id": "trees",
+            "title": "Trees",
+            "operations": []
+          }
+        ],
+        "problems": [
+          {
+            "id": "maximal_clique_enumeration",
+            "name": "Maximal Clique Enumeration",
+            "family": "cliques",
+            "contract": "problems/01_maximal_clique_enumeration/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "maximum_clique",
+            "name": "Maximum Clique",
+            "family": "cliques",
+            "contract": "problems/02_maximum_clique/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "k_clique_counting_enumeration",
+            "name": "k-Clique Counting and Enumeration",
+            "family": "cliques",
+            "contract": "problems/03_k_clique_counting_enumeration/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "quasi_clique_mining",
+            "name": "Quasi-Clique Mining",
+            "family": "dense_structures",
+            "contract": "problems/04_quasi_clique_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "densest_subgraph",
+            "name": "Densest Subgraph",
+            "family": "dense_structures",
+            "contract": "problems/05_densest_subgraph/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "densest_k_subgraph",
+            "name": "Densest k-Subgraph",
+            "family": "dense_structures",
+            "contract": "problems/06_densest_k_subgraph/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "k_core_decomposition",
+            "name": "k-Core Decomposition",
+            "family": "cores",
+            "contract": "problems/07_k_core_decomposition/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "k_truss_decomposition",
+            "name": "k-Truss Decomposition",
+            "family": "cores",
+            "contract": "problems/08_k_truss_decomposition/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "maximal_biclique_enumeration",
+            "name": "Maximal Biclique Enumeration",
+            "family": "dense_structures",
+            "contract": "problems/09_maximal_biclique_enumeration/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "triangle_counting_listing",
+            "name": "Triangle Counting and Listing",
+            "family": "motifs",
+            "contract": "problems/10_triangle_counting_listing/problem.json",
+            "operations": [
+              "triangle-counting"
+            ],
+            "runtime_integration": "implemented"
+          },
+          {
+            "id": "graph_motif_counting",
+            "name": "Graph Motif Counting",
+            "family": "pattern_mining",
+            "contract": "problems/11_graph_motif_counting/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graphlet_counting",
+            "name": "Graphlet Counting",
+            "family": "pattern_mining",
+            "contract": "problems/12_graphlet_counting/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "subgraph_isomorphism",
+            "name": "Subgraph Isomorphism and Pattern Matching",
+            "family": "pattern_mining",
+            "contract": "problems/13_subgraph_isomorphism/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "frequent_subgraph_mining",
+            "name": "Frequent Subgraph Mining",
+            "family": "pattern_mining",
+            "contract": "problems/14_frequent_subgraph_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "temporal_motif_mining",
+            "name": "Temporal Motif Mining",
+            "family": "pattern_mining",
+            "contract": "problems/15_temporal_motif_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "community_detection",
+            "name": "Disjoint Community Detection",
+            "family": "communities",
+            "contract": "problems/16_community_detection/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "overlapping_community_detection",
+            "name": "Overlapping Community Detection by k-Clique Percolation",
+            "family": "community",
+            "contract": "problems/17_overlapping_community_detection/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "centrality_influential_node_mining",
+            "name": "Centrality and Influential-Node Mining",
+            "family": "centrality",
+            "contract": "problems/18_centrality_influential_node_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "link_prediction",
+            "name": "Link Prediction",
+            "family": "similarity",
+            "contract": "problems/19_link_prediction/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_anomaly_detection",
+            "name": "Graph Anomaly Detection",
+            "family": "statistics",
+            "contract": "problems/20_graph_anomaly_detection/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "personalized_pagerank_rwr",
+            "name": "Personalized PageRank and Random Walk with Restart",
+            "family": "centrality",
+            "contract": "problems/21_personalized_pagerank_rwr/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "max_flow_min_cut",
+            "name": "Maximum Flow and Minimum s-t Cut",
+            "family": "flow",
+            "contract": "problems/22_max_flow_min_cut/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "butterfly_counting_bipartite",
+            "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+            "family": "pattern_mining",
+            "contract": "problems/23_butterfly_counting_bipartite/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_edit_distance_mcs",
+            "name": "Graph Edit Distance and Maximum Common Subgraph",
+            "family": "comparison",
+            "contract": "problems/24_graph_edit_distance_mcs/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "network_alignment",
+            "name": "Pairwise Network Alignment",
+            "family": "comparison",
+            "contract": "problems/25_network_alignment/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "hop_constrained_cycle_path_enumeration",
+            "name": "Hop-Constrained Simple Path and Cycle Enumeration",
+            "family": "traversal",
+            "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "group_steiner_tree",
+            "name": "Group Steiner Tree",
+            "family": "optimization",
+            "contract": "problems/27_group_steiner_tree/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "influence_maximization",
+            "name": "Influence Maximization under Diffusion Models",
+            "family": "centrality",
+            "contract": "problems/28_influence_maximization/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "simrank_vertex_similarity",
+            "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+            "family": "similarity",
+            "contract": "problems/29_simrank_vertex_similarity/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "balanced_graph_partitioning",
+            "name": "Balanced k-Way Graph Partitioning",
+            "family": "partitioning",
+            "contract": "problems/30_balanced_graph_partitioning/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "bipartite_matching_assignment",
+            "name": "Bipartite Matching and Linear Assignment",
+            "family": "matching",
+            "contract": "problems/31_bipartite_matching_assignment/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "signed_network_structural_balance",
+            "name": "Signed Network Structural Balance and Frustration Minimization",
+            "family": "partitioning",
+            "contract": "problems/32_signed_network_structural_balance/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "transitive_closure_reachability",
+            "name": "Transitive Closure and Reachability Indexing",
+            "family": "traversal",
+            "contract": "problems/33_transitive_closure_reachability/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "entity_resolution_blocking",
+            "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
+            "family": "data_preparation",
+            "contract": "problems/34_entity_resolution_blocking/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "connected_components",
+            "name": "Connected Components (Weakly and Strongly Connected)",
+            "family": "connectivity",
+            "contract": "problems/35_connected_components/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_layout_force_directed",
+            "name": "Force-Directed Graph Layout",
+            "family": "layout",
+            "contract": "problems/36_graph_layout_force_directed/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "null_model_significance_testing",
+            "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+            "family": "statistics",
+            "contract": "problems/37_null_model_significance_testing/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "breadth_first_search",
+            "name": "Breadth-First Search and Unweighted Shortest Paths",
+            "family": "traversal",
+            "contract": "problems/38_breadth_first_search/problem.json",
+            "operations": [
+              "breadth-first-search"
+            ],
+            "runtime_integration": "implemented"
+          },
+          {
+            "id": "single_source_shortest_paths",
+            "name": "Weighted Single-Source Shortest Paths",
+            "family": "traversal",
+            "contract": "problems/39_single_source_shortest_paths/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "many_source_shortest_paths",
+            "name": "Many-Source and All-Pairs Shortest Distances",
+            "family": "traversal",
+            "contract": "problems/40_many_source_shortest_paths/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "spanning_tree_forest",
+            "name": "Minimum and Maximum Spanning Trees and Forests",
+            "family": "trees",
+            "contract": "problems/41_spanning_tree_forest/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "maximal_independent_set",
+            "name": "Maximal Independent Set",
+            "family": "independent_sets",
+            "contract": "problems/42_maximal_independent_set/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "vertex_coloring",
+            "name": "Vertex Coloring",
+            "family": "coloring",
+            "contract": "problems/43_vertex_coloring/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "general_graph_weighted_matching",
+            "name": "General-Graph Weighted Matching",
+            "family": "matching",
+            "contract": "problems/44_general_graph_weighted_matching/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "topological_sort",
+            "name": "Topological Sorting and DAG Levels",
+            "family": "traversal",
+            "contract": "problems/45_topological_sort/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "random_walk_generation",
+            "name": "Graph Random-Walk Generation",
+            "family": "sampling",
+            "contract": "problems/46_random_walk_generation/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "neighborhood_sampling",
+            "name": "Neighborhood Sampling",
+            "family": "sampling",
+            "contract": "problems/47_neighborhood_sampling/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "induced_subgraph_ego_extraction",
+            "name": "Induced Subgraph and Ego-Network Extraction",
+            "family": "subgraphs",
+            "contract": "problems/48_induced_subgraph_ego_extraction/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "seeded_local_community_detection",
+            "name": "Seeded Local Community Detection",
+            "family": "communities",
+            "contract": "problems/49_seeded_local_community_detection/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "node_embedding",
+            "name": "Node Embedding",
+            "family": "embeddings",
+            "contract": "problems/50_node_embedding/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "knowledge_graph_embedding",
+            "name": "Knowledge-Graph Embedding",
+            "family": "embeddings",
+            "contract": "problems/51_knowledge_graph_embedding/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "node_classification_regression",
+            "name": "Node Classification and Regression",
+            "family": "learning",
+            "contract": "problems/52_node_classification_regression/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_classification_regression",
+            "name": "Graph Classification and Regression",
+            "family": "learning",
+            "contract": "problems/53_graph_classification_regression/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "hypergraph_partitioning",
+            "name": "Balanced Hypergraph Partitioning",
+            "family": "partitioning",
+            "contract": "problems/54_hypergraph_partitioning/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "spectral_graph_sparsification",
+            "name": "Spectral Graph Sparsification",
+            "family": "construction",
+            "contract": "problems/55_spectral_graph_sparsification/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "biconnected_components",
+            "name": "Biconnected Components, Articulation Points and Bridges",
+            "family": "connectivity",
+            "contract": "problems/56_biconnected_components/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "temporal_fastest_paths",
+            "name": "Temporal Fastest and Earliest-Arrival Paths",
+            "family": "temporal",
+            "contract": "problems/57_temporal_fastest_paths/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "top_k_critical_paths_dag",
+            "name": "Top-k Critical Paths in DAGs",
+            "family": "traversal",
+            "contract": "problems/58_top_k_critical_paths_dag/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_signal_denoising",
+            "name": "Graph Signal Denoising and Trend Filtering",
+            "family": "spectral",
+            "contract": "problems/59_graph_signal_denoising/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_based_geolocation",
+            "name": "Graph-Based Geolocation",
+            "family": "learning",
+            "contract": "problems/60_graph_based_geolocation/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "widest_paths",
+            "name": "Single-Source Widest Paths",
+            "family": "traversal",
+            "contract": "problems/61_widest_paths/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_coarsening",
+            "name": "Graph Coarsening and Quotient Construction",
+            "family": "construction",
+            "contract": "problems/62_graph_coarsening/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_laplacian_eigenpairs",
+            "name": "Graph Laplacian Eigenpairs",
+            "family": "spectral",
+            "contract": "problems/63_graph_laplacian_eigenpairs/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "knn_graph_construction",
+            "name": "k-Nearest-Neighbor Graph Construction",
+            "family": "construction",
+            "contract": "problems/64_knn_graph_construction/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "hypergraph_node_learning",
+            "name": "Hypergraph Node Classification and Regression",
+            "family": "learning",
+            "contract": "problems/65_hypergraph_node_learning/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "maximum_independent_set",
+            "name": "Maximum Independent Set",
+            "family": "independent_sets",
+            "contract": "problems/66_maximum_independent_set/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "persistent_homology",
+            "name": "Flag-Complex Persistent Homology",
+            "family": "topology",
+            "contract": "problems/67_persistent_homology/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "single_graph_frequent_subgraph_mining",
+            "name": "Frequent Subgraphs in One Labeled Graph",
+            "family": "pattern_mining",
+            "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "minimum_vertex_cover",
+            "name": "Minimum Vertex Cover",
+            "family": "independent_sets",
+            "contract": "problems/69_minimum_vertex_cover/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_condensation",
+            "name": "Learned Graph Condensation",
+            "family": "learning",
+            "contract": "problems/70_graph_condensation/problem.json",
+            "operations": [],
+            "runtime_integration": "pending"
+          },
+          {
+            "id": "graph_record_queries",
+            "name": "Canonical graph record queries",
+            "family": "query",
+            "contract": null,
+            "operations": [],
+            "runtime_integration": "pending"
+          }
+        ],
+        "operations": [
+          {
+            "id": "breadth-first-search",
+            "problem_id": "breadth_first_search",
+            "family": "traversal",
+            "title": "Connections within a number of steps",
+            "description": "Minimum hop distances with explicit independent or nearest-source searches. Preserve direction; discard loops and collapse duplicate arcs; weights are ignored. IDs are signed int64 or strings.",
+            "input_kind": "graph",
+            "parameters": {
+              "sources": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "source_mode": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "independent",
+                "choices": [
+                  "independent",
+                  "nearest_source"
+                ]
+              },
+              "depth_limit": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null,
+                "minimum": 0,
+                "maximum": 4294967295
+              },
+              "return_predecessors": {
+                "kind": "boolean",
+                "required": false,
+                "nullable": false,
+                "default": true
+              }
+            },
+            "output_ports": {
+              "vertices": {
+                "type": "vertex_set",
+                "availability": "runtime_checked"
+              },
+              "distances": {
+                "type": "table",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": true
+              }
+            ],
+            "quality": "exact",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          },
+          {
+            "id": "triangle-counting",
+            "problem_id": "triangle_counting_listing",
+            "family": "motifs",
+            "title": "Count or list triangles",
+            "description": "Count three-vertex cliques of an undirected graph. Discard loops and collapse duplicate edges; weights are ignored. GPU enumeration uses native CPU materialization with count verification.",
+            "input_kind": "graph",
+            "parameters": {
+              "mode": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "count",
+                "choices": [
+                  "count",
+                  "enumerate"
+                ]
+              },
+              "result_limit": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null,
+                "minimum": 1
+              }
+            },
+            "output_ports": {
+              "count": {
+                "type": "scalar",
+                "availability": "runtime_checked"
+              },
+              "groups": {
+                "type": "vertex_groups",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "tot",
+                "device": "gpu",
+                "compiled": true
+              },
+              {
+                "id": "wetric",
+                "device": "gpu",
+                "compiled": true
+              }
+            ],
+            "quality": "exact",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          }
+        ],
+        "abi_version": 1,
+        "implementation_sha256": "c0913c138aa5e80e983b8edd1e3e22a24baee075732279e4d21dca38a2de0012",
+        "python_runtime_required": false,
+        "file_readers": [
+          {
+            "id": "libcudf-csv",
+            "compiled": true,
+            "device": "gpu"
+          }
+        ]
+      },
+      "source_files": {
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/apps/tot.cu": "e9253e72b3b1e8c4d36202223e47bfd6952e2d0cbce96e4b353a20f1261efa42",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/common/arithmetic.h": "ddf3e1621e2009b0a03d76fc0a5a15665b908bf447da7897bb06268e40e4a79e",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/common/constants.h": "00be6e07be283881747afec23097bc6b4b548bcd7884aaf43f9f0a308d072864",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/common/macros.h": "c51d51fad51ab5785fa6dc4149306ee234db3c937ffaa9ed1a44ae9a3a6d7f55",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/common/memory.h": "26f82e4e4edf5ac217bc42f3be9f4067d685c51cdfd905eaf794bebf5048bf63",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/common/types.h": "4f905d55d96b63e5494247ddabc14f129431736424f1eb3bbbf85c6fd9e4b362",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/formats/bitcoo.h": "1550972a8c0b2424406d2fd75e6a7f1653d19c7416de4f63b909c6065867932f",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/formats/bitcsr.h": "fca274262108e537e7989d2c9ffa003adde4f14cab6c2d72ed26008d522db9fc",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/formats/coo.h": "a22eda1cad7c51dd2685911a15a30b7c7897d0c12bedfe67bd5476fc2c7966b2",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/formats/csr.h": "959a4b510671bf3e8d050fc0ef98f0922ed1bce22d65c80d99dece03d99523ec",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/operations/convert.h": "dfc89a2a294687865d7b108f8c10cc44cd8e37e56411736ce9232caf75fcf7c6",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/operations/kernel.h": "b7a3b1b9e30bae469f64fbd26383bbf4d51823c30518cfe567b69005ac75c6d0",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/operations/triangle_count.h": "5fc950194b031057179bcb57fa499d14976339351a674eb94af6efa3e526e520",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/operations/triangle_count_cpu.h": "a101ae0dfceb8a2e6dd2b1095f8fe5b78b782ba3c9e55948b49dc7b5b2100276",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/tot.h": "d01171b73e028ff9eadaec7389af8f27a9a22d21b384e817649ae0ee6cb5c7d5",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/utils/csr_helpers.h": "126bb43dde70c37f5f7ccce74398de74798e97a852e3dd37232060ee8521a283",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/utils/functors.h": "ad1ac359b6b7ec83fc2e7134dbf1124a4b252383541569d5e845877d542fcf32",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/utils/io/mmio.h": "9d2891b0d85b449f5c97f8c7e782dc7f4c06f40072f6f2e90ff5812000ff60b7",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/utils/io/read.h": "b30ce9da53e782a64ab74a40728c870b94fb6a17467eb51e80784261eb5234de",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/utils/option.h": "d91dcbe5a93cbaedbf50c3892a088e7ed0181d2ed639d47a82beaacd631551e4",
+        "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/code/tot/utils/timer.h": "e9b035f8ec35d441ca0c3c552a5d8be81b9cb7d03c6dae80d005ecf1884d47c9",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/edge_get.cu": "4dcf8187e6810b89b3dcc7083525aa607eb6b98fb8f4396e864b51c004927879",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/edge_get_big_graphs.cu": "62d157094f471a665ebfff7716687e6453f741f0e9d69c5fb5ac7398c622014c",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/sample_degrees.cu": "a3cde5e24e8ed46854a737a3775f16d4bff11b60b7fe545d5d606d9add99a8a6",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_arrow.cu": "05aa5e35f7c280c4640b03a3f9eed17019420ced0fc4c332effaaaba14fe749c",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_base.cu": "a1f0d275b49678002262299c8a2c1cbb5cf4380133d9160c3395d1e583c57556",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_big_graphs.cu": "1d41ed1b1d48bc3dabdd7eaa72a44978e0cefde4dc1c27fe72da87fd571a6fa0",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_big_graphs_arrow.cu": "b9ab24e047e01ebc96833eb6cc591b7650aa14931324d4b365f3dea471f9b112",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_big_graphs_base.cu": "fc690c8aa0c6e761e887f2bafb427c41f19a827a4f5e29e4c2e8dec1343c8a84",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_big_graphs_cycles.cu": "4e01baf9caf3dc549fc74904cea42a5d35cd064db3f03c9855f11e24f324d7c4",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_big_graphs_edge.cu": "4bcf62be25df28bfe24ae58ec3c521c91ae6d829477bcbcf1b98c1ef1ef848b2",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_big_graphs_reordered.cu": "06f1223a4d0dab4b09ca76f6efab1c9d837ef74415c84a0c363f7350a81aa0dd",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_big_graphs_spread.cu": "8e601214d970d88c28aea1fafde7f0e07b399ed8843e82178e0fbfd6ea575eb1",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_big_graphs_vertex.cu": "7c79a8488e5ec2ca6f55e99c855894d445c7413b341cd83afd27e7140d8fa330",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_cycles.cu": "31767960a9b65332ebe09ed0208d282a2b2eecd23549af229eec9cca5eef227c",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_edge.cu": "f6ddb33609a3e4fcb769ac8fdb28df16ad48d78ec9d105a9e6ef253a9e1c8419",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_reordered.cu": "863aa596833fa314679f355e27735eb19a845e8bea6e910265631678a4084ceb",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_spread.cu": "ab1379c85e81afae4acb3b86ceea8b4da297ce47af286aa2eaab42846e43f8d2",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/experiments/tc_vertex.cu": "a5f4a849c6fc5d5c3213626a05f4c52c2328c9958309d9c2874fa5001dc50401",
+        "problems/10_triangle_counting_listing/papers/2025_wetric/code/tc.cu": "57be3e8045cb1fcf3887862aecf6a252b031eb70cf72d2696d6bb8f6c74cbffe",
+        "library/include/graphmine/backend.hpp": "17b312f520a4248d54a3d8538ea682c645d31b0e5457eab13df9149266a71f0f",
+        "library/include/graphmine/execution.hpp": "1dc47c6bc045d329664064e9765cc4251c86780c10fb9110811411135dbbeca7",
+        "library/include/graphmine/graph.hpp": "890475c335325be9394de4e939d0c110f569cee1a1d49c36681e539c4d6ec966",
+        "library/include/graphmine/problems/triangle_counting.hpp": "acfe8e467560ec7ed9826fa9221ac2d2bfac70e7d86fe606b6509b79af8a28da",
+        "library/include/graphmine/runtime.hpp": "63febdb063f65c6479b5e86ab040c538e8e85212252a6a1931cb66960fb19d30",
+        "library/include/graphmine/runtime_c.h": "228af698dd32fe186ecb8a12570b4f69bc494f73d6976cb4ef2c616e4b27acd7",
+        "library/include/graphmine/status.hpp": "d6466420780b543df013ba6eb1a4dfddf9980626ed552e2a18f37a627577233d",
+        "library/manifests/problem_families.json": "7c5c7945fd3fb3089b8e5f9e1bc0c0e7a52d564065f3a9361a1489ca2372b9d9",
+        "library/src/backends/tot.cu": "8a4d11a9f86299544c0f1176e507154d351a8a71baabfc47152737f281fe64ee",
+        "library/src/backends/triangle_backend.hpp": "e31395039da614b39e5452db5b469be98983740e19b6cd7889fa79db9cc9e4dd",
+        "library/src/backends/wetric.cu": "58b05098fb86a63c4726d58e905b3512da83a7828adb5ad1cd46edcde1b2d669",
+        "library/src/core/graph.cpp": "adda75f2932369d622bd010a80c95f405242f26390f19054f71ac6fae658f8bf",
+        "library/src/core/json.cpp": "154e142cf081b143e69a2f8afa9362cf52dc74597ecc9f4ff5c0f765af4d4459",
+        "library/src/problems/triangle_counting.cpp": "44210e4cc1d69984cef50f8b26d45276d18bf22f5fc220de480e28c6d188e5e3",
+        "library/runtime/CMakeLists.txt": "e0114eb1044e655ce79258b58758ee1972d2a04606818aced6d6c4c36aaad00e",
+        "library/runtime/c_api.cpp": "ee34caa2f97ddec7423578d9e39a863cb1ebee9cd5a938a8c9da798211959db8",
+        "library/runtime/catalog_data.hpp.in": "ad79634357bd6cf719c495febcaa342a08789ed50d501c9cdfe57c359033ee6c",
+        "library/runtime/cli.cpp": "bc6a15542fd020d2f62fd4aa5b6daee983994b0bb9a4d3feed567aaffcc26514",
+        "library/runtime/cuda_device.cpp": "d19b2a91f1f284324a86be83a1ca4d0241d00be881c2460fccc70884f8ce6a1c",
+        "library/runtime/cugraph.cpp": "5e8117cb4cb4caebd377f282fed64c773d256125f77a800119ef71603fce033e",
+        "library/runtime/device_stub.cpp": "ab753eb75b6156a9854bc0b5d448819d7bd8e78f980979446db4cbbed2d17c71",
+        "library/runtime/families/patterns.cpp": "4a5aff96d263a27cda0e159e34395180c5539ba8ccc12ee3933cac5599e49712",
+        "library/runtime/families/traversal.cpp": "340f4daa73e358cd2b20ff22a307ff509cfd74c7131c32170e80221f4d892ee3",
+        "library/runtime/gpu_stub.cpp": "cc4b7a3af0692ea7ffe36dc14a319d8c26509c08e17b134bdaf9d961822f2d46",
+        "library/runtime/internal.hpp": "d35851784e09a1e0d5597c4b61cb279b82a156804446ec829f35ad636ff3546b",
+        "library/runtime/io/cudf_csv.cpp": "31d8ec480054596ef6c778ea619251849d006eebf6d8a45ee7b29bb38227e5a0",
+        "library/runtime/io_stub.cpp": "199c1f514a463c93615285a797abe8696e29a6d7c4fc0c11936ef0fe1821c2f0",
+        "library/runtime/json_graph.cpp": "ec351b5f76510b09be256dc72b11f0fb5eefd7b8ff5f0f4e3f57561bbff1b009",
+        "library/runtime/registry.cpp": "19c57795ca2b1748ad6be5238d95e4edf720d2ba2958e4740724dc1ea7d36c57",
+        "library/runtime/runtime.cpp": "983d2efdc5075342166ded0ceef95a6ca019f32de07d96d6211e9e2a96477462",
+        "library/runtime/tests/runtime_test.cpp": "30c4c6a83abaf3a46dd2fa27acdff2553d3cd40097bc1f353767600fdca6b201"
+      },
+      "binaries": {
+        "libgraphmine_runtime.so": "21d2cc147fd12173a3a52053318aec854ef7cdedc60e0d87d2a13a2533b36d8a",
+        "graphmine-native": "0bc6896597f34be527b4071ae073a837f5cc6fb000d83e7296a362a1d8d0660d",
+        "graphmine_runtime_test": "e66911810bebddc04927bc8cb4b19d87daa1aea2fe5bf5d697c92d0612e8053d"
+      },
+      "native_dependencies": [
+        "/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/librmm/lib64/librmm.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/rapids_logger/lib64/librapids_logger.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/libraft.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcuvs/lib64/libcuvs.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/libkvikio.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/libnvcomp/lib64/libnvcomp.so.5",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12",
+        "/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+        "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+        "/usr/lib/x86_64-linux-gnu/librt.so.1",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_mg.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_common.so",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+        "/usr/lib/x86_64-linux-gnu/libnvrtc.so.12.8.93",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusolver/lib/libcusolver.so.11",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft_cu12.libs/libgomp-855c301a.so.1.0.0",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio_cu12.libs/libzstd-0d65387f.so.1.5.7"
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x000070ddfa4c9000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x000070ddf9600000)\n\tlibcudart.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12 (0x000070ddf9200000)\n\tlibcugraph_c.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so (0x000070ddf8600000)\n\tlibcudf.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so (0x000070ddbcc00000)\n\tlibrmm.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/librmm/lib64/librmm.so (0x000070ddfa388000)\n\tlibrapids_logger.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/rapids_logger/lib64/librapids_logger.so (0x000070ddf9b64000)\n\tlibraft.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/libraft.so (0x000070ddbb000000)\n\tlibcuvs.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcuvs/lib64/libcuvs.so (0x000070dd98400000)\n\tlibkvikio.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/libkvikio.so (0x000070dd97e00000)\n\tlibnvcomp.so.5 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/libnvcomp/lib64/libnvcomp.so.5 (0x000070dd95200000)\n\tlibnvJitLink.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12 (0x000070dd8f400000)\n\tlibgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x000070ddfa32e000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000070dd8f000000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000070ddf9b36000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000070dd8ec00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000070ddfa4cb000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x000070ddfa327000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x000070ddfa322000)\n\tlibrt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x000070ddfa31d000)\n\tlibcugraph.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so (0x000070dd70000000)\n\tlibcugraph_mg.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_mg.so (0x000070dd4d400000)\n\tlibcugraph_common.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_common.so (0x000070dd3d600000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000070ddf9517000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x000070ddf9b1a000)\n\tlibnvrtc.so.12 => /lib/x86_64-linux-gnu/libnvrtc.so.12 (0x000070dd36e00000)\n\tlibcublas.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/cublas/lib/libcublas.so.12 (0x000070dd30600000)\n\tlibcusolver.so.11 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/cusolver/lib/libcusolver.so.11 (0x000070dd1e200000)\n\tlibcusparse.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/cusparse/lib/libcusparse.so.12 (0x000070dd00e00000)\n\tlibcurand.so.10 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/curand/lib/libcurand.so.10 (0x000070dcf6600000)\n\tlibcublasLt.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/cublas/lib/libcublasLt.so.12 (0x000070dcc4200000)\n\tlibgomp-855c301a.so.1.0.0 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../libraft_cu12.libs/libgomp-855c301a.so.1.0.0 (0x000070dcc3c00000)\n\tlibnccl.so.2 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcuvs/lib64/../../nvidia/nccl/lib/libnccl.so.2 (0x000070dcaaa00000)\n\tlibzstd-0d65387f.so.1.5.7 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/../../libkvikio_cu12.libs/libzstd-0d65387f.so.1.5.7 (0x000070dcaa400000)\n"
+    }
+  },
+  "reports": {
+    "cpu": {
+      "path": "validation/native_runtime/cpu.json",
+      "sha256": "3dcf62743b7330e41b01af351352c0b90ae47f294509cf9d97c5f9f117c822a4",
+      "results": [
+        {
+          "suite": "contracts",
+          "backend": "cpu",
+          "gpu_device": 0,
+          "passed_requests": 13,
+          "failed": 0
+        },
+        {
+          "suite": "bfs",
+          "backend": "cpu",
+          "gpu_device": 0,
+          "passed_requests": 4608,
+          "failed": 0
+        },
+        {
+          "suite": "triangles",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 2048,
+          "failed": 0
+        }
+      ]
+    },
+    "gpu-0": {
+      "path": "validation/native_runtime/gpu-0.json",
+      "sha256": "bf9ef23b3475deab2b252fac00e059b90d31f3ad4ab9ec6f353af621f26a9d92",
+      "results": [
+        {
+          "suite": "bfs",
+          "backend": "gpu",
+          "gpu_device": 0,
+          "passed_requests": 4608,
+          "failed": 0
+        },
+        {
+          "suite": "triangles",
+          "backend": "tot",
+          "gpu_device": 0,
+          "passed_requests": 2048,
+          "failed": 0
+        }
+      ]
+    },
+    "gpu-1": {
+      "path": "validation/native_runtime/gpu-1.json",
+      "sha256": "cfb58fd1505b4d57ef255e85cb0a75718f5d0138ef47ddaf545a4691ca4ad2ca",
+      "results": [
+        {
+          "suite": "bfs",
+          "backend": "gpu",
+          "gpu_device": 1,
+          "passed_requests": 4608,
+          "failed": 0
+        },
+        {
+          "suite": "triangles",
+          "backend": "wetric",
+          "gpu_device": 1,
+          "passed_requests": 2048,
+          "failed": 0
+        }
+      ]
+    },
+    "binding_ingestion": {
+      "path": "validation/native_runtime/binding-ingestion.xml",
+      "sha256": "56cf6fab6b7af7a5a8207fbd8a9c57618030707d0e27ec4f68f72ac743e2e14c",
+      "metadata_sha256": "4a51eb9c7b9c88c259230b1180aa348b05354cf03d564d01f836ae08d637faa0",
+      "passed": 19
+    },
+    "installed_consumers": {
+      "path": "validation/native_runtime/installed-consumers.json",
+      "sha256": "7dc086ead53eaf2eb86ad367143ef215f44cefc12286782b67f419778988a4f6",
+      "cpp_consumer": true,
+      "c_consumer": true,
+      "python_on_path": false
+    }
+  },
+  "native_dependency_sha256": {
+    "/usr/lib/x86_64-linux-gnu/libcrypto.so.3": "6a66c3ba6b3749aacc9497973fff00f6ba61c703ba7015d0d7ab3fd9510974b6",
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+    "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+    "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12": "256e6409e4f06f618e1fb53d4844a6b81cdded1013afa8ade40c22f99eb133b7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so": "fd616ca986a7eb40e0ff67923a173b64e7703fe7b291cbee5a49d0658699d7ed",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so": "a999887d2ad8abfce62bf916409c98ce7f0452912accaf6c69c720734230c698",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/librmm/lib64/librmm.so": "583120f5f81d720b56c7778fe9b67425911044b3470e15a2c27009ff96c0e378",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/rapids_logger/lib64/librapids_logger.so": "f18caaf7d1889e71a6f0216f7de092168b02249ed9d19f7c8a2df171a130d429",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/libraft.so": "54c9b6fb59521de7bb89a008d0b276d10b6f06dfb242663a9333454caabce80d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcuvs/lib64/libcuvs.so": "f5086b6dd8fa69bad803de7aad1b946fffde0dfc4f03d11b97a41c458e579355",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/libkvikio.so": "55e895504b72e3b9c8c9245459c1fea92da802749cd0d0d1dfbccdb462852d77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/libnvcomp/lib64/libnvcomp.so.5": "3f1e969bb2a767fea4b5bd91169831e7b8b15742ff74d997b7ce357dbe986316",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12": "02d3acb5fe598dd20f0fca3cc03734ad164037a22747a01900561a42d0b8448f",
+    "/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0": "135f3c8f006d2fe5e68e51281c7974cb991a03de3bfb3593d68d174dfcf854d1",
+    "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+    "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+    "/usr/lib/x86_64-linux-gnu/librt.so.1": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so": "fa287858d8838079897efe86adf1e849ba8d7f6d397d8bc355090783d57c7acf",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_mg.so": "338eac79972831d22d9e34a787b749901ae495eea17380dad3cc5ae697c1f9c7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_common.so": "e8387db31b9ff1c596efaa3f04a5f4570fcd0a72a0f52ddd45a7d8ff6b6900bf",
+    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
+    "/usr/lib/x86_64-linux-gnu/libnvrtc.so.12.8.93": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12": "5757ab5839fb4f203ca47ecb336110d10f4a5606b1e097f195fbca89774569e2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusolver/lib/libcusolver.so.11": "30a1fe2fe22dad7141afaa2878fb6e9d7360b016e164d2153e1f31a46f2a9833",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12": "6d85ab1acdabfe3b5a54aa76bc948c719bcd03e07eede3eb8122b083c1a6ecf7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10": "ab8c07338fa663c018b16df5b3f3878c84aaae98bda930e9e8bad340427b0faa",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12": "2c9006a75c74b3bea2dc7ae2ec38ab038b0e45ea02cb4b717a915e8a5796acb1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft_cu12.libs/libgomp-855c301a.so.1.0.0": "c690c02c7a6be4037ce2eabeab0fc78c7c0b2194f3d98f13ade54c25875be149",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2": "a23d2e3e47ad7f8987ac73eb04a373d6d40cfbb3a7a5bf41a9e0e8434817559b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio_cu12.libs/libzstd-0d65387f.so.1.5.7": "a87a8635928f0e17a6c74289469c95206f35cdb457eb4596664f325dcf2e9e4d"
+  },
+  "wrapper_sha256": "546c139863a5d8431981692078fd13e55b64c7a50355a6ed736fa7b3602b9bf4",
+  "family_catalog_sha256": "7c5c7945fd3fb3089b8e5f9e1bc0c0e7a52d564065f3a9361a1489ca2372b9d9"
+}

@@ -10,6 +10,18 @@ results computed by declared library algorithms and predefined visualizations.
 Normal, Interactive, and Expert modes share the same correctness checks.
 Implement the useful review recommendations and commit the work on this branch.
 
+**User architecture clarification (2026-10-10):** the executable algorithm core
+must be C++/CUDA for both CPU and GPU. This includes the original native
+implementations, direct native cuGraph integrations, and native equivalents of
+the CPU capabilities reviewed in YiGraph. Python is a wrapper around this core,
+with the same problem/family catalog, parameters and results. Existing Python
+algorithm integrations are migration references and test oracles; their passing
+tests do **not** satisfy the native CPU coverage requirement. Native migration
+takes priority over adding further Python algorithm implementations.
+The user also requires cuDF for tabular file loading and no NetworkX plotting.
+The native reader therefore links libcudf; the Python wrapper calls that reader.
+Browser rendering continues to use Cytoscape and predefined JavaScript views.
+
 The collection currently contains 70 formal problem contracts. CPU coverage
 means a documented executable implementation for each contract, including
 problems without a usable GPU implementation, and CPU alternatives for existing
@@ -23,8 +35,8 @@ layouts must declare what their results do and do not establish.
 | ID | Requirement | Evidence required before completion |
 |---|---|---|
 | A1 | Separate branch; commit all implementation, contracts, and required evidence | Branch and commits inspected; no uncommitted implementation changes |
-| A2 | cuGraph-like organization: graph objects, algorithm families, backend dispatch, separate native implementation | Public library imports, install/CLI tests, agent actually uses library |
-| A3 | CPU implementation for all 70 problem contracts and fallbacks for existing operations | Per-contract coverage inventory, independent result checks, CPU-only runs without GPU access |
+| A2 | C++/CUDA core: graph objects, algorithm families and backend dispatch; thin Python wrapper using the identical native catalog | Standalone C++ consumers and CLI run without Python; wrapper/core catalog and result parity; agent uses the native core |
+| A3 | Native CPU implementation for all 70 problem contracts and fallbacks for existing operations | Per-contract native coverage inventory, independent result checks, CPU-only runs without GPU access; Python algorithms count only as reference evidence |
 | A4 | cuGraph GPU integrations | Actual GPU execution, independent small-graph oracles, device/version evidence, supported-parameter checks |
 | A5 | Family-first, then exact-problem routing | Separate constrained stages; ambiguity and wrong-family recovery tests; held-out routing evaluation |
 | A6 | Normal / Interactive / Expert modes | Normal executes validated plans; Interactive reviews/edits before execution; Expert accepts explicit validated plans; browser/API tests |
@@ -51,12 +63,12 @@ reported score substitutes for local integration tests.
 
 ## Implementation sequence
 
-1. Preserve existing work; establish the public Python library, input/result
-   contracts, device policy, family modules, and evidence inventory.
-2. Implement and validate CPU coverage and cuGraph integration in an isolated
-   environment, retaining native GPU implementations through an adapter.
-3. Connect library capabilities to the agent, routing, queries, workflows,
-   table projections, recovery, examples, and MCP tools.
+1. Preserve existing work and the Python reference oracles; establish the
+   standalone C++/CUDA runtime, shared family catalog and thin Python binding.
+2. Migrate CPU algorithms, cuGraph integrations and original native backends
+   into that runtime with independent native checks and matching build evidence.
+3. Connect native capabilities and cuDF ingestion to the agent, routing,
+   queries, workflows, table projections, recovery, examples and MCP tools.
 4. Implement the three modes and predefined browser visualizations; integrate
    device selection, workflow review, completeness and provenance.
 5. Complete scheduler/cache work, full regression and correctness sweeps,
@@ -581,3 +593,56 @@ problem integrations, native/unified evidence, scheduler/cache work and scale
 verification remain required under A3/B1–B4. Existing browser modes, routing
 and workflow execution are implemented, but their remaining review acceptance
 details must still be verified before the overall goal can be complete.
+
+### Standalone native runtime and cuDF checkpoint
+
+The user's C++/CUDA clarification replaces the Python-first implementation
+sequence. This checkpoint establishes the native boundary; it does not count
+the existing Python implementations as native CPU coverage.
+
+- Added `libgraphmine_runtime`, a public C++ API, a versioned C ABI and the
+  standalone `graphmine-native` executable. Installed C and C++ consumers run
+  without Python on PATH and with GPUs hidden. The CPU shared library has no
+  Python or CUDA linkage. Original `Graph` storage and native triangle backends
+  are reused.
+- One embedded taxonomy assigns all 70 formal problems and record queries to
+  31 families. The thin Python binding obtains operations, parameters and
+  family membership from that native catalog. CPU/GPU selection and algorithm
+  execution occur inside C++. Unmigrated problems remain explicitly pending.
+- Native CPU breadth-first search and triangle counting are implemented.
+  BFS calls libcugraph directly on GPU; triangle counting links the original
+  ToT and WeTriC CUDA backends. This is **2 of 70 formal problems** in the new
+  shared runtime, not a claim about the coverage of older native entry points.
+- Native oracle requests passed: **13 contract checks**, **4,608 BFS and 2,048
+  triangle requests on CPU**, **4,608 BFS and 2,048 ToT requests on GPU 0**, and
+  **4,608 BFS and 2,048 WeTriC requests on GPU 1**. BFS uses independent all-pairs
+  distance oracles over exhaustive small graphs; triangles use brute-force
+  triple enumeration over all 1,024 undirected five-vertex graphs.
+- Fixed libcugraph's effective unlimited-depth bound, which had wrapped when
+  passed as `SIZE_MAX`, and suppressed original ToT timing prints only when
+  compiled into the library so CLI stdout remains valid JSON. GPU calls restore
+  the caller's device selection. Final original-backend checks ran against an
+  export of exactly the staged sources, including the selective root CMake
+  changes; unrelated working-tree repairs were preserved.
+- Refreshed the existing Python reference inventory after adding the wrapper:
+  **29,769 CPU tests and 1,546 tests on each GPU passed**, with zero skips and
+  unchanged source/contract snapshots. Reports are `cpu-native-wrapper.xml`
+  and `gpu-*-native-wrapper.xml`. These keep the current application's reference
+  gate consistent while migration proceeds; they do not add native coverage.
+- The libcudf CSV reader preserves string IDs, large numeric text, quoted
+  fields, multiline values and Unicode. It enforces declared columns and row
+  limits and reports explicit failure when cuDF is unavailable. **19 binding
+  and ingestion tests passed**, including both GPUs, standalone CLI parity,
+  concurrent calls, original-backend stdout and device restoration. No
+  NetworkX plotting was added; rendering remains in the existing browser views.
+- Native evidence is recorded under `validation/native_runtime/` and audited
+  in `catalog/native_runtime_coverage.json`. It includes source inventories,
+  binary and resolved native dependency hashes. This inventory is not yet the
+  application's execution gate. Build and usage instructions are in
+  `NATIVE_CORE_MIGRATION.md`.
+
+The existing public `graphmine.run`, application worker and web upload endpoint
+still await native migration. Remaining work includes all other profiles,
+native exact-number support for rational operations, cuDF-backed table
+construction, application evidence gating, and the open review requirements
+above. The overall goal remains incomplete.

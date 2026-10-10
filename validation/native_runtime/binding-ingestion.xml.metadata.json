@@ -1,0 +1,33 @@
+{
+  "scope": "Native C ABI/Python parity and libcudf ingestion; no application migration claim",
+  "source_files": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/manifests/problem_families.json": "7c5c7945fd3fb3089b8e5f9e1bc0c0e7a52d564065f3a9361a1489ca2372b9d9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/CMakeLists.txt": "e0114eb1044e655ce79258b58758ee1972d2a04606818aced6d6c4c36aaad00e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/c_api.cpp": "ee34caa2f97ddec7423578d9e39a863cb1ebee9cd5a938a8c9da798211959db8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/catalog_data.hpp.in": "ad79634357bd6cf719c495febcaa342a08789ed50d501c9cdfe57c359033ee6c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/cli.cpp": "bc6a15542fd020d2f62fd4aa5b6daee983994b0bb9a4d3feed567aaffcc26514",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/cuda_device.cpp": "d19b2a91f1f284324a86be83a1ca4d0241d00be881c2460fccc70884f8ce6a1c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/cugraph.cpp": "5e8117cb4cb4caebd377f282fed64c773d256125f77a800119ef71603fce033e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/device_stub.cpp": "ab753eb75b6156a9854bc0b5d448819d7bd8e78f980979446db4cbbed2d17c71",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/families/patterns.cpp": "4a5aff96d263a27cda0e159e34395180c5539ba8ccc12ee3933cac5599e49712",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/families/traversal.cpp": "340f4daa73e358cd2b20ff22a307ff509cfd74c7131c32170e80221f4d892ee3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/gpu_stub.cpp": "cc4b7a3af0692ea7ffe36dc14a319d8c26509c08e17b134bdaf9d961822f2d46",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/internal.hpp": "d35851784e09a1e0d5597c4b61cb279b82a156804446ec829f35ad636ff3546b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/io/cudf_csv.cpp": "31d8ec480054596ef6c778ea619251849d006eebf6d8a45ee7b29bb38227e5a0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/io_stub.cpp": "199c1f514a463c93615285a797abe8696e29a6d7c4fc0c11936ef0fe1821c2f0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/json_graph.cpp": "ec351b5f76510b09be256dc72b11f0fb5eefd7b8ff5f0f4e3f57561bbff1b009",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/registry.cpp": "19c57795ca2b1748ad6be5238d95e4edf720d2ba2958e4740724dc1ea7d36c57",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/runtime.cpp": "983d2efdc5075342166ded0ceef95a6ca019f32de07d96d6211e9e2a96477462",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/runtime/tests/runtime_test.cpp": "30c4c6a83abaf3a46dd2fa27acdff2553d3cd40097bc1f353767600fdca6b201",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/tests/test_native_binding.py": "eb942d711d78d2899781719a2fa0eabe60e56bd268cc3aba1af270a2518dcf88",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/python/graphmine/graphmine/native/__init__.py": "546c139863a5d8431981692078fd13e55b64c7a50355a6ed736fa7b3602b9bf4",
+    "/tmp/graphmine-native-cpu/graphmine-native": "11d2b85a22e8f7ff1df31c709f66129cf8cdffa4314828d1d929daf3081cd45b",
+    "/tmp/graphmine-native-cpu/libgraphmine_runtime.so": "5ad98ae4d0f232aa37f03b8fa24357aaace6565fafe019817c38489349817d23",
+    "/tmp/graphmine-native-cpu/native-source-hashes.txt": "4425c0ac5185256b5fb6b6c38d11cc6214b723d84b6e205831b94bf7f3db5c73",
+    "/tmp/graphmine-native-staged-build/runtime/graphmine-native": "0bc6896597f34be527b4071ae073a837f5cc6fb000d83e7296a362a1d8d0660d",
+    "/tmp/graphmine-native-staged-build/runtime/libgraphmine_runtime.so": "21d2cc147fd12173a3a52053318aec854ef7cdedc60e0d87d2a13a2533b36d8a",
+    "/tmp/graphmine-native-staged-build/runtime/native-source-hashes.txt": "c0913c138aa5e80e983b8edd1e3e22a24baee075732279e4d21dca38a2de0012"
+  },
+  "sources_unchanged_during_run": true,
+  "collected_test_count": 19
+}
