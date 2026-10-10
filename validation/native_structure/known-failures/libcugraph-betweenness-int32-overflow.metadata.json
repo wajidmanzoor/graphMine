@@ -1,0 +1,14 @@
+{
+  "scope": "Reproduced pre-admission failure, excluded by current GPU support checks; not acceptance evidence",
+  "vertices": 66,
+  "cpu_score_sum": 21857,
+  "gpu_score_sum": 21609,
+  "required_shortest_path_count": 2147483648,
+  "implementation_sha256": "3e6869500baaa75b407f4d9c3a7f8ab8d78c448097609b0042254c0f9c8132ad",
+  "response_sha256": "a158175a6af404d332cf50199e1499376e00a91dcf0b5e751df52e7b7ac141af",
+  "binary_files": {
+    "/tmp/graphmine-native-structure-gpu/graphmine-native": "f8ce003c3cfb5d01cb83ad4d3928ab0ddeb6d2483f7c8b12359c10ffd960221f",
+    "/tmp/graphmine-native-structure-gpu/libgraphmine_runtime.so": "c097c0f52821e3c8bed6ad24e942c1e31d3cabac55c13c4f3b23be9869b5ea00",
+    "/tmp/graphmine-native-structure-gpu/native-source-hashes.txt": "3e6869500baaa75b407f4d9c3a7f8ab8d78c448097609b0042254c0f9c8132ad"
+  }
+}

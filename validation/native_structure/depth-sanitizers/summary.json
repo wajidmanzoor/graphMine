@@ -1,0 +1,355 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c",
+  "binary_files": {
+    "/tmp/graphmine-native-structure-original-build/runtime/graphmine-native": "e10034b713360337d3c1db6287111b3420e1e40652fea85ad4fd471481913470",
+    "/tmp/graphmine-native-structure-original-build/runtime/libgraphmine_runtime.so": "b62a9c76aa6382f63ea48ef7bb2a140186b6f539f85fd2d623992ac99e1627ce",
+    "/tmp/graphmine-native-structure-original-build/runtime/native-source-hashes.txt": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/validate_native_mining_depth.py": "1f3a0d7c793dae087daef0283489237dec97891c89aa9d7b302f9e23bcbc55e3"
+  },
+  "build_unchanged_during_run": true,
+  "sanitizer_binary_sha256": "ddb2dbfd04b20e9cddf263ec9831335b92395225acf89d81cd9b3bf60476bae8",
+  "cases": [
+    {
+      "case": "kcgpu-K514-k3-gpu-0",
+      "passed": true,
+      "sanitizer": "memcheck",
+      "expected_rejection": false,
+      "request_sha256": "feee0a1c156bcea585de9fa401918c0747cb034096865ff38c07f08f200f4279",
+      "response": {
+        "parameters": {
+          "k": 3,
+          "mode": "count",
+          "result_limit": null
+        },
+        "result": {
+          "groups": [],
+          "count": 22500864,
+          "k": 3,
+          "listed_count": 0,
+          "count_is_exhaustive": true
+        },
+        "ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "value": [],
+            "complete": false,
+            "input_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0",
+            "graph_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0"
+          },
+          "count": {
+            "type": "scalar",
+            "value": 22500864,
+            "complete": true,
+            "input_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0",
+            "graph_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0"
+          }
+        },
+        "complete": true,
+        "quality": "exact",
+        "diagnostics": {
+          "materialization": "original GPU count"
+        },
+        "schema_version": "2.0.0",
+        "operation": "k-cliques",
+        "problem_id": "k_clique_counting_enumeration",
+        "family": "cliques",
+        "input_kind": "graph",
+        "input_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0",
+        "graph_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0",
+        "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c",
+        "requested_device": "gpu",
+        "backend": {
+          "id": "kcgpu",
+          "device": "gpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false,
+          "hardware": {
+            "device_ordinal": 0,
+            "name": "NVIDIA RTX 6000 Ada Generation",
+            "uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+            "cuda_runtime": 12090,
+            "cuda_driver": 12080
+          }
+        },
+        "budget": {
+          "max_candidates": 20000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 120.0
+        },
+        "elapsed_seconds": 1.002856029
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+    },
+    {
+      "case": "gamma-K12-k7-gpu-0",
+      "passed": true,
+      "sanitizer": "racecheck",
+      "expected_rejection": false,
+      "request_sha256": "6c9bf8626dcb567648f7071946ccddfae3a577787c85ca7c010a7baa7791bd26",
+      "response": {
+        "parameters": {
+          "k": 7,
+          "mode": "count",
+          "result_limit": null
+        },
+        "result": {
+          "groups": [],
+          "count": 792,
+          "k": 7,
+          "listed_count": 0,
+          "count_is_exhaustive": true
+        },
+        "ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "value": [],
+            "complete": false,
+            "input_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5",
+            "graph_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5"
+          },
+          "count": {
+            "type": "scalar",
+            "value": 792,
+            "complete": true,
+            "input_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5",
+            "graph_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5"
+          }
+        },
+        "complete": true,
+        "quality": "exact",
+        "diagnostics": {
+          "materialization": "original GPU count"
+        },
+        "schema_version": "2.0.0",
+        "operation": "k-cliques",
+        "problem_id": "k_clique_counting_enumeration",
+        "family": "cliques",
+        "input_kind": "graph",
+        "input_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5",
+        "graph_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5",
+        "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c",
+        "requested_device": "gpu",
+        "backend": {
+          "id": "gamma",
+          "device": "gpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false,
+          "hardware": {
+            "device_ordinal": 0,
+            "name": "NVIDIA RTX 6000 Ada Generation",
+            "uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+            "cuda_runtime": 12090,
+            "cuda_driver": 12080
+          }
+        },
+        "budget": {
+          "max_candidates": 20000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 120.0
+        },
+        "elapsed_seconds": 12.760067766
+      },
+      "log_sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4"
+    },
+    {
+      "case": "kcgpu-K1002-k3-gpu-0",
+      "passed": true,
+      "sanitizer": null,
+      "expected_rejection": true,
+      "request_sha256": "2473583a054d7dd6602884b3aa4415a3de47082a8ce43fd89edb84a80b37f6f0",
+      "response": {
+        "error": {
+          "code": "unsupported_input",
+          "message": "KCGPU pivot storage requires oriented degree <= 1000"
+        }
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "kcgpu-K514-k10-gpu-0",
+      "passed": true,
+      "sanitizer": null,
+      "expected_rejection": true,
+      "request_sha256": "0bb17587780c4556cdb98fa334ebff01c2491900b48577bacbcaa438d05c0de1",
+      "response": {
+        "error": {
+          "code": "unsupported_input",
+          "message": "Cannot certify that the original clique count fits uint64; use native CPU"
+        }
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "kcgpu-K514-k3-gpu-1",
+      "passed": true,
+      "sanitizer": "memcheck",
+      "expected_rejection": false,
+      "request_sha256": "08a4e8cb7b7c7ac41e997c6e33c69d77219078e9b6d3372d87db564e00b72766",
+      "response": {
+        "parameters": {
+          "k": 3,
+          "mode": "count",
+          "result_limit": null
+        },
+        "result": {
+          "groups": [],
+          "count": 22500864,
+          "k": 3,
+          "listed_count": 0,
+          "count_is_exhaustive": true
+        },
+        "ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "value": [],
+            "complete": false,
+            "input_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0",
+            "graph_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0"
+          },
+          "count": {
+            "type": "scalar",
+            "value": 22500864,
+            "complete": true,
+            "input_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0",
+            "graph_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0"
+          }
+        },
+        "complete": true,
+        "quality": "exact",
+        "diagnostics": {
+          "materialization": "original GPU count"
+        },
+        "schema_version": "2.0.0",
+        "operation": "k-cliques",
+        "problem_id": "k_clique_counting_enumeration",
+        "family": "cliques",
+        "input_kind": "graph",
+        "input_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0",
+        "graph_fingerprint": "fd3d3296aebc44f229dd76254620b689db998e56f97964bc1fd3fa54588d35a0",
+        "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c",
+        "requested_device": "gpu",
+        "backend": {
+          "id": "kcgpu",
+          "device": "gpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false,
+          "hardware": {
+            "device_ordinal": 1,
+            "name": "NVIDIA RTX 6000 Ada Generation",
+            "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+            "cuda_runtime": 12090,
+            "cuda_driver": 12080
+          }
+        },
+        "budget": {
+          "max_candidates": 20000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 120.0
+        },
+        "elapsed_seconds": 1.016249582
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+    },
+    {
+      "case": "gamma-K12-k7-gpu-1",
+      "passed": true,
+      "sanitizer": "racecheck",
+      "expected_rejection": false,
+      "request_sha256": "8d0609efa2a959beb5b53bcec7f0c09456ef60e2eaeea294974462d7e20554d2",
+      "response": {
+        "parameters": {
+          "k": 7,
+          "mode": "count",
+          "result_limit": null
+        },
+        "result": {
+          "groups": [],
+          "count": 792,
+          "k": 7,
+          "listed_count": 0,
+          "count_is_exhaustive": true
+        },
+        "ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "value": [],
+            "complete": false,
+            "input_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5",
+            "graph_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5"
+          },
+          "count": {
+            "type": "scalar",
+            "value": 792,
+            "complete": true,
+            "input_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5",
+            "graph_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5"
+          }
+        },
+        "complete": true,
+        "quality": "exact",
+        "diagnostics": {
+          "materialization": "original GPU count"
+        },
+        "schema_version": "2.0.0",
+        "operation": "k-cliques",
+        "problem_id": "k_clique_counting_enumeration",
+        "family": "cliques",
+        "input_kind": "graph",
+        "input_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5",
+        "graph_fingerprint": "38b9d244d3482b3112ea4e4b0648fe6c7371511bc35f87b2527b44cec866def5",
+        "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c",
+        "requested_device": "gpu",
+        "backend": {
+          "id": "gamma",
+          "device": "gpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false,
+          "hardware": {
+            "device_ordinal": 1,
+            "name": "NVIDIA RTX 6000 Ada Generation",
+            "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+            "cuda_runtime": 12090,
+            "cuda_driver": 12080
+          }
+        },
+        "budget": {
+          "max_candidates": 20000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 120.0
+        },
+        "elapsed_seconds": 12.548674658
+      },
+      "log_sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4"
+    },
+    {
+      "case": "kcgpu-K1002-k3-gpu-1",
+      "passed": true,
+      "sanitizer": null,
+      "expected_rejection": true,
+      "request_sha256": "3392b6d2009be1e04b3e2f834fc086bd198a4655d8e82476733699a3a31b8db3",
+      "response": {
+        "error": {
+          "code": "unsupported_input",
+          "message": "KCGPU pivot storage requires oriented degree <= 1000"
+        }
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "kcgpu-K514-k10-gpu-1",
+      "passed": true,
+      "sanitizer": null,
+      "expected_rejection": true,
+      "request_sha256": "be232114959fc98d38140713fce219370a3ef71cc1f0ca6200f8042902d7c59e",
+      "response": {
+        "error": {
+          "code": "unsupported_input",
+          "message": "Cannot certify that the original clique count fits uint64; use native CPU"
+        }
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

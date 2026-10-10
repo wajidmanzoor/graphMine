@@ -21,7 +21,13 @@ std::vector<double> cugraph_pagerank(const WeightedGraph&, const std::vector<dou
 std::vector<double> cugraph_jaccard(const WeightedGraph&, const std::vector<std::pair<VertexIndex, VertexIndex>>&, int, Work&) {
   throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
 }
+std::vector<std::uint32_t> cugraph_truss_numbers(const WeightedGraph&, const std::vector<std::pair<VertexIndex, VertexIndex>>&, int, Work&) {
+  throw Failure("backend_unavailable", "libcugraph was not linked in this build");
+}
 std::vector<std::uint32_t> cugraph_core_numbers(const WeightedGraph&, int, Work&) {
+  throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
+}
+std::vector<double> cugraph_betweenness(const WeightedGraph&, int, Work&) {
   throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
 }
 }

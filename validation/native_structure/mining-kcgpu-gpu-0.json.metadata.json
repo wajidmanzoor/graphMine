@@ -1,0 +1,14 @@
+{
+  "binary_files": {
+    "/tmp/graphmine-native-structure-original-build/runtime/libgraphmine_runtime.so.2.0.0": "b62a9c76aa6382f63ea48ef7bb2a140186b6f539f85fd2d623992ac99e1627ce",
+    "/tmp/graphmine-native-structure-original-build/runtime/graphmine-native": "e10034b713360337d3c1db6287111b3420e1e40652fea85ad4fd471481913470",
+    "/tmp/graphmine-native-structure-original-build/runtime/graphmine_runtime_test": "deaa233561e776b48a8af0fc820b0419cebe2afddfcad719b13235c8c2bafba1",
+    "/tmp/graphmine-native-structure-original-build/runtime/graphmine_reference_test": "8319d94c99a28d1f4e2cda86b272c63282d79d65f828d7cb88f59a2ac6c652fd",
+    "/tmp/graphmine-native-structure-original-build/runtime/graphmine_mining_test": "4a2e2171a032f80d746b16f7ea8513c407c4bb27fdcac02b1dd2af80739cb7a5",
+    "/tmp/graphmine-native-structure-original-build/runtime/graphmine_structure_test": "c9392a5ce80b9c80bda46efaed176d1c8c01e47465af5443ba46cf2c10bbe5fc",
+    "/tmp/graphmine-native-structure-original-build/runtime/graphmine_centrality_test": "d5d077d13d3ed131d40c89db9b16145363ed77832ce2c35ca7b851fc46fa7b03",
+    "/tmp/graphmine-native-structure-original-build/runtime/native-source-hashes.txt": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c"
+  },
+  "build_unchanged_during_run": true,
+  "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c"
+}

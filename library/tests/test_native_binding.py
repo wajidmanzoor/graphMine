@@ -176,12 +176,16 @@ print(len(library.list_algorithms()))
         ("connected-components", {"connectivity_mode": "strongly_connected"}, False),
         ("topological-sort", {}, False),
         ("pagerank", {"weight_mode": "edge_weight"}, False),
+        ("betweenness-centrality", {"weight_mode": "edge_weight"}, False),
+        ("degree-centrality", {"direction_mode": "both"}, False),
         ("personalized-pagerank", {"seed_vertices": [0], "top_k": 1}, False),
         ("link-prediction", {"scoring_measure": "resource_allocation"}, True),
         ("maximal-cliques", {"result_limit": 1}, True),
         ("maximum-clique", {"return_all_ties": True}, True),
         ("k-cliques", {"k": 2, "mode": "enumerate"}, True),
         ("k-core", {"requested_k": 0}, True),
+        ("k-truss", {"requested_k": 3}, True),
+        ("biconnected-components", {}, True),
         ("maximum-independent-set", {}, True),
         ("minimum-vertex-cover", {"mode": "decision", "k": 0}, True),
     ],
@@ -449,3 +453,77 @@ def test_graphset_and_gamma_can_share_a_host_process_across_devices(order):
             )
             assert result["result"]["count"] == expected
             assert result["backend"]["hardware"]["device_ordinal"] == device
+
+
+@pytest.mark.parametrize("backend", ["libcugraph", "turbo-bc"])
+@pytest.mark.parametrize("gpu_device", [0, 1])
+@pytest.mark.parametrize("normalized", [False, True])
+def test_native_betweenness_backends_match_cli_and_restore_device(
+    backend, gpu_device, normalized
+):
+    lib = library(ORIGINAL)
+    value = graph()
+    value["graph"]["directed"] = False
+    runtime = ctypes.CDLL(ctypes.util.find_library("cudart"))
+    runtime.cudaSetDevice.argtypes = [ctypes.c_int]
+    runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
+    assert runtime.cudaSetDevice(1 - gpu_device) == 0
+    result = lib.family("centrality").betweenness_centrality(
+        value,
+        parameters={"normalized": normalized},
+        backend=backend,
+        device="gpu",
+        gpu_device=gpu_device,
+    )
+    after = ctypes.c_int()
+    assert runtime.cudaGetDevice(ctypes.byref(after)) == 0
+    assert after.value == 1 - gpu_device
+    assert [row["score"] for row in result["result"]["vertices"]] == pytest.approx(
+        [0, 1 / 3 if normalized else 1, 0, 0]
+    )
+    request = {
+        "command": "run",
+        "operation": "betweenness-centrality",
+        "graph": value,
+        "parameters": {"normalized": normalized},
+        "backend": backend,
+        "device": "gpu",
+        "gpu_device": gpu_device,
+    }
+    direct = json.loads(
+        subprocess.check_output(
+            [ORIGINAL / "graphmine-native", "request"],
+            input=json.dumps(request),
+            text=True,
+        )
+    )
+    assert without_timing(result) == without_timing(direct)
+
+
+@pytest.mark.parametrize("backend", ["libcugraph", "turbo-bc"])
+@pytest.mark.parametrize("gpu_device", [0, 1])
+def test_native_betweenness_path_overflow_selects_cpu_before_execution(
+    backend, gpu_device
+):
+    lib = library(ORIGINAL)
+    value = graph()
+    value["graph"]["directed"] = False
+    value["vertices"] = [{"id": v} for v in range(66)]
+    value["edges"] = [
+        {"id": f"{layer}-{a}-{b}", "source": 2 * layer + a, "target": 2 * layer + 2 + b}
+        for layer in range(32)
+        for a in range(2)
+        for b in range(2)
+    ]
+    with pytest.raises(binding.NativeError) as error:
+        lib.run(
+            "betweenness-centrality",
+            value,
+            backend=backend,
+            device="gpu",
+            gpu_device=gpu_device,
+        )
+    assert error.value.code == "unsupported_input"
+    result = lib.run("betweenness-centrality", value, gpu_device=gpu_device)
+    assert result["backend"]["id"] == "cpp"
+    assert result["quality"] == "exact"

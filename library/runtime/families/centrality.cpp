@@ -93,7 +93,19 @@ json::object pagerank(const Graph& graph, const json::object& args, const std::s
   const auto input = weighted_graph(graph, mode == "edge_weight", true, "sum", "outgoing", work);
   const std::vector<double> uniform(graph.vertex_count(), graph.vertex_count() ? 1.0 / graph.vertex_count() : 0);
   const auto computed = rank(input, uniform, uniform, alpha, tolerance, iterations, backend, device, work);
-  return score_output(graph, computed, {{"alpha", alpha}, {"tolerance", tolerance}, {"max_iterations", iterations}, {"weight_mode", mode}}, alpha, tolerance);
+  auto output = score_output(graph, computed, {{"alpha", alpha}, {"tolerance", tolerance}, {"max_iterations", iterations}, {"weight_mode", mode}}, alpha, tolerance);
+  std::vector<VertexIndex> order(graph.vertex_count()); std::iota(order.begin(), order.end(), 0);
+  std::sort(order.begin(), order.end(), [&](auto a, auto b) {
+    return computed.values[a] != computed.values[b] ? computed.values[a] > computed.values[b] : graph.external_id(a) < graph.external_id(b);
+  });
+  json::array ranking;
+  for (const auto v : order) ranking.push_back(json::object{{"vertex", id_json(graph.external_id(v))}, {"score", computed.values[v]}, {"rank", ranking.size() + 1}});
+  auto& result = output.at("result").as_object(); result["ranked_vertices"] = ranking; result["complete"] = true;
+  result["score_definition"] = json::object{{"centrality_measure", "pagerank"}, {"direction_mode", graph.directed() ? "outgoing" : "undirected"},
+      {"weight_semantics", mode == "edge_weight" ? "strength" : "unweighted"}, {"parameters", output.at("parameters")},
+      {"normalized", true}, {"dangling_distribution", "uniform"}, {"restart_distribution", "uniform"}, {"parallel_edges", "sum"}, {"self_loops", "discard"},
+      {"tie_break", "numeric IDs before strings, then ascending stored value"}};
+  return output;
 }
 
 json::object personalized_pagerank(const Graph& graph, const json::object& args, const std::string& backend, int device, Work& work) {

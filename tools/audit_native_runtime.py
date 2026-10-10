@@ -77,6 +77,8 @@ def build_evidence(directory, source_root, dependency_hashes):
             "graphmine_runtime_test",
             "graphmine_reference_test",
             "graphmine_mining_test",
+            "graphmine_structure_test",
+            "graphmine_centrality_test",
         )
     }
     cache = directory / "CMakeCache.txt"
@@ -228,7 +230,38 @@ def audit(
             ("boundaries", 161),
         )
     ]
+    expected["structure-cpu"] = [
+        (s, "cpp", n)
+        for s, n in (
+            ("contracts", 14),
+            ("truss", 5135),
+            ("blocks", 1027),
+            ("boundaries", 37),
+        )
+    ]
+    expected["centrality-cpu"] = [
+        (s, "cpp", n)
+        for s, n in (
+            ("contracts", 14),
+            ("degree", 10632),
+            ("betweenness", 2658),
+            ("weighted", 2916),
+            ("boundaries", 39),
+        )
+    ]
     for ordinal in (0, 1):
+        expected[f"structure-gpu-{ordinal}"] = [
+            (s, "libcugraph", n)
+            for s, n in (("contracts", 9), ("truss", 5135), ("boundaries", 31))
+        ]
+        expected[f"centrality-gpu-{ordinal}"] = [
+            (s, "libcugraph", n)
+            for s, n in (("contracts", 7), ("betweenness", 2658), ("boundaries", 9))
+        ]
+        expected[f"centrality-turbo-bc-gpu-{ordinal}"] = [
+            (s, "turbo-bc", n)
+            for s, n in (("contracts", 8), ("betweenness", 2048), ("boundaries", 9))
+        ]
         for backend, cases in (
             *[
                 (b, [("contracts", 4), ("maximal", 264), ("boundaries", 21)])
@@ -325,8 +358,44 @@ def audit(
         "sha256": sha(depth_path),
         "passed": 8,
     }
+    centrality_path = report_root / "centrality-sanitizers/summary.json"
+    centrality = json.loads(centrality_path.read_text())
+    assert centrality["passed"] == 8 and centrality["failed"] == 0
+    assert centrality["build_unchanged_during_run"]
+    assert (
+        centrality["implementation_sha256"]
+        == builds["gpu"]["catalog"]["implementation_sha256"]
+    )
+    assert centrality["sanitizer_binary_sha256"] == sha("/usr/bin/compute-sanitizer")
+    for path, digest in centrality["binary_files"].items():
+        assert sha(path) == digest
+    assert {row["case"] for row in centrality["cases"]} == {
+        f"{backend}-{tool}-gpu-{device}"
+        for backend in ("libcugraph", "turbo-bc")
+        for tool in ("memcheck", "initcheck")
+        for device in (0, 1)
+    }
+    for row in centrality["cases"]:
+        assert (
+            row["passed"]
+            and row["result"]["passed_requests"] == 9
+            and row["result"]["failed"] == 0
+        )
+        assert (
+            sha(centrality_path.parent / f"{row['case']}.stderr.log")
+            == row["log_sha256"]
+        )
+        assert (
+            sha(centrality_path.parent / f"{row['case']}.stdout.json")
+            == row["output_sha256"]
+        )
+    reports["centrality_sanitizers"] = {
+        "path": str(centrality_path.relative_to(ROOT)),
+        "sha256": sha(centrality_path),
+        "passed": 8,
+    }
     reports["binding_ingestion"] = xml_evidence(
-        report_root / "binding-ingestion.xml", ROOT, 88
+        report_root / "binding-ingestion.xml", ROOT, 104
     )
     native_uploads = staged_app_root is not None
     if native_uploads:

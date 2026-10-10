@@ -25,6 +25,8 @@ def snapshot(build):
             "graphmine_runtime_test",
             "graphmine_reference_test",
             "graphmine_mining_test",
+            "graphmine_structure_test",
+            "graphmine_centrality_test",
             "native-source-hashes.txt",
         )
     ]
@@ -65,6 +67,32 @@ def validate(build, label, ordinal, output):
             ],
         ),
     ]
+    groups += [
+        (
+            f"structure-{label}",
+            "graphmine_structure_test",
+            [
+                (s, "cpp" if cpu else "libcugraph")
+                for s in (
+                    ["contracts", "truss", "blocks", "boundaries"]
+                    if cpu
+                    else ["contracts", "truss", "boundaries"]
+                )
+            ],
+        ),
+        (
+            f"centrality-{label}",
+            "graphmine_centrality_test",
+            [
+                (s, "cpp" if cpu else "libcugraph")
+                for s in (
+                    ["contracts", "degree", "betweenness", "weighted", "boundaries"]
+                    if cpu
+                    else ["contracts", "betweenness", "boundaries"]
+                )
+            ],
+        ),
+    ]
     if cpu:
         groups.append(
             (
@@ -85,6 +113,13 @@ def validate(build, label, ordinal, output):
             )
         )
     else:
+        groups.append(
+            (
+                f"centrality-turbo-bc-{label}",
+                "graphmine_centrality_test",
+                [(s, "turbo-bc") for s in ("contracts", "betweenness", "boundaries")],
+            )
+        )
         for backend, algorithms in (
             ("rdmce", ["maximal"]),
             ("mce-gpu", ["maximal"]),

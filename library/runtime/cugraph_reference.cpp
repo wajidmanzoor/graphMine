@@ -3,6 +3,7 @@
 #include <cugraph_c/array.h>
 #include <cugraph_c/centrality_algorithms.h>
 #include <cugraph_c/core_algorithms.h>
+#include <cugraph_c/community_algorithms.h>
 #include <cugraph_c/graph.h>
 #include <cugraph_c/graph_functions.h>
 #include <cugraph_c/labeling_algorithms.h>
@@ -235,6 +236,21 @@ std::vector<double> cugraph_jaccard(const WeightedGraph& input, const std::vecto
   }
   return output;
 }
+std::vector<double> cugraph_betweenness(const WeightedGraph& input, int device, Work& work) {
+  if (input.rows.size() < 3 || edgeless(input)) return std::vector<double>(input.rows.size(), 0);
+  std::uint64_t per_source = input.rows.size();
+  for (const auto& row : input.rows) per_source += row.size();
+  const auto remaining = work.max_candidates - std::min(work.candidates, work.max_candidates);
+  if (input.rows.size() > remaining / per_source) throw Failure("resource_limit", "All-source betweenness exceeds the GPU work budget");
+  work.tick(per_source * input.rows.size());
+  Instance instance(input, device, work); cugraph_centrality_result_t* raw = nullptr; Error error;
+  const auto status = ::cugraph_betweenness_centrality(instance.handle.get(), instance.graph.get(), nullptr, FALSE, FALSE, TRUE, &raw, &error.value);
+  Owned<cugraph_centrality_result_t, cugraph_centrality_result_free> result(raw, cugraph_centrality_result_free); error.check(status);
+  const auto ids = copy<std::int32_t>(instance.handle.get(), cugraph_centrality_result_get_vertices(result.get()));
+  auto values = mapped(ids, copy<double>(instance.handle.get(), cugraph_centrality_result_get_values(result.get())), input.rows.size());
+  if (!input.directed) for (auto& value : values) value *= 2;
+  work.tick(0); return values;
+}
 std::vector<std::uint32_t> cugraph_core_numbers(const WeightedGraph& input, int device, Work& work) {
   if (edgeless(input)) return std::vector<std::uint32_t>(input.rows.size(), 0);
   Instance instance(input, device, work); cugraph_core_result_t* raw = nullptr; Error error;
@@ -245,5 +261,36 @@ std::vector<std::uint32_t> cugraph_core_numbers(const WeightedGraph& input, int 
   std::vector<std::uint32_t> output;
   for (const auto value : values) { require(value >= 0, "libcugraph returned a negative core number"); output.push_back(value); }
   return output;
+}
+std::vector<std::uint32_t> cugraph_truss_numbers(const WeightedGraph& input,
+    const std::vector<std::pair<VertexIndex, VertexIndex>>& edges, int device, Work& work) {
+  std::vector<std::uint32_t> values(edges.size(), 2);
+  if (edges.empty()) return values;
+  Instance instance(input, device, work);
+  std::map<std::pair<VertexIndex, VertexIndex>, std::size_t> positions;
+  for (std::size_t e = 0; e < edges.size(); ++e) positions[edges[e]] = e;
+  std::size_t maximum_degree = 0;
+  for (const auto& row : input.rows) maximum_degree = std::max(maximum_degree, row.size());
+  std::vector<bool> previous(edges.size(), true);
+  for (std::size_t k = 3; k <= maximum_degree + 1; ++k) {
+    work.tick(input.rows.size() + edges.size());
+    cugraph_induced_subgraph_result_t* raw = nullptr; Error error;
+    const auto status = ::cugraph_k_truss_subgraph(instance.handle.get(), instance.graph.get(), k, TRUE, &raw, &error.value);
+    Owned<cugraph_induced_subgraph_result_t, cugraph_induced_subgraph_result_free> result(raw, cugraph_induced_subgraph_result_free); error.check(status);
+    const auto sources = copy<std::int32_t>(instance.handle.get(), cugraph_induced_subgraph_get_sources(result.get()));
+    const auto targets = copy<std::int32_t>(instance.handle.get(), cugraph_induced_subgraph_get_destinations(result.get()));
+    require(sources.size() == targets.size(), "libcugraph returned inconsistent truss endpoints");
+    if (sources.empty()) break;
+    std::vector<bool> current(edges.size(), false);
+    for (std::size_t i = 0; i < sources.size(); ++i) {
+      work.tick(); require(sources[i] >= 0 && targets[i] >= 0 && sources[i] != targets[i], "libcugraph returned invalid truss endpoints");
+      const std::pair<VertexIndex, VertexIndex> edge = std::minmax(sources[i], targets[i]);
+      const auto found = positions.find(edge);
+      require(found != positions.end() && previous[found->second], "libcugraph truss output lost original edge identity or nesting");
+      values[found->second] = k; current[found->second] = true;
+    }
+    previous = std::move(current);
+  }
+  return values;
 }
 }  // namespace graphmine::runtime

@@ -10,6 +10,7 @@
 #include "backends/maximum_clique_backend.hpp"
 #include "backends/k_clique_backend.hpp"
 #include "backends/k_core_backend.hpp"
+#include "backends/betweenness_centrality_backend.hpp"
 #endif
 
 namespace graphmine::runtime {
@@ -61,10 +62,12 @@ json::array original_mining_backends(const std::string& operation) {
     add("gamma", detail::gamma_kclique_backend_compiled(), "repaired original GPU count plus optional bounded native materialization");
     add("kcgpu", detail::kcgpu_backend_compiled(), "repaired original GPU count plus optional bounded native materialization");
   } else if (operation == "k-core") add("kcore-gpu", detail::kcore_gpu_backend_compiled(), "original GPU peeling kernels");
+  else if (operation == "betweenness-centrality") add("turbo-bc", detail::turbobc_backend_compiled(), "original all-source GPU Brandes kernels, float32 accumulation");
 #else
   const auto identifiers = operation == "maximal-cliques" ? std::vector<const char*>{"rdmce", "mce-gpu", "g2-aimd"}
       : operation == "maximum-clique" ? std::vector<const char*>{"cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu"}
-      : operation == "k-cliques" ? std::vector<const char*>{"graphset", "gamma", "kcgpu"} : std::vector<const char*>{"kcore-gpu"};
+      : operation == "k-cliques" ? std::vector<const char*>{"graphset", "gamma", "kcgpu"}
+      : operation == "betweenness-centrality" ? std::vector<const char*>{"turbo-bc"} : std::vector<const char*>{"kcore-gpu"};
   for (const auto id : identifiers) add(id, false, "not linked in this standalone build");
 #endif
   return output;
@@ -128,6 +131,19 @@ std::vector<std::uint32_t> original_core_numbers(const MiningGraph& adj, int dev
   status(result.status); work.tick(0); return result.core_numbers;
 #else
   throw Failure("backend_unavailable", "Original mining backends are not linked");
+#endif
+}
+std::vector<double> original_betweenness(const MiningGraph& adj, int device, Work& work) {
+#ifdef GRAPHMINE_NATIVE_ORIGINAL_MINING
+  if (adj.size() < 3 || std::all_of(adj.begin(), adj.end(), [](const auto& row) { return row.empty(); })) return std::vector<double>(adj.size(), 0);
+  std::uint64_t cost = adj.size(); for (const auto& row : adj) cost += row.size();
+  const auto remaining = work.max_candidates - std::min(work.candidates, work.max_candidates);
+  if (adj.size() > remaining / cost) throw Failure("resource_limit", "All-source TurboBC exceeds the GPU work budget");
+  work.tick(cost * adj.size());
+  auto input = csr(adj, work); auto lock = lock_original(work); const auto result = detail::run_turbobc(input, device);
+  status(result.status); work.tick(0); return result.scores;
+#else
+  throw Failure("backend_unavailable", "Original TurboBC is not linked");
 #endif
 }
 }  // namespace graphmine::runtime

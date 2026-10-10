@@ -1,0 +1,5 @@
+Validated 500 centrality requests
+Validated 1000 centrality requests
+Validated 1500 centrality requests
+Validated 2000 centrality requests
+{"suite":"betweenness","backend":"turbo-bc","gpu_device":0,"passed_requests":2048,"failed":0,"implementation_sha256":"1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c"}

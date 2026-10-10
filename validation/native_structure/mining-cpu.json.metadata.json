@@ -1,0 +1,14 @@
+{
+  "binary_files": {
+    "/tmp/graphmine-native-structure-cpu/libgraphmine_runtime.so.2.0.0": "a42a713d5cc6fef17894ae9bc1ab8811a4da9fc7045915b30ef438f1eb43514a",
+    "/tmp/graphmine-native-structure-cpu/graphmine-native": "5fbf746eafb2cb2a81a00297410a41f05b0d4390cef98c4028783532a77a9bd2",
+    "/tmp/graphmine-native-structure-cpu/graphmine_runtime_test": "5c624931d26c520c43caa697f6a6ec9ccaedcaceb4175c6cb6bd26ce3c6e99b1",
+    "/tmp/graphmine-native-structure-cpu/graphmine_reference_test": "83a3fc7be2f330312b6fb2bdb01d6b9cd783b08b10e64c4e196140b740237246",
+    "/tmp/graphmine-native-structure-cpu/graphmine_mining_test": "907820c64131452fe6f167fdfa64f05e8d4209d5db482c7c33ebb52b629dba85",
+    "/tmp/graphmine-native-structure-cpu/graphmine_structure_test": "b95602db1381f8cdccc785cfe8641b822e76bd127226f39bb2a65b24ff9e688a",
+    "/tmp/graphmine-native-structure-cpu/graphmine_centrality_test": "e0e65fee8f41292c792bebd31fa9b092e69e91013ab49fc8d5e62a0e493d86e1",
+    "/tmp/graphmine-native-structure-cpu/native-source-hashes.txt": "100fdfdae8152af575773a3b868308dd770ef32d1ddf22cf656db534bd1d67fd"
+  },
+  "build_unchanged_during_run": true,
+  "implementation_sha256": "100fdfdae8152af575773a3b868308dd770ef32d1ddf22cf656db534bd1d67fd"
+}

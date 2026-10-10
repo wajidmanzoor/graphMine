@@ -5,6 +5,7 @@
 #include <cmath>
 #include <map>
 #include <limits>
+#include <queue>
 
 namespace graphmine::runtime {
 double number(const json::value& value, const std::string& context) {
@@ -54,6 +55,8 @@ WeightedGraph weighted_graph(const Graph& graph, bool weighted, bool nonnegative
 }
 
 std::string gpu_support_reason(const std::string& operation, const Graph& graph, const json::object& args) {
+  if (operation == "betweenness-centrality" && args.contains("weight_mode") && args.at("weight_mode") == "edge_weight")
+    return "Native GPU betweenness profiles support unweighted paths; positive weighted paths use exact C++ CPU code";
   if (operation == "link-prediction" && args.contains("scoring_measure") && args.at("scoring_measure") != "jaccard")
     return "The native libcugraph link-prediction profile supports Jaccard; the other measures use C++ CPU code";
   if (operation == "personalized-pagerank" && args.contains("dangling_policy") && args.at("dangling_policy") == "redistribute_uniformly")
@@ -78,6 +81,32 @@ std::string gpu_support_reason(const std::string& operation, const Graph& graph,
 }
 std::string backend_support_reason(const std::string& operation, const std::string& backend, const Graph& graph, const json::object& args, Work& work) {
   if (backend == "cpp") return {};
+  if (operation == "betweenness-centrality" && backend == "turbo-bc" && graph.directed())
+    return "The original TurboBC profile supports undirected graphs; use libcugraph or C++ for directed betweenness";
+  if (operation == "betweenness-centrality" && graph.vertex_count() > 32) {
+    // Both linked GPU profiles use signed int32 shortest-path counters, even
+    // though their returned scores are floating point. A simple shortest path
+    // is determined by its interior vertex subset, so n<=32 is safe outright.
+    // For larger graphs, bounded BFS admission detects overflow before CUDA.
+    const auto input = weighted_graph(graph, false, false, "collapse", "outgoing", work);
+    for (VertexIndex source = 0; source < input.rows.size(); ++source) {
+      work.tick(input.rows.size());
+      std::vector<std::int64_t> distance(input.rows.size(), -1);
+      std::vector<std::uint64_t> paths(input.rows.size(), 0);
+      std::queue<VertexIndex> queue; queue.push(source); paths[source] = 1; distance[source] = 0;
+      while (!queue.empty()) {
+        work.tick(); const auto u = queue.front(); queue.pop();
+        for (const auto& arc : input.rows[u]) {
+          work.tick(); const auto v = arc.target;
+          if (distance[v] < 0) { distance[v] = distance[u] + 1; queue.push(v); }
+          if (distance[v] == distance[u] + 1) {
+            paths[v] += paths[u];
+            if (paths[v] > INT32_MAX) return "The GPU shortest-path counter would exceed signed int32; use exact native C++ betweenness";
+          }
+        }
+      }
+    }
+  }
   std::uint64_t k = 0;
   if (operation == "k-cliques") {
     if (!args.contains("k") || !(args.at("k").is_uint64() || (args.at("k").is_int64() && args.at("k").as_int64() >= 0))) return {};

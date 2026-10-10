@@ -1,0 +1,4 @@
+Validated 500 requests with kcgpu
+Validated 1000 requests with kcgpu
+Validated 1500 requests with kcgpu
+{"suite":"fixed","backend":"kcgpu","gpu_device":0,"passed_requests":1584,"failed":0,"implementation_sha256":"1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c"}

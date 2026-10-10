@@ -1,0 +1,26 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "kcore-gpu",
+    "gpu_device": 0,
+    "passed_requests": 4,
+    "failed": 0,
+    "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c"
+  },
+  {
+    "suite": "core",
+    "backend": "kcore-gpu",
+    "gpu_device": 0,
+    "passed_requests": 264,
+    "failed": 0,
+    "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "kcore-gpu",
+    "gpu_device": 0,
+    "passed_requests": 20,
+    "failed": 0,
+    "implementation_sha256": "1d9f3650d87837c0b421e3d3a966f0df0e98f6a4823fd4a34de723886d4dd25c"
+  }
+]

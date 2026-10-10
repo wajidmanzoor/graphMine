@@ -14,8 +14,8 @@ The catalog marks profiles still awaiting migration as `pending`.
 
 ## Current migration boundary
 
-The shared runtime has native profiles for sixteen formal problems. All sixteen have C++ CPU
-implementations. GPU dispatch calls native libraries directly:
+The shared runtime has twenty operations covering profiles for eighteen formal
+problems. All twenty have C++ CPU implementations. GPU dispatch calls native libraries directly:
 
 | Operation | Family | GPU implementation |
 | --- | --- | --- |
@@ -25,7 +25,10 @@ implementations. GPU dispatch calls native libraries directly:
 | Topological sort | traversal | CPU profile |
 | Spanning tree/forest | trees | libcugraph, minimum and maximum |
 | Connected components | connectivity | libcugraph, weak and strong |
+| Biconnected edge blocks | connectivity | CPU profile |
 | PageRank | centrality | libcugraph |
+| Degree centrality | centrality | CPU profile |
+| Betweenness centrality | centrality | libcugraph and original TurboBC; unweighted paths |
 | Personalized PageRank | centrality | libcugraph; custom uniform dangling redistribution uses CPU |
 | Local link prediction | similarity | libcugraph Jaccard; eight CPU measures |
 | Triangle counting/listing | motifs | Original ToT and WeTriC CUDA backends |
@@ -33,12 +36,13 @@ implementations. GPU dispatch calls native libraries directly:
 | Maximum clique | cliques | Original CUDA-MS, GPUMaximumClique and Maximum-Clique-on-GPU witnesses; native optimality check |
 | Fixed-size cliques | cliques | Original GraphSet, repaired GAMMA and repaired KCGPU counts |
 | Core decomposition | cores | Native libcugraph and original KCoreGPU |
+| Truss decomposition | cores | Native libcugraph |
 | Maximum independent set | independent_sets | Original maximum-clique kernels on the native complement, with optimality check |
 | Minimum vertex cover | independent_sets | Exact complement reduction using the same maximum-clique kernels |
 
 The original `Graph` and typed external IDs are reused. Existing native APIs
 remain available while their remaining profiles are brought into the shared
-runtime. Original triangle and mining backends are included when building from the
+runtime. Original triangle, mining and centrality backends are included when building from the
 `library` project with their corresponding options enabled.
 
 `graphmine.native.NativeLibrary` is the thin Python binding. Its family methods
@@ -237,7 +241,7 @@ requirements in `VERIFIED_ANALYTICS_IMPLEMENTATION.md`, including the seven
 previously missing formal problems, table projections, routing/evaluation,
 recovery, MCP, reviewed examples, scheduling and representation caching.
 
-## Validation at this checkpoint
+## Earlier native reference validation
 
 `validation/native_reference` records **39,231 successful native requests**:
 
@@ -278,7 +282,7 @@ python tools/validate_native_runtime.py --cpu-build build/native-cpu \
 ```
 
 For the current matrix, the GPU build must include libcugraph, libcudf, ToT,
-WeTriC and all ten original mining backends listed above, with both physical
+WeTriC, TurboBC and all ten original mining backends listed above, with both physical
 devices visible. The runner records source-bound implementation hashes,
 immutable binary snapshots and per-suite logs; an external watchdog bounds
 each oracle process.
@@ -286,7 +290,7 @@ each oracle process.
 `tools/audit_native_runtime.py` verifies these reports, the source inventory
 embedded in each build, current source contents and the binding test snapshot.
 It records binary and resolved dependency hashes in
-`catalog/native_runtime_coverage.json`. This is migration evidence for the sixteen
+`catalog/native_runtime_coverage.json`. This is migration evidence for the eighteen
 integrated problems and their listed profiles; it does not establish coverage of pending profiles or
 replace the application's evidence gate.
 
@@ -326,7 +330,7 @@ uses outgoing degree on the symmetric graph, avoiding double-counted cores.
 Catalog strings and implementation hashes have per-library storage so CPU
 and GPU builds loaded together cannot share the wrong provenance.
 
-The current reports live in `validation/native_mining`. They retain the failed
+The mining checkpoint reports live in `validation/native_mining`. They retain the failed
 binding comparison that exposed the provenance defect and the corrected
 acceptance run. The matrix checks exhaustive subsets on all five-vertex CPU
 graphs and four-vertex GPU graphs, larger complete/random fixtures, typed IDs,
@@ -347,8 +351,8 @@ python tools/validate_native_mining_depth.py --gpu-build build/original-with-rap
 
 Standalone C and C++ examples execute core decomposition and maximum
 clique. Their verification removes
-Python from PATH and hides CUDA. The native Python binding has the same
-sixteen operations and family assignments; the application algorithm worker
+Python from PATH and hides CUDA. The native Python binding obtains the same
+operations and family assignments from the shared catalog; the application algorithm worker
 and the broader reference API still require migration.
 
 The completed mining checkpoint contains **83,624 passing native requests**:
@@ -358,3 +362,73 @@ counts under racecheck on both devices, with zero reported errors or hazards.
 The binding suite has 88 passes, native cuDF construction has 64, and working
 and staged app acceptance has 41 and 25 respectively. No acceptance checks are
 skipped. The two app runs retain an existing Starlette deprecation warning.
+
+
+## Native structure and centrality contracts
+
+Biconnected decomposition returns edge blocks, corresponding vertex groups,
+bridges, articulation vertices and isolated vertices. Its iterative Tarjan
+traversal handles deep graphs without recursive stack growth. Truss
+decomposition returns every edge's largest k under the k-2 triangle-support
+convention, the maximum truss number (zero when empty), and an optional selected
+k-truss. Both operations require undirected input, discard loops, collapse
+parallel edges and ignore weights. Each normalized edge uses its first original
+ID and retains all collapsed source edge IDs. These outputs and their family
+assignments are identical through C++, the CLI and Python.
+
+Degree centrality supports incoming, outgoing, both and undirected projection;
+normalization divides by n-1 when n>1. Betweenness excludes endpoints and scores
+every source. Its C++ implementation uses unbounded integer path counts and
+exact rational dependencies/distances over the admitted binary64 lengths.
+Weighted paths require strictly positive lengths and minimum parallel weights.
+Exact fractions accompany display scores. PageRank, degree and betweenness
+return their score definitions and full ranked vertices, with numeric IDs
+before string IDs and ascending stored values as the tie break. Remaining
+centrality measures and contract variants are still pending.
+
+Direct libcugraph betweenness handles directed or undirected unweighted graphs.
+Original TurboBC handles undirected unweighted graphs and uses float32
+accumulation. Both are numerical profiles. Normalized and raw scores follow
+the same conventions as C++; a three-vertex path has raw center score one and
+normalized center score one. GPU work is admitted before native execution.
+
+The linked GPU profiles cannot safely count more than INT32_MAX shortest
+paths. Bounded native BFS checks larger inputs before dispatch. Explicit GPU
+requests outside this limit fail; automatic selection records the reason for
+using exact C++. A reproduced 66-vertex layered graph returned a raw-score sum
+of 21,609 from libcugraph where the exact pair-distance identity requires
+21,857. Its request, results and pre-admission binary hashes are retained in
+`validation/native_structure/known-failures`; the current admission rule
+excludes that failure. This is a path-count limit, not a vertex-count limit.
+
+
+The structure/centrality checkpoint reports in `validation/native_structure`
+contain **125,924 passing native requests**: 68,344 CPU and 28,790 per GPU.
+This includes the earlier BFS, triangle, path, forest, ranking, similarity
+and original mining regressions. New structure checks use exhaustive edge
+subsets on all five-vertex graphs; centrality checks independently enumerate
+simple paths and verify exact shortest-path fractions. Larger cases include
+a 20,000-vertex path, a 64-vertex complete graph and layered graphs whose
+shortest-path counts exceed fixed-width integer capacity.
+
+Eight original mining depth/admission checks and eight centrality sanitizer
+runs pass on both GPUs. The latter cover libcugraph and TurboBC with memcheck
+and initcheck, each running nine boundary requests, with zero reported errors.
+There are also 104 binding/CLI checks, 64 cuDF/construction checks, 41 working-app
+and 25 staged-app acceptance checks, with no failures or skips. Installed
+C/C++ consumers run with Python off PATH and CUDA hidden. The audit verifies
+43 CPU source files, 1,023 GPU source files, seven binaries per build and
+32 resolved native dependencies. All GPU build sources match the Git index;
+unrelated working changes remain outside this checkpoint.
+
+```sh
+python tools/validate_native_runtime.py --cpu-build build/native-cpu \
+  --gpu-build build/original-with-rapids/runtime --output validation/native_structure
+python tools/validate_native_centrality_sanitizers.py \
+  --gpu-build build/original-with-rapids/runtime \
+  --output validation/native_structure/centrality-sanitizers
+```
+
+The remaining 52 formal problems, unfinished variants within migrated
+problems, and the application algorithm worker still require native migration.
+This checkpoint does not close the review-integration goal.

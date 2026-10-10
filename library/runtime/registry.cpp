@@ -43,6 +43,8 @@ std::vector<Operation> definitions() {
   const auto weights = choice("unweighted", {"unweighted", "edge_weight"});
   auto core_backends = gpu;
   for (const auto& backend : original_mining_backends("k-core")) core_backends.push_back(backend);
+  auto betweenness_backends = gpu;
+  for (const auto& backend : original_mining_backends("betweenness-centrality")) betweenness_backends.push_back(backend);
   std::vector<Operation> result{
     {card("breadth-first-search", "breadth_first_search", "Connections within a number of steps",
          "Minimum hop distances with explicit independent or nearest-source searches. Preserve direction; discard loops and collapse duplicate arcs; weights are ignored. IDs are signed int64 or strings.",
@@ -78,6 +80,13 @@ std::vector<Operation> definitions() {
          "Directed random-walk scores with uniform restart and dangling distribution. Drop loops, sum parallel weights and independently verify the fixed-point residual.",
          {{"alpha", real(0.85, 0, 1)}, {"tolerance", real(1e-9, 0)}, {"max_iterations", positive(1000)}, {"weight_mode", weights}},
          {{"scores", port("vertex_scores")}}, gpu), pagerank},
+    {card("degree-centrality", "centrality_influential_node_mining", "Rank vertices by their number of connections",
+         "Exact degree scores with outgoing, incoming, both or undirected-projection semantics. Drop loops, collapse duplicate edges and ignore weights. Optional normalization divides by n-1; isolates score zero.",
+         {{"normalized", parameter("boolean", true)}, {"direction_mode", choice("outgoing", {"outgoing", "incoming", "both", "undirected_projection"})}},
+         {{"scores", port("vertex_scores")}}, {}), degree_centrality},
+    {card("betweenness-centrality", "centrality_influential_node_mining", "Rank vertices that connect shortest paths",
+         "All-source betweenness excluding endpoints. Preserve direction, drop loops and keep minimum parallel length. CPU supports exact rational scores and strictly positive weighted paths; GPU profiles use unweighted paths with declared floating-point arithmetic.",
+         {{"normalized", parameter("boolean", true)}, {"weight_mode", weights}}, {{"scores", port("vertex_scores")}}, betweenness_backends), betweenness},
     {card("personalized-pagerank", "personalized_pagerank_rwr", "Restart walks around seed vertices",
          "Seeded PageRank with explicit direction, weight and dangling policies. Full score port stays complete when the displayed ranking is filtered or capped.",
          {{"seed_vertices", parameter("array", nullptr, true)}, {"restart_probability", real(0.15, 0, 1)},
@@ -101,6 +110,12 @@ std::vector<Operation> definitions() {
          "Exact count for k>=2 with no upper k bound on CPU. Undirected simple projection; loops, duplicate edges and weights ignored. GPU counts require supported k and a uint64 count bound. Counts remain complete when memberships are capped.",
          {{"k", parameter("integer", nullptr, true)}, {"mode", mode}, {"result_limit", positive(nullptr, true)}},
          {{"groups", port("vertex_groups")}, {"count", port("scalar")}}, original_mining_backends("k-cliques")), k_cliques},
+    {card("biconnected-components", "biconnected_components", "Find fragile connections and cut vertices",
+         "Exact vertex-biconnected edge blocks, bridges and articulation vertices. Undirected input; loops discarded and parallel edges collapsed. Every normalized edge keeps its first original ID and all source edge IDs.",
+         {}, {{"groups", port("vertex_groups")}, {"vertices", port("vertex_set")}, {"edges", port("edge_set")}}, {}), biconnected},
+    {card("k-truss", "k_truss_decomposition", "Find connections supported by triangles",
+         "Complete edge truss numbers using the k-2 support convention, plus optional k-truss selection. Undirected simple projection, weights ignored. First original edge IDs represent collapsed edges; source IDs are retained.",
+         {{"requested_k", parameter("integer", nullptr, false, true)}}, {{"edges", port("edge_set")}}, gpu), truss},
     {card("k-core", "k_core_decomposition", "Find the well-connected core",
          "Exact core numbers and optional selected vertices. Undirected simple projection; loops, duplicate edges and weights ignored. Isolates have core number zero.",
          {{"requested_k", parameter("integer", nullptr, false, true)}}, {{"scores", port("vertex_scores")}, {"vertices", port("vertex_set")}}, core_backends), core_numbers},
@@ -120,10 +135,15 @@ std::vector<Operation> definitions() {
       metadata["gpu_limitations"] = json::array{"graphset: k=3..6; gamma: k=3..7; kcgpu: k=3..10; k larger than vertex count returns zero", "A forward-subset count bound must fit uint64"};
     }
     if (id == "maximal-cliques") metadata["gpu_limitations"] = json::array{"GPU count plus bounded native materialization", "A forward-subset count bound must fit uint64"};
+    if (id == "k-truss") metadata.at("parameters").as_object().at("requested_k").as_object()["minimum"] = 2;
     if (id == "k-core") metadata.at("parameters").as_object().at("requested_k").as_object()["minimum"] = 0;
     if (id == "minimum-vertex-cover") metadata.at("parameters").as_object().at("k").as_object()["minimum"] = 0;
     if (id == "pagerank" || id == "personalized-pagerank" || id == "link-prediction") metadata["quality"] = "numerical";
     if (id == "single-source-shortest-paths" || id == "many-source-shortest-paths") metadata["quality"] = "backend_dependent";
+    if (id == "betweenness-centrality") {
+      metadata["quality"] = "backend_dependent";
+      metadata["gpu_limitations"] = json::array{"Unweighted paths only", "Original turbo-bc supports undirected graphs and uses float32 accumulation; libcugraph supports either direction", "Shortest-path counts must fit signed int32; larger inputs receive bounded CPU admission checks"};
+    }
     if (id == "personalized-pagerank") metadata["gpu_limitations"] = json::array{"Custom uniform dangling redistribution uses the CPU profile"};
     if (id == "link-prediction") metadata["gpu_limitations"] = json::array{"Only scoring_measure=jaccard"};
     if (id == "single-source-shortest-paths" || id == "many-source-shortest-paths") metadata["gpu_limitations"] = json::array{"Path cost bounds must fit float64; integral costs beyond 2^53 require CPU"};

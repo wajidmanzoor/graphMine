@@ -798,3 +798,49 @@ interaction/routing/recovery, model/external evaluation, MCP and reviewed
 examples, two-GPU admission/cancellation, reusable representations and scale
 validation. cuDF remains the tabular reader and Cytoscape remains the browser
 visualization path. The overall goal remains active.
+
+
+### Native structure and centrality checkpoint
+
+- The standalone core now exposes **20 operations covering profiles for 18 of
+  70 formal problems**. New C++ implementations cover biconnected edge blocks,
+  full truss decomposition, degree centrality and exact all-source betweenness.
+  Direct native libcugraph adds truss extraction and betweenness; original
+  TurboBC is linked through the same C++/CUDA runtime.
+- Biconnected outputs include edge blocks, cut vertices, bridges and isolates.
+  Truss results include all per-edge numbers, the maximum truss number and
+  optional selection. Both retain original IDs when collapsing parallel edges.
+  Degree and betweenness expose full scores and rankings; PageRank also gains
+  the formal ranking and score-definition outputs. CPU betweenness uses exact
+  rational arithmetic over admitted binary64 lengths and unbounded path counts.
+- GPU betweenness remains an unweighted numerical profile. Normalization is
+  consistent across C++, libcugraph and TurboBC; precision is disclosed. Native
+  admission checks reject shortest-path counts beyond signed int32 capacity.
+  This prevents a reproduced libcugraph error on a 66-vertex layered graph:
+  the unguarded raw-score sum was 21,609 instead of 21,857. Auto selection uses
+  exact C++ for that input; explicit GPU requests report unsupported input.
+- Full regression evidence contains **125,924 passing native requests**
+  (68,344 CPU, 28,790 per GPU), **8 original mining depth/admission checks**,
+  **8 centrality sanitizer runs**, **104 binding/CLI tests**, **64 native cuDF
+  construction tests**, and **41 working-app / 25 staged-app acceptance tests**.
+  CUDA memcheck/initcheck report zero errors on both centrality backends and
+  both devices. The app tests retain the existing Starlette warning.
+- Independent oracles enumerate edge subsets and simple paths. Larger checks
+  include a 20,000-vertex path, K64 and layered graphs with enormous path counts;
+  typed IDs, reordered vertex records, duplicate edges, strict parameters and
+  budgets are exercised. Installed C/C++ consumers run without Python on PATH
+  or visible CUDA devices. Source, binary and dependency snapshots are checked;
+  all 1,023 GPU source hashes match the exact Git index.
+
+Reports are under `validation/native_structure`, including the retained
+pre-admission failure. `catalog/native_runtime_coverage.json` records the
+current native evidence. The Python wrapper obtains the same family catalog
+and results from the core. Tabular ingestion remains native cuDF and browser
+rendering remains Cytoscape.
+
+The goal remains **active**. Required work includes native coverage for the
+remaining **52 formal problems**, unimplemented contract variants within
+migrated problems, migration of the reference API/application algorithm
+worker, and all unfinished A/R/B requirements above. Passing native profile
+checks does not establish completion of the full formal contracts or the
+review integration.
