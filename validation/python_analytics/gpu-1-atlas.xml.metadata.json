@@ -1,0 +1,35 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "device": "gpu",
+  "cuda_visible_devices": "1",
+  "case_shard": "1/2",
+  "source_files": {
+    "graphmine/__init__.py": "32fd043a41b3eb83dd6273042e48277c33f70c375f5dee2bffefb4cd1a7033c1",
+    "graphmine/algorithms/__init__.py": "53382699408e6aa2062563bd8280220201846569a525274a82950f27ff621c1a",
+    "graphmine/algorithms/_common.py": "fbf4c63a5484a3135072e5e60a9eafd8a2970079c5b867a021a059f994318310",
+    "graphmine/algorithms/centrality.py": "4ff2fdf3efdb0e9a5ad8cac0ff611e4e0fafd93af121f53bfd5eab26e64cdc60",
+    "graphmine/algorithms/optimization.py": "b37441f09b7d410d9a426ec872f830fbb352d765d92b4bfd08019bb3ee511ee5",
+    "graphmine/algorithms/structure.py": "a067383c3002c8bcad9410cf3f9b3a317a1828f264f6d12501dedcb4443849db",
+    "graphmine/algorithms/traversal.py": "ac8d83d8cd2cae06278084a7082b80f3730ac56d47d6d7aefdfaf2d9ccdc3164",
+    "graphmine/backends/__init__.py": "b218e3f7e9db44250d8f6e2f805af2dff1526574fcd1e9f1bbed76cffcffc8e4",
+    "graphmine/backends/cugraph.py": "47de2462410ff3a6389fb7a19beda675d096627a25563afdd99cbd6f18ce194c",
+    "graphmine/cli.py": "c6c4b76fa544068386f3ad07fe690310f0c40e6e08a07095eed2c5d10d21e4d0",
+    "graphmine/contracts.py": "8b3e7961bd1faf57389d344aa5b65cdd833dbd03b064acfde4359261c4155a99",
+    "graphmine/dispatch.py": "1bd39848d75e8fdf4c8ace5bede0bdd5a040f4ecf0fb902526b0f73464eb7825",
+    "graphmine/exceptions.py": "2423cd49b2285fae98567483de16c9268907fe2b6dd3c340da511223da7b75c1",
+    "graphmine/graph.py": "662389d43e8b649b00fab760623398b889e29d8c99494101a86d0057a80f9c77",
+    "graphmine/registry.py": "069c332179f6e2c0420db44cec4adfbabe3406b122cd00523d35164e3aac8e4a",
+    "tests/conftest.py": "a553d1fe360fa94cb23d13498183125078b854c86d65801010a13601e0962b7b",
+    "tests/test_contracts.py": "4d60bc7f42ca1fa8872bef405c89828663529ecc497863998f32ec99e63d4be4",
+    "tests/test_small_graph_oracles.py": "f4b370577d84972b0b9ee4edcf76af0f4afadbfa88623ee2ecf68751128dab40"
+  },
+  "packages": {
+    "networkx": "3.7",
+    "numpy": "2.4.6",
+    "scipy": "1.18.1",
+    "cugraph-cu12": "26.10.0",
+    "nx-cugraph-cu12": "26.10.0",
+    "cupy-cuda12x": "14.2.0"
+  },
+  "sources_unchanged_during_run": true
+}

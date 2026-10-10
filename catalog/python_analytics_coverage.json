@@ -1,0 +1,1673 @@
+{
+  "schema_version": "1.0.0",
+  "problem_count": 70,
+  "cpu_operation_count": 27,
+  "problems_with_cpu_profile": 25,
+  "cugraph_operation_count": 13,
+  "reports": [
+    {
+      "id": "cpu-expanded",
+      "status": "passed",
+      "tests": 5617,
+      "failures": 0,
+      "skipped": 0,
+      "changed_sources": [],
+      "report": "validation/python_analytics/cpu-expanded.xml",
+      "report_sha256": "4b5ce3dc9e8fb0792f6743fc64b4984f735ef2c2603ec06e7c5dfe40534416fb",
+      "metadata": "validation/python_analytics/cpu-expanded.xml.metadata.json",
+      "packages": {
+        "networkx": "3.7",
+        "numpy": "2.4.6",
+        "scipy": "1.18.1",
+        "cugraph-cu12": "26.10.0",
+        "nx-cugraph-cu12": "26.10.0",
+        "cupy-cuda12x": "14.2.0"
+      }
+    },
+    {
+      "id": "gpu-0-expanded",
+      "status": "passed",
+      "tests": 1546,
+      "failures": 0,
+      "skipped": 0,
+      "changed_sources": [],
+      "report": "validation/python_analytics/gpu-0-expanded.xml",
+      "report_sha256": "a8cf4a2732cffece0df71df6a55eb9899338d8f46c8a616bf4944159aea3ef73",
+      "metadata": "validation/python_analytics/gpu-0-expanded.xml.metadata.json",
+      "packages": {
+        "networkx": "3.7",
+        "numpy": "2.4.6",
+        "scipy": "1.18.1",
+        "cugraph-cu12": "26.10.0",
+        "nx-cugraph-cu12": "26.10.0",
+        "cupy-cuda12x": "14.2.0"
+      }
+    },
+    {
+      "id": "gpu-1-expanded",
+      "status": "passed",
+      "tests": 1546,
+      "failures": 0,
+      "skipped": 0,
+      "changed_sources": [],
+      "report": "validation/python_analytics/gpu-1-expanded.xml",
+      "report_sha256": "9c92c76544b7ce0eff43305052a3efb49a854a0c6a058a467b4b4aa72ca59c06",
+      "metadata": "validation/python_analytics/gpu-1-expanded.xml.metadata.json",
+      "packages": {
+        "networkx": "3.7",
+        "numpy": "2.4.6",
+        "scipy": "1.18.1",
+        "cugraph-cu12": "26.10.0",
+        "nx-cugraph-cu12": "26.10.0",
+        "cupy-cuda12x": "14.2.0"
+      }
+    }
+  ],
+  "scope": "Executable profiles and the specific independent oracle fixtures recorded in each report. Native backends and outer-folder diagnostics are separate; no universal correctness or full parameter coverage claim.",
+  "problems": [
+    {
+      "problem_id": "maximal_clique_enumeration",
+      "name": "Maximal Clique Enumeration",
+      "contract": "problems/01_maximal_clique_enumeration/problem.json",
+      "cpu_operations": [
+        "maximal-cliques"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "maximum_clique",
+      "name": "Maximum Clique",
+      "contract": "problems/02_maximum_clique/problem.json",
+      "cpu_operations": [
+        "maximum-clique"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "k_clique_counting_enumeration",
+      "name": "k-Clique Counting and Enumeration",
+      "contract": "problems/03_k_clique_counting_enumeration/problem.json",
+      "cpu_operations": [
+        "k-cliques"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "quasi_clique_mining",
+      "name": "Quasi-Clique Mining",
+      "contract": "problems/04_quasi_clique_mining/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "densest_subgraph",
+      "name": "Densest Subgraph",
+      "contract": "problems/05_densest_subgraph/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "densest_k_subgraph",
+      "name": "Densest k-Subgraph",
+      "contract": "problems/06_densest_k_subgraph/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "k_core_decomposition",
+      "name": "k-Core Decomposition",
+      "contract": "problems/07_k_core_decomposition/problem.json",
+      "cpu_operations": [
+        "k-core"
+      ],
+      "cugraph_operations": [
+        "k-core"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "k_truss_decomposition",
+      "name": "k-Truss Decomposition",
+      "contract": "problems/08_k_truss_decomposition/problem.json",
+      "cpu_operations": [
+        "k-truss"
+      ],
+      "cugraph_operations": [
+        "k-truss"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "maximal_biclique_enumeration",
+      "name": "Maximal Biclique Enumeration",
+      "contract": "problems/09_maximal_biclique_enumeration/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "triangle_counting_listing",
+      "name": "Triangle Counting and Listing",
+      "contract": "problems/10_triangle_counting_listing/problem.json",
+      "cpu_operations": [
+        "triangle-counting"
+      ],
+      "cugraph_operations": [
+        "triangle-counting"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_motif_counting",
+      "name": "Graph Motif Counting",
+      "contract": "problems/11_graph_motif_counting/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graphlet_counting",
+      "name": "Graphlet Counting",
+      "contract": "problems/12_graphlet_counting/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "subgraph_isomorphism",
+      "name": "Subgraph Isomorphism and Pattern Matching",
+      "contract": "problems/13_subgraph_isomorphism/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "frequent_subgraph_mining",
+      "name": "Frequent Subgraph Mining",
+      "contract": "problems/14_frequent_subgraph_mining/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "temporal_motif_mining",
+      "name": "Temporal Motif Mining",
+      "contract": "problems/15_temporal_motif_mining/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "community_detection",
+      "name": "Disjoint Community Detection",
+      "contract": "problems/16_community_detection/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "overlapping_community_detection",
+      "name": "Overlapping Community Detection by k-Clique Percolation",
+      "contract": "problems/17_overlapping_community_detection/problem.json",
+      "cpu_operations": [
+        "overlapping-communities"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "name": "Centrality and Influential-Node Mining",
+      "contract": "problems/18_centrality_influential_node_mining/problem.json",
+      "cpu_operations": [
+        "betweenness-centrality",
+        "degree-centrality",
+        "pagerank"
+      ],
+      "cugraph_operations": [
+        "betweenness-centrality",
+        "pagerank"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "link_prediction",
+      "name": "Link Prediction",
+      "contract": "problems/19_link_prediction/problem.json",
+      "cpu_operations": [
+        "link-prediction"
+      ],
+      "cugraph_operations": [
+        "link-prediction"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_anomaly_detection",
+      "name": "Graph Anomaly Detection",
+      "contract": "problems/20_graph_anomaly_detection/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "personalized_pagerank_rwr",
+      "name": "Personalized PageRank and Random Walk with Restart",
+      "contract": "problems/21_personalized_pagerank_rwr/problem.json",
+      "cpu_operations": [
+        "personalized-pagerank"
+      ],
+      "cugraph_operations": [
+        "personalized-pagerank"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "max_flow_min_cut",
+      "name": "Maximum Flow and Minimum s-t Cut",
+      "contract": "problems/22_max_flow_min_cut/problem.json",
+      "cpu_operations": [
+        "max-flow-min-cut"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+      "contract": "problems/23_butterfly_counting_bipartite/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_edit_distance_mcs",
+      "name": "Graph Edit Distance and Maximum Common Subgraph",
+      "contract": "problems/24_graph_edit_distance_mcs/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "network_alignment",
+      "name": "Pairwise Network Alignment",
+      "contract": "problems/25_network_alignment/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "name": "Hop-Constrained Simple Path and Cycle Enumeration",
+      "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "group_steiner_tree",
+      "name": "Group Steiner Tree",
+      "contract": "problems/27_group_steiner_tree/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "influence_maximization",
+      "name": "Influence Maximization under Diffusion Models",
+      "contract": "problems/28_influence_maximization/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "simrank_vertex_similarity",
+      "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+      "contract": "problems/29_simrank_vertex_similarity/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "balanced_graph_partitioning",
+      "name": "Balanced k-Way Graph Partitioning",
+      "contract": "problems/30_balanced_graph_partitioning/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "bipartite_matching_assignment",
+      "name": "Bipartite Matching and Linear Assignment",
+      "contract": "problems/31_bipartite_matching_assignment/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "signed_network_structural_balance",
+      "name": "Signed Network Structural Balance and Frustration Minimization",
+      "contract": "problems/32_signed_network_structural_balance/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "transitive_closure_reachability",
+      "name": "Transitive Closure and Reachability Indexing",
+      "contract": "problems/33_transitive_closure_reachability/problem.json",
+      "cpu_operations": [
+        "transitive-closure"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "entity_resolution_blocking",
+      "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
+      "contract": "problems/34_entity_resolution_blocking/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "connected_components",
+      "name": "Connected Components (Weakly and Strongly Connected)",
+      "contract": "problems/35_connected_components/problem.json",
+      "cpu_operations": [
+        "connected-components"
+      ],
+      "cugraph_operations": [
+        "connected-components"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_layout_force_directed",
+      "name": "Force-Directed Graph Layout",
+      "contract": "problems/36_graph_layout_force_directed/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "null_model_significance_testing",
+      "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+      "contract": "problems/37_null_model_significance_testing/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "breadth_first_search",
+      "name": "Breadth-First Search and Unweighted Shortest Paths",
+      "contract": "problems/38_breadth_first_search/problem.json",
+      "cpu_operations": [
+        "breadth-first-search"
+      ],
+      "cugraph_operations": [
+        "breadth-first-search"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "single_source_shortest_paths",
+      "name": "Weighted Single-Source Shortest Paths",
+      "contract": "problems/39_single_source_shortest_paths/problem.json",
+      "cpu_operations": [
+        "single-source-shortest-paths"
+      ],
+      "cugraph_operations": [
+        "single-source-shortest-paths"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "many_source_shortest_paths",
+      "name": "Many-Source and All-Pairs Shortest Distances",
+      "contract": "problems/40_many_source_shortest_paths/problem.json",
+      "cpu_operations": [
+        "many-source-shortest-paths"
+      ],
+      "cugraph_operations": [
+        "many-source-shortest-paths"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "spanning_tree_forest",
+      "name": "Minimum and Maximum Spanning Trees and Forests",
+      "contract": "problems/41_spanning_tree_forest/problem.json",
+      "cpu_operations": [
+        "spanning-tree-forest"
+      ],
+      "cugraph_operations": [
+        "spanning-tree-forest"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "maximal_independent_set",
+      "name": "Maximal Independent Set",
+      "contract": "problems/42_maximal_independent_set/problem.json",
+      "cpu_operations": [
+        "maximal-independent-set"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "vertex_coloring",
+      "name": "Vertex Coloring",
+      "contract": "problems/43_vertex_coloring/problem.json",
+      "cpu_operations": [
+        "vertex-coloring"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "general_graph_weighted_matching",
+      "name": "General-Graph Weighted Matching",
+      "contract": "problems/44_general_graph_weighted_matching/problem.json",
+      "cpu_operations": [
+        "weighted-matching"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "topological_sort",
+      "name": "Topological Sorting and DAG Levels",
+      "contract": "problems/45_topological_sort/problem.json",
+      "cpu_operations": [
+        "topological-sort"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "random_walk_generation",
+      "name": "Graph Random-Walk Generation",
+      "contract": "problems/46_random_walk_generation/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "neighborhood_sampling",
+      "name": "Neighborhood Sampling",
+      "contract": "problems/47_neighborhood_sampling/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "induced_subgraph_ego_extraction",
+      "name": "Induced Subgraph and Ego-Network Extraction",
+      "contract": "problems/48_induced_subgraph_ego_extraction/problem.json",
+      "cpu_operations": [
+        "induced-subgraph"
+      ],
+      "cugraph_operations": [
+        "induced-subgraph"
+      ],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "seeded_local_community_detection",
+      "name": "Seeded Local Community Detection",
+      "contract": "problems/49_seeded_local_community_detection/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "node_embedding",
+      "name": "Node Embedding",
+      "contract": "problems/50_node_embedding/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "knowledge_graph_embedding",
+      "name": "Knowledge-Graph Embedding",
+      "contract": "problems/51_knowledge_graph_embedding/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "node_classification_regression",
+      "name": "Node Classification and Regression",
+      "contract": "problems/52_node_classification_regression/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_classification_regression",
+      "name": "Graph Classification and Regression",
+      "contract": "problems/53_graph_classification_regression/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "hypergraph_partitioning",
+      "name": "Balanced Hypergraph Partitioning",
+      "contract": "problems/54_hypergraph_partitioning/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "spectral_graph_sparsification",
+      "name": "Spectral Graph Sparsification",
+      "contract": "problems/55_spectral_graph_sparsification/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "biconnected_components",
+      "name": "Biconnected Components, Articulation Points and Bridges",
+      "contract": "problems/56_biconnected_components/problem.json",
+      "cpu_operations": [
+        "biconnected-components"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "temporal_fastest_paths",
+      "name": "Temporal Fastest and Earliest-Arrival Paths",
+      "contract": "problems/57_temporal_fastest_paths/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "top_k_critical_paths_dag",
+      "name": "Top-k Critical Paths in DAGs",
+      "contract": "problems/58_top_k_critical_paths_dag/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_signal_denoising",
+      "name": "Graph Signal Denoising and Trend Filtering",
+      "contract": "problems/59_graph_signal_denoising/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_based_geolocation",
+      "name": "Graph-Based Geolocation",
+      "contract": "problems/60_graph_based_geolocation/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "widest_paths",
+      "name": "Single-Source Widest Paths",
+      "contract": "problems/61_widest_paths/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_coarsening",
+      "name": "Graph Coarsening and Quotient Construction",
+      "contract": "problems/62_graph_coarsening/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_laplacian_eigenpairs",
+      "name": "Graph Laplacian Eigenpairs",
+      "contract": "problems/63_graph_laplacian_eigenpairs/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "knn_graph_construction",
+      "name": "k-Nearest-Neighbor Graph Construction",
+      "contract": "problems/64_knn_graph_construction/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "hypergraph_node_learning",
+      "name": "Hypergraph Node Classification and Regression",
+      "contract": "problems/65_hypergraph_node_learning/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "maximum_independent_set",
+      "name": "Maximum Independent Set",
+      "contract": "problems/66_maximum_independent_set/problem.json",
+      "cpu_operations": [
+        "maximum-independent-set"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "persistent_homology",
+      "name": "Flag-Complex Persistent Homology",
+      "contract": "problems/67_persistent_homology/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "single_graph_frequent_subgraph_mining",
+      "name": "Frequent Subgraphs in One Labeled Graph",
+      "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "minimum_vertex_cover",
+      "name": "Minimum Vertex Cover",
+      "contract": "problems/69_minimum_vertex_cover/problem.json",
+      "cpu_operations": [
+        "minimum-vertex-cover"
+      ],
+      "cugraph_operations": [],
+      "status": "has_executable_profile",
+      "full_formal_parameter_coverage_claimed": false
+    },
+    {
+      "problem_id": "graph_condensation",
+      "name": "Learned Graph Condensation",
+      "contract": "problems/70_graph_condensation/problem.json",
+      "cpu_operations": [],
+      "cugraph_operations": [],
+      "status": "integration_required",
+      "full_formal_parameter_coverage_claimed": false
+    }
+  ],
+  "operations": [
+    {
+      "id": "betweenness-centrality",
+      "problem_id": "centrality_influential_node_mining",
+      "family": "centrality",
+      "title": "Find bridges between people or places",
+      "description": "All-source betweenness centrality; optional weights are positive path lengths.",
+      "parameters": {
+        "normalized": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "numerical",
+      "references": []
+    },
+    {
+      "id": "degree-centrality",
+      "problem_id": "centrality_influential_node_mining",
+      "family": "centrality",
+      "title": "Rank the number of connections",
+      "description": "Degree centrality or raw degree with explicit direction.",
+      "parameters": {
+        "direction_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "outgoing",
+          "choices": [
+            "incoming",
+            "outgoing",
+            "both"
+          ],
+          "nullable": false
+        },
+        "normalized": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "pagerank",
+      "problem_id": "centrality_influential_node_mining",
+      "family": "centrality",
+      "title": "Rank overall influence",
+      "description": "Converged global PageRank with a checked fixed-point residual.",
+      "parameters": {
+        "alpha": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.85,
+          "nullable": false
+        },
+        "tolerance": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1e-09,
+          "nullable": false
+        },
+        "max_iterations": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1000,
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "numerical",
+      "references": []
+    },
+    {
+      "id": "personalized-pagerank",
+      "problem_id": "personalized_pagerank_rwr",
+      "family": "centrality",
+      "title": "Rank connections around selected starting points",
+      "description": "Converged personalized PageRank with explicit direction, dangling-node behavior and residual checks.",
+      "parameters": {
+        "seed_vertices": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "restart_probability": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.15,
+          "nullable": false
+        },
+        "direction_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "outgoing",
+          "choices": [
+            "outgoing",
+            "incoming",
+            "undirected_projection"
+          ],
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "dangling_policy": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "redistribute_to_seeds",
+          "choices": [
+            "redistribute_to_seeds",
+            "redistribute_uniformly",
+            "self_loop"
+          ],
+          "nullable": false
+        },
+        "convergence_tolerance": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1e-09,
+          "nullable": false
+        },
+        "max_iterations": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1000,
+          "nullable": false
+        },
+        "exclude_seeds_from_output": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "top_k": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "numerical",
+      "references": []
+    },
+    {
+      "id": "k-cliques",
+      "problem_id": "k_clique_counting_enumeration",
+      "family": "cliques",
+      "title": "Count or list complete groups of a chosen size",
+      "description": "Exact k-clique counting/enumeration with k>=2 and no implementation-imposed upper k bound.",
+      "parameters": {
+        "k": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 2,
+          "nullable": false
+        },
+        "mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "count",
+          "choices": [
+            "count",
+            "enumerate"
+          ],
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "maximal-cliques",
+      "problem_id": "maximal_clique_enumeration",
+      "family": "cliques",
+      "title": "Find complete groups that cannot be extended",
+      "description": "Enumerate maximal cliques; these are not necessarily maximum-size cliques.",
+      "parameters": {
+        "minimum_clique_size": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1,
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "maximum-clique",
+      "problem_id": "maximum_clique",
+      "family": "cliques",
+      "title": "Find the largest fully connected group",
+      "description": "Exact maximum clique, with optional enumeration of every tied optimum.",
+      "parameters": {
+        "return_all_ties": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "vertex-coloring",
+      "problem_id": "vertex_coloring",
+      "family": "coloring",
+      "title": "Assign non-conflicting groups",
+      "description": "A valid greedy coloring at distance one or two; the number of colors is not claimed minimal.",
+      "parameters": {
+        "distance": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "default": 1,
+          "choices": [
+            1,
+            2
+          ],
+          "nullable": false
+        },
+        "random_seed": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "default": 0,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "feasible",
+      "references": []
+    },
+    {
+      "id": "overlapping-communities",
+      "problem_id": "overlapping_community_detection",
+      "family": "community",
+      "title": "Find overlapping tightly connected groups",
+      "description": "Exact k-clique percolation communities. Membership may overlap.",
+      "parameters": {
+        "k": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 2,
+          "nullable": false
+        },
+        "minimum_community_size": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1,
+          "nullable": false
+        },
+        "include_unassigned_vertices": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "biconnected-components",
+      "problem_id": "biconnected_components",
+      "family": "connectivity",
+      "title": "Find fragile connections and cut vertices",
+      "description": "Exact biconnected vertex blocks, bridges and articulation points of an undirected graph.",
+      "parameters": {},
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "connected-components",
+      "problem_id": "connected_components",
+      "family": "connectivity",
+      "title": "Find connected groups",
+      "description": "Exact weakly or strongly connected components, including isolated vertices.",
+      "parameters": {
+        "connectivity_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "weakly_connected",
+          "choices": [
+            "weakly_connected",
+            "strongly_connected"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "k-core",
+      "problem_id": "k_core_decomposition",
+      "family": "cores",
+      "title": "Find the well-connected core",
+      "description": "Exact core numbers and an optional induced k-core.",
+      "parameters": {
+        "requested_k": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "k-truss",
+      "problem_id": "k_truss_decomposition",
+      "family": "cores",
+      "title": "Find connections supported by triangles",
+      "description": "Exact edge truss numbers and an optional k-truss edge set.",
+      "parameters": {
+        "requested_k": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 2,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "max-flow-min-cut",
+      "problem_id": "max_flow_min_cut",
+      "family": "flow",
+      "title": "Find capacity and bottlenecks between two places",
+      "description": "Maximum flow with a minimum-cut certificate; parallel capacities are summed.",
+      "parameters": {
+        "source": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "sink": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "capacity_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "edge_weight",
+          "choices": [
+            "edge_weight",
+            "unit_capacity"
+          ],
+          "nullable": false
+        },
+        "return_cut_side": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "maximal-independent-set",
+      "problem_id": "maximal_independent_set",
+      "family": "independent_sets",
+      "title": "Select a non-conflicting group that cannot be extended",
+      "description": "A maximal independent set; no maximum-cardinality guarantee is made.",
+      "parameters": {
+        "random_seed": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "default": 0,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "maximum-independent-set",
+      "problem_id": "maximum_independent_set",
+      "family": "independent_sets",
+      "title": "Find the largest non-conflicting group",
+      "description": "Exact maximum independent set via maximum clique enumeration of the complement.",
+      "parameters": {
+        "mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "minimum-vertex-cover",
+      "problem_id": "minimum_vertex_cover",
+      "family": "independent_sets",
+      "title": "Cover every connection with as few vertices as possible",
+      "description": "Exact minimum vertex cover through the complement of a maximum independent set.",
+      "parameters": {
+        "mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "decision"
+          ],
+          "nullable": false
+        },
+        "k": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "weighted-matching",
+      "problem_id": "general_graph_weighted_matching",
+      "family": "matching",
+      "title": "Find the highest-value non-conflicting pairs",
+      "description": "Exact maximum-weight matching on an undirected graph, without a maximum-cardinality constraint.",
+      "parameters": {
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "triangle-counting",
+      "problem_id": "triangle_counting_listing",
+      "family": "motifs",
+      "title": "Count three-way connections",
+      "description": "Exact triangle count and optional per-vertex, per-edge and instance outputs.",
+      "parameters": {
+        "list_instances": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "include_per_vertex_counts": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "include_per_edge_counts": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "link-prediction",
+      "problem_id": "link_prediction",
+      "family": "similarity",
+      "title": "Score possible connections",
+      "description": "Exact local similarity scores for explicit pairs or all currently absent undirected edges.",
+      "parameters": {
+        "scoring_measure": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "jaccard",
+          "choices": [
+            "common_neighbors",
+            "jaccard",
+            "adamic_adar",
+            "resource_allocation",
+            "preferential_attachment",
+            "sorensen",
+            "overlap",
+            "cosine"
+          ],
+          "nullable": false
+        },
+        "candidate_pairs": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "exclude_existing_edges": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        },
+        "top_k": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "induced-subgraph",
+      "problem_id": "induced_subgraph_ego_extraction",
+      "family": "subgraphs",
+      "title": "Explore a selected group or neighborhood",
+      "description": "An induced graph on explicit vertices or a bounded-hop neighborhood, with original IDs and attributes.",
+      "parameters": {
+        "mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "induced",
+          "choices": [
+            "induced",
+            "ego"
+          ],
+          "nullable": false
+        },
+        "vertices_or_seeds": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "radius": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1,
+          "nullable": false
+        },
+        "direction_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "outgoing",
+          "choices": [
+            "outgoing",
+            "incoming",
+            "undirected_projection"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "breadth-first-search",
+      "problem_id": "breadth_first_search",
+      "family": "traversal",
+      "title": "Connections within a number of steps",
+      "description": "Exact unweighted distances from independent sources or the nearest supplied source.",
+      "parameters": {
+        "sources": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "source_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "independent",
+          "choices": [
+            "independent",
+            "nearest_source"
+          ],
+          "nullable": false
+        },
+        "depth_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        },
+        "return_predecessors": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "many-source-shortest-paths",
+      "problem_id": "many_source_shortest_paths",
+      "family": "traversal",
+      "title": "Shortest routes between selected places",
+      "description": "Exact pairwise distances; absent routes are returned as null.",
+      "parameters": {
+        "origins": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "destinations": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "edge_weight",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "single-source-shortest-paths",
+      "problem_id": "single_source_shortest_paths",
+      "family": "traversal",
+      "title": "Shortest routes from one starting point",
+      "description": "Exact shortest distances and predecessors with nonnegative edge lengths.",
+      "parameters": {
+        "source": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "cutoff": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        },
+        "return_predecessors": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "topological-sort",
+      "problem_id": "topological_sort",
+      "family": "traversal",
+      "title": "Order tasks by their dependencies",
+      "description": "A topological vertex order for a directed acyclic graph; cycles are rejected.",
+      "parameters": {},
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "transitive-closure",
+      "problem_id": "transitive_closure_reachability",
+      "family": "traversal",
+      "title": "Find which places can reach each other",
+      "description": "Exact reachability with a zero-length path allowed from each vertex to itself.",
+      "parameters": {
+        "query_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "full_transitive_closure",
+          "choices": [
+            "single_pair",
+            "batch_pairs",
+            "full_transitive_closure"
+          ],
+          "nullable": false
+        },
+        "query_pairs": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "enumerate_closure_edges": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    },
+    {
+      "id": "spanning-tree-forest",
+      "problem_id": "spanning_tree_forest",
+      "family": "trees",
+      "title": "Connect the network with minimum or maximum total weight",
+      "description": "An exact minimum or maximum spanning forest, retaining isolated vertices.",
+      "parameters": {
+        "objective": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "minimum",
+          "choices": [
+            "minimum",
+            "maximum"
+          ],
+          "nullable": false
+        },
+        "require_connected": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": []
+    }
+  ]
+}

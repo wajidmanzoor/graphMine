@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "graphmine"
+version = "2.0.0.dev0"
+description = "Contract-driven graph analytics with explicit CPU and GPU execution"
+requires-python = ">=3.11"
+dependencies = ["networkx>=3.7,<4", "numpy>=2,<3", "scipy>=1.14,<2"]
+
+[project.optional-dependencies]
+gpu = ["cugraph-cu12>=25.6,<27", "nx-cugraph-cu12>=25.6,<27"]
+test = ["pytest>=8.3,<10"]
+
+[project.scripts]
+graphmine-python = "graphmine.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["graphmine"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

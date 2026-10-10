@@ -1,0 +1,36 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "device": "cpu",
+  "cuda_visible_devices": "",
+  "case_shard": null,
+  "source_files": {
+    "graphmine/__init__.py": "c8ad9c719cc6f915f4fe96b5a80c595550402b77729bc348a79f48f20dd0cdf3",
+    "graphmine/algorithms/__init__.py": "53382699408e6aa2062563bd8280220201846569a525274a82950f27ff621c1a",
+    "graphmine/algorithms/_common.py": "bde578c12f3ca2168700d8a7d861f16f70840ffaf3e37ca1168b790b96f58fc4",
+    "graphmine/algorithms/centrality.py": "8e70c8b96c0f36208b3ab5124d20ca337310e51aa02acbe66cdee7914a7136f3",
+    "graphmine/algorithms/optimization.py": "04b073aa8013fb6c62f7461b02896260ea86439ec8356cc36e2f99d6e00ed4b7",
+    "graphmine/algorithms/structure.py": "cdf5ceb9652375b710c8f569ae19a07e875d0d0499396ccfabb81469b4651516",
+    "graphmine/algorithms/traversal.py": "9a62af954a4aebb4be6864161eafc8778bbf434264203d1222275200a08330d7",
+    "graphmine/backends/__init__.py": "b218e3f7e9db44250d8f6e2f805af2dff1526574fcd1e9f1bbed76cffcffc8e4",
+    "graphmine/backends/cugraph.py": "6516f9d347c779a288b3ca1553c8e433f45a1ca4bf34c1afe51d8a673456cff6",
+    "graphmine/cli.py": "85aaadd06bcfe5bc2c8a74bd1c2d7909df0b3d9cb3f2ab799e69c0f05159ef87",
+    "graphmine/contracts.py": "d988f382a99f95067f36e0048a8a7d97ed96a915a8ea12c2995cf30cdf4fd323",
+    "graphmine/dispatch.py": "3b7899bc8e13300c49e289ca81b5ac3aedffa1009851d4fc9a6f2756d8a8be92",
+    "graphmine/exceptions.py": "2423cd49b2285fae98567483de16c9268907fe2b6dd3c340da511223da7b75c1",
+    "graphmine/graph.py": "b07d85a9a53370b316946a35c858045c708e66d4de1a41dd8b1df12d4c1978e0",
+    "graphmine/registry.py": "6e2a2f0e2922854312f5423971d4406de0044877e474ccf30d0886becfcf1ed8",
+    "tests/conftest.py": "4fcf0e6c228e44d38877e4f178b2b0d74d869669a04dd240ada78072a5974a73",
+    "tests/test_contracts.py": "843756b9680a686a2749b9717bad93d1cb0162f4fffe8bb3022e3a2afb9f5a48",
+    "tests/test_small_graph_oracles.py": "c8e4a3bc82e760f771a0a55538ddb01db3b9980114f3a6acd63e2750a8892cab",
+    "tests/test_weighted_directed.py": "2a5084ae42bbfbf9eec2b5e7af560c04cf4766aff20f6ded5ff928ca24b6c719"
+  },
+  "packages": {
+    "networkx": "3.7",
+    "numpy": "2.4.6",
+    "scipy": "1.18.1",
+    "cugraph-cu12": "26.10.0",
+    "nx-cugraph-cu12": "26.10.0",
+    "cupy-cuda12x": "14.2.0"
+  },
+  "sources_unchanged_during_run": true
+}
