@@ -47,11 +47,11 @@ def run(
         raise GraphMineError("device must be auto, cpu, or gpu")
     if backend is not None and (
         not isinstance(backend, str)
-        or backend not in {"networkx", "scipy", "cvxpy", "gudhi", "cugraph"}
+        or backend not in {"networkx", "numpy", "scipy", "cvxpy", "gudhi", "cugraph"}
     ):
         raise GraphMineError("Unknown backend")
     if (device == "cpu" and backend == "cugraph") or (
-        device == "gpu" and backend in {"networkx", "scipy", "cvxpy", "gudhi"}
+        device == "gpu" and backend in {"networkx", "numpy", "scipy", "cvxpy", "gudhi"}
     ):
         raise GraphMineError("Backend conflicts with the requested device policy")
     if backend:
@@ -64,7 +64,7 @@ def run(
     except (ValueError, TypeError) as exc:
         raise GraphMineError("parameters must contain finite JSON values") from exc
     if (
-        backend in {"networkx", "scipy", "cvxpy", "gudhi"}
+        backend in {"networkx", "numpy", "scipy", "cvxpy", "gudhi"}
         and backend != definition.library
     ):
         raise UnsupportedOperation(

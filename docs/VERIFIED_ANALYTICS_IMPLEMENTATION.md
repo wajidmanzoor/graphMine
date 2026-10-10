@@ -170,3 +170,46 @@ reported score substitutes for local integration tests.
   existing native agent/browser. Remaining CPU coverage and every open
   application/routing/workflow/UI/scheduling/evaluation requirement above remain
   part of the active goal.
+
+### Sampling, temporal and local-analysis checkpoint
+
+- CPU coverage is now **55 operations across 53 of 70 problem contracts**.
+  Seven new integrations cover random walks, neighborhood sampling, temporal
+  journey objectives, bounded paths/cycles, temporal motifs, null-model
+  significance and seeded local communities. Seventeen problem contracts
+  still need a CPU integration. Operation cards continue to disclose the
+  supported profile rather than claiming every formal parameter variant.
+- Walks and neighborhoods use NumPy sampling with recorded seeds, explicit
+  direction/parallel-edge/zero-weight semantics and validated fanouts.
+  Normalization supports large integer weight ratios; a positive probability
+  that underflows float64 is rejected instead of silently becoming zero.
+- Temporal paths optimize fastest duration or earliest arrival separately and
+  retain edge witnesses plus exact rational objective values. Temporal motifs
+  preserve event identity and support total/partial precedence, equal-time
+  policy, attribute predicates and induced occurrence windows. Counts remain
+  exhaustive when instance listings are capped.
+- Bounded path/cycle caps retain the shortest qualifying results and propagate
+  incomplete collection status. Fixed-degree null sampling uses complete
+  rejection of nonsimple configuration samples, with complementary sampling
+  for dense inputs, explicit budgets, and invariants checked for every sample.
+  The local-community profile returns an actual seed-containing community and
+  recomputed conductance; its diffusion/sweep method is labeled heuristic.
+- Latest reports: `cpu-temporal.xml` has **16,556 passes** with CUDA hidden;
+  `gpu-0-temporal.xml` and `gpu-1-temporal.xml` each have **1,546 passes**, with
+  zero failures or skips. All prior library operations were rerun. New oracles
+  include exhaustive event journeys, vertex/event injections, cycle/path
+  permutations, independent PageRank equations and conductance recomputation,
+  per-sample graph invariants, and deterministic sampling-frequency checks.
+- The initial new-profile run had four fixture-construction errors because
+  parallel edges had not been declared in fixture metadata; 1,742 cases passed.
+  After fixture correction, 1,752 focused tests passed. Four further input
+  validation cases are included in the final full sweep. Both earlier reports
+  are retained separately and are not the current-source acceptance evidence.
+- Lint, formatting, package dependency checks, formal-contract synchronization
+  and the source/dependency evidence audit pass. The audit now points to the
+  three latest full regression reports and records all new capability cards.
+- These are library integrations. The existing agent/browser still uses its
+  native execution path. Remaining CPU coverage and all open application,
+  routing, workflow, modes, visualization, scheduling, caching, MCP, reviewed
+  example retrieval and scale evaluation requirements remain in the active
+  goal.

@@ -1,7 +1,7 @@
 # GraphMine Python analytics
 
 The public library separates graph input, mathematical algorithm families,
-backend selection, and result provenance. It uses NetworkX, SciPy, CVXPY and
+backend selection, and result provenance. It uses NetworkX, NumPy, SciPy, CVXPY and
 GUDHI on CPU, and cuGraph on GPU. Native GraphMine and agent integration are tracked in
 [`docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md`](../../docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md).
 
@@ -63,7 +63,7 @@ vectors = FeatureVectors(
 neighbors = run("knn-graph", vectors, parameters={"k": 1}, device="cpu")
 ```
 
-CPU provenance identifies the primary library (`networkx`, `scipy`, `cvxpy` or `gudhi`) and
+CPU provenance identifies the primary library (`networkx`, `numpy`, `scipy`, `cvxpy` or `gudhi`) and
 records the installed numerical-library versions. Some operations use
 both libraries; per-result solver diagnostics identify the method actually used.
 
@@ -76,6 +76,13 @@ isomorphism, motif and graphlet counting, communities, balanced partitions and
 signed-network balance. See
 [`CPU_REFERENCE_PROFILES.md`](../../docs/CPU_REFERENCE_PROFILES.md) for objectives,
 limits, numerical guarantees and input conventions.
+
+Sampling and temporal modules additionally provide random walks, neighborhood
+samples, temporal journey objectives, bounded paths/cycles, ordered temporal
+motifs, null-model statistics and seeded local communities. Their cards declare
+the sampling distribution, event identity and order, completeness, or heuristic
+quality. Null-model samples preserve the stated invariants; a local community
+includes an actual selected vertex set and recomputed conductance.
 
 In particular, `densest-subgraph.clique_order` changes the density numerator;
 `densest-k-subgraph.k` fixes the size of the selected vertex set. These are

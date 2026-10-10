@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 48,
-  "problems_with_cpu_profile": 46,
+  "cpu_operation_count": 55,
+  "problems_with_cpu_profile": 53,
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-numerical",
+      "id": "cpu-temporal",
       "status": "passed",
-      "tests": 14800,
+      "tests": 16556,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
@@ -19,11 +19,12 @@
         "tests/test_extended_oracles.py",
         "tests/test_numerical_construction.py",
         "tests/test_small_graph_oracles.py",
+        "tests/test_temporal_sampling.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/cpu-numerical.xml",
-      "report_sha256": "8dc9bba652b99898f21e0b5837db7a5ec30a59231b4e9815ba9974349910ab0d",
-      "metadata": "validation/python_analytics/cpu-numerical.xml.metadata.json",
+      "report": "validation/python_analytics/cpu-temporal.xml",
+      "report_sha256": "7b5c618804fbe1535575008876de6efe9b2966b496ecf364f70768f4e307317d",
+      "metadata": "validation/python_analytics/cpu-temporal.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -37,7 +38,7 @@
       }
     },
     {
-      "id": "gpu-0-numerical",
+      "id": "gpu-0-temporal",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -48,9 +49,9 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-numerical.xml",
-      "report_sha256": "ddb9da1fd6254afcd15df9a145dddd9830720afe88b6d35e0a611d28a6447cba",
-      "metadata": "validation/python_analytics/gpu-0-numerical.xml.metadata.json",
+      "report": "validation/python_analytics/gpu-0-temporal.xml",
+      "report_sha256": "f129bb6a133abb3f39b1117a3c3002b44af905f6f6ff1467b892ba69132425ce",
+      "metadata": "validation/python_analytics/gpu-0-temporal.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -64,7 +65,7 @@
       }
     },
     {
-      "id": "gpu-1-numerical",
+      "id": "gpu-1-temporal",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -75,9 +76,9 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-numerical.xml",
-      "report_sha256": "675d2d7cbffc0bcd3b18032d25f5bd44e26ad2ce8dc57ffab2074a4846d95f80",
-      "metadata": "validation/python_analytics/gpu-1-numerical.xml.metadata.json",
+      "report": "validation/python_analytics/gpu-1-temporal.xml",
+      "report_sha256": "375b00491e80793bdf6a90d033970c7a5aba976827ad659a4f91afc509fd43b6",
+      "metadata": "validation/python_analytics/gpu-1-temporal.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -270,9 +271,11 @@
       "name": "Temporal Motif Mining",
       "contract": "problems/15_temporal_motif_mining/problem.json",
       "contract_sha256": "a55027b64e594ae35515157de4c04c9b08833704a9c683a10e03159cb60a82e1",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "temporal-motifs"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -403,9 +406,11 @@
       "name": "Hop-Constrained Simple Path and Cycle Enumeration",
       "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
       "contract_sha256": "74df4326c7e2bc4e93e33659341fefce48e54edbf9b2290a84dcb842071af49e",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "bounded-paths-cycles"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -527,9 +532,11 @@
       "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
       "contract": "problems/37_null_model_significance_testing/problem.json",
       "contract_sha256": "5087adee9c1baacf51eebc8a3ed3580381f6e96e95ba9049bc16a6cce42b2024",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "null-model-significance"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -641,9 +648,11 @@
       "name": "Graph Random-Walk Generation",
       "contract": "problems/46_random_walk_generation/problem.json",
       "contract_sha256": "37a80d51a0195a23a5876eec5fce3db4a44e4ae5a025148fc08c20a548129ec1",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "random-walks"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -651,9 +660,11 @@
       "name": "Neighborhood Sampling",
       "contract": "problems/47_neighborhood_sampling/problem.json",
       "contract_sha256": "f98574fa40eb46b1539640d0f2a57f4e99203f9b385e63b0bf5f98e70e4a0804",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "neighborhood-sampling"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -675,9 +686,11 @@
       "name": "Seeded Local Community Detection",
       "contract": "problems/49_seeded_local_community_detection/problem.json",
       "contract_sha256": "379132559634d9618a16574615ccae86b8d2d5d76cf9ccb03ab3b7f87ff2123c",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "seeded-local-community"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -759,9 +772,11 @@
       "name": "Temporal Fastest and Earliest-Arrival Paths",
       "contract": "problems/57_temporal_fastest_paths/problem.json",
       "contract_sha256": "af96bdc8bf82563d2cbe08645845f220260c5547645563af11d2d616263c3dc2",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "temporal-paths"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -1311,6 +1326,53 @@
       ],
       "input_kind": "graph",
       "profile_sha256": "92db29a609336ad4295c8d0ebc0450d08a5ebafc7d8a91a52fdc3d9bdb7ec1a2"
+    },
+    {
+      "id": "seeded-local-community",
+      "problem_id": "seeded_local_community_detection",
+      "family": "communities",
+      "title": "Find a community around required seed vertices",
+      "description": "NetworkX personalized PageRank followed by a weighted-degree-normalized sweep. All seeds are required; the lowest defined conductance among feasible sweep prefixes is selected. This is a heuristic, with recomputed cut and volume, and makes no global optimality claim. Parallel weights sum; self-loops are rejected.",
+      "parameters": {
+        "seeds": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "maximum_volume": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        },
+        "method_parameters": {
+          "kind": "object",
+          "required": false,
+          "description": "alpha (default 0.85), tolerance (1e-10), max_iterations (1000).",
+          "default": {},
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "heuristic",
+          "choices": [
+            "heuristic"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "heuristic",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.link_analysis.pagerank_alg.pagerank.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "b852625ec9f0e16f8257506b67f17b4b183146f23697b851efb425efd609e290"
     },
     {
       "id": "overlapping-communities",
@@ -2357,6 +2419,198 @@
       "profile_sha256": "25b32a503293326dcd1b253ba07ee1a0dd12295b418d6a0bee2bdd07d2d8d0ce"
     },
     {
+      "id": "temporal-motifs",
+      "problem_id": "temporal_motif_mining",
+      "family": "pattern_mining",
+      "title": "Count ordered temporal edge patterns",
+      "description": "NetworkX VF2 structural matching followed by injective event assignment, exact UTC time comparisons, order constraints and optional temporal inducedness. Distinct tuples in motif-edge order identify occurrences.",
+      "parameters": {
+        "temporal_motif": {
+          "kind": "object",
+          "required": true,
+          "description": "graph: canonical motif; optional order: [before_edge_id, after_edge_id] pairs (default: total input-edge order); optional vertex_predicates/edge_predicates use the structural matching predicate schema.",
+          "nullable": false
+        },
+        "maximum_duration_seconds": {
+          "kind": "number",
+          "required": true,
+          "description": "",
+          "minimum": 0,
+          "nullable": false
+        },
+        "allow_equal_timestamps": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "temporal_induced": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "list_instances": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "b9d36f652f9c0aefcac2d45cacfc10f87633328db25ed743c9f45c9d0cf40ad3"
+    },
+    {
+      "id": "neighborhood-sampling",
+      "problem_id": "neighborhood_sampling",
+      "family": "sampling",
+      "title": "Sample neighborhoods while retaining original edge identities",
+      "description": "Sample outgoing edge instances per distinct frontier vertex, hop and seed batch. Parallel edges and self-loops retain their identity. Typed fanouts and UTC timestamp cutoffs are explicit.",
+      "parameters": {
+        "seeds": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "fanouts": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "replacement": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "sampling_model": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "uniform",
+          "choices": [
+            "uniform",
+            "weighted"
+          ],
+          "nullable": false
+        },
+        "edge_type_fanouts": {
+          "kind": "object",
+          "required": false,
+          "description": "Map edge type to one fanout per hop; unlisted types use fanouts.",
+          "default": null,
+          "nullable": true
+        },
+        "time_cutoff": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "random_seed": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "numpy",
+      "quality": "stochastic",
+      "references": [
+        "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.choice.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "d3e755e266f5a976063dea1ff06a12b75be66a1562b4286018386aa0496396d9"
+    },
+    {
+      "id": "random-walks",
+      "problem_id": "random_walk_generation",
+      "family": "sampling",
+      "title": "Sample graph walks with an explicit transition model",
+      "description": "NumPy random sampling over outgoing adjacency. Uniform walks collapse parallel edges; weighted and node2vec walks sum weights. Self-loops are retained. Zero total outgoing weight terminates a walk.",
+      "parameters": {
+        "start_vertices": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "length": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 0,
+          "nullable": false
+        },
+        "walk_model": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "uniform",
+          "choices": [
+            "uniform",
+            "weighted",
+            "node2vec"
+          ],
+          "nullable": false
+        },
+        "p": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1.0,
+          "nullable": false
+        },
+        "q": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1.0,
+          "nullable": false
+        },
+        "random_seed": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "numpy",
+      "quality": "stochastic",
+      "references": [
+        "https://arxiv.org/abs/1607.00653",
+        "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.choice.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "436e458ede1cb44306b295a85a56066f99d775af6d2c34f2bd3099c84063721c"
+    },
+    {
       "id": "link-prediction",
       "problem_id": "link_prediction",
       "family": "similarity",
@@ -2620,6 +2874,90 @@
       "profile_sha256": "349c616fdc4f79859839fc5f9c373ebde4522af9fc1a79715100d91744c7cd9e"
     },
     {
+      "id": "null-model-significance",
+      "problem_id": "null_model_significance_testing",
+      "family": "statistics",
+      "title": "Compare a declared statistic with a random graph ensemble",
+      "description": "NetworkX uniform G(n,m), or configuration-model rejection sampling conditioned on a simple graph with the exact per-vertex degree sequence. Dense fixed-degree inputs are sampled through their complement. Statistical estimates retain their samples and declared tail convention.",
+      "parameters": {
+        "null_model": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "degree_preserving_configuration",
+          "choices": [
+            "degree_preserving_configuration",
+            "erdos_renyi"
+          ],
+          "nullable": false
+        },
+        "statistic_definition": {
+          "kind": "object",
+          "required": true,
+          "description": "name: triangles, directed_triangles, k_cliques (k), density, or modularity (partition and optional resolution).",
+          "nullable": false
+        },
+        "observed_value": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "sample_count": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "random_seed": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        },
+        "tail": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "greater",
+          "choices": [
+            "greater",
+            "less",
+            "two_sided_about_null_mean"
+          ],
+          "nullable": false
+        },
+        "max_randomization_attempts": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 100000,
+          "nullable": false
+        },
+        "return_randomized_edges": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "statistical_estimate",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/generated/networkx.generators.degree_seq.configuration_model.html",
+        "https://networkx.org/documentation/stable/reference/generated/networkx.generators.random_graphs.gnm_random_graph.html",
+        "https://arxiv.org/abs/1608.00607"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "a164f5ae9dfe07c050509e188a5329ea9425d2dcc47e38878277faf89b32ad82"
+    },
+    {
       "id": "induced-subgraph",
       "problem_id": "induced_subgraph_ego_extraction",
       "family": "subgraphs",
@@ -2671,6 +3009,57 @@
       "profile_sha256": "67fb9088884ae56412b2c0c529612ecff2fd4f1faf4753016577afc5f5e238df"
     },
     {
+      "id": "temporal-paths",
+      "problem_id": "temporal_fastest_paths",
+      "family": "temporal",
+      "title": "Find earliest arrivals or fastest journeys through timed events",
+      "description": "NetworkX shortest paths on an exact-rational time-expanded graph. Waiting is allowed; fastest duration excludes waiting before the first departure. Parallel events remain distinct candidates.",
+      "parameters": {
+        "source": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "ready_time": {
+          "kind": "number",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "deadline": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "objective": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "fastest_duration",
+          "choices": [
+            "fastest_duration",
+            "earliest_arrival"
+          ],
+          "nullable": false
+        },
+        "duration_attribute": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "duration",
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "profile_sha256": "8c8740cf56bbd134fda21d60c6759241b13279aa8236ee7cee6225b68c97de44"
+    },
+    {
       "id": "persistent-homology",
       "problem_id": "persistent_homology",
       "family": "topology",
@@ -2710,6 +3099,89 @@
       ],
       "input_kind": "graph",
       "profile_sha256": "c86f5b5e8ae442bf4dde9f60c98e82b2759b43a3d2b0896034e71d22798864f5"
+    },
+    {
+      "id": "bounded-paths-cycles",
+      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "family": "traversal",
+      "title": "Enumerate bounded simple paths or cycles",
+      "description": "NetworkX simple edge paths and bounded simple cycles, with explicit parallel-edge normalization and optional chronological filtering. A result limit retains the shortest results while still counting all qualifying results.",
+      "parameters": {
+        "task": {
+          "kind": "string",
+          "required": true,
+          "description": "",
+          "choices": [
+            "s_t_path",
+            "cycle_through_vertex",
+            "cycle_through_edge",
+            "all_cycles"
+          ],
+          "nullable": false
+        },
+        "source": {
+          "kind": "vertex_id",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "target": {
+          "kind": "vertex_id",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "anchor_edge": {
+          "kind": "vertex_id",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "max_hops": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        },
+        "chronological_order_required": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "parallel_edge_policy": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "collapse_first",
+          "choices": [
+            "collapse_first",
+            "preserve"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.simple_paths.all_simple_edge_paths.html",
+        "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cycles.simple_cycles.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "0db5c999f425fa017de7f8398639ed97704b7f4a0810181e78753ae5a0506b1a"
     },
     {
       "id": "breadth-first-search",
