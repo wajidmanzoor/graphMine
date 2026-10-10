@@ -2026,7 +2026,11 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"graph": s.upload_graph(body.get("name", ""), body.get("filename", ""),
                                                            body.get("content", ""), bool(body.get("directed")))})
             if url.path == "/api/revert":
-                return self._json(s.revert(body["ids"]))
+                with s.lock:
+                    groups = {s.effective(i)["group"] for i in body["ids"] if i in s.base or i in s.overlay}
+                    result = s.revert(body["ids"])
+                    result["conversations"] = {g: s.conversation_summary(g) for g in groups}
+                    return self._json(result)
             if url.path == "/api/validate":
                 draft = body
                 ex = s.effective(draft["id"]) if draft.get("id") in s.base or draft.get("id") in s.overlay else None

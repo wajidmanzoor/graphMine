@@ -16,6 +16,7 @@
     <label class="dataset-picker">
       <span class="sr-only">Dataset</span>
       <select id="dataset-select" title="Dataset"></select>
+      <button class="icon-btn" id="dataset-settings-btn" title="Rename, describe or delete this dataset" aria-label="Dataset settings" hidden>⋯</button>
     </label>
     <div class="search">
       <svg class="search-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg>
@@ -119,6 +120,39 @@
     </form>
   </dialog>
 
+  <dialog id="graph-dialog" class="dialog">
+    <form method="dialog" id="graph-form">
+      <header class="dialog-head">
+        <h2>Graph and domain</h2>
+        <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog-body" id="graph-body"></div>
+      <footer class="dialog-foot">
+        <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn primary" value="default">Save and build</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="dataset-settings-dialog" class="dialog">
+    <form method="dialog" id="dataset-settings-form">
+      <header class="dialog-head">
+        <h2>Dataset</h2>
+        <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog-body">
+        <label class="block">Name<input id="ds-name" maxlength="80" required autocomplete="off"></label>
+        <label class="block">Description<textarea id="ds-description" rows="2"></textarea></label>
+        <p class="muted" id="ds-location" style="margin:0;font-size:12px"></p>
+      </div>
+      <footer class="dialog-foot">
+        <button type="button" class="btn danger-ghost" id="ds-delete" style="margin-right:auto">Delete dataset…</button>
+        <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn primary" value="default">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
   <dialog id="dataset-dialog" class="dialog">
     <form method="dialog" id="dataset-form">
       <header class="dialog-head">
@@ -126,9 +160,10 @@
         <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
       </header>
       <div class="dialog-body">
-        <div class="callout">Starts with no conversations; add them with <b>＋ Add</b>. Steps written here have no model
-          context, so an export puts them in <code>needs-context.jsonl</code> for the pipeline to complete. The dataset is
-          saved under <code id="dataset-location">studio-datasets/</code> in the data root.</div>
+        <div class="callout">Starts with no conversations; add them with <b>＋ Add</b>. Give each conversation a graph and
+          domain and the studio replays it through the GraphMine agent: every step gets the model input production would
+          send, and GraphMine computes the facts for the analyst answer. Everything is saved in one folder,
+          <code id="dataset-location">studio-datasets/</code>.</div>
         <label class="block">Name<input id="dataset-name" maxlength="80" required placeholder="e.g. Hand-written fraud questions" autocomplete="off"></label>
         <label class="block">Description (optional)<textarea id="dataset-description" rows="2" placeholder="What goes in this dataset"></textarea></label>
       </div>
@@ -177,7 +212,7 @@
             <dt><kbd>x</kbd></dt><dd>Select for bulk actions (whole conversation)</dd>
             <dt><kbd>e</kbd></dt><dd>Edit the focused step's expected output</dd>
             <dt><kbd>q</kbd></dt><dd>Edit the question (every step that uses it)</dd>
-            <dt><kbd>c</kbd></dt><dd>Clone the focused step (keeps model context)</dd>
+            <dt><kbd>c</kbd></dt><dd>Duplicate the conversation (steps keep their model context)</dd>
             <dt><kbd>n</kbd></dt><dd>Add a conversation</dd>
             <dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd>Review the focused step: Unreviewed · Approved · Needs fix · Rejected</dd>
             <dt><kbd>Del</kbd></dt><dd>Delete / restore the focused step</dd>

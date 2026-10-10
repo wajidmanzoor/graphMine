@@ -13,9 +13,27 @@ const store = {
   set(k, v) { try { localStorage.setItem("dataset-studio:" + k, JSON.stringify(v)); } catch { /* storage unavailable */ } },
 };
 
+// A studio served beyond localhost needs its access token. The link it prints
+// carries ?token=…; it is kept in this browser and removed from the address bar.
+(() => {
+  const url = new URL(location.href);
+  const t = url.searchParams.get("token");
+  if (t) {
+    store.set("token", t);
+    url.searchParams.delete("token");
+    history.replaceState(null, "", url.pathname + url.search + url.hash);
+  }
+})();
 async function api(path, body) {
-  const opt = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  const headers = body === undefined ? {} : { "Content-Type": "application/json" };
+  const token = store.get("token", "");
+  if (token) headers["X-Studio-Token"] = token;
+  const opt = body === undefined ? { headers } : { method: "POST", headers, body: JSON.stringify(body) };
   const res = await fetch(path, opt);
+  if (res.status === 401) {
+    const entered = prompt("This studio needs its access token (printed when the server started):");
+    if (entered) { store.set("token", entered.trim()); return api(path, body); }
+  }
   const data = await res.json().catch(() => ({ error: res.statusText }));
   if (!res.ok) throw new Error(data.error || res.statusText);
   return data;
@@ -69,6 +87,8 @@ const CATEGORY_LABEL = {
   predictive_and_unusual_structure_mining: "Predictive & unusual",
 };
 const NONE = "__none__";
+// Variants that say nothing the thread does not already show.
+const HIDDEN_VARIANTS = ["initial", "plan_first", "manual", "conversation", "recovery"];
 const PAGE = 150;
 
 // ------------------------------------------------------------------ state
@@ -88,6 +108,10 @@ const S = {
   problems: new Map(), operations: new Map(),
   contextCache: new Map(),
   coverageFiltered: false,
+  // Server summaries per conversation: graph and domain, last build, freshness, next steps.
+  conversations: {},
+  convContext: new Map(),
+  stagesPresent: new Set(),
 };
 
 // ------------------------------------------------------------------ catalog helpers
@@ -145,18 +169,60 @@ const STEP_STAGE = { TurnDecision: 0, RouteDecision: 1, PlanDraft: 2, GroundedNa
 const PHASE_SECTION = ["main", "main", "recovery", "main", "analyst", "followup", "other"];
 const isRecovery = (e) => e.variant === "recovery" || /-recovery-/.test(e.id);
 const isCustomChart = (e) => e.variant === "custom_chart" || /-custom-chart\b/.test(e.id);
-// The row's earlier turns end with Qwen asking for information: the user is replying to it.
+// A follow-up comes after a finished answer. Earlier turns alone do not say so:
+// production also sends the planner's messages as history to the main answer.
+function isAfterAnswer(e) {
+  return e.schema === "TurnDecision" || e.turns.some((t) => t.role === "assistant"
+    && (t.status === "answered" || t.payload?.result_id || t.payload?.interpretation));
+}
+// The row's earlier turns end with the agent asking for information: the user is replying to it.
 function isClarifyReply(e) {
   const last = e.turns[e.turns.length - 1];
-  return last?.role === "assistant" && last.status === "needs_information"
+  return last?.role === "assistant" && last.status === "needs_information" && !isAfterAnswer(e)
     && (e.schema === "RouteDecision" || e.schema === "PlanDraft");
 }
 function stepPhase(e) {
   if (isRecovery(e)) return 2;
-  if (e.turns.length) return isClarifyReply(e) ? 1 : 5;
+  if (isAfterAnswer(e)) return 5;
+  if (isClarifyReply(e)) return 1;
   if (e.schema === "RouteDecision" || e.schema === "PlanDraft") return 0;
   if (e.schema === "GroundedNarrative") return isCustomChart(e) ? 4 : 3;
   return 6;
+}
+
+// How far a conversation got, in the order steps are written. A stage only counts
+// when the dataset has that kind of step (a routing-only dataset is complete after
+// Understanding); a dataset made in the studio expects every stage.
+const PROGRESS = {
+  needs_understanding: "Needs understanding", needs_planning: "Needs planning", ready_to_run: "Ready to run",
+  needs_answer: "Needs analyst answer", waiting_reply: "Waiting for the user's reply", refused: "Refused",
+  complete: "Complete",
+};
+const PROGRESS_ORDER = Object.keys(PROGRESS);
+const asksForInfo = (o) => (o?.ambiguity || []).length > 0 || (o?.missing_information || []).length > 0;
+function progressOf(c) {
+  const has = (schema) => S.dataset?.layout === "studio" || S.stagesPresent.has(schema);
+  const live = c.live.filter((e) => e._section === "main" || e._section === "analyst");
+  if (live.some((e) => e.schema === "GroundedNarrative")) return "complete";
+  const opening = live.filter((e) => e._phase === 0), replies = live.filter((e) => e._phase === 1);
+  const path = replies.length ? replies : opening;
+  const route = path.find((e) => e.schema === "RouteDecision"), plan = path.find((e) => e.schema === "PlanDraft");
+  if (has("RouteDecision")) {
+    if (!route) return "needs_understanding";
+    if (asksForInfo(route.output)) return "waiting_reply";
+    if (route.output?.supported === false) return "refused";
+  }
+  if (has("PlanDraft")) {
+    if (!plan) return "needs_planning";
+    const status = plan.output?.status;
+    if (status === "needs_information") return "waiting_reply";
+    if (status === "unsupported") return "refused";
+    if (status !== "ready") return "needs_planning";
+  }
+  if (!has("GroundedNarrative")) return "complete";
+  const sum = S.conversations[c.key];
+  if (sum?.replayable && !(sum.built && sum.fresh && sum.ran && !sum.needs_run)) return "ready_to_run";
+  return "needs_answer";
 }
 // Steps answering the same alternative message share one branch.
 const stepBranch = (e, phase) => (phase === 4 || phase === 5 ? `${phase}:${norm(userMessage(e))}` : String(phase));
@@ -203,9 +269,6 @@ function buildConvs() {
     c.steps.sort((a, b) => a._phase - b._phase || branchStart.get(a._branch) - branchStart.get(b._branch)
       || a._stage - b._stage || a._order - b._order);
     c.live = c.steps.filter((e) => !e.deleted);
-    // A conversation-level fact on every step, so it filters like any row facet.
-    c.hasAnswer = c.live.some((e) => e.schema === "GroundedNarrative");
-    for (const e of c.steps) e._answer = c.hasAnswer ? "has analyst answer" : "missing analyst answer";
     const pool = c.live.length ? c.live : c.steps;
     c.opener = pool.find((e) => e._section === "main") || pool[0];
     // The opening route of a clarification asks a question and has no operation to show.
@@ -213,6 +276,9 @@ function buildConvs() {
     c.question = openingQuestion(c.opener);
     c.split = c.opener.split;
     c.lineage = c.opener.lineage;
+    // A conversation-level fact on every step, so it filters like any row facet.
+    c.progress = progressOf(c);
+    for (const e of c.steps) e._progress = c.progress;
   }
   S.convs = map;
 }
@@ -227,7 +293,7 @@ const FACETS = [
   { key: "schema", label: "Stage", get: (e) => [e.schema || NONE], fmt: (v) => (v === NONE ? "(unknown)" : `${STAGE_LABEL[v] || v}`), dot: true },
   { key: "outcome", label: "Expected outcome", get: (e) => [e._outcome], fmt: (v) => v.replace(/_/g, " ") },
   { key: "conv", label: "Conversation", get: (e) => [e.turns.length ? "multi-turn" : "single turn", ...(e._clarify ? ["asks for more info"] : [])] },
-  { key: "answer", label: "Analyst answer", get: (e) => [e._answer] },
+  { key: "progress", label: "Progress", get: (e) => [e._progress], fmt: (v) => PROGRESS[v] || v, order: PROGRESS_ORDER },
   { key: "problem", label: "Problem", get: (e) => [e.tags.problem_id || NONE], fmt: (v) => (v === NONE ? "(untagged)" : problemName(v)), search: true, grouped: true },
   { key: "operation", label: "Operation", get: (e) => [e.tags.operation_id || NONE], fmt: (v) => (v === NONE ? "(untagged)" : v), search: true },
   { key: "backend", label: "Implementation", get: (e) => [e.tags.backend || NONE], fmt: (v) => (v === NONE ? "(auto / unknown)" : v), search: true },
@@ -244,7 +310,7 @@ const FIELD_ALIASES = {
   op: "operation", operation: "operation", problem: "problem", impl: "backend", backend: "backend", implementation: "backend",
   stage: "schema", schema: "schema", split: "split", model: "adapter", adapter: "adapter", review: "review",
   label: "labels", labels: "labels", status: "outcome", outcome: "outcome", lineage: "lineage", source: "lineage",
-  kind: "kind", variant: "variant", has: "has", id: "id", answer: "answer",
+  kind: "kind", variant: "variant", has: "has", id: "id", progress: "progress",
 };
 
 function parseQuery(q) {
@@ -269,7 +335,6 @@ function hasFlag(e, flag) {
   switch (flag) {
     case "clarify": case "clarification": return e._clarify;
     case "turns": case "multiturn": return e.turns.length > 0;
-    case "answer": return e._answer === "has analyst answer";
     case "errors": case "error": return e._issue === "error";
     case "warnings": case "warning": return e._issue === "warning";
     case "issues": return !!e._issue;
@@ -366,7 +431,7 @@ function renderFacets() {
   const focusKey = document.activeElement?.dataset?.ffilter;
   const openState = {};
   $$(".facet", host).forEach((d) => (openState[d.dataset.key] = d.open));
-  const defaults = new Set(["adapter", "split", "schema", "outcome", "conv", "answer", "problem", "review", "issues", "kind"]);
+  const defaults = new Set(["adapter", "split", "schema", "outcome", "conv", "progress", "problem", "review", "issues", "kind"]);
   host.innerHTML = FACETS.map((f) => {
     const counts = S.facetCounts[f.key];
     const sel = S.facetSel[f.key] || new Set();
@@ -614,12 +679,11 @@ function renderDetail() {
           : '<button class="icon-btn only-mobile" data-act="back" aria-label="Back to list">←</button>'}
         ${stageChip(e.schema)}<span class="chip split ${e.split}">${esc(e.split)}</span>
         <span class="chip">${e.adapter === "analyst" ? "Analyst" : "Planner"}</span>
-        ${e.variant ? `<span class="chip" title="Variant">${esc(String(e.variant).replace(/_/g, " "))}</span>` : ""}${kindChip}
+        ${e.variant && !HIDDEN_VARIANTS.includes(e.variant) ? `<span class="chip" title="Variant">${esc(String(e.variant).replace(/_/g, " "))}</span>` : ""}${kindChip}
         <div class="detail-actions">
           <span class="muted" style="font-size:12px">${posText}</span>
           <button class="icon-btn" data-act="prev" title="${inConv ? "Previous step ([)" : "Previous (k)"}">↑</button>
           <button class="icon-btn" data-act="next" title="${inConv ? "Next step (])" : "Next (j)"}">↓</button>
-          ${e.needs_context ? "" : '<button class="btn small" data-act="clone" title="Clone with full model context (c)">Clone</button>'}
           ${e.kind === "edited" || e.kind === "annotated" ? '<button class="btn small" data-act="revert" title="Undo all changes to this example">Revert</button>' : ""}
           ${e.kind === "new" || e.kind === "clone" ? '<button class="btn small danger-ghost" data-act="discard" title="Remove this added example permanently">Discard</button>' : ""}
           ${e.deleted ? '<button class="btn small" data-act="restore">Restore</button>' : '<button class="btn small danger-ghost" data-act="delete" title="Delete (Del)">Delete</button>'}
@@ -707,37 +771,24 @@ function tagCardHtml(e) {
     </div></div>`;
 }
 
-function turnBubble(t, i, editable) {
-  const who = t.role === "assistant" ? "Qwen" : "User";
-  if (editable) {
-    return `<div class="turn"><div class="avatar ${t.role}">${t.role === "assistant" ? "Q" : "U"}</div>
-      <div class="bubble context-turn"><div class="bubble-head">${who} · earlier turn ${i + 1}<span class="spacer"></span>
-        ${t.role === "assistant" ? `<select data-turn-status="${i}" title="Status">${["", "needs_information", "ready", "unsupported"].map((s) => `<option value="${s}"${(t.status || "") === s ? " selected" : ""}>${s || "(no status)"}</option>`).join("")}</select>` : ""}
-        <button class="icon-btn" data-turn-del="${i}" title="Remove turn" aria-label="Remove turn">✕</button></div>
-        <textarea data-turn-text="${i}" rows="2">${esc(t.text)}</textarea></div></div>`;
-  }
-  return `<div class="turn"><div class="avatar ${t.role}">${t.role === "assistant" ? "Q" : "U"}</div>
+function turnBubble(t) {
+  const who = t.role === "assistant" ? "GraphMine" : "User";
+  return `<div class="turn"><div class="avatar ${t.role}">${t.role === "assistant" ? "G" : "U"}</div>
     <div class="bubble context-turn"><div class="bubble-head">${who} · earlier turn${t.status ? ` · <span class="tag-pill">${esc(t.status)}</span>` : ""}<span class="spacer"></span></div>
     <div class="bubble-text">${esc(t.text)}</div></div></div>`;
 }
 
 function conversationHtml(e) {
   const ed = S.editing?.id === e.id ? S.editing : null;
-  const editingTurns = ed?.kind === "turns";
   const editingPrompts = ed?.kind === "prompts";
   const editingOutput = ed?.kind === "output";
-  const turns = editingTurns ? ed.draft : e.turns;
   const conv = S.convs.get(e.group);
   const siblings = conv ? conv.live : [];
   const sibHtml = siblings.length > 1 ? `<div class="siblings"><span class="muted">${S.mode === "conv" ? "Steps in this conversation:" : "Same conversation:"}</span>${siblings
-    .map((x) => `<button class="chip stage-${esc(x.schema)}${x.id === e.id ? " current" : ""}" data-goto="${esc(x.id)}" title="${esc(x.id)}"><span class="dot"></span>${esc(STAGE_LABEL[x.schema] || x.schema)}${x.variant && !["initial", "plan_first", "manual"].includes(x.variant) ? ` · ${esc(x.variant.replace(/_/g, " "))}` : ""}${x.kind === "clone" ? " · clone" : ""}</button>`).join("")}
+    .map((x) => `<button class="chip stage-${esc(x.schema)}${x.id === e.id ? " current" : ""}" data-goto="${esc(x.id)}" title="${esc(x.id)}"><span class="dot"></span>${esc(STAGE_LABEL[x.schema] || x.schema)}${x.variant && !HIDDEN_VARIANTS.includes(x.variant) ? ` · ${esc(x.variant.replace(/_/g, " "))}` : ""}${x.kind === "clone" ? " · clone" : ""}</button>`).join("")}
     ${S.mode === "rows" ? '<button class="link-btn" data-act="open-conv">Open as one conversation →</button>' : ""}</div>` : "";
 
-  const turnsBlock = (turns.length || editingTurns)
-    ? turns.map((t, i) => turnBubble(t, i, editingTurns)).join("") + (editingTurns
-      ? `<div class="editor-actions"><button class="btn small" data-act="turn-add">+ Add turn pair</button><span class="state"></span>
-          <button class="btn small ghost" data-act="cancel-edit">Cancel</button><button class="btn small primary" data-act="save-turns">Save turns</button></div>` : "")
-    : "";
+  const turnsBlock = e.turns.map(turnBubble).join("");
   const promptBody = editingPrompts
     ? e.prompts.map((p) => `<div class="prompt-label">${esc(p.label)}</div><textarea data-prompt="${esc(p.path)}" rows="3">${esc(ed.draft[p.path] ?? p.value)}</textarea>`).join("")
       + `<div class="editor-actions"><span class="state muted">Exact copies of the old text elsewhere in the hidden payload are updated too on export.</span>
@@ -760,8 +811,7 @@ function conversationHtml(e) {
     ${issuesHtml(e.issues)}
     ${tagCardHtml(e)}
     <div class="card"><div class="card-head">Conversation
-        <span class="muted" style="font-weight:400">${e.turns.length ? `${e.turns.length} earlier turn${e.turns.length > 1 ? "s" : ""} (context, not trained)` : "single turn"}</span>
-        <span class="spacer"></span>${editingTurns ? "" : `<button class="link-btn" data-act="edit-turns">${e.turns.length ? "Edit earlier turns" : "+ Add earlier turns"}</button>`}</div>
+        <span class="muted" style="font-weight:400">${e.turns.length ? `${e.turns.length} earlier turn${e.turns.length > 1 ? "s" : ""} (context, not trained; other steps share them, so edit them in the conversation view)` : "single turn"}</span></div>
       <div class="card-body thread">
         ${turnsBlock}
         <div class="turn"><div class="avatar user">U</div><div class="bubble final-user">
@@ -783,27 +833,71 @@ function renderConvDetail(host) {
   const steps = convSteps(c);
   const pos = S.convOrder.indexOf(c.key);
   const teachers = [...new Set(steps.map((e) => e.teacher).filter(Boolean))];
+  // Only steps written here can be discarded for good; anything else is soft-deleted.
+  const allAdded = c.live.length && c.live.every((e) => e.kind === "new" || e.kind === "clone");
+  const removeBtn = !c.live.length ? '<button class="btn small" data-act="conv-restore">Restore conversation</button>'
+    : allAdded ? '<button class="btn small danger-ghost" data-act="conv-discard" title="Remove every step permanently">Discard conversation</button>'
+      : '<button class="btn small danger-ghost" data-act="conv-delete" title="Delete every step (restorable until export)">Delete conversation</button>';
   host.innerHTML = `
     <div class="detail-head no-tabs">
       <div class="detail-title">
         <button class="icon-btn only-mobile" data-act="back" aria-label="Back to list">←</button>
         <span class="chip split ${c.split}">${esc(c.split)}</span>
         <span class="chip" title="Each step is exported as its own training row">${plural(steps.length, "training row")}</span>
+        <span class="chip progress-${esc(c.progress)}" title="How far this conversation got">${esc(PROGRESS[c.progress])}</span>
         ${c.lineage ? `<span class="chip" title="Graph source">${esc(c.lineage)}</span>` : ""}
         <div class="detail-actions">
           <span class="muted" style="font-size:12px">${pos >= 0 ? `${pos + 1} / ${S.convOrder.length}` : "hidden by filters"}</span>
           <button class="icon-btn" data-act="prev" title="Previous conversation (k)">↑</button>
           <button class="icon-btn" data-act="next" title="Next conversation (j)">↓</button>
-          <button class="btn small" data-act="add-to-conv" title="Add steps this conversation is missing, or follow-up messages">+ Add steps</button>
-          ${c.live.length ? '<button class="btn small danger-ghost" data-act="conv-delete" title="Delete every step (restorable until export)">Delete conversation</button>'
-            : '<button class="btn small" data-act="conv-restore">Restore conversation</button>'}
+          <button class="btn small" data-act="duplicate" title="Copy every step into a new conversation, keeping their model context (c)">Duplicate</button>
+          <button class="btn small" data-act="add-to-conv" title="Add missing steps or follow-up messages">+ Add steps</button>
+          ${removeBtn}
         </div>
       </div>
       <div class="detail-id"><span title="${esc(c.key)}">${esc(c.key)}</span><button class="link-btn" data-act="copy-conv">copy</button>
         ${teachers.length ? `<span>· teacher ${esc(teachers.join(", "))}</span>` : ""}</div>
     </div>
-    <div class="detail-body" id="detail-body">${convTagCardHtml(c, steps)}${convThreadHtml(c, steps)}</div>`;
+    <div class="detail-body" id="detail-body">${replayCardHtml(c)}${convTagCardHtml(c, steps)}${convThreadHtml(c, steps)}</div>`;
   if (S.editing?.kind === "output") initOutputEditor();
+  if (S.editing?.kind === "next") initNextEditor();
+  loadConversationContext(c.key);
+}
+
+// The replay card: which graph and domain the agent runs on, whether the model
+// inputs are current, and what the last build reported.
+function replayCardHtml(c) {
+  const engine = S.meta?.engine || {};
+  const sum = S.conversations[c.key];
+  if (!engine.available) {
+    return c.live.some((e) => e.kind === "new") ? `<div class="callout">Steps written here get their model input from the GraphMine agent, which this studio cannot load (${esc(engine.error || "start it with the repository's .venv")}). They export to <code>needs-context.jsonl</code>.</div>` : "";
+  }
+  const settings = sum?.settings;
+  const caseNote = sum?.case && !settings ? " (the case's own graph)" : "";
+  if (!settings && !sum?.case) {
+    if (!c.live.some((e) => e.kind === "new")) return "";
+    return `<div class="card replay"><div class="card-head">Model inputs<span class="spacer"></span></div>
+      <div class="card-body"><p class="muted" style="margin:0 0 8px">This conversation has no graph yet. With a graph and domain, the agent replays it: every step gets the model input production would send, and GraphMine computes the facts for the analyst answer.</p>
+      <button class="btn small primary" data-act="choose-graph">Choose graph and domain…</button></div></div>`;
+  }
+  const building = S.building?.group === c.key;
+  const status = building ? (S.building.run ? "Running GraphMine…" : "Building…")
+    : !sum?.built ? "not built yet" : sum.fresh ? "up to date" : "out of date: the conversation changed after the last build";
+  const ctx = S.convContext.get(c.key);
+  const events = (ctx?.events || []).filter((e) => e.level !== "info" || /GraphMine ran/.test(e.message));
+  const g = settings?.graph;
+  const domain = settings ? (S.meta.catalog.domains.find((d) => d.id === settings.domain_id)?.name || settings.domain_id) : "";
+  const canRun = c.progress === "ready_to_run" || sum?.needs_run;
+  return `<div class="card replay"><div class="card-head">Model inputs <span class="muted" style="font-weight:400">· ${esc(status)}${sum?.built_at && !building ? ` · built ${esc(new Date(sum.built_at).toLocaleString())}` : ""}</span><span class="spacer"></span>
+      <button class="btn small" data-act="build" ${building ? "disabled" : ""} title="Replay the conversation through the agent (does not run GraphMine)">${sum?.built ? "Rebuild" : "Build"}</button>
+      ${canRun ? `<button class="btn small primary" data-act="run" ${building ? "disabled" : ""} title="Run the ready plan with GraphMine, then rebuild">▶ Run GraphMine</button>` : ""}</div>
+    <div class="card-body">
+      <div class="replay-line">${g ? `<span class="tag-pill" title="Graph">⌗ ${esc(g.name || g.id)}${g.vertices != null ? ` · ${g.vertices} records · ${g.edges} links` : ""}</span>` : `<span class="tag-pill">⌗ case graph${esc(caseNote)}</span>`}
+        ${domain ? `<span class="tag-pill" title="Domain">${esc(domain)}</span>` : ""}
+        ${settings && sum?.case !== true ? '<button class="link-btn" data-act="choose-graph">change</button>' : ""}
+        ${ctx?.facts?.length ? `<span class="muted">· ${plural(ctx.facts.length, "computed fact")}</span>` : ""}</div>
+      ${events.length ? `<ul class="replay-events">${events.map((e) => `<li class="ev-${esc(e.level)}"><b>${esc(e.stage)}</b>${e.branch && e.branch !== "main" ? ' <span class="muted">(follow-up)</span>' : ""}: ${esc(e.message)}</li>`).join("")}</ul>` : ""}
+    </div></div>`;
 }
 
 function mixedNote(pool, key, fmt) {
@@ -868,19 +962,23 @@ function outputEditorHtml() {
 
 function stepHtml(e, n) {
   const ed = S.editing?.id === e.id ? S.editing : null;
-  const variant = e.variant && !["initial", "plan_first", "manual"].includes(e.variant) ? `<span class="chip" title="Variant">${esc(e.variant.replace(/_/g, " "))}</span>` : "";
+  const variant = e.variant && !HIDDEN_VARIANTS.includes(e.variant) ? `<span class="chip" title="Variant">${esc(e.variant.replace(/_/g, " "))}</span>` : "";
   const kindChip = e.deleted ? '<span class="chip kind-deleted">deleted</span>' : e.kind !== "original" ? `<span class="chip kind-${e.kind}">${e.kind}</span>` : "";
   const body = ed?.kind === "output" ? outputEditorHtml()
     : S.outputMode === "tree" ? `<div class="json-tree">${jsonTree(e.output)}</div>` : `<pre class="json-pretty">${highlightJson(e.output)}</pre>`;
   const shownIssues = e.issues.filter((i) => i.level !== "info");
+  const added = e.kind === "new" || e.kind === "clone";
+  const remove = e.deleted ? '<button class="link-btn" data-sact="restore">Restore</button>'
+    : added ? '<button class="link-btn danger" data-sact="discard" title="Remove this step permanently">Discard</button>'
+      : '<button class="link-btn danger" data-sact="delete" title="Delete this step (restorable until export)">Delete</button>';
   const foot = ed?.kind === "output" ? "" : `<div class="step-foot">
       ${e.notes ? `<span class="step-note" title="${esc(e.notes)}">✎ ${esc(e.notes)}</span>` : ""}
       ${e.labels.map((l) => `<span class="label-chip ro">${esc(l)}</span>`).join("")}
       <span class="spacer"></span>
       <button class="link-btn" data-sact="copy">copy</button>
       <button class="link-btn" data-sact="edit">Edit output</button>
-      ${e.deleted ? '<button class="link-btn" data-sact="restore">Restore</button>' : ""}
-      <button class="link-btn" data-sact="details" title="Model context, diff, history, notes, clone and delete for this step">Details →</button></div>`;
+      ${remove}
+      <button class="link-btn" data-sact="details" title="Model context, diff, history and notes for this step">Details →</button></div>`;
   return `<div class="turn step${e.id === S.currentId ? " focused" : ""}${e.deleted ? " deleted" : ""}" data-step="${esc(e.id)}">
     <div class="avatar assistant">Q</div>
     <div class="bubble target">
@@ -908,14 +1006,23 @@ function stepUserBubble(e, c, label) {
     ${body}</div></div>`;
 }
 
-function contextTurnsHtml(e, c) {
+// Earlier turns are context, not trained. They are shared by the steps that come
+// after them, so an edit here updates every copy in the conversation.
+function contextTurnsHtml(e, c, texts) {
+  const ed = S.editing?.kind === "ctx" && S.editing.key === c.key ? S.editing : null;
   return e.turns.map((t) => {
     if (t.role === "user" && norm(t.text) === norm(c.question)) return "";
     const who = t.role === "user" ? "User · earlier message"
-      : t.status === "needs_information" ? "Qwen · clarification question shown to the user" : "Qwen · earlier reply";
-    return `<div class="turn"><div class="avatar ${t.role}">${t.role === "assistant" ? "Q" : "U"}</div>
-      <div class="bubble context-turn"><div class="bubble-head">${who} <span class="muted">(context, not trained)</span>${t.status ? ` · <span class="tag-pill">${esc(t.status)}</span>` : ""}</div>
-      <div class="bubble-text">${esc(t.text)}</div></div></div>`;
+      : t.status === "needs_information" ? "GraphMine · clarification question shown to the user" : "GraphMine · reply";
+    const idx = texts.push(t.text) - 1;
+    const editing = ed && ed.old === t.text;
+    return `<div class="turn"><div class="avatar ${t.role}">${t.role === "assistant" ? "G" : "U"}</div>
+      <div class="bubble context-turn"><div class="bubble-head">${who} <span class="muted">(context, not trained)</span>${t.status ? ` · <span class="tag-pill">${esc(t.status)}</span>` : ""}
+        <span class="spacer"></span>${editing ? "" : `<button class="link-btn" data-act="edit-ctx" data-ctx="${idx}" title="Edit this text in every step that shares it">Edit</button>`}</div>
+      ${editing ? `<textarea id="ctx-editor" rows="3">${esc(ed.text)}</textarea>
+        <div class="editor-actions"><span class="state muted">Updates every step of this conversation that shares this text. A rebuild replaces text the agent derives.</span>
+          <button class="btn small ghost" data-act="cancel-edit">Cancel</button><button class="btn small primary" data-act="save-ctx">Save</button></div>`
+        : `<div class="bubble-text">${esc(t.text)}</div>`}</div></div>`;
   }).join("");
 }
 
@@ -923,6 +1030,7 @@ function convThreadHtml(c, steps) {
   const ed = S.editing;
   const editingQ = ed?.kind === "convq" && ed.key === c.key;
   const usesQ = steps.filter((e) => e.prompts.some((p) => p.value === c.question) || e.turns.some((t) => t.text === c.question)).length;
+  const texts = (S.ctxTexts = []);
   const parts = [`<div class="turn"><div class="avatar user">U</div><div class="bubble final-user">
     <div class="bubble-head">User · question<span class="spacer"></span>${editingQ ? "" : '<button class="link-btn" data-act="edit-convq">Edit (q)</button>'}</div>
     ${editingQ ? `<textarea id="convq-editor" rows="3">${esc(ed.text)}</textarea>
@@ -937,24 +1045,17 @@ function convThreadHtml(c, steps) {
   let mainUser = norm(c.question);
   let lastUser = mainUser;
   let lastContext = "";
-  let ranAnalysis = false;
   let plan = null;
+  let nextPlaced = false;
   const closeBox = () => { if (box) parts.push(`<div class="branch">${box.join("")}</div>`); box = null; };
-  // Where GraphMine would run (a ready plan, or steps added here) but no analyst
-  // answer exists yet, show the gap with a way to fill it.
-  const wantsAnswer = !c.hasAnswer && c.live.some((x) => (x.schema === "PlanDraft" && x.output?.status === "ready") || x.kind === "new");
-  let placedAnswer = !wantsAnswer;
-  const missingAnswer = () => {
-    placedAnswer = true;
-    const op = plan?.tags.operation_id || c.tagged.tags.operation_id;
-    return `<div class="run-divider"><span>⚙ GraphMine runs ${op ? `<code>${esc(op)}</code>` : "the plan"}${c.lineage ? ` on ${esc(c.lineage)}` : ""}; the analyst gets the computed result</span></div>
-      <div class="turn"><div class="avatar assistant">Q</div><div class="bubble missing-step">
-        <div class="bubble-head">${stageChip("GroundedNarrative")}<span>analyst model</span><span class="tag-pill">missing</span></div>
-        <div class="bubble-text muted">No analyst answer in this conversation yet.</div>
-        <button type="button" class="btn small" data-act="add-to-conv">+ Add analyst answer</button></div></div>`;
+  const runDivider = (request) => {
+    const op = (plan || steps.find((x) => x.schema === "PlanDraft"))?.tags.operation_id || c.tagged.tags.operation_id;
+    return `<div class="run-divider"><span>⚙ GraphMine runs ${op ? `<code>${esc(op)}</code>` : "the plan"}${c.lineage ? ` on ${esc(c.lineage)}` : ""}; the analyst gets the computed result${request ? ` and the request “${esc(request)}”` : ""}</span></div>`;
   };
+  const placeNext = () => { if (!nextPlaced) { nextPlaced = true; parts.push(nextStepHtml(c, plan, runDivider)); } };
   steps.forEach((e, i) => {
-    if (!placedAnswer && e._phase >= 4) { closeBox(); parts.push(missingAnswer()); }
+    // The main path ends before the alternatives: say what comes next there.
+    if (e._phase >= 4 && !nextPlaced) { closeBox(); placeNext(); }
     if (e._section !== section) {
       closeBox();
       section = e._section;
@@ -973,20 +1074,20 @@ function convThreadHtml(c, steps) {
     }
     const out = inBranch ? box : parts;
     if (section === "main" && e.schema === "PlanDraft") plan = e;
-    if (section === "main" && e.schema === "GroundedNarrative" && !ranAnalysis) {
-      ranAnalysis = true;
-      const op = (plan || steps.find((x) => x.schema === "PlanDraft"))?.tags.operation_id || c.tagged.tags.operation_id;
-      out.push(`<div class="run-divider"><span>⚙ GraphMine runs ${op ? `<code>${esc(op)}</code>` : "the plan"}${c.lineage ? ` on ${esc(c.lineage)}` : ""}; the analyst gets the computed result</span></div>`);
-    }
     const ctx = e.turns.map((t) => `${t.role}:${t.text}`).join("\n");
     if (e.turns.length && ctx !== lastContext) {
       // Context shared by several branches sits above their boxes.
-      (inBranch && !box.length ? parts : out).push(contextTurnsHtml(e, c));
+      (inBranch && !box.length ? parts : out).push(contextTurnsHtml(e, c, texts));
       lastContext = ctx;
     }
     const msg = norm(userMessage(e));
     const editingPrompt = ed?.kind === "prompts" && ed.id === e.id;
-    if (editingPrompt || msg !== lastUser) {
+    if (e._phase === 3) {
+      // The main answer's request is not typed by the user: the agent sends the
+      // objective from Understanding. Show it on the run divider instead.
+      out.push(runDivider(msg !== mainUser ? userMessage(e) : ""));
+      if (editingPrompt) out.push(stepUserBubble(e, c, "request to the analyst"));
+    } else if (editingPrompt || msg !== lastUser) {
       const label = e._phase === 1 ? "reply to the clarification question" : section === "followup" ? "follow-up message"
         : section === "analyst" ? "request to the analyst" : "message for this step";
       out.push(stepUserBubble(e, c, label));
@@ -996,11 +1097,123 @@ function convThreadHtml(c, steps) {
     out.push(stepHtml(e, i + 1));
   });
   closeBox();
-  if (!placedAnswer) parts.push(missingAnswer());
+  placeNext();
   return `<div class="card"><div class="card-head">Conversation
       <span class="muted" style="font-weight:400">${plural(steps.length, "step")}, each a separate training target</span><span class="spacer"></span>
       <span class="seg"><button data-omode="tree" class="${S.outputMode === "tree" ? "on" : ""}">Tree</button><button data-omode="pretty" class="${S.outputMode === "pretty" ? "on" : ""}">JSON</button></span></div>
     <div class="card-body thread">${parts.join("")}</div></div>`;
+}
+
+// ---------- the next step of a conversation, written in place
+// What production would ask for next, from the conversation's progress. When the
+// conversation was built, the card shows that step's real model input (and, for
+// the analyst, the computed facts), so the output can be written against it.
+const NEXT_SCHEMA = { needs_understanding: "RouteDecision", needs_planning: "PlanDraft", needs_answer: "GroundedNarrative", waiting_reply: "RouteDecision" };
+function derivedClarification(output) {
+  if ((output?.ambiguity || []).length) return output.ambiguity.join(" ");
+  if ((output?.missing_information || []).length) return "I need one more detail: " + output.missing_information.join("; ");
+  return output?.explanation || "";
+}
+function nextStepHtml(c, plan, runDivider) {
+  if (c.progress === "complete") {
+    return c.live.some((e) => e._section === "followup") ? ""
+      : `<div class="next-step done"><span class="muted">Complete. A follow-up message would continue it as an alternative branch.</span> <button class="btn small" data-act="add-to-conv">+ Add follow-up</button></div>`;
+  }
+  if (c.progress === "refused") return `<div class="next-step done"><span class="muted">The agent refuses here, so the conversation ends with this step.</span></div>`;
+  const ctx = S.convContext.get(c.key);
+  const sum = S.conversations[c.key];
+  const fresh = sum?.built && sum?.fresh;
+  if (c.progress === "ready_to_run") {
+    const building = S.building?.group === c.key;
+    return `${runDivider("")}<div class="next-step"><div class="ns-head"><b>Next: run GraphMine</b><span class="muted">The plan is ready. Running it computes the facts the analyst answer must cite.</span></div>
+      <button class="btn primary small" data-act="run" ${building ? "disabled" : ""}>${building ? "Running…" : "▶ Run GraphMine"}</button></div>`;
+  }
+  const schema = NEXT_SCHEMA[c.progress];
+  if (!schema) return "";
+  const ed = S.editing?.kind === "next" && S.editing.key === c.key ? S.editing : null;
+  const input = fresh ? (ctx?.next || []).find((n) => n.branch === "main" && n.schema === schema && n.messages) : null;
+  const facts = schema === "GroundedNarrative" && fresh ? ctx?.facts || [] : [];
+  const reply = c.progress === "waiting_reply";
+  const ask = reply ? c.live.filter((e) => e._section === "main" && e.schema === "RouteDecision").pop() : null;
+  const intro = reply
+    ? `GraphMine asked: <i>“${esc(derivedClarification(ask?.output) || "…")}”</i> Write the user's reply, then the Understanding of that reply.`
+    : schema === "GroundedNarrative" ? (facts.length ? `Cite the computed facts below by id (fact_ids, and fact_ids on each statement).` : `Build the conversation to see the computed facts this answer must cite.`)
+      : input ? "The model input is below; write the expected output against it." : sum?.replayable ? "Rebuild the conversation to see this step's model input." : "";
+  return `${schema === "GroundedNarrative" ? runDivider("") : ""}<div class="next-step" id="next-step">
+    <div class="ns-head"><b>Next: ${reply ? "the user's reply" : esc(STAGE_LABEL[schema])}</b> ${stageChip(schema)}<span class="muted">${intro}</span></div>
+    ${facts.length ? `<details class="ns-facts" open><summary>${plural(facts.length, "computed fact")}</summary><ul class="fact-list">${facts.map((f) => `<li><code>${esc(f.id)}</code><span>${esc(f.statement || JSON.stringify(f.value))}</span></li>`).join("")}</ul></details>` : ""}
+    ${input ? `<details class="ns-input"><summary>Model input (${(input.messages.at(-1).content.length).toLocaleString()} chars)</summary><div class="json-tree" data-next-input></div></details>` : ""}
+    ${ed ? `${reply ? `<label class="block">User · reply<textarea id="next-reply" rows="2">${esc(ed.reply || "")}</textarea></label>` : ""}
+      <div class="label-row"><span>${esc(STAGE_LABEL[schema])} · expected output (JSON)</span><button class="link-btn" data-act="next-template">Load template</button></div>
+      <textarea class="json-edit" id="next-editor" spellcheck="false">${esc(ed.text)}</textarea>
+      <div class="editor-actions"><span class="state" id="next-state"></span>
+        <button class="btn small ghost" data-act="cancel-edit">Cancel</button><button class="btn small primary" data-act="save-next">Save step</button></div>
+      <div id="next-issues" class="issues"></div>`
+    : `<button class="btn small primary" data-act="write-next">Write ${reply ? "the reply" : esc(STAGE_LABEL[schema])}</button>`}
+  </div>`;
+}
+function initNextEditor() {
+  const c = currentConv();
+  const ctx = S.convContext.get(c?.key);
+  const host = $("[data-next-input]");
+  const schema = NEXT_SCHEMA[c?.progress];
+  const input = (ctx?.next || []).find((n) => n.branch === "main" && n.schema === schema && n.messages);
+  if (host && input) host.closest("details").addEventListener("toggle", () => {
+    if (!host.innerHTML) { try { host.innerHTML = jsonTree(JSON.parse(input.messages.at(-1).content)); } catch { host.textContent = input.messages.at(-1).content; } }
+  }, { once: true });
+  const ta = $("#next-editor");
+  if (!ta) return;
+  const check = debounce(async () => {
+    const ed = S.editing;
+    if (ed?.kind !== "next") return;
+    let output;
+    try { output = JSON.parse(ta.value); } catch (err) { $("#next-state").innerHTML = `<span class="ic critical">✕</span> Invalid JSON: ${esc(err.message)}`; return; }
+    try {
+      const { issues } = await api("/api/validate", { schema: ed.schema, output, prompts: [{ value: c.question }], tags: c.tagged.tags });
+      const shown = issues.filter((i) => i.field !== "context" && i.field !== "split" && i.field !== "prompts");
+      ed.errors = shown.some((i) => i.level === "error");
+      $("#next-state").innerHTML = ed.errors ? '<span class="ic critical">✕</span> Fails validation' : `<span class="ic good">✓</span> Valid ${esc(ed.schema)}`;
+      $("#next-issues").innerHTML = issuesHtml(shown);
+    } catch (err) { fail(err); }
+  }, 350);
+  ta.addEventListener("input", () => { S.editing.text = ta.value; check(); });
+  $("#next-reply")?.addEventListener("input", (ev) => { S.editing.reply = ev.target.value; });
+  if (ta.value.trim()) check();
+}
+// The new step's message and earlier turns follow the path it continues.
+async function saveNextStep() {
+  const ed = S.editing;
+  const c = S.convs.get(ed.key);
+  let output;
+  try { output = JSON.parse($("#next-editor").value); } catch { return toast("The output is not valid JSON", true); }
+  if (ed.errors && !confirm("This output fails validation. Save it anyway?")) return;
+  const main = c.live.filter((e) => e._section === "main");
+  const replyStep = main.find((e) => e._phase === 1);
+  let message = replyStep ? userMessage(replyStep) : c.question;
+  let turns = replyStep ? replyStep.turns : [];
+  if (ed.reply !== undefined) {
+    const reply = ($("#next-reply")?.value || "").trim();
+    if (!reply) return toast("Write the user's reply", true);
+    const ask = main.filter((e) => e.schema === "RouteDecision").pop();
+    message = reply;
+    turns = [{ role: "user", text: c.question, status: null, payload: null },
+      { role: "assistant", text: derivedClarification(ask?.output), status: "needs_information", payload: null }];
+  }
+  const step = ed.schema === "GroundedNarrative"
+    ? { adapter: "analyst", schema: ed.schema, turns: [], output,
+      prompt_fields: [{ path: "answer.question", label: "Original user question", value: message }, { path: "user_message", label: "Request to the analyst", value: message }] }
+    : { adapter: "planner", schema: ed.schema, turns, output, prompt_fields: [{ path: "message", label: "User question", value: message }] };
+  try {
+    const r = await api("/api/create-conversation", { group: c.key, steps: [{ ...step, split: c.split, tags: Object.fromEntries(Object.entries(c.tagged.tags).filter(([, v]) => v)) }] });
+    r.examples.forEach(applyExample);
+    applyIssues(r.issues);
+    applyConversations(r.conversations);
+    S.editing = null;
+    refreshAll();
+    renderDetail();
+    toast(`${STAGE_LABEL[ed.schema]} saved`);
+    autoBuild(c.key);
+  } catch (err) { fail(err); }
 }
 
 // JSON tree & highlighting
@@ -1050,9 +1263,21 @@ function kvHtml(pairs) {
   return `<dl class="kv">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${typeof v === "object" ? `<code>${esc(JSON.stringify(v))}</code>` : esc(String(v))}</dd>`).join("")}</dl>`;
 }
 function contextHtml(ctx, e) {
-  if (!ctx.available) return `<div class="callout">This example was added in the studio and has no model context yet. It is exported to <code>needs-context.jsonl</code>.</div>`;
+  if (!ctx.available) {
+    return `<div class="callout">Written here, so its model input comes from replaying the conversation through the agent. ${ctx.replayable
+      ? "Build the conversation (Model inputs, in the conversation view) to see it." : "Choose a graph and domain for the conversation, then build it."}
+      Until then it exports to <code>needs-context.jsonl</code>.</div>`;
+  }
   const p = ctx.payload || {};
   const parts = [];
+  if (ctx.captured) {
+    parts.push(`<div class="callout">Model input from replaying the conversation through the agent${ctx.built_at ? `, built ${esc(new Date(ctx.built_at).toLocaleString())}` : ""}.
+      ${ctx.fresh ? "It is current, so this step exports as a training row." : "<b>Out of date:</b> the conversation changed after that build; rebuild it before exporting."}</div>`);
+    if ((ctx.history || []).length) {
+      parts.push(`<div class="card"><div class="card-head">Conversation history the model sees <span class="muted" style="font-weight:400">${ctx.history.length} message${ctx.history.length > 1 ? "s" : ""}</span></div>
+        <div class="card-body thread">${ctx.history.map(turnBubble).join("")}</div></div>`);
+    }
+  }
   if (ctx.source_id && ctx.source_id !== e.id) parts.push(`<div class="callout">Context inherited from <button class="link-btn" data-goto="${esc(ctx.source_id)}">${esc(ctx.source_id)}</button>.</div>`);
   parts.push(`<div class="card"><div class="card-head">Task given to Qwen</div><div class="card-body">${esc(p.task || "—")}</div></div>`);
   const gm = p.graph_metadata || {};
@@ -1153,22 +1378,22 @@ async function loadHistory(e, body) {
 // ------------------------------------------------------------------ editing
 // kind: "output" | "prompts" | "turns" edit one row (S.editing.id); "convq" edits the
 // opening question of the current conversation in every step that uses it.
-function startEdit(kind, id = S.currentId) {
+function startEdit(kind, id = S.currentId, extra = null) {
   const e = S.byId.get(id);
   if (!e) return;
-  const same = S.editing && S.editing.kind === kind && (kind === "convq" ? S.editing.key === e.group : S.editing.id === id);
+  const same = S.editing && S.editing.kind === kind && (kind === "convq" || kind === "ctx" ? S.editing.key === e.group && S.editing.old === extra : S.editing.id === id);
   if (S.editing && !same && !confirm("Discard unsaved edits?")) return;
   if (S.tab !== "conversation") S.tab = "conversation";
   if (kind === "output") S.editing = { kind, id, text: JSON.stringify(e.output, null, 2) };
   if (kind === "prompts") S.editing = { kind, id, draft: Object.fromEntries(e.prompts.map((p) => [p.path, p.value])) };
-  if (kind === "turns") S.editing = { kind, id, draft: e.turns.map((t) => ({ ...t })) };
+  if (kind === "ctx") S.editing = { kind, key: e.group, old: extra, text: extra };
   if (kind === "convq") S.editing = { kind, key: e.group, text: S.convs.get(e.group).question };
   renderDetail();
   const el = kind === "prompts" ? $(`[data-ustep="${CSS.escape(id)}"] [data-prompt]`) || $("[data-prompt]")
-    : kind === "output" ? $("#output-editor") : kind === "convq" ? $("#convq-editor") : $("[data-turn-text]");
+    : kind === "output" ? $("#output-editor") : kind === "convq" ? $("#convq-editor") : $("#ctx-editor");
   if (el) {
     el.focus();
-    if (kind === "prompts" || kind === "convq") el.setSelectionRange(el.value.length, el.value.length);
+    if (kind !== "output") el.setSelectionRange(el.value.length, el.value.length);
     if (S.mode === "conv") el.scrollIntoView({ block: "nearest" });
   }
 }
@@ -1177,7 +1402,8 @@ function syncDrafts() {
   const ed = S.editing;
   if (!ed) return;
   if (ed.kind === "prompts") $$("[data-prompt]").forEach((t) => (ed.draft[t.dataset.prompt] = t.value));
-  if (ed.kind === "turns" && $("[data-turn-text]")) readTurnDraft();
+  if (ed.kind === "ctx" && $("#ctx-editor")) ed.text = $("#ctx-editor").value;
+  if (ed.kind === "next" && $("#next-editor")) { ed.text = $("#next-editor").value; if ($("#next-reply")) ed.reply = $("#next-reply").value; }
   if (ed.kind === "output" && $("#output-editor")) ed.text = $("#output-editor").value;
   if (ed.kind === "convq" && $("#convq-editor")) ed.text = $("#convq-editor").value;
 }
@@ -1238,9 +1464,28 @@ async function saveOutput() {
   let obj;
   try { obj = JSON.parse(ed.text); } catch { return toast("Fix the JSON first", true); }
   if (ed.issues?.some((i) => i.level === "error") && !confirm("This output fails validation and would train Qwen on an invalid target. Save anyway?")) return;
+  const before = S.byId.get(ed.id);
+  const oldAsk = before?.schema === "RouteDecision" && before._phase === 0 && asksForInfo(before.output) ? derivedClarification(before.output) : null;
   if (!(await update(ed.id, { output: obj }, "Output saved"))) return;
   S.editing = null;
   renderDetail();
+  // The question GraphMine shows the user is derived from this output; keep the replies' copy in step.
+  const newAsk = asksForInfo(obj) ? derivedClarification(obj) : null;
+  if (oldAsk && newAsk && newAsk !== oldAsk) {
+    const c = S.convs.get(before.group);
+    const replies = c.live.filter((e) => e._phase === 1 && e.turns.some((t) => t.role === "assistant" && t.text === oldAsk));
+    if (replies.length) {
+      try {
+        const r = await api("/api/update-many", { patches: replies.map((e) => ({ id: e.id, patch: { turns: e.turns.map((t) => (t.role === "assistant" && t.text === oldAsk ? { ...t, text: newAsk } : t)) } })) });
+        r.examples.forEach(applyExample);
+        applyIssues(r.issues);
+        applyConversations(r.conversations);
+        refreshAll();
+        renderDetail();
+        toast(`Clarification question updated in ${plural(replies.length, "reply step")}`);
+      } catch (err) { fail(err); }
+    }
+  }
 }
 
 async function savePrompts() {
@@ -1252,13 +1497,12 @@ async function savePrompts() {
   renderDetail();
 }
 
-// Replace the opening question everywhere this conversation uses it verbatim:
-// prompt fields (planner message, analyst question/request) and earlier turns.
-async function saveConvQuestion() {
-  const c = S.convs.get(S.editing.key);
-  const text = $("#convq-editor").value;
-  if (!text.trim()) return toast("The question cannot be empty", true);
-  const old = c.question;
+// Replace one text everywhere this conversation uses it verbatim: prompt fields
+// (planner message, analyst question/request) and earlier turns. Used for the
+// opening question and for shared context such as GraphMine's earlier replies.
+async function saveConvText(old, text) {
+  const c = S.convs.get(S.editing?.key || S.convKey);
+  if (!text.trim()) return toast("The text cannot be empty", true);
   if (text === old) { cancelEdit(); return; }
   const patches = [];
   for (const e of c.steps) {
@@ -1272,26 +1516,16 @@ async function saveConvQuestion() {
     const r = await api("/api/update-many", { patches });
     r.examples.forEach(applyExample);
     applyIssues(r.issues);
+    applyConversations(r.conversations);
     S.editing = null;
     refreshAll();
     renderDetail();
     const skipped = c.steps.length - patches.length;
-    toast(`Question updated in ${plural(patches.length, "step")}${skipped ? ` · ${skipped} with different wording left unchanged` : ""}`);
+    toast(`Updated in ${plural(patches.length, "step")}${skipped ? ` · ${skipped} with different wording left unchanged` : ""}`);
+    autoBuild(c.key);
   } catch (err) { fail(err); }
 }
-
-function readTurnDraft() {
-  const d = S.editing.draft;
-  $$("[data-turn-text]").forEach((t) => (d[+t.dataset.turnText].text = t.value));
-  $$("[data-turn-status]").forEach((s) => (d[+s.dataset.turnStatus].status = s.value || null));
-  return d;
-}
-async function saveTurns() {
-  const turns = readTurnDraft().filter((t) => t.text.trim());
-  if (!(await update(S.editing.id, { turns }, "Turns saved"))) return;
-  S.editing = null;
-  renderDetail();
-}
+const saveConvQuestion = () => saveConvText(S.convs.get(S.editing.key).question, $("#convq-editor").value);
 
 // ------------------------------------------------------------------ mutations
 function applyExample(ex) {
@@ -1307,6 +1541,13 @@ function applyIssues(map) {
     if (e) { e.issues = issues; e._issue = issueLevel(e); }
   }
 }
+// Server summaries arrive with every change; a stale summary means the cached build report is too.
+function applyConversations(map) {
+  for (const [group, summary] of Object.entries(map || {})) {
+    S.conversations[group] = summary;
+    if (!summary.fresh) S.convContext.delete(group);
+  }
+}
 function refreshAll() {
   buildConvs();
   computeVisible();
@@ -1317,14 +1558,17 @@ function refreshAll() {
   if (S.view === "coverage") renderCoverage();
   if (S.view === "changes") renderChanges();
 }
+const CONTENT_FIELDS = ["output", "prompts", "turns", "deleted"];
 async function update(id, patch, msg) {
   try {
     const r = await api("/api/update", { id, patch });
     applyExample(r.example);
     applyIssues(r.issues);
+    applyConversations(r.conversations);
     refreshAll();
     if (id === S.currentId || (S.mode === "conv" && r.example.group === S.convKey)) { syncDrafts(); renderDetail(); }
     if (msg) toast(msg);
+    if (CONTENT_FIELDS.some((k) => k in patch)) autoBuild(r.example.group);
     return r.example;
   } catch (err) { fail(err); return null; }
 }
@@ -1334,10 +1578,12 @@ async function bulk(patch, msg, ids = [...S.selected]) {
     const r = await api("/api/bulk", { ids, patch });
     r.examples.forEach(applyExample);
     applyIssues(r.issues);
+    applyConversations(r.conversations);
     refreshAll();
     syncDrafts();
     renderDetail();
     toast(`${msg} · ${plural(ids.length, S.mode === "conv" ? "step" : "example")}`);
+    if ("deleted" in patch) new Set(r.examples.map((e) => e.group)).forEach(autoBuild);
   } catch (err) { fail(err); }
 }
 async function revert(ids, msg) {
@@ -1351,6 +1597,7 @@ async function revert(ids, msg) {
       if (S.currentId === id) S.currentId = null;
     }
     applyIssues(r.issues);
+    applyConversations(r.conversations);
     refreshAll();
     if (S.mode === "conv" && !S.currentId) {
       // The focused step was discarded: stay on what is left of the conversation.
@@ -1360,22 +1607,65 @@ async function revert(ids, msg) {
     }
     renderDetail();
     toast(msg);
+    Object.keys(r.conversations || {}).forEach(autoBuild);
   } catch (err) { fail(err); }
 }
-async function cloneCurrent() {
-  const e = current();
-  if (!e || e.needs_context) return;
+// A duplicate keeps every step's model context (original steps become clones of their source).
+async function duplicateConversation(group = S.convKey) {
+  if (!group) return;
   try {
-    const r = await api("/api/create", { clone_of: e.id });
-    applyExample(r.example);
+    const r = await api("/api/conversation/duplicate", { group });
+    r.examples.forEach(applyExample);
     applyIssues(r.issues);
+    applyConversations(r.conversations);
     S.facetSel = {};
     S.query = "";
     $("#search").value = "";
     refreshAll();
-    select(r.example.id, { scroll: true });
-    toast("Cloned with full model context. Edit the question and expected output.");
-    startEdit("prompts");
+    selectConv(r.group, { scroll: true });
+    toast(`Duplicated as a new conversation (${plural(r.examples.length, "step")}). Edit its question with q.`);
+  } catch (err) { fail(err); }
+}
+
+// ------------------------------------------------------------------ replay through the agent
+// Building replays the conversation through GraphMine's agent: every step gets the
+// exact model input production would send, and the next step's input is shown
+// while you write it. GraphMine itself only runs when asked (run: true).
+function replayable(group) { return !!S.conversations[group]?.replayable && !!S.conversations[group]?.settings; }
+async function buildConversation(group, { run = false, quiet = false } = {}) {
+  if (S.building) return;
+  S.building = { group, run };
+  if (S.convKey === group) renderDetail();
+  try {
+    const r = await api("/api/conversation/build", { group, run });
+    r.examples.forEach(applyExample);
+    applyIssues(r.issues);
+    applyConversations({ ...r.conversations, [group]: r.summary });
+    S.convContext.set(group, r.context);
+    refreshAll();
+    const errors = (r.context.events || []).filter((x) => x.level === "error");
+    if (!quiet || errors.length) {
+      toast(errors.length ? `${errors[0].stage}: ${errors[0].message}`
+        : run ? `Built${r.context.runs ? ` · GraphMine ran ${plural(r.context.runs, "plan")}` : ""} in ${r.context.seconds} s` : "Model inputs updated", !!errors.length);
+    }
+  } catch (err) { fail(err); }
+  finally {
+    S.building = null;
+    if (S.convKey === group) renderDetail();
+  }
+}
+// Steps written here are rebuilt after each content change so their inputs stay current.
+function autoBuild(group) {
+  const c = S.convs.get(group);
+  if (replayable(group) && c?.live.some((e) => e.kind === "new")) buildConversation(group, { quiet: true });
+}
+async function loadConversationContext(group) {
+  if (S.convContext.has(group) || !S.conversations[group]?.built) return;
+  try {
+    const r = await api(`/api/conversation?group=${encodeURIComponent(group)}`);
+    applyConversations({ [group]: r.summary });
+    if (r.context) S.convContext.set(group, r.context);
+    if (S.convKey === group) renderDetail();
   } catch (err) { fail(err); }
 }
 
@@ -1468,8 +1758,7 @@ function convLiveIds() {
   return c ? (c.live.length ? c.live : c.steps).map((e) => e.id) : [];
 }
 function backToConv() {
-  // Output and message editors also render in the thread; the turns editor does not.
-  if (S.editing?.kind === "turns") { if (!confirm("Discard unsaved edits?")) return; S.editing = null; }
+  // Every editor renders in the thread too, so an open edit survives going back.
   S.rowView = false;
   renderDetail();
   $(`[data-step="${CSS.escape(S.currentId)}"]`)?.scrollIntoView({ block: "center" });
@@ -1635,11 +1924,114 @@ async function renderChanges() {
   } catch (err) { fail(err); }
 }
 
+// ------------------------------------------------------------------ graphs: picker shared by the builder and the graph dialog
+// A conversation replays on one graph: a graph already in this dataset, a small
+// graph from the pipeline's case library, or an upload (checked by the agent's
+// own ingestion). Domains come from the catalog's domain profiles.
+async function loadGraphs(force = false) {
+  if (S.graphs && !force) return S.graphs;
+  try { S.graphs = await api("/api/graphs"); } catch (err) { fail(err); S.graphs = { dataset: [], library: [] }; }
+  return S.graphs;
+}
+function graphPickerHtml(sel = {}) {
+  const g = S.graphs || { dataset: [], library: [] };
+  const opt = (value, label, on) => `<option value="${esc(value)}"${on ? " selected" : ""}>${esc(label)}</option>`;
+  const desc = (x) => `${x.name || x.id}${x.vertices != null ? ` · ${x.vertices} records · ${x.edges} links` : ""}${x.directed ? " · directed" : ""}`;
+  return `<div class="graph-picker">
+    <div class="form-grid gp-grid">
+      <label>Domain<select data-gp="domain">${S.meta.catalog.domains.map((d) => opt(d.id, d.name, d.id === (sel.domain_id || "general"))).join("")}</select></label>
+      <label class="gp-graph">Graph<select data-gp="graph"><option value="">${S.graphs ? "Choose a graph…" : "Loading graphs…"}</option>
+        ${g.dataset.length ? `<optgroup label="In this dataset">${g.dataset.map((x) => opt(`own:${x.id}`, desc(x), sel.pick === `own:${x.id}`)).join("")}</optgroup>` : ""}
+        ${g.library.length ? `<optgroup label="Case library: small graphs from pipeline cases">${g.library.map((x) => opt(`lib:${x.id}`, desc(x) + (x.attachments?.length ? ` · with ${x.attachments.join(", ")}` : ""), sel.pick === `lib:${x.id}`)).join("")}</optgroup>` : ""}
+      </select></label>
+    </div>
+    <details class="gp-upload"><summary>Upload a graph…</summary>
+      <div class="form-grid">
+        <label>Name<input data-gp="up-name" placeholder="optional"></label>
+        <label>File: a GraphMine .json graph, or a .csv / .tsv edge list<input type="file" data-gp="up-file" accept=".json,.csv,.tsv,.txt"></label>
+        <label class="check"><input type="checkbox" data-gp="up-directed"> Links are directed</label>
+      </div>
+      <button type="button" class="btn small" data-gp-act="upload">Upload and use</button>
+    </details>
+  </div>`;
+}
+// The picked graph as an id in this dataset; a library graph is copied in first.
+async function resolvePickedGraph(pick) {
+  if (!pick) return null;
+  if (pick.startsWith("own:")) return pick.slice(4);
+  const r = await api("/api/graphs/use", { id: pick.slice(4) });
+  await loadGraphs(true);
+  return r.graph.id;
+}
+async function uploadPickedGraph(root) {
+  const file = root.querySelector('[data-gp="up-file"]').files[0];
+  if (!file) { toast("Choose a file to upload", true); return null; }
+  try {
+    const r = await api("/api/graphs/upload", {
+      name: root.querySelector('[data-gp="up-name"]').value, filename: file.name, content: await file.text(),
+      directed: root.querySelector('[data-gp="up-directed"]').checked,
+    });
+    await loadGraphs(true);
+    toast(`Uploaded ${r.graph.name}: ${r.graph.vertices} records, ${r.graph.edges} links`);
+    return `own:${r.graph.id}`;
+  } catch (err) { fail(err); return null; }
+}
+
+let graphDialog = null;
+async function openGraphDialog(group) {
+  const sum = S.conversations[group] || {};
+  graphDialog = { group, domain_id: sum.settings?.domain_id || "general", pick: sum.settings?.graph ? `own:${sum.settings.graph.id}` : "" };
+  $("#graph-body").innerHTML = `<p class="muted" style="margin:0">The agent replays this conversation on the graph, with the domain's vocabulary. Changing either makes the model inputs out of date until the next build.</p>${graphPickerHtml(graphDialog)}`;
+  $("#graph-dialog").showModal();
+  await loadGraphs();
+  $("#graph-body").innerHTML = `<p class="muted" style="margin:0">The agent replays this conversation on the graph, with the domain's vocabulary. Changing either makes the model inputs out of date until the next build.</p>${graphPickerHtml(graphDialog)}`;
+}
+async function submitGraphDialog(ev) {
+  ev.preventDefault();
+  const root = $("#graph-body");
+  graphDialog.domain_id = root.querySelector('[data-gp="domain"]').value;
+  graphDialog.pick = root.querySelector('[data-gp="graph"]').value;
+  if (!graphDialog.pick) return toast("Choose a graph", true);
+  try {
+    const graph_id = await resolvePickedGraph(graphDialog.pick);
+    const r = await api("/api/conversation/settings", { group: graphDialog.group, domain_id: graphDialog.domain_id, graph_id });
+    applyConversations({ [graphDialog.group]: r.summary });
+    $("#graph-dialog").close();
+    refreshAll();
+    renderDetail();
+    buildConversation(graphDialog.group);
+  } catch (err) { fail(err); }
+}
+
+// ------------------------------------------------------------------ templates
+// A real output to start from: this dataset first, then the others (a dataset
+// made in the studio has nothing of its own to copy at first).
+async function findTemplate(schema, want, op) {
+  const live = S.examples.filter((e) => !e.deleted && e.schema === schema && e.kind !== "new");
+  const fits = (e) => (want === "ask" ? asksForInfo(e.output) : want === "supported" ? e.output?.supported === true
+    : want === "ready" ? e.output?.status === "ready" : true);
+  const ex = live.find((e) => fits(e) && (!op || e.tags.operation_id === op)) || live.find(fits);
+  if (ex) return { output: ex.output, source: ex.id };
+  return api("/api/template", { schema, want, operation: op || null });
+}
+const WANT_FOR = { askRoute: "ask", route: "supported", plan: "ready" };
+async function loadNextTemplate() {
+  const ed = S.editing;
+  const c = S.convs.get(ed.key);
+  try {
+    const t = await findTemplate(ed.schema, ed.schema === "RouteDecision" ? "supported" : ed.schema === "PlanDraft" ? "ready" : "any", c.tagged.tags.operation_id);
+    $("#next-editor").value = ed.text = JSON.stringify(t.output, null, 2);
+    $("#next-editor").dispatchEvent(new Event("input"));
+    toast(`Template copied from ${t.source}`);
+  } catch { toast(`No dataset has a ${STAGE_LABEL[ed.schema]} example to copy from`, true); }
+}
+
 // ------------------------------------------------------------------ add conversation
 // The builder lays a conversation out in chat order; a Qwen output left empty is
-// skipped. New steps have no model context and export to needs-context.jsonl
-// under one conversation id. Opened from a conversation, it offers only the
-// steps that conversation is missing, plus follow-ups.
+// skipped. Text the agent derives (the clarification question, the analyst's
+// request, GraphMine's replies) is not typed: with a graph, building the
+// conversation fills it in from the agent itself. Opened from a conversation, it
+// offers only the steps that conversation is missing, plus follow-ups.
 let B = null;
 const BSCHEMA = { askRoute: "RouteDecision", route: "RouteDecision", plan: "PlanDraft", answer: "GroundedNarrative", check: "TurnDecision" };
 const FU_ID = /^fu(\d+)-(\w+)$/;
@@ -1647,6 +2039,8 @@ const bSchema = (id) => BSCHEMA[id.match(FU_ID)?.[2] || id];
 const bGet = (id) => { const m = id.match(FU_ID); return (m ? B.followups[+m[1]]?.[m[2]] : B[id]) ?? ""; };
 const bSet = (id, v) => { const m = id.match(FU_ID); if (m) B.followups[+m[1]][m[2]] = v; else B[id] = v; };
 const bTurn = (role, text, status = null) => ({ role, text, status, payload: null });
+const newFollowup = () => ({ msg: "", check: "", route: "", plan: "", answer: "" });
+const engineOn = () => !!S.meta?.engine?.available;
 
 function openAdd(c = null) {
   if (S.editing && !confirm("Discard unsaved edits?")) return;
@@ -1655,6 +2049,7 @@ function openAdd(c = null) {
   const main = live.filter((e) => e._section === "main");
   const reply = main.find((e) => e._phase === 1);
   const priorReply = live.find((e) => e._section === "followup" && e.turns.length)?.turns.filter((t) => t.role === "assistant").pop();
+  const sum = c ? S.conversations[c.key] : null;
   B = {
     conv: c?.key || null,
     question: c ? c.question : "",
@@ -1663,19 +2058,23 @@ function openAdd(c = null) {
     ctx: reply ? reply.turns : [],
     split: c ? c.split : "train",
     tags: { problem_id: "", operation_id: "", backend: "", ...(c ? c.tagged.tags : {}) },
-    clarify: false, askRoute: "", clarQ: "", reply: "",
-    route: "", plan: "", analystReq: "", answer: "",
+    // A graph is chosen here for a new conversation, or for one that has none yet.
+    graph: c && (sum?.settings || sum?.case) ? null : { domain_id: "general", pick: "" },
+    clarify: false, askRoute: "", reply: "",
+    route: "", plan: "", answer: "",
     earlierReply: priorReply?.text || "",
     followups: [],
     show: { route: !main.some((e) => e.schema === "RouteDecision"), plan: !main.some((e) => e.schema === "PlanDraft"),
       answer: !live.some((e) => e.schema === "GroundedNarrative") },
     issues: {},
+    preview: null,
   };
-  if (c && !B.show.route && !B.show.plan && !B.show.answer) B.followups.push({ msg: "", check: "", answer: "" });
+  if (c && !B.show.route && !B.show.plan && !B.show.answer) B.followups.push(newFollowup());
   $("#add-title").textContent = c ? "Add to this conversation" : "Add conversation";
   renderBuilder();
   $("#add-dialog").showModal();
   $(c ? "#add-body textarea" : '[data-btext="question"]')?.focus();
+  if (B.graph && engineOn()) loadGraphs().then(() => { if (B && $("#add-dialog").open) renderBuilder(); });
 }
 
 function renderBuilder() {
@@ -1683,17 +2082,16 @@ function renderBuilder() {
   const text = (id, who, title, placeholder, rows = 2) => `<div class="cb-step"><div class="avatar ${who === "U" ? "user" : "assistant"}">${who}</div>
     <div class="cb-body"><div class="cb-title">${esc(title)}</div>
       <textarea rows="${rows}" data-btext="${id}" placeholder="${esc(placeholder)}">${esc(bGet(id))}</textarea></div></div>`;
-  const json = (id, title = "", hint = "") => `<div class="cb-step"><div class="avatar assistant">Q</div>
+  const json = (id, title = "", hint = "", extra = "") => `<div class="cb-step"><div class="avatar assistant">Q</div>
     <div class="cb-body"><div class="cb-title">${stageChip(bSchema(id))}${title ? `<span class="muted">${esc(title)}</span>` : ""}<span class="spacer"></span>
-        <button type="button" class="link-btn" data-btpl="${id}">Load template</button></div>
+        ${extra}<button type="button" class="link-btn" data-btpl="${id}">Load template</button></div>
       ${hint ? `<div class="cb-hint">${esc(hint)}</div>` : ""}
       <textarea class="mono" rows="5" spellcheck="false" data-bjson="${id}" placeholder="Expected Qwen output (JSON). Leave empty to skip this step.">${esc(bGet(id))}</textarea>
       <div data-bissues="${id}">${issuesHtml(B.issues[id])}</div></div></div>`;
   const tagSelect = (key, label, html) => `<label>${label}<select data-btag="${key}">${html}</select></label>`;
-  const parts = [`<div class="callout">Fill in the steps in the order the chat happens. A Qwen step left empty is skipped.
-    New steps have <b>no model context</b> (graph, catalog contract, computed facts), so they export to <code>needs-context.jsonl</code>,
-    grouped by conversation, for the pipeline to complete. A conversation without an analyst answer is listed under
-    <b>Analyst answer → missing analyst answer</b>, so you can add it later.</div>`];
+  const parts = [`<div class="callout">Fill in the steps in the order the chat happens; a Qwen step left empty is skipped.
+    ${engineOn() ? "With a graph, the studio replays the conversation through the GraphMine agent: each step gets the model input production would send, text the agent derives is filled in, and once GraphMine has run, the analyst answer is checked against the computed facts. You can also add just the first steps now and the rest later, one step at a time."
+      : "The GraphMine agent is not available here, so steps written now have no model input and export to <code>needs-context.jsonl</code>."}</div>`];
   if (conv) {
     parts.push(`<div class="cb-context"><span class="chip split ${esc(B.split)}">${esc(B.split)}</span>
       ${B.tags.operation_id ? `<span class="tag-pill">${esc(B.tags.operation_id)}</span>` : ""}<span class="muted">New steps use this conversation's split and tags.</span></div>`);
@@ -1704,6 +2102,7 @@ function renderBuilder() {
       ${tagSelect("backend", "Implementation", backendOptions(B.tags.backend, "", B.tags.operation_id).replace("Auto: (none)", "(auto)"))}
       <label>Split<select id="b-split">${["train", "validation"].map((s) => `<option${s === B.split ? " selected" : ""}>${s}</option>`).join("")}</select></label></div>`);
   }
+  if (B.graph && engineOn()) parts.push(`<div class="cb-section"><div class="cb-title"><b>Graph and domain</b><span class="muted">the data the agent replays the conversation on</span></div>${graphPickerHtml(B.graph)}</div>`);
   const t = [];
   if (conv) {
     t.push(`<div class="cb-step"><div class="avatar user">U</div><div class="cb-body"><div class="cb-title">User · question</div>
@@ -1713,25 +2112,33 @@ function renderBuilder() {
     t.push(`<label class="check cb-toggle"><input type="checkbox" id="b-clarify"${B.clarify ? " checked" : ""}> Qwen asks for clarification first</label>`);
     if (B.clarify) {
       t.push(json("askRoute", "asks for more information", "supported: false, with the open question in ambiguity or missing_information."));
-      t.push(text("clarQ", "Q", "Qwen · clarification question shown to the user", "e.g. Are you looking for groups with many links inside them, or separate sections?"));
+      let shown = "";
+      try { shown = B.askRoute.trim() ? derivedClarification(JSON.parse(B.askRoute)) : ""; } catch { shown = ""; }
+      t.push(`<div class="cb-step"><div class="avatar assistant">G</div><div class="cb-body"><div class="cb-title">GraphMine · clarification question shown to the user <span class="muted">(derived from the Understanding output above)</span></div>
+        <div class="cb-quote">${shown ? esc(shown) : '<span class="muted">Appears once the Understanding output asks something.</span>'}</div></div></div>`);
       t.push(text("reply", "U", "User · reply to the clarification question", "The clarified request"));
     }
   }
-  if (B.show.route) t.push(json("route"));
+  const canPreview = !conv && engineOn() && B.graph?.pick && !B.clarify;
+  if (B.show.route) {
+    t.push(json("route", "", "", canPreview ? '<button type="button" class="link-btn" data-bact="preview">Show model input</button>' : ""));
+    if (B.preview) t.push(`<details class="ns-input cb-preview" open><summary>Understanding · model input the agent sends for this question</summary><div class="json-tree">${jsonTree(JSON.parse(B.preview.at(-1).content))}</div></details>`);
+  }
   if (B.show.plan) t.push(json("plan"));
   if (B.show.answer) {
-    t.push(`<div class="run-divider"><span>⚙ GraphMine runs the plan; the analyst gets the computed result</span></div>`);
-    t.push(text("analystReq", "U", "User · request to the analyst (optional)", "Leave empty to use the question"));
-    t.push(json("answer", "", "Leave empty to add it later."));
+    t.push(`<div class="run-divider"><span>⚙ GraphMine runs the plan; the analyst gets the computed result and the objective from Understanding</span></div>`);
+    t.push(json("answer", "", engineOn() ? "Easiest after GraphMine has run: the conversation then shows the facts to cite. Leave empty to add it later." : "Leave empty to add it later."));
   }
   t.push(`<div class="thread-section"><div class="ts-title">Follow-up messages</div>
-    <div class="ts-desc">Optional. Each one is an alternative next message after the first answer.</div></div>`);
-  if (B.followups.length) t.push(text("earlierReply", "Q", "GraphMine · reply the user saw before the follow-ups", "e.g. Found 4 matching groups of entities."));
+    <div class="ts-desc">Optional. Each one is an alternative next message after the first answer: the follow-up check decides whether to explain, analyze again or clarify.</div></div>`);
+  if (B.followups.length) t.push(text("earlierReply", "G", "GraphMine · reply the user saw before the follow-ups", B.graph?.pick || (conv && S.conversations[B.conv]?.replayable) ? "Optional: building the conversation replaces it with the agent's real reply" : "e.g. Found 4 matching groups of entities."));
   B.followups.forEach((_, i) => {
     t.push(`<div class="branch"><div class="cb-title"><b>Follow-up ${i + 1}</b><span class="spacer"></span>
         <button type="button" class="link-btn" data-bfu-del="${i}">Remove</button></div>
       ${text(`fu${i}-msg`, "U", "User · follow-up message", "e.g. Explain what this result means")}
       ${json(`fu${i}-check`)}
+      ${json(`fu${i}-route`, "optional", "When the check says analyze (or clarify), the planner runs again: Understanding, then Planning.")}
+      ${json(`fu${i}-plan`, "optional")}
       ${json(`fu${i}-answer`, "optional")}</div>`);
   });
   t.push(`<button type="button" class="btn small cb-add-fu" data-bact="add-fu">+ Add follow-up message</button>`);
@@ -1763,9 +2170,12 @@ function builderSteps() {
     if (!mainQ) problems.push("Enter the user question.");
     if (B.clarify) {
       const ask = parse("askRoute");
-      if (ask !== undefined) steps.push(planner("RouteDecision", mainQ, [], ask));
-      if (!B.clarQ.trim() || !B.reply.trim()) problems.push("Fill in Qwen's clarification question and the user's reply.");
-      ctx = [bTurn("user", mainQ), bTurn("assistant", B.clarQ.trim(), "needs_information")];
+      if (ask !== undefined) {
+        steps.push(planner("RouteDecision", mainQ, [], ask));
+        if (!asksForInfo(ask)) problems.push("The first Understanding must ask for more information (ambiguity or missing_information).");
+      }
+      if (!B.reply.trim()) problems.push("Write the user's reply to the clarification question.");
+      ctx = [bTurn("user", mainQ), bTurn("assistant", derivedClarification(ask), "needs_information")];
       mainQ = B.reply.trim();
     }
   }
@@ -1774,27 +2184,30 @@ function builderSteps() {
     if (output !== undefined) steps.push(planner(bSchema(id), mainQ, ctx, output));
   }
   const answer = B.show.answer ? parse("answer") : undefined;
-  if (answer !== undefined) steps.push(analyst(mainQ, B.analystReq.trim() || mainQ, [], answer));
-  const fuTurns = [...ctx, bTurn("user", mainQ), bTurn("assistant", B.earlierReply.trim())];
+  if (answer !== undefined) steps.push(analyst(mainQ, mainQ, [], answer));
+  // "answered" marks the reply as following a finished answer until a build supplies the real one.
+  const replayed = !!(B.graph?.pick || (B.conv && S.conversations[B.conv]?.replayable));
+  const prior = B.earlierReply.trim() || (replayed ? "(GraphMine's reply: filled in when the conversation is built)" : "");
+  const fuTurns = [...ctx, bTurn("user", mainQ), bTurn("assistant", prior, "answered")];
   B.followups.forEach((f, i) => {
-    const check = parse(`fu${i}-check`);
-    const reply = parse(`fu${i}-answer`);
-    if (check === undefined && reply === undefined) return;
+    const outs = ["check", "route", "plan", "answer"].map((k) => [k, parse(`fu${i}-${k}`)]).filter(([, v]) => v !== undefined);
+    if (!outs.length) return;
     if (!f.msg.trim()) problems.push(`Follow-up ${i + 1}: enter the user's message.`);
-    if (!B.earlierReply.trim()) problems.push("Enter GraphMine's reply the user saw before the follow-ups.");
-    if (check !== undefined) steps.push(planner("TurnDecision", f.msg.trim(), fuTurns, check));
-    if (reply !== undefined) steps.push(analyst(mainQ, f.msg.trim(), fuTurns, reply));
+    if (!prior) problems.push("Enter GraphMine's reply the user saw before the follow-ups (or choose a graph so the build fills it in).");
+    for (const [k, output] of outs) {
+      steps.push(k === "answer" ? analyst(mainQ, f.msg.trim(), fuTurns, output)
+        : planner({ check: "TurnDecision", route: "RouteDecision", plan: "PlanDraft" }[k], f.msg.trim(), fuTurns, output));
+    }
   });
   const invalid = filled.filter((id) => (B.issues[id] || []).some((i) => i.level === "error")).length;
-  const missingAnswer = answer === undefined && !(B.conv && !B.show.answer);
-  return { steps, problems: [...new Set(problems)], invalid, missingAnswer };
+  return { steps, problems: [...new Set(problems)], invalid };
 }
 
 function renderAddSummary() {
   const r = builderSteps();
   const names = r.steps.map((s) => STAGE_LABEL[s.schema]);
   $("#add-summary").textContent = !r.steps.length ? "No Qwen outputs yet"
-    : `${plural(r.steps.length, "step")}: ${names.join(" → ")}${r.missingAnswer ? " · no analyst answer yet" : ""}`;
+    : `${plural(r.steps.length, "step")}: ${names.join(" → ")}`;
   $("#add-submit").textContent = B.conv ? `Add ${plural(r.steps.length, "step")}` : "Add conversation";
 }
 
@@ -1821,32 +2234,35 @@ async function validateBuilderField(id) {
   B.issues[id] = issues;
   const host = $(`[data-bissues="${id}"]`);
   if (host) host.innerHTML = issuesHtml(issues);
-  renderAddSummary();
+  if (id === "askRoute" && B.clarify) renderBuilder();
+  else renderAddSummary();
 }
 
-// Copy a real output: from this dataset when it has one, otherwise from another
-// dataset (an empty dataset made in the studio has nothing of its own to copy).
 async function builderTemplate(id) {
   const schema = bSchema(id);
-  const op = B.tags.operation_id;
-  const want = id === "askRoute" ? "ask" : id === "route" ? "supported" : id === "plan" ? "ready" : "any";
-  const live = S.examples.filter((e) => !e.deleted && e.schema === schema && e.kind !== "new");
-  const fits = (e) => (want === "ask" ? e._clarify : want === "supported" ? e.output?.supported === true
-    : want === "ready" ? e.output?.status === "ready" : true);
-  const ex = live.find((e) => fits(e) && (!op || e.tags.operation_id === op)) || live.find(fits) || live[0];
-  let output = ex?.output;
-  let source = ex?.id;
-  if (!ex) {
-    try { ({ output, source } = await api("/api/template", { schema, want, operation: op || null })); }
-    catch { return toast(`No dataset has a ${STAGE_LABEL[schema]} example to copy from`, true); }
-  }
-  if (!B) return;
-  bSet(id, JSON.stringify(output, null, 2));
-  const area = $(`[data-bjson="${id}"]`);
-  if (area) area.value = bGet(id);
-  bValidate(id);
-  renderAddSummary();
-  toast(`Template copied from ${source}`);
+  try {
+    const t = await findTemplate(schema, WANT_FOR[id.replace(FU_ID, "$2")] || "any", B.tags.operation_id);
+    if (!B) return;
+    bSet(id, JSON.stringify(t.output, null, 2));
+    const area = $(`[data-bjson="${id}"]`);
+    if (area) area.value = bGet(id);
+    bValidate(id);
+    renderAddSummary();
+    toast(`Template copied from ${t.source}`);
+  } catch { toast(`No dataset has a ${STAGE_LABEL[schema]} example to copy from`, true); }
+}
+
+async function previewUnderstanding() {
+  const q = B.question.trim();
+  if (!q) return toast("Enter the question first", true);
+  try {
+    const graph_id = await resolvePickedGraph(B.graph.pick);
+    B.graph.pick = `own:${graph_id}`;
+    const r = await api("/api/preview-understanding", { question: q, domain_id: B.graph.domain_id, graph_id });
+    if (!r.messages) return toast((r.events || [])[0]?.message || "The agent did not ask for Understanding", true);
+    B.preview = r.messages;
+    renderBuilder();
+  } catch (err) { fail(err); }
 }
 
 function removeFollowup(i) {
@@ -1868,16 +2284,59 @@ async function submitAdd(ev) {
   if (!r.steps.length) return toast("Fill in at least one Qwen output", true);
   if (r.invalid && !confirm(`${plural(r.invalid, "step")} ${r.invalid === 1 ? "does" : "do"} not pass validation. Add anyway?`)) return;
   try {
+    const graph_id = B.graph?.pick ? await resolvePickedGraph(B.graph.pick) : null;
     const res = await api("/api/create-conversation", { group: B.conv, steps: r.steps });
     for (const ex of res.examples) applyExample(ex);
     applyIssues(res.issues);
+    applyConversations(res.conversations);
+    if (graph_id) {
+      const s = await api("/api/conversation/settings", { group: res.group, domain_id: B.graph.domain_id, graph_id });
+      applyConversations({ [res.group]: s.summary });
+    }
     $("#add-dialog").close();
     if (!B.conv) { S.facetSel = {}; S.query = ""; $("#search").value = ""; }
     B = null;
     refreshAll();
     if (S.mode === "conv") selectConv(res.group, { stepId: res.examples[0].id, scroll: true, reveal: true });
     else select(res.examples[0].id, { scroll: true });
-    toast(`${plural(res.examples.length, "step")} added${r.missingAnswer ? "; listed under Analyst answer → missing" : ""}`);
+    toast(`${plural(res.examples.length, "step")} added${graph_id ? "; building the model inputs…" : ""}`);
+    autoBuild(res.group);
+  } catch (err) { fail(err); }
+}
+
+// ------------------------------------------------------------------ dataset settings (datasets made in the studio)
+function openDatasetSettings() {
+  const d = S.dataset;
+  if (d?.layout !== "studio") return;
+  $("#ds-name").value = d.name || "";
+  $("#ds-description").value = d.description || "";
+  $("#ds-location").textContent = `Folder: ${S.meta.data_root}/${d.path}`;
+  $("#dataset-settings-dialog").showModal();
+}
+async function saveDatasetSettings(ev) {
+  ev.preventDefault();
+  try {
+    const r = await api("/api/dataset/update", { key: S.dataset.key, name: $("#ds-name").value, description: $("#ds-description").value });
+    S.datasets = r.datasets;
+    S.dataset = r.dataset;
+    $("#dataset-select").innerHTML = datasetOptions(S.datasets);
+    $("#dataset-select").value = S.dataset.key;
+    $("#dataset-settings-dialog").close();
+    renderStatus();
+    toast("Dataset updated");
+  } catch (err) { fail(err); }
+}
+async function deleteDataset() {
+  const d = S.dataset;
+  if (!confirm(`Delete "${d.name}"? Its folder moves to studio-datasets/.deleted/, so it can be restored by moving it back.`)) return;
+  try {
+    const r = await api("/api/dataset/delete", { key: d.key });
+    $("#dataset-settings-dialog").close();
+    S.datasets = r.datasets;
+    $("#dataset-select").innerHTML = datasetOptions(S.datasets);
+    resetForDataset();
+    if (r.current) await loadExamples(); else showNoDataset();
+    toast(`Deleted. Moved to ${r.moved_to}`);
   } catch (err) { fail(err); }
 }
 
@@ -1888,7 +2347,11 @@ function openExport() {
   const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "").replace(/^(\d{8})(\d{4})$/, "$1-$2");
   $("#export-name").value = `studio-${stamp}`;
   $("#export-result").innerHTML = "";
-  $("#export-summary").innerHTML = `${plural(new Set(live.map((e) => e.group)).size, "conversation")}, exported as ${plural(live.length, "training row")} (each step stays its own row) · ${c((e) => e.kind === "edited")} edited · ${c((e) => e.kind === "annotated")} annotated only · ${c((e) => e.kind === "clone")} cloned · ${c((e) => e.kind === "new")} new (needs context)
+  // A step written here becomes a training row once its conversation's build is current.
+  const replayed = (e) => e.kind === "new" && S.conversations[e.group]?.fresh && S.conversations[e.group]?.captured?.includes(e.id);
+  const written = c((e) => e.kind === "new");
+  $("#export-summary").innerHTML = `${plural(new Set(live.map((e) => e.group)).size, "conversation")}, ${plural(live.length, "step")} (each step is its own row) · ${c((e) => e.kind === "edited")} edited · ${c((e) => e.kind === "annotated")} annotated only · ${c((e) => e.kind === "clone")} duplicated
+    · ${written} written here: ${c(replayed)} with current model input (training rows), ${written - c(replayed)} without (needs-context.jsonl)
     · ${S.examples.filter((e) => e.deleted).length} deleted · ${c((e) => e.review === "approved")} approved · ${c((e) => e.review === "rejected")} rejected
     ${c((e) => e._issue === "error") ? `<br><span class="status-badge"><span class="ic critical">✕</span>${c((e) => e._issue === "error")} examples have validation errors and would be exported as they are.</span>` : ""}`;
   $("#export-dialog").showModal();
@@ -1899,8 +2362,12 @@ async function submitExport(ev) {
   btn.disabled = true;
   try {
     const r = await api("/api/export", { name: $("#export-name").value, exclude_rejected: $("#export-exclude-rejected").checked, approved_only: $("#export-approved-only").checked });
-    const files = Object.entries(r.counts).filter(([k]) => k.startsWith("sft/")).map(([k, v]) => `${k}: ${v}`).join(" · ");
-    $("#export-result").innerHTML = `<div class="callout"><b>Exported.</b><br><code>${esc(r.path)}</code><br>${esc(files)}
+    const files = Object.entries(r.counts).filter(([k]) => k.startsWith("sft/")).map(([k, v]) => `${k}: ${v}`);
+    if (r.counts.needs_context) files.push(`needs-context.jsonl: ${r.counts.needs_context} (written here, no current model input)`);
+    for (const [k, label] of [["skipped_rejected", "rejected, left out"], ["skipped_not_approved", "not approved, left out"], ["skipped_deleted", "deleted"]]) {
+      if (r.counts[k]) files.push(`${r.counts[k]} ${label}`);
+    }
+    $("#export-result").innerHTML = `<div class="callout"><b>Exported.</b><br><code>${esc(r.path)}</code><br>${esc(files.join(" · ") || "Nothing to write")}
       ${r.warning_count ? `<br><span class="status-badge"><span class="ic warning">!</span>${r.warning_count} warning(s); see manifest.json</span>` : ""}</div>`;
     toast("Export written");
   } catch (err) { fail(err); } finally { btn.disabled = false; }
@@ -1952,8 +2419,8 @@ async function copyText(text, msg) {
 function bind() {
   $("#search").addEventListener("input", debounce((ev) => { S.query = ev.target.value; S.rendered = 0; refreshAll(); }, 120));
   $("#dataset-select").addEventListener("change", async (ev) => {
-    if (ev.target.value === NEW_DATASET) { ev.target.value = S.dataset.key; openNewDataset(); return; }
-    if (S.editing && !confirm("Discard unsaved edits?")) { ev.target.value = S.dataset.key; return; }
+    if (ev.target.value === NEW_DATASET) { ev.target.value = S.dataset?.key || ""; openNewDataset(); return; }
+    if (S.editing && !confirm("Discard unsaved edits?")) { ev.target.value = S.dataset?.key || ""; return; }
     try {
       $("#status-strip").innerHTML = "<span>Indexing dataset…</span>";
       await api("/api/open", { key: ev.target.value });
@@ -1962,7 +2429,10 @@ function bind() {
     } catch (err) { fail(err); }
   });
   $("#dataset-form").addEventListener("submit", (ev) => { if (ev.submitter?.value === "default") submitNewDataset(ev); });
-  document.addEventListener("click", (ev) => { if (ev.target.closest("[data-empty-add]")) openAdd(); });
+  document.addEventListener("click", (ev) => {
+    if (ev.target.closest("[data-empty-add]")) openAdd();
+    if (ev.target.closest("[data-new-dataset]")) openNewDataset();
+  });
   $$(".views button").forEach((b) => b.addEventListener("click", () => setView(b.dataset.view)));
   $("#add-btn").addEventListener("click", () => openAdd());
   $("#export-btn").addEventListener("click", openExport);
@@ -2074,6 +2544,8 @@ function bind() {
         case "edit-prompt": focusStep(id); startEdit("prompts", id); break;
         case "copy": copyText(JSON.stringify(se.output, null, 2), "Output JSON copied"); break;
         case "restore": update(id, { deleted: false }, "Step restored"); break;
+        case "delete": update(id, { deleted: true }, "Step deleted (restorable until export)"); break;
+        case "discard": if (confirm("Discard this step? It was written here, so this cannot be undone.")) revert([id], "Step discarded"); break;
         case "details":
           if (S.editing && S.editing.id !== id) { if (!confirm("Discard unsaved edits?")) return; S.editing = null; }
           S.currentId = id;
@@ -2093,8 +2565,6 @@ function bind() {
     if (rv) { update(S.currentId, { review: rv.dataset.review }, `Review → ${REVIEW[rv.dataset.review].label}`); return; }
     const ul = t.closest("[data-unlabel]");
     if (ul) { const e = current(); update(e.id, { labels: e.labels.filter((l) => l !== ul.dataset.unlabel) }); return; }
-    const td = t.closest("[data-turn-del]");
-    if (td) { readTurnDraft(); S.editing.draft.splice(+td.dataset.turnDel, 1); renderDetail(); return; }
     const act = t.closest("[data-act]")?.dataset.act;
     const e = current();
     if (!act || !e) return;
@@ -2108,6 +2578,26 @@ function bind() {
       case "save-convq": saveConvQuestion().catch(() => {}); break;
       case "copy-conv": copyText(S.convKey, "Conversation ID copied"); break;
       case "add-to-conv": openAdd(currentConv()); break;
+      case "build": buildConversation(S.convKey); break;
+      case "run": buildConversation(S.convKey, { run: true }); break;
+      case "choose-graph": openGraphDialog(S.convKey); break;
+      case "edit-ctx": startEdit("ctx", S.currentId, S.ctxTexts[+t.closest("[data-ctx]").dataset.ctx]); break;
+      case "write-next": {
+        const c = currentConv();
+        if (S.editing && !confirm("Discard unsaved edits?")) break;
+        S.editing = { kind: "next", key: c.key, schema: NEXT_SCHEMA[c.progress], text: "", ...(c.progress === "waiting_reply" ? { reply: "" } : {}) };
+        renderDetail();
+        $("#next-step")?.scrollIntoView({ block: "center" });
+        $(c.progress === "waiting_reply" ? "#next-reply" : "#next-editor")?.focus();
+        break;
+      }
+      case "next-template": loadNextTemplate(); break;
+      case "save-next": saveNextStep(); break;
+      case "conv-discard": {
+        const ids = convLiveIds();
+        if (confirm(`Discard all ${plural(ids.length, "step")} of this conversation? They were written here, so this cannot be undone.`)) revert(ids, "Conversation discarded");
+        break;
+      }
       case "conv-delete": {
         const ids = convLiveIds();
         if (confirm(`Delete all ${plural(ids.length, "step")} of this conversation? They stay restorable until export.`)) bulk({ deleted: true }, "Conversation deleted", ids);
@@ -2115,7 +2605,7 @@ function bind() {
       }
       case "conv-restore": bulk({ deleted: false }, "Conversation restored", currentConv().steps.map((x) => x.id)); break;
       case "conv-reset-tags": bulk({ tags: { problem_id: null, operation_id: null, backend: null } }, "Tags reset to auto", convLiveIds()); break;
-      case "clone": cloneCurrent(); break;
+      case "duplicate": duplicateConversation(e.group); break;
       case "delete": update(e.id, { deleted: true }, "Deleted (restorable until export)"); break;
       case "restore": update(e.id, { deleted: false }, "Restored"); break;
       case "revert": if (confirm("Revert all edits to this example?")) revert([e.id], "Reverted to original"); break;
@@ -2125,12 +2615,10 @@ function bind() {
       case "reset-tags": update(e.id, { tags: { problem_id: null, operation_id: null, backend: null } }, "Tags reset to auto"); break;
       case "edit-output": startEdit("output"); break;
       case "edit-prompts": startEdit("prompts"); break;
-      case "edit-turns": startEdit("turns"); break;
       case "cancel-edit": cancelEdit(); break;
       case "save-output": saveOutput().catch(() => {}); break;
       case "save-prompts": savePrompts().catch(() => {}); break;
-      case "save-turns": saveTurns().catch(() => {}); break;
-      case "turn-add": readTurnDraft(); S.editing.draft.push({ role: "user", text: "", status: null, payload: null }, { role: "assistant", text: "", status: "needs_information", payload: null }); renderDetail(); break;
+      case "save-ctx": saveConvText(S.editing.old, $("#ctx-editor").value).catch(() => {}); break;
       case "format-json": {
         const ta = $("#output-editor");
         try { ta.value = JSON.stringify(JSON.parse(ta.value), null, 2); ta.dispatchEvent(new Event("input")); } catch { toast("Cannot format invalid JSON", true); }
@@ -2244,8 +2732,10 @@ function bind() {
   $("#add-body").addEventListener("change", (ev) => {
     const t = ev.target;
     if (!B) return;
-    if (t.id === "b-clarify") { B.clarify = t.checked; renderBuilder(); }
+    if (t.id === "b-clarify") { B.clarify = t.checked; B.preview = null; renderBuilder(); }
     else if (t.id === "b-split") B.split = t.value;
+    else if (t.dataset.gp === "graph") { B.graph.pick = t.value; B.preview = null; renderBuilder(); }
+    else if (t.dataset.gp === "domain") { B.graph.domain_id = t.value; B.preview = null; }
     else if (t.dataset.btag) {
       B.tags[t.dataset.btag] = t.value;
       if (t.dataset.btag === "problem_id") { const ops = opsOfProblem(t.value); B.tags.operation_id = ops.length === 1 ? ops[0] : ""; }
@@ -2259,13 +2749,31 @@ function bind() {
     if (tpl) { builderTemplate(tpl.dataset.btpl); return; }
     const del = ev.target.closest("[data-bfu-del]");
     if (del) { removeFollowup(+del.dataset.bfuDel); return; }
+    if (ev.target.closest('[data-bact="preview"]')) { previewUnderstanding(); return; }
+    if (ev.target.closest('[data-gp-act="upload"]')) {
+      uploadPickedGraph($("#add-body")).then((pick) => { if (pick && B) { B.graph.pick = pick; B.preview = null; renderBuilder(); } });
+      return;
+    }
     if (ev.target.closest('[data-bact="add-fu"]')) {
-      B.followups.push({ msg: "", check: "", answer: "" });
+      B.followups.push(newFollowup());
       renderBuilder();
       $(`[data-btext="fu${B.followups.length - 1}-msg"]`)?.focus();
     }
   });
   $("#add-form").addEventListener("submit", (ev) => { if (ev.submitter?.value === "default") submitAdd(ev); });
+  $("#graph-form").addEventListener("submit", (ev) => { if (ev.submitter?.value === "default") submitGraphDialog(ev); });
+  $("#graph-body").addEventListener("click", (ev) => {
+    if (!ev.target.closest('[data-gp-act="upload"]') || !graphDialog) return;
+    uploadPickedGraph($("#graph-body")).then((pick) => {
+      if (!pick) return;
+      graphDialog.pick = pick;
+      graphDialog.domain_id = $('#graph-body [data-gp="domain"]').value;
+      $("#graph-body").innerHTML = graphPickerHtml(graphDialog);
+    });
+  });
+  $("#dataset-settings-btn").addEventListener("click", openDatasetSettings);
+  $("#dataset-settings-form").addEventListener("submit", (ev) => { if (ev.submitter?.value === "default") saveDatasetSettings(ev); });
+  $("#ds-delete").addEventListener("click", deleteDataset);
   $("#export-form").addEventListener("submit", (ev) => { if (ev.submitter?.value === "default") submitExport(ev); });
 
   // keyboard
@@ -2275,7 +2783,8 @@ function bind() {
     if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "s") {
       if (S.editing) {
         ev.preventDefault();
-        ({ output: saveOutput, prompts: savePrompts, turns: saveTurns, convq: saveConvQuestion })[S.editing.kind]().catch(() => {});
+        ({ output: saveOutput, prompts: savePrompts, convq: saveConvQuestion, ctx: () => saveConvText(S.editing.old, $("#ctx-editor").value),
+          next: saveNextStep })[S.editing.kind]().catch(() => {});
       }
       return;
     }
@@ -2305,7 +2814,7 @@ function bind() {
         break;
       case "e": if (e) { ev.preventDefault(); startEdit("output"); } break;
       case "q": if (e) { ev.preventDefault(); startEdit(S.mode === "conv" && !S.rowView ? "convq" : "prompts"); } break;
-      case "c": if (e) cloneCurrent(); break;
+      case "c": if (e) duplicateConversation(e.group); break;
       case "n": ev.preventDefault(); openAdd(); break;
       case "1": case "2": case "3": case "4": if (e) update(e.id, { review: REVIEW_ORDER[+ev.key - 1] }, `Review → ${REVIEW[REVIEW_ORDER[+ev.key - 1]].label}`); break;
       case "Delete": if (e) update(e.id, e.deleted ? { deleted: false } : { deleted: true }, e.deleted ? "Restored" : "Deleted (restorable until export)"); break;
@@ -2364,7 +2873,13 @@ async function loadExamples() {
   S.dataset = d.dataset;
   S.examples = d.examples.map(prepare);
   S.byId = new Map(S.examples.map((e) => [e.id, e]));
+  S.conversations = d.conversations || {};
+  S.convContext = new Map();
+  S.graphs = null;
+  // Which stages this dataset has at all decides what "complete" means for it.
+  S.stagesPresent = new Set(S.examples.filter((e) => !e.deleted).map((e) => e.schema));
   $("#dataset-select").value = d.dataset.key;
+  $("#dataset-settings-btn").hidden = d.dataset.layout !== "studio";
   refreshAll();
   const hash = decodeURIComponent(location.hash.slice(1));
   const convHash = hash.startsWith("c=") ? hash.slice(2) : null;
@@ -2385,11 +2900,21 @@ async function init() {
     for (const o of meta.catalog.operations) S.operations.set(o.id, o);
     $("#dataset-select").innerHTML = datasetOptions(ds.datasets);
     fillBulkSelects();
-    await loadExamples();
+    if (ds.current) await loadExamples(); else showNoDataset();
   } catch (err) {
     fail(err);
     $("#status-strip").textContent = "Could not load: " + err.message;
   }
+}
+// A studio can start with no dataset at all; it offers to create one.
+function showNoDataset() {
+  S.dataset = null;
+  S.examples = [];
+  S.byId = new Map();
+  $("#dataset-settings-btn").hidden = true;
+  $("#status-strip").innerHTML = "<span>No dataset is open.</span>";
+  $("#list").innerHTML = '<div class="empty-list">There are no datasets yet.<br><button class="btn primary small" data-new-dataset>＋ New empty dataset</button></div>';
+  $("#detail").innerHTML = '<div class="empty-detail"><p>Create a dataset to start writing conversations.</p><p><button class="btn primary" data-new-dataset>＋ New empty dataset</button></p></div>';
 }
 window.DatasetStudio = { state: S };  // handy for debugging in the console
 init();
