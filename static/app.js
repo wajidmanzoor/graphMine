@@ -87,6 +87,10 @@ const CATEGORY_LABEL = {
   predictive_and_unusual_structure_mining: "Predictive & unusual",
 };
 const NONE = "__none__";
+// Steps copied by Duplicate are clones of their source row; "new" ones were written here.
+const KIND_LABEL = { clone: "duplicated", new: "written here" };
+const kindChipHtml = (e) => (e.deleted ? '<span class="chip kind-deleted">deleted</span>'
+  : e.kind !== "original" ? `<span class="chip kind-${e.kind}">${esc(e.kind === "clone" ? "duplicated" : e.kind)}</span>` : "");
 // Variants that say nothing the thread does not already show.
 const HIDDEN_VARIANTS = ["initial", "plan_first", "manual", "conversation", "recovery"];
 const PAGE = 150;
@@ -300,7 +304,7 @@ const FACETS = [
   { key: "review", label: "Review", get: (e) => [e.review], fmt: (v) => REVIEW[v]?.label || v, order: REVIEW_ORDER },
   { key: "labels", label: "Labels", get: (e) => (e.labels.length ? e.labels : [NONE]), fmt: (v) => (v === NONE ? "(no label)" : v), search: true },
   { key: "issues", label: "Validation", get: (e) => (e._issue ? [e._issue === "error" ? "has errors" : "has warnings"] : ["clean"]) },
-  { key: "kind", label: "Changes", get: (e) => [e.deleted ? "deleted" : e.kind], order: ["original", "annotated", "edited", "clone", "new", "deleted"] },
+  { key: "kind", label: "Changes", get: (e) => [e.deleted ? "deleted" : e.kind], fmt: (v) => KIND_LABEL[v] || v, order: ["original", "annotated", "edited", "clone", "new", "deleted"] },
   { key: "tagsrc", label: "Tag source", get: (e) => [Object.keys(e.manual_tags || {}).length ? "manual tags" : "auto tags"] },
   { key: "variant", label: "Variant", get: (e) => [e.variant || NONE], fmt: (v) => (v === NONE ? "—" : v.replace(/_/g, " ")) },
   { key: "lineage", label: "Graph source", get: (e) => [e.lineage || NONE], fmt: (v) => (v === NONE ? "—" : v), search: true },
@@ -503,7 +507,7 @@ function issueBadge(e) {
 // ------------------------------------------------------------------ rendering: list
 function rowHtml(e) {
   const cur = e.id === S.currentId;
-  const kindChip = e.deleted ? '<span class="chip kind-deleted">deleted</span>' : e.kind !== "original" ? `<span class="chip kind-${e.kind}">${e.kind}</span>` : "";
+  const kindChip = kindChipHtml(e);
   const pills = [];
   if (e.tags.problem_id) pills.push(`<span class="tag-pill${e.manual_tags.problem_id ? " manual" : ""}" title="Problem">${esc(problemName(e.tags.problem_id))}</span>`);
   if (e.tags.operation_id) pills.push(`<span class="tag-pill${e.manual_tags.operation_id ? " manual" : ""}" title="Operation">${esc(e.tags.operation_id)}</span>`);
@@ -671,7 +675,7 @@ function renderDetail() {
   if (e.kind === "edited" || e.kind === "clone") tabs.push(["diff", "Diff vs original"]);
   tabs.push(["history", "History"]);
   if (!tabs.some(([k]) => k === S.tab)) S.tab = "conversation";
-  const kindChip = e.deleted ? '<span class="chip kind-deleted">deleted</span>' : e.kind !== "original" ? `<span class="chip kind-${e.kind}">${e.kind}</span>` : "";
+  const kindChip = kindChipHtml(e);
   host.innerHTML = `
     <div class="detail-head">
       <div class="detail-title">
@@ -785,7 +789,7 @@ function conversationHtml(e) {
   const conv = S.convs.get(e.group);
   const siblings = conv ? conv.live : [];
   const sibHtml = siblings.length > 1 ? `<div class="siblings"><span class="muted">${S.mode === "conv" ? "Steps in this conversation:" : "Same conversation:"}</span>${siblings
-    .map((x) => `<button class="chip stage-${esc(x.schema)}${x.id === e.id ? " current" : ""}" data-goto="${esc(x.id)}" title="${esc(x.id)}"><span class="dot"></span>${esc(STAGE_LABEL[x.schema] || x.schema)}${x.variant && !HIDDEN_VARIANTS.includes(x.variant) ? ` · ${esc(x.variant.replace(/_/g, " "))}` : ""}${x.kind === "clone" ? " · clone" : ""}</button>`).join("")}
+    .map((x) => `<button class="chip stage-${esc(x.schema)}${x.id === e.id ? " current" : ""}" data-goto="${esc(x.id)}" title="${esc(x.id)}"><span class="dot"></span>${esc(STAGE_LABEL[x.schema] || x.schema)}${x.variant && !HIDDEN_VARIANTS.includes(x.variant) ? ` · ${esc(x.variant.replace(/_/g, " "))}` : ""}${x.kind === "clone" ? " · duplicated" : ""}</button>`).join("")}
     ${S.mode === "rows" ? '<button class="link-btn" data-act="open-conv">Open as one conversation →</button>' : ""}</div>` : "";
 
   const turnsBlock = e.turns.map(turnBubble).join("");
@@ -963,7 +967,7 @@ function outputEditorHtml() {
 function stepHtml(e, n) {
   const ed = S.editing?.id === e.id ? S.editing : null;
   const variant = e.variant && !HIDDEN_VARIANTS.includes(e.variant) ? `<span class="chip" title="Variant">${esc(e.variant.replace(/_/g, " "))}</span>` : "";
-  const kindChip = e.deleted ? '<span class="chip kind-deleted">deleted</span>' : e.kind !== "original" ? `<span class="chip kind-${e.kind}">${e.kind}</span>` : "";
+  const kindChip = kindChipHtml(e);
   const body = ed?.kind === "output" ? outputEditorHtml()
     : S.outputMode === "tree" ? `<div class="json-tree">${jsonTree(e.output)}</div>` : `<pre class="json-pretty">${highlightJson(e.output)}</pre>`;
   const shownIssues = e.issues.filter((i) => i.level !== "info");
@@ -1917,7 +1921,7 @@ async function renderChanges() {
       <span style="flex:1"></span><button class="btn primary" id="changes-export">Export new version</button></div>
       ${changes.length ? `<div class="cov-section"><table class="plain"><thead><tr><th>When</th><th>Change</th><th>Stage</th><th>Split</th><th>Question</th><th>Fields</th><th></th></tr></thead><tbody>
       ${changes.map((c) => `<tr class="click" data-open="${esc(c.id)}"><td class="muted">${c.updated_at ? esc(new Date(c.updated_at).toLocaleString()) : ""}</td>
-        <td>${c.deleted ? '<span class="chip kind-deleted">deleted</span>' : `<span class="chip kind-${esc(c.kind)}">${esc(c.kind)}</span>`}</td>
+        <td>${c.deleted ? '<span class="chip kind-deleted">deleted</span>' : `<span class="chip kind-${esc(c.kind)}">${esc(KIND_LABEL[c.kind] || c.kind)}</span>`}</td>
         <td>${stageChip(c.schema)}</td><td>${esc(c.split)}</td><td>${esc(c.question)}</td><td class="muted">${esc(c.changed.join(", "))}</td>
         <td><button class="btn small" data-undo="${esc(c.id)}">${c.kind === "new" || c.kind === "clone" ? "Discard" : "Revert"}</button></td></tr>`).join("")}
       </tbody></table></div>` : '<div class="cov-section muted">No changes yet. Edit, tag, review, clone or add examples in Browse.</div>'}`;

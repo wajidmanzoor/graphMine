@@ -117,7 +117,15 @@ class Engine:
         from graphmine_agent.results import summarize_result, validate_result
         from graphmine_agent.visualization import answer_visualizations
 
-        self.m = SimpleNamespace(**{k: v for k, v in locals().items() if k != "self"})
+        # Agent pieces used by the replay, gathered in one namespace.
+        self.m = SimpleNamespace(
+            AgentService=AgentService, validate_narrative=validate_narrative, Catalog=Catalog, Settings=Settings,
+            Database=Database, GraphMineRunner=GraphMineRunner, GraphStore=GraphStore, EventBus=EventBus,
+            JobManager=JobManager, LLMError=LLMError, runtime_messages=runtime_messages, ChatRequest=ChatRequest,
+            FileRole=FileRole, GroundedNarrative=GroundedNarrative, JobRecord=JobRecord, JobStatus=JobStatus,
+            LLMMode=LLMMode, PlanRequest=PlanRequest, ResultRecord=ResultRecord, SessionRecord=SessionRecord,
+            new_id=new_id, PlanValidator=PlanValidator, summarize_result=summarize_result,
+            validate_result=validate_result, answer_visualizations=answer_visualizations)
         self.base = Settings.from_env(self.repo)
         binary = Path(self.base.graphmine_binary)
         stat = binary.stat() if binary.is_file() else None

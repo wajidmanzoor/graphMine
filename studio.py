@@ -2124,14 +2124,14 @@ def main(argv=None):
     Handler.store = store
     Handler.token = access_token(args, workspace)
     if args.host not in LOOPBACK and not Handler.token:
-        print("[studio] WARNING: listening beyond localhost without a token; anyone on the network can edit.")
+        print("[studio] WARNING: listening beyond localhost without a token; anyone on the network can edit.", flush=True)
     server = ThreadingHTTPServer((args.host, args.port), Handler)
-    print(f"[studio] strict schema validation: {'on' if schemas.strict else 'off (' + str(schemas.error) + ')'}")
-    print(f"[studio] replay engine: {'on' if engine.available else 'off (' + str(engine.error) + ')'}")
+    print(f"[studio] strict schema validation: {'on' if schemas.strict else 'off (' + str(schemas.error) + ')'}", flush=True)
+    print(f"[studio] replay engine: {'on' if engine.available else 'off (' + str(engine.error) + ')'}", flush=True)
     print(f"[studio] {len(store.datasets)} dataset(s) under {data_root}; "
-          f"opened {choice['path'] if choice else 'none (create one in the picker)'}")
+          f"opened {choice['path'] if choice else 'none (create one in the picker)'}", flush=True)
     shown = "localhost" if args.host in ("0.0.0.0", "::") else args.host
-    print(f"[studio] open http://{shown}:{args.port}/" + (f"?token={Handler.token}" if Handler.token else ""))
+    print(f"[studio] open http://{shown}:{args.port}/" + (f"?token={Handler.token}" if Handler.token else ""), flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
