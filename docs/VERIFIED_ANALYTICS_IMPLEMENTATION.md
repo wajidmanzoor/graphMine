@@ -74,6 +74,7 @@ reported score substitutes for local integration tests.
 
 ### First library checkpoint
 
+- Implementation commit: `cd3ec454` on the requested feature branch.
 - Added the installable `python/graphmine` library, graph objects, family modules,
   strict operation parameters, CPU/GPU dispatch, typed result ports and source,
   dependency and device provenance. The existing application is not switched
