@@ -13,12 +13,10 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import hmac
 import json
 import mimetypes
 import os
 import re
-import secrets
 import sys
 import threading
 import time
@@ -26,9 +24,12 @@ import uuid
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from http import HTTPStatus
+from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+
+from studio_auth import Auth, AuthError, Forbidden
 
 APP_DIR = Path(__file__).resolve().parent
 STATIC_DIR = APP_DIR / "static"
@@ -245,7 +246,8 @@ def discover(root: Path, max_depth: int = 3) -> list[dict]:
             rows = 0
             try:
                 marker = json.loads((path / STUDIO_MARKER).read_text())
-                extra = {"name": marker.get("name"), "description": marker.get("description", "")}
+                extra = {"name": marker.get("name"), "description": marker.get("description", ""),
+                         "created_by": marker.get("created_by")}
             except (ValueError, OSError):
                 pass
         found.append(
@@ -685,7 +687,33 @@ def _auto_tags(rec, problem_id, operation_id, ref_backends) -> dict:
 # --------------------------------------------------------------------------
 
 
-class Store:
+def read_journal(path: Path) -> tuple[dict, list[str]]:
+    """Replay a journal: the latest state per id, and ids in first-seen order."""
+    overlay, seen = {}, []
+    if path.is_file():
+        for line in path.open():
+            if not line.strip():
+                continue
+            entry = json.loads(line)
+            if entry.get("state") is None:
+                overlay.pop(entry["id"], None)
+            else:
+                overlay[entry["id"]] = entry["state"]
+            if entry["id"] not in seen:
+                seen.append(entry["id"])
+    return overlay, seen
+
+
+# Who is making the current request; the journal records it with every change.
+ACTOR = threading.local()
+
+
+class Studio:
+    """What every user shares: the dataset list, the agent and the case library.
+
+    Each dataset someone opens gets one Store, shared by everyone who has it
+    open, so people working on the same dataset see each other's changes."""
+
     def __init__(self, data_root: Path, workspace: Path, catalog: Catalog, schemas: Schemas, engine=None):
         self.data_root = data_root.resolve()
         self.workspace = workspace
@@ -693,25 +721,13 @@ class Store:
         self.schemas = schemas
         self.engine = engine
         self.lock = threading.RLock()
-        self.current = None
         self.datasets: list[dict] = []
-        self.refresh_datasets()
+        self.stores: dict[str, "Store"] = {}
         # Indexes of other datasets, loaded only to offer templates.
         self._template_bases: dict[str, list[dict]] = {}
-        self.base: dict[str, dict] = {}
-        # Clarification-reply case -> the case that asked; shown as one conversation.
-        self.group_alias: dict[str, str] = {}
-        self.order: list[str] = []
-        self.overlay: dict[str, dict] = {}
-        self.journal_path: Path | None = None
-        self._strict_cache: dict[tuple, tuple] = {}
-        self._issues: dict[str, list] = {}
-        self._cases: dict[str, dict] | None = None
-        self._contexts: dict[str, dict | None] = {}
         self._library: list[dict] | None = None
-        self._settings_cache: dict | None = None
+        self.refresh_datasets()
 
-    # ---------------- dataset lifecycle ----------------
     def dataset(self, key: str) -> dict:
         for d in self.datasets:
             if d["key"] == key:
@@ -730,16 +746,21 @@ class Store:
         return self.home(info) / "engine"
 
     def refresh_datasets(self) -> None:
-        datasets = discover(self.data_root)
-        name_datasets(datasets, NAMES_FILE)
-        for d in datasets:
-            if d["layout"] == "studio":
-                self._adopt_workspace_journal(d)
-                overlay, _ = self._read_journal(self.home(d) / "journal.jsonl")
-                d["rows"] = sum(1 for state in overlay.values() if not state.get("deleted"))
-        if self.current:
-            self.current = next((d for d in datasets if d["key"] == self.current["key"]), self.current)
-        self.datasets = datasets
+        with self.lock:
+            datasets = discover(self.data_root)
+            name_datasets(datasets, NAMES_FILE)
+            for d in datasets:
+                if d["layout"] == "studio":
+                    self._adopt_workspace_journal(d)
+                    overlay, _ = read_journal(self.home(d) / "journal.jsonl")
+                    d["rows"] = sum(1 for state in overlay.values() if not state.get("deleted"))
+            self.datasets = datasets
+            for key, store in list(self.stores.items()):
+                fresh = next((d for d in datasets if d["key"] == key), None)
+                if fresh is None:
+                    del self.stores[key]
+                else:
+                    store.current = fresh
 
     def _adopt_workspace_journal(self, info: dict) -> None:
         """Older studio versions kept a created dataset's journal in the workspace."""
@@ -749,28 +770,11 @@ class Store:
             new.write_bytes(old.read_bytes())
             old.rename(old.with_suffix(".jsonl.moved"))
 
-    @staticmethod
-    def _read_journal(path: Path) -> tuple[dict, list[str]]:
-        """Replay a journal: the latest state per id, and ids in first-seen order."""
-        overlay, seen = {}, []
-        if path.is_file():
-            for line in path.open():
-                if not line.strip():
-                    continue
-                entry = json.loads(line)
-                if entry.get("state") is None:
-                    overlay.pop(entry["id"], None)
-                else:
-                    overlay[entry["id"]] = entry["state"]
-                if entry["id"] not in seen:
-                    seen.append(entry["id"])
-        return overlay, seen
-
-    def _load_base(self, info: dict) -> list[dict]:
+    def load_base(self, info: dict) -> list[dict]:
         ds_path = self.data_root / info["path"]
         wdir = self.workspace / info["key"]
         wdir.mkdir(parents=True, exist_ok=True)
-        fingerprint = self._fingerprint(ds_path)
+        fingerprint = Store._fingerprint(ds_path)
         cache = wdir / "index-cache.json"
         if cache.is_file():
             try:
@@ -782,35 +786,34 @@ class Store:
         started = time.time()
         base = build_index(ds_path, info["layout"])
         cache.write_text(json.dumps({"version": INDEX_VERSION, "fingerprint": fingerprint, "examples": base}))
-        print(f"[studio] indexed {len(base)} rows from {info['path']} in {time.time() - started:.1f}s")
+        print(f"[studio] indexed {len(base)} rows from {info['path']} in {time.time() - started:.1f}s", flush=True)
         return base
 
-    def open(self, key: str) -> dict:
+    def store_for(self, key: str) -> "Store":
+        """The open Store of a dataset, opening it on first use."""
         with self.lock:
-            info = self.dataset(key)
-            base = self._load_base(info)
-            self.current = info
-            self.base = {r["id"]: r for r in base}
-            self.group_alias = link_clarifications(base)
-            self.order = [r["id"] for r in base]
-            home = self.home(info)
-            home.mkdir(parents=True, exist_ok=True)
-            self.journal_path = home / "journal.jsonl"
-            self.overlay, seen = self._read_journal(self.journal_path)
-            self.order += [rid for rid in seen if rid not in self.base]
-            self._cases = None
-            self._contexts = {}
-            self._settings_cache = None
-            self._recompute_issues()
-            return {"dataset": info, "count": len(self.order)}
+            store = self.stores.get(key)
+            if store is None:
+                store = self.stores[key] = Store(self, self.dataset(key))
+            return store
 
     def _key_of(self, folder: Path) -> str:
         return re.sub(r"[^A-Za-z0-9._-]", "__", str(folder.relative_to(self.data_root)))
 
-    def create_dataset(self, name: str, description: str = "") -> dict:
-        """Create an empty dataset under ``studio-datasets/`` and open it."""
-        name = self._check_name(name)
+    def _check_name(self, name: str, *, except_key: str | None = None) -> str:
+        name = (name or "").strip()
+        if not name:
+            raise ValueError("Give the dataset a name")
+        if len(name) > 80:
+            raise ValueError("Keep the name to 80 characters or fewer")
+        if any(d["name"].lower() == name.lower() and d["key"] != except_key for d in self.datasets):
+            raise ValueError(f"A dataset named {name!r} already exists")
+        return name
+
+    def create_dataset(self, name: str, description: str = "", created_by: str | None = None) -> dict:
+        """Create an empty dataset under ``studio-datasets/``."""
         with self.lock:
+            name = self._check_name(name)
             slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")[:60] or "dataset"
             parent = self.data_root / STUDIO_DIR
             folder, n = parent / slug, 2
@@ -823,22 +826,13 @@ class Store:
                 "name": name,
                 "description": (description or "").strip(),
                 "created_at": utc_now(),
+                "created_by": created_by,
                 "note": "Created in Dataset Studio. journal.jsonl holds every step; conversations.json the graph "
                         "and domain of each conversation; engine/ the replayed model inputs and GraphMine results.",
             }
             (folder / STUDIO_MARKER).write_text(json.dumps(marker, indent=2, ensure_ascii=False) + "\n")
             self.refresh_datasets()
-            return {**self.open(self._key_of(folder)), "datasets": self.datasets}
-
-    def _check_name(self, name: str, *, except_key: str | None = None) -> str:
-        name = (name or "").strip()
-        if not name:
-            raise ValueError("Give the dataset a name")
-        if len(name) > 80:
-            raise ValueError("Keep the name to 80 characters or fewer")
-        if any(d["name"].lower() == name.lower() and d["key"] != except_key for d in self.datasets):
-            raise ValueError(f"A dataset named {name!r} already exists")
-        return name
+            return self.dataset(self._key_of(folder))
 
     def update_dataset(self, key: str, name: str, description: str = "") -> dict:
         """Rename or re-describe a dataset made in the studio (its folder keeps its name)."""
@@ -853,9 +847,9 @@ class Store:
             marker.update({"name": name, "description": (description or "").strip(), "updated_at": utc_now()})
             path.write_text(json.dumps(marker, indent=2, ensure_ascii=False) + "\n")
             self.refresh_datasets()
-            return {"dataset": self.dataset(key), "datasets": self.datasets}
+            return self.dataset(key)
 
-    def delete_dataset(self, key: str) -> dict:
+    def delete_dataset(self, key: str) -> str:
         """Move a studio-made dataset to studio-datasets/.deleted/ (restorable by moving it back)."""
         with self.lock:
             info = self.dataset(key)
@@ -866,20 +860,106 @@ class Store:
             trash.mkdir(parents=True, exist_ok=True)
             target = trash / f"{folder.name}-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
             folder.rename(target)
-            was_open = self.current and self.current["key"] == key
+            self.stores.pop(key, None)
             self.refresh_datasets()
-            if was_open:
-                self.current = None
-                fallback = next((d for d in self.datasets if d["layout"] == "reusable"),
-                                self.datasets[0] if self.datasets else None)
-                if fallback:
-                    self.open(fallback["key"])
-                else:
-                    self.base, self.order, self.overlay, self.journal_path = {}, [], {}, None
-            return {"moved_to": str(target), "datasets": self.datasets,
-                    "current": self.current["key"] if self.current else None}
+            return str(target)
 
-    # ---------------- conversation settings: graph and domain ----------------
+    def template(self, schema: str, want: str, operation: str | None, store: "Store | None",
+                 allowed: set[str]) -> dict:
+        """A real expected output to start a new step from: the open dataset first,
+        then the other datasets this person may see."""
+        def fits(r) -> bool:
+            out = r.get("output")
+            if r.get("schema") != schema or not isinstance(out, dict):
+                return False
+            if want == "ask":
+                return _asks_for_information(out)
+            if want == "supported":
+                return out.get("supported") is True
+            if want == "ready":
+                return out.get("status") == "ready"
+            return True
+
+        current = store.current["key"] if store else None
+        for info in sorted(self.datasets, key=lambda d: d["key"] != current):
+            if info["layout"] == "studio" or info["key"] not in allowed:
+                continue
+            if info["key"] == current:
+                with store.lock:
+                    base = list(store.base.values())
+            else:
+                with self.lock:
+                    if info["key"] not in self._template_bases:
+                        self._template_bases[info["key"]] = self.load_base(info)
+                    base = self._template_bases[info["key"]]
+            matches = [r for r in base if fits(r)]
+            pick = next((r for r in matches if operation and (r.get("auto") or {}).get("operation_id") == operation), None)
+            pick = pick or (matches[0] if matches else None)
+            if pick:
+                return {"output": pick["output"], "source": f"{info['name']} · {pick['id']}"}
+        raise KeyError(f"no {schema} example in any dataset you can open")
+
+    def library_index(self, allowed: set[str]) -> list[dict]:
+        """Distinct graphs (with attachments) used by cases of the pipeline datasets one may see."""
+        with self.lock:
+            if self._library is None:
+                seen = {}
+                for info in self.datasets:
+                    path = self.data_root / info["path"] / "cases.jsonl"
+                    if info["layout"] != "reusable" or not path.is_file():
+                        continue
+                    for line in path.open():
+                        c = json.loads(line)
+                        if not c.get("graph"):
+                            continue
+                        gid = digest({"graph": c["graph"], "attachments": c.get("attachments") or {}})[:16]
+                        if gid not in seen:
+                            seen[gid] = {"id": gid, "name": c.get("lineage") or c["id"], "origin": "library",
+                                         "vertices": len(c["graph"].get("vertices", [])),
+                                         "edges": len(c["graph"].get("edges", [])),
+                                         "attachments": sorted((c.get("attachments") or {}).keys()),
+                                         "example_question": (c.get("task") or {}).get("question", "")[:160],
+                                         "dataset": info["name"], "_dataset_key": info["key"],
+                                         "_graph": c["graph"], "_attachments": c.get("attachments") or {}}
+                self._library = list(seen.values())
+            return [g for g in self._library if g["_dataset_key"] in allowed]
+
+
+class Store:
+    """One open dataset: its base rows, the journal overlay and the replay files."""
+
+    def __init__(self, studio: "Studio", info: dict):
+        self.studio = studio
+        self.data_root = studio.data_root
+        self.workspace = studio.workspace
+        self.catalog = studio.catalog
+        self.schemas = studio.schemas
+        self.engine = studio.engine
+        self.lock = threading.RLock()
+        self._strict_cache: dict[tuple, tuple] = {}
+        self._issues: dict[str, list] = {}
+        self._cases: dict[str, dict] | None = None
+        self._contexts: dict[str, dict | None] = {}
+        self._settings_cache: dict | None = None
+        self.current = info
+        base = studio.load_base(info)
+        self.base: dict[str, dict] = {r["id"]: r for r in base}
+        # Clarification-reply case -> the case that asked; shown as one conversation.
+        self.group_alias: dict[str, str] = link_clarifications(base)
+        self.order: list[str] = [r["id"] for r in base]
+        home = self.home(info)
+        home.mkdir(parents=True, exist_ok=True)
+        self.journal_path = home / "journal.jsonl"
+        self.overlay, seen = read_journal(self.journal_path)
+        self.order += [rid for rid in seen if rid not in self.base]
+        self._recompute_issues()
+
+    def home(self, info: dict) -> Path:
+        return self.studio.home(info)
+
+    def engine_dir(self, info: dict) -> Path:
+        return self.studio.engine_dir(info)
+
     def _settings_path(self) -> Path:
         return self.home(self.current) / "conversations.json"
 
@@ -947,38 +1027,6 @@ class Store:
                  "media_type": stored.get("media_type"), "directed": stored.get("directed", False)},
                 stored.get("attachments") or {})
 
-    def template(self, schema: str, want: str = "any", operation: str | None = None) -> dict:
-        """A real expected output to start a new step from: the open dataset first, then the others."""
-        def fits(r) -> bool:
-            out = r.get("output")
-            if r.get("schema") != schema or not isinstance(out, dict):
-                return False
-            if want == "ask":
-                return _asks_for_information(out)
-            if want == "supported":
-                return out.get("supported") is True
-            if want == "ready":
-                return out.get("status") == "ready"
-            return True
-
-        with self.lock:
-            for info in sorted(self.datasets, key=lambda d: d is not self.current):
-                if info["layout"] == "studio":
-                    continue
-                if info is self.current:
-                    base = list(self.base.values())
-                else:
-                    if info["key"] not in self._template_bases:
-                        self._template_bases[info["key"]] = self._load_base(info)
-                    base = self._template_bases[info["key"]]
-                matches = [r for r in base if fits(r)]
-                pick = next((r for r in matches if operation and (r.get("auto") or {}).get("operation_id") == operation), None)
-                pick = pick or (matches[0] if matches else None)
-                if pick:
-                    return {"output": pick["output"], "source": f"{info['name']} · {pick['id']}"}
-        raise KeyError(f"no {schema} example in any dataset")
-
-    # ---------------- graphs: the open dataset's own and the case library ----------------
     def _graphs_dir(self) -> Path:
         return self.home(self.current) / "graphs"
 
@@ -992,31 +1040,7 @@ class Store:
         stored = self._read_graph(graph_id)
         return {k: stored.get(k) for k in ("id", "name", "origin", "filename", "directed", "vertices", "edges")}
 
-    def _library_index(self) -> list[dict]:
-        """Distinct graphs (with attachments) used by cases of every pipeline dataset."""
-        if self._library is None:
-            seen = {}
-            for info in self.datasets:
-                path = self.data_root / info["path"] / "cases.jsonl"
-                if info["layout"] != "reusable" or not path.is_file():
-                    continue
-                for line in path.open():
-                    c = json.loads(line)
-                    if not c.get("graph"):
-                        continue
-                    gid = digest({"graph": c["graph"], "attachments": c.get("attachments") or {}})[:16]
-                    if gid not in seen:
-                        seen[gid] = {"id": gid, "name": c.get("lineage") or c["id"], "origin": "library",
-                                     "vertices": len(c["graph"].get("vertices", [])),
-                                     "edges": len(c["graph"].get("edges", [])),
-                                     "attachments": sorted((c.get("attachments") or {}).keys()),
-                                     "example_question": (c.get("task") or {}).get("question", "")[:160],
-                                     "dataset": info["name"],
-                                     "_graph": c["graph"], "_attachments": c.get("attachments") or {}}
-            self._library = list(seen.values())
-        return self._library
-
-    def graphs(self) -> dict:
+    def graphs(self, allowed: set[str]) -> dict:
         with self.lock:
             own = []
             if self.current and self._graphs_dir().is_dir():
@@ -1024,7 +1048,7 @@ class Store:
                     stored = json.loads(path.read_text())
                     own.append({k: stored.get(k) for k in ("id", "name", "origin", "filename", "directed",
                                                            "vertices", "edges", "added_at")})
-            library = [{k: v for k, v in g.items() if not k.startswith("_")} for g in self._library_index()]
+            library = [{k: v for k, v in g.items() if not k.startswith("_")} for g in self.studio.library_index(allowed)]
             return {"dataset": own, "library": library}
 
     def _store_graph(self, record: dict) -> dict:
@@ -1035,9 +1059,9 @@ class Store:
             path.write_text(json.dumps({**record, "added_at": utc_now()}, ensure_ascii=False))
         return self._graph_meta(record["id"])
 
-    def use_library_graph(self, library_id: str) -> dict:
+    def use_library_graph(self, library_id: str, allowed: set[str]) -> dict:
         with self.lock:
-            item = next((g for g in self._library_index() if g["id"] == library_id), None)
+            item = next((g for g in self.studio.library_index(allowed) if g["id"] == library_id), None)
             if item is None:
                 raise KeyError(f"library graph {library_id}")
             return self._store_graph({
@@ -1287,7 +1311,7 @@ class Store:
             source = self.base.get(state.get("clone_of") or "")
             base = source or {}
             kind = "clone" if source else "new"
-        elif state:
+        elif state and set(state) - {"updated_at", "updated_by"}:
             content = any(k in state for k in ("prompts", "turns", "output", "split"))
             kind = "edited" if content else "annotated"
         else:
@@ -1472,9 +1496,10 @@ class Store:
 
     # ---------------- mutations ----------------
     def _write(self, op: str, rid: str, state: dict | None) -> None:
+        by = getattr(ACTOR, "name", None)
         if state is not None:
-            state = {**state, "updated_at": utc_now()}
-        entry = {"ts": utc_now(), "op": op, "id": rid, "state": state}
+            state = {**state, "updated_at": utc_now(), "updated_by": by}
+        entry = {"ts": utc_now(), "op": op, "id": rid, "by": by, "state": state}
         with self.journal_path.open("a") as stream:
             stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
         if state is None:
@@ -1488,7 +1513,8 @@ class Store:
         return {i: v for i, v in self._issues.items() if before.get(i) != v}
 
     def _normalize_patch(self, rid: str, patch: dict) -> dict:
-        state = dict(self.overlay.get(rid) or {})
+        # Bookkeeping is re-added on write; it must not keep an undone edit alive.
+        state = {k: v for k, v in (self.overlay.get(rid) or {}).items() if k not in ("updated_at", "updated_by")}
         base = self.base.get(rid)
         is_new = base is None and not state.get("clone_of")
         for key in ("prompts", "turns", "output", "split", "labels", "review", "notes", "tags", "deleted",
@@ -1871,7 +1897,7 @@ class Store:
         for rid, state in list(self.overlay.items()):
             ex = self.effective(rid)
             out.append({"id": rid, "kind": ex["kind"], "deleted": ex["deleted"], "changed": ex["changed"],
-                        "updated_at": state.get("updated_at"), "question": ex["prompts"][0]["value"] if ex["prompts"] else "",
+                        "updated_at": state.get("updated_at"), "updated_by": state.get("updated_by"), "question": ex["prompts"][0]["value"] if ex["prompts"] else "",
                         "schema": ex["schema"], "split": ex["split"]})
         out.sort(key=lambda r: r.get("updated_at") or "", reverse=True)
         return out
@@ -1882,29 +1908,44 @@ class Store:
 # --------------------------------------------------------------------------
 
 
+class NotSignedIn(PermissionError):
+    pass
+
+
+COOKIE = "studio_session"
+
+
 class Handler(BaseHTTPRequestHandler):
-    store: Store = None  # type: ignore[assignment]
-    token: str | None = None
-    server_version = "GraphMineDatasetStudio/2.0"
+    studio: Studio = None  # type: ignore[assignment]
+    auth: Auth = None  # type: ignore[assignment]
+    server_version = "GraphMineDatasetStudio/3.0"
 
     def log_message(self, fmt, *args):  # quieter console
         if self.path.startswith("/api/") and not self.path.startswith("/api/examples"):
-            sys.stderr.write("[studio] %s %s\n" % (self.command, self.path.split("?")[0]))
+            who = getattr(ACTOR, "name", None) or "-"
+            sys.stderr.write("[studio] %s %s %s\n" % (who, self.command, self.path.split("?")[0]))
 
-    def _send(self, status, body: bytes, ctype: str):
+    def _send(self, status, body: bytes, ctype: str, headers: dict | None = None):
         self.send_response(status)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "same-origin")
+        for name, value in (headers or {}).items():
+            self.send_header(name, value)
         self.end_headers()
         self.wfile.write(body)
 
-    def _json(self, obj, status=HTTPStatus.OK):
-        self._send(status, json.dumps(obj, ensure_ascii=False).encode(), "application/json; charset=utf-8")
+    def _json(self, obj, status=HTTPStatus.OK, headers: dict | None = None):
+        self._send(status, json.dumps(obj, ensure_ascii=False).encode(), "application/json; charset=utf-8", headers)
 
     def _error(self, message, status=HTTPStatus.BAD_REQUEST):
         self._json({"error": message}, status)
+
+    def _redirect(self, location: str):
+        self._send(HTTPStatus.FOUND, b"", "text/plain", {"Location": location})
 
     def _body(self) -> dict:
         length = int(self.headers.get("Content-Length") or 0)
@@ -1913,36 +1954,97 @@ class Handler(BaseHTTPRequestHandler):
         data = self.rfile.read(length) if length else b"{}"
         return json.loads(data or b"{}")
 
-    def _require_dataset(self):
-        if not self.store.current:
+    # ---------------- who is asking ----------------
+    def _token(self) -> str | None:
+        jar = SimpleCookie()
+        try:
+            jar.load(self.headers.get("Cookie") or "")
+        except Exception:  # noqa: BLE001 - a malformed cookie is no session
+            return None
+        return jar[COOKIE].value if COOKIE in jar else None
+
+    def _resolve_session(self) -> None:
+        self.session = self.auth.session(self._token())
+        self.user = self.session["username"] if self.session else None
+        ACTOR.name = self.user
+
+    def _require_user(self) -> str:
+        if not self.user:
+            raise NotSignedIn("Sign in to continue")
+        return self.user
+
+    def _require_admin(self) -> str:
+        if not self.auth.is_admin(self._require_user()):
+            raise Forbidden("Only admins can do this")
+        return self.user
+
+    def _allowed(self) -> set[str]:
+        return {d["key"] for d in self.auth.visible(self._require_user(), self.studio.datasets)}
+
+    def _visible(self) -> list[dict]:
+        return self.auth.visible(self._require_user(), self.studio.datasets)
+
+    def _current_key(self) -> str | None:
+        """This person's open dataset; the first one they may see when theirs is gone."""
+        key = self.session.get("current")
+        allowed = self._allowed()
+        if key in allowed:
+            return key
+        visible = self._visible()
+        choice = next((d for d in visible if d["layout"] == "reusable"), visible[0] if visible else None)
+        key = choice["key"] if choice else None
+        self.auth.set_current(self.session["id"], key)
+        return key
+
+    def _store(self) -> Store:
+        self._require_user()
+        key = self._current_key()
+        if not key:
             raise LookupError("No dataset is open")
+        return self.studio.store_for(key)
 
-    def _authorized(self) -> bool:
-        """Pages load freely; every data request needs the token when one is set."""
-        if not self.token or not self.path.startswith("/api/"):
-            return True
-        sent = self.headers.get("X-Studio-Token") or ""
-        return hmac.compare_digest(sent.encode(), self.token.encode())
+    def _may_manage(self, key: str) -> None:
+        """Renaming or deleting a dataset: admins, or whoever created it."""
+        if key not in self._allowed():
+            raise Forbidden("You do not have access to that dataset")
+        info = self.studio.dataset(key)
+        if not (self.auth.is_admin(self.user) or (info.get("created_by") and info["created_by"] == self.user)):
+            raise Forbidden("Only admins and the person who created a dataset can rename or delete it")
 
-    def _with_summaries(self, result: dict) -> dict:
+    def _me(self) -> dict:
+        me = self.auth.public(self.user)
+        return {"username": me["username"], "role": me["role"]}
+
+    @staticmethod
+    def _with_summaries(store: Store, result: dict) -> dict:
         """Mutations also report where their conversations now stand (progress, rebuild needed)."""
         examples = result.get("examples") or ([result["example"]] if result.get("example") else [])
         groups = {ex["group"] for ex in examples}
         if result.get("group"):
             groups.add(result["group"])
-        result["conversations"] = {g: self.store.conversation_summary(g) for g in groups}
+        result["conversations"] = {g: store.conversation_summary(g) for g in groups}
         return result
 
+    # ---------------- requests ----------------
     def do_GET(self):
         url = urlparse(self.path)
         q = {k: v[0] for k, v in parse_qs(url.query).items()}
-        if not self._authorized():
-            return self._error("This studio needs its access token", HTTPStatus.UNAUTHORIZED)
-        s = self.store
         try:
+            self._resolve_session()
+            if not url.path.startswith("/api/"):
+                if url.path in ("", "/", "/index.html") and not self.user:
+                    return self._redirect("/login.html")
+                if url.path == "/login.html" and self.user:
+                    return self._redirect("/")
+                return self._static(url.path)
+            if url.path == "/api/me":
+                self._require_user()
+                return self._json(self._me())
+            self._require_user()
             if url.path == "/api/datasets":
-                return self._json({"datasets": s.datasets, "current": s.current and s.current["key"]})
+                return self._json({"datasets": self._visible(), "current": self._current_key()})
             if url.path == "/api/meta":
+                s = self.studio
                 return self._json({
                     "catalog": s.catalog.public(),
                     "strict_schema": s.schemas.strict,
@@ -1950,105 +2052,165 @@ class Handler(BaseHTTPRequestHandler):
                     "engine": s.engine.status() if s.engine else {"available": False, "error": "not loaded"},
                     "schemas": list(SCHEMAS),
                     "review_states": list(REVIEW_STATES),
-                    "dataset": s.current,
                     "data_root": str(s.data_root),
-                    "workspace": str(s.workspace),
+                    "me": self._me(),
                 })
-            self._require_dataset()
+            if url.path == "/api/users":
+                self._require_admin()
+                return self._json({"users": self.auth.list_users(),
+                                   "datasets": [{k: d.get(k) for k in ("key", "name", "group", "layout", "created_by")}
+                                                for d in self.studio.datasets]})
+            store = self._store()
             if url.path == "/api/examples":
-                with s.lock:
-                    examples = s.all_effective()
-                    return self._json({"dataset": s.current, "examples": examples,
-                                       "conversations": s.conversation_summaries(examples)})
+                with store.lock:
+                    examples = store.all_effective()
+                    return self._json({"dataset": store.current, "examples": examples,
+                                       "conversations": store.conversation_summaries(examples)})
             if url.path == "/api/original":
-                return self._json({"original": s.original(q["id"])})
+                return self._json({"original": store.original(q["id"])})
             if url.path == "/api/context":
-                return self._json(s.context(q["id"]))
+                return self._json(store.context(q["id"]))
             if url.path == "/api/conversation":
-                return self._json(s.conversation_context(q["group"]))
+                return self._json(store.conversation_context(q["group"]))
             if url.path == "/api/graphs":
-                return self._json(s.graphs())
+                return self._json(store.graphs(self._allowed()))
             if url.path == "/api/history":
-                return self._json({"history": s.history(q["id"])})
+                return self._json({"history": store.history(q["id"])})
             if url.path == "/api/changes":
-                return self._json({"changes": s.changes()})
-            return self._static(url.path)
+                return self._json({"changes": store.changes()})
+            return self._error("Unknown endpoint", HTTPStatus.NOT_FOUND)
+        except NotSignedIn as error:
+            return self._error(str(error), HTTPStatus.UNAUTHORIZED)
+        except Forbidden as error:
+            return self._error(str(error), HTTPStatus.FORBIDDEN)
         except KeyError as error:
             return self._error(f"Not found: {error}", HTTPStatus.NOT_FOUND)
         except LookupError as error:
-            if url.path.startswith("/api/"):
-                return self._error(str(error), HTTPStatus.CONFLICT)
-            return self._static(url.path)
+            return self._error(str(error), HTTPStatus.CONFLICT)
         except Exception as error:  # noqa: BLE001
             return self._error(f"{type(error).__name__}: {error}", HTTPStatus.INTERNAL_SERVER_ERROR)
+        finally:
+            ACTOR.name = None
 
     def do_POST(self):
         url = urlparse(self.path)
-        if not self._authorized():
-            return self._error("This studio needs its access token", HTTPStatus.UNAUTHORIZED)
         try:
+            # Browsers cannot send JSON across sites without asking first; with the
+            # SameSite cookie this keeps other pages from acting as a signed-in person.
+            if not (self.headers.get("Content-Type") or "").startswith("application/json"):
+                return self._error("Requests must be JSON", HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
             body = self._body()
-            s = self.store
+            self._resolve_session()
+            if url.path == "/api/login":
+                token = self.auth.login(body.get("username", ""), body.get("password", ""))
+                cookie = f"{COOKIE}={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age={7 * 24 * 3600}"
+                ACTOR.name = body.get("username", "").strip().lower()
+                return self._json({"ok": True}, headers={"Set-Cookie": cookie})
+            if url.path == "/api/logout":
+                if self.session:
+                    self.auth.logout(self.session["id"])
+                return self._json({"ok": True}, headers={"Set-Cookie": f"{COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0"})
+            user = self._require_user()
+            a, st = self.auth, self.studio
+            if url.path == "/api/me/password":
+                a.change_password(user, body.get("current", ""), body.get("new", ""))
+                return self._json({"ok": True})
+            if url.path == "/api/users/create":
+                self._require_admin()
+                return self._json({"user": a.create_user(body.get("username", ""), body.get("password", ""),
+                                                         body.get("role") or "user", body.get("datasets") or [], by=user)})
+            if url.path == "/api/users/update":
+                self._require_admin()
+                return self._json({"user": a.update_user(body["username"], role=body.get("role"),
+                                                         datasets=body.get("datasets"), password=body.get("password") or None,
+                                                         disabled=body.get("disabled"))})
+            if url.path == "/api/users/delete":
+                self._require_admin()
+                if body["username"] == user:
+                    raise AuthError("You cannot remove your own account")
+                a.delete_user(body["username"])
+                return self._json({"ok": True})
             if url.path == "/api/open":
-                return self._json(s.open(body["key"]))
+                if body["key"] not in self._allowed():
+                    raise Forbidden("You do not have access to that dataset")
+                store = st.store_for(body["key"])
+                a.set_current(self.session["id"], body["key"])
+                return self._json({"dataset": store.current, "count": len(store.order)})
             if url.path == "/api/new-dataset":
-                return self._json(s.create_dataset(body.get("name", ""), body.get("description", "")))
+                info = st.create_dataset(body.get("name", ""), body.get("description", ""), created_by=user)
+                a.grant(user, info["key"])
+                a.set_current(self.session["id"], info["key"])
+                store = st.store_for(info["key"])
+                return self._json({"dataset": store.current, "count": len(store.order), "datasets": self._visible()})
             if url.path == "/api/dataset/update":
-                return self._json(s.update_dataset(body["key"], body.get("name", ""), body.get("description", "")))
+                self._may_manage(body["key"])
+                info = st.update_dataset(body["key"], body.get("name", ""), body.get("description", ""))
+                return self._json({"dataset": info, "datasets": self._visible()})
             if url.path == "/api/dataset/delete":
-                return self._json(s.delete_dataset(body["key"]))
-            self._require_dataset()
+                self._may_manage(body["key"])
+                moved = st.delete_dataset(body["key"])
+                a.forget_dataset(body["key"])
+                return self._json({"moved_to": moved, "datasets": self._visible(), "current": self._current_key()})
+            store = self._store()
             if url.path == "/api/template":
-                return self._json(s.template(body.get("schema"), body.get("want") or "any", body.get("operation") or None))
+                return self._json(st.template(body.get("schema"), body.get("want") or "any",
+                                              body.get("operation") or None, store, self._allowed()))
             if url.path == "/api/update":
-                return self._json(self._with_summaries(s.update(body["id"], body.get("patch") or {})))
+                return self._json(self._with_summaries(store, store.update(body["id"], body.get("patch") or {})))
             if url.path == "/api/bulk":
-                return self._json(self._with_summaries(s.bulk(body["ids"], body.get("patch") or {})))
+                return self._json(self._with_summaries(store, store.bulk(body["ids"], body.get("patch") or {})))
             if url.path == "/api/update-many":
-                return self._json(self._with_summaries(s.update_many(body["patches"])))
+                return self._json(self._with_summaries(store, store.update_many(body["patches"])))
             if url.path == "/api/create-conversation":
-                return self._json(self._with_summaries(s.create_conversation(body)))
+                return self._json(self._with_summaries(store, store.create_conversation(body)))
             if url.path == "/api/conversation/duplicate":
-                return self._json(self._with_summaries(s.duplicate_conversation(body["group"])))
+                return self._json(self._with_summaries(store, store.duplicate_conversation(body["group"])))
             if url.path == "/api/conversation/settings":
-                s.set_conversation_settings(body["group"], domain_id=body.get("domain_id") or "general",
-                                            graph_id=body["graph_id"])
-                return self._json({"summary": s.conversation_summary(body["group"])})
+                store.set_conversation_settings(body["group"], domain_id=body.get("domain_id") or "general",
+                                                graph_id=body["graph_id"])
+                return self._json({"summary": store.conversation_summary(body["group"])})
             if url.path == "/api/conversation/build":
-                return self._json(self._with_summaries(s.build_context(body["group"], run=bool(body.get("run")))))
+                return self._json(self._with_summaries(store, store.build_context(body["group"], run=bool(body.get("run")))))
             if url.path == "/api/preview-understanding":
-                return self._json(s.preview_understanding(question=body.get("question", ""),
-                                                          domain_id=body.get("domain_id") or "general",
-                                                          graph_id=body["graph_id"]))
+                return self._json(store.preview_understanding(question=body.get("question", ""),
+                                                              domain_id=body.get("domain_id") or "general",
+                                                              graph_id=body["graph_id"]))
             if url.path == "/api/graphs/use":
-                return self._json({"graph": s.use_library_graph(body["id"])})
+                return self._json({"graph": store.use_library_graph(body["id"], self._allowed())})
             if url.path == "/api/graphs/upload":
-                return self._json({"graph": s.upload_graph(body.get("name", ""), body.get("filename", ""),
-                                                           body.get("content", ""), bool(body.get("directed")))})
+                return self._json({"graph": store.upload_graph(body.get("name", ""), body.get("filename", ""),
+                                                               body.get("content", ""), bool(body.get("directed")))})
             if url.path == "/api/revert":
-                with s.lock:
-                    groups = {s.effective(i)["group"] for i in body["ids"] if i in s.base or i in s.overlay}
-                    result = s.revert(body["ids"])
-                    result["conversations"] = {g: s.conversation_summary(g) for g in groups}
+                with store.lock:
+                    groups = {store.effective(i)["group"] for i in body["ids"] if i in store.base or i in store.overlay}
+                    result = store.revert(body["ids"])
+                    result["conversations"] = {g: store.conversation_summary(g) for g in groups}
                     return self._json(result)
             if url.path == "/api/validate":
                 draft = body
-                ex = s.effective(draft["id"]) if draft.get("id") in s.base or draft.get("id") in s.overlay else None
-                if ex is None:
-                    ex = {"tags": {}, "manual_tags": {}, "prompts": draft.get("prompts") or [{"value": "x"}]}
-                ex = {**ex, **{k: v for k, v in draft.items() if k in ("output", "schema", "prompts")}}
-                ex.setdefault("tags", {})
-                ex.setdefault("manual_tags", {})
-                if "tags" in draft:
-                    ex["tags"] = {**ex["tags"], **{k: v for k, v in draft["tags"].items() if v}}
-                with s.lock:
-                    context = {"lineage_splits": {}, "question_splits": {}, "replay": s._freshness()}
-                    return self._json({"issues": s.validate(ex, context)})
+                with store.lock:
+                    known = draft.get("id") in store.base or draft.get("id") in store.overlay
+                    ex = store.effective(draft["id"]) if known else None
+                    if ex is None:
+                        ex = {"tags": {}, "manual_tags": {}, "prompts": draft.get("prompts") or [{"value": "x"}]}
+                    ex = {**ex, **{k: v for k, v in draft.items() if k in ("output", "schema", "prompts")}}
+                    ex.setdefault("tags", {})
+                    ex.setdefault("manual_tags", {})
+                    if "tags" in draft:
+                        ex["tags"] = {**ex["tags"], **{k: v for k, v in draft["tags"].items() if v}}
+                    context = {"lineage_splits": {}, "question_splits": {}, "replay": store._freshness()}
+                    return self._json({"issues": store.validate(ex, context)})
             if url.path == "/api/export":
-                return self._json(s.export(body.get("name", ""),
-                                           exclude_rejected=bool(body.get("exclude_rejected", True)),
-                                           approved_only=bool(body.get("approved_only", False))))
+                return self._json(store.export(body.get("name", ""),
+                                               exclude_rejected=bool(body.get("exclude_rejected", True)),
+                                               approved_only=bool(body.get("approved_only", False))))
             return self._error("Unknown endpoint", HTTPStatus.NOT_FOUND)
+        except NotSignedIn as error:
+            return self._error(str(error), HTTPStatus.UNAUTHORIZED)
+        except Forbidden as error:
+            return self._error(str(error), HTTPStatus.FORBIDDEN)
+        except AuthError as error:
+            return self._error(str(error), HTTPStatus.UNAUTHORIZED if url.path == "/api/login" else HTTPStatus.BAD_REQUEST)
         except KeyError as error:
             return self._error(f"Not found or missing field: {error}", HTTPStatus.NOT_FOUND)
         except LookupError as error:
@@ -2057,6 +2219,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._error(str(error))
         except Exception as error:  # noqa: BLE001
             return self._error(f"{type(error).__name__}: {error}", HTTPStatus.INTERNAL_SERVER_ERROR)
+        finally:
+            ACTOR.name = None
 
     def _static(self, path: str):
         if path in ("", "/"):
@@ -2070,39 +2234,64 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(HTTPStatus.OK, target.read_bytes(), ctype)
 
 
-LOOPBACK = ("127.0.0.1", "localhost", "::1")
+def _read_password(prompt: str) -> str:
+    """From the terminal (asked twice), or the first line of stdin when piped."""
+    if sys.stdin.isatty():
+        import getpass
+        first = getpass.getpass(prompt)
+        if getpass.getpass("Again: ") != first:
+            raise SystemExit("The two passwords differ")
+        return first
+    return sys.stdin.readline().rstrip("\n")
 
 
-def access_token(args, workspace: Path) -> str | None:
-    """A token is required whenever the studio listens beyond this machine.
-    It is kept in the workspace so bookmarked links survive restarts."""
-    if args.token:
-        return args.token
-    if args.host in LOOPBACK or args.no_token:
-        return None
-    path = workspace / ".studio-token"
-    if path.is_file() and path.read_text().strip():
-        return path.read_text().strip()
-    workspace.mkdir(parents=True, exist_ok=True)
-    token = secrets.token_urlsafe(24)
-    path.write_text(token + "\n")
-    path.chmod(0o600)
-    return token
+def users_command(argv) -> None:
+    """``studio.py users list | add NAME [--admin] | passwd NAME | delete NAME``"""
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--workspace", type=Path, default=APP_DIR / "workspace",
+                        help="Studio workspace holding auth/users.json (default: ./workspace)")
+    parser = argparse.ArgumentParser(prog="studio.py users", description="Manage Dataset Studio sign-ins")
+    sub = parser.add_subparsers(dest="action", required=True)
+    sub.add_parser("list", parents=[common])
+    add = sub.add_parser("add", parents=[common])
+    add.add_argument("username")
+    add.add_argument("--admin", action="store_true")
+    sub.add_parser("passwd", parents=[common]).add_argument("username")
+    sub.add_parser("delete", parents=[common]).add_argument("username")
+    args = parser.parse_args(argv)
+    auth = Auth(args.workspace.resolve() / "auth")
+    try:
+        if args.action == "list":
+            for u in auth.list_users():
+                print(f"{u['username']:<20} {u['role']:<6} {'disabled ' if u['disabled'] else ''}"
+                      f"datasets: {', '.join(u['datasets']) or ('all' if u['role'] == 'admin' else 'none')}")
+        elif args.action == "add":
+            user = auth.create_user(args.username, _read_password("Password: "), "admin" if args.admin else "user",
+                                    by="command line")
+            print(f"Created {user['role']} {user['username']}")
+        elif args.action == "passwd":
+            auth.update_user(args.username.lower(), password=_read_password("New password: "))
+            print(f"Password changed for {args.username}; their sessions were signed out")
+        elif args.action == "delete":
+            auth.delete_user(args.username.lower())
+            print(f"Removed {args.username}")
+    except (AuthError, KeyError) as error:
+        raise SystemExit(str(error)) from error
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="GraphMine Dataset Studio")
+    argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] == "users":
+        return users_command(argv[1:])
+    parser = argparse.ArgumentParser(description="GraphMine Dataset Studio (manage sign-ins with: studio.py users …)")
     parser.add_argument("--repo", type=Path, default=DEFAULT_REPO,
                         help="GraphMine repository (catalog, domain profiles, agent schemas)")
     parser.add_argument("--data-root", type=Path, default=None,
                         help="Directory searched for datasets (default: <repo>/.graphmine-learning)")
-    parser.add_argument("--dataset", default=None, help="Dataset key or relative path to open at startup")
     parser.add_argument("--workspace", type=Path, default=APP_DIR / "workspace",
-                        help="Where edits to pipeline datasets, their exports and the access token are kept")
+                        help="Where sign-ins, edits to pipeline datasets and their exports are kept")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8877)
-    parser.add_argument("--token", default=None, help="Access token (default: generated when --host is not local)")
-    parser.add_argument("--no-token", action="store_true", help="Serve beyond localhost without a token (unsafe)")
     args = parser.parse_args(argv)
 
     repo = args.repo.resolve()
@@ -2114,24 +2303,16 @@ def main(argv=None):
     catalog = Catalog(repo)
     from studio_engine import Engine
     engine = Engine(repo)
-    store = Store(data_root, workspace, catalog, schemas, engine)
-    wanted = args.dataset
-    choice = next((d for d in store.datasets if wanted in (d["key"], d["path"])), None) if wanted else None
-    if choice is None and store.datasets:
-        choice = next((d for d in store.datasets if d["layout"] == "reusable"), store.datasets[0])
-    if choice:
-        store.open(choice["key"])
-    Handler.store = store
-    Handler.token = access_token(args, workspace)
-    if args.host not in LOOPBACK and not Handler.token:
-        print("[studio] WARNING: listening beyond localhost without a token; anyone on the network can edit.", flush=True)
+    Handler.studio = Studio(data_root, workspace, catalog, schemas, engine)
+    Handler.auth = Auth(workspace / "auth")
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     print(f"[studio] strict schema validation: {'on' if schemas.strict else 'off (' + str(schemas.error) + ')'}", flush=True)
     print(f"[studio] replay engine: {'on' if engine.available else 'off (' + str(engine.error) + ')'}", flush=True)
-    print(f"[studio] {len(store.datasets)} dataset(s) under {data_root}; "
-          f"opened {choice['path'] if choice else 'none (create one in the picker)'}", flush=True)
+    print(f"[studio] {len(Handler.studio.datasets)} dataset(s) under {data_root}", flush=True)
+    if not Handler.auth.has_users:
+        print("[studio] No sign-ins yet. Create the first admin with: ./run.sh users add NAME --admin", flush=True)
     shown = "localhost" if args.host in ("0.0.0.0", "::") else args.host
-    print(f"[studio] open http://{shown}:{args.port}/" + (f"?token={Handler.token}" if Handler.token else ""), flush=True)
+    print(f"[studio] sign in at http://{shown}:{args.port}/", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

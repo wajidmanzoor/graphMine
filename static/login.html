@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · Dataset Studio</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Ccircle cx='10' cy='11' r='3.2' fill='white'/%3E%3Ccircle cx='22' cy='9' r='3.2' fill='white'/%3E%3Ccircle cx='16' cy='22' r='3.2' fill='white'/%3E%3Cpath d='M10 11L22 9L16 22Z' stroke='white' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+  <main class="login-card">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Dataset Studio</span>
+    </div>
+    <p class="muted login-sub">Sign in to review and write GraphMine training conversations.</p>
+    <form id="login-form" novalidate>
+      <label class="block">Username<input id="login-username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus></label>
+      <label class="block">Password<input id="login-password" name="password" type="password" autocomplete="current-password" required></label>
+      <p id="login-error" class="login-error" role="alert" hidden></p>
+      <button class="btn primary login-submit" type="submit">Sign in</button>
+    </form>
+    <p class="muted login-foot">No account? Ask an admin of this studio to create one for you.</p>
+  </main>
+  <script src="login.js"></script>
+</body>
+</html>

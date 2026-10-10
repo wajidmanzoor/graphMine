@@ -33,6 +33,15 @@
       <button class="btn" id="export-btn" title="Export a new dataset version">Export</button>
       <button class="icon-btn" id="theme-btn" title="Toggle light / dark" aria-label="Toggle theme"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13z" fill="currentColor" stroke="none"/></svg></button>
       <button class="icon-btn" id="help-btn" title="Keyboard shortcuts (?)" aria-label="Help">?</button>
+      <div class="account">
+        <button class="btn account-btn" id="account-btn" aria-haspopup="menu" aria-expanded="false"><span id="account-name">…</span> <span aria-hidden="true">▾</span></button>
+        <div class="account-menu" id="account-menu" role="menu" hidden>
+          <div class="account-who" id="account-who"></div>
+          <button role="menuitem" data-account="users" id="account-users" hidden>Users and access…</button>
+          <button role="menuitem" data-account="password">Change password…</button>
+          <button role="menuitem" data-account="logout">Sign out</button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -116,6 +125,37 @@
         <span id="add-summary" class="add-summary"></span>
         <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
         <button class="btn primary" id="add-submit" value="default">Add conversation</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="users-dialog" class="dialog wide">
+    <form method="dialog" id="users-form">
+      <header class="dialog-head">
+        <h2>Users and access</h2>
+        <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog-body" id="users-body"></div>
+      <footer class="dialog-foot">
+        <button class="btn ghost" value="cancel" formnovalidate>Close</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="password-dialog" class="dialog">
+    <form method="dialog" id="password-form">
+      <header class="dialog-head">
+        <h2>Change password</h2>
+        <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog-body">
+        <label class="block">Current password<input id="pw-current" type="password" autocomplete="current-password"></label>
+        <label class="block">New password <span class="muted">(at least 8 characters)</span><input id="pw-new" type="password" autocomplete="new-password"></label>
+        <label class="block">New password again<input id="pw-again" type="password" autocomplete="new-password"></label>
+      </div>
+      <footer class="dialog-foot">
+        <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn primary" value="default">Change password</button>
       </footer>
     </form>
   </dialog>

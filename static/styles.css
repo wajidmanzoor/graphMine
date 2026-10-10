@@ -516,6 +516,35 @@ table.plain td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .gp-upload .form-grid { margin: 8px 0; }
 .cb-section { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); }
 .cb-preview .json-tree { max-height: 320px; overflow: auto; }
+/* sign-in page */
+body.login-page { display: grid; place-items: center; min-height: 100vh; padding: 16px; background: var(--bg); }
+.login-card { width: min(380px, 100%); background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; }
+.login-card form { display: flex; flex-direction: column; gap: 12px; }
+.login-card label.block { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--text-secondary); }
+.login-card input { padding: 8px 10px; }
+.login-sub, .login-foot { margin: 0; font-size: 12.5px; }
+.login-submit { justify-content: center; padding: 8px; }
+.login-error { margin: 0; padding: 7px 10px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--critical) 12%, transparent); color: var(--critical); font-size: 12.5px; }
+/* account menu */
+.account { position: relative; }
+.account-btn { white-space: nowrap; }
+.account-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 220px; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 6px; display: flex; flex-direction: column; }
+.account-menu[hidden] { display: none; }
+.account-who { padding: 6px 8px 8px; font-size: 12px; color: var(--text-secondary); border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.account-menu button { border: 0; background: none; text-align: left; padding: 7px 8px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text-primary); }
+.account-menu button:hover { background: var(--surface-2); }
+/* users and access */
+.users-table td { vertical-align: top; }
+.users-table .u-access { max-width: 360px; }
+.users-table .u-access .tag-pill { display: inline-block; margin: 0 2px 3px 0; }
+.users-table .u-actions { white-space: nowrap; display: flex; gap: 10px; }
+.u-edit summary { cursor: pointer; font-size: 12px; color: var(--accent-ink); margin-top: 4px; }
+.ds-checks { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0; }
+.ds-checks fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; min-width: 200px; }
+.ds-checks legend { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .03em; padding: 0; margin-bottom: 2px; }
+.ds-checks label.check { display: flex; flex-direction: row; gap: 6px; align-items: center; font-size: 12.5px; color: var(--text-primary); }
+.new-user { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.new-user .form-grid { width: 100%; }
 /* conversation builder (Add dialog) */
 .cb-thread { display: flex; flex-direction: column; gap: 10px; }
 .cb-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 9px; align-items: start; }
@@ -534,5 +563,7 @@ table.plain td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .dialog label.cb-toggle, .cb-add-fu { padding-left: 0; margin-left: 0; }
   .dialog-foot { flex-wrap: wrap; }
   .next-step { margin-left: 0; }
+  .account-btn #account-name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: bottom; }
+  .users-table .u-actions { flex-direction: column; gap: 4px; }
   .gp-grid { grid-template-columns: 1fr; }
 }

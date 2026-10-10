@@ -22,10 +22,10 @@ static files.
 
 ```bash
 cd dataset-studio
-./run.sh                     # http://127.0.0.1:8877/
+./run.sh users add NAME --admin   # once: the first admin (asks for a password)
+./run.sh                          # http://127.0.0.1:8877/, then sign in
 ./run.sh --port 9000
-./run.sh --dataset business-routing-data-v1
-./run.sh --host 0.0.0.0      # reachable from other machines: prints a link with an access token
+./run.sh --host 0.0.0.0           # reachable from other machines
 ```
 
 `run.sh` uses `../graphMine-repo/.venv/bin/python` when it exists. With that
@@ -40,13 +40,50 @@ interpreter the studio imports the agent, which it needs for two things:
 
 Options: `--repo` (default `../graphMine-repo`), `--data-root` (default
 `<repo>/.graphmine-learning`), `--workspace` (default `./workspace`), `--host`
-(default `127.0.0.1`), `--port` (default `8877`), `--token`, `--no-token`.
+(default `127.0.0.1`), `--port` (default `8877`).
 
-**Access token.** On any host other than localhost, every data request needs a
-token. It is generated once, kept in `workspace/.studio-token` (so bookmarked
-links keep working) and printed as part of the link at startup. Opening that
-link stores the token in the browser. Pass `--token` to choose one, or
-`--no-token` to serve without one (anyone on the network could then edit).
+## Sign-in, users and access
+
+Everyone signs in. There are two roles:
+
+| Role | Can |
+| --- | --- |
+| **admin** | Open every dataset; create users and admins, decide which datasets each user may open, reset passwords, disable or remove accounts (**Users and access…** in the account menu, top right) |
+| **user** | Open the datasets granted to them; create their own datasets (they get access automatically) |
+
+Anyone can create a dataset. Renaming or deleting one (**⋯** next to the picker)
+is for admins and for the person who created it. Every change is recorded with
+who made it: the History tab and the Changes view show it.
+
+Each person has their own open dataset; two people working on the same dataset
+see each other's changes after a refresh.
+
+From the command line (useful for the first admin, or a forgotten password):
+
+```bash
+./run.sh users add NAME [--admin]   # asks for the password twice (or reads one line from stdin)
+./run.sh users passwd NAME          # reset a password; signs that person out
+./run.sh users list
+./run.sh users delete NAME
+```
+
+How it is kept safe:
+
+- **Passwords** are stored only as salted PBKDF2-SHA256 hashes (310,000
+  iterations), in `workspace/auth/users.json`. The folder is readable by its
+  owner only, and git ignores `workspace/`.
+- **Sessions** are random tokens in an HttpOnly, SameSite=Strict cookie, valid
+  for 7 days. Only their SHA-256 is saved (`workspace/auth/sessions.json`), so
+  a restart keeps people signed in.
+- **Logins:** five wrong passwords for one name lock it for 5 minutes. Changing
+  a password, disabling or removing an account signs that person out. There is
+  always at least one active admin.
+- **Requests:** every data request must be JSON from a signed-in session, which
+  keeps other web pages from acting for someone. The studio serves plain HTTP,
+  so on an untrusted network put it behind HTTPS (for example an SSH tunnel or
+  a reverse proxy).
+- **Leaks:** templates and the case-graph library only draw from datasets the
+  person may open.
 
 ## Conversations
 
@@ -255,8 +292,7 @@ this manifest) instead of hand-writing a provenance file.
   steps' *Model context* after a build.
 - **Multi-step plans:** a plan with supporting analyses runs every step; a
   follow-up that plans again uses its first plan.
-- **Server-wide state:** the open dataset is shared; switching it in one tab
-  switches it for every tab.
+- **Open dataset:** each person has their own; all of one person's tabs share it.
 - **Splits:** "This question text also appears in another split" is
   informational. The held-out unit is the graph source, and a step written here
   takes its conversation's graph as its source.

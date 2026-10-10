@@ -13,27 +13,11 @@ const store = {
   set(k, v) { try { localStorage.setItem("dataset-studio:" + k, JSON.stringify(v)); } catch { /* storage unavailable */ } },
 };
 
-// A studio served beyond localhost needs its access token. The link it prints
-// carries ?token=…; it is kept in this browser and removed from the address bar.
-(() => {
-  const url = new URL(location.href);
-  const t = url.searchParams.get("token");
-  if (t) {
-    store.set("token", t);
-    url.searchParams.delete("token");
-    history.replaceState(null, "", url.pathname + url.search + url.hash);
-  }
-})();
 async function api(path, body) {
-  const headers = body === undefined ? {} : { "Content-Type": "application/json" };
-  const token = store.get("token", "");
-  if (token) headers["X-Studio-Token"] = token;
-  const opt = body === undefined ? { headers } : { method: "POST", headers, body: JSON.stringify(body) };
+  const opt = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
   const res = await fetch(path, opt);
-  if (res.status === 401) {
-    const entered = prompt("This studio needs its access token (printed when the server started):");
-    if (entered) { store.set("token", entered.trim()); return api(path, body); }
-  }
+  // The session ended (signed out elsewhere, expired, or the account changed).
+  if (res.status === 401) { location.replace("/login.html"); throw new Error("Signed out"); }
   const data = await res.json().catch(() => ({ error: res.statusText }));
   if (!res.ok) throw new Error(data.error || res.statusText);
   return data;
@@ -1371,10 +1355,10 @@ async function loadHistory(e, body) {
     if (!history.length) { body.innerHTML = '<div class="muted">No edits yet. This example is identical to the source dataset.</div>'; return; }
     body.innerHTML = `<ul class="history-list" style="padding:0;margin:0">${history.slice().reverse().map((h) => {
       const st = h.state || {};
-      const keys = Object.keys(st).filter((k) => k !== "updated_at");
+      const keys = Object.keys(st).filter((k) => k !== "updated_at" && k !== "updated_by");
       const summary = h.state === null ? "returned to original / discarded"
         : keys.map((k) => k === "review" ? `review → ${st.review}` : k === "deleted" ? (st.deleted ? "deleted" : "restored") : k === "tags" ? `tags → ${Object.entries(st.tags).map(([a, b]) => `${a.replace("_id", "")}=${b}`).join(", ")}` : k).join(" · ");
-      return `<li><span class="muted">${esc(new Date(h.ts).toLocaleString())}</span><span>${esc(h.op)}</span><span>${esc(summary)}</span></li>`;
+      return `<li><span class="muted">${esc(new Date(h.ts).toLocaleString())}</span><span>${esc(h.op)}${h.by ? ` · ${esc(h.by)}` : ""}</span><span>${esc(summary)}</span></li>`;
     }).join("")}</ul>`;
   } catch (err) { fail(err); }
 }
@@ -1919,8 +1903,8 @@ async function renderChanges() {
     const { changes } = await api("/api/changes");
     host.innerHTML = `<div class="cov-head"><h1>Changes</h1><span class="muted">${plural(changes.length, "changed example")} · saved in the workspace journal, written out on export</span>
       <span style="flex:1"></span><button class="btn primary" id="changes-export">Export new version</button></div>
-      ${changes.length ? `<div class="cov-section"><table class="plain"><thead><tr><th>When</th><th>Change</th><th>Stage</th><th>Split</th><th>Question</th><th>Fields</th><th></th></tr></thead><tbody>
-      ${changes.map((c) => `<tr class="click" data-open="${esc(c.id)}"><td class="muted">${c.updated_at ? esc(new Date(c.updated_at).toLocaleString()) : ""}</td>
+      ${changes.length ? `<div class="cov-section"><table class="plain"><thead><tr><th>When</th><th>By</th><th>Change</th><th>Stage</th><th>Split</th><th>Question</th><th>Fields</th><th></th></tr></thead><tbody>
+      ${changes.map((c) => `<tr class="click" data-open="${esc(c.id)}"><td class="muted">${c.updated_at ? esc(new Date(c.updated_at).toLocaleString()) : ""}</td><td>${esc(c.updated_by || "")}</td>
         <td>${c.deleted ? '<span class="chip kind-deleted">deleted</span>' : `<span class="chip kind-${esc(c.kind)}">${esc(KIND_LABEL[c.kind] || c.kind)}</span>`}</td>
         <td>${stageChip(c.schema)}</td><td>${esc(c.split)}</td><td>${esc(c.question)}</td><td class="muted">${esc(c.changed.join(", "))}</td>
         <td><button class="btn small" data-undo="${esc(c.id)}">${c.kind === "new" || c.kind === "clone" ? "Discard" : "Revert"}</button></td></tr>`).join("")}
@@ -2342,6 +2326,113 @@ async function deleteDataset() {
     if (r.current) await loadExamples(); else showNoDataset();
     toast(`Deleted. Moved to ${r.moved_to}`);
   } catch (err) { fail(err); }
+}
+
+// ------------------------------------------------------------------ account: menu, password, users (admins)
+const isAdmin = () => S.me?.role === "admin";
+function renderAccount() {
+  $("#account-name").textContent = S.me ? S.me.username : "";
+  $("#account-who").innerHTML = S.me ? `Signed in as <b>${esc(S.me.username)}</b> · ${esc(S.me.role)}` : "";
+  $("#account-users").hidden = !isAdmin();
+}
+function toggleAccountMenu(open = $("#account-menu").hidden) {
+  $("#account-menu").hidden = !open;
+  $("#account-btn").setAttribute("aria-expanded", String(open));
+}
+async function signOut() {
+  if (S.editing && !confirm("Discard unsaved edits?")) return;
+  try { await api("/api/logout", {}); } catch { /* signed out anyway */ }
+  location.replace("/login.html");
+}
+async function changePassword(ev) {
+  ev.preventDefault();
+  const fresh = $("#pw-new").value;
+  if (fresh !== $("#pw-again").value) return toast("The new passwords differ", true);
+  try {
+    await api("/api/me/password", { current: $("#pw-current").value, new: fresh });
+    $("#password-dialog").close();
+    toast("Password changed");
+  } catch (err) { fail(err); }
+}
+
+// Admins create users and admins and decide which datasets each user may open.
+let usersData = null;
+async function openUsers() {
+  try {
+    usersData = await api("/api/users");
+    renderUsers();
+    if (!$("#users-dialog").open) $("#users-dialog").showModal();
+  } catch (err) { fail(err); }
+}
+function datasetChecks(prefix, selected) {
+  const groups = new Map();
+  for (const d of usersData.datasets) {
+    const g = d.group || (d.layout === "studio" ? "Created in the studio" : "Other datasets");
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(d);
+  }
+  return `<div class="ds-checks">${[...groups].map(([g, items]) => `<fieldset><legend>${esc(g)}</legend>${items.map((d) =>
+    `<label class="check"><input type="checkbox" data-${prefix}-ds="${esc(d.key)}"${selected.includes(d.key) ? " checked" : ""}> ${esc(d.name)}${d.created_by ? ` <span class="muted">· by ${esc(d.created_by)}</span>` : ""}</label>`).join("")}</fieldset>`).join("")}</div>`;
+}
+function renderUsers() {
+  const name = (key) => usersData.datasets.find((d) => d.key === key)?.name || key;
+  const rows = usersData.users.map((u) => {
+    const self = u.username === S.me.username;
+    const access = u.role === "admin" ? '<span class="muted">every dataset</span>'
+      : u.datasets.length ? u.datasets.map((k) => `<span class="tag-pill">${esc(name(k))}</span>`).join(" ") : '<span class="muted">none yet</span>';
+    return `<tr data-user="${esc(u.username)}">
+      <td><b>${esc(u.username)}</b>${self ? ' <span class="muted">(you)</span>' : ""}${u.disabled ? ' <span class="chip kind-deleted">disabled</span>' : ""}</td>
+      <td><select data-uact="role"${self ? " disabled" : ""}>${["user", "admin"].map((r) => `<option${r === u.role ? " selected" : ""}>${r}</option>`).join("")}</select></td>
+      <td class="u-access">${access}${u.role === "admin" ? "" : `<details class="u-edit"><summary>Change access</summary>${datasetChecks("u", u.datasets)}
+        <button type="button" class="btn small" data-uact="save-access">Save access</button></details>`}</td>
+      <td class="muted">${u.last_login ? esc(new Date(u.last_login).toLocaleString()) : "never"}</td>
+      <td><div class="u-actions"><button type="button" class="link-btn" data-uact="password">Reset password</button>
+        ${self ? "" : `<button type="button" class="link-btn" data-uact="disable">${u.disabled ? "Enable" : "Disable"}</button>
+        <button type="button" class="link-btn danger" data-uact="delete">Remove</button>`}</div></td></tr>`;
+  }).join("");
+  $("#users-body").innerHTML = `
+    <table class="plain users-table"><thead><tr><th>User</th><th>Role</th><th>Datasets</th><th>Last sign-in</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="card"><div class="card-head">Add a user</div><div class="card-body new-user">
+      <div class="form-grid">
+        <label>Username<input id="nu-name" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="lowercase, e.g. alex"></label>
+        <label>Password<input id="nu-password" type="password" autocomplete="new-password" placeholder="at least 8 characters"></label>
+        <label>Role<select id="nu-role"><option value="user">user: only the datasets you choose</option><option value="admin">admin: every dataset, manages users</option></select></label>
+      </div>
+      <div id="nu-datasets"><div class="tf-label">Datasets this user may open</div>${datasetChecks("nu", [])}</div>
+      <button type="button" class="btn primary small" data-uact="create">Create user</button>
+    </div></div>
+    <p class="muted" style="margin:0;font-size:12px">Users can also create their own datasets; they get access to those automatically. Changing a password or disabling an account signs that person out.</p>`;
+}
+async function usersAction(ev) {
+  const act = ev.target.closest("[data-uact]")?.dataset.uact;
+  if (!act || ev.type === "change" && act !== "role") return;
+  const row = ev.target.closest("[data-user]");
+  const username = row?.dataset.user;
+  const call = async (path, body, msg) => {
+    try { await api(path, body); toast(msg); usersData = await api("/api/users"); renderUsers(); } catch (err) { fail(err); }
+  };
+  if (act === "create") {
+    const role = $("#nu-role").value;
+    const datasets = role === "admin" ? [] : $$("[data-nu-ds]:checked").map((c) => c.dataset.nuDs);
+    return call("/api/users/create", { username: $("#nu-name").value, password: $("#nu-password").value, role, datasets },
+      `Created ${$("#nu-name").value.trim().toLowerCase()}`);
+  }
+  if (act === "role") return call("/api/users/update", { username, role: ev.target.value }, `${username} is now ${ev.target.value === "admin" ? "an admin" : "a user"}`);
+  if (act === "save-access") {
+    const datasets = $$("[data-u-ds]:checked", row).map((c) => c.dataset.uDs);
+    return call("/api/users/update", { username, datasets }, `Access updated for ${username}`);
+  }
+  if (act === "password") {
+    const password = prompt(`New password for ${username} (at least 8 characters):`);
+    if (password) return call("/api/users/update", { username, password }, `Password reset for ${username}`);
+  }
+  if (act === "disable") {
+    const user = usersData.users.find((u) => u.username === username);
+    return call("/api/users/update", { username, disabled: !user.disabled }, `${username} ${user.disabled ? "enabled" : "disabled"}`);
+  }
+  if (act === "delete" && confirm(`Remove ${username}? They are signed out and can no longer sign in.`)) {
+    return call("/api/users/delete", { username }, `Removed ${username}`);
+  }
 }
 
 // ------------------------------------------------------------------ export dialog
@@ -2776,6 +2867,19 @@ function bind() {
     });
   });
   $("#dataset-settings-btn").addEventListener("click", openDatasetSettings);
+  $("#account-btn").addEventListener("click", (ev) => { ev.stopPropagation(); toggleAccountMenu(); });
+  document.addEventListener("click", (ev) => { if (!ev.target.closest(".account")) toggleAccountMenu(false); });
+  $("#account-menu").addEventListener("click", (ev) => {
+    const act = ev.target.closest("[data-account]")?.dataset.account;
+    if (!act) return;
+    toggleAccountMenu(false);
+    if (act === "users") openUsers();
+    if (act === "password") { $("#password-form").reset(); $("#password-dialog").showModal(); $("#pw-current").focus(); }
+    if (act === "logout") signOut();
+  });
+  $("#password-form").addEventListener("submit", (ev) => { if (ev.submitter?.value === "default") changePassword(ev); });
+  $("#users-body").addEventListener("click", usersAction);
+  $("#users-body").addEventListener("change", usersAction);
   $("#dataset-settings-form").addEventListener("submit", (ev) => { if (ev.submitter?.value === "default") saveDatasetSettings(ev); });
   $("#ds-delete").addEventListener("click", deleteDataset);
   $("#export-form").addEventListener("submit", (ev) => { if (ev.submitter?.value === "default") submitExport(ev); });
@@ -2883,7 +2987,8 @@ async function loadExamples() {
   // Which stages this dataset has at all decides what "complete" means for it.
   S.stagesPresent = new Set(S.examples.filter((e) => !e.deleted).map((e) => e.schema));
   $("#dataset-select").value = d.dataset.key;
-  $("#dataset-settings-btn").hidden = d.dataset.layout !== "studio";
+  // Admins, and whoever created a dataset in the studio, may rename or delete it.
+  $("#dataset-settings-btn").hidden = d.dataset.layout !== "studio" || !(isAdmin() || d.dataset.created_by === S.me?.username);
   refreshAll();
   const hash = decodeURIComponent(location.hash.slice(1));
   const convHash = hash.startsWith("c=") ? hash.slice(2) : null;
@@ -2900,6 +3005,8 @@ async function init() {
     const [ds, meta] = await Promise.all([api("/api/datasets"), api("/api/meta")]);
     S.datasets = ds.datasets;
     S.meta = meta;
+    S.me = meta.me;
+    renderAccount();
     for (const p of meta.catalog.problems) S.problems.set(p.id, p);
     for (const o of meta.catalog.operations) S.operations.set(o.id, o);
     $("#dataset-select").innerHTML = datasetOptions(ds.datasets);
@@ -2917,7 +3024,8 @@ function showNoDataset() {
   S.byId = new Map();
   $("#dataset-settings-btn").hidden = true;
   $("#status-strip").innerHTML = "<span>No dataset is open.</span>";
-  $("#list").innerHTML = '<div class="empty-list">There are no datasets yet.<br><button class="btn primary small" data-new-dataset>＋ New empty dataset</button></div>';
+  const why = isAdmin() ? "There are no datasets yet." : "You do not have access to any dataset yet. Ask an admin, or create your own.";
+  $("#list").innerHTML = `<div class="empty-list">${why}<br><button class="btn primary small" data-new-dataset>＋ New empty dataset</button></div>`;
   $("#detail").innerHTML = '<div class="empty-detail"><p>Create a dataset to start writing conversations.</p><p><button class="btn primary" data-new-dataset>＋ New empty dataset</button></p></div>';
 }
 window.DatasetStudio = { state: S };  // handy for debugging in the console
