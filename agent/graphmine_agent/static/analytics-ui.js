@@ -381,10 +381,13 @@
     $("result-completeness").classList.toggle("incomplete", !port.complete || !result.complete);
     $("result-completeness").textContent = `${port.complete ? "This output collection is complete." : "This output is incomplete or count-only; it cannot supply a full downstream collection."} Method quality: ${title(result.quality)}. Computed by ${result.backend.library} on ${result.backend.device.toUpperCase()}.`;
     const graph = port.type === "graph" ? port.value : await graphForStep(stepId);
+    if (port.type === "vertex_positions") $("graph-layout").value = "computed";
     renderGraph(graph); renderOutput();
   }
   function renderGraph(data) {
     state.cy?.destroy(); state.cy = null; state.graph = data;
+    $("graph-layout").querySelector('[value="computed"]').disabled = state.port?.type !== "vertex_positions";
+    if (state.port?.type !== "vertex_positions" && $("graph-layout").value === "computed") $("graph-layout").value = "cose";
     $("network").replaceChildren(); $("preview-scope").textContent = ""; $("selection-detail").textContent = "Select a node or a result row to inspect it.";
     if (!data?.vertices || !window.cytoscape) return;
     const vertices = data.vertices.slice(0, 500), keys = new Set(vertices.map(v => W.idKey(v.id)));
@@ -406,10 +409,24 @@
     });
     state.cy.on("tap", "edge", event => { $("selection-detail").textContent = W.stringify(event.target.data("original"), true); });
     const n = data.vertex_count ?? data.vertices.length, m = data.edge_count ?? data.edges.length;
-    $("preview-scope").textContent = `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. ${vertices.length < n || edges.length < m || data.vertices_truncated || data.edges_truncated ? "The preview is truncated. " : ""}Layout positions are for display only.`;
+    state.previewScope = `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. ${vertices.length < n || edges.length < m || data.vertices_truncated || data.edges_truncated ? "The preview is truncated. " : ""}`;
+    renderPreviewScope();
     applySelection();
   }
-  function layoutOptions() { return {name: $("graph-layout").value, animate: false, randomize: false, fit: true, padding: 35, nodeRepulsion: () => 7000, idealEdgeLength: () => 70}; }
+  function renderPreviewScope() {
+    if (!state.graph) return;
+    const computed = $("graph-layout").value === "computed" && state.port?.type === "vertex_positions";
+    $("preview-scope").textContent = state.previewScope + (computed ? `Computed coordinates${state.port.value[0]?.coordinates?.length === 3 ? " (XY projection of 3D)" : ""}; display scale is uniform.` : "Layout positions are for display only.");
+  }
+  function layoutOptions() {
+    if ($("graph-layout").value === "computed" && state.port?.type === "vertex_positions") {
+      let scale = 1;
+      for (const row of state.port.value) scale = Math.max(scale, Math.abs(row.coordinates[0]), Math.abs(row.coordinates[1]));
+      const positions = new Map(state.port.value.map(row => [W.idKey(row.vertex), {x: row.coordinates[0] / scale * 200, y: row.coordinates[1] / scale * 200}]));
+      return {name: "preset", positions: n => positions.get(n.id()), animate: false, fit: true, padding: 35};
+    }
+    return {name: $("graph-layout").value, animate: false, randomize: false, fit: true, padding: 35, nodeRepulsion: () => 7000, idealEdgeLength: () => 70};
+  }
   function rowVertices(row) {
     if (!state.port) return [];
     if (state.port.type === "vertex_set") return [row];
@@ -528,7 +545,7 @@
   $("approve-plan").addEventListener("click", () => runAction(async () => { const record = state.record; state.record = await api(`/api/workflows/${record.id}/run`, {method: "POST", body: W.stringify({workflow_hash: record.validation.workflow_hash, expected_revision: record.revision})}); clearResults(); renderWorkflow(); pollWorkflow(); }));
   $("cancel-workflow").addEventListener("click", async () => { try { clearTimeout(state.poll); state.epoch++; state.record = await api(`/api/workflows/${state.record.id}`, {method: "DELETE"}); renderWorkflow(); await loadSaved(); await loadResults(); notice("Execution cancelled. Completed step artifacts remain saved."); } catch (error) { notice(error.message, true); } });
   $("result-step").addEventListener("change", () => runAction(selectStep)); $("result-port").addEventListener("change", () => runAction(selectPort));
-  $("graph-layout").addEventListener("change", () => state.cy?.layout(layoutOptions()).run()); $("fit-graph").addEventListener("click", () => state.cy?.fit(undefined, 35));
+  $("graph-layout").addEventListener("change", () => { state.cy?.layout(layoutOptions()).run(); renderPreviewScope(); }); $("fit-graph").addEventListener("click", () => state.cy?.fit(undefined, 35));
   $("clear-selection").addEventListener("click", () => { state.selected.clear(); $("selection-detail").textContent = "Selection cleared."; applySelection(); });
   $("table-search").addEventListener("input", filterRows);
   $("table-prev").addEventListener("click", () => { state.page--; renderTable(); }); $("table-next").addEventListener("click", () => { state.page++; renderTable(); });

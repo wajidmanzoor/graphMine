@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 59,
-  "problems_with_cpu_profile": 57,
+  "cpu_operation_count": 62,
+  "problems_with_cpu_profile": 60,
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-workspace",
+      "id": "cpu-diffusion-geometry",
       "status": "passed",
-      "tests": 19611,
+      "tests": 22136,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
@@ -16,6 +16,7 @@
       "test_modules": [
         "tests/test_comparison_data_oracles.py",
         "tests/test_contracts.py",
+        "tests/test_diffusion_geometry.py",
         "tests/test_evidence_worker.py",
         "tests/test_extended_contracts.py",
         "tests/test_extended_oracles.py",
@@ -25,10 +26,10 @@
         "tests/test_weighted_directed.py",
         "tests/test_workflows.py"
       ],
-      "report": "validation/python_analytics/cpu-workspace.xml",
-      "report_sha256": "f1fd53606b42ca170be1d9ed80f74790ff2d960b3134ee99438c4829674b07b7",
-      "metadata": "validation/python_analytics/cpu-workspace.xml.metadata.json",
-      "metadata_sha256": "391e8cf0f1e29c78c158e00b0087b401415d5ba4023c4cecdc3d93ec8b2e9f72",
+      "report": "validation/python_analytics/cpu-diffusion-geometry.xml",
+      "report_sha256": "3d0afffaae6e0818ca2fe3ff83e79df45a26596e59f9ef6121d9f2b9e5dbcbb1",
+      "metadata": "validation/python_analytics/cpu-diffusion-geometry.xml.metadata.json",
+      "metadata_sha256": "308d4c310abb0da11223b4b121857fd727f0684a068a0fe4f599431135060ad4",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -43,7 +44,7 @@
       }
     },
     {
-      "id": "gpu-0-workspace",
+      "id": "gpu-0-diffusion-geometry",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -54,10 +55,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-workspace.xml",
-      "report_sha256": "092a007f83c3a433c7b01d83edc12c690216741ff3357a8d3f876a87b4d665d2",
-      "metadata": "validation/python_analytics/gpu-0-workspace.xml.metadata.json",
-      "metadata_sha256": "2189a0cd8199925f2ba30fd9c21d4aaf19b7dd87e5fe188a52e939e09a5bfac5",
+      "report": "validation/python_analytics/gpu-0-diffusion-geometry.xml",
+      "report_sha256": "e9f062654b0bac9f05273728709400346aa7f6d5445a67712e0daaf302deed85",
+      "metadata": "validation/python_analytics/gpu-0-diffusion-geometry.xml.metadata.json",
+      "metadata_sha256": "7616ff7ac81797c09ad22759f6371a5b18583084a7dfa512a9603622750fdfea",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -72,7 +73,7 @@
       }
     },
     {
-      "id": "gpu-1-workspace",
+      "id": "gpu-1-diffusion-geometry",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -83,10 +84,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-workspace.xml",
-      "report_sha256": "bb7a6593d71aebbf5bbad8eb6b15af560df020681af0ed8a39c58f03a4c5c82b",
-      "metadata": "validation/python_analytics/gpu-1-workspace.xml.metadata.json",
-      "metadata_sha256": "489c8216f366e8b9ee5799c3a5539c03d5bd6010408b7eae148a5c19134fae85",
+      "report": "validation/python_analytics/gpu-1-diffusion-geometry.xml",
+      "report_sha256": "be9f756bd8747bb743377a022dc430c46a1136e062395a83f94f1d5691012073",
+      "metadata": "validation/python_analytics/gpu-1-diffusion-geometry.xml.metadata.json",
+      "metadata_sha256": "5164976425273bf2b3071bc7017061011d89eedfc15dff5924277f3b10aaff3b",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -443,9 +444,11 @@
       "name": "Influence Maximization under Diffusion Models",
       "contract": "problems/28_influence_maximization/problem.json",
       "contract_sha256": "b15f09826604a42f29739820129cdae051eb55461217acffd25e2c9ac2b85eab",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "influence-maximization"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -539,9 +542,11 @@
       "name": "Force-Directed Graph Layout",
       "contract": "problems/36_graph_layout_force_directed/problem.json",
       "contract_sha256": "ab1e56af2377f6b4c77ddebdd25addf91be36545bb70fc106a7002f15bd0d607",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "force-directed-layout"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -767,9 +772,11 @@
       "name": "Spectral Graph Sparsification",
       "contract": "problems/55_spectral_graph_sparsification/problem.json",
       "contract_sha256": "d2d25cd89f20f5a614dbbe5547103cf849b0bccacb552c91c650b7a86d52bfcb",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "spectral-sparsification"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -1022,6 +1029,56 @@
         }
       },
       "profile_sha256": "27b52913f05ac94a66f4a735983bb795ce613f26aa3bef68832eb2d97d540d80"
+    },
+    {
+      "id": "influence-maximization",
+      "problem_id": "influence_maximization",
+      "family": "centrality",
+      "title": "Choose starting points that maximize expected diffusion",
+      "description": "Exact rational enumeration of seed sets and live-edge states using NetworkX reachability. Supports independent cascade and uniform-random linear threshold; supplied fixed thresholds use progressive activation. Parallel IC probabilities combine as 1-product(1-p); LT weights sum. Exponential reference method with explicit work budgets, no sampling or unsupported statistical promises.",
+      "parameters": {
+        "diffusion_model": {
+          "kind": "string",
+          "required": true,
+          "description": "",
+          "choices": [
+            "independent_cascade",
+            "linear_threshold"
+          ],
+          "nullable": false
+        },
+        "seed_set_size": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "vertex_thresholds": {
+          "kind": "array",
+          "required": false,
+          "description": "Fixed LT thresholds as {vertex,value} rows for every vertex. Null selects independent uniform thresholds. Zero fixed thresholds activate even without active predecessors.",
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [
+        "https://www.cs.cornell.edu/home/kleinber/kdd03-inf.pdf"
+      ],
+      "input_kind": "graph",
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        },
+        "spread": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "e4a45187a01fc496a296b65984834ceb08c741c4cb1e8188013e5a9e716feea6"
     },
     {
       "id": "pagerank",
@@ -1770,6 +1827,63 @@
       "profile_sha256": "b106bf3800b06267715fa96c32cc45f4729b9d093ad760df434007fa9e4ffb5a"
     },
     {
+      "id": "spectral-sparsification",
+      "problem_id": "spectral_graph_sparsification",
+      "family": "construction",
+      "title": "Reduce edges while measuring Laplacian distortion",
+      "description": "Static effective-resistance sampling with replacement and importance reweighting, using SciPy grounded Laplacian solves. Measures all generalized eigenvalues, not only sampled vectors. An explicit epsilon must pass that numerical check. An edge budget alone permits disclosed distortion. Requires undirected, explicitly weighted simple input; loops and parallel edges are rejected; zero-weight edges can be dropped.",
+      "parameters": {
+        "mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "static",
+          "choices": [
+            "static"
+          ],
+          "nullable": false
+        },
+        "edge_budget": {
+          "kind": "integer",
+          "required": true,
+          "description": "At most this many edges; repeated draws merge. A budget covering all positive edges returns the identity sparsifier.",
+          "minimum": 0,
+          "nullable": false
+        },
+        "epsilon": {
+          "kind": "number",
+          "required": false,
+          "description": "Optional strict target 0<epsilon<1, checked by generalized eigenvalues in float64; failure asks for a larger edge budget.",
+          "minimum": 0,
+          "maximum": 1,
+          "default": null,
+          "nullable": true
+        },
+        "random_seed": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 0,
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "heuristic",
+      "references": [
+        "https://arxiv.org/abs/0803.0929",
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.eigvalsh.html"
+      ],
+      "input_kind": "graph",
+      "output_ports": {
+        "graph": {
+          "type": "graph",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "52645dace8a869cacebfafa94be98bcbae4cb8acba6f8634fd11589882e2b3db"
+    },
+    {
       "id": "k-core",
       "problem_id": "k_core_decomposition",
       "family": "cores",
@@ -2267,6 +2381,110 @@
         }
       },
       "profile_sha256": "b3d8e27392a4a052f31ced2447b6bd780c93cb5744c0007579e0b2404bae2d5f"
+    },
+    {
+      "id": "force-directed-layout",
+      "problem_id": "graph_layout_force_directed",
+      "family": "layout",
+      "title": "Compute a force-directed drawing of the network",
+      "description": "NetworkX Fruchterman-Reingold force iterations in 2D or 3D, with its explicit 0.01 distance regularization and no final rescaling. Recomputes the matching potential and maximum force. Convergence means a small force residual, not optimality of the drawing. Directed edges project to undirected; loops are removed; parallel weights sum (unweighted duplicates collapse).",
+      "parameters": {
+        "dimensions": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "default": 2,
+          "choices": [
+            2,
+            3
+          ],
+          "nullable": false
+        },
+        "force_model": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "fruchterman_reingold",
+          "choices": [
+            "fruchterman_reingold"
+          ],
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "iterations": {
+          "kind": "integer",
+          "required": false,
+          "description": "Fixed iteration count; null/unbounded stopping is not supported by this profile.",
+          "minimum": 0,
+          "default": 50,
+          "nullable": false
+        },
+        "random_seed": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 0,
+          "nullable": false
+        },
+        "initial_positions": {
+          "kind": "array",
+          "required": false,
+          "description": "Optional {vertex, value:[coordinates]} rows for every vertex, preserved when iterations=0.",
+          "default": null,
+          "nullable": true
+        },
+        "optimal_distance": {
+          "kind": "number",
+          "required": false,
+          "description": "Force-law length k; defaults to 1/sqrt(vertex count).",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        },
+        "force_tolerance": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1e-06,
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "approximate",
+          "choices": [
+            "approximate",
+            "converged"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "heuristic",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/generated/networkx.drawing.layout.spring_layout.html"
+      ],
+      "input_kind": "graph",
+      "output_ports": {
+        "positions": {
+          "type": "vertex_positions",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "c82200f11553fef439b511f9364d3d266034e9db3fd0d74681ef2fa5b31969b3"
     },
     {
       "id": "bipartite-matching",

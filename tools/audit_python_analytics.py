@@ -19,7 +19,11 @@ ROOT = Path(__file__).resolve().parents[1]
 def audit():
     library = ROOT / "python/graphmine"
     reports = []
-    for name in ("cpu-workspace", "gpu-0-workspace", "gpu-1-workspace"):
+    for name in (
+        "cpu-diffusion-geometry",
+        "gpu-0-diffusion-geometry",
+        "gpu-1-diffusion-geometry",
+    ):
         xml = ROOT / "validation/python_analytics" / f"{name}.xml"
         metadata_path = xml.with_name(xml.name + ".metadata.json")
         if not xml.exists() or not metadata_path.exists():
@@ -73,7 +77,9 @@ def audit():
                 "report": str(xml.relative_to(ROOT)),
                 "report_sha256": hashlib.sha256(xml.read_bytes()).hexdigest(),
                 "metadata": str(metadata_path.relative_to(ROOT)),
-                "metadata_sha256": hashlib.sha256(metadata_path.read_bytes()).hexdigest(),
+                "metadata_sha256": hashlib.sha256(
+                    metadata_path.read_bytes()
+                ).hexdigest(),
                 "packages": metadata["packages"],
             }
         )

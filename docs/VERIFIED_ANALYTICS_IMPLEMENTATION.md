@@ -367,3 +367,49 @@ reported score substitutes for local integration tests.
   reviewed examples, memory-aware two-GPU scheduling, representation caching
   and external-scale validation remain part of the active goal. The earlier
   native workspace has not been migrated to the new execution policy.
+
+### Diffusion, layout and sparsification checkpoint
+
+- Added three CPU profiles, bringing coverage to **62 executable operations
+  across 60 of 70 problem contracts**. Influence maximization computes exact
+  expectations and seed-set optima for independent cascade and linear threshold
+  with explicit work budgets. Rational comparisons preserve differences hidden
+  by rounded displayed expectations. Fixed thresholds, parallel edges and
+  zero-threshold activation have declared semantics.
+- Force-directed layout uses the explicit NetworkX Fruchterman–Reingold force
+  method in 2D/3D and recomputes its distance-regularized potential and force
+  residual. A one-iteration equation oracle includes the 500-vertex method-switch
+  boundary. Fixed iteration count zero preserves supplied coordinates; null
+  iteration limits and other force models are not advertised as supported.
+  The browser displays computed coordinates with uniform scale and labels a
+  3D result's XY projection while preserving all coordinates in the result.
+- Static spectral sparsification uses effective-resistance sampling and
+  importance reweighting. Grounded generalized eigenvalues check quadratic-form
+  distortion across all vectors; numerical diagnostics are distinguished from
+  the algebraic identity/zero cases. Exact component checks prevent a rounded
+  zero eigenvalue from accepting a lost bridge under any strict epsilon<1
+  target. Unmet targets and numerically unresolved systems are rejected.
+- The new suite contributes **2,525 independent checks**: every three-vertex
+  directed graph under both stochastic diffusion models, all 27 fixed-threshold
+  assignments on those graphs, graph-atlas force/energy and spectral comparisons,
+  typed IDs, tiny probability distinctions, resource failures and unsupported
+  parameters. Uniform-threshold expectations are verified by integrating
+  threshold intervals, independently of the live-edge implementation. Spectral
+  references use an orthogonal eigenbasis rather than grounded solves.
+- The full `cpu-diffusion-geometry.xml` run passed **22,136 tests** with GPUs
+  hidden. Both `gpu-*-diffusion-geometry.xml` reports passed **1,546 tests** on
+  their respective devices, with no failures/skips. The audit now references
+  these reports; dependency and contract checks pass.
+- Application/planner runs passed **34 tests** on both working-tree and staged
+  application sources. Firefox runs passed **seven tests** on both versions,
+  including the computed-coordinate view, with Node absent from the server PATH.
+  Reports include source snapshots; the staged snapshots match Git's index.
+  The authored model transport remains an integration test rather than an LLM
+  accuracy result.
+- The remaining CPU contracts are frequent subgraph mining, graph edit
+  distance/maximum common subgraph, node embedding, knowledge-graph embedding,
+  node prediction, graph prediction, geolocation, hypergraph node learning,
+  single-graph frequent subgraph mining and graph condensation. Native
+  adaptation, deployed-model evaluation, deterministic queries/table operations,
+  MCP, reviewed examples, memory-aware scheduling, representation caching and
+  external-scale evaluation remain open. The overall goal is not complete.

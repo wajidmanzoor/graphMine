@@ -35,6 +35,11 @@ show at most 500 vertices and 2,000 edges; calculations still use the full
 input. Selection outside the preview is identified explicitly. Layout positions
 are display coordinates, not computed graph metrics.
 
+When a layout algorithm returns a `vertex_positions` port, **Computed
+coordinates** displays those values with uniform scale. Three-dimensional
+positions use a labeled XY projection; all three coordinates remain in the
+table and export. Choosing a display layout changes only the drawing.
+
 Tables search and page the retained result collection; they do not change the
 calculation. Output completeness is distinct from pagination and graph-preview
 limits. The raw provenance preview is bounded, with a full JSON download.
@@ -234,7 +239,7 @@ are trusted local artifacts, not client-submitted results or signed certificates
 
 ## Verification for this checkpoint
 
-- 19,611 CPU library tests passed with GPUs hidden; 1,546 cuGraph tests passed on
+- 22,136 CPU library tests passed with GPUs hidden; 1,546 cuGraph tests passed on
   each physical GPU. No failures or skips. As before, weighted/boundary cases
   repeat on both GPUs, so these counts are test executions, not distinct graphs.
 - The workflow suite includes dependent 2-core/extraction/PageRank workflows
@@ -245,6 +250,11 @@ are trusted local artifacts, not client-submitted results or signed certificates
   across atlas graphs through five vertices. Capped listings now propagate
   `complete: false` to the operation and workflow, while count-only operations
   retain complete counts with incomplete materialized-list ports.
+- A further 2,525 checks cover exact diffusion, force-law energy and iteration
+  equations, and spectral quadratic-form ratios. Random-threshold diffusion
+  is checked independently by integrating threshold intervals; sparsifier bounds
+  use an independent orthogonal Laplacian basis. Work-budget failures and
+  unsupported options are included.
 - The application/planner suite passed all 34 checks on both working-tree and
   staged application sources. These exercise all three
   API modes with the actual library,
@@ -256,16 +266,18 @@ are trusted local artifacts, not client-submitted results or signed certificates
   evidence of concurrent two-GPU scheduling. Routing tests replay authored
   decisions, including ambiguity, rerouting, bounded repair, follow-up scope
   and attempts to escape the allowed operation/parameter schema.
-- Six browser checks passed on both working-tree and staged application
+- Seven browser checks passed on both working-tree and staged application
   sources. They use actual Firefox, API and library computations with Node
   absent from the server PATH. They cover approval/editing, dependent plans,
   lossless IDs and downloads, narrow-screen layout, linked selections, paging,
   preview limits, graph-input bindings, workspace reset and question-to-workflow
-  transport. The model transport is an authored fixture, not a real LLM.
+  transport. The coordinate-view test checks uniform scaling, typed vertex IDs,
+  the explicit 3D-to-XY projection and switching to a display-only layout.
+  The model transport is an authored fixture, not a real LLM.
   The two existing `/classic` browser regressions also passed against the
   working tree, using their synthetic native executable fixture.
 
 Reports and source/dependency metadata are in `validation/python_analytics/`.
-CPU contract coverage remains 57 of 70; these workflow additions do not claim
-new problem-contract coverage. The browser tests cover the new workspace;
+CPU contract coverage is 60 of 70, with ten integrations still required.
+The browser tests cover the new workspace;
 the retained `/classic` workspace still has its earlier execution policy.

@@ -3,6 +3,9 @@
 from .exceptions import GraphMineError
 
 OUTPUT_PORTS = {
+    "force-directed-layout": {"positions": "vertex_positions"},
+    "influence-maximization": {"vertices": "vertex_set", "spread": "scalar"},
+    "spectral-sparsification": {"graph": "graph"},
     "network-alignment": {"mapping": "cross_graph_mapping"},
     "graph-anomalies": {"ranking": "entity_ranking"},
     "maximal-bicliques": {"bicliques": "bipartite_groups"},

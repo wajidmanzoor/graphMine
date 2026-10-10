@@ -571,6 +571,59 @@ def test_lossless_json_rejects_invalid_values_and_preserves_export(browser):
     assert rejected
 
 
+def test_force_layout_displays_computed_coordinates_with_explicit_projection(
+    browser, tmp_path
+):
+    upload(browser, tmp_path)
+    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
+    coordinates = [[0, 0, 0], [1, 0, 1], [0, 2, 3], [-1, 0, 1], [3, 3, 0]]
+    ids = [v["id"] for v in typed_graph()["vertices"]]
+    plan = {
+        "version": 1,
+        "device": "cpu",
+        "steps": [
+            {
+                "id": "drawing",
+                "operation": "force-directed-layout",
+                "input": {"input": "main"},
+                "parameters": {
+                    "iterations": 0,
+                    "dimensions": 3,
+                    "initial_positions": [
+                        {"vertex": v, "value": p}
+                        for v, p in zip(ids, coordinates, strict=True)
+                    ],
+                },
+            }
+        ],
+    }
+    editor = browser.find_element(By.ID, "plan-editor")
+    editor.clear()
+    editor.send_keys(json.dumps(plan))
+    browser.find_element(By.ID, "save-editor").click()
+    status(browser, "ready")
+    browser.find_element(By.ID, "approve-plan").click()
+    done(browser)
+    assert (
+        Select(
+            browser.find_element(By.ID, "graph-layout")
+        ).first_selected_option.get_attribute("value")
+        == "computed"
+    )
+    assert "XY projection of 3D" in browser.find_element(By.ID, "preview-scope").text
+    stored = browser.execute_script(
+        "return window.GraphMineWorkspace.state.port.value.map(r=>r.coordinates)"
+    )
+    assert stored == coordinates
+    displayed = browser.execute_script(
+        "return window.GraphMineWorkspace.state.cy.nodes().map(n=>[n.position('x'),n.position('y')])"
+    )
+    for actual, expected in zip(displayed, coordinates, strict=True):
+        assert actual == pytest.approx([expected[0] / 3 * 200, expected[1] / 3 * 200])
+    Select(browser.find_element(By.ID, "graph-layout")).select_by_value("circle")
+    assert "for display only" in browser.find_element(By.ID, "preview-scope").text
+
+
 def test_question_uses_family_then_operation_then_real_calculation(
     browser, tmp_path, authored_model_transport
 ):

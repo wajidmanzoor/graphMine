@@ -98,6 +98,13 @@ the match decisions; optimization outputs include a checked witness and solver
 bound. Unknown predicates, score methods and unsupported alignment modes are
 rejected.
 
+Diffusion and geometry profiles add exact influence maximization under the
+declared cascade/threshold model, fixed-iteration force-directed layouts with
+recomputed energy, and static spectral sparsification with all-vector numerical
+quality diagnostics. Their cards distinguish exponential reference computation,
+heuristic drawing, and numerical spectral verification. Unsupported sampling,
+force-model and dynamic-update parameters are rejected during planning.
+
 In particular, `densest-subgraph.clique_order` changes the density numerator;
 `densest-k-subgraph.k` fixes the size of the selected vertex set. These are
 different problems. Graphlet classification uses the complete NetworkX atlas
