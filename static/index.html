@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dataset Studio</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Ccircle cx='10' cy='11' r='3.2' fill='white'/%3E%3Ccircle cx='22' cy='9' r='3.2' fill='white'/%3E%3Ccircle cx='16' cy='22' r='3.2' fill='white'/%3E%3Cpath d='M10 11L22 9L16 22Z' stroke='white' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Dataset Studio</span>
+    </div>
+    <label class="dataset-picker">
+      <span class="sr-only">Dataset</span>
+      <select id="dataset-select" title="Dataset"></select>
+    </label>
+    <div class="search">
+      <svg class="search-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg>
+      <input id="search" type="search" placeholder="Search questions, outputs, notes…  try  op:k-core stage:PlanDraft has:clarify" autocomplete="off" spellcheck="false">
+      <kbd class="search-kbd">/</kbd>
+    </div>
+    <nav class="views" role="tablist" aria-label="Views">
+      <button role="tab" data-view="browse" class="active">Browse</button>
+      <button role="tab" data-view="coverage">Coverage</button>
+      <button role="tab" data-view="changes">Changes <span id="changes-count" class="count-pill" hidden></span></button>
+    </nav>
+    <div class="top-actions">
+      <button class="btn primary" id="add-btn" title="Add a conversation (n)"><span aria-hidden="true">＋</span> Add</button>
+      <button class="btn" id="export-btn" title="Export a new dataset version">Export</button>
+      <button class="icon-btn" id="theme-btn" title="Toggle light / dark" aria-label="Toggle theme"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13z" fill="currentColor" stroke="none"/></svg></button>
+      <button class="icon-btn" id="help-btn" title="Keyboard shortcuts (?)" aria-label="Help">?</button>
+    </div>
+  </header>
+
+  <div class="status-strip" id="status-strip"></div>
+
+  <main id="browse-view" class="browse">
+    <aside class="facets" id="facets" aria-label="Filters">
+      <div class="facets-head">
+        <span>Filters</span>
+        <button class="link-btn" id="clear-filters">Clear all</button>
+      </div>
+      <div id="facet-groups"></div>
+    </aside>
+
+    <section class="list-pane" aria-label="Examples">
+      <div class="list-toolbar">
+        <button class="icon-btn only-narrow" id="facets-toggle" title="Filters" aria-label="Show filters">☰</button>
+        <label class="check"><input type="checkbox" id="select-all"> <span id="result-count">0</span></label>
+        <div class="toolbar-spacer"></div>
+        <span class="seg mode-seg" id="mode-seg" role="group" aria-label="List shows">
+          <button type="button" data-mode="conv" title="One entry per conversation: route, plan, answers and follow-ups for one question on one graph">Conversations</button>
+          <button type="button" data-mode="rows" title="One entry per training row">Rows</button>
+        </span>
+        <label class="toggle"><input type="checkbox" id="deleted-toggle"> Show deleted</label>
+        <select id="sort-select" title="Sort">
+          <option value="file">File order</option>
+          <option value="question">Question A–Z</option>
+          <option value="problem">Problem</option>
+          <option value="issues">Issues first</option>
+          <option value="updated">Recently edited</option>
+          <option value="output">Longest output</option>
+        </select>
+      </div>
+      <div class="bulkbar" id="bulkbar" hidden>
+        <span id="bulk-count"></span>
+        <select id="bulk-problem"><option value="">Problem…</option></select>
+        <select id="bulk-operation"><option value="">Operation…</option></select>
+        <select id="bulk-backend"><option value="">Implementation…</option></select>
+        <select id="bulk-review">
+          <option value="">Review…</option>
+          <option value="approved">✓ Approved</option>
+          <option value="needs_fix">⚑ Needs fix</option>
+          <option value="rejected">✕ Rejected</option>
+          <option value="unreviewed">○ Unreviewed</option>
+        </select>
+        <select id="bulk-split">
+          <option value="">Move to…</option>
+          <option value="train">train</option>
+          <option value="validation">validation</option>
+        </select>
+        <input id="bulk-label" placeholder="+ label" list="label-options" size="10">
+        <button class="btn danger-ghost" id="bulk-delete">Delete</button>
+        <button class="btn ghost" id="bulk-restore">Restore</button>
+        <button class="link-btn" id="bulk-clear">Clear selection</button>
+      </div>
+      <div class="list" id="list" tabindex="0"></div>
+    </section>
+
+    <section class="detail-pane" id="detail" aria-label="Example detail">
+      <div class="empty-detail">
+        <div class="empty-art" aria-hidden="true"></div>
+        <p>Select an example to see the conversation, expected output and tags.</p>
+        <p class="muted">Use <kbd>j</kbd>/<kbd>k</kbd> to move, <kbd>e</kbd> to edit the output, <kbd>?</kbd> for all shortcuts.</p>
+      </div>
+    </section>
+  </main>
+
+  <main id="coverage-view" class="page" hidden></main>
+  <main id="changes-view" class="page" hidden></main>
+
+  <datalist id="label-options"></datalist>
+
+  <dialog id="add-dialog" class="dialog wide">
+    <form method="dialog" id="add-form">
+      <header class="dialog-head">
+        <h2 id="add-title">Add conversation</h2>
+        <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog-body" id="add-body"></div>
+      <footer class="dialog-foot">
+        <span id="add-summary" class="add-summary"></span>
+        <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn primary" id="add-submit" value="default">Add conversation</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="dataset-dialog" class="dialog">
+    <form method="dialog" id="dataset-form">
+      <header class="dialog-head">
+        <h2>New empty dataset</h2>
+        <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog-body">
+        <div class="callout">Starts with no conversations; add them with <b>＋ Add</b>. Steps written here have no model
+          context, so an export puts them in <code>needs-context.jsonl</code> for the pipeline to complete. The dataset is
+          saved under <code id="dataset-location">studio-datasets/</code> in the data root.</div>
+        <label class="block">Name<input id="dataset-name" maxlength="80" required placeholder="e.g. Hand-written fraud questions" autocomplete="off"></label>
+        <label class="block">Description (optional)<textarea id="dataset-description" rows="2" placeholder="What goes in this dataset"></textarea></label>
+      </div>
+      <footer class="dialog-foot">
+        <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn primary" value="default">Create and open</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="export-dialog" class="dialog">
+    <form method="dialog" id="export-form">
+      <header class="dialog-head">
+        <h2>Export new dataset version</h2>
+        <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog-body">
+        <p class="muted">The source dataset is never modified. The export contains <code>sft/&lt;model&gt;/&lt;split&gt;.jsonl</code>,
+          <code>sft-index.jsonl</code>, <code>annotations.jsonl</code> (tags, review, notes), <code>needs-context.jsonl</code>,
+          <code>changes.jsonl</code> and a <code>manifest.json</code> with SHA-256 fingerprints. Unchanged rows are byte-identical to the source.</p>
+        <label class="block">Name<input name="name" id="export-name" pattern="[A-Za-z0-9._\-]{1,80}" required></label>
+        <label class="check"><input type="checkbox" id="export-exclude-rejected" checked> Leave out examples reviewed as rejected</label>
+        <label class="check"><input type="checkbox" id="export-approved-only"> Approved examples only</label>
+        <div id="export-summary" class="export-summary"></div>
+        <div id="export-result"></div>
+      </div>
+      <footer class="dialog-foot">
+        <button class="btn ghost" value="cancel" formnovalidate>Close</button>
+        <button class="btn primary" id="export-submit" value="default">Export</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="help-dialog" class="dialog">
+    <form method="dialog">
+      <header class="dialog-head">
+        <h2>Shortcuts &amp; search</h2>
+        <button class="icon-btn" value="cancel" formnovalidate aria-label="Close">✕</button>
+      </header>
+      <div class="dialog-body help">
+        <div class="help-cols">
+          <dl>
+            <dt><kbd>/</kbd></dt><dd>Search</dd>
+            <dt><kbd>j</kbd> <kbd>k</kbd> or <kbd>↓</kbd> <kbd>↑</kbd></dt><dd>Next / previous conversation (or row)</dd>
+            <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Previous / next step in the conversation</dd>
+            <dt><kbd>x</kbd></dt><dd>Select for bulk actions (whole conversation)</dd>
+            <dt><kbd>e</kbd></dt><dd>Edit the focused step's expected output</dd>
+            <dt><kbd>q</kbd></dt><dd>Edit the question (every step that uses it)</dd>
+            <dt><kbd>c</kbd></dt><dd>Clone the focused step (keeps model context)</dd>
+            <dt><kbd>n</kbd></dt><dd>Add a conversation</dd>
+            <dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd>Review the focused step: Unreviewed · Approved · Needs fix · Rejected</dd>
+            <dt><kbd>Del</kbd></dt><dd>Delete / restore the focused step</dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>S</kbd></dt><dd>Save the open editor</dd>
+            <dt><kbd>Esc</kbd></dt><dd>Cancel editing · back from step details</dd>
+          </dl>
+          <dl>
+            <dt><code>op:k-core</code></dt><dd>Operation (also <code>problem:</code>, <code>impl:</code>)</dd>
+            <dt><code>stage:PlanDraft</code></dt><dd>Output schema</dd>
+            <dt><code>split:validation</code></dt><dd>Split (also <code>model:analyst</code>)</dd>
+            <dt><code>review:needs_fix</code></dt><dd>Review state</dd>
+            <dt><code>label:checked</code></dt><dd>Your labels</dd>
+            <dt><code>status:needs_information</code></dt><dd>Expected status / action</dd>
+            <dt><code>has:clarify</code></dt><dd>Also <code>has:turns</code>, <code>has:errors</code>, <code>has:warnings</code>, <code>has:notes</code>, <code>has:manual</code>, <code>has:edits</code></dd>
+            <dt><code>-split:train</code></dt><dd>Prefix with <code>-</code> to exclude</dd>
+            <dt><code>"exact phrase"</code></dt><dd>Quoted phrase</dd>
+          </dl>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "_about": "Display names for the dataset picker, keyed by the dataset's path under the data root. The folders themselves are not renamed. Restart the Studio after editing.",
+  "datasets": {
+    "dual-adapter-full-v1/reusable-dataset-v1": {
+      "name": "Full planner + analyst set",
+      "group": "Planner + analyst",
+      "description": "Current complete set (2026-10-09). Planner: 1,000 train + 100 validation rows (understanding, planning, follow-up check). Analyst: 766 train + 57 validation answers."
+    },
+    "dual-adapter-v2/planner-dataset-v1": {
+      "name": "Pilot planner set",
+      "group": "Planner + analyst",
+      "description": "First two-model pilot (2026-10-08), planner only: 142 understanding, 135 planning and 60 follow-up check rows."
+    },
+    "dual-adapter-v2/analyst-dataset-v1": {
+      "name": "Pilot analyst set",
+      "group": "Planner + analyst",
+      "description": "First two-model pilot (2026-10-08), analyst answers only: 114 rows."
+    },
+    "business-routing-data-v1": {
+      "name": "Routing · business-language questions",
+      "group": "Routing only (understanding step)",
+      "description": "Older (2026-10-03). Synthetic questions phrased in business language; not independently reviewed."
+    },
+    "finetune-routing-data-v1": {
+      "name": "Routing · template questions",
+      "group": "Routing only (understanding step)",
+      "description": "Older (2026-10-03). Built from question templates and checked by the automatic oracle."
+    },
+    "codex-reviewed-candidates-v1": {
+      "name": "Routing · blind-reviewed sample",
+      "group": "Routing only (understanding step)",
+      "description": "Older (2026-10-03). 10 template rows that were reviewed blind and re-checked by the oracle. Train split only."
+    },
+    "route-candidates-v1": {
+      "name": "Routing · first template draft",
+      "group": "Routing only (understanding step)",
+      "description": "Older (2026-10-03). The earliest template routing set."
+    }
+  }
+}
