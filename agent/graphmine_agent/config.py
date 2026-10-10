@@ -58,6 +58,7 @@ class Settings:
     max_result_bytes: int = 64 * 1024 * 1024
     analytics_python: Path | None = None
     analytics_max_input_bytes: int = 64 * 1024 * 1024
+    native_runtime_binary: Path | None = None
 
     @property
     def routing_contract_version(self) -> str:
@@ -137,6 +138,14 @@ class Settings:
                     "GRAPHMINE_BINARY", str(root / "library" / "build" / "graphmine")
                 )
             ).resolve(),
+            native_runtime_binary=Path(
+                os.getenv(
+                    "GRAPHMINE_NATIVE_BINARY",
+                    str(root / "library/build/runtime/graphmine-native"),
+                )
+            )
+            .expanduser()
+            .resolve(),
             catalog_path=(root / "graphmine_catalog.json").resolve(),
             manifest_path=(root / "graphmine_manifest.json").resolve(),
             program_instructions_path=(

@@ -8,7 +8,7 @@
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-native-wrapper",
+      "id": "cpu-native-ingestion",
       "status": "passed",
       "tests": 29769,
       "failures": 0,
@@ -31,10 +31,10 @@
         "tests/test_weighted_directed.py",
         "tests/test_workflows.py"
       ],
-      "report": "validation/python_analytics/cpu-native-wrapper.xml",
-      "report_sha256": "e4664cb69f9e41277d3b70f9cfefa17528f0f62f4879c1673bd338ca8a15ad05",
-      "metadata": "validation/python_analytics/cpu-native-wrapper.xml.metadata.json",
-      "metadata_sha256": "c7d68e4cfb7bc4329703f16abe10bc46a6e94f3de90f7a16f1e22b26a030c653",
+      "report": "validation/python_analytics/cpu-native-ingestion.xml",
+      "report_sha256": "62df3bd61049ef612551c7a5f52a9897c63f59cbcf8a17d3345176604e82ba47",
+      "metadata": "validation/python_analytics/cpu-native-ingestion.xml.metadata.json",
+      "metadata_sha256": "272eb085a33e437bb9e96c34926e85859d90508ad43ff7a6853905a0ea1250bf",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -50,7 +50,7 @@
       }
     },
     {
-      "id": "gpu-0-native-wrapper",
+      "id": "gpu-0-native-ingestion",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -61,10 +61,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-native-wrapper.xml",
-      "report_sha256": "c223829af518d9a29e5bf9b9fbf785d9a89150e3d36ef71b3562104c79a07b5f",
-      "metadata": "validation/python_analytics/gpu-0-native-wrapper.xml.metadata.json",
-      "metadata_sha256": "eaa1485f00d8341c436df9450238790ae3e28385bcaea2078ea35df5aa8ba4b1",
+      "report": "validation/python_analytics/gpu-0-native-ingestion.xml",
+      "report_sha256": "f7ef8d1292d5d0c29604f7c3e42db185d6af407ff08dc183ad90abbf64983750",
+      "metadata": "validation/python_analytics/gpu-0-native-ingestion.xml.metadata.json",
+      "metadata_sha256": "29c3e2583e530932022f4d077dd08e4f1577d65d3f6028741636c69db0e3b4de",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -80,7 +80,7 @@
       }
     },
     {
-      "id": "gpu-1-native-wrapper",
+      "id": "gpu-1-native-ingestion",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -91,10 +91,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-native-wrapper.xml",
-      "report_sha256": "47daa42fd6908bb7dfa2f69fb2739efb66b83536d590a4e6002d203d7b14c71f",
-      "metadata": "validation/python_analytics/gpu-1-native-wrapper.xml.metadata.json",
-      "metadata_sha256": "8138c9e88fd9f1e36c4a4e69bea05f8527df8ff811ab4508fe9c5dde91e060b7",
+      "report": "validation/python_analytics/gpu-1-native-ingestion.xml",
+      "report_sha256": "e123eed1adb2dc651890b9aed3cc6ae2d2f31a2f90d8df2552dd90bed243515b",
+      "metadata": "validation/python_analytics/gpu-1-native-ingestion.xml.metadata.json",
+      "metadata_sha256": "3b69150cdf23708c7ad069427e24c21a7c04f4ad3cbfb865da061a78c1ebb332",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",

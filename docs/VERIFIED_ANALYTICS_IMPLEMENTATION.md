@@ -646,3 +646,51 @@ still await native migration. Remaining work includes all other profiles,
 native exact-number support for rational operations, cuDF-backed table
 construction, application evidence gating, and the open review requirements
 above. The overall goal remains incomplete.
+
+### Native cuDF uploads and C++ graph construction
+
+- CSV and edge-list uploads now invoke the libcudf-enabled native executable
+  through a bounded isolated process. The Python CSV parser and Python graph
+  construction routines were removed from this path. The native CLI, thin
+  binding and application share the same reader and construction contract.
+  Existing Cytoscape/browser views continue to render results without NetworkX.
+- cuDF handles file access and GPU parsing, including headers. C++ validates
+  UTF-8, quote structure and record widths before parsing, since cuDF otherwise
+  tolerates and discards excess fields. Original header names must be nonempty
+  and unique. CSV values remain strings until the declared compatibility
+  construction profile maps them to canonical graph records.
+- Construction preserves lexical IDs, labels, types, scalar attributes,
+  parallel records and loops; it checks conflicting vertex attributes,
+  duplicate edge IDs and native numeric bounds. Explicit string-ID mode is
+  available through the native API. Headers, comments, tab/space/comma edge
+  lists and optional weight/timestamp fields are supported. Input hashes,
+  implementation hashes and resolved mapping stay in provenance.
+- A tab-separated regression exposed cuDF's whitespace delimiter behavior;
+  tabs are now normalized only outside quoted fields. Strict reader tests
+  reproduce excess/missing columns, malformed quotes, invalid UTF-8 and lossy
+  integer conversion. **64 native ingestion/construction tests and 19 binding
+  tests passed**, without skips. The staged native build also passed all
+  **19,981 CPU/GPU oracle requests** from the prior checkpoint, and installed
+  C/C++ consumers ran without Python or CUDA dependencies in the CPU core.
+- Application acceptance passed **41 tests in the working tree and 25 in the
+  exact staged app**, including real cuDF uploads, API graph previews, failure
+  cleanup and timeout/result-size bounds. The working tree additionally retains
+  16 pre-existing streaming tests. Source, configuration and binary snapshots
+  stayed unchanged during the passing runs.
+- Clean staged startup exposed an existing inconsistency: the committed
+  densest-subgraph instructions lacked `clique_order` and `clique_count`, which
+  the committed manifest already required. Only these output names were
+  synchronized; the other uncommitted catalog repairs were preserved.
+- Reference evidence was refreshed for the wrapper update: **29,769 CPU tests
+  and 1,546 tests on each GPU passed**, with matching source, contract and
+  dependency hashes. This remains reference evidence, separate from native
+  algorithm coverage. Latest reports are under `validation/native_ingestion`
+  and `validation/python_analytics/*-native-ingestion*`; the native audit records
+  build configuration, resolved dependency hashes and the staged app sources.
+
+This completes the cuDF upload path for the current bounded delimited-file
+profile. Native formal-problem integration remains **2 of 70** in the shared
+runtime. The public reference algorithm API and application algorithm worker,
+other native backends, exact-number support, multi-table/task-aware projections
+and all other open review acceptance requirements still need migration or
+completion. The overall goal remains active.

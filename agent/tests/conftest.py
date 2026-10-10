@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import stat
 import textwrap
 from dataclasses import replace
@@ -71,7 +72,7 @@ def settings(tmp_path: Path, fake_binary: Path) -> Settings:
         data_root=tmp_path / "data",
         graphmine_binary=fake_binary,
         api_token="test-secret",
-        graph_gpu_uuid="GPU-test-graph",
+        graph_gpu_uuid=os.getenv("GRAPHMINE_TEST_GRAPH_GPU_UUID", "GPU-test-graph"),
         llm_gpu_uuid="GPU-test-llm",
         llm_enabled=False,
         max_upload_bytes=1_000_000,

@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import csv
 import hashlib
-import io
 import json
 import math
 import re
 import shutil
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +15,7 @@ from .config import Settings
 from .database import Database
 from .graph_context import semantic_context
 from .models import FileRole, GraphMetadata, StoredFile, new_id
+from .native_ingestion import IngestionError, read_delimited_graph
 
 
 class UploadError(ValueError):
@@ -26,17 +26,6 @@ def _safe_name(name: str) -> str:
     base = Path(name).name
     safe = re.sub(r"[^A-Za-z0-9._-]+", "-", base).strip(".-")
     return safe[:180] or "upload"
-
-
-def _external_id(value: str) -> str | int:
-    value = value.strip()
-    if not value:
-        raise UploadError("vertex IDs must not be empty")
-    try:
-        parsed = int(value)
-    except ValueError:
-        return value
-    return parsed if str(parsed) == value or value == f"+{parsed}" else value
 
 
 class GraphStore:
@@ -166,212 +155,19 @@ class GraphStore:
             if not isinstance(value, dict):
                 raise UploadError("canonical graph JSON must be an object")
             return value
-        if filename.lower().endswith(".csv"):
-            try:
-                text = content.decode("utf-8-sig")
-            except UnicodeDecodeError as error:
-                raise UploadError("CSV input must be UTF-8") from error
-            header = next(csv.reader(io.StringIO(text)), [])
-            names = {name.strip().lower(): name for name in header}
-            source = source_column or next(
-                (names[key] for key in ("source", "src", "from") if key in names), None
-            )
-            target = target_column or next(
-                (names[key] for key in ("target", "dst", "to") if key in names), None
-            )
-            if source or target:
-                return self._attribute_csv(
-                    filename, text, directed=directed, source=source, target=target
-                )
-            raise UploadError(
-                "Choose the CSV From and To columns, or use source,target headers. For a headerless edge list, use a .txt file."
-            )
-        return self._edge_list_graph(filename, content, directed=directed)
-
-    @staticmethod
-    def _attribute_csv(
-        filename: str,
-        text: str,
-        *,
-        directed: bool,
-        source: str | None,
-        target: str | None,
-    ) -> dict[str, Any]:
-        reader = csv.DictReader(io.StringIO(text))
-        columns = reader.fieldnames or []
-        if (
-            not source
-            or not target
-            or source == target
-            or source not in columns
-            or target not in columns
-        ):
-            raise UploadError(
-                "Choose two different CSV columns identifying the connected records (From column and To column)."
-            )
-        if len(set(columns)) != len(columns):
-            raise UploadError("CSV column names must be unique.")
-        vertices = {}
-        edges = []
-
-        def value(raw):
-            if raw == "":
-                return None
-            if raw.lower() in {"true", "false"}:
-                return raw.lower() == "true"
-            try:
-                parsed = json.loads(raw)
-            except (ValueError, TypeError):
-                return raw
-            if isinstance(parsed, float) and not math.isfinite(parsed):
-                return raw
-            return (
-                parsed
-                if isinstance(parsed, (str, int, float, bool)) or parsed is None
-                else raw
-            )
-
-        for index, row in enumerate(reader, 1):
-            if None in row or any(item is None for item in row.values()):
-                raise UploadError(
-                    f"CSV record {index} has a different number of values than its header."
-                )
-            row = {name: item.strip() for name, item in row.items()}
-            endpoints = [_external_id(row[source]), _external_id(row[target])]
-            edge = {
-                "id": row.get("id") or index,
-                "source": endpoints[0],
-                "target": endpoints[1],
-            }
-            extras = {}
-            for side, identifier in zip(("source", "target"), endpoints, strict=True):
-                vertex = vertices.setdefault(json.dumps(identifier), {"id": identifier})
-                for field in ("label", "type"):
-                    candidate = row.get(f"{side}_{field}")
-                    if candidate:
-                        if field in vertex and vertex[field] != candidate:
-                            raise UploadError(
-                                f"Conflicting {field} values for record {identifier!r}."
-                            )
-                        vertex[field] = candidate
-                for column, raw in row.items():
-                    if column.startswith(f"{side}.") and raw.strip():
-                        field = column[len(side) + 1 :]
-                        attrs = vertex.setdefault("attributes", {})
-                        parsed = value(raw)
-                        if field in attrs and attrs[field] != parsed:
-                            raise UploadError(
-                                f"Conflicting {field} attributes for record {identifier!r}."
-                            )
-                        attrs[field] = parsed
-            for column, raw in row.items():
-                if column in {
-                    source,
-                    target,
-                    "id",
-                    "source_label",
-                    "target_label",
-                    "source_type",
-                    "target_type",
-                } or column.startswith(("source.", "target.")):
-                    continue
-                if column in {"weight", "timestamp"} and raw:
-                    try:
-                        edge[column] = int(raw) if column == "timestamp" else float(raw)
-                    except ValueError as error:
-                        raise UploadError(
-                            f"CSV {column} must be numeric; preserve dates in a separate attribute column if needed."
-                        ) from error
-                elif column == "type" and raw:
-                    edge[column] = raw
-                else:
-                    extras[column] = value(raw)
-            if extras:
-                edge["attributes"] = extras
-            edges.append(edge)
-        return {
-            "graph": {
-                "id": Path(filename).stem,
-                "directed": directed,
-                "allows_self_loops": any(
-                    edge["source"] == edge["target"] for edge in edges
-                ),
-                "allows_parallel_edges": GraphStore._has_parallel_edges(
-                    edges, directed
-                ),
-            },
-            "vertices": list(vertices.values()),
-            "edges": edges,
-        }
-
-    @staticmethod
-    def _edge_list_graph(
-        filename: str, content: bytes, *, directed: bool
-    ) -> dict[str, Any]:
         try:
-            text = content.decode("utf-8-sig")
-        except UnicodeDecodeError as error:
-            raise UploadError("edge-list input must be UTF-8") from error
-        rows: list[list[str]] = []
-        for line_number, raw in enumerate(text.splitlines(), start=1):
-            line = raw.strip()
-            if not line or line.startswith(("#", "%")):
-                continue
-            try:
-                row = next(csv.reader([line])) if "," in line else line.split()
-            except csv.Error as error:
-                raise UploadError(
-                    f"invalid edge-list row {line_number}: {error}"
-                ) from error
-            row = [item.strip() for item in row if item.strip()]
-            if len(row) < 2 or len(row) > 4:
-                raise UploadError(
-                    f"edge-list row {line_number} needs source target [weight] [timestamp]"
+            with tempfile.TemporaryDirectory(prefix="graphmine-upload-") as temporary:
+                path = Path(temporary) / _safe_name(filename)
+                path.write_bytes(content)
+                return read_delimited_graph(
+                    self.settings,
+                    path,
+                    directed=directed,
+                    source_column=source_column,
+                    target_column=target_column,
                 )
-            if not rows and row[0].lower() in {"source", "src", "from"}:
-                continue
-            rows.append(row)
-        if not rows:
-            raise UploadError("edge-list input contains no edges")
-
-        vertex_ids: dict[str | int, None] = {}
-        edges: list[dict[str, Any]] = []
-        for index, row in enumerate(rows):
-            source = _external_id(row[0])
-            target = _external_id(row[1])
-            vertex_ids[source] = None
-            vertex_ids[target] = None
-            edge: dict[str, Any] = {"id": index, "source": source, "target": target}
-            if len(row) >= 3:
-                try:
-                    edge["weight"] = float(row[2])
-                except ValueError as error:
-                    raise UploadError(
-                        f"edge row {index + 1} has invalid weight"
-                    ) from error
-            if len(row) == 4:
-                try:
-                    edge["timestamp"] = int(row[3])
-                except ValueError as error:
-                    raise UploadError(
-                        f"edge row {index + 1} has non-integer timestamp"
-                    ) from error
-            edges.append(edge)
-        graph_name = Path(filename).stem or "uploaded-graph"
-        return {
-            "graph": {
-                "id": graph_name,
-                "directed": directed,
-                "allows_self_loops": any(
-                    edge["source"] == edge["target"] for edge in edges
-                ),
-                "allows_parallel_edges": GraphStore._has_parallel_edges(
-                    edges, directed
-                ),
-            },
-            "vertices": [{"id": vertex_id} for vertex_id in vertex_ids],
-            "edges": edges,
-        }
+        except IngestionError as error:
+            raise UploadError(str(error)) from error
 
     @staticmethod
     def _has_parallel_edges(edges: list[dict[str, Any]], directed: bool) -> bool:

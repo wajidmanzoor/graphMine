@@ -1,0 +1,22 @@
+{
+  "cpp_consumer": true,
+  "c_consumer": true,
+  "python_on_path": false,
+  "cuda_visible_devices": "",
+  "cpu_ldd": "\tlinux-vdso.so.1 (0x000070e9e2c87000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x000070e9e2600000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000070e9e2200000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000070e9e2b97000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000070e9e1e00000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000070e9e2517000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000070e9e2c89000)\n",
+  "scope": "Installed standalone C/C++ catalog consumers; algorithm correctness is recorded separately",
+  "source_files": {
+    "library/examples/native_runtime/CMakeLists.txt": "7933636325f48f7f2ae28a32cced0956815b64d2f813d67a5b2abe841f714939",
+    "library/examples/native_runtime/main.c": "997e0259f4225a9427df9eb98964dc3eb38b6f8ebfacc6ea90a12a9fc3ae2814",
+    "library/examples/native_runtime/main.cpp": "4746a847a804fae9ed3726de74faeb7c09d0451d6d05e5c1be806615dec654ac"
+  },
+  "binary_files": {
+    "/tmp/graphmine-native-consumer/build/cpp_consumer": "3a22d15e07f31341fa9ba08d98f2eaf1876b63b8cde45c35abe748ac9d7ef3de",
+    "/tmp/graphmine-native-consumer/build/c_consumer": "c032fc648af99388298acfc0ade0b485b8a585a774f25533c8ce6a2413d06b79"
+  },
+  "installed_library": {
+    "path": "/tmp/graphmine-native-install/lib/libgraphmine_runtime.so",
+    "sha256": "bcd57be854cde98352c677a5ebded53f03e31625ef89fe2dfe1087aeb36e2980"
+  },
+  "implementation_sha256": "74285405312e2b6e888c5c43653e6b6ec0999ef61ace712ee592fde1575fe22b"
+}

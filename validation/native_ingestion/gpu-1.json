@@ -1,0 +1,16 @@
+[
+  {
+    "suite": "bfs",
+    "backend": "gpu",
+    "gpu_device": 1,
+    "passed_requests": 4608,
+    "failed": 0
+  },
+  {
+    "suite": "triangles",
+    "backend": "wetric",
+    "gpu_device": 1,
+    "passed_requests": 2048,
+    "failed": 0
+  }
+]

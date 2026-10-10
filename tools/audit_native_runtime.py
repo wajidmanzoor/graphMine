@@ -62,6 +62,23 @@ def build_evidence(directory, source_root, dependency_hashes):
             "graphmine_runtime_test",
         )
     }
+    cache = directory / "CMakeCache.txt"
+    if not cache.exists():
+        cache = directory.parent / "CMakeCache.txt"
+    configuration = [
+        line
+        for line in cache.read_text().splitlines()
+        if line.startswith(
+            (
+                "GRAPHMINE_",
+                "CMAKE_BUILD_TYPE:",
+                "CMAKE_CXX_COMPILER:",
+                "CMAKE_CUDA_COMPILER:",
+                "CMAKE_CXX_FLAGS:",
+                "CMAKE_CUDA_FLAGS:",
+            )
+        )
+    ]
     return {
         "build_directory": str(directory),
         "catalog": catalog,
@@ -69,15 +86,87 @@ def build_evidence(directory, source_root, dependency_hashes):
         "binaries": binaries,
         "native_dependencies": dependencies,
         "ldd": linkage,
+        "build_configuration": configuration,
+        "root_build_script_sha256": sha(source_root / "library/CMakeLists.txt")
+        if cache.parent != directory
+        else None,
     }
 
 
-def audit(cpu_build, gpu_build, gpu_source_root, report_root):
+def xml_evidence(path, source_root, expected_count=None):
+    suite = ET.parse(path).getroot().find("testsuite")
+    count = int(suite.attrib["tests"])
+    if expected_count is not None:
+        assert count == expected_count
+    assert count > 0
+    assert all(int(suite.attrib[key]) == 0 for key in ("errors", "failures", "skipped"))
+    meta = path.with_name(path.name + ".metadata.json")
+    data = json.loads(meta.read_text())
+    assert data["sources_unchanged_during_run"]
+    assert data["collected_test_count"] == count
+    for name, expected_hash in data["source_files"].items():
+        source = Path(name)
+        if not source.is_absolute():
+            source = source_root / source
+        assert sha(source) == expected_hash, name
+    for key in ("native_binary", "native_library"):
+        if key in data:
+            assert sha(data[key]) == data[key + "_sha256"]
+    return {
+        "path": str(path.relative_to(ROOT)),
+        "sha256": sha(path),
+        "metadata_sha256": sha(meta),
+        "passed": count,
+    }
+
+
+def audit(
+    cpu_build,
+    gpu_build,
+    gpu_source_root,
+    report_root,
+    staged_app_root=None,
+    working_gpu_build=None,
+):
+    report_root = report_root.resolve()
     dependencies = {}
     builds = {
         "cpu": build_evidence(cpu_build, ROOT, dependencies),
         "gpu": build_evidence(gpu_build, gpu_source_root, dependencies),
     }
+    if working_gpu_build is not None:
+        builds["working_ingestion_gpu"] = build_evidence(
+            working_gpu_build, ROOT, dependencies
+        )
+    hardware = []
+    for ordinal in (0, 1):
+        request = {
+            "command": "run",
+            "operation": "breadth-first-search",
+            "graph": {
+                "graph": {
+                    "id": "hardware-inventory",
+                    "directed": False,
+                    "allows_self_loops": False,
+                    "allows_parallel_edges": False,
+                },
+                "vertices": [{"id": 0}],
+                "edges": [],
+            },
+            "parameters": {"sources": [0]},
+            "device": "gpu",
+            "gpu_device": ordinal,
+            "backend": "libcugraph",
+        }
+        response = json.loads(
+            subprocess.check_output(
+                [gpu_build / "graphmine-native", "request"],
+                input=json.dumps(request),
+                text=True,
+            )
+        )
+        assert response["backend"]["hardware"]["device_ordinal"] == ordinal
+        hardware.append(response["backend"])
     assert not any(
         name in builds["cpu"]["ldd"].lower()
         for name in ("python", "cuda", "cugraph", "cudf")
@@ -110,21 +199,23 @@ def audit(cpu_build, gpu_build, gpu_source_root, report_root):
             "sha256": sha(path),
             "results": rows,
         }
-    xml = report_root / "binding-ingestion.xml"
-    suite = ET.parse(xml).getroot().find("testsuite")
-    assert int(suite.attrib["tests"]) == 19
-    assert all(int(suite.attrib[key]) == 0 for key in ("errors", "failures", "skipped"))
-    meta = xml.with_name(xml.name + ".metadata.json")
-    data = json.loads(meta.read_text())
-    assert data["sources_unchanged_during_run"]
-    for path, expected_hash in data["source_files"].items():
-        assert sha(path) == expected_hash, path
-    reports["binding_ingestion"] = {
-        "path": str(xml.relative_to(ROOT)),
-        "sha256": sha(xml),
-        "metadata_sha256": sha(meta),
-        "passed": 19,
-    }
+    reports["binding_ingestion"] = xml_evidence(
+        report_root / "binding-ingestion.xml", ROOT, 19
+    )
+    native_uploads = staged_app_root is not None
+    if native_uploads:
+        reports["cudf_construction"] = xml_evidence(
+            report_root / "cudf-construction.xml", ROOT, 64
+        )
+        for name, root in (("app-working", ROOT), ("app-staged", staged_app_root)):
+            reports[name] = xml_evidence(report_root / f"{name}.xml", root)
+            suite = ET.parse(report_root / f"{name}.xml").getroot().find("testsuite")
+            names = {case.attrib["name"] for case in suite.findall("testcase")}
+            assert {
+                "test_upload_uses_cudf_and_preserves_original_bytes",
+                "test_upload_endpoint_returns_graph_constructed_by_cpp",
+                "test_unavailable_cudf_does_not_use_a_python_reader",
+            } <= names
     installed_path = report_root / "installed-consumers.json"
     installed = json.loads(installed_path.read_text())
     assert installed["cpp_consumer"] and installed["c_consumer"]
@@ -175,10 +266,13 @@ def audit(cpu_build, gpu_build, gpu_source_root, report_root):
         ],
         "standalone_core_requires_python": False,
         "application_uses_native_runtime": False,
+        "application_tabular_uploads_use_native_cudf": native_uploads,
+        "application_algorithm_worker_uses_native_runtime": False,
         "remaining_native_profile_migration_required": True,
         "builds": builds,
         "reports": reports,
         "native_dependency_sha256": dependencies,
+        "native_gpu_hardware": hardware,
         "wrapper_sha256": sha(ROOT / "python/graphmine/graphmine/native/__init__.py"),
         "family_catalog_sha256": sha(ROOT / "library/manifests/problem_families.json"),
     }
@@ -190,12 +284,19 @@ def main():
     parser.add_argument("--gpu-build", type=Path, required=True)
     parser.add_argument("--gpu-source-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--report-root", type=Path, default=ROOT / "validation/native_runtime"
+    )
+    parser.add_argument("--staged-app-root", type=Path)
+    parser.add_argument("--working-gpu-build", type=Path)
     args = parser.parse_args()
     result = audit(
         args.cpu_build,
         args.gpu_build,
         args.gpu_source_root,
-        ROOT / "validation/native_runtime",
+        args.report_root,
+        args.staged_app_root,
+        args.working_gpu_build,
     )
     args.output.write_text(json.dumps(result, indent=2) + "\n")
     print(
@@ -207,6 +308,7 @@ def main():
                     "formal_problem_count",
                     "standalone_core_requires_python",
                     "application_uses_native_runtime",
+                    "application_tabular_uploads_use_native_cudf",
                 )
             }
         )

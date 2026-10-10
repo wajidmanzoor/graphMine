@@ -70,17 +70,43 @@ class NativeLibrary:
     def catalog(self):
         return deepcopy(self._catalog)
 
-    def read_csv(self, path, *, columns, gpu_device=0, max_rows=100000):
+    def read_csv(self, path, *, columns=None, gpu_device=0, max_rows=100000):
         """Use libcudf; retain text until the caller supplies explicit mapping."""
-        return self.request(
-            {
-                "command": "read_csv",
-                "path": os.fspath(path),
-                "columns": columns,
-                "gpu_device": gpu_device,
-                "max_rows": max_rows,
-            }
-        )
+        request = {
+            "command": "read_csv",
+            "path": os.fspath(path),
+            "gpu_device": gpu_device,
+            "max_rows": max_rows,
+        }
+        if columns is not None:
+            request["columns"] = columns
+        return self.request(request)
+
+    def read_graph(
+        self,
+        path,
+        *,
+        source_column=None,
+        target_column=None,
+        directed=False,
+        id_type="canonical",
+        gpu_device=0,
+        max_rows=100000,
+    ):
+        """Read tabular files through libcudf and construct the graph in C++."""
+        request = {
+            "command": "read_graph",
+            "path": os.fspath(path),
+            "directed": directed,
+            "id_type": id_type,
+            "gpu_device": gpu_device,
+            "max_rows": max_rows,
+        }
+        if source_column is not None:
+            request["source_column"] = source_column
+        if target_column is not None:
+            request["target_column"] = target_column
+        return self.request(request)
 
     def list_algorithms(self, *, family=None):
         return [

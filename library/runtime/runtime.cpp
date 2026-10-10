@@ -128,6 +128,7 @@ std::string request(std::string_view raw) {
     }
     if (command == "run") return json::serialize(execute(value));
     if (command == "read_csv") return json::serialize(read_csv(value));
+    if (command == "read_graph") return json::serialize(read_graph_file(value));
     throw Failure("invalid_input", "Unknown native command");
   } catch (const Failure& failure) {
     return json::serialize(json::object{{"error", {{"code", failure.code}, {"message", failure.what()}}}});

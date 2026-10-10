@@ -696,6 +696,8 @@
         "vertices",
         "density",
         "induced_edge_value",
+        "clique_order",
+        "clique_count",
         "optimal"
       ],
       "validated_profile": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",

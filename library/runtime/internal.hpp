@@ -74,4 +74,5 @@ json::object catalog();
 json::object execute(const json::object& request);
 bool cudf_compiled() noexcept;
 json::object read_csv(const json::object& request);
+json::object read_graph_file(const json::object& request);
 }  // namespace graphmine::runtime

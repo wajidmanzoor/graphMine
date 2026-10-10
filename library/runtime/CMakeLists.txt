@@ -81,7 +81,7 @@ configure_file(catalog_data.hpp.in generated/catalog_data.hpp @ONLY)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/native-source-hashes.txt" "${GRAPHMINE_NATIVE_SOURCE_DIGEST}")
 
 add_library(graphmine_runtime SHARED runtime.cpp registry.cpp json_graph.cpp c_api.cpp
-            families/traversal.cpp families/patterns.cpp ../src/core/json.cpp)
+            families/traversal.cpp families/patterns.cpp io/graph_projection.cpp ../src/core/json.cpp)
 add_library(GraphMine::runtime ALIAS graphmine_runtime)
 target_compile_features(graphmine_runtime PUBLIC cxx_std_17)
 target_include_directories(graphmine_runtime PUBLIC

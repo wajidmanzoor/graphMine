@@ -98,12 +98,13 @@ in C++, including for Python calls.
 
 ## cuDF ingestion and visualization
 
-The native `read_csv` request and binding method call libcudf. Declare every
-column name; the reader rejects missing or unexpected columns and returns text
-for every field. Leading zeroes, large integer strings, quoted delimiters,
-multiline strings, Unicode and literal `NA` survive parsing. Numeric IDs and
-weights require an explicit subsequent schema conversion. The reader preserves
-cuDF's unique header names and checks them against the declared set.
+The native `read_csv` request and binding method use libcudf for file access
+and GPU value parsing. The reader preserves original nonempty, unique header
+names and returns text for every field. Supplying `columns` additionally checks
+the complete column set. Leading zeroes, large integer strings, quoted
+delimiters, multiline strings, Unicode and literal `NA` survive parsing.
+Native structural validation rejects ragged rows, malformed quotes, invalid
+UTF-8 and NUL bytes before cuDF can discard or reinterpret fields.
 
 ```python
 table = library.read_csv(
@@ -114,14 +115,45 @@ table = library.read_csv(
 The standalone equivalent is `graphmine-native read-csv transactions.csv
 --columns column-names.json`, where the names file contains a JSON array.
 The current ingestion profile limits files to 64 MiB and returned tables to
-100,000 rows by default. Exceeding the row bound fails; it does not return an
+100,000 rows by default, with at most 4,096 columns and 1,000,000 cells including
+headers. `max_rows` may be raised to 1,000,000 within the cell bound. Exceeding
+these limits fails; it does not return an
 apparently complete truncated table. cuDF ingestion requires a GPU and a
 libcudf-enabled build. Once a graph has been constructed, the native CPU
 algorithms can run without a GPU. Canonical graph JSON remains a native JSON
 input format rather than being misinterpreted as a tabular file.
 
-The web upload endpoint has not yet been switched to this reader. Multi-table
-joins, graph projection and wider format support remain migration work.
+The web upload endpoint now uses the same native reader and C++ graph
+constructor. Set `GRAPHMINE_NATIVE_BINARY` to a libcudf-enabled
+`graphmine-native`; ingestion runs in an isolated process on
+`GRAPHMINE_GRAPH_GPU_UUID` with a deadline and an output byte limit. A missing
+native reader or unavailable GPU produces an explicit upload error.
+
+```python
+result = library.read_graph(
+    "transactions.csv", source_column="sender", target_column="recipient",
+    directed=True, id_type="canonical", gpu_device=0,
+)
+canonical_graph = result["graph"]
+```
+
+`graphmine-native read-graph transactions.csv --source-column sender
+--target-column recipient --directed true` uses this same entry point. The
+compatibility construction profile trims fields, maps canonical signed 64-bit
+integer endpoint text to integers, preserves lexical IDs such as `001`, and
+retains labels, types, scalar JSON attributes, weights, timestamps and parallel
+records. Use `id_type="string"` to keep all endpoint IDs as strings. Conflicting
+vertex attributes, duplicate edge IDs, nonfinite weights and precision loss
+are rejected. Source hashes, the native implementation hash and resolved
+mapping are retained in ingestion provenance.
+
+Headerless edge lists support two to four positional fields:
+`source target [weight] [timestamp]`. A file uses either commas or whitespace;
+tabs outside quoted fields are normalized before cuDF parsing. Optional
+source/target headers and `#`/`%` comment lines are supported. CSV records use
+LF or CRLF; CSV quoted values can span lines. Edge-list quoted fields stay on
+one line. Multi-table joins, explicit per-attribute schemas, task-specific
+projections and wider format support remain migration work.
 Rendering stays in Cytoscape and predefined browser charts/tables; NetworkX
 does not render this workspace.
 
@@ -143,8 +175,8 @@ code. Budgets bound CPU search, output and BFS working-state size; timeouts on
 uninterruptible native GPU calls require the isolated worker boundary.
 
 Before completing the user goal, migrate the remaining algorithms and native
-backends, extend exact numeric types, connect the application's validated worker
-and uploads to this core, and replace the reference evidence inventory with a
+backends, extend exact numeric types, connect the application's validated
+algorithm worker to this core, and replace the reference evidence inventory with a
 source/binary/dependency-aware native gate. Complete the remaining review
 requirements in `VERIFIED_ANALYTICS_IMPLEMENTATION.md`, including the seven
 previously missing formal problems, table projections, routing/evaluation,
@@ -152,13 +184,21 @@ recovery, MCP, reviewed examples, scheduling and representation caching.
 
 ## Validation at this checkpoint
 
-`validation/native_runtime` records 19,981 successful native requests: 13
+`validation/native_ingestion` records 19,981 successful native requests: 13
 contract cases, 4,608 BFS requests on each of CPU/GPU 0/GPU 1, and 2,048 triangle
 requests on each of native CPU/ToT GPU 0/WeTriC GPU 1. The C++ oracles use
 independent shortest-path matrices and exhaustive vertex triples. A further
 19 tests cover the Python/C boundary, catalog parity, concurrent calls,
 libcudf text ingestion on both GPUs, CLI JSON output and CUDA device restoration.
 Installed C and C++ consumers were also checked without Python on PATH.
+
+The ingestion extension adds 64 native cuDF/construction tests on both GPUs.
+Application acceptance passed 41 checks against the preserved working tree
+and 25 against the exact staged application; the former includes additional
+pre-existing streaming tests. These check actual native uploads, API graph
+previews, original-byte preservation, failure cleanup and bounded process
+transport. Test reports include source, configuration and binary snapshots.
+The earlier foundation reports remain in `validation/native_runtime`.
 
 `tools/audit_native_runtime.py` verifies these reports, the source inventory
 embedded in each build, current source contents and the binding test snapshot.
