@@ -1,0 +1,15 @@
+{
+  "scope": "Retained instrumentation timeout, not a successful sanitizer acceptance result",
+  "case": "20,000-vertex directed unit-capacity path through ECL-MaxFlow",
+  "observed_error": "resource_limit: GPU worker timed out under memcheck at default 60-second deadline",
+  "normal_execution": "12 boundary requests, including this graph, passed without instrumentation",
+  "normal_report": {
+    "suite": "boundaries",
+    "backend": "ecl-maxflow",
+    "gpu_device": 0,
+    "passed_requests": 12,
+    "failed": 0,
+    "implementation_sha256": "6ecb0d709ee1a37dfe2ebdaa379a1d614c79c0acb3f6310d3b32fdbfdc8f3c62"
+  },
+  "replacement_acceptance": "Direct worker memcheck/initcheck on independently certified residual networks and integer boundary capacities; see optimization-sanitizers"
+}

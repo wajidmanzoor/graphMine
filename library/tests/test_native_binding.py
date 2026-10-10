@@ -527,3 +527,157 @@ def test_native_betweenness_path_overflow_selects_cpu_before_execution(
     result = lib.run("betweenness-centrality", value, gpu_device=gpu_device)
     assert result["backend"]["id"] == "cpp"
     assert result["quality"] == "exact"
+
+
+def optimization_graph(operation):
+    value = graph()
+    if operation == "bipartite-matching":
+        value["graph"]["directed"] = False
+        value["vertices"] = [
+            {"id": identifier, "attributes": {"side": "left" if i < 2 else "right"}}
+            for i, identifier in enumerate([0, "0", 9007199254740993, "right"])
+        ]
+        value["edges"] = [
+            {
+                "id": str(i),
+                "source": [0, "0"][i // 2],
+                "target": [9007199254740993, "right"][i % 2],
+                "weight": weight,
+            }
+            for i, weight in enumerate([4, 1, 2, 5])
+        ]
+        return (
+            value,
+            {
+                "objective": "minimum_cost",
+                "weight_mode": "edge_weight",
+                "perfect_matching_required": True,
+            },
+            "matching",
+            "objective_value",
+            3,
+        )
+    for edge in value["edges"]:
+        edge["weight"] = 2
+    if operation == "weighted-matching":
+        value["graph"]["directed"] = False
+        return value, {}, "matching", "objective_value", 2
+    return value, {"source": 0, "sink": 9007199254740993}, "flow", "max_flow_value", 2
+
+
+@pytest.mark.parametrize(
+    "operation,backend,gpu_device",
+    [
+        ("weighted-matching", "cpp", 0),
+        ("bipartite-matching", "cpp", 0),
+        ("max-flow-min-cut", "cpp", 0),
+        ("bipartite-matching", "hungarian-cuda", 0),
+        ("bipartite-matching", "hungarian-cuda", 1),
+        ("max-flow-min-cut", "ecl-maxflow", 0),
+        ("max-flow-min-cut", "ecl-maxflow", 1),
+    ],
+)
+def test_native_optimization_family_wrapper_matches_cli(operation, backend, gpu_device):
+    build = CPU if backend == "cpp" else ORIGINAL
+    lib = library(build)
+    value, parameters, family, key, expected = optimization_graph(operation)
+    selected = getattr(lib.family(family), operation.replace("-", "_"))
+    result = selected(
+        value,
+        parameters=parameters,
+        device="cpu" if backend == "cpp" else "gpu",
+        backend=backend,
+        gpu_device=gpu_device,
+    )
+    assert result["result"][key] == expected
+    assert result["quality"] == "exact"
+    request = {
+        "command": "run",
+        "operation": operation,
+        "graph": value,
+        "parameters": parameters,
+        "backend": backend,
+        "gpu_device": gpu_device,
+        "device": "cpu" if backend == "cpp" else "gpu",
+    }
+    direct = json.loads(
+        subprocess.check_output(
+            [build / "graphmine-native", "request"],
+            input=json.dumps(request),
+            text=True,
+        )
+    )
+    assert without_timing(result) == without_timing(direct)
+
+
+def test_native_flow_vertex_capacities_preserve_typed_identity():
+    value, parameters, *_ = optimization_graph("max-flow-min-cut")
+    parameters["vertex_capacities"] = [
+        {"vertex": 0, "capacity": 1},
+        {"vertex": "0", "capacity": 0.5},
+    ]
+    result = (
+        library(CPU)
+        .family("flow")
+        .max_flow_min_cut(value, parameters=parameters, device="cpu")
+    )
+    assert result["result"]["min_cut_vertices"] == ["0"]
+    assert result["result"]["max_flow_value"] == 0.5
+    assert result["parameters"]["vertex_capacities"] == parameters["vertex_capacities"]
+
+
+@pytest.mark.parametrize(
+    "operation,backend,script,code",
+    [
+        (
+            "max-flow-min-cut",
+            "ecl-maxflow",
+            "echo GRAPHMINE_FLOW 1 0",
+            "correctness_mismatch",
+        ),
+        (
+            "bipartite-matching",
+            "hungarian-cuda",
+            "echo GRAPHMINE_ASSIGNMENT 0 1",
+            "correctness_mismatch",
+        ),
+        ("max-flow-min-cut", "ecl-maxflow", "exit 7", "backend_failure"),
+        ("bipartite-matching", "hungarian-cuda", "exit 7", "backend_failure"),
+    ],
+)
+def test_native_cuda_worker_failure_has_no_silent_fallback(
+    tmp_path, monkeypatch, operation, backend, script, code
+):
+    worker = tmp_path / f"graphmine-worker-{backend}"
+    worker.write_text("#!/bin/sh\n" + script + "\n")
+    worker.chmod(0o755)
+    monkeypatch.setenv("GRAPHMINE_WORKER_DIR", str(tmp_path))
+    value, parameters, *_ = optimization_graph(operation)
+    with pytest.raises(binding.NativeError) as error:
+        library(ORIGINAL).run(operation, value, parameters=parameters, device="auto")
+    assert error.value.code == code
+
+
+def test_native_cuda_worker_deadline_kills_and_reaps_process(tmp_path, monkeypatch):
+    import time
+
+    worker = tmp_path / "graphmine-worker-ecl-maxflow"
+    pid_file = tmp_path / "pid"
+    worker.write_text(f"#!/bin/sh\necho $$ > '{pid_file}'\nexec /bin/sleep 30\n")
+    worker.chmod(0o755)
+    monkeypatch.setenv("GRAPHMINE_WORKER_DIR", str(tmp_path))
+    value, parameters, *_ = optimization_graph("max-flow-min-cut")
+    start = time.monotonic()
+    with pytest.raises(binding.NativeError) as error:
+        library(ORIGINAL).run(
+            "max-flow-min-cut",
+            value,
+            parameters=parameters,
+            device="gpu",
+            backend="ecl-maxflow",
+            budget={"timeout_seconds": 0.2},
+        )
+    assert error.value.code == "resource_limit"
+    assert time.monotonic() - start < 3
+    with pytest.raises(ProcessLookupError):
+        os.kill(int(pid_file.read_text()), 0)

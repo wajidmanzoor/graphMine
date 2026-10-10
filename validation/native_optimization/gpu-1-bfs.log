@@ -1,0 +1,1 @@
+{"suite":"bfs","backend":"gpu","gpu_device":1,"passed_requests":4608,"failed":0}

@@ -99,6 +99,19 @@ std::vector<Operation> definitions() {
          {{"scoring_measure", choice("jaccard", {"jaccard", "common_neighbors", "adamic_adar", "resource_allocation", "preferential_attachment", "sorensen", "overlap", "cosine"})},
           {"candidate_pairs", parameter("array", nullptr, false, true)}, {"exclude_existing_edges", parameter("boolean", true)}, {"top_k", positive(nullptr, true)}},
          {{"pairs", port("table")}}, gpu), link_prediction},
+    {card("max-flow-min-cut", "max_flow_min_cut", "Find capacity and bottlenecks between two places",
+         "Exact rational flow and cut certificate. Sum parallel capacities, discard loops and treat undirected edges as two directed arcs. Optional vertex capacities use typed {vertex,capacity} records and include explicitly limited terminals. Mixed cuts return original edge IDs plus cut vertices.",
+         {{"source", parameter("vertex_id", nullptr, true)}, {"sink", parameter("vertex_id", nullptr, true)},
+          {"capacity_mode", choice("edge_weight", {"edge_weight", "unit_capacity"})}, {"return_cut_side", parameter("boolean", true)},
+          {"vertex_capacities", parameter("array", nullptr, false, true)}, {"solution_quality", choice("exact", {"exact", "approximate"})}},
+         {{"value", port("scalar")}, {"vertices", port("vertex_set")}}, original_optimization_backends("max-flow-min-cut")), max_flow},
+    {card("weighted-matching", "general_graph_weighted_matching", "Find the highest-value non-conflicting pairs",
+         "Exact maximum-weight matching on an undirected graph, with no cardinality constraint. Require nonnegative weights; discard loops and keep the largest parallel weight. Preserve selected original edge IDs and return exact rational totals over admitted binary64 weights. Zero-weight edges may be omitted.",
+         {{"solution_quality", choice("exact", {"exact", "approximate"})}}, {{"edges", port("edge_set")}}, {}), weighted_matching},
+    {card("bipartite-matching", "bipartite_matching_assignment", "Match items on two sides by count, value or cost",
+         "Exact cardinality, weight or cost matching with attributes.side=left|right on every vertex. Reject same-side edges and loops; keep the best parallel edge. Weighted objectives require explicit weights. Without required smaller-side coverage, empty matching may be optimal. Infeasible coverage has no witness port.",
+         {{"objective", parameter("string", nullptr, true)}, {"weight_mode", weights}, {"perfect_matching_required", parameter("boolean", false)},
+          {"solution_quality", choice("exact", {"exact", "approximate"})}}, {{"edges", port("edge_set")}}, original_optimization_backends("bipartite-matching")), bipartite_matching},
     {card("maximal-cliques", "maximal_clique_enumeration", "Find complete groups that cannot be extended",
          "Exact maximal cliques in an undirected simple projection. Drop loops and duplicate edges; ignore weights. Original GPU kernels supply a count, with bounded C++ materialization and explicit list completeness.",
          {{"minimum_clique_size", positive(1)}, {"result_limit", positive(nullptr, true)}},
@@ -130,6 +143,9 @@ std::vector<Operation> definitions() {
   for (auto& definition : result) {
     auto& metadata = definition.metadata;
     const auto id = string(metadata.at("id"), "operation");
+    if (id == "bipartite-matching") metadata.at("parameters").as_object().at("objective").as_object()["choices"] = json::array{"maximum_cardinality", "maximum_weight", "minimum_cost"};
+    if (id == "max-flow-min-cut") metadata["gpu_limitations"] = json::array{"ecl-maxflow: nonnegative integral normalized capacities with total <=1e9; no vertex capacities", "At most 1M vertices and 10M input edges; exact residual flow/cut certification"};
+    if (id == "bipartite-matching") metadata["gpu_limitations"] = json::array{"hungarian-cuda: minimum-cost perfect assignment, complete equal sides, at most 64 per side", "Every input cost must be an integer in [0,999]; native C++ verifies the optimum"};
     if (id == "k-cliques") {
       metadata.at("parameters").as_object().at("k").as_object()["minimum"] = 2;
       metadata["gpu_limitations"] = json::array{"graphset: k=3..6; gamma: k=3..7; kcgpu: k=3..10; k larger than vertex count returns zero", "A forward-subset count bound must fit uint64"};

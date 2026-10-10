@@ -1,0 +1,78 @@
+cpu: graphmine_runtime_test contracts: 20 passed
+cpu: graphmine_runtime_test bfs: 4608 passed
+cpu: graphmine_runtime_test triangles: 2048 passed
+cpu: graphmine_reference_test contracts: 28 passed
+cpu: graphmine_reference_test paths: 3645 passed
+cpu: graphmine_reference_test forests: 1458 passed
+cpu: graphmine_reference_test connectivity: 320 passed
+cpu: graphmine_reference_test rank: 706 passed
+cpu: graphmine_reference_test similarity: 1024 passed
+cpu: graphmine_structure_test contracts: 14 passed
+cpu: graphmine_structure_test truss: 5135 passed
+cpu: graphmine_structure_test blocks: 1027 passed
+cpu: graphmine_structure_test boundaries: 37 passed
+cpu: graphmine_centrality_test contracts: 14 passed
+gpu-0: graphmine_runtime_test bfs: 4608 passed
+gpu-1: graphmine_runtime_test bfs: 4608 passed
+cpu: graphmine_centrality_test degree: 10632 passed
+cpu: graphmine_centrality_test betweenness: 2658 passed
+gpu-0: graphmine_runtime_test triangles: 2048 passed
+gpu-0: graphmine_reference_test contracts: 30 passed
+gpu-1: graphmine_runtime_test triangles: 2048 passed
+cpu: graphmine_centrality_test weighted: 2916 passed
+cpu: graphmine_centrality_test boundaries: 39 passed
+cpu: graphmine_matching_test contracts: 19 passed
+gpu-1: graphmine_reference_test contracts: 30 passed
+cpu: graphmine_matching_test general: 5120 passed
+cpu: graphmine_matching_test bipartite: 7446 passed
+cpu: graphmine_matching_test boundaries: 155 passed
+cpu: graphmine_flow_test contracts: 16 passed
+gpu-0: graphmine_reference_test paths: 3645 passed
+gpu-1: graphmine_reference_test paths: 3645 passed
+gpu-0: graphmine_reference_test forests: 1458 passed
+gpu-0: graphmine_reference_test connectivity: 256 passed
+gpu-1: graphmine_reference_test forests: 1458 passed
+gpu-1: graphmine_reference_test connectivity: 256 passed
+gpu-1: graphmine_reference_test rank: 514 passed
+gpu-1: graphmine_reference_test similarity: 128 passed
+gpu-1: graphmine_structure_test contracts: 9 passed
+cpu: graphmine_flow_test edges: 17369 passed
+gpu-0: graphmine_reference_test rank: 514 passed
+gpu-0: graphmine_reference_test similarity: 128 passed
+gpu-0: graphmine_structure_test contracts: 9 passed
+cpu: graphmine_flow_test vertices: 8192 passed
+cpu: graphmine_flow_test boundaries: 10 passed
+cpu: graphmine_mining_test contracts: 48 passed
+cpu: graphmine_mining_test maximal: 4104 passed
+cpu: graphmine_mining_test maximum: 2052 passed
+gpu-1: graphmine_structure_test truss: 5135 passed
+gpu-1: graphmine_structure_test boundaries: 31 passed
+gpu-1: graphmine_centrality_test contracts: 7 passed
+cpu: graphmine_mining_test fixed: 18468 passed
+gpu-1: graphmine_centrality_test betweenness: 2658 passed
+gpu-1: graphmine_centrality_test boundaries: 9 passed
+cpu: graphmine_mining_test core: 4104 passed
+cpu: graphmine_mining_test optimization: 3078 passed
+cpu: graphmine_mining_test boundaries: 161 passed
+gpu-0: graphmine_structure_test truss: 5135 passed
+gpu-0: graphmine_structure_test boundaries: 31 passed
+gpu-0: graphmine_centrality_test contracts: 7 passed
+gpu-0: graphmine_centrality_test betweenness: 2658 passed
+gpu-0: graphmine_centrality_test boundaries: 9 passed
+Traceback (most recent call last):
+  File "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/validate_native_runtime.py", line 240, in <module>
+    main()
+  File "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/validate_native_runtime.py", line 236, in main
+    future.result()
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/validate_native_runtime.py", line 191, in validate
+    raise RuntimeError(
+RuntimeError: ['/tmp/graphmine-native-matching-original-build/runtime/graphmine_matching_test', 'contracts', 'hungarian-cuda', '1']: 1
+Matching oracle failed after 6 requests: Wrong rejection: {"error":{"code":"unsupported_input","message":"Hungarian CUDA supports minimum-cost matching with required perfect coverage; other objectives use native CPU"}}

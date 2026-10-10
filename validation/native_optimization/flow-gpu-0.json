@@ -1,0 +1,26 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "ecl-maxflow",
+    "gpu_device": 0,
+    "passed_requests": 8,
+    "failed": 0,
+    "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+  },
+  {
+    "suite": "edges",
+    "backend": "ecl-maxflow",
+    "gpu_device": 0,
+    "passed_requests": 1049,
+    "failed": 0,
+    "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "ecl-maxflow",
+    "gpu_device": 0,
+    "passed_requests": 12,
+    "failed": 0,
+    "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+  }
+]

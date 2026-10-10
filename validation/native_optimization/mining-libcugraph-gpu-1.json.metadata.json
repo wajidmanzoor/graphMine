@@ -1,0 +1,23 @@
+{
+  "binary_files": {
+    "/tmp/graphmine-native-matching-original-build/runtime/libgraphmine_runtime.so.2.0.0": "2fcef37735d2d2c33a95f02ad8f8db92b08f651677e6115118a8408e6356b378",
+    "/tmp/graphmine-native-matching-original-build/runtime/graphmine-native": "6ba945e266a9927012a19a240316418fbe001542fcc6e2c0d90b81565a00a017",
+    "/tmp/graphmine-native-matching-original-build/runtime/graphmine_runtime_test": "c9046c8d590beee6e80b38d105cb5ee9f36cba943702067bd57e22cb8a55d4f1",
+    "/tmp/graphmine-native-matching-original-build/runtime/graphmine_reference_test": "fe0aca44bdad4011206fac211c3d6280ecbb0f8466340a5ff6c76b74ce32b9d0",
+    "/tmp/graphmine-native-matching-original-build/runtime/graphmine_mining_test": "8e707cff62bc052d5edede80edc3e600f6d46d0505d1740b4ace773a62635a9d",
+    "/tmp/graphmine-native-matching-original-build/runtime/graphmine_structure_test": "92822cac6385bb81b72673394e59809049a2d71075ba4788d6d2d1c84dc02cb4",
+    "/tmp/graphmine-native-matching-original-build/runtime/graphmine_centrality_test": "496382f8f15196e343c3f45ec1275d41c0577c15e2c83cf53c611de7ae5170c2",
+    "/tmp/graphmine-native-matching-original-build/runtime/graphmine_matching_test": "e2fa1c0d56fb766f10fe131e6703b639bb28e55e7cec475d777afd882e1a4fc5",
+    "/tmp/graphmine-native-matching-original-build/runtime/graphmine_flow_test": "90e2fc4c74404b6e232903786f07300cb0f9504fc0e674161737a08820c8d9ab",
+    "/tmp/graphmine-native-matching-original-build/runtime/native-source-hashes.txt": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-workers/graphmine-worker-ecl-maxflow": "89fa9dda777febfce6eca4378834eddd079d16c7731f2da5ca9bf2bc99e84ac6",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-workers/graphmine-worker-hungarian-cuda": "ceb31c966d50289f6362a81de42ffd2eac8cbb8015611a423c12a18aaf637f32",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-generated/ecl_flow.cu": "5521193806d646f8fdf3ba6fbd237dca5227bffa3a1d7cb023b1d3b5349a64ed",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-generated/ecl_scc.cu": "af92ce618507b9b8878807f36981b6703c7322f2b540995e2e52addb2a16dae3",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-generated/gdlog_tc.cu": "78dc8f41a7981b5c1a5bc3a33adfd9362e78e6fb6872298201a04f97b0feb41e",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-generated/hungarian.cu": "f345ec5f559a86593c65e3bff8609a5c36390c7542addd961993efb2f2cf720d",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-generated/maxflow.cu": "215c6610a31861073de19b699d5630a5faff2d32c6212e23f7f1323db2722d89"
+  },
+  "build_unchanged_during_run": true,
+  "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+}

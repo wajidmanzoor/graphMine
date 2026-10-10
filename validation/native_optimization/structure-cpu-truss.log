@@ -1,0 +1,11 @@
+Validated 500 structure requests
+Validated 1000 structure requests
+Validated 1500 structure requests
+Validated 2000 structure requests
+Validated 2500 structure requests
+Validated 3000 structure requests
+Validated 3500 structure requests
+Validated 4000 structure requests
+Validated 4500 structure requests
+Validated 5000 structure requests
+{"suite":"truss","backend":"cpp","gpu_device":0,"passed_requests":5135,"failed":0,"implementation_sha256":"e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"}

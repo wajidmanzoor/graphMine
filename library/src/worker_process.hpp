@@ -11,6 +11,7 @@
 #include <limits>
 #include <map>
 #include <numeric>
+#include <optional>
 #include <queue>
 #include <set>
 #include <sstream>
@@ -69,7 +70,8 @@ inline std::string worker_path(const std::string& name, const IsolatedBackendOpt
 
 inline std::string invoke_worker(const std::string& name, std::vector<std::string> arguments,
                           const IsolatedBackendOptions& options, const TempDirectory& temp,
-                          const std::map<std::string,std::string>& overrides = {}) {
+                          const std::map<std::string,std::string>& overrides = {},
+                          std::optional<Clock::time_point> deadline_override = std::nullopt) {
   arguments.insert(arguments.begin(),worker_path(name,options));
   std::vector<char*> argv;for (auto& arg:arguments) argv.push_back(arg.data());argv.push_back(nullptr);
   std::string visible=std::to_string(options.execution.device_ids[0]);
@@ -106,7 +108,7 @@ inline std::string invoke_worker(const std::string& name, std::vector<std::strin
   if (!error) error=posix_spawn(&pid,argv[0],&actions,&attributes,argv.data(),env.data());
   posix_spawn_file_actions_destroy(&actions);posix_spawnattr_destroy(&attributes);
   if (error) throw BackendError(StatusCode::backend_unavailable,"cannot start "+name+": "+std::strerror(error));
-  const auto deadline=Clock::now()+std::chrono::seconds(options.timeout_seconds);
+  const auto deadline=deadline_override.value_or(Clock::now()+std::chrono::seconds(options.timeout_seconds));
   int status=0;bool timeout=false,oversize=false;
   while (true) {
     const auto result=waitpid(pid,&status,WNOHANG);

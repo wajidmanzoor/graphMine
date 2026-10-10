@@ -844,3 +844,52 @@ migrated problems, migration of the reference API/application algorithm
 worker, and all unfinished A/R/B requirements above. Passing native profile
 checks does not establish completion of the full formal contracts or the
 review integration.
+
+### Native matching and flow checkpoint
+
+- The standalone C++/CUDA core now exposes **23 operations covering profiles
+  for 21 of 70 formal problems**. New CPU implementations provide general
+  maximum-weight matching, bipartite cardinality/weight/cost matching, and
+  maximum flow/minimum cut. The Python wrapper obtains these operations from
+  the same native family catalog and invokes the same C ABI.
+- Weighted Blossom uses checked exact integer scaling of admitted binary64
+  weights. Bipartite matching uses exact residual costs and explicitly reports
+  infeasible required coverage. Both preserve selected original edge IDs.
+  Iterative exact Dinic supports fractional capacities, exact parallel sums,
+  undirected arcs, and optional typed-ID vertex capacities, including terminal
+  limits. Mixed edge/vertex cut certificates are now defined consistently in
+  the authoritative flow contract and its four embedded copies.
+- Original ECL-MaxFlow and Hungarian CUDA kernels execute in isolated native
+  workers. Their profiles disclose integral capacity/cost, size, and objective
+  restrictions. C++ certifies flow conservation/cut equality and assignment
+  optimality. Worker failures are explicit; precise deadlines kill and reap
+  workers. Unsupported variants can select native CPU before a GPU run starts.
+- Installed CPU C/C++ consumers execute with Python off PATH and CUDA hidden.
+  Installed CUDA CLI calls execute without Python on PATH; process traces
+  confirm that installed native workers are selected. Installed wrapper/CLI
+  parity is checked for both new GPU backends on both GPUs.
+- A malformed-boolean GPU admission mismatch was corrected. A 20,000-vertex
+  GPU flow path passes normally but exceeds the default 60-second deadline
+  under memcheck. That instrumented timeout is retained as a known limitation;
+  kernel memory/initialization checks separately exercise 256-vertex residual
+  networks, the 1e9 capacity limit, and 64-by-64 assignment matrices.
+
+Final acceptance: **167,891 native requests passed** (106,671 CPU and 30,610
+on each GPU), including 12,740 CPU matching and 25,587 CPU flow checks. Each GPU
+passes 751 assignment and 1,069 flow checks. There are **16 optimization kernel
+sanitizer checks**, **8 centrality sanitizer runs**, **8 mining depth/admission
+checks**, **117 binding/CLI tests**, **64 cuDF construction tests**, and **41
+working-app / 25 staged-app tests**. The app reports retain the existing
+Starlette warning; acceptance has no failures or skips. Installed GPU worker
+traces and wrapper parity cover four backend/device combinations.
+
+Reports are under `validation/native_optimization`.
+`catalog/native_runtime_coverage.json` checks all report snapshots, 49 CPU and
+1,060 GPU source files, nine CPU and eleven GPU binaries, generated worker
+sources, and 32 resolved native dependencies. All GPU source hashes match the
+exact Git index. The 169 pre-existing tracked modifications remain preserved.
+
+The remaining **49 formal problems**, unfinished variants within migrated
+problems, the native application worker/evidence gate, and the remaining A/R/B
+requirements still need implementation and verification. The overall review
+integration goal remains active.

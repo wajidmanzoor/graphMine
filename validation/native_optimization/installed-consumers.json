@@ -1,0 +1,189 @@
+{
+  "cpp_consumer": true,
+  "c_consumer": true,
+  "python_on_path": false,
+  "cuda_visible_devices": "",
+  "cpu_ldd": "\tlinux-vdso.so.1 (0x00007cb6955fa000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007cb694e00000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007cb694a00000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007cb69536b000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007cb69533d000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007cb694600000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007cb6955fc000)\n",
+  "scope": "Installed standalone C/C++ algorithm calls on a triangle plus isolated vertex",
+  "results": {
+    "cpp_consumer": {
+      "parameters": {
+        "return_all_ties": true
+      },
+      "result": {
+        "groups": [
+          {
+            "group": 0,
+            "vertices": [
+              0,
+              1,
+              2
+            ],
+            "size": 3
+          }
+        ],
+        "count": 1,
+        "maximum_size": 3
+      },
+      "ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "value": [
+            {
+              "group": 0,
+              "vertices": [
+                0,
+                1,
+                2
+              ],
+              "size": 3
+            }
+          ],
+          "complete": true,
+          "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+          "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "complete": true,
+          "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+          "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff"
+        }
+      },
+      "complete": true,
+      "quality": "exact",
+      "schema_version": "2.0.0",
+      "operation": "maximum-clique",
+      "problem_id": "maximum_clique",
+      "family": "cliques",
+      "input_kind": "graph",
+      "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+      "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+      "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496",
+      "requested_device": "cpu",
+      "backend": {
+        "id": "cpp",
+        "device": "cpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false
+      },
+      "budget": {
+        "max_candidates": 2000000,
+        "max_output_items": 100000,
+        "timeout_seconds": 60.0
+      },
+      "elapsed_seconds": 0.001638351
+    },
+    "c_consumer": {
+      "parameters": {
+        "requested_k": 2
+      },
+      "result": {
+        "vertices": [
+          {
+            "vertex": 0,
+            "core_number": 2
+          },
+          {
+            "vertex": 1,
+            "core_number": 2
+          },
+          {
+            "vertex": 2,
+            "core_number": 2
+          },
+          {
+            "vertex": 3,
+            "core_number": 0
+          }
+        ],
+        "selected_vertices": [
+          0,
+          1,
+          2
+        ]
+      },
+      "ports": {
+        "scores": {
+          "type": "vertex_scores",
+          "value": [
+            {
+              "vertex": 0,
+              "core_number": 2
+            },
+            {
+              "vertex": 1,
+              "core_number": 2
+            },
+            {
+              "vertex": 2,
+              "core_number": 2
+            },
+            {
+              "vertex": 3,
+              "core_number": 0
+            }
+          ],
+          "complete": true,
+          "score_field": "core_number",
+          "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+          "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "complete": true,
+          "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+          "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff"
+        }
+      },
+      "complete": true,
+      "quality": "exact",
+      "schema_version": "2.0.0",
+      "operation": "k-core",
+      "problem_id": "k_core_decomposition",
+      "family": "cores",
+      "input_kind": "graph",
+      "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+      "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+      "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496",
+      "requested_device": "cpu",
+      "backend": {
+        "id": "cpp",
+        "device": "cpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false
+      },
+      "budget": {
+        "max_candidates": 2000000,
+        "max_output_items": 100000,
+        "timeout_seconds": 60.0
+      },
+      "elapsed_seconds": 0.001546342
+    }
+  },
+  "source_files": {
+    "library/examples/native_runtime/CMakeLists.txt": "7933636325f48f7f2ae28a32cced0956815b64d2f813d67a5b2abe841f714939",
+    "library/examples/native_runtime/main.c": "2842cf9609d1bf85a5db7939ecd4a94ac04c3d7ba8740d93d2da90926eef54ff",
+    "library/examples/native_runtime/main.cpp": "a1afa7b94bcf91408ec5b9b5503b03198814effd40bc420419da53b5277e88d8",
+    "tools/validate_native_consumers.py": "95acc7b7888bbc99fb81e7617a96b6b6ac859838fad1af62867593330fb6144e"
+  },
+  "binary_files": {
+    "/tmp/graphmine-native-optimization-consumers/cpp_consumer": "d5df31eecd9bf58a37e582edffd7bb4835825c953f50be25ee0321fc3ac4a248",
+    "/tmp/graphmine-native-optimization-consumers/c_consumer": "772156f4671048bda28476c60a1751541151493e14eebe4ad29e8fdd477dcb0f"
+  },
+  "installed_library": {
+    "path": "/tmp/graphmine-native-optimization-install/lib/libgraphmine_runtime.so",
+    "sha256": "1bcab22bdc0503707025d17207f4bff47e185580e09bc58568c2acfa4f34b6cb"
+  },
+  "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+}

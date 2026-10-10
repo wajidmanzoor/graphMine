@@ -1,0 +1,16 @@
+{
+  "binary_files": {
+    "/tmp/graphmine-native-matching-cpu/libgraphmine_runtime.so.2.0.0": "1bcab22bdc0503707025d17207f4bff47e185580e09bc58568c2acfa4f34b6cb",
+    "/tmp/graphmine-native-matching-cpu/graphmine-native": "5484b4c3cb8c7f0253b601204cd2f93838a731a2e0f7bb099c890bb0e3cfe0b7",
+    "/tmp/graphmine-native-matching-cpu/graphmine_runtime_test": "575c098ef0c76334c37b2a1111abf356d74b92a7361504553c9f3302527a00b4",
+    "/tmp/graphmine-native-matching-cpu/graphmine_reference_test": "97ae77ce79b923cbd15d9a009fb8d6441f166090c0060446f96b3d5f0a4cfffd",
+    "/tmp/graphmine-native-matching-cpu/graphmine_mining_test": "a58ac32a7a6b700615015b07aeada6e3cffd2b692a2ffd44c3abd30b1b70d71f",
+    "/tmp/graphmine-native-matching-cpu/graphmine_structure_test": "bdad71a60ffc5a5eb13042e73afa7ebd3eaf7593dfb56f15fffa35e062f7f0d3",
+    "/tmp/graphmine-native-matching-cpu/graphmine_centrality_test": "3c4ee44082cd49531468177f2daaee185bbddbcf9898726255dee6dd9c2894fb",
+    "/tmp/graphmine-native-matching-cpu/graphmine_matching_test": "f5f6c6afe6ffa292692b556c7a8cb5d914f950d21f4fe37b8f5aa2cbed42ee99",
+    "/tmp/graphmine-native-matching-cpu/graphmine_flow_test": "1cdfb04657eab00f88f650c80d9e649a8ce9a796861020822039fa98dd350f88",
+    "/tmp/graphmine-native-matching-cpu/native-source-hashes.txt": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+  },
+  "build_unchanged_during_run": true,
+  "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+}

@@ -79,7 +79,15 @@ def build_evidence(directory, source_root, dependency_hashes):
             "graphmine_mining_test",
             "graphmine_structure_test",
             "graphmine_centrality_test",
+            "graphmine_matching_test",
+            "graphmine_flow_test",
         )
+    }
+    for path in sorted((directory / "optimization-workers").glob("graphmine-worker-*")):
+        binaries[str(path.relative_to(directory))] = sha(path)
+    generated_sources = {
+        str(path.relative_to(directory)): sha(path)
+        for path in sorted((directory / "optimization-generated").glob("*.cu"))
     }
     cache = directory / "CMakeCache.txt"
     if not cache.exists():
@@ -104,6 +112,7 @@ def build_evidence(directory, source_root, dependency_hashes):
         "source_files": source_files,
         "staged_root_build_script": staged_build_script,
         "binaries": binaries,
+        "generated_worker_sources": generated_sources,
         "native_dependencies": dependencies,
         "ldd": linkage,
         "build_configuration": configuration,
@@ -290,6 +299,33 @@ def audit(
             expected[f"mining-{backend}-gpu-{ordinal}"] = [
                 (s, backend, n) for s, n in cases
             ]
+    expected["matching-cpu"] = [
+        (s, "cpp", n)
+        for s, n in (
+            ("contracts", 19),
+            ("general", 5120),
+            ("bipartite", 7446),
+            ("boundaries", 155),
+        )
+    ]
+    expected["flow-cpu"] = [
+        (s, "cpp", n)
+        for s, n in (
+            ("contracts", 16),
+            ("edges", 17369),
+            ("vertices", 8192),
+            ("boundaries", 10),
+        )
+    ]
+    for device in (0, 1):
+        expected[f"matching-gpu-{device}"] = [
+            (s, "hungarian-cuda", n)
+            for s, n in (("contracts", 9), ("assignment", 721), ("boundaries", 21))
+        ]
+        expected[f"flow-gpu-{device}"] = [
+            (s, "ecl-maxflow", n)
+            for s, n in (("contracts", 8), ("edges", 1049), ("boundaries", 12))
+        ]
     for name, cases in expected.items():
         path = report_root / f"{name}.json"
         rows = json.loads(path.read_text())
@@ -394,8 +430,64 @@ def audit(
         "sha256": sha(centrality_path),
         "passed": 8,
     }
+    optimization_path = report_root / "optimization-sanitizers/summary.json"
+    optimization = json.loads(optimization_path.read_text())
+    assert optimization["passed"] == 16 and optimization["failed"] == 0
+    assert optimization["build_unchanged_during_run"]
+    assert (
+        optimization["implementation_sha256"]
+        == builds["gpu"]["catalog"]["implementation_sha256"]
+    )
+    assert optimization["sanitizer_binary_sha256"] == sha("/usr/bin/compute-sanitizer")
+    assert {row["case"] for row in optimization["cases"]} == {
+        f"{backend}-{tool}-gpu-{device}-{kind}"
+        for backend in ("ecl-maxflow", "hungarian-cuda")
+        for tool in ("memcheck", "initcheck")
+        for device in (0, 1)
+        for kind in ("structure", "limit")
+    }
+    for path, digest in optimization["binary_files"].items():
+        assert sha(path) == digest, path
+    for row in optimization["cases"]:
+        assert row["passed"]
+        for suffix, key in (
+            ("stderr.log", "log_sha256"),
+            ("stdout.log", "output_sha256"),
+            ("input", "input_sha256"),
+        ):
+            assert sha(optimization_path.parent / f"{row['case']}.{suffix}") == row[key]
+    reports["optimization_sanitizers"] = {
+        "path": str(optimization_path.relative_to(ROOT)),
+        "sha256": sha(optimization_path),
+        "passed": 16,
+    }
+    installed_optimization_path = report_root / "installed-optimization.json"
+    installed_optimization = json.loads(installed_optimization_path.read_text())
+    assert (
+        installed_optimization["passed"] == 4 and installed_optimization["failed"] == 0
+    )
+    assert (
+        installed_optimization["installed_workers_observed_in_execve"]
+        and installed_optimization["wrapper_cli_parity"]
+    )
+    assert not installed_optimization["standalone_cli_python_on_path"]
+    assert (
+        installed_optimization["implementation_sha256"]
+        == builds["gpu"]["catalog"]["implementation_sha256"]
+    )
+    for path, digest in installed_optimization["binary_files"].items():
+        assert sha(path) == digest, path
+    for path, digest in installed_optimization["source_files"].items():
+        assert sha(ROOT / path) == digest, path
+    for row in installed_optimization["results"]:
+        assert sha(row["execve_log"]) == row["execve_sha256"]
+    reports["installed_optimization"] = {
+        "path": str(installed_optimization_path.relative_to(ROOT)),
+        "sha256": sha(installed_optimization_path),
+        "passed": 4,
+    }
     reports["binding_ingestion"] = xml_evidence(
-        report_root / "binding-ingestion.xml", ROOT, 104
+        report_root / "binding-ingestion.xml", ROOT, 117
     )
     native_uploads = staged_app_root is not None
     if native_uploads:

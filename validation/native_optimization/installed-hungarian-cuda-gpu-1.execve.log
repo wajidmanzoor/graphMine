@@ -1,0 +1,13 @@
+3401008 execve("/tmp/graphmine-native-optimization-gpu-install/bin/graphmine-native", ["/tmp/graphmine-native-optimizati"..., "request"], 0x7ffce823f7c0 /* 52 vars */) = 0
+3401028 execve("/tmp/graphmine-native-optimization-gpu-install/bin/../lib/../libexec/graphmine/graphmine-worker-hungarian-cuda", ["/tmp/graphmine-native-optimizati"..., "/tmp/graphmine-worker-qsnH6S/ass"...], 0x5dcf6ea7ede0 /* 53 vars */) = 0
+3401033 +++ exited with 0 +++
+3401032 +++ exited with 0 +++
+3401029 +++ exited with 0 +++
+3401028 +++ exited with 0 +++
+3401008 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3401028, si_uid=1002, si_status=0, si_utime=5 /* 0.05 s */, si_stime=37 /* 0.37 s */} ---
+3401045 +++ exited with 0 +++
+3401017 +++ exited with 0 +++
+3401015 +++ exited with 0 +++
+3401044 +++ exited with 0 +++
+3401016 +++ exited with 0 +++
+3401008 +++ exited with 0 +++

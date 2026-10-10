@@ -6,6 +6,7 @@
 #include <map>
 #include <limits>
 #include <queue>
+#include <set>
 
 namespace graphmine::runtime {
 double number(const json::value& value, const std::string& context) {
@@ -81,6 +82,48 @@ std::string gpu_support_reason(const std::string& operation, const Graph& graph,
 }
 std::string backend_support_reason(const std::string& operation, const std::string& backend, const Graph& graph, const json::object& args, Work& work) {
   if (backend == "cpp") return {};
+  if (operation == "max-flow-min-cut") {
+    if (graph.vertex_count() > 1000000 || graph.edge_count() > 10000000) return "ECL flow supports at most 1M vertices and 10M input edges";
+    if (args.contains("vertex_capacities") && !args.at("vertex_capacities").is_null() &&
+        (!args.at("vertex_capacities").is_array() || !args.at("vertex_capacities").as_array().empty()))
+      return "The ECL GPU flow profile does not support vertex capacities; use native CPU";
+    const bool unit = args.contains("capacity_mode") && args.at("capacity_mode") == "unit_capacity";
+    Exact total = 0;
+    for (const auto& edge : graph.canonical().edges) {
+      work.tick(); if (!unit && !edge.weight) return {};  // Shared parameter validation reports missing weights.
+      const double value = unit ? 1 : *edge.weight;
+      if (value < 0) return {};
+      if (std::trunc(value) != value) return "ECL GPU flow supports integral capacities; fractional capacities use exact native CPU";
+      if (edge.source != edge.target) total += Exact(value) * (graph.directed() ? 1 : 2);
+      if (total > 1000000000) return "ECL GPU flow requires total normalized capacity <=1e9 to prevent int32 overflow; use native CPU";
+    }
+  }
+  if (operation == "bipartite-matching") {
+    if ((args.contains("objective") && !args.at("objective").is_string()) ||
+        (args.contains("perfect_matching_required") && !args.at("perfect_matching_required").is_bool())) return {};
+    if (!args.contains("objective") || args.at("objective") != "minimum_cost" ||
+        !args.contains("perfect_matching_required") || args.at("perfect_matching_required") != true)
+      return "Hungarian CUDA supports minimum-cost matching with required perfect coverage; other objectives use native CPU";
+    std::vector<bool> left; std::size_t count = 0;
+    for (const auto& vertex : graph.canonical().vertices) {
+      work.tick(); const auto found = vertex.attributes.find("side");
+      if (found == vertex.attributes.end() || !std::holds_alternative<std::string>(found->second.value())) return {};
+      const auto& side = std::get<std::string>(found->second.value());
+      if (side != "left" && side != "right") return {};
+      left.push_back(side == "left"); count += left.back();
+    }
+    if (count * 2 != graph.vertex_count() || count > 64) return "Hungarian CUDA requires equal sides with at most 64 vertices each";
+    std::set<std::pair<VertexIndex, VertexIndex>> pairs;
+    for (const auto& edge : graph.canonical().edges) {
+      work.tick(); if (!edge.weight) return {};
+      if (*edge.weight < 0 || *edge.weight > 999 || std::trunc(*edge.weight) != *edge.weight)
+        return "Hungarian CUDA requires every input cost to be an integer in [0,999]; use native CPU";
+      auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+      if (left[u] == left[v]) return {};
+      if (!left[u]) std::swap(u, v); pairs.emplace(u,v);
+    }
+    if (pairs.size() != count * count) return "Hungarian CUDA requires a complete bipartite graph; sparse matching uses native CPU";
+  }
   if (operation == "betweenness-centrality" && backend == "turbo-bc" && graph.directed())
     return "The original TurboBC profile supports undirected graphs; use libcugraph or C++ for directed betweenness";
   if (operation == "betweenness-centrality" && graph.vertex_count() > 32) {

@@ -1,0 +1,1 @@
+Matching oracle failed after 6 requests: Wrong rejection: {"error":{"code":"unsupported_input","message":"Hungarian CUDA supports minimum-cost matching with required perfect coverage; other objectives use native CPU"}}

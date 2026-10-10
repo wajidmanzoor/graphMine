@@ -1,0 +1,2123 @@
+{
+  "catalog": {
+    "schema_version": 1,
+    "scope": "Authoritative native and wrapper problem/family taxonomy; membership is not execution or validation evidence.",
+    "families": [
+      {
+        "id": "centrality",
+        "title": "Centrality",
+        "operations": [
+          "pagerank",
+          "degree-centrality",
+          "betweenness-centrality",
+          "personalized-pagerank"
+        ]
+      },
+      {
+        "id": "cliques",
+        "title": "Cliques",
+        "operations": [
+          "maximal-cliques",
+          "maximum-clique",
+          "k-cliques"
+        ]
+      },
+      {
+        "id": "coloring",
+        "title": "Coloring",
+        "operations": []
+      },
+      {
+        "id": "communities",
+        "title": "Communities",
+        "operations": []
+      },
+      {
+        "id": "community",
+        "title": "Community",
+        "operations": []
+      },
+      {
+        "id": "comparison",
+        "title": "Comparison",
+        "operations": []
+      },
+      {
+        "id": "connectivity",
+        "title": "Connectivity",
+        "operations": [
+          "connected-components",
+          "biconnected-components"
+        ]
+      },
+      {
+        "id": "construction",
+        "title": "Construction",
+        "operations": []
+      },
+      {
+        "id": "cores",
+        "title": "Cores",
+        "operations": [
+          "k-truss",
+          "k-core"
+        ]
+      },
+      {
+        "id": "data_preparation",
+        "title": "Data Preparation",
+        "operations": []
+      },
+      {
+        "id": "dense_structures",
+        "title": "Dense Structures",
+        "operations": []
+      },
+      {
+        "id": "embeddings",
+        "title": "Embeddings",
+        "operations": []
+      },
+      {
+        "id": "flow",
+        "title": "Flow",
+        "operations": [
+          "max-flow-min-cut"
+        ]
+      },
+      {
+        "id": "independent_sets",
+        "title": "Independent Sets",
+        "operations": [
+          "maximum-independent-set",
+          "minimum-vertex-cover"
+        ]
+      },
+      {
+        "id": "layout",
+        "title": "Layout",
+        "operations": []
+      },
+      {
+        "id": "learning",
+        "title": "Learning",
+        "operations": []
+      },
+      {
+        "id": "matching",
+        "title": "Matching",
+        "operations": [
+          "weighted-matching",
+          "bipartite-matching"
+        ]
+      },
+      {
+        "id": "motifs",
+        "title": "Motifs",
+        "operations": [
+          "triangle-counting"
+        ]
+      },
+      {
+        "id": "optimization",
+        "title": "Optimization",
+        "operations": []
+      },
+      {
+        "id": "partitioning",
+        "title": "Partitioning",
+        "operations": []
+      },
+      {
+        "id": "pattern_mining",
+        "title": "Pattern Mining",
+        "operations": []
+      },
+      {
+        "id": "query",
+        "title": "Query",
+        "operations": []
+      },
+      {
+        "id": "sampling",
+        "title": "Sampling",
+        "operations": []
+      },
+      {
+        "id": "similarity",
+        "title": "Similarity",
+        "operations": [
+          "link-prediction"
+        ]
+      },
+      {
+        "id": "spectral",
+        "title": "Spectral",
+        "operations": []
+      },
+      {
+        "id": "statistics",
+        "title": "Statistics",
+        "operations": []
+      },
+      {
+        "id": "subgraphs",
+        "title": "Subgraphs",
+        "operations": []
+      },
+      {
+        "id": "temporal",
+        "title": "Temporal",
+        "operations": []
+      },
+      {
+        "id": "topology",
+        "title": "Topology",
+        "operations": []
+      },
+      {
+        "id": "traversal",
+        "title": "Traversal",
+        "operations": [
+          "breadth-first-search",
+          "single-source-shortest-paths",
+          "many-source-shortest-paths",
+          "topological-sort"
+        ]
+      },
+      {
+        "id": "trees",
+        "title": "Trees",
+        "operations": [
+          "spanning-tree-forest"
+        ]
+      }
+    ],
+    "problems": [
+      {
+        "id": "maximal_clique_enumeration",
+        "name": "Maximal Clique Enumeration",
+        "family": "cliques",
+        "contract": "problems/01_maximal_clique_enumeration/problem.json",
+        "operations": [
+          "maximal-cliques"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "maximum_clique",
+        "name": "Maximum Clique",
+        "family": "cliques",
+        "contract": "problems/02_maximum_clique/problem.json",
+        "operations": [
+          "maximum-clique"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "k_clique_counting_enumeration",
+        "name": "k-Clique Counting and Enumeration",
+        "family": "cliques",
+        "contract": "problems/03_k_clique_counting_enumeration/problem.json",
+        "operations": [
+          "k-cliques"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "quasi_clique_mining",
+        "name": "Quasi-Clique Mining",
+        "family": "dense_structures",
+        "contract": "problems/04_quasi_clique_mining/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "densest_subgraph",
+        "name": "Densest Subgraph",
+        "family": "dense_structures",
+        "contract": "problems/05_densest_subgraph/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "densest_k_subgraph",
+        "name": "Densest k-Subgraph",
+        "family": "dense_structures",
+        "contract": "problems/06_densest_k_subgraph/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "k_core_decomposition",
+        "name": "k-Core Decomposition",
+        "family": "cores",
+        "contract": "problems/07_k_core_decomposition/problem.json",
+        "operations": [
+          "k-core"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "k_truss_decomposition",
+        "name": "k-Truss Decomposition",
+        "family": "cores",
+        "contract": "problems/08_k_truss_decomposition/problem.json",
+        "operations": [
+          "k-truss"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "maximal_biclique_enumeration",
+        "name": "Maximal Biclique Enumeration",
+        "family": "dense_structures",
+        "contract": "problems/09_maximal_biclique_enumeration/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "triangle_counting_listing",
+        "name": "Triangle Counting and Listing",
+        "family": "motifs",
+        "contract": "problems/10_triangle_counting_listing/problem.json",
+        "operations": [
+          "triangle-counting"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "graph_motif_counting",
+        "name": "Graph Motif Counting",
+        "family": "pattern_mining",
+        "contract": "problems/11_graph_motif_counting/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "graphlet_counting",
+        "name": "Graphlet Counting",
+        "family": "pattern_mining",
+        "contract": "problems/12_graphlet_counting/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "subgraph_isomorphism",
+        "name": "Subgraph Isomorphism and Pattern Matching",
+        "family": "pattern_mining",
+        "contract": "problems/13_subgraph_isomorphism/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "frequent_subgraph_mining",
+        "name": "Frequent Subgraph Mining",
+        "family": "pattern_mining",
+        "contract": "problems/14_frequent_subgraph_mining/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "temporal_motif_mining",
+        "name": "Temporal Motif Mining",
+        "family": "pattern_mining",
+        "contract": "problems/15_temporal_motif_mining/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "community_detection",
+        "name": "Disjoint Community Detection",
+        "family": "communities",
+        "contract": "problems/16_community_detection/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "overlapping_community_detection",
+        "name": "Overlapping Community Detection by k-Clique Percolation",
+        "family": "community",
+        "contract": "problems/17_overlapping_community_detection/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "centrality_influential_node_mining",
+        "name": "Centrality and Influential-Node Mining",
+        "family": "centrality",
+        "contract": "problems/18_centrality_influential_node_mining/problem.json",
+        "operations": [
+          "pagerank",
+          "degree-centrality",
+          "betweenness-centrality"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "link_prediction",
+        "name": "Link Prediction",
+        "family": "similarity",
+        "contract": "problems/19_link_prediction/problem.json",
+        "operations": [
+          "link-prediction"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "graph_anomaly_detection",
+        "name": "Graph Anomaly Detection",
+        "family": "statistics",
+        "contract": "problems/20_graph_anomaly_detection/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "personalized_pagerank_rwr",
+        "name": "Personalized PageRank and Random Walk with Restart",
+        "family": "centrality",
+        "contract": "problems/21_personalized_pagerank_rwr/problem.json",
+        "operations": [
+          "personalized-pagerank"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "max_flow_min_cut",
+        "name": "Maximum Flow and Minimum s-t Cut",
+        "family": "flow",
+        "contract": "problems/22_max_flow_min_cut/problem.json",
+        "operations": [
+          "max-flow-min-cut"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "butterfly_counting_bipartite",
+        "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+        "family": "pattern_mining",
+        "contract": "problems/23_butterfly_counting_bipartite/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "graph_edit_distance_mcs",
+        "name": "Graph Edit Distance and Maximum Common Subgraph",
+        "family": "comparison",
+        "contract": "problems/24_graph_edit_distance_mcs/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "network_alignment",
+        "name": "Pairwise Network Alignment",
+        "family": "comparison",
+        "contract": "problems/25_network_alignment/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "hop_constrained_cycle_path_enumeration",
+        "name": "Hop-Constrained Simple Path and Cycle Enumeration",
+        "family": "traversal",
+        "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "group_steiner_tree",
+        "name": "Group Steiner Tree",
+        "family": "optimization",
+        "contract": "problems/27_group_steiner_tree/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "influence_maximization",
+        "name": "Influence Maximization under Diffusion Models",
+        "family": "centrality",
+        "contract": "problems/28_influence_maximization/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "simrank_vertex_similarity",
+        "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+        "family": "similarity",
+        "contract": "problems/29_simrank_vertex_similarity/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "balanced_graph_partitioning",
+        "name": "Balanced k-Way Graph Partitioning",
+        "family": "partitioning",
+        "contract": "problems/30_balanced_graph_partitioning/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "bipartite_matching_assignment",
+        "name": "Bipartite Matching and Linear Assignment",
+        "family": "matching",
+        "contract": "problems/31_bipartite_matching_assignment/problem.json",
+        "operations": [
+          "bipartite-matching"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "signed_network_structural_balance",
+        "name": "Signed Network Structural Balance and Frustration Minimization",
+        "family": "partitioning",
+        "contract": "problems/32_signed_network_structural_balance/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "transitive_closure_reachability",
+        "name": "Transitive Closure and Reachability Indexing",
+        "family": "traversal",
+        "contract": "problems/33_transitive_closure_reachability/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "entity_resolution_blocking",
+        "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
+        "family": "data_preparation",
+        "contract": "problems/34_entity_resolution_blocking/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "connected_components",
+        "name": "Connected Components (Weakly and Strongly Connected)",
+        "family": "connectivity",
+        "contract": "problems/35_connected_components/problem.json",
+        "operations": [
+          "connected-components"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "graph_layout_force_directed",
+        "name": "Force-Directed Graph Layout",
+        "family": "layout",
+        "contract": "problems/36_graph_layout_force_directed/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "null_model_significance_testing",
+        "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+        "family": "statistics",
+        "contract": "problems/37_null_model_significance_testing/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "breadth_first_search",
+        "name": "Breadth-First Search and Unweighted Shortest Paths",
+        "family": "traversal",
+        "contract": "problems/38_breadth_first_search/problem.json",
+        "operations": [
+          "breadth-first-search"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "single_source_shortest_paths",
+        "name": "Weighted Single-Source Shortest Paths",
+        "family": "traversal",
+        "contract": "problems/39_single_source_shortest_paths/problem.json",
+        "operations": [
+          "single-source-shortest-paths"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "many_source_shortest_paths",
+        "name": "Many-Source and All-Pairs Shortest Distances",
+        "family": "traversal",
+        "contract": "problems/40_many_source_shortest_paths/problem.json",
+        "operations": [
+          "many-source-shortest-paths"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "spanning_tree_forest",
+        "name": "Minimum and Maximum Spanning Trees and Forests",
+        "family": "trees",
+        "contract": "problems/41_spanning_tree_forest/problem.json",
+        "operations": [
+          "spanning-tree-forest"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "maximal_independent_set",
+        "name": "Maximal Independent Set",
+        "family": "independent_sets",
+        "contract": "problems/42_maximal_independent_set/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "vertex_coloring",
+        "name": "Vertex Coloring",
+        "family": "coloring",
+        "contract": "problems/43_vertex_coloring/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "general_graph_weighted_matching",
+        "name": "General-Graph Weighted Matching",
+        "family": "matching",
+        "contract": "problems/44_general_graph_weighted_matching/problem.json",
+        "operations": [
+          "weighted-matching"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "topological_sort",
+        "name": "Topological Sorting and DAG Levels",
+        "family": "traversal",
+        "contract": "problems/45_topological_sort/problem.json",
+        "operations": [
+          "topological-sort"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "random_walk_generation",
+        "name": "Graph Random-Walk Generation",
+        "family": "sampling",
+        "contract": "problems/46_random_walk_generation/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "neighborhood_sampling",
+        "name": "Neighborhood Sampling",
+        "family": "sampling",
+        "contract": "problems/47_neighborhood_sampling/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "induced_subgraph_ego_extraction",
+        "name": "Induced Subgraph and Ego-Network Extraction",
+        "family": "subgraphs",
+        "contract": "problems/48_induced_subgraph_ego_extraction/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "seeded_local_community_detection",
+        "name": "Seeded Local Community Detection",
+        "family": "communities",
+        "contract": "problems/49_seeded_local_community_detection/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "node_embedding",
+        "name": "Node Embedding",
+        "family": "embeddings",
+        "contract": "problems/50_node_embedding/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "knowledge_graph_embedding",
+        "name": "Knowledge-Graph Embedding",
+        "family": "embeddings",
+        "contract": "problems/51_knowledge_graph_embedding/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "node_classification_regression",
+        "name": "Node Classification and Regression",
+        "family": "learning",
+        "contract": "problems/52_node_classification_regression/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "graph_classification_regression",
+        "name": "Graph Classification and Regression",
+        "family": "learning",
+        "contract": "problems/53_graph_classification_regression/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "hypergraph_partitioning",
+        "name": "Balanced Hypergraph Partitioning",
+        "family": "partitioning",
+        "contract": "problems/54_hypergraph_partitioning/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "spectral_graph_sparsification",
+        "name": "Spectral Graph Sparsification",
+        "family": "construction",
+        "contract": "problems/55_spectral_graph_sparsification/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "biconnected_components",
+        "name": "Biconnected Components, Articulation Points and Bridges",
+        "family": "connectivity",
+        "contract": "problems/56_biconnected_components/problem.json",
+        "operations": [
+          "biconnected-components"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "temporal_fastest_paths",
+        "name": "Temporal Fastest and Earliest-Arrival Paths",
+        "family": "temporal",
+        "contract": "problems/57_temporal_fastest_paths/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "top_k_critical_paths_dag",
+        "name": "Top-k Critical Paths in DAGs",
+        "family": "traversal",
+        "contract": "problems/58_top_k_critical_paths_dag/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "graph_signal_denoising",
+        "name": "Graph Signal Denoising and Trend Filtering",
+        "family": "spectral",
+        "contract": "problems/59_graph_signal_denoising/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "graph_based_geolocation",
+        "name": "Graph-Based Geolocation",
+        "family": "learning",
+        "contract": "problems/60_graph_based_geolocation/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "widest_paths",
+        "name": "Single-Source Widest Paths",
+        "family": "traversal",
+        "contract": "problems/61_widest_paths/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "graph_coarsening",
+        "name": "Graph Coarsening and Quotient Construction",
+        "family": "construction",
+        "contract": "problems/62_graph_coarsening/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "graph_laplacian_eigenpairs",
+        "name": "Graph Laplacian Eigenpairs",
+        "family": "spectral",
+        "contract": "problems/63_graph_laplacian_eigenpairs/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "knn_graph_construction",
+        "name": "k-Nearest-Neighbor Graph Construction",
+        "family": "construction",
+        "contract": "problems/64_knn_graph_construction/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "hypergraph_node_learning",
+        "name": "Hypergraph Node Classification and Regression",
+        "family": "learning",
+        "contract": "problems/65_hypergraph_node_learning/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "maximum_independent_set",
+        "name": "Maximum Independent Set",
+        "family": "independent_sets",
+        "contract": "problems/66_maximum_independent_set/problem.json",
+        "operations": [
+          "maximum-independent-set"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "persistent_homology",
+        "name": "Flag-Complex Persistent Homology",
+        "family": "topology",
+        "contract": "problems/67_persistent_homology/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "single_graph_frequent_subgraph_mining",
+        "name": "Frequent Subgraphs in One Labeled Graph",
+        "family": "pattern_mining",
+        "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "minimum_vertex_cover",
+        "name": "Minimum Vertex Cover",
+        "family": "independent_sets",
+        "contract": "problems/69_minimum_vertex_cover/problem.json",
+        "operations": [
+          "minimum-vertex-cover"
+        ],
+        "runtime_integration": "implemented"
+      },
+      {
+        "id": "graph_condensation",
+        "name": "Learned Graph Condensation",
+        "family": "learning",
+        "contract": "problems/70_graph_condensation/problem.json",
+        "operations": [],
+        "runtime_integration": "pending"
+      },
+      {
+        "id": "graph_record_queries",
+        "name": "Canonical graph record queries",
+        "family": "query",
+        "contract": null,
+        "operations": [],
+        "runtime_integration": "pending"
+      }
+    ],
+    "operations": [
+      {
+        "id": "breadth-first-search",
+        "problem_id": "breadth_first_search",
+        "family": "traversal",
+        "title": "Connections within a number of steps",
+        "description": "Minimum hop distances with explicit independent or nearest-source searches. Preserve direction; discard loops and collapse duplicate arcs; weights are ignored. IDs are signed int64 or strings.",
+        "input_kind": "graph",
+        "parameters": {
+          "sources": {
+            "kind": "array",
+            "required": true,
+            "nullable": false
+          },
+          "source_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "independent",
+            "choices": [
+              "independent",
+              "nearest_source"
+            ]
+          },
+          "depth_limit": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "return_predecessors": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": true
+          }
+        },
+        "output_ports": {
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          },
+          "distances": {
+            "type": "table",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "triangle-counting",
+        "problem_id": "triangle_counting_listing",
+        "family": "motifs",
+        "title": "Count or list triangles",
+        "description": "Count three-vertex cliques of an undirected graph. Discard loops and collapse duplicate edges; weights are ignored. GPU enumeration uses native CPU materialization with count verification.",
+        "input_kind": "graph",
+        "parameters": {
+          "mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "count",
+            "choices": [
+              "count",
+              "enumerate"
+            ]
+          },
+          "result_limit": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 1
+          }
+        },
+        "output_ports": {
+          "count": {
+            "type": "scalar",
+            "availability": "runtime_checked"
+          },
+          "groups": {
+            "type": "vertex_groups",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "tot",
+            "device": "gpu",
+            "compiled": true
+          },
+          {
+            "id": "wetric",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "single-source-shortest-paths",
+        "problem_id": "single_source_shortest_paths",
+        "family": "traversal",
+        "title": "Shortest weighted paths from one vertex",
+        "description": "Nonnegative lengths; preserve direction, drop loops and keep minimum parallel length. CPU returns exact rational costs over admitted binary64 weights; GPU returns float64 costs. Cutoff is inclusive.",
+        "input_kind": "graph",
+        "parameters": {
+          "source": {
+            "kind": "vertex_id",
+            "required": true,
+            "nullable": false
+          },
+          "cutoff": {
+            "kind": "number",
+            "required": false,
+            "nullable": true,
+            "default": null
+          },
+          "return_predecessors": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": true
+          }
+        },
+        "output_ports": {
+          "distances": {
+            "type": "vertex_scores",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "backend_dependent",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "Path cost bounds must fit float64; integral costs beyond 2^53 require CPU"
+        ]
+      },
+      {
+        "id": "many-source-shortest-paths",
+        "problem_id": "many_source_shortest_paths",
+        "family": "traversal",
+        "title": "Shortest paths between selected vertex sets",
+        "description": "Selected origins and destinations, or all vertices for null. Nonnegative lengths, minimum parallel length and preserved direction; CPU exact costs and GPU float64 costs.",
+        "input_kind": "graph",
+        "parameters": {
+          "origins": {
+            "kind": "array",
+            "required": false,
+            "nullable": true,
+            "default": null
+          },
+          "destinations": {
+            "kind": "array",
+            "required": false,
+            "nullable": true,
+            "default": null
+          },
+          "weight_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "edge_weight",
+            "choices": [
+              "edge_weight",
+              "unweighted"
+            ]
+          }
+        },
+        "output_ports": {
+          "distances": {
+            "type": "table",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "backend_dependent",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "Path cost bounds must fit float64; integral costs beyond 2^53 require CPU"
+        ]
+      },
+      {
+        "id": "spanning-tree-forest",
+        "problem_id": "spanning_tree_forest",
+        "family": "trees",
+        "title": "Minimum or maximum spanning forest",
+        "description": "Undirected weighted forests with isolates retained. Negative lengths are allowed. Keep minimum or maximum parallel weights according to the objective; discard loops.",
+        "input_kind": "graph",
+        "parameters": {
+          "objective": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "minimum",
+            "choices": [
+              "minimum",
+              "maximum"
+            ]
+          },
+          "require_connected": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": false
+          }
+        },
+        "output_ports": {
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          },
+          "edges": {
+            "type": "edge_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "connected-components",
+        "problem_id": "connected_components",
+        "family": "connectivity",
+        "title": "Connected vertex groups",
+        "description": "Weak or strong connectivity. Weak mode uses an undirected projection; strong mode preserves direction. Loops, duplicate edges and weights do not affect membership.",
+        "input_kind": "graph",
+        "parameters": {
+          "connectivity_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "weakly_connected",
+            "choices": [
+              "weakly_connected",
+              "strongly_connected"
+            ]
+          }
+        },
+        "output_ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "topological-sort",
+        "problem_id": "topological_sort",
+        "family": "traversal",
+        "title": "Order a directed acyclic graph",
+        "description": "Return a deterministic topological order. Reject directed cycles, including self-loops. Duplicate arcs collapse; weights are ignored.",
+        "input_kind": "graph",
+        "parameters": {},
+        "output_ports": {
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "pagerank",
+        "problem_id": "centrality_influential_node_mining",
+        "family": "centrality",
+        "title": "PageRank influence scores",
+        "description": "Directed random-walk scores with uniform restart and dangling distribution. Drop loops, sum parallel weights and independently verify the fixed-point residual.",
+        "input_kind": "graph",
+        "parameters": {
+          "alpha": {
+            "kind": "number",
+            "required": false,
+            "nullable": false,
+            "default": 0.85,
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "tolerance": {
+            "kind": "number",
+            "required": false,
+            "nullable": false,
+            "default": 1e-09,
+            "minimum": 0.0
+          },
+          "max_iterations": {
+            "kind": "integer",
+            "required": false,
+            "nullable": false,
+            "default": 1000,
+            "minimum": 1
+          },
+          "weight_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "unweighted",
+            "choices": [
+              "unweighted",
+              "edge_weight"
+            ]
+          }
+        },
+        "output_ports": {
+          "scores": {
+            "type": "vertex_scores",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "numerical",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "degree-centrality",
+        "problem_id": "centrality_influential_node_mining",
+        "family": "centrality",
+        "title": "Rank vertices by their number of connections",
+        "description": "Exact degree scores with outgoing, incoming, both or undirected-projection semantics. Drop loops, collapse duplicate edges and ignore weights. Optional normalization divides by n-1; isolates score zero.",
+        "input_kind": "graph",
+        "parameters": {
+          "normalized": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": true
+          },
+          "direction_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "outgoing",
+            "choices": [
+              "outgoing",
+              "incoming",
+              "both",
+              "undirected_projection"
+            ]
+          }
+        },
+        "output_ports": {
+          "scores": {
+            "type": "vertex_scores",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "betweenness-centrality",
+        "problem_id": "centrality_influential_node_mining",
+        "family": "centrality",
+        "title": "Rank vertices that connect shortest paths",
+        "description": "All-source betweenness excluding endpoints. Preserve direction, drop loops and keep minimum parallel length. CPU supports exact rational scores and strictly positive weighted paths; GPU profiles use unweighted paths with declared floating-point arithmetic.",
+        "input_kind": "graph",
+        "parameters": {
+          "normalized": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": true
+          },
+          "weight_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "unweighted",
+            "choices": [
+              "unweighted",
+              "edge_weight"
+            ]
+          }
+        },
+        "output_ports": {
+          "scores": {
+            "type": "vertex_scores",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          },
+          {
+            "id": "turbo-bc",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original all-source GPU Brandes kernels, float32 accumulation"
+          }
+        ],
+        "quality": "backend_dependent",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "Unweighted paths only",
+          "Original turbo-bc supports undirected graphs and uses float32 accumulation; libcugraph supports either direction",
+          "Shortest-path counts must fit signed int32; larger inputs receive bounded CPU admission checks"
+        ]
+      },
+      {
+        "id": "personalized-pagerank",
+        "problem_id": "personalized_pagerank_rwr",
+        "family": "centrality",
+        "title": "Restart walks around seed vertices",
+        "description": "Seeded PageRank with explicit direction, weight and dangling policies. Full score port stays complete when the displayed ranking is filtered or capped.",
+        "input_kind": "graph",
+        "parameters": {
+          "seed_vertices": {
+            "kind": "array",
+            "required": true,
+            "nullable": false
+          },
+          "restart_probability": {
+            "kind": "number",
+            "required": false,
+            "nullable": false,
+            "default": 0.15,
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "direction_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "outgoing",
+            "choices": [
+              "outgoing",
+              "incoming",
+              "undirected_projection"
+            ]
+          },
+          "weight_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "unweighted",
+            "choices": [
+              "unweighted",
+              "edge_weight"
+            ]
+          },
+          "dangling_policy": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "redistribute_to_seeds",
+            "choices": [
+              "redistribute_to_seeds",
+              "redistribute_uniformly",
+              "self_loop"
+            ]
+          },
+          "convergence_tolerance": {
+            "kind": "number",
+            "required": false,
+            "nullable": false,
+            "default": 1e-09,
+            "minimum": 0.0
+          },
+          "max_iterations": {
+            "kind": "integer",
+            "required": false,
+            "nullable": false,
+            "default": 1000,
+            "minimum": 1
+          },
+          "exclude_seeds_from_output": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": false
+          },
+          "top_k": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 1
+          }
+        },
+        "output_ports": {
+          "scores": {
+            "type": "vertex_scores",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "numerical",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "Custom uniform dangling redistribution uses the CPU profile"
+        ]
+      },
+      {
+        "id": "link-prediction",
+        "problem_id": "link_prediction",
+        "family": "similarity",
+        "title": "Score potential links from local neighborhoods",
+        "description": "Undirected simple neighborhoods; loops and weights ignored. CPU supports eight local measures; GPU supports Jaccard. Candidate limits apply before top_k; capped output is explicitly incomplete.",
+        "input_kind": "graph",
+        "parameters": {
+          "scoring_measure": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "jaccard",
+            "choices": [
+              "jaccard",
+              "common_neighbors",
+              "adamic_adar",
+              "resource_allocation",
+              "preferential_attachment",
+              "sorensen",
+              "overlap",
+              "cosine"
+            ]
+          },
+          "candidate_pairs": {
+            "kind": "array",
+            "required": false,
+            "nullable": true,
+            "default": null
+          },
+          "exclude_existing_edges": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": true
+          },
+          "top_k": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 1
+          }
+        },
+        "output_ports": {
+          "pairs": {
+            "type": "table",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "numerical",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "Only scoring_measure=jaccard"
+        ]
+      },
+      {
+        "id": "max-flow-min-cut",
+        "problem_id": "max_flow_min_cut",
+        "family": "flow",
+        "title": "Find capacity and bottlenecks between two places",
+        "description": "Exact rational flow and cut certificate. Sum parallel capacities, discard loops and treat undirected edges as two directed arcs. Optional vertex capacities use typed {vertex,capacity} records and include explicitly limited terminals. Mixed cuts return original edge IDs plus cut vertices.",
+        "input_kind": "graph",
+        "parameters": {
+          "source": {
+            "kind": "vertex_id",
+            "required": true,
+            "nullable": false
+          },
+          "sink": {
+            "kind": "vertex_id",
+            "required": true,
+            "nullable": false
+          },
+          "capacity_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "edge_weight",
+            "choices": [
+              "edge_weight",
+              "unit_capacity"
+            ]
+          },
+          "return_cut_side": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": true
+          },
+          "vertex_capacities": {
+            "kind": "array",
+            "required": false,
+            "nullable": true,
+            "default": null
+          },
+          "solution_quality": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "exact",
+            "choices": [
+              "exact",
+              "approximate"
+            ]
+          }
+        },
+        "output_ports": {
+          "value": {
+            "type": "scalar",
+            "availability": "runtime_checked"
+          },
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "ecl-maxflow",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "isolated original CUDA flow worker with native exact flow and cut certification"
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "ecl-maxflow: nonnegative integral normalized capacities with total <=1e9; no vertex capacities",
+          "At most 1M vertices and 10M input edges; exact residual flow/cut certification"
+        ]
+      },
+      {
+        "id": "weighted-matching",
+        "problem_id": "general_graph_weighted_matching",
+        "family": "matching",
+        "title": "Find the highest-value non-conflicting pairs",
+        "description": "Exact maximum-weight matching on an undirected graph, with no cardinality constraint. Require nonnegative weights; discard loops and keep the largest parallel weight. Preserve selected original edge IDs and return exact rational totals over admitted binary64 weights. Zero-weight edges may be omitted.",
+        "input_kind": "graph",
+        "parameters": {
+          "solution_quality": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "exact",
+            "choices": [
+              "exact",
+              "approximate"
+            ]
+          }
+        },
+        "output_ports": {
+          "edges": {
+            "type": "edge_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "bipartite-matching",
+        "problem_id": "bipartite_matching_assignment",
+        "family": "matching",
+        "title": "Match items on two sides by count, value or cost",
+        "description": "Exact cardinality, weight or cost matching with attributes.side=left|right on every vertex. Reject same-side edges and loops; keep the best parallel edge. Weighted objectives require explicit weights. Without required smaller-side coverage, empty matching may be optimal. Infeasible coverage has no witness port.",
+        "input_kind": "graph",
+        "parameters": {
+          "objective": {
+            "kind": "string",
+            "required": true,
+            "nullable": false,
+            "choices": [
+              "maximum_cardinality",
+              "maximum_weight",
+              "minimum_cost"
+            ]
+          },
+          "weight_mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "unweighted",
+            "choices": [
+              "unweighted",
+              "edge_weight"
+            ]
+          },
+          "perfect_matching_required": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": false
+          },
+          "solution_quality": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "exact",
+            "choices": [
+              "exact",
+              "approximate"
+            ]
+          }
+        },
+        "output_ports": {
+          "edges": {
+            "type": "edge_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "hungarian-cuda",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "isolated original CUDA assignment worker with native exact optimality verification"
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "hungarian-cuda: minimum-cost perfect assignment, complete equal sides, at most 64 per side",
+          "Every input cost must be an integer in [0,999]; native C++ verifies the optimum"
+        ]
+      },
+      {
+        "id": "maximal-cliques",
+        "problem_id": "maximal_clique_enumeration",
+        "family": "cliques",
+        "title": "Find complete groups that cannot be extended",
+        "description": "Exact maximal cliques in an undirected simple projection. Drop loops and duplicate edges; ignore weights. Original GPU kernels supply a count, with bounded C++ materialization and explicit list completeness.",
+        "input_kind": "graph",
+        "parameters": {
+          "minimum_clique_size": {
+            "kind": "integer",
+            "required": false,
+            "nullable": false,
+            "default": 1,
+            "minimum": 1
+          },
+          "result_limit": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 1
+          }
+        },
+        "output_ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "rdmce",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU count plus bounded native materialization"
+          },
+          {
+            "id": "mce-gpu",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU count plus bounded native materialization"
+          },
+          {
+            "id": "g2-aimd",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU count plus bounded native materialization"
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "GPU count plus bounded native materialization",
+          "A forward-subset count bound must fit uint64"
+        ]
+      },
+      {
+        "id": "maximum-clique",
+        "problem_id": "maximum_clique",
+        "family": "cliques",
+        "title": "Find the largest fully connected group",
+        "description": "Exact maximum clique, optionally all tied optima. Undirected simple projection; loops, duplicate edges and weights ignored. Original GPU witnesses are checked by native coloring or exact search; ties use native materialization.",
+        "input_kind": "graph",
+        "parameters": {
+          "return_all_ties": {
+            "kind": "boolean",
+            "required": false,
+            "nullable": false,
+            "default": false
+          }
+        },
+        "output_ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "availability": "runtime_checked"
+          },
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "cuda-ms",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          },
+          {
+            "id": "gpu-maximum-clique",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          },
+          {
+            "id": "maximum-clique-on-gpu",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "k-cliques",
+        "problem_id": "k_clique_counting_enumeration",
+        "family": "cliques",
+        "title": "Count or list complete groups of a chosen size",
+        "description": "Exact count for k>=2 with no upper k bound on CPU. Undirected simple projection; loops, duplicate edges and weights ignored. GPU counts require supported k and a uint64 count bound. Counts remain complete when memberships are capped.",
+        "input_kind": "graph",
+        "parameters": {
+          "k": {
+            "kind": "integer",
+            "required": true,
+            "nullable": false,
+            "minimum": 2
+          },
+          "mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "count",
+            "choices": [
+              "count",
+              "enumerate"
+            ]
+          },
+          "result_limit": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 1
+          }
+        },
+        "output_ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "availability": "runtime_checked"
+          },
+          "count": {
+            "type": "scalar",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "graphset",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU count plus optional bounded native materialization"
+          },
+          {
+            "id": "gamma",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "repaired original GPU count plus optional bounded native materialization"
+          },
+          {
+            "id": "kcgpu",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "repaired original GPU count plus optional bounded native materialization"
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report",
+        "gpu_limitations": [
+          "graphset: k=3..6; gamma: k=3..7; kcgpu: k=3..10; k larger than vertex count returns zero",
+          "A forward-subset count bound must fit uint64"
+        ]
+      },
+      {
+        "id": "biconnected-components",
+        "problem_id": "biconnected_components",
+        "family": "connectivity",
+        "title": "Find fragile connections and cut vertices",
+        "description": "Exact vertex-biconnected edge blocks, bridges and articulation vertices. Undirected input; loops discarded and parallel edges collapsed. Every normalized edge keeps its first original ID and all source edge IDs.",
+        "input_kind": "graph",
+        "parameters": {},
+        "output_ports": {
+          "groups": {
+            "type": "vertex_groups",
+            "availability": "runtime_checked"
+          },
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          },
+          "edges": {
+            "type": "edge_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "k-truss",
+        "problem_id": "k_truss_decomposition",
+        "family": "cores",
+        "title": "Find connections supported by triangles",
+        "description": "Complete edge truss numbers using the k-2 support convention, plus optional k-truss selection. Undirected simple projection, weights ignored. First original edge IDs represent collapsed edges; source IDs are retained.",
+        "input_kind": "graph",
+        "parameters": {
+          "requested_k": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 2
+          }
+        },
+        "output_ports": {
+          "edges": {
+            "type": "edge_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "k-core",
+        "problem_id": "k_core_decomposition",
+        "family": "cores",
+        "title": "Find the well-connected core",
+        "description": "Exact core numbers and optional selected vertices. Undirected simple projection; loops, duplicate edges and weights ignored. Isolates have core number zero.",
+        "input_kind": "graph",
+        "parameters": {
+          "requested_k": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 0
+          }
+        },
+        "output_ports": {
+          "scores": {
+            "type": "vertex_scores",
+            "availability": "runtime_checked"
+          },
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "libcugraph",
+            "device": "gpu",
+            "compiled": true
+          },
+          {
+            "id": "kcore-gpu",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU peeling kernels"
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "maximum-independent-set",
+        "problem_id": "maximum_independent_set",
+        "family": "independent_sets",
+        "title": "Find the largest non-conflicting group",
+        "description": "Exact maximum independent set via maximum clique of the complement. Undirected simple projection; loops, duplicate edges and weights ignored. Complement construction and search are bounded.",
+        "input_kind": "graph",
+        "parameters": {
+          "mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "exact",
+            "choices": [
+              "exact"
+            ]
+          }
+        },
+        "output_ports": {
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "cuda-ms",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          },
+          {
+            "id": "gpu-maximum-clique",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          },
+          {
+            "id": "maximum-clique-on-gpu",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      },
+      {
+        "id": "minimum-vertex-cover",
+        "problem_id": "minimum_vertex_cover",
+        "family": "independent_sets",
+        "title": "Cover every connection with as few vertices as possible",
+        "description": "Exact minimum vertex cover, or decision against k, from a maximum independent set. Undirected simple projection; loops, duplicate edges and weights ignored. Native complement construction and search are bounded.",
+        "input_kind": "graph",
+        "parameters": {
+          "mode": {
+            "kind": "string",
+            "required": false,
+            "nullable": false,
+            "default": "exact",
+            "choices": [
+              "exact",
+              "decision"
+            ]
+          },
+          "k": {
+            "kind": "integer",
+            "required": false,
+            "nullable": true,
+            "default": null,
+            "minimum": 0
+          }
+        },
+        "output_ports": {
+          "vertices": {
+            "type": "vertex_set",
+            "availability": "runtime_checked"
+          }
+        },
+        "backends": [
+          {
+            "id": "cpp",
+            "device": "cpu",
+            "compiled": true
+          },
+          {
+            "id": "cuda-ms",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          },
+          {
+            "id": "gpu-maximum-clique",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          },
+          {
+            "id": "maximum-clique-on-gpu",
+            "device": "gpu",
+            "compiled": true,
+            "execution": "original GPU witness plus native optimality proof"
+          }
+        ],
+        "quality": "exact",
+        "implementation_language": "c++/cuda",
+        "evidence_status": "requires_matching_validation_report"
+      }
+    ],
+    "abi_version": 1,
+    "implementation_sha256": "6ecb0d709ee1a37dfe2ebdaa379a1d614c79c0acb3f6310d3b32fdbfdc8f3c62",
+    "python_runtime_required": false,
+    "file_readers": [
+      {
+        "id": "libcudf-csv",
+        "compiled": true,
+        "device": "gpu"
+      }
+    ]
+  },
+  "library_sha256": "34430542328b1920ca32836775e7260130ecc39ed8b3be851caf5f8028eca77d"
+}

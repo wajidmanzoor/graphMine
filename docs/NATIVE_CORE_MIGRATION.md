@@ -14,8 +14,9 @@ The catalog marks profiles still awaiting migration as `pending`.
 
 ## Current migration boundary
 
-The shared runtime has twenty operations covering profiles for eighteen formal
-problems. All twenty have C++ CPU implementations. GPU dispatch calls native libraries directly:
+The shared runtime has 23 operations covering profiles for 21 formal
+problems. All 23 have C++ CPU implementations. GPU dispatch calls native
+libraries or isolated native CUDA workers:
 
 | Operation | Family | GPU implementation |
 | --- | --- | --- |
@@ -31,6 +32,9 @@ problems. All twenty have C++ CPU implementations. GPU dispatch calls native lib
 | Betweenness centrality | centrality | libcugraph and original TurboBC; unweighted paths |
 | Personalized PageRank | centrality | libcugraph; custom uniform dangling redistribution uses CPU |
 | Local link prediction | similarity | libcugraph Jaccard; eight CPU measures |
+| Maximum flow/minimum cut | flow | Original ECL-MaxFlow CUDA worker, integral capacities totaling at most 1e9 |
+| General weighted matching | matching | CPU weighted Blossom profile |
+| Bipartite matching/assignment | matching | Original Hungarian CUDA worker for complete square minimum-cost perfect assignment |
 | Triangle counting/listing | motifs | Original ToT and WeTriC CUDA backends |
 | Maximal cliques | cliques | Original RDMCE, MCE-GPU and G2-AIMD counts; bounded native materialization |
 | Maximum clique | cliques | Original CUDA-MS, GPUMaximumClique and Maximum-Clique-on-GPU witnesses; native optimality check |
@@ -432,3 +436,89 @@ python tools/validate_native_centrality_sanitizers.py \
 The remaining 52 formal problems, unfinished variants within migrated
 problems, and the application algorithm worker still require native migration.
 This checkpoint does not close the review-integration goal.
+
+## Native matching and flow profiles
+
+`weighted-matching` computes an exact maximum-weight matching with native Boost
+weighted Blossom. It requires an undirected graph and nonnegative explicit
+weights, removes loops, and retains the largest parallel edge with its original
+ID. No cardinality constraint is implied; zero-weight pairs may be omitted.
+Component-local power-of-two scaling preserves admitted binary64 weights in
+checked 4096-bit integer arithmetic. A cubic admission bound limits Blossom
+work before its call; hard interruption of an in-process CPU solver remains
+part of the application-worker migration.
+
+`bipartite-matching` requires `attributes.side` equal to `left` or `right` on
+every vertex, including isolates. C++ supports maximum cardinality, maximum
+weight and minimum cost, with optional coverage of the smaller side. Weighted
+objectives require explicit weights and use exact rational residual costs.
+Without required coverage, an empty matching can be optimal. Infeasible
+coverage is explicitly certified and produces no edge witness port.
+
+`max-flow-min-cut` sums parallel capacities exactly, removes loops and expands
+undirected edges into two directed capacity arcs. Iterative Dinic avoids host
+stack growth on long paths. Exact flow assignments retain original edge IDs;
+undirected assignments also identify their orientation. Optional vertex limits
+are encoded as `[{"vertex": 0, "capacity": 2}, ...]`, preserving typed IDs.
+Explicit terminal limits apply too. Splitting vertices makes the returned cut
+certificate include both `min_cut_edges` and `min_cut_vertices`; their combined
+capacity equals the flow value. Source-side membership refers to reachability
+of the input copy, and `split_source_side` exposes both copies. The authoritative
+formal contract and its four embedded copies define this mixed-cut convention.
+
+Enable `GRAPHMINE_NATIVE_OPTIMIZATION=ON` to build two original CUDA workers:
+
+- `ecl-maxflow`: integral normalized capacities whose total is at most 1e9;
+  at most one million vertices and ten million input edges; no vertex limits.
+  C++ checks capacity, conservation, residual reachability and exact cut equality.
+- `hungarian-cuda`: minimum-cost perfect assignment on a complete square
+  bipartite graph, at most 64 vertices per side, every input cost integral in
+  `[0,999]`. C++ checks its permutation and independently verifies the optimum.
+
+The pinned upstream source adapters are prepared by Python at build time. Both
+workers and the shared core execute entirely in C++/CUDA. Worker processes have
+precise deadlines, bounded output, and are killed and reaped on timeout. Their
+failure is returned explicitly; automatic routing never hides a failed GPU run
+by recomputing its result. Unsupported variants can select CPU before execution.
+Workers install in `libexec/graphmine` and are located from the installed CLI or
+shared library, including calls made through the Python wrapper.
+
+The optimization checkpoint reports in `validation/native_optimization` contain
+**167,891 passing native requests**: 106,671 CPU and 30,610 per GPU. The new CPU
+matching checks total 12,740; flow checks total 25,587. On each GPU, assignment
+has 751 checks and flow has 1,069. Independent oracles enumerate matching
+subsets and split-network cuts, checking original edge identities, feasibility,
+exact objectives, residual certificates and all declared variants. Larger
+cases include 20,000-vertex flow paths and 64-by-64 assignment matrices.
+
+Sixteen direct-worker memcheck/initcheck cases pass, alongside the previous
+8 centrality sanitizer and 8 original mining depth/admission checks. The
+20,000-vertex flow path passes normally but times out under instrumentation at
+the default 60-second deadline; its failed instrumented report is retained
+under `known-failures`, separately from successful kernel checks. Successful
+kernel checks cover 256-vertex residual networks, total capacity 1e9 and
+64-by-64 assignment cost boundaries.
+
+There are also 117 wrapper/CLI checks, 64 cuDF construction checks, 41
+working-app and 25 staged-app checks, with no acceptance failures or skips.
+Installed native C/C++ consumers and installed CUDA CLI/worker execution do not
+require Python on PATH. Installed wrapper/CLI parity passes on both GPUs.
+The audit verifies 49 CPU source files, 1,060 GPU source files, nine CPU and
+eleven GPU binaries, generated worker sources and 32 linked dependencies.
+All GPU source hashes match the exact Git index.
+
+```sh
+python tools/validate_native_runtime.py --cpu-build build/native-cpu \
+  --gpu-build build/original-with-rapids/runtime --output validation/native_optimization
+python tools/validate_native_optimization_sanitizers.py \
+  --gpu-build build/original-with-rapids/runtime \
+  --output validation/native_optimization/optimization-sanitizers
+python tools/validate_native_optimization_install.py \
+  --gpu-build build/original-with-rapids/runtime --prefix /tmp/native-gpu-install \
+  --output validation/native_optimization/installed-optimization.json
+```
+
+Native coverage for the remaining 49 formal problems, unfinished variants of
+migrated problems, the application algorithm worker and the outstanding review
+requirements remain open. Tabular ingestion uses native cuDF, and browser
+visualizations use Cytoscape.

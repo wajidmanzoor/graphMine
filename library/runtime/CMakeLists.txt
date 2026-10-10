@@ -38,6 +38,39 @@ endif()
 find_path(GRAPHMINE_RUNTIME_BOOST_INCLUDE boost/json.hpp REQUIRED)
 find_package(OpenSSL REQUIRED COMPONENTS Crypto)
 
+# Reuse the pinned research kernels as isolated native executables. Python is
+# only a build-time source patch generator; it is absent from execution.
+option(GRAPHMINE_NATIVE_OPTIMIZATION "Build native ECL flow and Hungarian CUDA workers" OFF)
+set(GRAPHMINE_NATIVE_OPTIMIZATION_ARCHITECTURES "89-real;89-virtual" CACHE STRING "Optimization worker CUDA architectures")
+if(GRAPHMINE_NATIVE_OPTIMIZATION)
+  enable_language(CUDA)
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  set(optimization_upstream "${CMAKE_CURRENT_SOURCE_DIR}/../src/backends/expansion/upstream")
+  set(optimization_generated "${CMAKE_CURRENT_BINARY_DIR}/optimization-generated")
+  file(GLOB_RECURSE optimization_inputs CONFIGURE_DEPENDS "${optimization_upstream}/*")
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/../tools/prepare_expansion_workers.py" ${optimization_inputs})
+  execute_process(COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/../tools/prepare_expansion_workers.py" "${optimization_generated}"
+    RESULT_VARIABLE optimization_result ERROR_VARIABLE optimization_error)
+  if(NOT optimization_result EQUAL 0)
+    message(FATAL_ERROR "Cannot prepare native optimization workers: ${optimization_error}")
+  endif()
+  foreach(profile IN ITEMS ecl_flow hungarian)
+    add_executable(graphmine_native_worker_${profile} "${optimization_generated}/${profile}.cu")
+    set_target_properties(graphmine_native_worker_${profile} PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/optimization-workers"
+      CUDA_ARCHITECTURES "${GRAPHMINE_NATIVE_OPTIMIZATION_ARCHITECTURES}"
+      CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON)
+    install(TARGETS graphmine_native_worker_${profile} RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/graphmine")
+  endforeach()
+  set_target_properties(graphmine_native_worker_ecl_flow PROPERTIES OUTPUT_NAME graphmine-worker-ecl-maxflow)
+  set_target_properties(graphmine_native_worker_hungarian PROPERTIES OUTPUT_NAME graphmine-worker-hungarian-cuda)
+  target_include_directories(graphmine_native_worker_ecl_flow PRIVATE "${optimization_upstream}/ecl_flow/lib" "${optimization_upstream}/ecl_flow/src")
+  target_compile_definitions(graphmine_native_worker_hungarian PRIVATE _n_=64 _range_=100)
+  install(DIRECTORY "${optimization_upstream}/" DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/graphmine/expansion"
+    FILES_MATCHING PATTERN "LICENSE*" PATTERN "PROVENANCE.json")
+endif()
+
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/problem_families.json" GRAPHMINE_NATIVE_TAXONOMY)
 file(GLOB_RECURSE GRAPHMINE_RUNTIME_HASH_INPUTS CONFIGURE_DEPENDS
      "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
@@ -105,6 +138,12 @@ if(TARGET graphmine_backend_rdmce)
     endif()
   endforeach()
 endif()
+if(GRAPHMINE_NATIVE_OPTIMIZATION)
+  list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS ${optimization_inputs}
+    "${CMAKE_CURRENT_SOURCE_DIR}/../tools/prepare_expansion_workers.py"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/worker_process.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include/graphmine/problems/validated_expansion.hpp")
+endif()
 list(REMOVE_DUPLICATES GRAPHMINE_RUNTIME_HASH_INPUTS)
 list(SORT GRAPHMINE_RUNTIME_HASH_INPUTS)
 set(GRAPHMINE_NATIVE_SOURCE_DIGEST "")
@@ -118,10 +157,10 @@ string(SHA256 GRAPHMINE_NATIVE_SOURCE_SHA256 "${GRAPHMINE_NATIVE_SOURCE_DIGEST}"
 configure_file(catalog_data.hpp.in generated/catalog_data.hpp @ONLY)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/native-source-hashes.txt" "${GRAPHMINE_NATIVE_SOURCE_DIGEST}")
 
-add_library(graphmine_runtime SHARED runtime.cpp registry.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp
+add_library(graphmine_runtime SHARED runtime.cpp registry.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp original_optimization.cpp
             families/traversal.cpp families/patterns.cpp families/common.cpp
             families/weighted_paths.cpp families/connectivity.cpp families/centrality.cpp
-            families/similarity.cpp families/cliques.cpp families/structure.cpp families/centrality_measures.cpp io/graph_projection.cpp ../src/core/json.cpp)
+            families/similarity.cpp families/cliques.cpp families/structure.cpp families/centrality_measures.cpp families/matching.cpp families/flow.cpp io/graph_projection.cpp ../src/core/json.cpp)
 add_library(GraphMine::runtime ALIAS graphmine_runtime)
 target_compile_features(graphmine_runtime PUBLIC cxx_std_17)
 target_include_directories(graphmine_runtime PUBLIC
@@ -131,12 +170,20 @@ target_include_directories(graphmine_runtime PUBLIC
           "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
 target_link_libraries(graphmine_runtime PRIVATE ${GRAPHMINE_RUNTIME_CORE} OpenSSL::Crypto)
 set_target_properties(graphmine_runtime PROPERTIES VERSION 2.0.0 SOVERSION 1 EXPORT_NAME runtime)
-if(GRAPHMINE_NATIVE_CUGRAPH OR GRAPHMINE_NATIVE_CUDF OR GRAPHMINE_HAS_TOT OR GRAPHMINE_HAS_WETRIC OR GRAPHMINE_RUNTIME_MINING_GPU)
+if(GRAPHMINE_NATIVE_CUGRAPH OR GRAPHMINE_NATIVE_CUDF OR GRAPHMINE_HAS_TOT OR GRAPHMINE_HAS_WETRIC OR GRAPHMINE_RUNTIME_MINING_GPU OR GRAPHMINE_NATIVE_OPTIMIZATION)
   find_package(CUDAToolkit REQUIRED)
   target_sources(graphmine_runtime PRIVATE cuda_device.cpp)
   target_link_libraries(graphmine_runtime PRIVATE CUDA::cudart)
 else()
   target_sources(graphmine_runtime PRIVATE device_stub.cpp)
+endif()
+if(GRAPHMINE_NATIVE_OPTIMIZATION)
+  add_dependencies(graphmine_runtime graphmine_native_worker_ecl_flow graphmine_native_worker_hungarian)
+  target_include_directories(graphmine_runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../src")
+  target_compile_definitions(graphmine_runtime PRIVATE GRAPHMINE_NATIVE_OPTIMIZATION=1
+    GRAPHMINE_WORKER_BUILD_DIR="${CMAKE_CURRENT_BINARY_DIR}/optimization-workers"
+    GRAPHMINE_WORKER_INSTALL_DIR="${CMAKE_INSTALL_FULL_LIBEXECDIR}/graphmine")
+  target_link_libraries(graphmine_runtime PRIVATE ${CMAKE_DL_LIBS})
 endif()
 if(GRAPHMINE_RUNTIME_MINING_TARGETS)
   target_link_libraries(graphmine_runtime PRIVATE ${GRAPHMINE_RUNTIME_MINING_TARGETS})
@@ -206,6 +253,18 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" "include(\
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GraphMineRuntime)
 
 if(BUILD_TESTING OR GRAPHMINE_BUILD_TESTS)
+  add_executable(graphmine_flow_test tests/flow_test.cpp ../src/core/json.cpp)
+  target_include_directories(graphmine_flow_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
+  target_link_libraries(graphmine_flow_test PRIVATE GraphMine::runtime)
+  foreach(suite IN ITEMS contracts edges vertices boundaries)
+    add_test(NAME graphmine_flow_${suite}_cpu COMMAND graphmine_flow_test ${suite})
+  endforeach()
+  add_executable(graphmine_matching_test tests/matching_test.cpp ../src/core/json.cpp)
+  target_include_directories(graphmine_matching_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
+  target_link_libraries(graphmine_matching_test PRIVATE GraphMine::runtime)
+  foreach(suite IN ITEMS contracts general bipartite boundaries)
+    add_test(NAME graphmine_matching_${suite}_cpu COMMAND graphmine_matching_test ${suite})
+  endforeach()
   add_executable(graphmine_runtime_test tests/runtime_test.cpp ../src/core/json.cpp)
   target_include_directories(graphmine_runtime_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
   target_link_libraries(graphmine_runtime_test PRIVATE GraphMine::runtime)

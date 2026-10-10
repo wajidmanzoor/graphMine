@@ -1,0 +1,217 @@
+{
+  "passed": 16,
+  "failed": 0,
+  "cases": [
+    {
+      "case": "ecl-maxflow-memcheck-gpu-0-structure",
+      "passed": true,
+      "result": {
+        "vertices": 256,
+        "arcs": 1017,
+        "flow": 7,
+        "certificate_valid": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "781a88000fd5073d16e1d98dd5d86925d9c27401bad2c2516fbd56f8632e5a2d",
+      "input_sha256": "f82f9856c3d6e24d24aa416ea06bbf85362b17b95abc84402f72980be28fdca4"
+    },
+    {
+      "case": "ecl-maxflow-memcheck-gpu-0-limit",
+      "passed": true,
+      "result": {
+        "vertices": 4,
+        "arcs": 4,
+        "flow": 500000000,
+        "certificate_valid": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "1d4a17e51aff8f287d040e04f0cadb4d8cde84ac8c97052b7a161b5af186a088",
+      "input_sha256": "a5d31b42ddd802f419fb7b734b32e46e60bb58bbef5cf73a1b1ad0048cf1ce3a"
+    },
+    {
+      "case": "ecl-maxflow-initcheck-gpu-0-structure",
+      "passed": true,
+      "result": {
+        "vertices": 256,
+        "arcs": 1017,
+        "flow": 7,
+        "certificate_valid": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "57339c349c2508ef4c6e5cddc6a66eb4d1beb6d9f4fb217b36ba5c27c839c82f",
+      "input_sha256": "f82f9856c3d6e24d24aa416ea06bbf85362b17b95abc84402f72980be28fdca4"
+    },
+    {
+      "case": "ecl-maxflow-initcheck-gpu-0-limit",
+      "passed": true,
+      "result": {
+        "vertices": 4,
+        "arcs": 4,
+        "flow": 500000000,
+        "certificate_valid": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "dcf4e8212d317d84c7a1cee0ea52a565a28d71525f002172efda35ffe94273e5",
+      "input_sha256": "a5d31b42ddd802f419fb7b734b32e46e60bb58bbef5cf73a1b1ad0048cf1ce3a"
+    },
+    {
+      "case": "hungarian-cuda-memcheck-gpu-0-structure",
+      "passed": true,
+      "result": {
+        "side_size": 64,
+        "objective_value": 0,
+        "optimality_checked": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "9bf64256ab182f826c0935d3e4cf1cb2abb2ecb619b07bb1559618cd8a8b5eaa",
+      "input_sha256": "abbdec7ec54c0a8a6ae6089ffc27f9ddeda359c7455121f01ef22b9a0e77ace0"
+    },
+    {
+      "case": "hungarian-cuda-memcheck-gpu-0-limit",
+      "passed": true,
+      "result": {
+        "side_size": 64,
+        "objective_value": 63936,
+        "optimality_checked": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "c06b32a43fc26466d8cd222d22ac23187148788515e1b7689c60b126e2021876",
+      "input_sha256": "13c16666308a72aaf2d6e217e7686c7bd80fbb05d62d394771baf50b4bcdbc5c"
+    },
+    {
+      "case": "hungarian-cuda-initcheck-gpu-0-structure",
+      "passed": true,
+      "result": {
+        "side_size": 64,
+        "objective_value": 0,
+        "optimality_checked": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "033eff88042ad4f1118f493adf5083e1c1496f8dde85bd52128ee2ef44e3579d",
+      "input_sha256": "abbdec7ec54c0a8a6ae6089ffc27f9ddeda359c7455121f01ef22b9a0e77ace0"
+    },
+    {
+      "case": "hungarian-cuda-initcheck-gpu-0-limit",
+      "passed": true,
+      "result": {
+        "side_size": 64,
+        "objective_value": 63936,
+        "optimality_checked": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "980ab4364300b0ffa4ffc430a1cc0f9ab39503cb89d22e4774cd5b43282cde52",
+      "input_sha256": "13c16666308a72aaf2d6e217e7686c7bd80fbb05d62d394771baf50b4bcdbc5c"
+    },
+    {
+      "case": "ecl-maxflow-memcheck-gpu-1-structure",
+      "passed": true,
+      "result": {
+        "vertices": 256,
+        "arcs": 1017,
+        "flow": 7,
+        "certificate_valid": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "20b6fad494996ba385842486f839ccfa34c5b8504e366eda341c6cd0672c9bf1",
+      "input_sha256": "f82f9856c3d6e24d24aa416ea06bbf85362b17b95abc84402f72980be28fdca4"
+    },
+    {
+      "case": "ecl-maxflow-memcheck-gpu-1-limit",
+      "passed": true,
+      "result": {
+        "vertices": 4,
+        "arcs": 4,
+        "flow": 500000000,
+        "certificate_valid": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "743cd09067a9751f9038440e18b64e1cbb9296fb2790f36ab9536f3b0106192c",
+      "input_sha256": "a5d31b42ddd802f419fb7b734b32e46e60bb58bbef5cf73a1b1ad0048cf1ce3a"
+    },
+    {
+      "case": "ecl-maxflow-initcheck-gpu-1-structure",
+      "passed": true,
+      "result": {
+        "vertices": 256,
+        "arcs": 1017,
+        "flow": 7,
+        "certificate_valid": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "d18ca3bea1e3162891924310a5894206d53c7c0bc67137a0f2a0e0e246c44993",
+      "input_sha256": "f82f9856c3d6e24d24aa416ea06bbf85362b17b95abc84402f72980be28fdca4"
+    },
+    {
+      "case": "ecl-maxflow-initcheck-gpu-1-limit",
+      "passed": true,
+      "result": {
+        "vertices": 4,
+        "arcs": 4,
+        "flow": 500000000,
+        "certificate_valid": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "1a6837b726dfc5602e96d5e150b1dcc0c990968379e54639334c29e27120e6e1",
+      "input_sha256": "a5d31b42ddd802f419fb7b734b32e46e60bb58bbef5cf73a1b1ad0048cf1ce3a"
+    },
+    {
+      "case": "hungarian-cuda-memcheck-gpu-1-structure",
+      "passed": true,
+      "result": {
+        "side_size": 64,
+        "objective_value": 0,
+        "optimality_checked": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "8249600aab1f6283f44aa9a4cb8bf8188a87d5ae8252a39d379b6ef30eaccf77",
+      "input_sha256": "abbdec7ec54c0a8a6ae6089ffc27f9ddeda359c7455121f01ef22b9a0e77ace0"
+    },
+    {
+      "case": "hungarian-cuda-memcheck-gpu-1-limit",
+      "passed": true,
+      "result": {
+        "side_size": 64,
+        "objective_value": 63936,
+        "optimality_checked": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "ae981b7aec0900f2c55bed807b99602d0318a66f81ee2fb4a3896f18b7153482",
+      "input_sha256": "13c16666308a72aaf2d6e217e7686c7bd80fbb05d62d394771baf50b4bcdbc5c"
+    },
+    {
+      "case": "hungarian-cuda-initcheck-gpu-1-structure",
+      "passed": true,
+      "result": {
+        "side_size": 64,
+        "objective_value": 0,
+        "optimality_checked": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "83cf240d3809789f7936bde5dc2324d0acac7570ddaa4602c2be9973f56f39ef",
+      "input_sha256": "abbdec7ec54c0a8a6ae6089ffc27f9ddeda359c7455121f01ef22b9a0e77ace0"
+    },
+    {
+      "case": "hungarian-cuda-initcheck-gpu-1-limit",
+      "passed": true,
+      "result": {
+        "side_size": 64,
+        "objective_value": 63936,
+        "optimality_checked": true
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "e3fc2796a7cc0ab32f2e2c041398f6663a09aea06b43be3d06a3fad2eafa00bd",
+      "input_sha256": "13c16666308a72aaf2d6e217e7686c7bd80fbb05d62d394771baf50b4bcdbc5c"
+    }
+  ],
+  "binary_files": {
+    "/tmp/graphmine-native-matching-original-build/runtime/native-source-hashes.txt": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6",
+    "/tmp/graphmine-native-matching-original-build/runtime/libgraphmine_runtime.so": "2fcef37735d2d2c33a95f02ad8f8db92b08f651677e6115118a8408e6356b378",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-workers/graphmine-worker-ecl-maxflow": "89fa9dda777febfce6eca4378834eddd079d16c7731f2da5ca9bf2bc99e84ac6",
+    "/tmp/graphmine-native-matching-original-build/runtime/optimization-workers/graphmine-worker-hungarian-cuda": "ceb31c966d50289f6362a81de42ffd2eac8cbb8015611a423c12a18aaf637f32",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/validate_native_optimization_sanitizers.py": "3a852c21454134e6243c22ae74addc26ed4205f6c04948f187ff3f432b573c21"
+  },
+  "sanitizer_binary_sha256": "ddb2dbfd04b20e9cddf263ec9831335b92395225acf89d81cd9b3bf60476bae8",
+  "scope": "Direct isolated CUDA worker kernels; independent flow certificates and known assignment optima",
+  "build_unchanged_during_run": true,
+  "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+}

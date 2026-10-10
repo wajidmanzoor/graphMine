@@ -27,9 +27,13 @@ def snapshot(build):
             "graphmine_mining_test",
             "graphmine_structure_test",
             "graphmine_centrality_test",
+            "graphmine_matching_test",
+            "graphmine_flow_test",
             "native-source-hashes.txt",
         )
     ]
+    files += sorted((build / "optimization-workers").glob("graphmine-worker-*"))
+    files += sorted((build / "optimization-generated").glob("*.cu"))
     return {str(path.resolve()): sha(path) for path in files}
 
 
@@ -93,6 +97,35 @@ def validate(build, label, ordinal, output):
             ],
         ),
     ]
+    groups += [
+        (
+            f"matching-{label}",
+            "graphmine_matching_test",
+            [
+                (s, "cpp" if cpu else "hungarian-cuda")
+                for s in (
+                    ["contracts", "general", "bipartite", "boundaries"]
+                    if cpu
+                    else ["contracts", "assignment", "boundaries"]
+                )
+            ],
+        ),
+        (
+            f"flow-{label}",
+            "graphmine_flow_test",
+            [
+                (s, "cpp" if cpu else "ecl-maxflow")
+                for s in (
+                    ["contracts", "edges", "vertices", "boundaries"]
+                    if cpu
+                    else ["contracts", "edges", "boundaries"]
+                )
+            ],
+        ),
+    ]
+    groups = (
+        groups[-2:] + groups[:-2]
+    )  # Exercise newly migrated profiles before regressions.
     if cpu:
         groups.append(
             (
@@ -150,7 +183,10 @@ def validate(build, label, ordinal, output):
                     command,
                     stdout=log,
                     stderr=subprocess.STDOUT,
-                    timeout=300,
+                    timeout=900
+                    if not cpu
+                    and executable in {"graphmine_matching_test", "graphmine_flow_test"}
+                    else 300,
                     check=False,
                 )
             log_text = log_path.read_text()
