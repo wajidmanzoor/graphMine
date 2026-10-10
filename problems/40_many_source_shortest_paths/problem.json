@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "many_source_shortest_paths",
+  "name": "Many-Source and All-Pairs Shortest Distances",
+  "category": "traversal_and_paths",
+  "problem_statement": "Compute a matrix of minimum path-weight sums for selected origins and destinations, including all-pairs queries.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "optional_nonnegative",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "origins",
+      "type": "array<vertex_id>_or_null",
+      "required": false,
+      "description": "Null selects every vertex.",
+      "default": null
+    },
+    {
+      "name": "destinations",
+      "type": "array<vertex_id>_or_null",
+      "required": false,
+      "description": "Null selects every vertex.",
+      "default": null
+    },
+    {
+      "name": "weight_mode",
+      "type": "enum",
+      "required": false,
+      "description": "Use unit distances or nonnegative weights.",
+      "default": "edge_weight",
+      "allowed_values": [
+        "unweighted",
+        "edge_weight"
+      ]
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "distance_matrix",
+      "type": "object",
+      "description": "Rows and columns identify origins and destinations; unreachable pairs have null distance."
+    },
+    {
+      "name": "complete",
+      "type": "boolean",
+      "description": "Whether every requested pair was evaluated."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Compute the shortest distance for each requested pair.",
+    "exactness": "Exact within numeric tolerance. Batched SSSP and matrix-based implementations must return the same distances.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Compare against repeated CPU Dijkstra or Floyd-Warshall.",
+    "Diagonal entries for identical origin and destination are zero."
+  ],
+  "edge_cases": [
+    "Empty origin/destination sets produce an empty matrix.",
+    "All-pairs output can require quadratic storage."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Compare against repeated CPU Dijkstra or Floyd-Warshall.",
+      "Diagonal entries for identical origin and destination are zero."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

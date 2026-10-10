@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "minimum_vertex_cover",
+  "name": "Minimum Vertex Cover",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Find a smallest set of vertices touching every edge, or decide whether a cover of size at most k exists.",
+  "graph_input": {
+    "format": "canonical_graph_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve external vertex identities and isolated vertices.",
+      "Reject self-loops and collapse parallel edges only under the declared aggregation rule."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "mode",
+      "type": "enum",
+      "required": false,
+      "description": "Optimization, parameterized decision, or heuristic feasible cover.",
+      "default": "exact",
+      "allowed_values": [
+        "exact",
+        "decision",
+        "heuristic"
+      ]
+    },
+    {
+      "name": "k",
+      "type": "integer|null",
+      "required": false,
+      "description": "Nonnegative bound required for decision mode; otherwise ignored.",
+      "default": null
+    },
+    {
+      "name": "time_limit_seconds",
+      "type": "number",
+      "required": false,
+      "description": "Positive runtime budget.",
+      "default": 60
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "cover",
+      "type": "array<vertex_id>|null",
+      "description": "Feasible cover witness when available; null if no witness is returned."
+    },
+    {
+      "name": "cover_size",
+      "type": "integer|null",
+      "description": "Cardinality of a witness or the optimum size from a size-only solver."
+    },
+    {
+      "name": "decision",
+      "type": "boolean|null",
+      "description": "True or false only if the bounded decision is established; otherwise null."
+    },
+    {
+      "name": "optimality_proven",
+      "type": "boolean",
+      "description": "Whether minimum size is established."
+    },
+    {
+      "name": "termination_reason",
+      "type": "string",
+      "description": "Exhausted search, timeout, heuristic completion, or other reason."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Find a smallest set of vertices touching every edge, or decide whether a cover of size at most k exists.",
+    "exactness": "Exact mathematical objective; implementations must declare approximation and termination status.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "For a returned witness, verify that every edge has at least one endpoint in the cover.",
+    "Validate optimum sizes and bounded decisions by exhaustive search on small graphs.",
+    "Timeout without a witness is unknown, not proof that no cover exists.",
+    "A size-only solver must declare that it did not return a witness.",
+    "The complement of a cover is independent, but maximality alone does not establish minimum cover size."
+  ],
+  "edge_cases": [
+    "Edgeless graphs have an empty optimum cover.",
+    "Disconnected component optima add.",
+    "k=0 is feasible exactly for an edgeless graph."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "For a returned witness, verify that every edge has at least one endpoint in the cover.",
+      "Validate optimum sizes and bounded decisions by exhaustive search on small graphs.",
+      "Timeout without a witness is unknown, not proof that no cover exists.",
+      "A size-only solver must declare that it did not return a witness.",
+      "The complement of a cover is independent, but maximality alone does not establish minimum cover size."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "minimum vertex cover",
+    "smallest vertex cover",
+    "parameterized vertex cover",
+    "k vertex cover"
+  ],
+  "research_only": true
+}

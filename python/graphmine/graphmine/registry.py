@@ -43,8 +43,12 @@ def _load():
     global _loaded
     if not _loaded:
         from .algorithms import (  # noqa: F401
+            bipartite,
             centrality,
+            density,
             optimization,
+            partitioning,
+            patterns,
             structure,
             traversal,
         )

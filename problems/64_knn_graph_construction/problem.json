@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "knn_graph_construction",
+  "name": "k-Nearest-Neighbor Graph Construction",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Construct a graph connecting each feature vector to its k nearest distinct input vectors under a declared distance metric.",
+  "graph_input": {
+    "format": "feature_vectors_v1",
+    "schema_ref": "../feature_vectors_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "not_applicable_feature_vectors",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "required_finite_equal_length_vectors",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve IDs and vector order.",
+      "Do not silently normalize vectors or change the requested distance."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "k",
+      "type": "integer",
+      "required": true,
+      "description": "0 <= k < number of vectors."
+    },
+    {
+      "name": "distance",
+      "type": "enum",
+      "required": false,
+      "description": "Metric used for search and returned edge weights.",
+      "default": "squared_euclidean",
+      "allowed_values": [
+        "squared_euclidean",
+        "euclidean",
+        "cosine"
+      ]
+    },
+    {
+      "name": "search_mode",
+      "type": "enum",
+      "required": false,
+      "description": "Exact or approximate neighbor selection.",
+      "default": "exact",
+      "allowed_values": [
+        "exact",
+        "approximate"
+      ]
+    },
+    {
+      "name": "symmetrization",
+      "type": "enum",
+      "required": false,
+      "description": "Directed k-out graph, undirected union, or mutual-neighbor graph.",
+      "default": "directed",
+      "allowed_values": [
+        "directed",
+        "union",
+        "mutual"
+      ]
+    },
+    {
+      "name": "seed",
+      "type": "integer",
+      "required": false,
+      "description": "Seed for approximate index construction.",
+      "default": 0
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "neighbor_lists",
+      "type": "map<vertex_id,array<vertex_id>>",
+      "description": "Exactly k unique non-self neighbors before symmetrization."
+    },
+    {
+      "name": "graph",
+      "type": "canonical_graph_v1",
+      "description": "Edges weighted by the declared distances."
+    },
+    {
+      "name": "search_metadata",
+      "type": "object",
+      "description": "Algorithm, exact/approximate mode, metric, seed and relevant index parameters."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Construct a graph connecting each feature vector to its k nearest distinct input vectors under a declared distance metric.",
+    "exactness": "Exact and approximate modes are separate and must be reported.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "Each vector has exactly dimension finite values and a unique ID.",
+    "No self-neighbors or duplicate neighbors; recompute distances independently.",
+    "Exact search must select k nearest neighbors; ties at the boundary can select any tied subset.",
+    "Approximate search reports recall@k against exact neighbors on a declared evaluation subset.",
+    "Symmetrization is applied after checking the directed neighbor lists."
+  ],
+  "edge_cases": [
+    "Duplicate vectors with distinct IDs are valid zero-distance neighbors.",
+    "Reject zero-norm vectors for cosine distance.",
+    "k=0 produces an edgeless graph.",
+    "An ANN navigation graph is not automatically a kNN result graph."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Each vector has exactly dimension finite values and a unique ID.",
+      "No self-neighbors or duplicate neighbors; recompute distances independently.",
+      "Exact search must select k nearest neighbors; ties at the boundary can select any tied subset.",
+      "Approximate search reports recall@k against exact neighbors on a declared evaluation subset.",
+      "Symmetrization is applied after checking the directed neighbor lists."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "knn graph",
+    "nearest neighbor graph",
+    "build graph from vectors"
+  ],
+  "research_only": true
+}

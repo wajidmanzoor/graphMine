@@ -1,0 +1,122 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_condensation",
+  "name": "Learned Graph Condensation",
+  "category": "graph_machine_learning",
+  "problem_statement": "Learn a smaller synthetic attributed graph whose supervised training utility approximates that of the original training graph.",
+  "graph_input": {
+    "format": "canonical_graph_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "optional_nonnegative_adjacency_weights",
+      "timestamps": "ignored",
+      "vertex_attributes": "required_features_labels_and_splits",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve external vertex identities and isolated vertices.",
+      "Reject self-loops and collapse parallel edges only under the declared aggregation rule."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "synthetic_vertex_budget",
+      "type": "integer",
+      "required": true,
+      "description": "Positive number of synthetic vertices, at most the number of training vertices."
+    },
+    {
+      "name": "feature_key",
+      "type": "string",
+      "required": false,
+      "description": "Numeric vertex feature attribute.",
+      "default": "features"
+    },
+    {
+      "name": "label_key",
+      "type": "string",
+      "required": false,
+      "description": "Training class-label attribute.",
+      "default": "label"
+    },
+    {
+      "name": "split_key",
+      "type": "string",
+      "required": false,
+      "description": "Train/validation/test attribute.",
+      "default": "split"
+    },
+    {
+      "name": "method",
+      "type": "string",
+      "required": true,
+      "description": "Condensation method, hyperparameters and training model."
+    },
+    {
+      "name": "seed",
+      "type": "integer",
+      "required": false,
+      "description": "Seed for condensation and downstream evaluation.",
+      "default": 0
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "synthetic_graph",
+      "type": "canonical_graph_v1",
+      "description": "Synthetic vertices, learned features/labels and declared weighted adjacency."
+    },
+    {
+      "name": "training_metadata",
+      "type": "object",
+      "description": "Method, seed, budgets, splits, preprocessing and model/checkpoint references."
+    },
+    {
+      "name": "utility_metrics",
+      "type": "object",
+      "description": "Downstream performance and variance on held-out original data under a fixed evaluation protocol."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Learn a smaller synthetic attributed graph whose supervised training utility approximates that of the original training graph.",
+    "exactness": "Learned approximation measured by held-out downstream utility, with no structural equivalence claim.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "Honor the synthetic vertex budget and feature/class dimensions.",
+    "Synthetic IDs are new identities; do not claim a quotient mapping from original vertices.",
+    "Fit on permitted training labels only; record transductive access to unlabeled topology/features.",
+    "Report downstream training/evaluation configuration and held-out metrics over declared seeds.",
+    "Verify finite features, valid labels, and adjacency under the declared symmetry/weight convention."
+  ],
+  "edge_cases": [
+    "Condensation need not preserve original edges or graph cuts.",
+    "Very small budgets may not represent every class.",
+    "A utility estimate does not prove an exact structural approximation."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Honor the synthetic vertex budget and feature/class dimensions.",
+      "Synthetic IDs are new identities; do not claim a quotient mapping from original vertices.",
+      "Fit on permitted training labels only; record transductive access to unlabeled topology/features.",
+      "Report downstream training/evaluation configuration and held-out metrics over declared seeds.",
+      "Verify finite features, valid labels, and adjacency under the declared symmetry/weight convention."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "graph condensation",
+    "synthetic training graph",
+    "condense graph dataset"
+  ],
+  "research_only": true
+}

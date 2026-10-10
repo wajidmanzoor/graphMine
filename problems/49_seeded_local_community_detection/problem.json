@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "seeded_local_community_detection",
+  "name": "Seeded Local Community Detection",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Find a nontrivial low-conductance vertex subset containing a specified seed set.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "optional_nonnegative",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "seeds",
+      "type": "array<vertex_id>",
+      "required": true,
+      "description": "Nonempty required seed set."
+    },
+    {
+      "name": "maximum_volume",
+      "type": "number_or_null",
+      "required": false,
+      "description": "Optional upper bound on selected weighted degree volume.",
+      "default": null
+    },
+    {
+      "name": "method_parameters",
+      "type": "object",
+      "required": false,
+      "description": "Declared diffusion and stopping parameters.",
+      "default": {}
+    },
+    {
+      "name": "solution_quality",
+      "type": "enum",
+      "required": false,
+      "description": "Heuristic or exact global optimization.",
+      "default": "heuristic",
+      "allowed_values": [
+        "heuristic",
+        "exact"
+      ]
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "vertices",
+      "type": "array<vertex_id>",
+      "description": "Selected community."
+    },
+    {
+      "name": "conductance",
+      "type": "number_or_null",
+      "description": "cut(S,V-S)/min(vol(S),vol(V-S)); null when denominator is zero."
+    },
+    {
+      "name": "optimal",
+      "type": "boolean",
+      "description": "Whether global constrained optimality was proven."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Find a seed-containing community of low conductance under the volume constraint.",
+    "exactness": "Typical diffusion-and-sweep methods are heuristic; diffusion scores alone are an incomplete implementation of this contract.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "All seeds are included.",
+    "Recompute cut, volume and conductance.",
+    "Verify maximum_volume when supplied."
+  ],
+  "edge_cases": [
+    "Disconnected zero-cut communities may have conductance zero.",
+    "No feasible nontrivial set must be reported explicitly."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "All seeds are included.",
+      "Recompute cut, volume and conductance.",
+      "Verify maximum_volume when supplied."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

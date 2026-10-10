@@ -95,3 +95,41 @@ reported score substitutes for local integration tests.
 - All remaining problem integrations, the native adapter, evidence-based
   planner gating, application modes, routing, workflows, UI, scheduler,
   projections, MCP, retrieval and scale evaluation are still required.
+
+### CPU structural and optimization checkpoint
+
+- CPU coverage is now 39 executable operations across 37 of the 70 problem
+  contracts. The remaining 33 problem contracts still need CPU integrations.
+  The new operations cover density, quasi-cliques, bicliques, butterflies,
+  assignment, pattern matching/counting, communities, balanced partitioning
+  and signed-network balance. Their precise objectives, limits and input
+  conventions are in `CPU_REFERENCE_PROFILES.md`.
+- Extended higher-order density without a fixed clique-order ceiling;
+  graphlet classification now covers the complete atlas through seven vertices.
+  Exact integer-capacity density optimization is distinguished from numerical
+  HiGHS optimality certificates. Infeasible balance and matching constraints
+  cannot be presented as successful feasible solutions.
+- Corrected two ambiguous formal definitions: ordinary degree versus butterfly
+  participation in bipartite cores, and structural balance versus zero weighted
+  frustration when zero-cost edges exist. The embedded catalog/manifest
+  definitions are synchronized with their source contracts.
+- Latest full library report: **11,677 CPU tests passed**, with GPUs hidden;
+  **1,546 cuGraph tests passed on each GPU**, with no skips. The new oracle cases
+  include all 512 3-by-3 bipartite graphs, all 729 signed four-vertex graphs,
+  atlas graphs through six vertices, directed patterns and weighted fixtures.
+  Counts are test executions; parameter loops inside tests add further calls.
+- `cpu-extended-initial.xml` retains the first 6,059-test pass on the new
+  operations. Final reports are `cpu-extended.xml`, `gpu-0-extended.xml` and
+  `gpu-1-extended.xml`. Metadata now includes formal contract/package hashes
+  and the collected test selection. The audit checks dependency versions and
+  generates per-operation profile hashes in addition to source hashes.
+- Existing agent catalog/planning regression checks: 55 passed; nine native
+  worker tests were skipped because that invocation did not configure a native
+  test binary. These results are not an agent integration claim for the new
+  Python layer.
+- Derived graph ports now distinguish their own fingerprint from input lineage.
+  Explicit SciPy provenance, malformed-parameter rejection and oversized GPU
+  integer-weight handling were verified alongside the previous operations.
+- The browser and agent still use the existing native path. All application,
+  remaining CPU, native adapter, routing, workflow, scheduler, cache, MCP,
+  reviewed-example retrieval and scale requirements above remain open.

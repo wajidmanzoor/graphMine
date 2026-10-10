@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "general_graph_weighted_matching",
+  "name": "General-Graph Weighted Matching",
+  "category": "graph_optimization",
+  "problem_statement": "Find a matching of high total nonnegative edge weight in an undirected graph without a bipartiteness assumption.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "required_nonnegative",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "solution_quality",
+      "type": "enum",
+      "required": false,
+      "description": "Whether a global optimum is required.",
+      "default": "approximate",
+      "allowed_values": [
+        "exact",
+        "approximate"
+      ]
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "matching_edges",
+      "type": "array<edge_id>",
+      "description": "Edges with pairwise-disjoint endpoints."
+    },
+    {
+      "name": "total_weight",
+      "type": "number",
+      "description": "Matching weight."
+    },
+    {
+      "name": "optimal",
+      "type": "boolean",
+      "description": "Whether optimality was proven."
+    }
+  ],
+  "optional_outputs": [
+    {
+      "name": "approximation_ratio",
+      "type": "number_or_null",
+      "description": "Certified ratio where the algorithm provides one."
+    }
+  ],
+  "solution_semantics": {
+    "objective": "Maximize total matching edge weight.",
+    "exactness": "Approximate mode returns a feasible matching with any proven bound disclosed; exact mode requires optimal=true.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Every returned edge exists and no endpoint appears twice.",
+    "Recompute total_weight from selected edges.",
+    "Validate any claimed approximation bound against small exact instances."
+  ],
+  "edge_cases": [
+    "An odd cycle is valid input.",
+    "An edgeless graph has the empty matching."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Every returned edge exists and no endpoint appears twice.",
+      "Recompute total_weight from selected edges.",
+      "Validate any claimed approximation bound against small exact instances."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

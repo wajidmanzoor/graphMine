@@ -1,20 +1,28 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 27,
-  "problems_with_cpu_profile": 25,
+  "cpu_operation_count": 39,
+  "problems_with_cpu_profile": 37,
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-expanded",
+      "id": "cpu-extended",
       "status": "passed",
-      "tests": 5617,
+      "tests": 11677,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
-      "report": "validation/python_analytics/cpu-expanded.xml",
-      "report_sha256": "4b5ce3dc9e8fb0792f6743fc64b4984f735ef2c2603ec06e7c5dfe40534416fb",
-      "metadata": "validation/python_analytics/cpu-expanded.xml.metadata.json",
+      "changed_dependencies": [],
+      "test_modules": [
+        "tests/test_contracts.py",
+        "tests/test_extended_contracts.py",
+        "tests/test_extended_oracles.py",
+        "tests/test_small_graph_oracles.py",
+        "tests/test_weighted_directed.py"
+      ],
+      "report": "validation/python_analytics/cpu-extended.xml",
+      "report_sha256": "5e8958e9f97475e840011efd321dadd393e3a9be1215f465ec8f3033124cd99a",
+      "metadata": "validation/python_analytics/cpu-extended.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -25,15 +33,20 @@
       }
     },
     {
-      "id": "gpu-0-expanded",
+      "id": "gpu-0-extended",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
-      "report": "validation/python_analytics/gpu-0-expanded.xml",
-      "report_sha256": "a8cf4a2732cffece0df71df6a55eb9899338d8f46c8a616bf4944159aea3ef73",
-      "metadata": "validation/python_analytics/gpu-0-expanded.xml.metadata.json",
+      "changed_dependencies": [],
+      "test_modules": [
+        "tests/test_small_graph_oracles.py",
+        "tests/test_weighted_directed.py"
+      ],
+      "report": "validation/python_analytics/gpu-0-extended.xml",
+      "report_sha256": "b163031650afd5b4af81352b833f8d77ff9ddf6d56d180d4b7ec327918164eb4",
+      "metadata": "validation/python_analytics/gpu-0-extended.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -44,15 +57,20 @@
       }
     },
     {
-      "id": "gpu-1-expanded",
+      "id": "gpu-1-extended",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
-      "report": "validation/python_analytics/gpu-1-expanded.xml",
-      "report_sha256": "9c92c76544b7ce0eff43305052a3efb49a854a0c6a058a467b4b4aa72ca59c06",
-      "metadata": "validation/python_analytics/gpu-1-expanded.xml.metadata.json",
+      "changed_dependencies": [],
+      "test_modules": [
+        "tests/test_small_graph_oracles.py",
+        "tests/test_weighted_directed.py"
+      ],
+      "report": "validation/python_analytics/gpu-1-extended.xml",
+      "report_sha256": "527039994083271e224ecc872313b08f8352913a8c564e45bce3b0bd76d40b2a",
+      "metadata": "validation/python_analytics/gpu-1-extended.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -69,6 +87,7 @@
       "problem_id": "maximal_clique_enumeration",
       "name": "Maximal Clique Enumeration",
       "contract": "problems/01_maximal_clique_enumeration/problem.json",
+      "contract_sha256": "64f350557c60029710df647d471b62b9a2860a2797612227ea9595bf83cbf6da",
       "cpu_operations": [
         "maximal-cliques"
       ],
@@ -80,6 +99,7 @@
       "problem_id": "maximum_clique",
       "name": "Maximum Clique",
       "contract": "problems/02_maximum_clique/problem.json",
+      "contract_sha256": "47934cd7de11c600f78bc708ef6580baba8f9d28965da5f110109db8191436b9",
       "cpu_operations": [
         "maximum-clique"
       ],
@@ -91,6 +111,7 @@
       "problem_id": "k_clique_counting_enumeration",
       "name": "k-Clique Counting and Enumeration",
       "contract": "problems/03_k_clique_counting_enumeration/problem.json",
+      "contract_sha256": "23c486ff1d36454e0061ef0e2ec8989c13ff9693aff88e4855f3a11eae714c1a",
       "cpu_operations": [
         "k-cliques"
       ],
@@ -102,33 +123,43 @@
       "problem_id": "quasi_clique_mining",
       "name": "Quasi-Clique Mining",
       "contract": "problems/04_quasi_clique_mining/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "d31f4b765b52532fee50f029d654b5e6b49d5af7fba463445627f6b4823178dd",
+      "cpu_operations": [
+        "quasi-cliques"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "densest_subgraph",
       "name": "Densest Subgraph",
       "contract": "problems/05_densest_subgraph/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "10a4b33baa8204683d7de9d2c702c9620bc754fcba625a02d514a37bf204826b",
+      "cpu_operations": [
+        "densest-subgraph"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "densest_k_subgraph",
       "name": "Densest k-Subgraph",
       "contract": "problems/06_densest_k_subgraph/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "97c4325ce58fef21cbc5229109cdb3a4ebda3effcafa2fab0ef0e7ec378e46da",
+      "cpu_operations": [
+        "densest-k-subgraph"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "k_core_decomposition",
       "name": "k-Core Decomposition",
       "contract": "problems/07_k_core_decomposition/problem.json",
+      "contract_sha256": "a6df23fb86d75632f93e80b579746bc5966ac2e548ba361d2d0d605ecd2b6526",
       "cpu_operations": [
         "k-core"
       ],
@@ -142,6 +173,7 @@
       "problem_id": "k_truss_decomposition",
       "name": "k-Truss Decomposition",
       "contract": "problems/08_k_truss_decomposition/problem.json",
+      "contract_sha256": "29c45d5da275df9aa5363e9daebcfef835b25d57b79e98c7d60e86bec32f96e2",
       "cpu_operations": [
         "k-truss"
       ],
@@ -155,15 +187,19 @@
       "problem_id": "maximal_biclique_enumeration",
       "name": "Maximal Biclique Enumeration",
       "contract": "problems/09_maximal_biclique_enumeration/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "e6c249d327995945c3dcb1e028b79885f9ee5795c2d4a05c406497d49a21b15f",
+      "cpu_operations": [
+        "maximal-bicliques"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "triangle_counting_listing",
       "name": "Triangle Counting and Listing",
       "contract": "problems/10_triangle_counting_listing/problem.json",
+      "contract_sha256": "aab8af154f4e620aa9463eb43af1570c79e1b4ea9d081a2509157e241bdc31f8",
       "cpu_operations": [
         "triangle-counting"
       ],
@@ -177,33 +213,43 @@
       "problem_id": "graph_motif_counting",
       "name": "Graph Motif Counting",
       "contract": "problems/11_graph_motif_counting/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "e96398b35903b2883a71f7bf0cdb4fa2d1765e80773ffda2200abe3cd91cbdd2",
+      "cpu_operations": [
+        "motif-counting"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "graphlet_counting",
       "name": "Graphlet Counting",
       "contract": "problems/12_graphlet_counting/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "95314941f93983de5bb32c5e5b2a5a0ee1fedfa54f216fdcb81c049b1ef36487",
+      "cpu_operations": [
+        "graphlet-counting"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "subgraph_isomorphism",
       "name": "Subgraph Isomorphism and Pattern Matching",
       "contract": "problems/13_subgraph_isomorphism/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "4bb2722a89a726ef1446d67ef4c82e8716a770e307ac6d51a8917b8a8d58bbe8",
+      "cpu_operations": [
+        "subgraph-isomorphism"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "frequent_subgraph_mining",
       "name": "Frequent Subgraph Mining",
       "contract": "problems/14_frequent_subgraph_mining/problem.json",
+      "contract_sha256": "9c2cac193fd47c31c8b0d18604ebda21d65455caeb4a4614091ce3b69f4c7aad",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -213,6 +259,7 @@
       "problem_id": "temporal_motif_mining",
       "name": "Temporal Motif Mining",
       "contract": "problems/15_temporal_motif_mining/problem.json",
+      "contract_sha256": "a55027b64e594ae35515157de4c04c9b08833704a9c683a10e03159cb60a82e1",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -222,15 +269,19 @@
       "problem_id": "community_detection",
       "name": "Disjoint Community Detection",
       "contract": "problems/16_community_detection/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "e3832b156c46a4122ae9769bf4a16a8991fbb0308262abaef177d44c11929b4d",
+      "cpu_operations": [
+        "community-detection"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "overlapping_community_detection",
       "name": "Overlapping Community Detection by k-Clique Percolation",
       "contract": "problems/17_overlapping_community_detection/problem.json",
+      "contract_sha256": "7e7e24e87ad35ac7e5b466749c939452e39c9a9658816f83b2885baf4f5e6a29",
       "cpu_operations": [
         "overlapping-communities"
       ],
@@ -242,6 +293,7 @@
       "problem_id": "centrality_influential_node_mining",
       "name": "Centrality and Influential-Node Mining",
       "contract": "problems/18_centrality_influential_node_mining/problem.json",
+      "contract_sha256": "84799e62a8a59d684633345b2ec6a1dda713bb7d431359885b70392d55dc197a",
       "cpu_operations": [
         "betweenness-centrality",
         "degree-centrality",
@@ -258,6 +310,7 @@
       "problem_id": "link_prediction",
       "name": "Link Prediction",
       "contract": "problems/19_link_prediction/problem.json",
+      "contract_sha256": "5ee3ba9dcf9f473fa2c2cdf4a9eccd891161e2fe715ed242776395236843dd91",
       "cpu_operations": [
         "link-prediction"
       ],
@@ -271,6 +324,7 @@
       "problem_id": "graph_anomaly_detection",
       "name": "Graph Anomaly Detection",
       "contract": "problems/20_graph_anomaly_detection/problem.json",
+      "contract_sha256": "410df95e9d954ef070287dae8fcf224c43fcda4353bd937e9f2f50a424ea2dc1",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -280,6 +334,7 @@
       "problem_id": "personalized_pagerank_rwr",
       "name": "Personalized PageRank and Random Walk with Restart",
       "contract": "problems/21_personalized_pagerank_rwr/problem.json",
+      "contract_sha256": "e1850768003aedb1a9f181f3c9de044d4be20e043d45d5a236f639c367dbaedc",
       "cpu_operations": [
         "personalized-pagerank"
       ],
@@ -293,6 +348,7 @@
       "problem_id": "max_flow_min_cut",
       "name": "Maximum Flow and Minimum s-t Cut",
       "contract": "problems/22_max_flow_min_cut/problem.json",
+      "contract_sha256": "21c6a0da7e3c845b7889dc27344aad76809e201c0891cb269d6474f3981da713",
       "cpu_operations": [
         "max-flow-min-cut"
       ],
@@ -304,15 +360,19 @@
       "problem_id": "butterfly_counting_bipartite",
       "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
       "contract": "problems/23_butterfly_counting_bipartite/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "3ce8500d52655dcbab5363b7874eb5869f1bc281e472c18d928d5475becaf1e9",
+      "cpu_operations": [
+        "butterfly-counting"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "graph_edit_distance_mcs",
       "name": "Graph Edit Distance and Maximum Common Subgraph",
       "contract": "problems/24_graph_edit_distance_mcs/problem.json",
+      "contract_sha256": "2b300980b0c1681143cb88fc3b6f7ba1a2885f43347c97c11c73f18cd47db17e",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -322,6 +382,7 @@
       "problem_id": "network_alignment",
       "name": "Pairwise Network Alignment",
       "contract": "problems/25_network_alignment/problem.json",
+      "contract_sha256": "6c2b929ead094e972709dbd5ca0354e46611135609b8a90c6c07495b04c2d35a",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -331,6 +392,7 @@
       "problem_id": "hop_constrained_cycle_path_enumeration",
       "name": "Hop-Constrained Simple Path and Cycle Enumeration",
       "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
+      "contract_sha256": "74df4326c7e2bc4e93e33659341fefce48e54edbf9b2290a84dcb842071af49e",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -340,6 +402,7 @@
       "problem_id": "group_steiner_tree",
       "name": "Group Steiner Tree",
       "contract": "problems/27_group_steiner_tree/problem.json",
+      "contract_sha256": "4c8ae79bbe621d3577778e2bbc7e8f67d604c91d24da038177044c673e021088",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -349,6 +412,7 @@
       "problem_id": "influence_maximization",
       "name": "Influence Maximization under Diffusion Models",
       "contract": "problems/28_influence_maximization/problem.json",
+      "contract_sha256": "b15f09826604a42f29739820129cdae051eb55461217acffd25e2c9ac2b85eab",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -358,6 +422,7 @@
       "problem_id": "simrank_vertex_similarity",
       "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
       "contract": "problems/29_simrank_vertex_similarity/problem.json",
+      "contract_sha256": "4b755fcbcabf242d62a79a2331242a0c3c8ad0969d6fbd3a48b8d3083cf9e2d3",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -367,33 +432,43 @@
       "problem_id": "balanced_graph_partitioning",
       "name": "Balanced k-Way Graph Partitioning",
       "contract": "problems/30_balanced_graph_partitioning/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "190393302d8065bb8ead4b00ebbc8c5a020cb5b47bc98ad12290adf6c8966f27",
+      "cpu_operations": [
+        "balanced-partitioning"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "bipartite_matching_assignment",
       "name": "Bipartite Matching and Linear Assignment",
       "contract": "problems/31_bipartite_matching_assignment/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "f95160c947ca3e4e34e255600da3e287b500ac0b9c3aa0283114ef679b84e7f5",
+      "cpu_operations": [
+        "bipartite-matching"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "signed_network_structural_balance",
       "name": "Signed Network Structural Balance and Frustration Minimization",
       "contract": "problems/32_signed_network_structural_balance/problem.json",
-      "cpu_operations": [],
+      "contract_sha256": "b5caa2909af070ebc3c119caea37d2b32fdd2bc84e1a0e16ac9f367c73501e84",
+      "cpu_operations": [
+        "signed-balance"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
       "problem_id": "transitive_closure_reachability",
       "name": "Transitive Closure and Reachability Indexing",
       "contract": "problems/33_transitive_closure_reachability/problem.json",
+      "contract_sha256": "cad21f716c8a0e5d968474295efe86fc390eb81dc359dc174706e90aee354e42",
       "cpu_operations": [
         "transitive-closure"
       ],
@@ -405,6 +480,7 @@
       "problem_id": "entity_resolution_blocking",
       "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
       "contract": "problems/34_entity_resolution_blocking/problem.json",
+      "contract_sha256": "af6c356f965cd6aff9810f7ae1fdaf85ab2d30b0673f30611877c0b40538749d",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -414,6 +490,7 @@
       "problem_id": "connected_components",
       "name": "Connected Components (Weakly and Strongly Connected)",
       "contract": "problems/35_connected_components/problem.json",
+      "contract_sha256": "7f37c6d949b5ffcdcd888dbf36cb32f49c7fda77b03cbbeee39d24cd28ef1466",
       "cpu_operations": [
         "connected-components"
       ],
@@ -427,6 +504,7 @@
       "problem_id": "graph_layout_force_directed",
       "name": "Force-Directed Graph Layout",
       "contract": "problems/36_graph_layout_force_directed/problem.json",
+      "contract_sha256": "ab1e56af2377f6b4c77ddebdd25addf91be36545bb70fc106a7002f15bd0d607",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -436,6 +514,7 @@
       "problem_id": "null_model_significance_testing",
       "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
       "contract": "problems/37_null_model_significance_testing/problem.json",
+      "contract_sha256": "5087adee9c1baacf51eebc8a3ed3580381f6e96e95ba9049bc16a6cce42b2024",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -445,6 +524,7 @@
       "problem_id": "breadth_first_search",
       "name": "Breadth-First Search and Unweighted Shortest Paths",
       "contract": "problems/38_breadth_first_search/problem.json",
+      "contract_sha256": "391e21514cd78267d18ab60025509aa2c92b89cf6973f2310aa0b933f614d3a8",
       "cpu_operations": [
         "breadth-first-search"
       ],
@@ -458,6 +538,7 @@
       "problem_id": "single_source_shortest_paths",
       "name": "Weighted Single-Source Shortest Paths",
       "contract": "problems/39_single_source_shortest_paths/problem.json",
+      "contract_sha256": "f7f1851a798e662c2f557839fa3051a44618cfaa041e02557fc86fe07f3ac621",
       "cpu_operations": [
         "single-source-shortest-paths"
       ],
@@ -471,6 +552,7 @@
       "problem_id": "many_source_shortest_paths",
       "name": "Many-Source and All-Pairs Shortest Distances",
       "contract": "problems/40_many_source_shortest_paths/problem.json",
+      "contract_sha256": "f2a4e87b461c0d5b321ac18acf27099f52f3a29f2f506f452050e0df9b738bad",
       "cpu_operations": [
         "many-source-shortest-paths"
       ],
@@ -484,6 +566,7 @@
       "problem_id": "spanning_tree_forest",
       "name": "Minimum and Maximum Spanning Trees and Forests",
       "contract": "problems/41_spanning_tree_forest/problem.json",
+      "contract_sha256": "2b9be1f564febe31c621046ec087f23ab00992c3d1c3a9ee46856d1e3987c2f3",
       "cpu_operations": [
         "spanning-tree-forest"
       ],
@@ -497,6 +580,7 @@
       "problem_id": "maximal_independent_set",
       "name": "Maximal Independent Set",
       "contract": "problems/42_maximal_independent_set/problem.json",
+      "contract_sha256": "74ed777f7e0789ac984fe92114dd2ab0a9f20ba411167eb113f739cd16adcf18",
       "cpu_operations": [
         "maximal-independent-set"
       ],
@@ -508,6 +592,7 @@
       "problem_id": "vertex_coloring",
       "name": "Vertex Coloring",
       "contract": "problems/43_vertex_coloring/problem.json",
+      "contract_sha256": "0f952e3bc776473d9995fbec8f61d60ea8c38abdb74a1956c2ff1a8c0d16d97d",
       "cpu_operations": [
         "vertex-coloring"
       ],
@@ -519,6 +604,7 @@
       "problem_id": "general_graph_weighted_matching",
       "name": "General-Graph Weighted Matching",
       "contract": "problems/44_general_graph_weighted_matching/problem.json",
+      "contract_sha256": "5d2c63c821227e20c0c6f74dea553c9121fe785597fac654bd19c8fa541008e6",
       "cpu_operations": [
         "weighted-matching"
       ],
@@ -530,6 +616,7 @@
       "problem_id": "topological_sort",
       "name": "Topological Sorting and DAG Levels",
       "contract": "problems/45_topological_sort/problem.json",
+      "contract_sha256": "f49e614f16b28f135d90909381815f85b47c8f71d968c4721d9ed922a5130dd4",
       "cpu_operations": [
         "topological-sort"
       ],
@@ -541,6 +628,7 @@
       "problem_id": "random_walk_generation",
       "name": "Graph Random-Walk Generation",
       "contract": "problems/46_random_walk_generation/problem.json",
+      "contract_sha256": "37a80d51a0195a23a5876eec5fce3db4a44e4ae5a025148fc08c20a548129ec1",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -550,6 +638,7 @@
       "problem_id": "neighborhood_sampling",
       "name": "Neighborhood Sampling",
       "contract": "problems/47_neighborhood_sampling/problem.json",
+      "contract_sha256": "f98574fa40eb46b1539640d0f2a57f4e99203f9b385e63b0bf5f98e70e4a0804",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -559,6 +648,7 @@
       "problem_id": "induced_subgraph_ego_extraction",
       "name": "Induced Subgraph and Ego-Network Extraction",
       "contract": "problems/48_induced_subgraph_ego_extraction/problem.json",
+      "contract_sha256": "094f687810052ff0e30bfa266a43b32491c5a05c70a63001fc3fdca1d2f6bf1e",
       "cpu_operations": [
         "induced-subgraph"
       ],
@@ -572,6 +662,7 @@
       "problem_id": "seeded_local_community_detection",
       "name": "Seeded Local Community Detection",
       "contract": "problems/49_seeded_local_community_detection/problem.json",
+      "contract_sha256": "379132559634d9618a16574615ccae86b8d2d5d76cf9ccb03ab3b7f87ff2123c",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -581,6 +672,7 @@
       "problem_id": "node_embedding",
       "name": "Node Embedding",
       "contract": "problems/50_node_embedding/problem.json",
+      "contract_sha256": "7eb3e86df35369ec93bb199a2aadf2373a8c70ae5cf4e1c0ea43edc6aa1bb11f",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -590,6 +682,7 @@
       "problem_id": "knowledge_graph_embedding",
       "name": "Knowledge-Graph Embedding",
       "contract": "problems/51_knowledge_graph_embedding/problem.json",
+      "contract_sha256": "97acd8147a12bd6adb468702367d5ccc7016695288610ace1148d1d19e4cdf52",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -599,6 +692,7 @@
       "problem_id": "node_classification_regression",
       "name": "Node Classification and Regression",
       "contract": "problems/52_node_classification_regression/problem.json",
+      "contract_sha256": "0b39fb8e453b3a6d6b57c29f1c1bc053eb5909fa7927bdf2a25529c69cfb4626",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -608,6 +702,7 @@
       "problem_id": "graph_classification_regression",
       "name": "Graph Classification and Regression",
       "contract": "problems/53_graph_classification_regression/problem.json",
+      "contract_sha256": "f129244313f0a6e838e4a46dff0193d204d1a88521e48425ad7218a63b2feb3b",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -617,6 +712,7 @@
       "problem_id": "hypergraph_partitioning",
       "name": "Balanced Hypergraph Partitioning",
       "contract": "problems/54_hypergraph_partitioning/problem.json",
+      "contract_sha256": "d84535d348db8033db996050918c83ee53a29e859106634454a00dc125ee63c3",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -626,6 +722,7 @@
       "problem_id": "spectral_graph_sparsification",
       "name": "Spectral Graph Sparsification",
       "contract": "problems/55_spectral_graph_sparsification/problem.json",
+      "contract_sha256": "d2d25cd89f20f5a614dbbe5547103cf849b0bccacb552c91c650b7a86d52bfcb",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -635,6 +732,7 @@
       "problem_id": "biconnected_components",
       "name": "Biconnected Components, Articulation Points and Bridges",
       "contract": "problems/56_biconnected_components/problem.json",
+      "contract_sha256": "4def82958a99be5eb2d97d364beca0a3fa7174fa3582741e9ca50b7fbdf864c9",
       "cpu_operations": [
         "biconnected-components"
       ],
@@ -646,6 +744,7 @@
       "problem_id": "temporal_fastest_paths",
       "name": "Temporal Fastest and Earliest-Arrival Paths",
       "contract": "problems/57_temporal_fastest_paths/problem.json",
+      "contract_sha256": "af96bdc8bf82563d2cbe08645845f220260c5547645563af11d2d616263c3dc2",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -655,6 +754,7 @@
       "problem_id": "top_k_critical_paths_dag",
       "name": "Top-k Critical Paths in DAGs",
       "contract": "problems/58_top_k_critical_paths_dag/problem.json",
+      "contract_sha256": "db8cb1e46348083889099e373f10b9a8ed1048a38b86fe8d97bd1673b109f634",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -664,6 +764,7 @@
       "problem_id": "graph_signal_denoising",
       "name": "Graph Signal Denoising and Trend Filtering",
       "contract": "problems/59_graph_signal_denoising/problem.json",
+      "contract_sha256": "28ac5a1ef502393314064e2fc90e090a4527414a0e6de54ac13d85d19cfe4e26",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -673,6 +774,7 @@
       "problem_id": "graph_based_geolocation",
       "name": "Graph-Based Geolocation",
       "contract": "problems/60_graph_based_geolocation/problem.json",
+      "contract_sha256": "9a0922ca917887139456f45225bbf26cfca16b241120040cbf2cc056feb41369",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -682,6 +784,7 @@
       "problem_id": "widest_paths",
       "name": "Single-Source Widest Paths",
       "contract": "problems/61_widest_paths/problem.json",
+      "contract_sha256": "6e69017e6c18ab73a70e1c363fa310618964642d67a41dd94f0a7759c3e3e84a",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -691,6 +794,7 @@
       "problem_id": "graph_coarsening",
       "name": "Graph Coarsening and Quotient Construction",
       "contract": "problems/62_graph_coarsening/problem.json",
+      "contract_sha256": "04fb7c06c6fd891fe90b5d9273215da0105092ff02e380fbaa6c2a5a7c8359da",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -700,6 +804,7 @@
       "problem_id": "graph_laplacian_eigenpairs",
       "name": "Graph Laplacian Eigenpairs",
       "contract": "problems/63_graph_laplacian_eigenpairs/problem.json",
+      "contract_sha256": "39e828c3d5d6b1d7754c2f596ed3c991dfe9b44bf0a43f12b5f0b3328474a2e3",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -709,6 +814,7 @@
       "problem_id": "knn_graph_construction",
       "name": "k-Nearest-Neighbor Graph Construction",
       "contract": "problems/64_knn_graph_construction/problem.json",
+      "contract_sha256": "a16850fcc2d14a0de56f57de94a81828742ac9f06e7852a186b08d1027b00aa2",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -718,6 +824,7 @@
       "problem_id": "hypergraph_node_learning",
       "name": "Hypergraph Node Classification and Regression",
       "contract": "problems/65_hypergraph_node_learning/problem.json",
+      "contract_sha256": "838594eccbff07149757e6f876d18605e95f2baf685ecfc8aa68e756b44d8265",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -727,6 +834,7 @@
       "problem_id": "maximum_independent_set",
       "name": "Maximum Independent Set",
       "contract": "problems/66_maximum_independent_set/problem.json",
+      "contract_sha256": "0326d81e28fc701d5b6fdd1fc851f45ac8c507b45f5f238d4e15524ebd962246",
       "cpu_operations": [
         "maximum-independent-set"
       ],
@@ -738,6 +846,7 @@
       "problem_id": "persistent_homology",
       "name": "Flag-Complex Persistent Homology",
       "contract": "problems/67_persistent_homology/problem.json",
+      "contract_sha256": "b13beec1c5a3ec34226bef03f88ea8405c506ed23b190f74582910900e376351",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -747,6 +856,7 @@
       "problem_id": "single_graph_frequent_subgraph_mining",
       "name": "Frequent Subgraphs in One Labeled Graph",
       "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json",
+      "contract_sha256": "413eb8726676ba79232e92fd7faeed081d7555115de6665f233431f214d9bc3c",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -756,6 +866,7 @@
       "problem_id": "minimum_vertex_cover",
       "name": "Minimum Vertex Cover",
       "contract": "problems/69_minimum_vertex_cover/problem.json",
+      "contract_sha256": "89772dfe22c16fa24f6922a99bb9263bc51fe373b3eee5e670f42fb3d5d82115",
       "cpu_operations": [
         "minimum-vertex-cover"
       ],
@@ -767,6 +878,7 @@
       "problem_id": "graph_condensation",
       "name": "Learned Graph Condensation",
       "contract": "problems/70_graph_condensation/problem.json",
+      "contract_sha256": "06cf0b674b2418b9894bb8ec99a9d7be561e276b5087dc19a85bd9215ce4c59c",
       "cpu_operations": [],
       "cugraph_operations": [],
       "status": "integration_required",
@@ -802,7 +914,8 @@
       },
       "library": "networkx",
       "quality": "numerical",
-      "references": []
+      "references": [],
+      "profile_sha256": "d79f63422d0d75e13b02d2f51bc6188c9aa242e6ea69523857219705d396fefd"
     },
     {
       "id": "degree-centrality",
@@ -833,7 +946,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "73f9679f8177402ca4e03455d39159cf99a699f44760deaf1e0fa664a328cf1c"
     },
     {
       "id": "pagerank",
@@ -881,7 +995,8 @@
       },
       "library": "networkx",
       "quality": "numerical",
-      "references": []
+      "references": [],
+      "profile_sha256": "af422d2ea37e0442390c45e60d24cd2782bec8b840bd1e3d00377b1c50d48880"
     },
     {
       "id": "personalized-pagerank",
@@ -974,7 +1089,8 @@
       },
       "library": "networkx",
       "quality": "numerical",
-      "references": []
+      "references": [],
+      "profile_sha256": "b13ce942315f69636241aa26acfb7242bd8c711ba66d10fb6025fa90eacaf37f"
     },
     {
       "id": "k-cliques",
@@ -1012,7 +1128,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "cec0af34b5e4662a42acfc3b109d93f528f6d4fe49299b086fe41f33e6ec954d"
     },
     {
       "id": "maximal-cliques",
@@ -1040,7 +1157,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "c579e25c28accdc5aa013794690c4afcbf491983af27ad59944addc94c18e7e6"
     },
     {
       "id": "maximum-clique",
@@ -1059,7 +1177,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "7ea6d0d166530ce00301317cf151986a2916273f93d9a294263a483b3a3aea75"
     },
     {
       "id": "vertex-coloring",
@@ -1089,7 +1208,72 @@
       },
       "library": "networkx",
       "quality": "feasible",
-      "references": []
+      "references": [],
+      "profile_sha256": "9f87bf95a4c5a998031e8856137a5ac9bf9040d14466309e96bf8720db4827d0"
+    },
+    {
+      "id": "community-detection",
+      "problem_id": "community_detection",
+      "family": "communities",
+      "title": "Divide a network into communities",
+      "description": "Louvain for heuristic modularity; checked binary partition optimization for exact modularity or CPM. CPM is internal edge weight minus resolution times the number of within-community vertex pairs.",
+      "parameters": {
+        "quality_function": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "modularity",
+          "choices": [
+            "modularity",
+            "constant_potts_model"
+          ],
+          "nullable": false
+        },
+        "resolution": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1.0,
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "heuristic",
+          "choices": [
+            "exact",
+            "heuristic"
+          ],
+          "nullable": false
+        },
+        "seed": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 0,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "heuristic",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.louvain.louvain_communities.html"
+      ],
+      "profile_sha256": "909c2e3aa3f7dcc9fd474f013df3d49292aa8f896aaa82345e25e73eb20265f5"
     },
     {
       "id": "overlapping-communities",
@@ -1123,7 +1307,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "f1ca836fa23219cd22a770a330d1bc98de063323b8ec68eb96aa71f957fe88a6"
     },
     {
       "id": "biconnected-components",
@@ -1134,7 +1319,8 @@
       "parameters": {},
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "f9408f936a91de8519e9f172a2be041c610c39bace38131f89504a72d67a2d3e"
     },
     {
       "id": "connected-components",
@@ -1157,7 +1343,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "135469f633b6219523c07a96b8fac42803bef5f176aaa1ca6a3422ce0e060a4e"
     },
     {
       "id": "k-core",
@@ -1177,7 +1364,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "32cab5067191e9419a1df04c5127fafb00b708496d0176fd32910ad9b37dcd12"
     },
     {
       "id": "k-truss",
@@ -1197,7 +1385,197 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "d2767e052639c1a0003e0a2cb4c24c06ff61b98e2806127af4d9e4308227049e"
+    },
+    {
+      "id": "densest-k-subgraph",
+      "problem_id": "densest_k_subgraph",
+      "family": "dense_structures",
+      "title": "Find exactly k vertices with the greatest internal edge value",
+      "description": "Binary vertex/edge optimization with an exact cardinality constraint; solver optimality and the recomputed objective are checked.",
+      "parameters": {
+        "k": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical_optimum",
+      "references": [
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
+      ],
+      "profile_sha256": "cae842a2fcf9fff2e812f8e11987c0838ed1e47919715ef1b76d133be9b0c9a6"
+    },
+    {
+      "id": "densest-subgraph",
+      "problem_id": "densest_subgraph",
+      "family": "dense_structures",
+      "title": "Find the region with the most edges or cliques per vertex",
+      "description": "Maximize induced k-clique count / vertex count. k is clique order, not result size. Weighted density is defined only for k=2.",
+      "parameters": {
+        "clique_order": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 2,
+          "default": 2,
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "minimum_vertices": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1,
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.flow.minimum_cut.html"
+      ],
+      "profile_sha256": "a270c3ae93bbe03ef1509745a8ba3f7f1c04bc6b4d81668f01e1479ea597de64"
+    },
+    {
+      "id": "maximal-bicliques",
+      "problem_id": "maximal_biclique_enumeration",
+      "family": "dense_structures",
+      "title": "Find maximal completely connected groups across two sides",
+      "description": "A clique reduction followed by NetworkX maximal-clique enumeration; both biclique sides must be nonempty.",
+      "parameters": {
+        "left_partition": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "right_partition": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "minimum_left_size": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1,
+          "nullable": false
+        },
+        "minimum_right_size": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1,
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "profile_sha256": "1e1fb8ad97d7b57e139e239c67570d0d7a1213a78bd0f20c8f71594438fe3888"
+    },
+    {
+      "id": "quasi-cliques",
+      "problem_id": "quasi_clique_mining",
+      "family": "dense_structures",
+      "title": "Find groups meeting a minimum internal-degree fraction",
+      "description": "Enumerate all gamma quasi-cliques via binary feasibility models; maximality is checked against all qualifying larger sets within the size bounds.",
+      "parameters": {
+        "gamma": {
+          "kind": "number",
+          "required": true,
+          "description": "",
+          "minimum": 0,
+          "maximum": 1,
+          "nullable": false
+        },
+        "minimum_size": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 2,
+          "nullable": false
+        },
+        "maximum_size": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 2,
+          "default": null,
+          "nullable": true
+        },
+        "maximal_only": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "exact",
+      "references": [],
+      "profile_sha256": "ae2bead18b85ff611c0d37d3cfd1abcb43abef82a1bac99d2c0dd8817c35fc4b"
     },
     {
       "id": "max-flow-min-cut",
@@ -1239,7 +1617,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "05b52600190def51caf1e4c17bb1303f451a6d3548a04ef920d2154735dfd068"
     },
     {
       "id": "maximal-independent-set",
@@ -1258,7 +1637,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "17a8193a4c08d34c919858cc99c2eb0ef1739329ff1a56228c8e00c23caa688f"
     },
     {
       "id": "maximum-independent-set",
@@ -1280,7 +1660,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "1317c8b6b9625243d3d221c98deab6360de58a2d898b534272facf6829979724"
     },
     {
       "id": "minimum-vertex-cover",
@@ -1311,7 +1692,61 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "405ab33fbbc1dd99056cc3ba264337570b1cd80335d6eecac069f98e9e954a2d"
+    },
+    {
+      "id": "bipartite-matching",
+      "problem_id": "bipartite_matching_assignment",
+      "family": "matching",
+      "title": "Match items on two sides by count, value, or cost",
+      "description": "NetworkX maximum-weight matching with explicit cardinality and coverage semantics. Minimum-cost without required coverage may legitimately choose an empty matching.",
+      "parameters": {
+        "objective": {
+          "kind": "string",
+          "required": true,
+          "description": "",
+          "choices": [
+            "maximum_cardinality",
+            "maximum_weight",
+            "minimum_cost"
+          ],
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "perfect_matching_required": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "profile_sha256": "d63d87b5bce3a4d6af9b28c94a5788b25ab4c68514a49e6fbac1f488af0b1502"
     },
     {
       "id": "weighted-matching",
@@ -1333,7 +1768,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "bf95d4a9ba4172178fa83d9615e4ed7d694831ec71c1d1dc27ed764302dd26e4"
     },
     {
       "id": "triangle-counting",
@@ -1374,7 +1810,341 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "33bc1b47ac2e0a0f22d8cd19ba8e675417a96d84f4bbbb93d36de5db236d3876"
+    },
+    {
+      "id": "balanced-partitioning",
+      "problem_id": "balanced_graph_partitioning",
+      "family": "partitioning",
+      "title": "Split a graph into balanced groups with few crossing edges",
+      "description": "Minimize crossing edge cost under both lower and upper balance limits and nonempty parts. Normalized cut is the sum of each part's boundary cost divided by its declared balance size.",
+      "parameters": {
+        "num_parts": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 2,
+          "nullable": false
+        },
+        "balance_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "vertex_count",
+          "choices": [
+            "vertex_count",
+            "vertex_weight"
+          ],
+          "nullable": false
+        },
+        "vertex_weights": {
+          "kind": "array",
+          "required": false,
+          "description": "One {vertex, value} record per input vertex.",
+          "default": null,
+          "nullable": true
+        },
+        "imbalance_tolerance": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 0.03,
+          "nullable": false
+        },
+        "edge_weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "objective": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "edge_cut",
+          "choices": [
+            "edge_cut",
+            "normalized_cut"
+          ],
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical_optimum",
+      "references": [],
+      "profile_sha256": "251850a83cfcdba8d0c28419ab10c5cee7cd6883a1b4bfc8d7b35ea724c722bd"
+    },
+    {
+      "id": "signed-balance",
+      "problem_id": "signed_network_structural_balance",
+      "family": "partitioning",
+      "title": "Check signed-network balance or minimize frustrated connections",
+      "description": "Structural balance is an exact parity test, independent of edge costs. Frustration minimization uses binary XOR constraints and recomputes the weighted violations.",
+      "parameters": {
+        "task": {
+          "kind": "string",
+          "required": true,
+          "description": "",
+          "choices": [
+            "balance_check",
+            "frustration_minimization"
+          ],
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "profile_sha256": "788c83a900e6b9c2c53022c1985af935450267545323478ba756b7ef26b76dae"
+    },
+    {
+      "id": "butterfly-counting",
+      "problem_id": "butterfly_counting_bipartite",
+      "family": "pattern_mining",
+      "title": "Count four-way connections between two sides",
+      "description": "Exact 2-by-2 biclique counts and participation. Core mode declares whether thresholds apply to ordinary degree or butterfly participation.",
+      "parameters": {
+        "mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "count",
+          "choices": [
+            "count",
+            "per_vertex",
+            "per_edge",
+            "alpha_beta_core"
+          ],
+          "nullable": false
+        },
+        "alpha": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        },
+        "beta": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        },
+        "core_measure": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "butterfly_participation",
+          "choices": [
+            "butterfly_participation",
+            "degree"
+          ],
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "profile_sha256": "2b0397a28ca29fe531edd24dfea49257317ec61bc51cfc1ec25cfd12081ed559"
+    },
+    {
+      "id": "graphlet-counting",
+      "problem_id": "graphlet_counting",
+      "family": "pattern_mining",
+      "title": "Count connected induced graph shapes and vertex roles",
+      "description": "Classify induced subgraphs against NetworkX's complete graph atlas through seven vertices, with optional exact automorphism-orbit participation.",
+      "parameters": {
+        "graphlet_sizes": {
+          "kind": "array",
+          "required": true,
+          "description": "Unique integer sizes 2 through 7; the atlas contains every unlabeled class in that range.",
+          "nullable": false
+        },
+        "include_orbit_counts": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "list_instances": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "result_limit_per_graphlet": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/generated/networkx.generators.atlas.graph_atlas_g.html"
+      ],
+      "profile_sha256": "bd0283fbe6372831975689de9e1610349809c3bacc91035e797aa5732069c02c"
+    },
+    {
+      "id": "motif-counting",
+      "problem_id": "graph_motif_counting",
+      "family": "pattern_mining",
+      "title": "Count occurrences of supplied graph motifs",
+      "description": "VF2 embeddings with explicit automorphism identity. Non-induced occurrences sharing a vertex set can still be different motif instances.",
+      "parameters": {
+        "motifs": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "induced": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "occurrence_identity": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unique_vertex_set_and_mapping_class",
+          "choices": [
+            "unique_vertex_set_and_mapping_class",
+            "all_embeddings"
+          ],
+          "nullable": false
+        },
+        "list_instances": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "result_limit_per_motif": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "profile_sha256": "f1449a25412cbc5ef167f00b110f476b19865772251a8418b1c57ceb9b684cd4"
+    },
+    {
+      "id": "subgraph-isomorphism",
+      "problem_id": "subgraph_isomorphism",
+      "family": "pattern_mining",
+      "title": "Find every match for a supplied graph pattern",
+      "description": "NetworkX VF2 induced or non-induced matching. Preserves direction, loops and distinct parallel edges; declarative predicates constrain vertex and edge attributes.",
+      "parameters": {
+        "query_graph": {
+          "kind": "object",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "induced": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "vertex_predicates": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": [],
+          "nullable": false
+        },
+        "edge_predicates": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": [],
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html"
+      ],
+      "profile_sha256": "c977624b4c57c35d9ae6d3f5c531ac41e4f56f428daa1db23b08c8d4bd9027d9"
     },
     {
       "id": "link-prediction",
@@ -1425,7 +2195,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "a5462aa1342f5b1a11b023b2d7551b62700ae0378d5c20a485684a43ffabbb64"
     },
     {
       "id": "induced-subgraph",
@@ -1474,7 +2245,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "b633e433bc464ab7d2744cc23afd0fb0041d243dcce55803bc0f65dff32888f6"
     },
     {
       "id": "breadth-first-search",
@@ -1518,7 +2290,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "8109a52ea6aac5f8f9773ec9a78e8244bb59d5e7580165340b36dc999e88eeb1"
     },
     {
       "id": "many-source-shortest-paths",
@@ -1555,7 +2328,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "7a2715207ad05c5bb31870391a8fd8bb5a4a8ec774f734cf857b42db98d2b2b7"
     },
     {
       "id": "single-source-shortest-paths",
@@ -1588,7 +2362,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "e4c959f1c17e9bffb65ababc0254465c77deb3c710a9e26a6fee72eac5ac3cb5"
     },
     {
       "id": "topological-sort",
@@ -1599,7 +2374,8 @@
       "parameters": {},
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "d572ca68a72d40917658a92216d63dfbbf47adddd875a79f04a3737e24a581af"
     },
     {
       "id": "transitive-closure",
@@ -1637,7 +2413,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "d7e9aae1f90229f590c8fa02206b88de9c295f36c7a77bdfd0eea68b403b7e03"
     },
     {
       "id": "spanning-tree-forest",
@@ -1667,7 +2444,8 @@
       },
       "library": "networkx",
       "quality": "exact",
-      "references": []
+      "references": [],
+      "profile_sha256": "69dc37f771bacf58c2e4901683e41e3b7f808db3ebb503dd49b924254a199cc8"
     }
   ]
 }

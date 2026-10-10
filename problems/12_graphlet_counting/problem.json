@@ -12,7 +12,7 @@
     "normalization": ["Reject directed input unless an explicit undirected projection is requested.", "Remove self-loops.", "Collapse parallel edges into one undirected edge."]
   },
   "problem_inputs": [
-    {"name": "graphlet_sizes", "type": "array<integer>", "required": true, "constraints": "unique values, each between 2 and 5 inclusive", "description": "Vertex cardinalities of connected induced graphlets to count."},
+    {"name": "graphlet_sizes", "type": "array<integer>", "required": true, "constraints": "unique values, each between 2 and 7 inclusive; an executable backend may support a smaller declared range", "description": "Vertex cardinalities of connected induced graphlets to count. The CPU atlas integration supports every unlabeled class through seven vertices."},
     {"name": "include_orbit_counts", "type": "boolean", "required": false, "default": false, "description": "Compute per-vertex automorphism-orbit participation."},
     {"name": "list_instances", "type": "boolean", "required": false, "default": false, "description": "Materialize classified vertex sets."},
     {"name": "result_limit_per_graphlet", "type": "integer_or_null", "required": false, "default": null, "constraints": "null or value >= 1", "description": "Maximum listed instances per graphlet class; counts remain exhaustive."}

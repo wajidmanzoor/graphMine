@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_laplacian_eigenpairs",
+  "name": "Graph Laplacian Eigenpairs",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Compute selected eigenpairs of the combinatorial or symmetric normalized Laplacian of a nonnegative undirected graph.",
+  "graph_input": {
+    "format": "canonical_graph_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "optional_finite_nonnegative_weights_default_one",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Reject self-loops to avoid ambiguous Laplacian conventions.",
+      "Sum parallel edge weights; preserve isolates."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "num_eigenpairs",
+      "type": "integer",
+      "required": true,
+      "description": "k with 1 <= k <= |V|; sparse implementations may require k < |V|."
+    },
+    {
+      "name": "laplacian",
+      "type": "enum",
+      "required": false,
+      "description": "L = D-A, or L = I_active-D^(-1/2) A D^(-1/2); isolated rows and columns are zero.",
+      "default": "combinatorial",
+      "allowed_values": [
+        "combinatorial",
+        "symmetric_normalized"
+      ]
+    },
+    {
+      "name": "selection",
+      "type": "enum",
+      "required": false,
+      "description": "Select the k smallest or largest algebraic eigenvalues, including multiplicities.",
+      "default": "smallest",
+      "allowed_values": [
+        "smallest",
+        "largest"
+      ]
+    },
+    {
+      "name": "tolerance",
+      "type": "number",
+      "required": false,
+      "description": "Positive residual and orthogonality tolerance.",
+      "default": 1e-06
+    },
+    {
+      "name": "max_iterations",
+      "type": "integer",
+      "required": false,
+      "description": "Positive iteration limit for iterative solvers.",
+      "default": 1000
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "eigenvalues",
+      "type": "array<number>",
+      "description": "Selected real eigenvalues in ascending order."
+    },
+    {
+      "name": "eigenvectors",
+      "type": "matrix<number>",
+      "description": "Columns correspond to eigenvalues; rows follow a reported vertex order."
+    },
+    {
+      "name": "vertex_order",
+      "type": "array<vertex_id>",
+      "description": "Row-to-external-ID mapping."
+    },
+    {
+      "name": "residual_norms",
+      "type": "array<number>",
+      "description": "Euclidean norms of Lq-lambda*q."
+    },
+    {
+      "name": "converged",
+      "type": "boolean",
+      "description": "Whether residual and orthogonality requirements were met."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Compute selected eigenpairs of the combinatorial or symmetric normalized Laplacian of a nonnegative undirected graph.",
+    "exactness": "Floating-point eigenpairs with explicit residual and orthogonality tolerances.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "Rebuild the requested Laplacian and check residuals and Q^T Q against the declared tolerance.",
+    "Compare subspaces, allowing sign flips and rotations within repeated eigenspaces.",
+    "Verify selected eigenvalue order and multiplicity with an independent small dense reference.",
+    "Do not treat a partially converged iterative result as converged."
+  ],
+  "edge_cases": [
+    "Each connected component contributes a zero eigenvalue.",
+    "Isolated vertices contribute zero rows.",
+    "Reject negative weights and directed inputs."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Rebuild the requested Laplacian and check residuals and Q^T Q against the declared tolerance.",
+      "Compare subspaces, allowing sign flips and rotations within repeated eigenspaces.",
+      "Verify selected eigenvalue order and multiplicity with an independent small dense reference.",
+      "Do not treat a partially converged iterative result as converged."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "laplacian eigenvectors",
+    "laplacian eigenvalues",
+    "fiedler vector",
+    "spectral graph embedding"
+  ],
+  "research_only": true
+}

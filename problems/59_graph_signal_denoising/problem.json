@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_signal_denoising",
+  "name": "Graph Signal Denoising and Trend Filtering",
+  "category": "graph_signal_processing",
+  "problem_statement": "Estimate a vertex signal from noisy observations using a declared graph-difference regularizer.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "optional_nonnegative",
+      "timestamps": "ignored",
+      "vertex_attributes": "required_observed_signal",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "observed_signal",
+      "type": "object",
+      "required": true,
+      "description": "Scalar or fixed-width vector observations per vertex."
+    },
+    {
+      "name": "regularizer",
+      "type": "enum",
+      "required": false,
+      "description": "Total variation, higher-order trend filtering or quadratic Laplacian smoothing.",
+      "default": "total_variation",
+      "allowed_values": [
+        "total_variation",
+        "trend_filtering",
+        "laplacian_quadratic"
+      ]
+    },
+    {
+      "name": "regularization_strength",
+      "type": "number",
+      "required": true,
+      "description": "Nonnegative regularization weight."
+    },
+    {
+      "name": "difference_order",
+      "type": "integer",
+      "required": false,
+      "description": "Nonnegative trend-filtering order.",
+      "default": 0
+    },
+    {
+      "name": "tolerance",
+      "type": "number",
+      "required": false,
+      "description": "Positive solver convergence tolerance.",
+      "default": 1e-06
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "estimated_signal",
+      "type": "object",
+      "description": "Denoised signal per vertex."
+    },
+    {
+      "name": "objective_value",
+      "type": "number",
+      "description": "Declared objective evaluated on the returned signal."
+    },
+    {
+      "name": "converged",
+      "type": "boolean",
+      "description": "Whether the declared solver tolerance was met."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Minimize squared observation error plus the declared graph-difference penalty.",
+    "exactness": "Numerical optimization with disclosed stopping conditions; different regularizers define different variants.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Recompute the stated objective and convergence residual.",
+    "With zero regularization the solution equals observations.",
+    "Compare small instances with an independent convex solver."
+  ],
+  "edge_cases": [
+    "Isolated vertices retain their observations for edge-difference penalties.",
+    "Disconnected components can be processed independently."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Recompute the stated objective and convergence residual.",
+      "With zero regularization the solution equals observations.",
+      "Compare small instances with an independent convex solver."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

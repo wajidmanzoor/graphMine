@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "topological_sort",
+  "name": "Topological Sorting and DAG Levels",
+  "category": "traversal_and_paths",
+  "problem_statement": "Determine whether a directed graph is acyclic and return a valid topological vertex order and optional dependency levels.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [],
+  "required_outputs": [
+    {
+      "name": "is_dag",
+      "type": "boolean",
+      "description": "False when a directed cycle exists."
+    },
+    {
+      "name": "order",
+      "type": "array<vertex_id>_or_null",
+      "description": "Permutation placing every edge source before its target, or null for cyclic input."
+    }
+  ],
+  "optional_outputs": [
+    {
+      "name": "levels",
+      "type": "map<vertex_id,integer>",
+      "description": "Longest source-to-vertex hop distance; an order-only backend need not supply levels."
+    }
+  ],
+  "solution_semantics": {
+    "objective": "Produce a linear extension of the graph dependency relation.",
+    "exactness": "Exact acyclicity and ordering; algorithms may reject cyclic input with an explicit diagnostic.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "For a DAG, order is a permutation of all vertices.",
+    "For every edge u->v, u precedes v."
+  ],
+  "edge_cases": [
+    "A self-loop is a cycle.",
+    "Isolated vertices can appear anywhere.",
+    "Empty input has an empty valid order."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "For a DAG, order is a permutation of all vertices.",
+      "For every edge u->v, u precedes v."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "spanning_tree_forest",
+  "name": "Minimum and Maximum Spanning Trees and Forests",
+  "category": "graph_optimization",
+  "problem_statement": "Select an acyclic spanning subgraph minimizing or maximizing total edge weight independently within each connected component.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "required_finite",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "objective",
+      "type": "enum",
+      "required": false,
+      "description": "Optimization direction.",
+      "default": "minimum",
+      "allowed_values": [
+        "minimum",
+        "maximum"
+      ]
+    },
+    {
+      "name": "require_connected",
+      "type": "boolean",
+      "required": false,
+      "description": "Reject disconnected graphs when true.",
+      "default": false
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "forest_edges",
+      "type": "array<edge_id>",
+      "description": "Selected original edges."
+    },
+    {
+      "name": "total_weight",
+      "type": "number",
+      "description": "Sum of selected weights."
+    },
+    {
+      "name": "component_count",
+      "type": "integer",
+      "description": "Number of trees, including isolated vertices."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Optimize total spanning-forest weight under the selected objective.",
+    "exactness": "Globally optimal forest; equal-weight alternatives are valid.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Selected edges are acyclic and preserve each input connected component.",
+    "Edge count equals vertex count minus component count.",
+    "Compare objective with a Kruskal oracle."
+  ],
+  "edge_cases": [
+    "Negative weights are valid.",
+    "Self-loops are never selected.",
+    "Parallel edges remain identifiable."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Selected edges are acyclic and preserve each input connected component.",
+      "Edge count equals vertex count minus component count.",
+      "Compare objective with a Kruskal oracle."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

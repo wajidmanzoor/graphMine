@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "biconnected_components",
+  "name": "Biconnected Components, Articulation Points and Bridges",
+  "category": "connectivity_and_resilience",
+  "problem_statement": "Compute vertex-biconnected blocks of a simple undirected graph, plus vertices and edges whose removal increases component count.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all vertices.",
+      "Remove self-loops and collapse parallel edges to a simple graph before defining bridges."
+    ]
+  },
+  "problem_inputs": [],
+  "required_outputs": [
+    {
+      "name": "blocks",
+      "type": "array<array<edge_id>>",
+      "description": "Edge sets of maximal vertex-biconnected blocks; every bridge is a singleton-edge block."
+    },
+    {
+      "name": "articulation_vertices",
+      "type": "array<vertex_id>",
+      "description": "Vertices whose deletion increases component count."
+    },
+    {
+      "name": "bridges",
+      "type": "array<edge_id>",
+      "description": "Edges whose deletion increases component count."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Decompose the graph into blocks and identify single-vertex and single-edge connectivity failures.",
+    "exactness": "Exact decomposition. Ordinary connected components do not satisfy this problem.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Compare with a Tarjan block oracle.",
+    "Deleting each reported articulation vertex or bridge increases component count.",
+    "Every normalized edge belongs to exactly one block."
+  ],
+  "edge_cases": [
+    "Isolated vertices belong to no edge block.",
+    "A tree has one block per edge and every edge is a bridge."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Compare with a Tarjan block oracle.",
+      "Deleting each reported articulation vertex or bridge increases component count.",
+      "Every normalized edge belongs to exactly one block."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

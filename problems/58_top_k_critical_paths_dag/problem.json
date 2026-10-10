@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "top_k_critical_paths_dag",
+  "name": "Top-k Critical Paths in DAGs",
+  "category": "traversal_and_paths",
+  "problem_statement": "Return up to k distinct source-to-sink paths of greatest total edge delay in a directed acyclic graph.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed",
+      "weights": "required_finite",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "k",
+      "type": "integer",
+      "required": true,
+      "description": "Positive number of paths requested."
+    },
+    {
+      "name": "sources",
+      "type": "array<vertex_id>_or_null",
+      "required": false,
+      "description": "Null means all zero-indegree vertices.",
+      "default": null
+    },
+    {
+      "name": "sinks",
+      "type": "array<vertex_id>_or_null",
+      "required": false,
+      "description": "Null means all zero-outdegree vertices.",
+      "default": null
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "paths",
+      "type": "array<object>",
+      "description": "Edge sequences and total weights in nonincreasing cost order."
+    },
+    {
+      "name": "complete",
+      "type": "boolean",
+      "description": "True if the top-k request or exhaustion of all paths is certified."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Rank distinct DAG paths by descending total delay.",
+    "exactness": "Exact top-k ranking; equal-cost ties may be selected arbitrarily at the kth boundary.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Input is a DAG.",
+    "Every path follows edges from an allowed source to an allowed sink.",
+    "Recompute costs and compare to exhaustive small-DAG enumeration."
+  ],
+  "edge_cases": [
+    "Return fewer than k paths if fewer exist.",
+    "A cyclic input is rejected.",
+    "Parallel edges define distinct edge-sequence paths."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Input is a DAG.",
+      "Every path follows edges from an allowed source to an allowed sink.",
+      "Recompute costs and compare to exhaustive small-DAG enumeration."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

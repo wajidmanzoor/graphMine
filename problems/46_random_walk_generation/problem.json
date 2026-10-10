@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "random_walk_generation",
+  "name": "Graph Random-Walk Generation",
+  "category": "sampling_and_representation_learning",
+  "problem_statement": "Generate vertex sequences sampled from a declared graph transition process.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "optional_nonnegative",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "start_vertices",
+      "type": "array<vertex_id>",
+      "required": true,
+      "description": "One starting vertex per walk; repeats are permitted."
+    },
+    {
+      "name": "length",
+      "type": "integer",
+      "required": true,
+      "description": "Nonnegative maximum number of transitions."
+    },
+    {
+      "name": "walk_model",
+      "type": "enum",
+      "required": false,
+      "description": "Transition model.",
+      "default": "uniform",
+      "allowed_values": [
+        "uniform",
+        "weighted",
+        "node2vec"
+      ]
+    },
+    {
+      "name": "p",
+      "type": "number",
+      "required": false,
+      "description": "Positive node2vec return parameter.",
+      "default": 1.0
+    },
+    {
+      "name": "q",
+      "type": "number",
+      "required": false,
+      "description": "Positive node2vec exploration parameter.",
+      "default": 1.0
+    },
+    {
+      "name": "random_seed",
+      "type": "integer_or_null",
+      "required": false,
+      "description": "Random seed.",
+      "default": null
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "walks",
+      "type": "array<array<vertex_id>>",
+      "description": "One sequence per start; a dead end terminates the walk."
+    },
+    {
+      "name": "lengths",
+      "type": "array<integer>",
+      "description": "Number of transitions actually sampled."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Sample walks from the specified transition probabilities.",
+    "exactness": "Every transition must be valid and obey the requested probability distribution; finite samples are stochastic outputs.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Each walk starts at its requested vertex and follows graph edges.",
+    "Distribution tests on small graphs agree with analytic transition probabilities.",
+    "Walk lengths do not exceed the requested limit."
+  ],
+  "edge_cases": [
+    "A dead-end start yields a one-vertex sequence.",
+    "Zero total outgoing weight terminates a weighted walk."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Each walk starts at its requested vertex and follows graph edges.",
+      "Distribution tests on small graphs agree with analytic transition probabilities.",
+      "Walk lengths do not exceed the requested limit."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

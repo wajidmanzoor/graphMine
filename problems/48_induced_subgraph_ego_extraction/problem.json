@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "induced_subgraph_ego_extraction",
+  "name": "Induced Subgraph and Ego-Network Extraction",
+  "category": "graph_transformations",
+  "problem_statement": "Extract the graph induced by an explicit vertex set or by vertices within a hop radius of declared seeds.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "preserve",
+      "timestamps": "preserve",
+      "vertex_attributes": "preserve",
+      "edge_attributes": "preserve"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "mode",
+      "type": "enum",
+      "required": true,
+      "description": "Selection mode.",
+      "allowed_values": [
+        "induced",
+        "ego"
+      ]
+    },
+    {
+      "name": "vertices_or_seeds",
+      "type": "array<vertex_id>",
+      "required": true,
+      "description": "Explicit selected vertices or ego centers."
+    },
+    {
+      "name": "radius",
+      "type": "integer",
+      "required": false,
+      "description": "Nonnegative ego hop radius.",
+      "default": 1
+    },
+    {
+      "name": "direction_mode",
+      "type": "enum",
+      "required": false,
+      "description": "Traversal direction for ego discovery.",
+      "default": "outgoing",
+      "allowed_values": [
+        "outgoing",
+        "incoming",
+        "undirected_projection"
+      ]
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "subgraph",
+      "type": "canonical_edge_list_v1",
+      "description": "Selected vertices and every input edge whose endpoints are selected."
+    },
+    {
+      "name": "vertex_mapping",
+      "type": "object",
+      "description": "Mapping between output-local and original identifiers."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Preserve the induced graph on the specified or discovered vertex set.",
+    "exactness": "Exact extraction, preserving edge identities and properties.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "The vertex set equals the declared selection or bounded BFS result.",
+    "Every and only input edge with both endpoints selected is returned.",
+    "Selected isolated vertices remain present."
+  ],
+  "edge_cases": [
+    "Empty selection produces an empty graph.",
+    "Radius zero selects only seeds."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "The vertex set equals the declared selection or bounded BFS result.",
+      "Every and only input edge with both endpoints selected is returned.",
+      "Selected isolated vertices remain present."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

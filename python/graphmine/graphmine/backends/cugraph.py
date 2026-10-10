@@ -75,7 +75,13 @@ def prepare(operation: str, args: dict, graph=None) -> dict:
         "spanning-tree-forest",
     }:
         weights = [edge.get("weight", 1) for edge in graph.to_canonical()["edges"]]
-        if any(type(value) is int and float(value) != value for value in weights):
+        try:
+            loses_precision = any(
+                type(value) is int and float(value) != value for value in weights
+            )
+        except OverflowError:
+            loses_precision = True
+        if loses_precision:
             raise UnsupportedOperation(
                 "cuGraph float64 cannot exactly represent these integer weights; use CPU"
             )

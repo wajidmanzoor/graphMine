@@ -129,6 +129,8 @@ class Algorithm:
     references: tuple[str, ...] = ()
 
     def arguments(self, supplied: dict[str, Any]) -> dict[str, Any]:
+        if not isinstance(supplied, dict):
+            raise GraphMineError("parameters must be an object")
         unknown = set(supplied) - set(self.parameters)
         if unknown:
             raise GraphMineError(

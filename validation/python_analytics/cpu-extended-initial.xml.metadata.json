@@ -1,0 +1,43 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "device": "cpu",
+  "cuda_visible_devices": "",
+  "case_shard": null,
+  "source_files": {
+    "graphmine/__init__.py": "c8ad9c719cc6f915f4fe96b5a80c595550402b77729bc348a79f48f20dd0cdf3",
+    "graphmine/algorithms/__init__.py": "53382699408e6aa2062563bd8280220201846569a525274a82950f27ff621c1a",
+    "graphmine/algorithms/_common.py": "fd974d78455c777830efc2a0265d40d199723ed8d242ad9fa05d1632c5adfcd0",
+    "graphmine/algorithms/_milp.py": "3fe6c08f9e525bb4cb96b341f55e7cd9d3bcb7326e8bfd14228ed4859d329066",
+    "graphmine/algorithms/bipartite.py": "7af9026ad525e507c5594df6913e4b2b5c6a5542d6d456b2aab336de9b51fc35",
+    "graphmine/algorithms/centrality.py": "8e70c8b96c0f36208b3ab5124d20ca337310e51aa02acbe66cdee7914a7136f3",
+    "graphmine/algorithms/density.py": "9274f8c8ce8d14423261e7427cc036b7cef74104bfc845b6068715eee10c5d8f",
+    "graphmine/algorithms/optimization.py": "04b073aa8013fb6c62f7461b02896260ea86439ec8356cc36e2f99d6e00ed4b7",
+    "graphmine/algorithms/partitioning.py": "2e68e863b0995ebd6651d2a16f69e660d2402a4a42ea620f14b91e891a9b72f4",
+    "graphmine/algorithms/patterns.py": "8619604ba57740e1198582996569fc1687416c7afb399299d7674db5b8ceda0b",
+    "graphmine/algorithms/structure.py": "cdf5ceb9652375b710c8f569ae19a07e875d0d0499396ccfabb81469b4651516",
+    "graphmine/algorithms/traversal.py": "9a62af954a4aebb4be6864161eafc8778bbf434264203d1222275200a08330d7",
+    "graphmine/backends/__init__.py": "b218e3f7e9db44250d8f6e2f805af2dff1526574fcd1e9f1bbed76cffcffc8e4",
+    "graphmine/backends/cugraph.py": "145f976f162db2a8831be5e5f8f136c416288a811b8bc863d2516dd52fb3bf30",
+    "graphmine/cli.py": "85aaadd06bcfe5bc2c8a74bd1c2d7909df0b3d9cb3f2ab799e69c0f05159ef87",
+    "graphmine/contracts.py": "bca74a0c93e70f4cce877e54702cc69cdee8e3cb6d9093da5864dc9670d1d46b",
+    "graphmine/dispatch.py": "b0baaa652e89f0fc51dcdef8b83b5f8e978e5423f32a3aca6e6c48463fa72449",
+    "graphmine/exceptions.py": "2423cd49b2285fae98567483de16c9268907fe2b6dd3c340da511223da7b75c1",
+    "graphmine/graph.py": "b07d85a9a53370b316946a35c858045c708e66d4de1a41dd8b1df12d4c1978e0",
+    "graphmine/registry.py": "b7a2dcfe33f93723a54bfce615c71758877957cc1d731381670d919152227516",
+    "tests/conftest.py": "4fcf0e6c228e44d38877e4f178b2b0d74d869669a04dd240ada78072a5974a73",
+    "tests/test_contracts.py": "843756b9680a686a2749b9717bad93d1cb0162f4fffe8bb3022e3a2afb9f5a48",
+    "tests/test_extended_contracts.py": "990904e79bf9671575a7dd50bcfb10a85df01ba8d306173c48298c4b674f1960",
+    "tests/test_extended_oracles.py": "2252e3fe789f1c4dfb84e1b40b44239e4fc96398bc87cd1ecbe50e867809b0e7",
+    "tests/test_small_graph_oracles.py": "c8e4a3bc82e760f771a0a55538ddb01db3b9980114f3a6acd63e2750a8892cab",
+    "tests/test_weighted_directed.py": "2a5084ae42bbfbf9eec2b5e7af560c04cf4766aff20f6ded5ff928ca24b6c719"
+  },
+  "packages": {
+    "networkx": "3.7",
+    "numpy": "2.4.6",
+    "scipy": "1.18.1",
+    "cugraph-cu12": "26.10.0",
+    "nx-cugraph-cu12": "26.10.0",
+    "cupy-cuda12x": "14.2.0"
+  },
+  "sources_unchanged_during_run": true
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_classification_regression",
+  "name": "Graph Classification and Regression",
+  "category": "graph_learning",
+  "problem_statement": "Predict one categorical label or numerical target for each graph in a collection.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "graph_collection",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "optional_features",
+      "edge_attributes": "optional_features"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "task",
+      "type": "enum",
+      "required": true,
+      "description": "Prediction target.",
+      "allowed_values": [
+        "classification",
+        "regression"
+      ]
+    },
+    {
+      "name": "graph_labels",
+      "type": "object",
+      "required": true,
+      "description": "Training graph labels."
+    },
+    {
+      "name": "split",
+      "type": "object",
+      "required": true,
+      "description": "Disjoint training, validation and test graph identities."
+    },
+    {
+      "name": "model_definition",
+      "type": "object",
+      "required": true,
+      "description": "Message passing, pooling/readout, loss and training budget."
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "predictions",
+      "type": "object",
+      "description": "Prediction keyed by graph identity."
+    },
+    {
+      "name": "metrics",
+      "type": "object",
+      "description": "Held-out metrics."
+    },
+    {
+      "name": "model_state",
+      "type": "object",
+      "description": "Trained parameters or artifact reference."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Learn a permutation-invariant graph-level predictor under the specified loss.",
+    "exactness": "Approximate learned model.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Graph-level train and test sets are disjoint.",
+    "Node reordering leaves evaluation predictions unchanged within tolerance.",
+    "Recompute reported metrics."
+  ],
+  "edge_cases": [
+    "Empty-graph behavior must be declared.",
+    "Batches must not introduce edges between different graphs."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Graph-level train and test sets are disjoint.",
+      "Node reordering leaves evaluation predictions unchanged within tolerance.",
+      "Recompute reported metrics."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

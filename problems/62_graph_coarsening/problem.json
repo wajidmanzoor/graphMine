@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_coarsening",
+  "name": "Graph Coarsening and Quotient Construction",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Map every vertex to a nonempty coarse cluster and construct the weighted quotient graph with declared edge and feature aggregation.",
+  "graph_input": {
+    "format": "canonical_graph_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "optional_finite_nonnegative_weights_default_one",
+      "timestamps": "ignored",
+      "vertex_attributes": "optional_numeric_feature_vectors",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve external vertex identities and isolated vertices.",
+      "Reject self-loops and collapse parallel edges only under the declared aggregation rule."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "cluster_assignment",
+      "type": "map<vertex_id,integer>|null",
+      "required": false,
+      "description": "Optional fixed assignment; null requests a declared clustering method.",
+      "default": null
+    },
+    {
+      "name": "method",
+      "type": "string",
+      "required": false,
+      "description": "Clustering method when an assignment is not supplied.",
+      "default": "greedy_matching"
+    },
+    {
+      "name": "self_loop_policy",
+      "type": "enum",
+      "required": false,
+      "description": "Whether intra-cluster edges survive as quotient self-loops.",
+      "default": "keep",
+      "allowed_values": [
+        "keep",
+        "drop"
+      ]
+    },
+    {
+      "name": "feature_reduction",
+      "type": "enum",
+      "required": false,
+      "description": "Reduction for numeric vertex features.",
+      "default": "sum",
+      "allowed_values": [
+        "sum",
+        "mean"
+      ]
+    },
+    {
+      "name": "seed",
+      "type": "integer",
+      "required": false,
+      "description": "Random seed for a randomized clustering method.",
+      "default": 0
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "fine_to_coarse",
+      "type": "map<vertex_id,integer>",
+      "description": "Total surjective mapping to the coarse vertex IDs."
+    },
+    {
+      "name": "coarse_graph",
+      "type": "canonical_graph_v1",
+      "description": "Quotient graph; parallel fine edges aggregate by sum."
+    },
+    {
+      "name": "cluster_sizes",
+      "type": "map<integer,integer>",
+      "description": "Number of original vertices in each cluster."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Map every vertex to a nonempty coarse cluster and construct the weighted quotient graph with declared edge and feature aggregation.",
+    "exactness": "Clustering may be heuristic; quotient aggregation must be exact within numeric tolerance.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "Every fine vertex occurs in exactly one nonempty cluster, including isolated vertices.",
+    "For each coarse edge, recompute the sum of corresponding original edge weights.",
+    "Undirected input edges are counted once, even if a GPU adapter stores symmetric arcs.",
+    "Recompute cluster sizes and requested feature reductions from the assignment."
+  ],
+  "edge_cases": [
+    "Identity coarsening is valid.",
+    "A one-cluster quotient can contain a self-loop.",
+    "Greedy matching may leave singleton clusters."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Every fine vertex occurs in exactly one nonempty cluster, including isolated vertices.",
+      "For each coarse edge, recompute the sum of corresponding original edge weights.",
+      "Undirected input edges are counted once, even if a GPU adapter stores symmetric arcs.",
+      "Recompute cluster sizes and requested feature reductions from the assignment."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "coarsen graph",
+    "quotient graph",
+    "contract vertices",
+    "graph contraction"
+  ],
+  "research_only": true
+}

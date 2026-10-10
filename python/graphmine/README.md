@@ -38,6 +38,34 @@ Every result includes its input hash, implementation hash, library version,
 device, parameters, numerical diagnostics where applicable, and typed output
 ports. A complete count does not imply that a materialized instance list is
 complete. A budget failure does not return an apparently exhaustive answer.
+Graph-valued ports carry the derived graph's content hash and the source graph's
+hash separately; vertex selections retain the source graph's ID namespace.
+
+CPU provenance identifies the primary library (`networkx` or `scipy`) and
+records the installed NetworkX, NumPy and SciPy versions. Some operations use
+both libraries; per-result solver diagnostics identify the method actually used.
+
+## Additional CPU profiles
+
+The density, bipartite, pattern and partitioning modules provide quasi-cliques,
+clique-density maximization, fixed-cardinality densest subgraphs, maximal
+bicliques, butterfly participation and cores, bipartite matching, subgraph
+isomorphism, motif and graphlet counting, communities, balanced partitions and
+signed-network balance. See
+[`CPU_REFERENCE_PROFILES.md`](../../docs/CPU_REFERENCE_PROFILES.md) for objectives,
+limits, numerical guarantees and input conventions.
+
+In particular, `densest-subgraph.clique_order` changes the density numerator;
+`densest-k-subgraph.k` fixes the size of the selected vertex set. These are
+different problems. Graphlet classification uses the complete NetworkX atlas
+through seven vertices. Larger clique orders remain available to density and
+clique enumeration, subject to work and output budgets.
+
+HiGHS optimization results use `quality="numerical_optimum"`, record the solver's
+bound and gap, and check feasibility and objective values after solving. They
+are numerical optimality certificates, not exact-arithmetic proofs. Timed-out
+incumbents are never labeled optimal. Unconstrained clique-density uses exact
+integer-capacity min cuts and records the resulting rational density.
 
 The runtime currently invokes algorithms synchronously; the agent integration
 must use cancellable subprocesses for hard time and memory limits. Cooperative
@@ -61,3 +89,9 @@ path enumeration, and linear systems supply expected results. Additional tests
 cover weighted/directed graphs, large and mixed IDs, empty outputs, exactness
 limits, and forbidden device dispatch. These are correctness fixtures, not
 performance benchmarks or a proof that every problem/parameter is covered.
+The expanded suite also enumerates all 512 bipartite 3-by-3 graphs and all 729
+four-vertex signed graphs, and checks pattern embeddings against permutations
+and optimization objectives against subsets and set partitions. Reports record
+the collected test selection, package versions, implementation/test sources,
+formal contracts and package definition. The audit marks evidence stale when
+any of those source, contract or dependency snapshots changes.

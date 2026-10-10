@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "widest_paths",
+  "name": "Single-Source Widest Paths",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "For each vertex v, maximize the minimum edge capacity along a directed path from a designated source to v.",
+  "graph_input": {
+    "format": "canonical_graph_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "required_finite_nonnegative_capacities",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Retain directed arcs; undirected edges become symmetric arcs.",
+      "Parallel arcs can be collapsed using maximum capacity.",
+      "Self-loops do not improve widest paths."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "source_vertex",
+      "type": "vertex_id",
+      "required": true,
+      "description": "Source vertex, which must exist."
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "bottleneck_capacity",
+      "type": "map<vertex_id,number|null>",
+      "description": "Best capacity, null for unreachable vertices; the source uses null with reachable=true and is_source=true to represent +infinity."
+    },
+    {
+      "name": "reachable",
+      "type": "map<vertex_id,boolean>",
+      "description": "Reachability, distinguishing source infinity from unreachable null."
+    },
+    {
+      "name": "is_source",
+      "type": "map<vertex_id,boolean>",
+      "description": "Exactly the designated source is true."
+    },
+    {
+      "name": "predecessor",
+      "type": "map<vertex_id,vertex_id|null>",
+      "description": "A witness path tree; null at the source and unreachable vertices."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "For each vertex v, maximize the minimum edge capacity along a directed path from a designated source to v.",
+    "exactness": "Exact mathematical objective; implementations must declare approximation and termination status.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "For reachable non-source vertices, a predecessor path realizes the reported bottleneck.",
+    "Compare bottleneck values with a max-min semiring reference, not sum-of-weights shortest paths.",
+    "Unreachable vertices remain unreachable even when all reachable capacities are zero."
+  ],
+  "edge_cases": [
+    "The source has an empty path with infinite bottleneck.",
+    "Zero capacities are legal.",
+    "Disconnected graphs and isolated sources are legal."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "For reachable non-source vertices, a predecessor path realizes the reported bottleneck.",
+      "Compare bottleneck values with a max-min semiring reference, not sum-of-weights shortest paths.",
+      "Unreachable vertices remain unreachable even when all reachable capacities are zero."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "widest path",
+    "maximum bottleneck path",
+    "maximum capacity path"
+  ],
+  "research_only": true
+}

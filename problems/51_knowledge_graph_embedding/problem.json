@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "knowledge_graph_embedding",
+  "name": "Knowledge-Graph Embedding",
+  "category": "sampling_and_representation_learning",
+  "problem_statement": "Learn entity and relation representations from typed directed triples for relational link prediction.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "required_edge_type"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "model",
+      "type": "enum",
+      "required": true,
+      "description": "Scoring model.",
+      "allowed_values": [
+        "transe",
+        "distmult",
+        "complex",
+        "rotate"
+      ]
+    },
+    {
+      "name": "dimensions",
+      "type": "integer",
+      "required": true,
+      "description": "Positive latent dimension."
+    },
+    {
+      "name": "training_triples",
+      "type": "array<edge_id>",
+      "required": true,
+      "description": "Edges allowed during training."
+    },
+    {
+      "name": "validation_triples",
+      "type": "array<object>",
+      "required": false,
+      "description": "Held-out triples, never used to fit embeddings.",
+      "default": []
+    },
+    {
+      "name": "training_parameters",
+      "type": "object",
+      "required": true,
+      "description": "Loss, negatives, optimizer and budget."
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "entity_embeddings",
+      "type": "object",
+      "description": "Learned entity parameters."
+    },
+    {
+      "name": "relation_embeddings",
+      "type": "object",
+      "description": "Learned relation parameters."
+    },
+    {
+      "name": "training_summary",
+      "type": "object",
+      "description": "Model configuration, losses and split-aware ranking metrics."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Optimize the declared triple-scoring loss.",
+    "exactness": "Approximate learned model; held-out ranking quality is evaluated separately from training loss.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Training uses only declared training triples.",
+    "Relation identity is preserved.",
+    "Filtered ranking evaluation declares which known positives are excluded."
+  ],
+  "edge_cases": [
+    "Multiple relation types can connect the same entity pair.",
+    "Unseen entities require a declared inductive policy or explicit rejection."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Training uses only declared training triples.",
+      "Relation identity is preserved.",
+      "Filtered ranking evaluation declares which known positives are excluded."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

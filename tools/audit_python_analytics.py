@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.metadata
 import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -18,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def audit():
     library = ROOT / "python/graphmine"
     reports = []
-    for name in ("cpu-expanded", "gpu-0-expanded", "gpu-1-expanded"):
+    for name in ("cpu-extended", "gpu-0-extended", "gpu-1-extended"):
         xml = ROOT / "validation/python_analytics" / f"{name}.xml"
         metadata_path = xml.with_name(xml.name + ".metadata.json")
         if not xml.exists() or not metadata_path.exists():
@@ -33,13 +34,33 @@ def audit():
         ]
         current_files = {str(p.relative_to(library)) for p in library.rglob("*.py")}
         changed.extend(sorted(current_files - set(metadata["source_files"])))
+        for contract, expected in metadata.get("contracts", {}).items():
+            path = ROOT / contract
+            if (
+                not path.is_file()
+                or hashlib.sha256(path.read_bytes()).hexdigest() != expected
+            ):
+                changed.append(contract)
+        changed_dependencies = []
+        for package, expected in metadata["packages"].items():
+            try:
+                current = importlib.metadata.version(package)
+            except importlib.metadata.PackageNotFoundError:
+                current = None
+            if current != expected:
+                changed_dependencies.append(
+                    {"package": package, "tested": expected, "current": current}
+                )
         suite = ET.parse(xml).getroot().find("testsuite")
         failures = int(suite.attrib["failures"]) + int(suite.attrib["errors"])
         reports.append(
             {
                 "id": name,
                 "status": "stale"
-                if changed or not metadata["sources_unchanged_during_run"]
+                if changed
+                or changed_dependencies
+                or not metadata["sources_unchanged_during_run"]
+                or not metadata.get("contracts_unchanged_during_run", False)
                 else "failed"
                 if failures
                 else "passed",
@@ -47,6 +68,8 @@ def audit():
                 "failures": failures,
                 "skipped": int(suite.attrib["skipped"]),
                 "changed_sources": changed,
+                "changed_dependencies": changed_dependencies,
+                "test_modules": metadata.get("test_modules", []),
                 "report": str(xml.relative_to(ROOT)),
                 "report_sha256": hashlib.sha256(xml.read_bytes()).hexdigest(),
                 "metadata": str(metadata_path.relative_to(ROOT)),
@@ -54,6 +77,10 @@ def audit():
             }
         )
     cards = list_algorithms()
+    for card in cards:
+        card["profile_sha256"] = hashlib.sha256(
+            json.dumps(card, sort_keys=True).encode()
+        ).hexdigest()
     problems = []
     for path in sorted((ROOT / "problems").glob("[0-9][0-9]_*/problem.json")):
         spec = json.loads(path.read_text())
@@ -65,6 +92,7 @@ def audit():
                 "problem_id": spec["problem_id"],
                 "name": spec["name"],
                 "contract": str(path.relative_to(ROOT)),
+                "contract_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
                 "cpu_operations": [card["id"] for card in operations],
                 "cugraph_operations": [
                     card["id"] for card in operations if card["id"] in OPERATIONS

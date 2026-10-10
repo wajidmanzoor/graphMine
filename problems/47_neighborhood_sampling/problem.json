@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "neighborhood_sampling",
+  "name": "Neighborhood Sampling",
+  "category": "sampling_and_representation_learning",
+  "problem_statement": "Sample multihop neighborhoods around seed vertices using declared fanouts and neighbor-selection probabilities.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "optional_nonnegative",
+      "timestamps": "optional_for_temporal_sampling",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "optional_edge_types"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "seeds",
+      "type": "array<vertex_id>",
+      "required": true,
+      "description": "Seed vertices."
+    },
+    {
+      "name": "fanouts",
+      "type": "array<integer>",
+      "required": true,
+      "description": "Per-hop nonnegative sample sizes; -1 explicitly means all neighbors."
+    },
+    {
+      "name": "replacement",
+      "type": "boolean",
+      "required": false,
+      "description": "Sample neighbors with replacement.",
+      "default": false
+    },
+    {
+      "name": "sampling_model",
+      "type": "enum",
+      "required": false,
+      "description": "Selection rule.",
+      "default": "uniform",
+      "allowed_values": [
+        "uniform",
+        "weighted"
+      ]
+    },
+    {
+      "name": "edge_type_fanouts",
+      "type": "object_or_null",
+      "required": false,
+      "description": "Optional fanout per edge type.",
+      "default": null
+    },
+    {
+      "name": "time_cutoff",
+      "type": "number_or_null",
+      "required": false,
+      "description": "Optional timestamp upper bound; backend must explicitly support this variant.",
+      "default": null
+    },
+    {
+      "name": "random_seed",
+      "type": "integer_or_null",
+      "required": false,
+      "description": "Random seed.",
+      "default": null
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "sampled_edges",
+      "type": "array<object>",
+      "description": "Original edge identities tagged with hop and seed/batch provenance."
+    },
+    {
+      "name": "sampled_vertices",
+      "type": "array<vertex_id>",
+      "description": "Selected vertices, including retained seeds."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Generate neighborhood samples with the declared distribution and fanout semantics.",
+    "exactness": "Structural validity and sampling semantics are exact; realizations are stochastic.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Every sampled edge exists and satisfies type/time constraints.",
+    "Counts respect fanouts and replacement policy.",
+    "Distribution tests validate uniform or weighted selection."
+  ],
+  "edge_cases": [
+    "Zero-degree seeds contribute no sampled edges.",
+    "Without replacement, fanout above degree returns all eligible neighbors."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Every sampled edge exists and satisfies type/time constraints.",
+      "Counts respect fanouts and replacement policy.",
+      "Distribution tests validate uniform or weighted selection."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

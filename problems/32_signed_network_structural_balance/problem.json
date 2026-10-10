@@ -17,18 +17,19 @@
     {"name": "solution_quality", "type": "enum", "required": false, "default": "approximate", "allowed_values": ["exact", "approximate"], "description": "balance_check is always solved exactly in linear time; frustration_minimization is NP-hard in general and approximate mode must disclose a bound."}
   ],
   "required_outputs": [
-    {"name": "balanced", "type": "boolean", "description": "Whether the graph is structurally balanced, i.e. the minimum achievable frustrated weight is zero."},
+    {"name": "balanced", "type": "boolean", "description": "Whether every signed edge can be satisfied by a two-faction assignment, independent of its cost. A zero weighted frustration optimum does not prove structural balance when zero-cost edges are allowed."},
     {"name": "faction_assignment", "type": "map<vertex_id,enum[A,B]>", "description": "Two-faction partition of every vertex realizing the reported frustrated_weight."},
     {"name": "frustrated_weight", "type": "number", "description": "Total weight (or count, under weight_mode=unweighted) of frustrated edges under faction_assignment: positive edges crossing factions plus negative edges within a faction."},
     {"name": "optimal", "type": "boolean", "description": "Whether global optimality was proven for the requested task."}
   ],
   "optional_outputs": [
+    {"name": "frustration_optimal", "type": "boolean", "description": "Whether the returned assignment minimizes frustration. A completed balance_check proves the decision, but need not minimize frustration when the graph is unbalanced."},
     {"name": "frustrated_edges", "type": "array<edge_id>", "description": "Edges violating faction_assignment under the sign rule."},
     {"name": "approximation_bound", "type": "number", "description": "Certified bound or gap-to-best-known for an approximate frustration_minimization result."}
   ],
   "solution_semantics": {
-    "objective": "Find faction_assignment minimizing frustrated_weight, where a positive edge is frustrated if its endpoints are in different factions and a negative edge is frustrated if its endpoints are in the same faction; balanced=true exactly when the achieved minimum frustrated_weight is zero.",
-    "exactness": "balance_check always returns optimal=true via the linear-time cycle-based (parity-propagation) test; frustration_minimization is NP-hard in general, so approximate mode must disclose approximation_bound.",
+    "objective": "balance_check decides whether a two-faction assignment satisfies every edge sign. frustration_minimization minimizes the cost of positive edges crossing factions plus negative edges within factions. balanced always refers to the sign-based decision, even when costs are zero.",
+    "exactness": "For balance_check, optimal=true certifies the balance decision, not a minimum-frustration assignment on an unbalanced graph. For frustration_minimization, optimal=true certifies the optimization under the declared numerical certificate; approximate mode must disclose approximation_bound.",
     "duplicate_policy": "Each vertex is assigned to exactly one of the two factions (A or B).",
     "ordering": "faction_assignment is an unordered partition; the A/B labels are arbitrary beyond grouping and may be swapped per connected component."
   },
@@ -42,7 +43,7 @@
     "An all-positive graph is trivially balanced by placing each connected component entirely in one faction.",
     "A single negative edge between two otherwise-isolated vertices is trivially balanced by placing its endpoints in different factions.",
     "Disconnected graphs: each connected component's faction assignment, and which label is 'A' vs 'B', is independent of other components.",
-    "A graph containing an odd negative cycle cannot be balanced; frustration_minimization must still return a feasible assignment with frustrated_weight > 0."
+    "A graph containing an odd negative cycle is structurally unbalanced. Its minimum frustrated weight is positive when all edge costs are strictly positive, but may be zero when a violated edge has zero cost."
   ],
   "evaluation_metrics": {
     "correctness": ["balance-test agreement with the cycle-based oracle on small/medium fixtures", "frustrated-weight recomputation", "faction-assignment completeness (every vertex assigned exactly once)"],

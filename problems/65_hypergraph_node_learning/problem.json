@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "hypergraph_node_learning",
+  "name": "Hypergraph Node Classification and Regression",
+  "category": "graph_machine_learning",
+  "problem_statement": "Train or evaluate a declared hypergraph neural model to predict vertex labels or targets while preserving hyperedge incidence.",
+  "graph_input": {
+    "format": "canonical_hypergraph_v1",
+    "schema_ref": "../hypergraph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected_hypergraph",
+      "weights": "optional_nonnegative_hyperedge_weights",
+      "timestamps": "ignored",
+      "vertex_attributes": "required_features_and_split_specific_targets",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve every hyperedge incidence set and vertex ID.",
+      "Reject repeated vertices inside one hyperedge."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "task",
+      "type": "enum",
+      "required": false,
+      "description": "Prediction objective.",
+      "default": "classification",
+      "allowed_values": [
+        "classification",
+        "regression"
+      ]
+    },
+    {
+      "name": "feature_key",
+      "type": "string",
+      "required": false,
+      "description": "Numeric feature-vector vertex attribute.",
+      "default": "features"
+    },
+    {
+      "name": "target_key",
+      "type": "string",
+      "required": false,
+      "description": "Ground-truth vertex attribute available only in permitted splits.",
+      "default": "target"
+    },
+    {
+      "name": "split_key",
+      "type": "string",
+      "required": false,
+      "description": "Attribute assigning train, validation, test, or inference vertices.",
+      "default": "split"
+    },
+    {
+      "name": "model",
+      "type": "string",
+      "required": true,
+      "description": "Declared architecture, hyperparameters, preprocessing and checkpoint."
+    },
+    {
+      "name": "seed",
+      "type": "integer",
+      "required": false,
+      "description": "Training and inference seed.",
+      "default": 0
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "predictions",
+      "type": "map<vertex_id,number|array<number>>",
+      "description": "Targets or class probabilities for requested vertices."
+    },
+    {
+      "name": "model_artifact",
+      "type": "object",
+      "description": "Model parameters/checkpoint reference and reproducible hyperparameters."
+    },
+    {
+      "name": "split_metrics",
+      "type": "object",
+      "description": "Metrics with denominators and explicit split membership."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Train or evaluate a declared hypergraph neural model to predict vertex labels or targets while preserving hyperedge incidence.",
+    "exactness": "Statistical learning with declared split, seed and tolerance; no deterministic optimum claim.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "Retain hyperedges and incidence IDs; any clique or mediator expansion must be declared as a model transformation.",
+    "Only training labels influence fitting; validation selects hyperparameters and test labels are held out.",
+    "Verify prediction dimensions, finite outputs and classification probability normalization.",
+    "Reproduce inference on a small hypergraph using the same parameters; do not require trained models to have identical accuracy."
+  ],
+  "edge_cases": [
+    "Singleton hyperedges and isolated vertices are legal with a declared model convention.",
+    "Variable-size hyperedges cannot be silently replaced by ordinary pairwise edges."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Retain hyperedges and incidence IDs; any clique or mediator expansion must be declared as a model transformation.",
+      "Only training labels influence fitting; validation selects hyperparameters and test labels are held out.",
+      "Verify prediction dimensions, finite outputs and classification probability normalization.",
+      "Reproduce inference on a small hypergraph using the same parameters; do not require trained models to have identical accuracy."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "hypergraph node classification",
+    "hypergraph neural network",
+    "learn hypergraph labels"
+  ],
+  "research_only": true
+}

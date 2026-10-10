@@ -1,4 +1,24 @@
 from ..contracts import AlgorithmOutput
+from ..exceptions import GraphMineError
+
+
+def vertex_values(graph, rows, name):
+    """Lossless keyed values: JSON object keys cannot distinguish 0 from '0'."""
+    if not isinstance(rows, list):
+        raise GraphMineError(
+            f"{name} must be an array of objects with vertex and value"
+        )
+    values = {}
+    for row in rows:
+        if not isinstance(row, dict) or set(row) != {"vertex", "value"}:
+            raise GraphMineError(f"Every {name} row needs exactly vertex and value")
+        v = graph.index(row["vertex"])
+        if v in values:
+            raise GraphMineError(f"Duplicate vertex in {name}")
+        values[v] = row["value"]
+    if set(values) != set(range(graph.vertex_count)):
+        raise GraphMineError(f"{name} must contain every input vertex exactly once")
+    return values
 
 
 def simple(

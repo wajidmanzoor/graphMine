@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "graph_based_geolocation",
+  "name": "Graph-Based Geolocation",
+  "category": "graph_signal_processing",
+  "problem_statement": "Infer geographic coordinates for unlocated vertices using declared graph propagation or supervised graph-learning models.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "method_declared",
+      "weights": "optional_nonnegative",
+      "timestamps": "ignored",
+      "vertex_attributes": "required_seed_locations_and_method_specific_features",
+      "edge_attributes": "optional_method_specific_features"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "method_family",
+      "type": "enum",
+      "required": true,
+      "allowed_values": [
+        "spatial_propagation",
+        "supervised_graph_learning"
+      ],
+      "description": "Distinguish spatial-median propagation from learned geographic regression on attributed graphs."
+    },
+    {
+      "name": "seed_locations",
+      "type": "object",
+      "required": true,
+      "description": "Known latitude/longitude coordinates keyed by vertex."
+    },
+    {
+      "name": "method_definition",
+      "type": "object",
+      "required": true,
+      "description": "Propagation objective, geographic metric, confidence thresholds and stopping conditions."
+    },
+    {
+      "name": "hold_seeds_fixed",
+      "type": "boolean",
+      "required": false,
+      "description": "Known locations remain fixed.",
+      "default": true
+    },
+    {
+      "name": "training_definition",
+      "type": "object_or_null",
+      "required": false,
+      "default": null,
+      "description": "Required for supervised_graph_learning: architecture, features, training/validation/test vertex split, target coordinate normalization, optimizer and stopping rule."
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "locations",
+      "type": "object",
+      "description": "Estimated coordinates or null for unresolved vertices."
+    },
+    {
+      "name": "confidence",
+      "type": "object",
+      "description": "Declared confidence or dispersion per estimated vertex."
+    },
+    {
+      "name": "converged",
+      "type": "boolean",
+      "description": "Whether the method stopping condition was met."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Optimize the explicitly declared geographic propagation objective or supervised geographic regression loss.",
+    "exactness": "Estimates are model-dependent; graph layout coordinates are not geographic predictions.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Latitude and longitude are in valid ranges.",
+    "Preserve fixed seed locations.",
+    "Evaluate geodesic error on held-out known locations without label leakage.",
+    "For learned methods, fit preprocessing on the training split and prevent held-out locations from entering node features.",
+    "Preserve known seeds in returned outputs when hold_seeds_fixed is true; training loss alone does not establish this property."
+  ],
+  "edge_cases": [
+    "A component without located seeds may remain unresolved.",
+    "Geodesic distances account for the antimeridian."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Latitude and longitude are in valid ranges.",
+      "Preserve fixed seed locations.",
+      "Evaluate geodesic error on held-out known locations without label leakage."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

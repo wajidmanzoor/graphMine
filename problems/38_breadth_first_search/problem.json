@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "breadth_first_search",
+  "name": "Breadth-First Search and Unweighted Shortest Paths",
+  "category": "traversal_and_paths",
+  "problem_statement": "Compute minimum hop distances and optional predecessor paths from one or more source vertices.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "sources",
+      "type": "array<vertex_id>",
+      "required": true,
+      "description": "Nonempty set of distinct source vertices."
+    },
+    {
+      "name": "source_mode",
+      "type": "enum",
+      "required": false,
+      "description": "Independent searches return one result per source; nearest_source returns distance to the closest source.",
+      "default": "independent",
+      "allowed_values": [
+        "independent",
+        "nearest_source"
+      ]
+    },
+    {
+      "name": "depth_limit",
+      "type": "integer_or_null",
+      "required": false,
+      "description": "Null means unlimited; otherwise a nonnegative hop limit.",
+      "default": null
+    },
+    {
+      "name": "return_predecessors",
+      "type": "boolean",
+      "required": false,
+      "description": "Return a predecessor forest for reconstructing shortest paths.",
+      "default": true
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "distances",
+      "type": "object",
+      "description": "Source-indexed or nearest-source hop distances; null denotes unreachable within the cutoff."
+    },
+    {
+      "name": "complete",
+      "type": "boolean",
+      "description": "True when all vertices within the requested depth were processed."
+    }
+  ],
+  "optional_outputs": [
+    {
+      "name": "predecessors",
+      "type": "object",
+      "description": "One valid predecessor per reachable nonsource vertex."
+    }
+  ],
+  "solution_semantics": {
+    "objective": "Minimize edge count along each requested source-to-vertex path.",
+    "exactness": "Distances are exact within the declared cutoff. A predecessor may be any valid shortest-path predecessor.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Compare hop distances against CPU BFS on small fixtures.",
+    "Each reachable nonsource predecessor has an edge to its vertex and distance exactly one less."
+  ],
+  "edge_cases": [
+    "An isolated source has distance zero.",
+    "A zero depth limit returns only sources.",
+    "Disconnected vertices have null distances."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Compare hop distances against CPU BFS on small fixtures.",
+      "Each reachable nonsource predecessor has an edge to its vertex and distance exactly one less."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

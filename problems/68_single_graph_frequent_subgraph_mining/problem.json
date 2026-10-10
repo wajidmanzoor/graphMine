@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "single_graph_frequent_subgraph_mining",
+  "name": "Frequent Subgraphs in One Labeled Graph",
+  "category": "pattern_mining",
+  "problem_statement": "Enumerate or count connected labeled patterns meeting a declared minimum-image-support threshold in one labeled host graph.",
+  "graph_input": {
+    "format": "canonical_graph_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "required_discrete_vertex_labels",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve external vertex identities and isolated vertices.",
+      "Reject self-loops and collapse parallel edges only under the declared aggregation rule."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "minimum_image_support",
+      "type": "integer",
+      "required": true,
+      "description": "Positive minimum over pattern vertices of the number of distinct host images."
+    },
+    {
+      "name": "max_pattern_edges",
+      "type": "integer",
+      "required": true,
+      "description": "Positive maximum number of pattern edges."
+    },
+    {
+      "name": "match_mode",
+      "type": "enum",
+      "required": false,
+      "description": "Whether embeddings preserve nonedges.",
+      "default": "non_induced",
+      "allowed_values": [
+        "non_induced",
+        "induced"
+      ]
+    },
+    {
+      "name": "output_mode",
+      "type": "enum",
+      "required": false,
+      "description": "Pattern records or a count of distinct frequent isomorphism classes.",
+      "default": "count",
+      "allowed_values": [
+        "count",
+        "patterns"
+      ]
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "frequent_pattern_count",
+      "type": "integer",
+      "description": "Number of distinct frequent labeled connected pattern isomorphism classes."
+    },
+    {
+      "name": "patterns",
+      "type": "array<object>|null",
+      "description": "Canonical labeled patterns and MNI support when output_mode=patterns; null in count mode."
+    },
+    {
+      "name": "completed",
+      "type": "boolean",
+      "description": "Whether enumeration completed through the requested size bound."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Enumerate or count connected labeled patterns meeting a declared minimum-image-support threshold in one labeled host graph.",
+    "exactness": "Exact mathematical objective; implementations must declare approximation and termination status.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "For each pattern vertex independently collect distinct host images; support is the smallest image-set size.",
+    "Deduplicate label-preserving isomorphic patterns.",
+    "Use exhaustive embeddings on tiny labeled graphs as a correctness oracle.",
+    "Do not substitute transaction support, number of embeddings, or edge-disjoint support for MNI.",
+    "Count-only upstream releases cannot satisfy the patterns output mode without an adapter change."
+  ],
+  "edge_cases": [
+    "Repeated labels do not identify distinct host vertices.",
+    "A single host graph differs from a database of graph transactions.",
+    "A threshold exceeding the host vertex count yields no frequent patterns."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "For each pattern vertex independently collect distinct host images; support is the smallest image-set size.",
+      "Deduplicate label-preserving isomorphic patterns.",
+      "Use exhaustive embeddings on tiny labeled graphs as a correctness oracle.",
+      "Do not substitute transaction support, number of embeddings, or edge-disjoint support for MNI.",
+      "Count-only upstream releases cannot satisfy the patterns output mode without an adapter change."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "single graph frequent subgraphs",
+    "minimum image support",
+    "mni frequent patterns"
+  ],
+  "research_only": true
+}

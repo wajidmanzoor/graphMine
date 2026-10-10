@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "hypergraph_partitioning",
+  "name": "Balanced Hypergraph Partitioning",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Partition vertices of a weighted hypergraph into balanced parts while minimizing a declared hyperedge cut objective.",
+  "graph_input": {
+    "format": "canonical_hypergraph_v1",
+    "schema_ref": "../hypergraph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected_hypergraph",
+      "weights": "optional_nonnegative_hyperedge_weights",
+      "timestamps": "ignored",
+      "vertex_attributes": "optional_nonnegative_vertex_weights",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve vertex identities and hyperedge incidence sets.",
+      "Duplicate vertices within one hyperedge are invalid.",
+      "Do not replace hyperedges with clique expansion without an explicitly different objective."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "num_parts",
+      "type": "integer",
+      "required": true,
+      "description": "Positive part count."
+    },
+    {
+      "name": "imbalance_tolerance",
+      "type": "number",
+      "required": false,
+      "description": "Nonnegative fractional excess over ideal part weight.",
+      "default": 0.03
+    },
+    {
+      "name": "objective",
+      "type": "enum",
+      "required": false,
+      "description": "Cut-net or connectivity-minus-one objective.",
+      "default": "cut_net",
+      "allowed_values": [
+        "cut_net",
+        "connectivity_minus_one"
+      ]
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "partition",
+      "type": "map<vertex_id,integer>",
+      "description": "Part per vertex."
+    },
+    {
+      "name": "objective_value",
+      "type": "number",
+      "description": "Cut objective."
+    },
+    {
+      "name": "part_weights",
+      "type": "array<number>",
+      "description": "Weight per part."
+    },
+    {
+      "name": "feasible",
+      "type": "boolean",
+      "description": "Whether the balance constraints are met."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Minimize weighted hyperedge cut cost subject to balance.",
+    "exactness": "Heuristic optimization; feasibility and objective recomputation are exact checks.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Every vertex belongs to one part.",
+    "Recompute part weights and hyperedge cut cost.",
+    "feasible=true requires every balance constraint."
+  ],
+  "edge_cases": [
+    "Singleton hyperedges cannot cross parts.",
+    "An overweight indivisible vertex may make balance infeasible."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Every vertex belongs to one part.",
+      "Recompute part weights and hyperedge cut cost.",
+      "feasible=true requires every balance constraint."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

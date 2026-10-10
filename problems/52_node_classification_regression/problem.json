@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "node_classification_regression",
+  "name": "Node Classification and Regression",
+  "category": "graph_learning",
+  "problem_statement": "Train or apply a graph model to predict categorical labels or numerical targets for specified vertices.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "required_features_and_split_labels",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "task",
+      "type": "enum",
+      "required": true,
+      "description": "Prediction target.",
+      "allowed_values": [
+        "classification",
+        "regression"
+      ]
+    },
+    {
+      "name": "vertex_features",
+      "type": "object",
+      "required": true,
+      "description": "Features keyed by vertex."
+    },
+    {
+      "name": "training_labels",
+      "type": "object",
+      "required": true,
+      "description": "Labels restricted to the declared training split."
+    },
+    {
+      "name": "split",
+      "type": "object",
+      "required": true,
+      "description": "Disjoint train/validation/test vertices and transductive or inductive policy."
+    },
+    {
+      "name": "model_definition",
+      "type": "object",
+      "required": true,
+      "description": "Architecture, loss, optimizer and training/inference budget."
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "predictions",
+      "type": "object",
+      "description": "Per-vertex predictions for the requested evaluation split."
+    },
+    {
+      "name": "metrics",
+      "type": "object",
+      "description": "Split-aware accuracy/F1 or regression errors."
+    },
+    {
+      "name": "model_state",
+      "type": "object",
+      "description": "Serializable learned parameters or a local artifact reference."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Minimize the declared supervised or semi-supervised loss on training labels.",
+    "exactness": "Learned estimates; no globally optimal model is required.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Disjoint label splits prevent training on evaluation labels.",
+    "Prediction shapes match the declared task.",
+    "Recompute metrics from predictions and held-out targets."
+  ],
+  "edge_cases": [
+    "Isolated vertices require a declared aggregation convention.",
+    "Missing features or labels are handled explicitly."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Disjoint label splits prevent training on evaluation labels.",
+      "Prediction shapes match the declared task.",
+      "Recompute metrics from predictions and held-out targets."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

@@ -40,27 +40,45 @@ def run(
     silently execute an unsupported CPU algorithm. Automatic selection may use
     CPU when the GPU capability is absent, preserving all requested parameters.
     """
-    if device not in {"auto", "cpu", "gpu"}:
+    if not isinstance(operation, str):
+        raise GraphMineError("operation must be a string")
+    if not isinstance(device, str) or device not in {"auto", "cpu", "gpu"}:
         raise GraphMineError("device must be auto, cpu, or gpu")
-    if backend not in {None, "networkx", "cugraph"}:
+    if backend is not None and (
+        not isinstance(backend, str) or backend not in {"networkx", "scipy", "cugraph"}
+    ):
         raise GraphMineError("Unknown backend")
     if (device == "cpu" and backend == "cugraph") or (
-        device == "gpu" and backend == "networkx"
+        device == "gpu" and backend in {"networkx", "scipy"}
     ):
         raise GraphMineError("Backend conflicts with the requested device policy")
     if backend:
         device = "gpu" if backend == "cugraph" else "cpu"
     graph = graph if isinstance(graph, Graph) else Graph(graph)
     definition = algorithm(operation)
-    args = definition.arguments(parameters or {})
+    args = definition.arguments({} if parameters is None else parameters)
+    try:
+        json.dumps(args, allow_nan=False)
+    except (ValueError, TypeError) as exc:
+        raise GraphMineError("parameters must contain finite JSON values") from exc
+    if backend in {"networkx", "scipy"} and backend != definition.library:
+        raise UnsupportedOperation(
+            f"{operation} uses the {definition.library} CPU integration"
+        )
+    if budget is not None and not isinstance(budget, Budget):
+        raise GraphMineError("budget must be a Budget")
     work = WorkCounter(budget or Budget())
     started = time.monotonic()
     selected = "networkx"
     provenance = {
-        "id": "networkx",
+        "id": definition.library,
         "device": "cpu",
         "library": definition.library,
         "version": importlib.metadata.version(definition.library),
+        "dependencies": {
+            name: importlib.metadata.version(name)
+            for name in ("networkx", "numpy", "scipy")
+        },
     }
     if device != "cpu":
         from .backends import cugraph
@@ -98,7 +116,12 @@ def run(
             "The algorithm returned non-finite or non-serializable results"
         ) from exc
     for port in output.ports.values():
-        port.setdefault("graph_fingerprint", graph.fingerprint)
+        if port.get("type") == "graph":
+            derived = Graph(port["value"])
+            port["graph_fingerprint"] = derived.fingerprint
+            port["source_graph_fingerprint"] = graph.fingerprint
+        else:
+            port.setdefault("graph_fingerprint", graph.fingerprint)
     return {
         "schema_version": "2.0.0",
         "operation": operation,

@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "maximal_independent_set",
+  "name": "Maximal Independent Set",
+  "category": "graph_optimization",
+  "problem_statement": "Find one independent vertex set that cannot be enlarged by adding any remaining vertex.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve isolated vertices.",
+      "Remove self-loops and collapse parallel edges to form a simple undirected graph."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "random_seed",
+      "type": "integer_or_null",
+      "required": false,
+      "description": "Optional algorithm random seed.",
+      "default": null
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "vertices",
+      "type": "array<vertex_id>",
+      "description": "Independent set."
+    },
+    {
+      "name": "size",
+      "type": "integer",
+      "description": "Set cardinality."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Return an inclusion-maximal independent set; larger size is an optional heuristic quality metric.",
+    "exactness": "Independence and maximality are exact requirements; maximum cardinality is not required.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "No selected pair is adjacent.",
+    "Every excluded vertex has at least one selected neighbor."
+  ],
+  "edge_cases": [
+    "Every isolated vertex must be selected.",
+    "An empty graph has the empty independent set."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "No selected pair is adjacent.",
+      "Every excluded vertex has at least one selected neighbor."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

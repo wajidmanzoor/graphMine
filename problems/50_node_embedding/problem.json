@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "node_embedding",
+  "name": "Node Embedding",
+  "category": "sampling_and_representation_learning",
+  "problem_statement": "Learn a vector for every vertex under a declared graph representation-learning objective.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "optional_nonnegative",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "model",
+      "type": "enum",
+      "required": true,
+      "description": "Embedding objective.",
+      "allowed_values": [
+        "deepwalk",
+        "line",
+        "node2vec"
+      ]
+    },
+    {
+      "name": "dimensions",
+      "type": "integer",
+      "required": true,
+      "description": "Positive embedding dimension."
+    },
+    {
+      "name": "training_parameters",
+      "type": "object",
+      "required": true,
+      "description": "Model-specific loss, optimizer, sampling and iteration settings."
+    },
+    {
+      "name": "random_seed",
+      "type": "integer_or_null",
+      "required": false,
+      "description": "Random seed.",
+      "default": null
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "embeddings",
+      "type": "map<vertex_id,array<number>>",
+      "description": "Finite vectors with the requested dimensions."
+    },
+    {
+      "name": "training_summary",
+      "type": "object",
+      "description": "Loss definition, attained loss, training budget and convergence information."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Optimize the declared representation-learning loss.",
+    "exactness": "Numerical stochastic optimization; no unique embedding or global optimum is implied.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "All declared vertices have finite vectors of the requested dimension.",
+    "Evaluate the stated objective and downstream metrics on fixed splits."
+  ],
+  "edge_cases": [
+    "Isolated-vertex behavior must be declared.",
+    "Embedding rotations and equivalent parameterizations are valid."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "All declared vertices have finite vectors of the requested dimension.",
+      "Evaluate the stated objective and downstream metrics on fixed splits."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

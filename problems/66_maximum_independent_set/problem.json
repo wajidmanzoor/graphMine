@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "maximum_independent_set",
+  "name": "Maximum Independent Set",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Find an independent vertex set of maximum cardinality in a simple undirected graph.",
+  "graph_input": {
+    "format": "canonical_graph_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve external vertex identities and isolated vertices.",
+      "Reject self-loops and collapse parallel edges only under the declared aggregation rule."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "mode",
+      "type": "enum",
+      "required": false,
+      "description": "Exact optimization or an explicitly heuristic feasible solution.",
+      "default": "heuristic",
+      "allowed_values": [
+        "exact",
+        "heuristic"
+      ]
+    },
+    {
+      "name": "time_limit_seconds",
+      "type": "number",
+      "required": false,
+      "description": "Positive runtime budget; expiry must report incomplete optimization.",
+      "default": 60
+    },
+    {
+      "name": "seed",
+      "type": "integer",
+      "required": false,
+      "description": "Random seed for heuristic methods.",
+      "default": 0
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "independent_set",
+      "type": "array<vertex_id>",
+      "description": "Distinct pairwise nonadjacent vertices."
+    },
+    {
+      "name": "cardinality",
+      "type": "integer",
+      "description": "Size of the returned set."
+    },
+    {
+      "name": "optimality_proven",
+      "type": "boolean",
+      "description": "True only if a valid exact proof or exhausted search establishes optimality."
+    },
+    {
+      "name": "termination_reason",
+      "type": "string",
+      "description": "Convergence, exhausted search, timeout, or other explicit reason."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Find an independent vertex set of maximum cardinality in a simple undirected graph.",
+    "exactness": "Exact mathematical objective; implementations must declare approximation and termination status.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "Check every returned ID and every edge for independent-set feasibility.",
+    "On small graphs compare cardinality with exhaustive search.",
+    "A maximal independent set is not necessarily maximum; local maximality does not prove optimality.",
+    "Heuristic and learned methods must set optimality_proven=false absent a separate proof."
+  ],
+  "edge_cases": [
+    "The empty graph has the empty optimum.",
+    "All isolated vertices belong to every maximum-cardinality solution.",
+    "Disconnected components can be solved independently."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Check every returned ID and every edge for independent-set feasibility.",
+      "On small graphs compare cardinality with exhaustive search.",
+      "A maximal independent set is not necessarily maximum; local maximality does not prove optimality.",
+      "Heuristic and learned methods must set optimality_proven=false absent a separate proof."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "maximum independent set",
+    "largest independent set",
+    "optimize independent set"
+  ],
+  "research_only": true
+}

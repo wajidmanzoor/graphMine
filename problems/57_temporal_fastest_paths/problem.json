@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "temporal_fastest_paths",
+  "name": "Temporal Fastest and Earliest-Arrival Paths",
+  "category": "traversal_and_paths",
+  "problem_statement": "Find time-respecting journeys minimizing elapsed duration or arrival time in a directed temporal graph.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed",
+      "weights": "ignored",
+      "timestamps": "required_numeric_departure_time",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "required_nonnegative_duration"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "source",
+      "type": "vertex_id",
+      "required": true,
+      "description": "Source vertex."
+    },
+    {
+      "name": "ready_time",
+      "type": "number",
+      "required": true,
+      "description": "Earliest permitted initial departure."
+    },
+    {
+      "name": "deadline",
+      "type": "number_or_null",
+      "required": false,
+      "description": "Latest permitted arrival.",
+      "default": null
+    },
+    {
+      "name": "objective",
+      "type": "enum",
+      "required": false,
+      "description": "Arrival time or last-arrival minus first-departure duration.",
+      "default": "fastest_duration",
+      "allowed_values": [
+        "fastest_duration",
+        "earliest_arrival"
+      ]
+    },
+    {
+      "name": "duration_attribute",
+      "type": "string",
+      "required": false,
+      "description": "Nonnegative traversal duration stored in each edge attributes object.",
+      "default": "duration"
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "values",
+      "type": "map<vertex_id,number_or_null>",
+      "description": "Best temporal objective per reachable vertex; null when unreachable."
+    },
+    {
+      "name": "complete",
+      "type": "boolean",
+      "description": "Whether all requested objectives were computed."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Optimize the declared temporal journey objective, allowing waiting between edge events.",
+    "exactness": "Exact objective values; chronological path enumeration alone is insufficient.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Every next departure is no earlier than the previous arrival.",
+    "Respect ready_time and deadline.",
+    "Compare against a time-expanded-graph oracle on small inputs."
+  ],
+  "edge_cases": [
+    "Multiple events between the same endpoints remain distinct.",
+    "Zero-duration edges require an explicit equal-time convention."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Every next departure is no earlier than the previous arrival.",
+      "Respect ready_time and deadline.",
+      "Compare against a time-expanded-graph oracle on small inputs."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

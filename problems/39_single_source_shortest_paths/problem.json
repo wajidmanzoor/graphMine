@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "single_source_shortest_paths",
+  "name": "Weighted Single-Source Shortest Paths",
+  "category": "traversal_and_paths",
+  "problem_statement": "Compute minimum path-weight sums from one source to every vertex in a graph with nonnegative edge weights.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "directed_or_undirected",
+      "weights": "required_nonnegative",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Preserve all declared vertices, including isolated vertices.",
+      "Preserve direction; an undirected projection must be explicitly requested.",
+      "Declare the treatment of self-loops and parallel edges before execution; an adapter must reject unsupported cases."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "source",
+      "type": "vertex_id",
+      "required": true,
+      "description": "Source vertex."
+    },
+    {
+      "name": "cutoff",
+      "type": "number_or_null",
+      "required": false,
+      "description": "Optional nonnegative maximum path distance.",
+      "default": null
+    },
+    {
+      "name": "return_predecessors",
+      "type": "boolean",
+      "required": false,
+      "description": "Return predecessor paths.",
+      "default": true
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "distances",
+      "type": "map<vertex_id,number_or_null>",
+      "description": "Minimum path weights; null denotes unreachable within the cutoff."
+    },
+    {
+      "name": "complete",
+      "type": "boolean",
+      "description": "Whether all requested distances were computed."
+    }
+  ],
+  "optional_outputs": [
+    {
+      "name": "predecessors",
+      "type": "map<vertex_id,vertex_id_or_null>",
+      "description": "Valid shortest-path predecessor forest."
+    }
+  ],
+  "solution_semantics": {
+    "objective": "Minimize path-weight sum from the source.",
+    "exactness": "Exact distances up to declared floating-point tolerance; negative weights are outside this contract.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Compare distances with Dijkstra on small fixtures.",
+    "Every reachable nonsource predecessor satisfies the path-distance recurrence.",
+    "All weights are nonnegative and finite."
+  ],
+  "edge_cases": [
+    "Zero-weight edges and cycles are valid.",
+    "An isolated source has distance zero."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Compare distances with Dijkstra on small fixtures.",
+      "Every reachable nonsource predecessor satisfies the path-distance recurrence.",
+      "All weights are nonnegative and finite."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}

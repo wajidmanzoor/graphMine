@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "persistent_homology",
+  "name": "Flag-Complex Persistent Homology",
+  "category": "community_and_structural_analysis",
+  "problem_statement": "Compute persistence intervals over a declared prime field for the flag-complex filtration induced by nonnegative undirected edge filtration values.",
+  "graph_input": {
+    "format": "canonical_graph_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "required_finite_nonnegative_filtration_values",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Reject self-loops; duplicate edges collapse to their minimum filtration value.",
+      "Preserve isolated vertices."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "max_homology_dimension",
+      "type": "integer",
+      "required": false,
+      "description": "Nonnegative largest homology dimension to report.",
+      "default": 1
+    },
+    {
+      "name": "max_filtration",
+      "type": "number|null",
+      "required": false,
+      "description": "Nonnegative finite cutoff; null means no cutoff.",
+      "default": null
+    },
+    {
+      "name": "field_prime",
+      "type": "integer",
+      "required": false,
+      "description": "Prime coefficient modulus supported by the selected implementation.",
+      "default": 2
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "intervals",
+      "type": "array<object>",
+      "description": "Each interval specifies dimension, birth, and death; null death denotes survival beyond the cutoff."
+    },
+    {
+      "name": "essential_interval_convention",
+      "type": "string",
+      "description": "Explain whether null means essential in the complete filtration or right-censored at the cutoff."
+    },
+    {
+      "name": "coefficient_field",
+      "type": "integer",
+      "description": "Actual prime modulus used."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Compute persistence intervals over a declared prime field for the flag-complex filtration induced by nonnegative undirected edge filtration values.",
+    "exactness": "Exact mathematical objective; implementations must declare approximation and termination status.",
+    "duplicate_policy": "Each external vertex ID occurs once; output multiplicities follow the declared task.",
+    "ordering": "No ordering among equally valid solutions is required."
+  },
+  "validation_rules": [
+    "Vertices enter at zero; a clique simplex enters at the maximum filtration value of its edges.",
+    "Missing graph edges never enter; do not silently complete a sparse graph or reinterpret weights as similarities.",
+    "Compare barcode multisets against an independent small boundary-matrix reduction.",
+    "Intervals have birth <= death; specify whether zero-length intervals are omitted.",
+    "To compute dimension d, include simplices up to dimension d+1."
+  ],
+  "edge_cases": [
+    "Disconnected components produce multiple surviving H0 intervals.",
+    "A 4-cycle has an H1 class until filling diagonals appear.",
+    "Equal filtration values require a face-compatible ordering."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Vertices enter at zero; a clique simplex enters at the maximum filtration value of its edges.",
+      "Missing graph edges never enter; do not silently complete a sparse graph or reinterpret weights as similarities.",
+      "Compare barcode multisets against an independent small boundary-matrix reduction.",
+      "Intervals have birth <= death; specify whether zero-length intervals are omitted.",
+      "To compute dimension d, include simplices up to dimension d+1."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  },
+  "intent_signals": [
+    "persistent homology",
+    "persistence barcode",
+    "vietoris rips complex",
+    "flag complex"
+  ],
+  "research_only": true
+}

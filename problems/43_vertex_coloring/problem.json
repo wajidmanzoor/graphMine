@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0.0",
+  "problem_id": "vertex_coloring",
+  "name": "Vertex Coloring",
+  "category": "graph_optimization",
+  "problem_statement": "Assign colors so vertices within a declared graph distance receive different colors.",
+  "graph_input": {
+    "format": "canonical_edge_list_v1",
+    "schema_ref": "../graph_input.schema.json",
+    "cardinality": "single_graph",
+    "requirements": {
+      "direction": "undirected",
+      "weights": "ignored",
+      "timestamps": "ignored",
+      "vertex_attributes": "ignored",
+      "edge_attributes": "ignored"
+    },
+    "normalization": [
+      "Remove self-loops and collapse parallel edges to a simple graph.",
+      "Preserve isolated vertices."
+    ]
+  },
+  "problem_inputs": [
+    {
+      "name": "distance",
+      "type": "enum",
+      "required": false,
+      "description": "Distance-one or distance-two coloring.",
+      "default": 1,
+      "allowed_values": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "random_seed",
+      "type": "integer_or_null",
+      "required": false,
+      "description": "Optional algorithm seed.",
+      "default": null
+    }
+  ],
+  "required_outputs": [
+    {
+      "name": "colors",
+      "type": "map<vertex_id,integer>",
+      "description": "Color assigned to every vertex."
+    },
+    {
+      "name": "color_count",
+      "type": "integer",
+      "description": "Number of distinct used colors."
+    }
+  ],
+  "optional_outputs": [],
+  "solution_semantics": {
+    "objective": "Produce a proper coloring while heuristically limiting the number of colors.",
+    "exactness": "Coloring feasibility is exact; minimum chromatic number is not required.",
+    "duplicate_policy": "Output identities refer to the normalized input; any multiplicities must follow the declared task.",
+    "ordering": "No output order or choice among equally valid optima is required unless specified by an input."
+  },
+  "validation_rules": [
+    "Every vertex receives one color.",
+    "Vertices separated by at most distance edges have distinct colors.",
+    "color_count equals the number of unique labels."
+  ],
+  "edge_cases": [
+    "An empty graph uses zero colors.",
+    "An edgeless nonempty graph may use one color."
+  ],
+  "evaluation_metrics": {
+    "correctness": [
+      "Every vertex receives one color.",
+      "Vertices separated by at most distance edges have distinct colors.",
+      "color_count equals the number of unique labels."
+    ],
+    "performance": [
+      "end-to-end time",
+      "compute time",
+      "peak host memory",
+      "peak device memory"
+    ]
+  }
+}
