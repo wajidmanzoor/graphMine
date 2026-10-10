@@ -6,9 +6,9 @@
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-comparison",
+      "id": "cpu-workflows",
       "status": "passed",
-      "tests": 19251,
+      "tests": 19505,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
@@ -16,16 +16,19 @@
       "test_modules": [
         "tests/test_comparison_data_oracles.py",
         "tests/test_contracts.py",
+        "tests/test_evidence_worker.py",
         "tests/test_extended_contracts.py",
         "tests/test_extended_oracles.py",
         "tests/test_numerical_construction.py",
         "tests/test_small_graph_oracles.py",
         "tests/test_temporal_sampling.py",
-        "tests/test_weighted_directed.py"
+        "tests/test_weighted_directed.py",
+        "tests/test_workflows.py"
       ],
-      "report": "validation/python_analytics/cpu-comparison.xml",
-      "report_sha256": "796275e63383fd464d2a1e7753dbdfd9d0467d252e2b137832f1dec29253dc54",
-      "metadata": "validation/python_analytics/cpu-comparison.xml.metadata.json",
+      "report": "validation/python_analytics/cpu-workflows.xml",
+      "report_sha256": "24e8ec2f2d9a14ee298d539dfaf3620f1cdc6abafe8a989df009ae16f438029a",
+      "metadata": "validation/python_analytics/cpu-workflows.xml.metadata.json",
+      "metadata_sha256": "688772561dae2f77ef375448b32365de6c89e1dadd8e52c3eddf0e17b8e536a0",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -40,7 +43,7 @@
       }
     },
     {
-      "id": "gpu-0-comparison",
+      "id": "gpu-0-workflows",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -51,9 +54,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-comparison.xml",
-      "report_sha256": "c19c83fc308b1d3061662cce4bf97d0ca6f9e9db34f196470a61ede62309cb7e",
-      "metadata": "validation/python_analytics/gpu-0-comparison.xml.metadata.json",
+      "report": "validation/python_analytics/gpu-0-workflows.xml",
+      "report_sha256": "9131d095eff92ffdaebdbc144b180e43cf1dddc35a82efaf13e6d6e2bb2a27c3",
+      "metadata": "validation/python_analytics/gpu-0-workflows.xml.metadata.json",
+      "metadata_sha256": "b58d73c8d13a857e1840e7f38416be6e1d34a865a485e22be8cc3e4e04f34064",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -68,7 +72,7 @@
       }
     },
     {
-      "id": "gpu-1-comparison",
+      "id": "gpu-1-workflows",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -79,9 +83,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-comparison.xml",
-      "report_sha256": "f1fe911a0d819fd7943246bfec31bb6000582d0be11f6625646d108a50b8403b",
-      "metadata": "validation/python_analytics/gpu-1-comparison.xml.metadata.json",
+      "report": "validation/python_analytics/gpu-1-workflows.xml",
+      "report_sha256": "ab697c31db7db833e33b8d4d7f5bfb69d952f9cbb70ccc8f609cb20468ba6d16",
+      "metadata": "validation/python_analytics/gpu-1-workflows.xml.metadata.json",
+      "metadata_sha256": "735926d32350a6e114cfb3fca93c2df9fc956a1597ac0566332c1e78c16fdd65",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -971,7 +976,13 @@
       "quality": "numerical",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "fcdfbfef59595fcd97d7f15f671b84024a1de24a8a84702225445e934b004d6b"
+      "output_ports": {
+        "scores": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "73a7ac173cf0c915fae4bf1f28dc63845753e638ecca9c75e91e68484d87d117"
     },
     {
       "id": "degree-centrality",
@@ -1004,7 +1015,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "e14bac9ecde3d1bb2c36622edea53c438e5b4e2e3b33511980b36f9cd9241566"
+      "output_ports": {
+        "scores": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "27b52913f05ac94a66f4a735983bb795ce613f26aa3bef68832eb2d97d540d80"
     },
     {
       "id": "pagerank",
@@ -1054,7 +1071,13 @@
       "quality": "numerical",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "9ef277f2dedd0c958150664e8bc8d10af073fd50bbcc98e2e975a5ce59a20d01"
+      "output_ports": {
+        "scores": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "aee1c682c89f07ab7cb791c733a7759996fae98da00e984f4ac334004a9de80b"
     },
     {
       "id": "personalized-pagerank",
@@ -1149,7 +1172,13 @@
       "quality": "numerical",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "1db6b264ddf9230e1640a03df416a2d19d8cbca8729c01e7e42045ccf9fa9d09"
+      "output_ports": {
+        "scores": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "3957cea800c2f3a965b23e7df96d14973de1ea4a9fff8cf0a908fe495edad774"
     },
     {
       "id": "k-cliques",
@@ -1189,7 +1218,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "be2d231ffbede60fc5a2557d3bd880d0eab6e6c0f750daca260a7dbd2ccddd71"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "d573603d8c01d51402adafd7c01a91345aa3b00fde4478f36dd81b5b31c0cd2c"
     },
     {
       "id": "maximal-cliques",
@@ -1219,7 +1258,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "6eac8570b13c55a0c500e22e9ab6a663fcb0795d6d921af310a25bf7bdda5960"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "e538c5f194f32603babdabdbb4c5ab46ac3f9f7b984366755a354457d7e630a4"
     },
     {
       "id": "maximum-clique",
@@ -1240,7 +1285,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "f31911ef39acd372e67cb236f665a906036ded7b9db8137cb8eed551f19af3e7"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "cfd768eec018b11f73c1a231a973777fb3056c2a7e1e29a8a877fc4725619258"
     },
     {
       "id": "vertex-coloring",
@@ -1272,7 +1327,13 @@
       "quality": "feasible",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "e853e66d39872a7daceee62ebe1cb68bbf69b2112c1bbb7647386eeaeebccfea"
+      "output_ports": {
+        "scores": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "51cc4f662f1b55f3a762b54494009eaab18ea8b8295c3e70892a10a32e659351"
     },
     {
       "id": "community-detection",
@@ -1337,7 +1398,17 @@
         "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.louvain.louvain_communities.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "92db29a609336ad4295c8d0ebc0450d08a5ebafc7d8a91a52fdc3d9bdb7ec1a2"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        },
+        "partition": {
+          "type": "vertex_partition",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "5029f86e5a818bfa7d2b20f467171bab84bcd29eb4aaba119650be41b394100c"
     },
     {
       "id": "seeded-local-community",
@@ -1384,7 +1455,13 @@
         "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.link_analysis.pagerank_alg.pagerank.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "b852625ec9f0e16f8257506b67f17b4b183146f23697b851efb425efd609e290"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "dee6ad2565454de7f29cf1948075ae75bb706da815b7348886c8fd795d79097b"
     },
     {
       "id": "overlapping-communities",
@@ -1420,7 +1497,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "4cbe88e25ca0e57843c851e38b053df8c00e03900f333a335353d90aef7faf26"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "2e8d3045ee953de27dc1d7a73dfca11ee2d75bfb8aef694fb295b8838497c304"
     },
     {
       "id": "network-alignment",
@@ -1489,7 +1572,13 @@
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "03ef77d97771bb187410103c8467811b6cdb6101998d03da56d2a3cac01b06a0"
+      "output_ports": {
+        "mapping": {
+          "type": "cross_graph_mapping",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "e4449f42fb0c8dce3bd50769faf4f5d33ad63d7c1fb215ded2867407bb1a5bdb"
     },
     {
       "id": "biconnected-components",
@@ -1502,7 +1591,21 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "1a1381986d769e4127980022893ce2f688b17cc6f9b4e6f8b83df6bbe061f017"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        },
+        "edges": {
+          "type": "edge_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "d8a8e4aac07b98af163ff10828eac2a78ef9da728b21cd752012844724d9a291"
     },
     {
       "id": "connected-components",
@@ -1527,7 +1630,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "f38264544b21cc85a3504179c88ebc50035d2c49ab5ca4c41ba4db3af0d5ce8f"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "69d8d38fd2b405f8cd47cc0ef0781885d1b61beafa8e432bc81648a45f276679"
     },
     {
       "id": "graph-coarsening",
@@ -1580,7 +1689,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "34f3e04ffcc7076ab4d7959fc33126616e10e59368239598b4c99e118e740a00"
+      "output_ports": {
+        "graph": {
+          "type": "graph",
+          "availability": "runtime_checked"
+        },
+        "mapping": {
+          "type": "vertex_coarsening",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "5dc2adbd6bf79bb7d3b24778c6dd981d262e4d5e9d4929cc327f3e460b418e48"
     },
     {
       "id": "knn-graph",
@@ -1638,7 +1757,17 @@
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html"
       ],
       "input_kind": "feature_vectors",
-      "profile_sha256": "f5601988096dc9680c80e7bca57d6234211e184b6f2d83761e9227191151cfdc"
+      "output_ports": {
+        "graph": {
+          "type": "graph",
+          "availability": "runtime_checked"
+        },
+        "neighbors": {
+          "type": "neighbor_lists",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "b106bf3800b06267715fa96c32cc45f4729b9d093ad760df434007fa9e4ffb5a"
     },
     {
       "id": "k-core",
@@ -1660,7 +1789,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "c9f51df586088823eff511a10b18433a304a4b23cd98d68ec86983a459feaf6e"
+      "output_ports": {
+        "scores": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "2dd081835ac0957b3aa0b38c43cac9120d511e4dc333ea596dca586fda3ce21f"
     },
     {
       "id": "k-truss",
@@ -1682,7 +1821,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "db5695a50a9b58b5c27e1994ebf6daa0d94081005fd39b6e18891734a6d25f3a"
+      "output_ports": {
+        "edges": {
+          "type": "edge_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "67968287e421051d49dca11a321c400446f6252fa455c570ab806d92999fa9eb"
     },
     {
       "id": "entity-resolution",
@@ -1744,7 +1889,17 @@
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "290823c66295230411fa828d2ff5acdf6796010a107806e12c084c2b5a46ca2a"
+      "output_ports": {
+        "candidates": {
+          "type": "record_pair_collection",
+          "availability": "runtime_checked"
+        },
+        "clusters": {
+          "type": "vertex_partition",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "4941f75b76fb7c2a8c245a21243bf52fb4e6928187f342ae0c78fcea2b4605c1"
     },
     {
       "id": "densest-k-subgraph",
@@ -1789,7 +1944,13 @@
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "109b2221c483b72c6c12a68e16cb0cdd45eaf1ecca02a4e0ca463744353e2e1e"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "fd4bb836990e225cc36e2ced2e200a3e6a88d09f72cb7d24f478227642af6b2c"
     },
     {
       "id": "densest-subgraph",
@@ -1843,7 +2004,13 @@
         "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.flow.minimum_cut.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "976a3a433f7a14766c57122f888f0a72612297ad2638bec73c1216f414b999c8"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "315d8b28a7deb4a138b039876853ab3322f017063861b58e5af51caa4f2f783c"
     },
     {
       "id": "maximal-bicliques",
@@ -1893,7 +2060,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "c88664264219473524a40503d6313fc467661c6d75ded0b7d462c6acc5b9ae77"
+      "output_ports": {
+        "bicliques": {
+          "type": "bipartite_groups",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "0f3ecd6be5ff4ba9d93b4e498ac60f1f2c0f09e3640562e5fb4177929ea4902e"
     },
     {
       "id": "quasi-cliques",
@@ -1937,7 +2110,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "3ca429b259f8bee17911864d98a6fe44343ecaa290cced72b0714a501b40634c"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "411cb960f80ffeb527348f0dda5a2fc451a1f5039420f890f95073f096a64f4b"
     },
     {
       "id": "max-flow-min-cut",
@@ -1981,7 +2160,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "1ec1752b43d028074c0479f6e99828608abce24260c1d25a7ba6e831512aaffb"
+      "output_ports": {
+        "value": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "5c512146290e131909e5442ca6ea83a83f8883263e0b65c4f32a14a256adaeb4"
     },
     {
       "id": "maximal-independent-set",
@@ -2002,7 +2191,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "654cae256e0f4934803afcd29946ed89bc5be0bf89211189e72745c3e643f98f"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "f610a3fc70aa094569a062c4bafd3dfc6b7a8adaa459eedbd8f6ebec3668aec8"
     },
     {
       "id": "maximum-independent-set",
@@ -2026,7 +2221,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "5c3b06f0c1f2a205800d2ff5464b886229e1e23397fbcef1a3955d2f435a9107"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "5aa078f9e798a89d5fa1614fedf602adc4a6c1855f376359c353cb5b338e3a56"
     },
     {
       "id": "minimum-vertex-cover",
@@ -2059,7 +2260,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "4090f01ff5f102572c6e9c8f9d40bab5c76c9ac70b2be2f873e64c136cc44a2f"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "b3d8e27392a4a052f31ced2447b6bd780c93cb5744c0007579e0b2404bae2d5f"
     },
     {
       "id": "bipartite-matching",
@@ -2113,7 +2320,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "0b56f259c8c5697fe3928a75adc18a8ab28e3b77c4560e8829203ffa01f64bae"
+      "output_ports": {
+        "edges": {
+          "type": "edge_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "ae614b33415cc7a1324093a87a104f8b8f54ac4b9608de9d81ba6ac72bf12c91"
     },
     {
       "id": "weighted-matching",
@@ -2137,7 +2350,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "2b6a10b17d59447647ed7d66b22eb8bbd2c05a98232fb245fc9b59f8a525dbf6"
+      "output_ports": {
+        "edges": {
+          "type": "edge_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "342cd3ea71e76f184494c129805b96b3f9988b14838b7b35626302eac8335eb5"
     },
     {
       "id": "triangle-counting",
@@ -2180,7 +2399,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "3fba1bcbd1989aea269a4b3037fc664f8f7299d352c5142c2bba827d7b004115"
+      "output_ports": {
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "01ee225725bb95fa02581d49a70d7574d7c67e3585a4fa5f530414330c0e58ef"
     },
     {
       "id": "group-steiner-tree",
@@ -2220,7 +2445,17 @@
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "06cd48ee81161dd9ebfc55d3030a94c1f13636e686e0d118a584303bf58265c5"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        },
+        "edges": {
+          "type": "edge_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "6e22091632fbcb1f0e2fd7f9c4228cd6e68bd64ecfbdba4edd8134df3409edec"
     },
     {
       "id": "balanced-partitioning",
@@ -2300,7 +2535,17 @@
       "quality": "numerical_optimum",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "1d59e1e6b7f9a6acd2b44a5b69fc80404133578a39f7d4b3e3df08ec7d8f7caa"
+      "output_ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        },
+        "partition": {
+          "type": "vertex_partition",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "f1155a7a733d9ade57f3db0e0d4f9f49f8a3eb53ab93b98b1d6438db17eb1d1c"
     },
     {
       "id": "hypergraph-partitioning",
@@ -2340,7 +2585,13 @@
       "quality": "numerical_optimum",
       "references": [],
       "input_kind": "hypergraph",
-      "profile_sha256": "c0f8a0840f9f2c1aefd08d077dbebe25e87580f2d75576e19fee39841cd1a0d9"
+      "output_ports": {
+        "partition": {
+          "type": "vertex_partition",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "e2e222dda1277953498a46a1434b60c39aaf3a96a63244027833b7f05fb8987c"
     },
     {
       "id": "signed-balance",
@@ -2386,7 +2637,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "f0c92d5eb360d936014c2a63a4f6e08331f63af20ecdf942789799bf16b16752"
+      "output_ports": {
+        "partition": {
+          "type": "vertex_partition",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "c59112f5851c597712157569b44cfd7de6ff8677ee9d27bfc669899e52f5c198"
     },
     {
       "id": "butterfly-counting",
@@ -2451,7 +2708,25 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "0c9f5b4319c551222e838fd5eff74b1c6be9089d498d739c7ac79c3432b448a7"
+      "output_ports": {
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        },
+        "scores": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        },
+        "edges": {
+          "type": "edge_scores",
+          "availability": "runtime_checked"
+        },
+        "cores": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "0b0899503d27e760cba1254c3ff86d5afa30e3065394285255e9c18db48b2b1e"
     },
     {
       "id": "graphlet-counting",
@@ -2495,7 +2770,17 @@
         "https://networkx.org/documentation/stable/reference/generated/networkx.generators.atlas.graph_atlas_g.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "bfccf3697c3966e203c76305c628fcf22a8db9384fd7a6dc52518b1d7aded821"
+      "output_ports": {
+        "counts": {
+          "type": "table",
+          "availability": "runtime_checked"
+        },
+        "instances": {
+          "type": "graphlet_instances",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "653d3ffcb5689166d465697273f73b5c6452b6867185f1e355484a88b0a084e5"
     },
     {
       "id": "motif-counting",
@@ -2548,7 +2833,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "8a9ae0d22fc81f365e8ffdfe8d90692545654d045f6fc1ba0e0b06b103681782"
+      "output_ports": {
+        "counts": {
+          "type": "table",
+          "availability": "runtime_checked"
+        },
+        "instances": {
+          "type": "motif_instances",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "00d0d4f3f25e61625cf3e04e1ce38e97b7a4440549ceb6247c2b5cd1873ff166"
     },
     {
       "id": "subgraph-isomorphism",
@@ -2599,7 +2894,13 @@
         "https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "25b32a503293326dcd1b253ba07ee1a0dd12295b418d6a0bee2bdd07d2d8d0ce"
+      "output_ports": {
+        "matches": {
+          "type": "vertex_mappings",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "5483cc09755b5daef066de5fa9774befc6ba3b8790c19b76f012bb76764c2be1"
     },
     {
       "id": "temporal-motifs",
@@ -2657,7 +2958,13 @@
         "https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "b9d36f652f9c0aefcac2d45cacfc10f87633328db25ed743c9f45c9d0cf40ad3"
+      "output_ports": {
+        "instances": {
+          "type": "temporal_occurrence_collection",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "d870106a47c6a859e5fd6688a23af10dd528dd9ba4e9cba6bd5752c912da9b5b"
     },
     {
       "id": "neighborhood-sampling",
@@ -2725,7 +3032,17 @@
         "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.choice.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "d3e755e266f5a976063dea1ff06a12b75be66a1562b4286018386aa0496396d9"
+      "output_ports": {
+        "edges": {
+          "type": "edge_sample",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "10df1d6675af562c844a673a2aff66c030b33a4de9e5c7ebe3cc622c20ae0522"
     },
     {
       "id": "random-walks",
@@ -2791,7 +3108,13 @@
         "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.choice.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "436e458ede1cb44306b295a85a56066f99d775af6d2c34f2bd3099c84063721c"
+      "output_ports": {
+        "walks": {
+          "type": "walk_sample",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "2e7c0b9e6a210b3909e465156e9ff871b8dad51978c174a0bdc4166f81b0daf9"
     },
     {
       "id": "link-prediction",
@@ -2844,7 +3167,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "974811d9f8e0f52e2f3e9b36dc73c245bdc815b1eb5923e9f82d13e2101ac8de"
+      "output_ports": {
+        "pairs": {
+          "type": "table",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "0d302e95bae9b7d4e8f23fed3707cd243e19eaad4e7e1a58c28324f136232b94"
     },
     {
       "id": "simrank",
@@ -2938,7 +3267,13 @@
       "quality": "numerical",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "a46a35f9c608095723a27c5629f9ae91ee8010685cd45ec1ed890d22787c16cd"
+      "output_ports": {
+        "pairs": {
+          "type": "pair_scores",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "857108de39b2db2a296555f8499689be7ea9634fc951dd11d768b7e474ab3283"
     },
     {
       "id": "graph-signal-denoising",
@@ -3001,7 +3336,13 @@
       "quality": "numerical",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "671d87a09d6b742423abcf1d851948a1dac70961ff72c193d5b3696a94f66036"
+      "output_ports": {
+        "signal": {
+          "type": "vertex_signal",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "33f484d070e2c4e100819fdb31bbc945a1e1f2d7058ddc17c78effe8782f6f25"
     },
     {
       "id": "laplacian-eigenpairs",
@@ -3054,7 +3395,13 @@
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.eigh.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "349c616fdc4f79859839fc5f9c373ebde4522af9fc1a79715100d91744c7cd9e"
+      "output_ports": {
+        "eigenpairs": {
+          "type": "eigenpairs",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "5a4784a6f157db913b6c88d875624faaaed92e31a4c8f225353dc6bedae75395"
     },
     {
       "id": "graph-anomalies",
@@ -3120,7 +3467,13 @@
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.zscore.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "3f5269c441f12c508bfd8f0c2cf3860fa0404272ba534b8cd017c84879c9d28f"
+      "output_ports": {
+        "ranking": {
+          "type": "entity_ranking",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "2e2abb5cd615636786684a3f7af4808a4caddc5c0aa594c23a6d787224fa6635"
     },
     {
       "id": "null-model-significance",
@@ -3204,7 +3557,13 @@
         "https://arxiv.org/abs/1608.00607"
       ],
       "input_kind": "graph",
-      "profile_sha256": "a164f5ae9dfe07c050509e188a5329ea9425d2dcc47e38878277faf89b32ad82"
+      "output_ports": {
+        "samples": {
+          "type": "numeric_sample",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "a88e4cd380e0af34b0f5cda2d644b148ac4ee3f973429d002c41844f3e7cada2"
     },
     {
       "id": "induced-subgraph",
@@ -3255,7 +3614,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "67fb9088884ae56412b2c0c529612ecff2fd4f1faf4753016577afc5f5e238df"
+      "output_ports": {
+        "graph": {
+          "type": "graph",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "5448eb17772afdd173d72744a82eb0ea402e9e549b9308bc25301e998feb8256"
     },
     {
       "id": "temporal-paths",
@@ -3306,7 +3675,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "8c8740cf56bbd134fda21d60c6759241b13279aa8236ee7cee6225b68c97de44"
+      "output_ports": {
+        "paths": {
+          "type": "temporal_path_table",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "60869b6a5e09544407cf7d35f5d6b5918f51204a681b237ccc6b9473121de21a"
     },
     {
       "id": "persistent-homology",
@@ -3347,7 +3722,13 @@
         "https://gudhi.inria.fr/python/latest/simplex_tree_ref.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "c86f5b5e8ae442bf4dde9f60c98e82b2759b43a3d2b0896034e71d22798864f5"
+      "output_ports": {
+        "intervals": {
+          "type": "persistence_intervals",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "b2d6a9778dde930148905910209e6840db47506ec9a489080d75178957bc5926"
     },
     {
       "id": "bounded-paths-cycles",
@@ -3430,7 +3811,13 @@
         "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cycles.simple_cycles.html"
       ],
       "input_kind": "graph",
-      "profile_sha256": "0db5c999f425fa017de7f8398639ed97704b7f4a0810181e78753ae5a0506b1a"
+      "output_ports": {
+        "sequences": {
+          "type": "edge_sequence_collection",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "ecf8be4ac5e539d3d09cb5b9f75476c9832ea7b12cd4fc531ba2efebae168e42"
     },
     {
       "id": "breadth-first-search",
@@ -3476,7 +3863,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "fbc11d8afb400134c26706fc3991a36dd9626126c07ad34463af0c49027f5a18"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        },
+        "distances": {
+          "type": "table",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "5d621b87a050af52186c684e7419f7ae20d288a134c092a8fff5c1c8cf6989ae"
     },
     {
       "id": "many-source-shortest-paths",
@@ -3515,7 +3912,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "503f5d7d8ae83c76955f0e00a240e3cf7a9321d91aad990e77e8f76c594b1755"
+      "output_ports": {
+        "distances": {
+          "type": "table",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "9afef4724c863566b7626708b8d52cd3b3710b8be6a53cb07015b15db86525ca"
     },
     {
       "id": "single-source-shortest-paths",
@@ -3550,7 +3953,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "e477bc58ace3fa5a03b1dd6ec5ae7c4710a8806ed3acdcff2633eadc71a0a7d8"
+      "output_ports": {
+        "distances": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "e3483537bc44fe48dc7d322c0f8a9de349640628280c4cc021093c185e0f3172"
     },
     {
       "id": "top-k-critical-paths",
@@ -3585,7 +3994,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "d1d5a546f5ebc30df779c2da0da1b830202c0785d8c0b0adb6afae9f677ebbed"
+      "output_ports": {
+        "paths": {
+          "type": "path_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "6bccc2db3ff38f2733566200d3b6176672192bc81240b6d5791219fbcb74946c"
     },
     {
       "id": "topological-sort",
@@ -3598,7 +4013,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "7e2bd064e4684450cc5f6f34a58c7eb2f03e39d948e5d0a5d0fd3d6200762150"
+      "output_ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "1ed18e47ee6013454e2c1470f5f783c3557fa1bf292a1c890956e04f33d8be2e"
     },
     {
       "id": "transitive-closure",
@@ -3638,7 +4059,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "80db8068d91f5b90b1299baac93eb7b74edb6012cb1f819a7d817cebc90f0632"
+      "output_ports": {
+        "pairs": {
+          "type": "table",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "829483aa89bc45c8c374967626d792f1d25c07d3a5e27a875fbcdc35e970ee40"
     },
     {
       "id": "widest-paths",
@@ -3658,7 +4085,13 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "60e4e5aaea2456c7a65fc7cff17d9f2f99531d78829c242767ca53d8911b1060"
+      "output_ports": {
+        "paths": {
+          "type": "widest_path_tree",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "a8d5b0ea04dfc88d4cd6df5109bce7c392bb364fb9108f6ed21a20e0de48cb18"
     },
     {
       "id": "spanning-tree-forest",
@@ -3690,7 +4123,17 @@
       "quality": "exact",
       "references": [],
       "input_kind": "graph",
-      "profile_sha256": "b1ee692202fa386d056ae60bbd27588a9255838f62309b7ee40bcc06e5e465ed"
+      "output_ports": {
+        "edges": {
+          "type": "edge_set",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "4b93fd138e0b239ae4b6f140ae5718c05fb1d5be7452453eb76d1596b13c86a8"
     }
   ]
 }

@@ -5,6 +5,10 @@ backend selection, and result provenance. It uses NetworkX, NumPy, SciPy, CVXPY,
 GUDHI and RapidFuzz on CPU, and cuGraph on GPU. Native GraphMine and agent integration are tracked in
 [`docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md`](../../docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md).
 
+The agent now exposes evidence-checked, typed workflow endpoints for this library.
+See [workflow modes, bindings, cancellation and reuse](../../docs/TYPED_ANALYTICS_WORKFLOWS.md).
+The existing chat/browser migration remains in progress.
+
 ```sh
 python -m pip install -e 'python/graphmine[test]'
 # Optional NVIDIA CUDA 12 backend:

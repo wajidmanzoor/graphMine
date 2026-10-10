@@ -12,6 +12,7 @@ from .contracts import Budget, WorkCounter
 from .exceptions import BackendUnavailable, GraphMineError, UnsupportedOperation
 from .graph import Graph
 from .inputs import FeatureVectors, Hypergraph, load_input
+from .ports import validate_ports
 from .registry import algorithm
 
 _backend_configuration_lock = RLock()
@@ -112,6 +113,7 @@ def run(
     ):
         output = definition.function(graph, args, work, selected)
     work.tick(0)
+    validate_ports(operation, output.ports)
     try:
         json.dumps(
             {

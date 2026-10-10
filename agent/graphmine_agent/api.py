@@ -34,6 +34,13 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__
 from .agent_service import AgentService
+from .analytics import (
+    AnalyticsError,
+    AnalyticsService,
+    WorkflowApproval,
+    WorkflowRequest,
+    WorkflowRevision,
+)
 from .catalog import Catalog, CatalogError
 from .config import Settings
 from .database import Database, RecordNotFound
@@ -77,6 +84,7 @@ class Runtime:
     events: EventBus
     jobs: JobManager
     agent: AgentService
+    analytics: AnalyticsService
 
 
 def build_runtime(settings: Settings) -> Runtime:
@@ -106,6 +114,7 @@ def build_runtime(settings: Settings) -> Runtime:
         events=events,
         jobs=jobs,
         agent=agent,
+        analytics=AnalyticsService(settings, database, graph_store, events),
     )
 
 
@@ -185,13 +194,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         runtime = build_runtime(configured)
         app.state.runtime = runtime
-        runtime.runner.probe()
-        await runtime.jobs.start()
         try:
+            runtime.runner.probe()
+            await runtime.jobs.start()
+            runtime.analytics.open()
             yield
         finally:
-            await runtime.jobs.stop()
-            await runtime.agent.close()
+            try:
+                await runtime.analytics.close()
+            finally:
+                try:
+                    await runtime.jobs.stop()
+                finally:
+                    await runtime.agent.close()
 
     app = FastAPI(
         title="GraphMine Agent API",
@@ -209,6 +224,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["Authorization", "Content-Type", "X-GraphMine-Token"],
     )
+
+    @app.exception_handler(AnalyticsError)
+    async def analytics_error_handler(
+        _request: Request, error: AnalyticsError
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=error.status,
+            content={"error": {"code": error.code, "message": str(error)}},
+        )
 
     @app.exception_handler(RecordNotFound)
     async def not_found_handler(
@@ -612,6 +636,55 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         runtime = _runtime(request)
         runtime.database.get_session(session_id)
         return runtime.database.events(session_id, after)
+
+    @router.get("/analytics/capabilities")
+    async def analytics_capabilities(request: Request):
+        return await _runtime(request).analytics.capabilities()
+
+    @router.post("/sessions/{session_id}/workflows", status_code=201)
+    async def create_workflow(session_id: str, body: WorkflowRequest, request: Request):
+        return await _runtime(request).analytics.create(session_id, body)
+
+    @router.get("/sessions/{session_id}/workflows")
+    async def list_workflows(session_id: str, request: Request):
+        return _runtime(request).analytics.list(session_id)
+
+    @router.get("/workflows/{workflow_id}")
+    async def get_workflow(workflow_id: str, request: Request):
+        return _runtime(request).analytics.get(workflow_id)
+
+    @router.post("/workflows/{workflow_id}/revise")
+    async def revise_workflow(
+        workflow_id: str, body: WorkflowRevision, request: Request
+    ):
+        return await _runtime(request).analytics.revise(workflow_id, body)
+
+    @router.post("/workflows/{workflow_id}/run", status_code=202)
+    async def run_workflow(workflow_id: str, body: WorkflowApproval, request: Request):
+        return await _runtime(request).analytics.start(
+            workflow_id, body.workflow_hash, body.expected_revision
+        )
+
+    @router.delete("/workflows/{workflow_id}")
+    async def cancel_workflow(workflow_id: str, request: Request):
+        return await _runtime(request).analytics.cancel(workflow_id)
+
+    @router.get("/workflows/{workflow_id}/result")
+    async def workflow_result(workflow_id: str, request: Request):
+        return _runtime(request).analytics.result(workflow_id)
+
+    @router.get("/workflows/{workflow_id}/steps/{step}/ports/{port}")
+    async def workflow_port(
+        workflow_id: str,
+        step: str,
+        port: str,
+        request: Request,
+        offset: int = Query(0, ge=0),
+        limit: int = Query(100, ge=1, le=1000),
+    ):
+        return _runtime(request).analytics.port_page(
+            workflow_id, step, port, offset, limit
+        )
 
     app.include_router(router)
 

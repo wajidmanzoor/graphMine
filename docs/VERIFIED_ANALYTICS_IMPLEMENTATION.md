@@ -262,3 +262,55 @@ reported score substitutes for local integration tests.
 - The agent/browser is still on its native execution path. All remaining CPU,
   library-to-agent, family-routing, workflow, mode/UI, scheduling/cache, MCP,
   reviewed-example and external-scale requirements remain open.
+
+### Typed workflows and application API checkpoint
+
+- The application now calls the Python library through isolated workflow
+  workers. New authenticated endpoints support Normal, Interactive and Expert
+  execution policies, plan revisions, approval hashes, current-revision result
+  access, port pagination and cancellation. The existing chat/browser and native
+  job API remain on their earlier execution path; browser mode integration is
+  still open. See `TYPED_ANALYTICS_WORKFLOWS.md` for the exact API and limits.
+- All 59 operation cards declare possible output ports. DAG validation checks
+  references, cycles, accepted parameters and binding types; execution checks
+  actual port availability, completeness and graph identity. Original typed IDs
+  survive dependent graph extraction. Failed dependencies are marked blocked
+  while independent steps can complete.
+- The capability endpoint and worker require current Python correctness
+  evidence: report/metadata hashes, source/contract inventories and bytes,
+  dependency/Python versions, complete test collection and audited profile
+  hashes. The execution worker checks the reviewed plan and evidence again.
+  Automatic steps lacking current GPU evidence use CPU. This gate covers the
+  Python integrations; unification with native/research evidence remains open.
+- A SQLite ledger saves immutable revision input snapshots and execution state.
+  Approval is reset on every revision, including identical-content revisions.
+  Trusted local successful steps can be reused only with matching resolved
+  inputs, parameters, implementation/dependencies, device policy and result
+  hash. Corrupt entries are recomputed. Restarted work is marked interrupted.
+  This supplies manual affected-step recovery; automatic bounded recovery and
+  graph-representation caching remain open.
+- Worker process groups permit cancellation/deadlines during native calls.
+  CPU workers hide CUDA devices. The current analytics queue is serial and uses
+  the configured graph GPU when requested; memory-aware two-GPU scheduling and
+  LLM memory admission remain open.
+- Latest full reports: `cpu-workflows.xml` has **19,505 passes** with CUDA hidden;
+  `gpu-0-workflows.xml` and `gpu-1-workflows.xml` each have **1,546 passes**, with
+  no failures or skips. The 254 new focused checks include independent peeling
+  and linear-algebra oracles for dependent workflows across atlas graphs through
+  six vertices, malformed/type/cycle checks, incomplete collections, namespace
+  errors, cache invalidation and evidence rejection.
+- `agent-workflows.xml` has **15 passing checks** against the working tree;
+  `agent-workflows-index.xml` has the same **15 passes** against the staged
+  application sources. The report's source hashes match the staged Git blobs.
+  These exercise the actual CPU library through the application,
+  plus explicitly synthetic process/ledger fault injection. The checks cover
+  three API modes, stale approvals/evidence, revision changes, numerical results,
+  pagination, cancellation, deadlines, restart ownership, CPU isolation and reuse
+  after a failed dependency. GPU workflows also ran serially on both physical
+  devices, checking recorded device assignment and numerical results.
+  Source/dependency metadata accompanies both reports.
+- CPU algorithm coverage remains **57 of 70 problem contracts**, with **13 CPU
+  integrations still required**. Native adaptation, family routing, natural
+  language workflow planning, browser modes/visuals, deterministic queries/table
+  construction, MCP, reviewed-example retrieval, memory-aware scheduling and
+  external-scale evaluation all remain part of the active goal.

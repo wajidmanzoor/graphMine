@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import os
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -54,6 +54,10 @@ class Settings:
     llm_route_model: str = "graphmine-business-v1"
     llm_route_adapter_sha256: str | None = None
     deployment_version: str = "base"
+    max_pending_jobs: int = 64
+    max_result_bytes: int = 64 * 1024 * 1024
+    analytics_python: Path | None = None
+    analytics_max_input_bytes: int = 64 * 1024 * 1024
 
     @property
     def routing_contract_version(self) -> str:
@@ -75,6 +79,12 @@ class Settings:
             raise ValueError("GRAPHMINE_API_PORT must be between 1 and 65535")
         if self.max_upload_bytes < 1:
             raise ValueError("GRAPHMINE_MAX_UPLOAD_BYTES must be positive")
+        if self.max_pending_jobs < 1:
+            raise ValueError("GRAPHMINE_MAX_PENDING_JOBS must be positive")
+        if self.max_result_bytes < 1:
+            raise ValueError("GRAPHMINE_MAX_RESULT_BYTES must be positive")
+        if self.analytics_max_input_bytes < 1:
+            raise ValueError("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES must be positive")
         if self.job_timeout_seconds < 1:
             raise ValueError("GRAPHMINE_JOB_TIMEOUT_SECONDS must be positive")
         if self.result_summary_items < 1:
@@ -152,6 +162,16 @@ class Settings:
             llm_model=os.getenv("GRAPHMINE_LLM_MODEL", "Qwen/Qwen3.8-27B-FP8"),
             llm_enabled=_boolean("GRAPHMINE_LLM_ENABLED", True),
             max_upload_bytes=_integer("GRAPHMINE_MAX_UPLOAD_BYTES", 2_147_483_648),
+            max_pending_jobs=_integer("GRAPHMINE_MAX_PENDING_JOBS", 64),
+            max_result_bytes=_integer("GRAPHMINE_MAX_RESULT_BYTES", 64 * 1024 * 1024),
+            analytics_python=(
+                Path(os.environ["GRAPHMINE_ANALYTICS_PYTHON"]).expanduser().resolve()
+                if os.getenv("GRAPHMINE_ANALYTICS_PYTHON")
+                else None
+            ),
+            analytics_max_input_bytes=_integer(
+                "GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES", 64 * 1024 * 1024
+            ),
             job_timeout_seconds=_integer("GRAPHMINE_JOB_TIMEOUT_SECONDS", 86_400),
             result_summary_items=_integer("GRAPHMINE_RESULT_SUMMARY_ITEMS", 50),
             llm_route_reasoning_effort=os.getenv(

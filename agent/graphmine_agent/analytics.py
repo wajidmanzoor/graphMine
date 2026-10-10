@@ -1,0 +1,593 @@
+"""Durable, reviewed workflows over the verified Python analytics library."""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import os
+import signal
+import sqlite3
+from contextlib import closing, suppress
+from datetime import datetime, timezone
+from typing import Any, Literal
+from uuid import uuid4
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from .database import RecordNotFound
+from .ownership import StoreLock
+
+
+class AnalyticsError(ValueError):
+    def __init__(self, message, code="invalid_workflow", status=422):
+        super().__init__(message)
+        self.code, self.status = code, status
+
+
+class InputReference(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    file_id: str
+    kind: Literal["graph", "feature_vectors", "hypergraph"] = "graph"
+
+
+class WorkflowRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    mode: Literal["normal", "interactive", "expert"] = "interactive"
+    plan: dict[str, Any]
+    inputs: dict[str, InputReference]
+
+
+class WorkflowRevision(WorkflowRequest):
+    expected_revision: int = Field(ge=1)
+
+
+class WorkflowApproval(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    workflow_hash: str = Field(min_length=64, max_length=64)
+    expected_revision: int = Field(ge=1)
+
+
+def _now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _json(value):
+    return json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
+
+
+class AnalyticsService:
+    """One owned ledger; execution stays outside the ASGI process.
+
+    This initial execution queue is serial. The dedicated graph GPU is honored;
+    sharing the LLM GPU requires the existing explicit administrator setting.
+    """
+
+    def __init__(self, settings, database, graph_store, events):
+        self.settings, self.database, self.graph_store, self.events = (
+            settings,
+            database,
+            graph_store,
+            events,
+        )
+        self.root = settings.data_root / "analytics"
+        self.root.mkdir(parents=True, exist_ok=True)
+        self.path = self.root / "workflows.sqlite3"
+        self.owner = StoreLock(self.path)
+        self.tasks = {}
+        self.edit_lock = asyncio.Lock()
+        self.slot = asyncio.Semaphore(1)
+        self.closed = False
+        self.opened = False
+        with closing(sqlite3.connect(self.path)) as db, db:
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS workflows (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, document TEXT NOT NULL)"
+            )
+
+    def open(self):
+        self.owner.acquire()
+        self.opened = True
+        for record in self._all():
+            if record["status"] in ("queued", "running"):
+                record.update(
+                    status="interrupted",
+                    error={
+                        "code": "service_restarted",
+                        "message": "Execution was interrupted; successful saved steps can be reused after review",
+                    },
+                )
+                for step in record.get("steps", {}).values():
+                    if step.get("status") == "running":
+                        step["status"] = "interrupted"
+                self._save(record)
+
+    async def close(self):
+        self.closed = True
+        if not self.opened:
+            return
+        tasks = list(self.tasks.values())
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        for record in self._all():
+            if record["status"] == "queued":
+                record.update(status="cancelled", complete=False)
+                self._save(record)
+        self.owner.release()
+        self.opened = False
+
+    def _all(self, session_id=None):
+        with closing(sqlite3.connect(self.path)) as db:
+            rows = db.execute(
+                "SELECT document FROM workflows"
+                + (" WHERE session_id=?" if session_id else ""),
+                (session_id,) if session_id else (),
+            )
+            return [json.loads(row[0]) for row in rows]
+
+    def list(self, session_id):
+        self.database.get_session(session_id)
+        return self._all(session_id)
+
+    def get(self, workflow_id):
+        with closing(sqlite3.connect(self.path)) as db:
+            row = db.execute(
+                "SELECT document FROM workflows WHERE id=?", (workflow_id,)
+            ).fetchone()
+        if row is None:
+            raise RecordNotFound(f"Workflow {workflow_id} not found")
+        return json.loads(row[0])
+
+    def _save(self, record):
+        record["updated_at"] = _now()
+        with closing(sqlite3.connect(self.path)) as db, db:
+            db.execute(
+                "INSERT INTO workflows VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET document=excluded.document",
+                (record["id"], record["session_id"], _json(record)),
+            )
+
+    def _directory(self, record):
+        # Both values are generated by this service, never client paths.
+        return self.root / record["id"] / f"revision-{record['revision']}"
+
+    def _write(self, path, value):
+        raw = _json(value).encode()
+        if len(raw) > self.settings.max_result_bytes:
+            raise AnalyticsError(
+                "Workflow artifact exceeds the byte budget", "resource_limit"
+            )
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix(path.suffix + ".tmp")
+        temporary.write_bytes(raw)
+        temporary.replace(path)
+
+    def _inputs(self, session_id, references):
+        self.database.get_session(session_id)
+        result, total = {}, 0
+        for alias, reference in references.items():
+            path = self.graph_store.execution_path(reference.file_id, session_id)
+            total += path.stat().st_size
+            if total > self.settings.analytics_max_input_bytes:
+                raise AnalyticsError(
+                    "Combined workflow inputs exceed the byte budget", "resource_limit"
+                )
+            try:
+                data = json.loads(path.read_text())
+            except (ValueError, UnicodeError) as exc:
+                raise AnalyticsError(
+                    "Workflow inputs must be uploaded canonical JSON files"
+                ) from exc
+            result[alias] = {"kind": reference.kind, "data": data}
+        return result
+
+    async def _stop_process(self, process):
+        if process.returncode is None:
+            with suppress(ProcessLookupError):
+                os.killpg(process.pid, signal.SIGTERM)
+            try:
+                await asyncio.wait_for(process.wait(), 2)
+            except TimeoutError:
+                with suppress(ProcessLookupError):
+                    os.killpg(process.pid, signal.SIGKILL)
+                await process.wait()
+
+    async def _call(self, request, *, on_event=None):
+        python = (
+            self.settings.analytics_python
+            or self.settings.repository_root / ".venv-analytics/bin/python"
+        )
+        if not python.is_file():
+            raise AnalyticsError(
+                "The analytics Python environment is unavailable",
+                "backend_unavailable",
+                503,
+            )
+        raw = _json(request).encode()
+        if (
+            len(raw)
+            > self.settings.analytics_max_input_bytes + self.settings.max_result_bytes
+        ):
+            raise AnalyticsError(
+                "Worker request exceeds the byte budget", "resource_limit"
+            )
+        env = os.environ.copy()
+        env.update(
+            GRAPHMINE_REPOSITORY_ROOT=str(self.settings.repository_root),
+            GRAPHMINE_WORKER_INPUT_BYTES=str(
+                self.settings.analytics_max_input_bytes + self.settings.max_result_bytes
+            ),
+            PYTHONUNBUFFERED="1",
+        )
+        env.pop("PYTHONPATH", None)
+        env.pop("PYTHONHOME", None)
+        policy = request.get("plan", {}).get("device", "auto")
+        gpu = self.settings.graph_gpu_uuid
+        if request["command"] != "run" or policy == "cpu":
+            env["CUDA_VISIBLE_DEVICES"] = ""
+        else:
+            if policy == "gpu" and not gpu:
+                raise AnalyticsError(
+                    "GPU execution requires a configured graph GPU",
+                    "backend_unavailable",
+                    503,
+                )
+            env["CUDA_VISIBLE_DEVICES"] = gpu or ""
+        process = await asyncio.create_subprocess_exec(
+            str(python),
+            "-m",
+            "graphmine.worker",
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            env=env,
+            cwd=self.settings.repository_root,
+            start_new_session=True,
+            limit=self.settings.max_result_bytes + 1,
+        )
+        tasks = []
+        errors = bytearray()
+
+        async def send():
+            process.stdin.write(raw)
+            await process.stdin.drain()
+            process.stdin.close()
+
+        async def diagnostics():
+            while data := await process.stderr.read(65536):
+                if len(errors) < 8192:
+                    errors.extend(data[: 8192 - len(errors)])
+
+        async def receive():
+            final, total = None, 0
+            while line := await process.stdout.readline():
+                total += len(line)
+                if total > self.settings.max_result_bytes * 3:
+                    raise AnalyticsError(
+                        "Worker output exceeded the byte budget", "resource_limit"
+                    )
+                try:
+                    message = json.loads(line)
+                except ValueError as exc:
+                    raise AnalyticsError(
+                        "Invalid worker response", "worker_failure", 502
+                    ) from exc
+                if final is not None:
+                    raise AnalyticsError(
+                        "Worker emitted data after completion", "worker_failure", 502
+                    )
+                if message.get("event") == "error":
+                    error = message["error"]
+                    raise AnalyticsError(error["message"], error["code"])
+                if message.get("event") == "complete":
+                    final = message["result"]
+                elif message.get("event") in ("step_started", "step_finished"):
+                    if on_event:
+                        await on_event(message)
+                else:
+                    raise AnalyticsError("Unknown worker event", "worker_failure", 502)
+            return final
+
+        try:
+            tasks = [
+                asyncio.create_task(send()),
+                asyncio.create_task(diagnostics()),
+                asyncio.create_task(receive()),
+            ]
+            timeout = (
+                self.settings.job_timeout_seconds if request["command"] == "run" else 60
+            )
+            async with asyncio.timeout(timeout):
+                _, _, final = await asyncio.gather(*tasks)
+                code = await process.wait()
+            if code != 0 or final is None:
+                raise AnalyticsError(
+                    "Analytics worker exited without a completed response",
+                    "worker_failure",
+                    502,
+                )
+            return final
+        except TimeoutError as exc:
+            raise AnalyticsError(
+                "Workflow exceeded its execution deadline", "resource_limit"
+            ) from exc
+        except (BrokenPipeError, ConnectionResetError, ValueError) as exc:
+            if isinstance(exc, AnalyticsError):
+                raise
+            raise AnalyticsError(
+                "Analytics worker communication failed", "worker_failure", 502
+            ) from exc
+        finally:
+            for task in tasks:
+                task.cancel()
+            await self._stop_process(process)
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+    async def capabilities(self):
+        return await self._call({"command": "capabilities"})
+
+    async def create(self, session_id, body):
+        inputs = self._inputs(session_id, body.inputs)
+        checked = await self._call(
+            {"command": "validate", "plan": body.plan, "inputs": inputs}
+        )
+        record = {
+            "id": str(uuid4()),
+            "session_id": session_id,
+            "revision": 1,
+            "mode": body.mode,
+            "status": "awaiting_review" if body.mode == "interactive" else "ready",
+            "created_at": _now(),
+            "approved_hash": None,
+            "input_files": {k: v.model_dump() for k, v in body.inputs.items()},
+            "validation": checked,
+            "steps": {},
+        }
+        self._write(self._directory(record) / "inputs.json", inputs)
+        self._save(record)
+        if body.mode == "normal":
+            return await self.start(
+                record["id"], checked["workflow_hash"], record["revision"]
+            )
+        return record
+
+    async def revise(self, workflow_id, body):
+        async with self.edit_lock:
+            previous = self.get(workflow_id)
+            if previous["revision"] != body.expected_revision or previous["status"] in (
+                "queued",
+                "running",
+            ):
+                raise AnalyticsError(
+                    "The workflow changed or is running; reload it before editing",
+                    "revision_conflict",
+                    409,
+                )
+            inputs = self._inputs(previous["session_id"], body.inputs)
+            checked = await self._call(
+                {"command": "validate", "plan": body.plan, "inputs": inputs}
+            )
+            record = {
+                **previous,
+                "revision": previous["revision"] + 1,
+                "mode": body.mode,
+                "status": "awaiting_review" if body.mode == "interactive" else "ready",
+                "approved_hash": None,
+                "input_files": {k: v.model_dump() for k, v in body.inputs.items()},
+                "validation": checked,
+                "steps": {},
+            }
+            record.pop("error", None)
+            record.pop("complete", None)
+            for field in ("approved_at", "started_at", "finished_at"):
+                record.pop(field, None)
+            self._write(self._directory(record) / "inputs.json", inputs)
+            self._save(record)
+        if body.mode == "normal":
+            return await self.start(
+                workflow_id, checked["workflow_hash"], record["revision"]
+            )
+        return record
+
+    async def start(self, workflow_id, expected_hash, expected_revision):
+        async with self.edit_lock:
+            record = self.get(workflow_id)
+            if self.closed or record["status"] in ("queued", "running"):
+                raise AnalyticsError(
+                    "Workflow execution is unavailable or already pending",
+                    "state_conflict",
+                    409,
+                )
+            if (
+                expected_hash != record["validation"]["workflow_hash"]
+                or expected_revision != record["revision"]
+            ):
+                raise AnalyticsError(
+                    "Approval refers to a different plan or input revision",
+                    "approval_required",
+                    409,
+                )
+            if len(self.tasks) >= self.settings.max_pending_jobs:
+                raise AnalyticsError("Workflow queue is full", "queue_full", 429)
+            record.update(
+                status="queued",
+                approved_hash=expected_hash,
+                approved_at=_now(),
+                complete=False,
+                steps={},
+            )
+            record.pop("started_at", None)
+            record.pop("finished_at", None)
+            record.pop("error", None)
+            self._save(record)
+            task = asyncio.create_task(self._execute(workflow_id))
+            self.tasks[workflow_id] = task
+            task.add_done_callback(
+                lambda done: (
+                    self.tasks.pop(workflow_id, None)
+                    if self.tasks.get(workflow_id) is done
+                    else None
+                )
+            )
+            return record
+
+    def _resume(self, record):
+        cache = {}
+        for revision in range(1, record["revision"] + 1):
+            directory = self.root / record["id"] / f"revision-{revision}"
+            for path in sorted(directory.glob("step-*.json")):
+                try:
+                    saved = json.loads(path.read_text())
+                except (OSError, ValueError):
+                    continue  # Corrupt cache entries are recomputed, never trusted.
+                if isinstance(saved, dict) and saved.get("status") == "completed":
+                    cache[path.stem[5:]] = saved
+        return cache
+
+    async def _execute(self, workflow_id):
+        record = self.get(workflow_id)
+        directory = self._directory(record)
+        try:
+            async with self.slot:
+                (directory / "result.json").unlink(missing_ok=True)
+                record.update(status="running", started_at=_now(), steps={})
+                self._save(record)
+
+                async def event(message):
+                    step = message["step"]
+                    if step not in {
+                        s["id"] for s in record["validation"]["plan"]["steps"]
+                    }:
+                        raise AnalyticsError(
+                            "Worker returned an unknown step", "worker_failure"
+                        )
+                    if message["event"] == "step_finished":
+                        saved = message["record"]
+                        self._write(directory / f"step-{step}.json", saved)
+                        summary = {k: v for k, v in saved.items() if k != "result"}
+                        if "result" in saved:
+                            summary.update(
+                                complete=saved["result"]["complete"],
+                                quality=saved["result"]["quality"],
+                                backend=saved["result"]["backend"],
+                            )
+                        record["steps"][step] = summary
+                    else:
+                        record["steps"][step] = {"status": "running"}
+                    self._save(record)
+                    await self.events.publish(
+                        record["session_id"],
+                        "workflow.step",
+                        {
+                            "workflow_id": workflow_id,
+                            "revision": record["revision"],
+                            "step": step,
+                            **record["steps"][step],
+                        },
+                    )
+
+                result = await self._call(
+                    {
+                        "command": "run",
+                        "plan": record["validation"]["plan"],
+                        "inputs": json.loads((directory / "inputs.json").read_text()),
+                        "expected_hash": record["approved_hash"],
+                        "resume": self._resume(record),
+                    },
+                    on_event=event,
+                )
+                if result["workflow_hash"] != record["approved_hash"]:
+                    raise AnalyticsError(
+                        "Worker result does not match the approved plan",
+                        "worker_failure",
+                    )
+                self._write(directory / "result.json", result)
+                record.update(
+                    status=result["status"],
+                    complete=result["complete"],
+                    finished_at=_now(),
+                )
+        except asyncio.CancelledError:
+            record.update(status="cancelled", complete=False, finished_at=_now())
+        except Exception as exc:  # noqa: BLE001 - persist terminal failures from isolated jobs
+            record.update(
+                status="failed",
+                complete=False,
+                finished_at=_now(),
+                error={
+                    "code": getattr(exc, "code", "workflow_failure"),
+                    "message": str(exc),
+                },
+            )
+        finally:
+            for step in record["steps"].values():
+                if step["status"] == "running":
+                    step["status"] = (
+                        "cancelled"
+                        if record["status"] == "cancelled"
+                        else "interrupted"
+                    )
+            self._save(record)
+            await self.events.publish(
+                record["session_id"],
+                "workflow.finished",
+                {
+                    "workflow_id": workflow_id,
+                    "revision": record["revision"],
+                    "status": record["status"],
+                    "complete": record.get("complete", False),
+                },
+            )
+
+    async def cancel(self, workflow_id):
+        record = self.get(workflow_id)
+        task = self.tasks.get(workflow_id)
+        if task:
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+            record = self.get(workflow_id)
+            # A task cancelled before its coroutine first runs has no finally.
+            if record["status"] == "queued":
+                record.update(status="cancelled", complete=False)
+                self._save(record)
+        return record
+
+    def result(self, workflow_id, *, step=None):
+        record = self.get(workflow_id)
+        if step is not None and step not in {
+            s["id"] for s in record["validation"]["plan"]["steps"]
+        }:
+            raise RecordNotFound("Unknown workflow step")
+        if step is None and record["status"] not in ("completed", "failed"):
+            raise AnalyticsError(
+                "The workflow has no completed result", "result_unavailable", 409
+            )
+        if (
+            step is not None
+            and record["steps"].get(step, {}).get("status") != "completed"
+        ):
+            raise AnalyticsError(
+                "This step has no completed result in the current execution",
+                "result_unavailable",
+                409,
+            )
+        path = self._directory(record) / (
+            f"step-{step}.json" if step else "result.json"
+        )
+        if not path.is_file():
+            raise RecordNotFound("No saved result for this workflow revision")
+        return json.loads(path.read_text())
+
+    def port_page(self, workflow_id, step, port, offset, limit):
+        saved = self.result(workflow_id, step=step)
+        value = saved.get("result", {}).get("ports", {}).get(port)
+        if value is None:
+            raise RecordNotFound("No such output port")
+        rows = value["value"] if isinstance(value["value"], list) else [value["value"]]
+        return {
+            **{k: v for k, v in value.items() if k != "value"},
+            "offset": offset,
+            "limit": limit,
+            "total_items": len(rows),
+            "has_more": offset + limit < len(rows),
+            "items": rows[offset : offset + limit],
+        }

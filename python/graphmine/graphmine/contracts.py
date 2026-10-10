@@ -145,6 +145,8 @@ class Algorithm:
         return values
 
     def card(self) -> dict[str, Any]:
+        from .ports import OUTPUT_PORTS
+
         return {
             "id": self.id,
             "problem_id": self.problem_id,
@@ -156,4 +158,8 @@ class Algorithm:
             "quality": self.quality,
             "references": list(self.references),
             "input_kind": self.input_kind,
+            "output_ports": {
+                name: {"type": kind, "availability": "runtime_checked"}
+                for name, kind in OUTPUT_PORTS.get(self.id, {}).items()
+            },
         }
