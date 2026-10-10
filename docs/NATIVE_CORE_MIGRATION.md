@@ -14,7 +14,7 @@ The catalog marks profiles still awaiting migration as `pending`.
 
 ## Current migration boundary
 
-The shared runtime has native profiles for ten formal problems. All ten have C++ CPU
+The shared runtime has native profiles for sixteen formal problems. All sixteen have C++ CPU
 implementations. GPU dispatch calls native libraries directly:
 
 | Operation | Family | GPU implementation |
@@ -29,10 +29,16 @@ implementations. GPU dispatch calls native libraries directly:
 | Personalized PageRank | centrality | libcugraph; custom uniform dangling redistribution uses CPU |
 | Local link prediction | similarity | libcugraph Jaccard; eight CPU measures |
 | Triangle counting/listing | motifs | Original ToT and WeTriC CUDA backends |
+| Maximal cliques | cliques | Original RDMCE, MCE-GPU and G2-AIMD counts; bounded native materialization |
+| Maximum clique | cliques | Original CUDA-MS, GPUMaximumClique and Maximum-Clique-on-GPU witnesses; native optimality check |
+| Fixed-size cliques | cliques | Original GraphSet, repaired GAMMA and repaired KCGPU counts |
+| Core decomposition | cores | Native libcugraph and original KCoreGPU |
+| Maximum independent set | independent_sets | Original maximum-clique kernels on the native complement, with optimality check |
+| Minimum vertex cover | independent_sets | Exact complement reduction using the same maximum-clique kernels |
 
 The original `Graph` and typed external IDs are reused. Existing native APIs
 remain available while their remaining profiles are brought into the shared
-runtime. Original triangle backends are included when building from the
+runtime. Original triangle and mining backends are included when building from the
 `library` project with their corresponding options enabled.
 
 `graphmine.native.NativeLibrary` is the thin Python binding. Its family methods
@@ -264,14 +270,15 @@ tree retains additional streaming tests. Native, binding and app reports
 record unchanged source/configuration/binary snapshots. Earlier checkpoints
 remain under `validation/native_runtime` and `validation/native_ingestion`.
 
-To reproduce the native matrix after building both configurations:
+To run the current native matrix after building both configurations:
 
 ```sh
 python tools/validate_native_runtime.py --cpu-build build/native-cpu \
-  --gpu-build build/original-with-rapids/runtime --output validation/native_reference
+  --gpu-build build/original-with-rapids/runtime --output validation/native_mining
 ```
 
-The GPU build must include libcugraph, libcudf, ToT and WeTriC, with both physical
+For the current matrix, the GPU build must include libcugraph, libcudf, ToT,
+WeTriC and all ten original mining backends listed above, with both physical
 devices visible. The runner records source-bound implementation hashes,
 immutable binary snapshots and per-suite logs; an external watchdog bounds
 each oracle process.
@@ -279,6 +286,75 @@ each oracle process.
 `tools/audit_native_runtime.py` verifies these reports, the source inventory
 embedded in each build, current source contents and the binding test snapshot.
 It records binary and resolved dependency hashes in
-`catalog/native_runtime_coverage.json`. This is migration evidence for the ten
+`catalog/native_runtime_coverage.json`. This is migration evidence for the sixteen
 integrated problems and their listed profiles; it does not establish coverage of pending profiles or
 replace the application's evidence gate.
+
+
+## Native mining contracts and verification
+
+The clique algorithms use an undirected simple projection: loops and repeated
+edges are discarded, weights are ignored and external ID types are preserved.
+CPU search uses an iterative, budgeted Bron–Kerbosch implementation and bounded
+fixed-size enumeration. A capped maximal-clique list is marked incomplete;
+fixed-size count-only results expose a complete count and an incomplete group
+port. Maximum-clique ties are materialized in C++ when requested. A GPU maximum
+witness must match a native coloring upper bound or a bounded exact search.
+Independent sets and vertex covers use the same exact complement reduction;
+cover decision mode requires a nonnegative integer threshold.
+
+CPU clique order has no fixed upper bound. Original GPU count ranges are
+GraphSet 3–6, GAMMA 3–7 and KCGPU 3–10; orders larger than the vertex count
+return zero without launching a kernel. GPU count admission requires a
+conservative forward-subset bound that fits uint64. KCGPU additionally requires
+oriented degree at most 1000. Unsupported GPU variants have an explicit error;
+auto selection can choose a supported GPU backend or native CPU. Candidate,
+output and deadline budgets cover CPU search and native admission. Original
+kernel entry points are serialized because some retain process-global state.
+Hard interruption and GPU memory admission still belong to the pending worker
+and scheduler integration.
+
+KCGPU's generated headers repair an unused out-of-bounds diagnostic counter,
+the terminal search-depth slot and Pascal-table depth. GAMMA's generated
+headers repair its prefix-neighbor comparison and warp synchronization. Its
+adapter prepares eligible roots from native CSR degrees; the redundant
+Thrust root filter failed after GraphSet in a shared host process. An explicit
+regression alternates both backends and both GPU orders.
+Embedded original backends suppress normal console diagnostics; their
+standalone artifact behavior is retained. Native libcugraph core decomposition
+uses outgoing degree on the symmetric graph, avoiding double-counted cores.
+Catalog strings and implementation hashes have per-library storage so CPU
+and GPU builds loaded together cannot share the wrong provenance.
+
+The current reports live in `validation/native_mining`. They retain the failed
+binding comparison that exposed the provenance defect and the corrected
+acceptance run. The matrix checks exhaustive subsets on all five-vertex CPU
+graphs and four-vertex GPU graphs, larger complete/random fixtures, typed IDs,
+loops, duplicate edges, caps, ties, malformed parameters and resource limits.
+Depth/storage and race checks are separate from graph-oracle counts. The audit
+requires an exact index match for the isolated root build script while keeping
+unrelated pre-existing working changes outside this checkpoint.
+
+```sh
+python tools/validate_native_runtime.py --cpu-build build/native-cpu \
+  --gpu-build build/original-with-rapids/runtime --output validation/native_mining
+python tools/validate_native_consumers.py --cpu-build build/native-cpu \
+  --prefix /tmp/graphmine-install --consumer-build /tmp/graphmine-consumer \
+  --output validation/native_mining/installed-consumers.json
+python tools/validate_native_mining_depth.py --gpu-build build/original-with-rapids/runtime \
+  --output validation/native_mining/depth-sanitizers
+```
+
+Standalone C and C++ examples execute core decomposition and maximum
+clique. Their verification removes
+Python from PATH and hides CUDA. The native Python binding has the same
+sixteen operations and family assignments; the application algorithm worker
+and the broader reference API still require migration.
+
+The completed mining checkpoint contains **83,624 passing native requests**:
+45,872 on CPU and 18,876 on each GPU. Eight additional depth/admission checks
+pass, including K514 triangle counts under CUDA memcheck and K12 seven-clique
+counts under racecheck on both devices, with zero reported errors or hazards.
+The binding suite has 88 passes, native cuDF construction has 64, and working
+and staged app acceptance has 41 and 25 respectively. No acceptance checks are
+skipped. The two app runs retain an existing Starlette deprecation warning.

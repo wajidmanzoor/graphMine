@@ -41,9 +41,9 @@ bool kcgpu_backend_compiled() noexcept { return true; }
 
 KCliqueBackendResult run_kcgpu(const CsrGraph& graph, std::uint32_t k,
                                int device_id) {
-  if (k < 3 || k > 5) {
+  if (k < 3 || k > 10) {
     return {{StatusCode::unsupported,
-             "the validated KCGPU path supports 3 <= k <= 5"},
+             "the KCGPU path supports 3 <= k <= 10"},
             0, 0.0};
   }
   if (graph.vertex_count() < k) {
@@ -95,6 +95,28 @@ KCliqueBackendResult run_kcgpu(const CsrGraph& graph, std::uint32_t k,
     }
     for (std::size_t index = 1; index < offsets.size(); ++index) {
       offsets[index] += offsets[index - 1];
+    }
+
+    // The repaired pivot kernel indexes a 1001-by-1001 Pascal table. Its
+    // saturated entries and atomic count cannot represent arbitrary totals.
+    unsigned __int128 count_bound = 0;
+    for (std::size_t v = 0; v < upstream_vertex_count; ++v) {
+      const auto degree = offsets[v + 1] - offsets[v];
+      if (degree > 1000) {
+        return {{StatusCode::unsupported,
+                 "KCGPU pivot storage requires oriented degree <= 1000"}, 0, 0.0};
+      }
+      if (degree < k - 1) continue;
+      unsigned __int128 choices = 1;
+      for (std::uint32_t j = 1; j < k; ++j) {
+        choices = choices * (degree - j + 1) / j;
+        if (choices > UINT64_MAX) break;
+      }
+      count_bound += choices;
+      if (count_bound > UINT64_MAX) {
+        return {{StatusCode::unsupported,
+                 "KCGPU cannot certify that the clique count fits uint64"}, 0, 0.0};
+      }
     }
 
     DeviceGraph device;

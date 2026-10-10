@@ -744,3 +744,57 @@ the remaining native profiles/backends, native evidence gate, seven missing
 formal integrations, table projections/joins, interaction and recovery work,
 external/model evaluation, MCP/examples, two-GPU scheduling/caching and scale
 validation in scope.
+
+
+### Native mining integration checkpoint
+
+- The standalone core now implements profiles for **16 of 70 formal problems**.
+  Added native C++ maximal cliques, maximum clique, fixed-size clique counting
+  and enumeration, core decomposition, maximum independent set and minimum
+  vertex cover. The same native catalog supplies Python family methods and
+  parameter/result contracts. CPU search, complement construction and output
+  materialization have explicit candidate, output and deadline budgets.
+- Linked ten original GPU implementations directly into the shared runtime:
+  RDMCE, MCE-GPU, G2-AIMD, CUDA-MS, GPUMaximumClique,
+  Maximum-Clique-on-GPU, GraphSet, GAMMA, KCGPU and KCoreGPU. Added the native
+  libcugraph core-number API. Maximum witnesses receive a native optimality
+  check; count kernels retain bounded C++ materialization where requested.
+  Incomplete memberships cannot claim to be complete workflow inputs.
+- Integrated the existing KCGPU depth/Pascal-table repair and GAMMA comparison
+  and synchronization repairs. Added backend-specific clique-order and count
+  admission, isolated-vertex handling, clean CLI JSON, library-safe error
+  helpers and device restoration. Core-number tests caught double-counted
+  undirected degrees in the initial cuGraph call; outgoing degree fixes it.
+- The strengthened wrapper comparison caught shared inline build metadata
+  mixing CPU and GPU provenance. Catalog/hash data now belongs to each DSO.
+  A mixed-backend regression also caught GAMMA's redundant Thrust root filter
+  failing after GraphSet. Eligible roots now come from the native CSR, with
+  both backend orders/device orders exercised by the wrapper tests. Initial
+  failed binding reports are retained alongside corrected acceptance evidence.
+- Installed C and C++ examples now execute algorithms with Python unavailable
+  and CUDA hidden. The root CMake build was exported from the exact index;
+  unrelated pre-existing working changes were preserved. The evidence audit
+  permits a differing working root build file only when the tested export
+  matches the index exactly.
+
+- Final acceptance: **83,624 native requests passed** (45,872 CPU;
+  18,876 per GPU), plus **8 depth/admission checks**, **88 binding/CLI tests**,
+  **64 cuDF construction tests**, and **41 working-app / 25 staged-app tests**.
+  K514 memcheck and K12 seven-clique racecheck reported no errors or hazards on
+  either GPU. Installed C/C++ algorithm calls passed without Python or CUDA.
+  There are no skipped acceptance cases; the app reports retain the existing
+  Starlette deprecation warning.
+
+Acceptance reports for this checkpoint are under `validation/native_mining`;
+`catalog/native_runtime_coverage.json` records their source, binary, dependency
+and device evidence. These reports are a migration checkpoint, not an
+application execution gate or a claim that the whole goal is complete.
+
+Remaining requirements include native profiles for the other **54 formal
+problems**, remaining profiles/backends within the sixteen integrated problems,
+extended exact numeric storage, the native application worker and evidence
+gate, plus all unfinished A/R/B items above: task-aware projections and joins,
+interaction/routing/recovery, model/external evaluation, MCP and reviewed
+examples, two-GPU admission/cancellation, reusable representations and scale
+validation. cuDF remains the tabular reader and Cytoscape remains the browser
+visualization path. The overall goal remains active.

@@ -1562,8 +1562,12 @@ namespace graph
 						current_level2.freeGPU();
 						node_be.freeGPU();
 					}
+#ifndef GRAPHMINE_LIBRARY
 					std::cout.imbue(std::locale(""));
+#endif
+#ifndef GRAPHMINE_LIBRARY
 					std::cout << "------------- Level = " << level << " Nodes = " << current_q.count.gdata()[0] << " Counter = " << counter.gdata()[0] << "\n";
+#endif
 				}
 				level += span;
 			}
@@ -1670,8 +1674,12 @@ namespace graph
 						current_level2.gdata(), cpn.gdata(),
 						d_bitmap_states.gdata(), node_be.gdata(), globalCounter.gdata());
 
+#ifndef GRAPHMINE_LIBRARY
 					std::cout.imbue(std::locale(""));
+#endif
+#ifndef GRAPHMINE_LIBRARY
 					std::cout << "------------- Level = " << level << " Nodes = " << current_q.count.gdata()[0] << " Counter = " << counter.gdata()[0] << "\n";
+#endif
 				}
 				level += span;
 			}
@@ -1846,8 +1854,12 @@ namespace graph
 
 					
 			
+#ifndef GRAPHMINE_LIBRARY
 					std::cout.imbue(std::locale(""));
+#endif
+#ifndef GRAPHMINE_LIBRARY
 					std::cout << "------------- Level = " << level << " Nodes = " << current_q.count.gdata()[0] << " Counter = " << counter.gdata()[0] << "\n";
+#endif
 				}
 				level += span;
 			}
@@ -2007,8 +2019,12 @@ namespace graph
 
 					
 			
+#ifndef GRAPHMINE_LIBRARY
 					std::cout.imbue(std::locale(""));
+#endif
+#ifndef GRAPHMINE_LIBRARY
 					std::cout << "------------- Level = " << level << " Nodes = " << current_q.count.gdata()[0] << " Counter = " << counter.gdata()[0] << "\n";
+#endif
 				}
 				level += span;
 			}
@@ -2153,8 +2169,12 @@ namespace graph
 				}
 				level += span;
 
+#ifndef GRAPHMINE_LIBRARY
 				std::cout.imbue(std::locale(""));
+#endif
+#ifndef GRAPHMINE_LIBRARY
 				std::cout << "Level = " << level << " Nodes = " << current_q.count.gdata()[0] << " Counter = " << counter.gdata()[0] << "\n";
+#endif
 			}
 
 			counter.freeGPU();
@@ -2295,8 +2315,12 @@ namespace graph
 				}
 				level += span;
 
+#ifndef GRAPHMINE_LIBRARY
 				std::cout.imbue(std::locale(""));
+#endif
+#ifndef GRAPHMINE_LIBRARY
 				std::cout << "Level = " << level << " Nodes = " << current_q.count.gdata()[0] << " Counter = " << counter.gdata()[0] << "\n";
+#endif
 			}
 
 			current_level2.freeGPU();
@@ -2459,8 +2483,12 @@ namespace graph
 				}
 				level += span;
 
+#ifndef GRAPHMINE_LIBRARY
 				std::cout.imbue(std::locale(""));
+#endif
+#ifndef GRAPHMINE_LIBRARY
 				std::cout << "Level = " << level << " Nodes = " << current_q.count.gdata()[0] << " Counter = " << counter.gdata()[0] << "\n";
+#endif
 			//}
 
 			counter.freeGPU();
@@ -2624,8 +2652,12 @@ namespace graph
 				}
 				level += span;
 
+#ifndef GRAPHMINE_LIBRARY
 				std::cout.imbue(std::locale(""));
+#endif
+#ifndef GRAPHMINE_LIBRARY
 				std::cout << "Level = " << level << " Nodes = " << current_q.count.gdata()[0] << " Counter = " << counter.gdata()[0] << "\n";
+#endif
 			}
 
 			counter.freeGPU();

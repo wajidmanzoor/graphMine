@@ -154,7 +154,9 @@ Graph::Graph(std::string input_file){
 }
 
 Graph::~Graph(){
+#ifndef GRAPHMINE_LIBRARY
     cout<<"Deallocated... "<<endl;
+#endif
     delete [] neighbors;
     delete [] neighbors_offset;
     delete [] degrees;

@@ -2,6 +2,7 @@
 
 #include <cugraph_c/array.h>
 #include <cugraph_c/centrality_algorithms.h>
+#include <cugraph_c/core_algorithms.h>
 #include <cugraph_c/graph.h>
 #include <cugraph_c/graph_functions.h>
 #include <cugraph_c/labeling_algorithms.h>
@@ -232,6 +233,17 @@ std::vector<double> cugraph_jaccard(const WeightedGraph& input, const std::vecto
     require(found != positions.end() && !seen[found->second], "libcugraph returned an invalid pair mapping");
     seen[found->second] = true; output[found->second] = scores[i];
   }
+  return output;
+}
+std::vector<std::uint32_t> cugraph_core_numbers(const WeightedGraph& input, int device, Work& work) {
+  if (edgeless(input)) return std::vector<std::uint32_t>(input.rows.size(), 0);
+  Instance instance(input, device, work); cugraph_core_result_t* raw = nullptr; Error error;
+  const auto status = ::cugraph_core_number(instance.handle.get(), instance.graph.get(), K_CORE_DEGREE_TYPE_OUT, TRUE, &raw, &error.value);
+  Owned<cugraph_core_result_t, cugraph_core_result_free> result(raw, cugraph_core_result_free); error.check(status);
+  const auto ids = copy<std::int32_t>(instance.handle.get(), cugraph_core_result_get_vertices(result.get()));
+  const auto values = mapped(ids, copy<std::int32_t>(instance.handle.get(), cugraph_core_result_get_core_numbers(result.get())), input.rows.size());
+  std::vector<std::uint32_t> output;
+  for (const auto value : values) { require(value >= 0, "libcugraph returned a negative core number"); output.push_back(value); }
   return output;
 }
 }  // namespace graphmine::runtime

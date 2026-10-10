@@ -1,4 +1,5 @@
 #include "internal.hpp"
+#include "exact_number.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -72,6 +73,39 @@ std::string gpu_support_reason(const std::string& operation, const Graph& graph,
       return "Path costs may reach the float64 unreachable sentinel or overflow; use the native CPU implementation";
     if (integral && bound > 9007199254740992.0L)
       return "Integer path costs may exceed exact float64 range; use the native CPU implementation";
+  }
+  return {};
+}
+std::string backend_support_reason(const std::string& operation, const std::string& backend, const Graph& graph, const json::object& args, Work& work) {
+  if (backend == "cpp") return {};
+  std::uint64_t k = 0;
+  if (operation == "k-cliques") {
+    if (!args.contains("k") || !(args.at("k").is_uint64() || (args.at("k").is_int64() && args.at("k").as_int64() >= 0))) return {};
+    k = uint(args.at("k"), "k");
+    if (k > graph.vertex_count()) return {};  // Exact empty boundary; no kernel launch.
+    const unsigned maximum = backend == "graphset" ? 6 : backend == "gamma" ? 7 : 10;
+    if (k < 3 || k > maximum) return "The " + backend + " count kernel supports 3 <= k <= " + std::to_string(maximum) + "; native CPU has no upper k bound";
+  }
+  if (graph.directed() || (operation != "maximal-cliques" && operation != "k-cliques")) return {};
+  // Every nonempty clique has one first vertex in this ordering. Counting
+  // all possible forward subsets bounds both fixed-size and maximal counts.
+  work.tick(graph.vertex_count() + graph.canonical().edges.size());
+  const auto simple = graph.simple_undirected({});
+  Integer bound = 0;
+  for (VertexIndex v = 0; v < simple.csr.vertex_count(); ++v) {
+    work.tick(simple.csr.offsets[v + 1] - simple.csr.offsets[v] + 1);
+    std::size_t degree = 0;
+    for (auto i = simple.csr.offsets[v]; i < simple.csr.offsets[v + 1]; ++i) degree += simple.csr.neighbors[i] > v;
+    Integer choices = 1;
+    if (operation == "maximal-cliques") {
+      if (degree >= 64) return "Cannot certify that the original maximal-clique count fits uint64; use native CPU";
+      choices <<= degree;
+    } else {
+      if (degree < k - 1) continue;
+      for (std::uint64_t j = 1; j < k; ++j) choices = choices * (degree - j + 1) / j;
+    }
+    bound += choices;
+    if (bound > UINT64_MAX) return "Cannot certify that the original clique count fits uint64; use native CPU";
   }
   return {};
 }

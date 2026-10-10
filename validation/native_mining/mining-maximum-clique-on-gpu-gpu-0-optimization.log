@@ -1,0 +1,1 @@
+{"suite":"optimization","backend":"maximum-clique-on-gpu","gpu_device":0,"passed_requests":198,"failed":0,"implementation_sha256":"f34ec6ad688f0e511a74ceb2aec7d19fca4a8a4ed26b7d2e816bfea211d0e196"}

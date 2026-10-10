@@ -425,7 +425,7 @@ if(GRAPHMINE_HAS_RDMCE)
   # each backend a private symbol prefix so independently valid components can
   # coexist in one application without ODR/linker collisions.
   target_compile_definitions(graphmine_backend_rdmce
-    PRIVATE Graph=GraphMineRdmceGraph
+    PRIVATE GRAPHMINE_LIBRARY Graph=GraphMineRdmceGraph
   )
   target_compile_features(graphmine_backend_rdmce PUBLIC cxx_std_17)
   set_target_properties(graphmine_backend_rdmce PROPERTIES
@@ -470,7 +470,7 @@ if(GRAPHMINE_HAS_KCOREGPU)
     PRIVATE CUDA::cudart CUDA::cudadevrt OpenMP::OpenMP_CXX
   )
   target_compile_definitions(graphmine_backend_kcoregpu
-    PRIVATE Graph=GraphMineKCoreGraph
+    PRIVATE GRAPHMINE_LIBRARY Graph=GraphMineKCoreGraph
   )
   target_compile_features(graphmine_backend_kcoregpu PUBLIC cxx_std_17)
   set_target_properties(graphmine_backend_kcoregpu PROPERTIES
@@ -923,6 +923,36 @@ set(GRAPHMINE_KCGPU_ROOT
   "${CMAKE_CURRENT_SOURCE_DIR}/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code")
 
 if(GRAPHMINE_HAS_KCGPU)
+  set(GRAPHMINE_KCGPU_GENERATED "${CMAKE_CURRENT_BINARY_DIR}/kcgpu-generated")
+  file(MAKE_DIRECTORY "${GRAPHMINE_KCGPU_GENERATED}")
+  file(GLOB GRAPHMINE_KCGPU_HEADERS CONFIGURE_DEPENDS "${GRAPHMINE_KCGPU_ROOT}/kclique/*.cuh")
+  foreach(header IN LISTS GRAPHMINE_KCGPU_HEADERS)
+    get_filename_component(header_name "${header}" NAME)
+    configure_file("${header}" "${GRAPHMINE_KCGPU_GENERATED}/${header_name}" COPYONLY)
+  endforeach()
+  file(READ "${GRAPHMINE_KCGPU_GENERATED}/kckernels_pivoting.cuh" kcgpu_pivot)
+  string(FIND "${kcgpu_pivot}" "atomicAdd(&cpn[sm_id], 1);" kcgpu_repair_anchor)
+  if(kcgpu_repair_anchor LESS 0)
+    message(FATAL_ERROR "KCGPU diagnostic counter repair anchor is missing")
+  endif()
+  # cpn is allocated per vertex, but this unused diagnostic indexed it by SM.
+  string(REPLACE "atomicAdd(&cpn[sm_id], 1);" "(void)cpn; // Removed unused, out-of-bounds SM diagnostic."
+    kcgpu_pivot "${kcgpu_pivot}")
+  # Pivot search depth can follow every forward neighbor, even at small k.
+  # Match the checked degree<=1000 bound instead of an unrelated 512 slots.
+  string(REPLACE "level_pivot[512]" "level_pivot[1001]" kcgpu_pivot "${kcgpu_pivot}")
+  string(REPLACE "* 401" "* 1001" kcgpu_pivot "${kcgpu_pivot}")
+  file(WRITE "${GRAPHMINE_KCGPU_GENERATED}/kckernels_pivoting.cuh" "${kcgpu_pivot}")
+  file(READ "${GRAPHMINE_KCGPU_GENERATED}/kclique.cuh" kcgpu_driver)
+  # A pivot leaf may use C(drop, rsize-k), whose second index can exceed 400
+  # even for triangles. Populate the entire supported Pascal triangle.
+  string(REPLACE "*401" "*1001" kcgpu_driver "${kcgpu_driver}")
+  string(REPLACE "col < 401" "col < 1001" kcgpu_driver "${kcgpu_driver}")
+  # Arrays include depth zero plus one slot for every forward neighbor.
+  string(REPLACE "//printf(\"%d\\n\", maxDegree.gdata()[0]++);"
+    "++maxDegree.gdata()[0]; // Extra terminal search-depth slot."
+    kcgpu_driver "${kcgpu_driver}")
+  file(WRITE "${GRAPHMINE_KCGPU_GENERATED}/kclique.cuh" "${kcgpu_driver}")
   add_library(graphmine_backend_kcgpu STATIC src/backends/kcgpu.cu)
   target_include_directories(graphmine_backend_kcgpu
     PRIVATE
@@ -930,7 +960,7 @@ if(GRAPHMINE_HAS_KCGPU)
       ${CMAKE_CURRENT_SOURCE_DIR}/src
       ${GRAPHMINE_KCGPU_ROOT}/include
       ${GRAPHMINE_KCGPU_ROOT}/kcore
-      ${GRAPHMINE_KCGPU_ROOT}/kclique
+      ${GRAPHMINE_KCGPU_GENERATED}
   )
   target_compile_definitions(graphmine_backend_kcgpu PRIVATE
     CUDA
@@ -973,6 +1003,32 @@ set(GRAPHMINE_GAMMA_ROOT
   "${CMAKE_CURRENT_SOURCE_DIR}/../problems/03_k_clique_counting_enumeration/papers/2024_gamma/code")
 
 if(GRAPHMINE_HAS_GAMMA_KCLIQUE)
+  # Keep the collected artifact intact. Its pre-merge loop compares a query
+  # position to a data vertex ID, which can skip a required adjacency list.
+  set(GRAPHMINE_GAMMA_GENERATED "${CMAKE_CURRENT_BINARY_DIR}/gamma-kclique-generated")
+  file(MAKE_DIRECTORY "${GRAPHMINE_GAMMA_GENERATED}")
+  file(GLOB GRAPHMINE_GAMMA_HEADERS CONFIGURE_DEPENDS
+    "${GRAPHMINE_GAMMA_ROOT}/*.h" "${GRAPHMINE_GAMMA_ROOT}/*.cuh")
+  foreach(header IN LISTS GRAPHMINE_GAMMA_HEADERS)
+    get_filename_component(header_name "${header}" NAME)
+    configure_file("${header}" "${GRAPHMINE_GAMMA_GENERATED}/${header_name}" COPYONLY)
+  endforeach()
+  file(READ "${GRAPHMINE_GAMMA_GENERATED}/expand.cuh" gamma_expand)
+  string(FIND "${gamma_expand}" "if (query_node == min_nbr_node)" gamma_repair_anchor)
+  if(gamma_repair_anchor LESS 0)
+    message(FATAL_ERROR "GAMMA pre-merge repair anchor is missing; review the upstream change")
+  endif()
+  string(REPLACE "if (query_node == min_nbr_node)" "if (query_node == min_neighbor)"
+    gamma_expand "${gamma_expand}")
+  # A memory fence is not a warp barrier on independently scheduled threads.
+  # Synchronize prefix-group publication and in-place list compaction.
+  string(REPLACE "//__syncwarp();" "__syncwarp();" gamma_expand "${gamma_expand}")
+  string(REPLACE "__threadfence_block();" "__syncwarp();" gamma_expand "${gamma_expand}")
+  string(REPLACE "group_id ++;" "__syncwarp(); group_id ++;" gamma_expand "${gamma_expand}")
+  string(REPLACE "//check embedding similarity and group them"
+    "__syncwarp(); // Finish prior group-condition reads before reusing its shared storage.\n\t\t//check embedding similarity and group them"
+    gamma_expand "${gamma_expand}")
+  file(WRITE "${GRAPHMINE_GAMMA_GENERATED}/expand.cuh" "${gamma_expand}")
   add_library(graphmine_backend_gamma_kclique STATIC
     src/backends/gamma_kclique.cu
     ${GRAPHMINE_GAMMA_ROOT}/log.cpp
@@ -981,7 +1037,7 @@ if(GRAPHMINE_HAS_GAMMA_KCLIQUE)
     PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/include
       ${CMAKE_CURRENT_SOURCE_DIR}/src
-      ${GRAPHMINE_GAMMA_ROOT}
+      ${GRAPHMINE_GAMMA_GENERATED}
   )
   target_compile_definitions(graphmine_backend_gamma_kclique PRIVATE
     GRAPHMINE_LIBRARY

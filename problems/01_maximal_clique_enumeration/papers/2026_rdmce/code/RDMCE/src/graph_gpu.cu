@@ -43,8 +43,10 @@ __host__ void GraphGpu::LoadFromCpu(Graph &graph, bool print)
   // CUDA_CHECK(cudaMemcpy(rowidx_, rowidx_cpu, sizeof(vid_t) * graph.GetNumEdges() * 2, cudaMemcpyHostToDevice));
 
   size_t total_mem = sizeof(vid_t) * (graph.GetNumVertices() + 1) + sizeof(vid_t) * graph.GetNumEdges() * 2;
+#ifndef GRAPHMINE_LIBRARY
   if(print)
     std::cout <<"\033[90m" << "[GPU] Graph memory usage: " << total_mem / 1024.0 / 1024.0 << " MB" << "\033[0m" << std::endl;
+#endif
 
   num_vertices_ = graph.GetNumVertices();
   num_edges_ = graph.GetNumEdges();

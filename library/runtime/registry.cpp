@@ -41,6 +41,8 @@ std::vector<Operation> definitions() {
   auto real = [](double initial, double minimum, std::optional<double> maximum = {}) { auto p = parameter("number", initial); p["minimum"] = minimum; if (maximum) p["maximum"] = *maximum; return p; };
   const json::array gpu{json::object{{"id", "libcugraph"}, {"device", "gpu"}, {"compiled", cugraph_compiled()}}};
   const auto weights = choice("unweighted", {"unweighted", "edge_weight"});
+  auto core_backends = gpu;
+  for (const auto& backend : original_mining_backends("k-core")) core_backends.push_back(backend);
   std::vector<Operation> result{
     {card("breadth-first-search", "breadth_first_search", "Connections within a number of steps",
          "Minimum hop distances with explicit independent or nearest-source searches. Preserve direction; discard loops and collapse duplicate arcs; weights are ignored. IDs are signed int64 or strings.",
@@ -56,7 +58,7 @@ std::vector<Operation> definitions() {
           json::object{{"id", "wetric"}, {"device", "gpu"}, {"compiled", original_triangles_compiled("wetric")}}}), triangles},
     {card("single-source-shortest-paths", "single_source_shortest_paths", "Shortest weighted paths from one vertex",
          "Nonnegative lengths; preserve direction, drop loops and keep minimum parallel length. CPU returns exact rational costs over admitted binary64 weights; GPU returns float64 costs. Cutoff is inclusive.",
-         {{"source", parameter("vertex", nullptr, true)}, {"cutoff", parameter("number", nullptr, false, true)}, {"return_predecessors", parameter("boolean", true)}},
+         {{"source", parameter("vertex_id", nullptr, true)}, {"cutoff", parameter("number", nullptr, false, true)}, {"return_predecessors", parameter("boolean", true)}},
          {{"distances", port("vertex_scores")}}, gpu), shortest_paths},
     {card("many-source-shortest-paths", "many_source_shortest_paths", "Shortest paths between selected vertex sets",
          "Selected origins and destinations, or all vertices for null. Nonnegative lengths, minimum parallel length and preserved direction; CPU exact costs and GPU float64 costs.",
@@ -87,11 +89,39 @@ std::vector<Operation> definitions() {
          "Undirected simple neighborhoods; loops and weights ignored. CPU supports eight local measures; GPU supports Jaccard. Candidate limits apply before top_k; capped output is explicitly incomplete.",
          {{"scoring_measure", choice("jaccard", {"jaccard", "common_neighbors", "adamic_adar", "resource_allocation", "preferential_attachment", "sorensen", "overlap", "cosine"})},
           {"candidate_pairs", parameter("array", nullptr, false, true)}, {"exclude_existing_edges", parameter("boolean", true)}, {"top_k", positive(nullptr, true)}},
-         {{"pairs", port("table")}}, gpu), link_prediction}
+         {{"pairs", port("table")}}, gpu), link_prediction},
+    {card("maximal-cliques", "maximal_clique_enumeration", "Find complete groups that cannot be extended",
+         "Exact maximal cliques in an undirected simple projection. Drop loops and duplicate edges; ignore weights. Original GPU kernels supply a count, with bounded C++ materialization and explicit list completeness.",
+         {{"minimum_clique_size", positive(1)}, {"result_limit", positive(nullptr, true)}},
+         {{"groups", port("vertex_groups")}}, original_mining_backends("maximal-cliques")), maximal_cliques},
+    {card("maximum-clique", "maximum_clique", "Find the largest fully connected group",
+         "Exact maximum clique, optionally all tied optima. Undirected simple projection; loops, duplicate edges and weights ignored. Original GPU witnesses are checked by native coloring or exact search; ties use native materialization.",
+         {{"return_all_ties", parameter("boolean", false)}}, {{"groups", port("vertex_groups")}, {"vertices", port("vertex_set")}}, original_mining_backends("maximum-clique")), maximum_clique},
+    {card("k-cliques", "k_clique_counting_enumeration", "Count or list complete groups of a chosen size",
+         "Exact count for k>=2 with no upper k bound on CPU. Undirected simple projection; loops, duplicate edges and weights ignored. GPU counts require supported k and a uint64 count bound. Counts remain complete when memberships are capped.",
+         {{"k", parameter("integer", nullptr, true)}, {"mode", mode}, {"result_limit", positive(nullptr, true)}},
+         {{"groups", port("vertex_groups")}, {"count", port("scalar")}}, original_mining_backends("k-cliques")), k_cliques},
+    {card("k-core", "k_core_decomposition", "Find the well-connected core",
+         "Exact core numbers and optional selected vertices. Undirected simple projection; loops, duplicate edges and weights ignored. Isolates have core number zero.",
+         {{"requested_k", parameter("integer", nullptr, false, true)}}, {{"scores", port("vertex_scores")}, {"vertices", port("vertex_set")}}, core_backends), core_numbers},
+    {card("maximum-independent-set", "maximum_independent_set", "Find the largest non-conflicting group",
+         "Exact maximum independent set via maximum clique of the complement. Undirected simple projection; loops, duplicate edges and weights ignored. Complement construction and search are bounded.",
+         {{"mode", choice("exact", {"exact"})}}, {{"vertices", port("vertex_set")}}, original_mining_backends("maximum-clique")), maximum_independent_set},
+    {card("minimum-vertex-cover", "minimum_vertex_cover", "Cover every connection with as few vertices as possible",
+         "Exact minimum vertex cover, or decision against k, from a maximum independent set. Undirected simple projection; loops, duplicate edges and weights ignored. Native complement construction and search are bounded.",
+         {{"mode", choice("exact", {"exact", "decision"})}, {"k", parameter("integer", nullptr, false, true)}},
+         {{"vertices", port("vertex_set")}}, original_mining_backends("maximum-clique")), minimum_vertex_cover}
   };
   for (auto& definition : result) {
     auto& metadata = definition.metadata;
     const auto id = string(metadata.at("id"), "operation");
+    if (id == "k-cliques") {
+      metadata.at("parameters").as_object().at("k").as_object()["minimum"] = 2;
+      metadata["gpu_limitations"] = json::array{"graphset: k=3..6; gamma: k=3..7; kcgpu: k=3..10; k larger than vertex count returns zero", "A forward-subset count bound must fit uint64"};
+    }
+    if (id == "maximal-cliques") metadata["gpu_limitations"] = json::array{"GPU count plus bounded native materialization", "A forward-subset count bound must fit uint64"};
+    if (id == "k-core") metadata.at("parameters").as_object().at("requested_k").as_object()["minimum"] = 0;
+    if (id == "minimum-vertex-cover") metadata.at("parameters").as_object().at("k").as_object()["minimum"] = 0;
     if (id == "pagerank" || id == "personalized-pagerank" || id == "link-prediction") metadata["quality"] = "numerical";
     if (id == "single-source-shortest-paths" || id == "many-source-shortest-paths") metadata["quality"] = "backend_dependent";
     if (id == "personalized-pagerank") metadata["gpu_limitations"] = json::array{"Custom uniform dangling redistribution uses the CPU profile"};

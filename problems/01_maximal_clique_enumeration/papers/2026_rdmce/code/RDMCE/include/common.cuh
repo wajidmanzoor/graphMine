@@ -1,3 +1,7 @@
+#ifdef GRAPHMINE_LIBRARY
+#include <stdexcept>
+#include <string>
+#endif
 #pragma once
 #include <cstdint>
 #include <iostream>
@@ -103,6 +107,10 @@ inline void cudaHandleError(cudaError_t code, const char *file, int line, bool a
 {
   if (code != cudaSuccess)
   {
+#ifdef GRAPHMINE_LIBRARY
+    throw std::runtime_error(std::string("RDMCE CUDA failure at ") + file + ":" +
+                             std::to_string(line) + ": " + cudaGetErrorString(code));
+#else
     // Print error message with error string, file name, and line number
     fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
     if (abort)
@@ -110,6 +118,7 @@ inline void cudaHandleError(cudaError_t code, const char *file, int line, bool a
       // Abort the program if abort is true
       exit(code);
     }
+#endif
   }
 }
 

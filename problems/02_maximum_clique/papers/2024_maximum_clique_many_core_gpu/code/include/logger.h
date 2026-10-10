@@ -1,9 +1,17 @@
 #pragma once
+#ifdef GRAPHMINE_LIBRARY
+#include <stdexcept>
+#endif
 #include "defs.h"
 
 template <bool NEWLINE = true, typename... Args>
 void Log(LogPriorityEnum l, const char *f, Args... args)
 {
+#ifdef GRAPHMINE_LIBRARY
+  // Embedded algorithms report failures to their caller and keep stdout free
+  // for the native CLI protocol. Standalone artifacts retain their logging.
+  if (l == critical || l == error) throw std::runtime_error(f);
+#else
   // Line Color Set
   switch (l)
   {
@@ -39,4 +47,5 @@ void Log(LogPriorityEnum l, const char *f, Args... args)
     exit(0);
 
   printf("\033[0m");
+#endif
 }

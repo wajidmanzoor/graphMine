@@ -91,6 +91,13 @@ std::vector<double> cugraph_pagerank(const WeightedGraph& graph,
     std::uint64_t iterations, int device, Work& work);
 std::vector<double> cugraph_jaccard(const WeightedGraph& graph,
     const std::vector<std::pair<VertexIndex, VertexIndex>>& pairs, int device, Work& work);
+std::vector<std::uint32_t> cugraph_core_numbers(const WeightedGraph&, int, Work&);
+using MiningGraph = std::vector<std::vector<VertexIndex>>;
+json::array original_mining_backends(const std::string& operation);
+std::uint64_t original_maximal_count(const MiningGraph&, const std::string&, int, Work&);
+std::vector<VertexIndex> original_maximum_clique(const MiningGraph&, const std::string&, int, Work&);
+std::uint64_t original_k_clique_count(const MiningGraph&, std::uint32_t, const std::string&, int, Work&);
+std::vector<std::uint32_t> original_core_numbers(const MiningGraph&, int, Work&);
 
 json::object bfs(const Graph& graph, const json::object& args,
                  const std::string& backend, int device, Work& work);
@@ -100,6 +107,7 @@ bool original_triangles_compiled(const std::string& backend);
 using NativeAlgorithm = json::object (*)(const Graph&, const json::object&, const std::string&, int, Work&);
 NativeAlgorithm operation_handler(const std::string& operation);
 std::string gpu_support_reason(const std::string& operation, const Graph& graph, const json::object& args);
+std::string backend_support_reason(const std::string& operation, const std::string& backend, const Graph&, const json::object&, Work&);
 json::object shortest_paths(const Graph&, const json::object&, const std::string&, int, Work&);
 json::object many_shortest_paths(const Graph&, const json::object&, const std::string&, int, Work&);
 json::object spanning_forest(const Graph&, const json::object&, const std::string&, int, Work&);
@@ -108,6 +116,12 @@ json::object topological(const Graph&, const json::object&, const std::string&, 
 json::object pagerank(const Graph&, const json::object&, const std::string&, int, Work&);
 json::object personalized_pagerank(const Graph&, const json::object&, const std::string&, int, Work&);
 json::object link_prediction(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object maximal_cliques(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object maximum_clique(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object k_cliques(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object core_numbers(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object maximum_independent_set(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object minimum_vertex_cover(const Graph&, const json::object&, const std::string&, int, Work&);
 json::array operation_cards();
 json::object catalog();
 json::object execute(const json::object& request);

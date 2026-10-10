@@ -438,7 +438,9 @@ unsigned long long k_clique_counting(Graph* g, int k) {
              cudaMemcpyHostToDevice) );
 
   clock_t start_time = clock();
+#ifndef GRAPHMINE_LIBRARY
   printf("Counting function is running...\n");
+#endif
 
   unsigned long long sum = 0;
   cudaMemcpyToSymbol(dev_sum, &sum, sizeof(unsigned long long));
@@ -454,11 +456,15 @@ unsigned long long k_clique_counting(Graph* g, int k) {
   
   gpuErrchk( cudaMemcpyFromSymbol(&sum, dev_sum, sizeof(unsigned long long)) );
 
+#ifndef GRAPHMINE_LIBRARY
   printf("Answer: %llu\n", sum);
+#endif
 
+#ifndef GRAPHMINE_LIBRARY
   clock_t end_time = clock();
   printf("Counting time cost: %.6lf s.\n",
          (double)(end_time - start_time) / CLOCKS_PER_SEC);
+#endif
 
   cudaFree(gpu_binary_adj);
   cudaFree(gpu_vertex);

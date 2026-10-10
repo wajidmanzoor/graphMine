@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="86" time="23.590" timestamp="2026-10-10T14:22:40.288855-04:00" hostname="guoglambda01"><testcase classname="library.tests.test_native_binding" name="test_native_catalog_and_python_families_are_identical" time="0.065" /><testcase classname="library.tests.test_native_binding" name="test_cpp_cli_python_binding_and_family_method_return_same_results" time="0.011" /><testcase classname="library.tests.test_native_binding" name="test_wrapper_import_and_execution_without_installed_python_packages" time="0.060" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[single-source-shortest-paths-parameters0-False]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[many-source-shortest-paths-parameters1-False]" time="0.009" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[spanning-tree-forest-parameters2-True]" time="0.009" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[connected-components-parameters3-False]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[topological-sort-parameters4-False]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[pagerank-parameters5-False]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[personalized-pagerank-parameters6-False]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[link-prediction-parameters7-True]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[maximal-cliques-parameters8-True]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[maximum-clique-parameters9-True]" time="0.009" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[k-cliques-parameters10-True]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[k-core-parameters11-True]" time="0.009" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[maximum-independent-set-parameters12-True]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_migrated_families_match_native_cli[minimum-vertex-cover-parameters13-True]" time="0.008" /><testcase classname="library.tests.test_native_binding" name="test_cli_validates_original_graph_numeric_tokens[18446744073709551616]" time="0.003" /><testcase classname="library.tests.test_native_binding" name="test_cli_validates_original_graph_numeric_tokens[18446744073709551617]" time="0.004" /><testcase classname="library.tests.test_native_binding" name="test_cli_validates_original_graph_numeric_tokens[-9223372036854775809]" time="0.003" /><testcase classname="library.tests.test_native_binding" name="test_concurrent_binding_calls_keep_results_and_memory_ownership_separate" time="0.018" /><testcase classname="library.tests.test_native_binding" name="test_native_errors_cross_the_binding_without_coercion[True]" time="0.003" /><testcase classname="library.tests.test_native_binding" name="test_native_errors_cross_the_binding_without_coercion[0.0]" time="0.003" /><testcase classname="library.tests.test_native_binding" name="test_native_errors_cross_the_binding_without_coercion[missing]" time="0.003" /><testcase classname="library.tests.test_native_binding" name="test_native_errors_cross_the_binding_without_coercion[9223372036854775808]" time="0.003" /><testcase classname="library.tests.test_native_binding" name="test_native_errors_cross_the_binding_without_coercion[]" time="0.003" /><testcase classname="library.tests.test_native_binding" name="test_native_cugraph_keeps_long_paths_and_explicit_device[0]" time="0.374" /><testcase classname="library.tests.test_native_binding" name="test_native_cugraph_keeps_long_paths_and_explicit_device[1]" time="0.121" /><testcase classname="library.tests.test_native_binding" name="test_cudf_csv_roundtrip_preserves_text_and_header_mapping[\n-0]" time="0.976" /><testcase classname="library.tests.test_native_binding" name="test_cudf_csv_roundtrip_preserves_text_and_header_mapping[\n-1]" time="0.006" /><testcase classname="library.tests.test_native_binding" name="test_cudf_csv_roundtrip_preserves_text_and_header_mapping[\r\n-0]" time="0.003" /><testcase classname="library.tests.test_native_binding" name="test_cudf_csv_roundtrip_preserves_text_and_header_mapping[\r\n-1]" time="0.004" /><testcase classname="library.tests.test_native_binding" name="test_cudf_empty_table_and_rejection_boundaries" time="0.006" /><testcase classname="library.tests.test_native_binding" name="test_cudf_reader_refuses_cpu_only_build" time="0.001" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[triangle-counting-tot-parameters0-count-1-0-triangle]" time="0.307" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[triangle-counting-tot-parameters0-count-1-0-cycle]" time="0.297" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[triangle-counting-tot-parameters0-count-1-1-triangle]" time="0.413" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[triangle-counting-tot-parameters0-count-1-1-cycle]" time="0.413" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[triangle-counting-wetric-parameters1-count-1-0-triangle]" time="0.418" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[triangle-counting-wetric-parameters1-count-1-0-cycle]" time="0.366" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[triangle-counting-wetric-parameters1-count-1-1-triangle]" time="0.532" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[triangle-counting-wetric-parameters1-count-1-1-cycle]" time="0.536" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-rdmce-parameters2-count-2-0-triangle]" time="0.371" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-rdmce-parameters2-count-2-0-cycle]" time="0.358" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-rdmce-parameters2-count-2-1-triangle]" time="0.545" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-rdmce-parameters2-count-2-1-cycle]" time="0.535" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-mce-gpu-parameters3-count-2-0-triangle]" time="0.368" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-mce-gpu-parameters3-count-2-0-cycle]" time="0.367" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-mce-gpu-parameters3-count-2-1-triangle]" time="0.543" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-mce-gpu-parameters3-count-2-1-cycle]" time="0.544" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-g2-aimd-parameters4-count-2-0-triangle]" time="0.381" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-g2-aimd-parameters4-count-2-0-cycle]" time="0.377" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-g2-aimd-parameters4-count-2-1-triangle]" time="0.558" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximal-cliques-g2-aimd-parameters4-count-2-1-cycle]" time="0.562" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-cuda-ms-parameters5-maximum_size-3-0-triangle]" time="0.352" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-cuda-ms-parameters5-maximum_size-3-0-cycle]" time="0.359" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-cuda-ms-parameters5-maximum_size-3-1-triangle]" time="0.528" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-cuda-ms-parameters5-maximum_size-3-1-cycle]" time="0.538" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-gpu-maximum-clique-parameters6-maximum_size-3-0-triangle]" time="0.373" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-gpu-maximum-clique-parameters6-maximum_size-3-0-cycle]" time="0.362" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-gpu-maximum-clique-parameters6-maximum_size-3-1-triangle]" time="0.562" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-gpu-maximum-clique-parameters6-maximum_size-3-1-cycle]" time="0.544" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-maximum-clique-on-gpu-parameters7-maximum_size-3-0-triangle]" time="0.353" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-maximum-clique-on-gpu-parameters7-maximum_size-3-0-cycle]" time="0.389" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-maximum-clique-on-gpu-parameters7-maximum_size-3-1-triangle]" time="0.539" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[maximum-clique-maximum-clique-on-gpu-parameters7-maximum_size-3-1-cycle]" time="0.564" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-graphset-parameters8-count-1-0-triangle]" time="0.355" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-graphset-parameters8-count-1-0-cycle]" time="0.354" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-graphset-parameters8-count-1-1-triangle]" time="0.529" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-graphset-parameters8-count-1-1-cycle]" time="0.524" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-gamma-parameters9-count-1-0-triangle]" time="0.009"><failure message="tested_native_binding.NativeError: GAMMA execution failed: copy_if failed on 2nd step: cudaErrorInvalidValue: invalid argument">operation = 'k-cliques', backend = 'gamma', parameters = {'k': 3}
+field = 'count', expected = 1, gpu_device = 0, shape = 'triangle'
+
+    @pytest.mark.parametrize("shape", ["triangle", "cycle"])
+    @pytest.mark.parametrize("gpu_device", [0, 1])
+    @pytest.mark.parametrize(
+        ("operation", "backend", "parameters", "field", "expected"),
+        [("triangle-counting", b, {}, "count", 1) for b in ("tot", "wetric")]
+        + [("maximal-cliques", b, {}, "count", 2) for b in ("rdmce", "mce-gpu", "g2-aimd")]
+        + [
+            ("maximum-clique", b, {}, "maximum_size", 3)
+            for b in ("cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu")
+        ]
+        + [("k-cliques", b, {"k": 3}, "count", 1) for b in ("graphset", "gamma", "kcgpu")]
+        + [
+            ("k-core", b, {}, "core_numbers", [2, 2, 2, 0])
+            for b in ("kcore-gpu", "libcugraph")
+        ],
+    )
+    def test_original_cuda_backends_keep_cli_json_and_restore_device(
+        operation, backend, parameters, field, expected, gpu_device, shape
+    ):
+        lib = library(ORIGINAL)
+        runtime = ctypes.CDLL(ctypes.util.find_library("cudart"))
+        runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
+        runtime.cudaSetDevice.argtypes = [ctypes.c_int]
+        before = ctypes.c_int()
+        assert runtime.cudaSetDevice(1 - gpu_device) == 0
+        assert runtime.cudaGetDevice(ctypes.byref(before)) == 0
+        selected = gpu_device
+        value = graph()
+        value["graph"]["directed"] = False
+        value["edges"].append({"id": 2, "source": 9007199254740993, "target": 0})
+        if shape == "cycle":
+            value["vertices"] = [{"id": i} for i in range(5)]
+            value["edges"] = [
+                {"id": i, "source": i, "target": (i + 1) % 5} for i in range(5)
+            ]
+            expected = {
+                "triangle-counting": 0,
+                "maximal-cliques": 5,
+                "maximum-clique": 2,
+                "k-cliques": 0,
+                "k-core": [2] * 5,
+            }[operation]
+&gt;       result = lib.run(
+            operation,
+            value,
+            parameters=parameters,
+            device="gpu",
+            backend=backend,
+            gpu_device=selected,
+        )
+
+library/tests/test_native_binding.py:388: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+python/graphmine/graphmine/native/__init__.py:150: in run
+    return self.request(request)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tested_native_binding.NativeLibrary object at 0x77c887e3b320&gt;
+value = {'backend': 'gamma', 'command': 'run', 'device': 'gpu', 'gpu_device': 0, ...}
+
+    def request(self, value):
+        raw = json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        output = ctypes.c_void_p()
+        length = ctypes.c_size_t()
+        status = self._library.graphmine_runtime_request(
+            raw, len(raw), ctypes.byref(output), ctypes.byref(length)
+        )
+        if status != 0:
+            raise NativeError("resource_limit", "Native response allocation failed")
+        try:
+            response = json.loads(ctypes.string_at(output, length.value))
+        finally:
+            self._library.graphmine_runtime_free(output)
+        if "error" in response:
+&gt;           raise NativeError(response["error"]["code"], response["error"]["message"])
+E           tested_native_binding.NativeError: GAMMA execution failed: copy_if failed on 2nd step: cudaErrorInvalidValue: invalid argument
+
+python/graphmine/graphmine/native/__init__.py:67: NativeError</failure></testcase><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-gamma-parameters9-count-1-0-cycle]" time="0.007"><failure message="tested_native_binding.NativeError: GAMMA execution failed: copy_if failed on 2nd step: cudaErrorInvalidValue: invalid argument">operation = 'k-cliques', backend = 'gamma', parameters = {'k': 3}
+field = 'count', expected = 0, gpu_device = 0, shape = 'cycle'
+
+    @pytest.mark.parametrize("shape", ["triangle", "cycle"])
+    @pytest.mark.parametrize("gpu_device", [0, 1])
+    @pytest.mark.parametrize(
+        ("operation", "backend", "parameters", "field", "expected"),
+        [("triangle-counting", b, {}, "count", 1) for b in ("tot", "wetric")]
+        + [("maximal-cliques", b, {}, "count", 2) for b in ("rdmce", "mce-gpu", "g2-aimd")]
+        + [
+            ("maximum-clique", b, {}, "maximum_size", 3)
+            for b in ("cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu")
+        ]
+        + [("k-cliques", b, {"k": 3}, "count", 1) for b in ("graphset", "gamma", "kcgpu")]
+        + [
+            ("k-core", b, {}, "core_numbers", [2, 2, 2, 0])
+            for b in ("kcore-gpu", "libcugraph")
+        ],
+    )
+    def test_original_cuda_backends_keep_cli_json_and_restore_device(
+        operation, backend, parameters, field, expected, gpu_device, shape
+    ):
+        lib = library(ORIGINAL)
+        runtime = ctypes.CDLL(ctypes.util.find_library("cudart"))
+        runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
+        runtime.cudaSetDevice.argtypes = [ctypes.c_int]
+        before = ctypes.c_int()
+        assert runtime.cudaSetDevice(1 - gpu_device) == 0
+        assert runtime.cudaGetDevice(ctypes.byref(before)) == 0
+        selected = gpu_device
+        value = graph()
+        value["graph"]["directed"] = False
+        value["edges"].append({"id": 2, "source": 9007199254740993, "target": 0})
+        if shape == "cycle":
+            value["vertices"] = [{"id": i} for i in range(5)]
+            value["edges"] = [
+                {"id": i, "source": i, "target": (i + 1) % 5} for i in range(5)
+            ]
+            expected = {
+                "triangle-counting": 0,
+                "maximal-cliques": 5,
+                "maximum-clique": 2,
+                "k-cliques": 0,
+                "k-core": [2] * 5,
+            }[operation]
+&gt;       result = lib.run(
+            operation,
+            value,
+            parameters=parameters,
+            device="gpu",
+            backend=backend,
+            gpu_device=selected,
+        )
+
+library/tests/test_native_binding.py:388: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+python/graphmine/graphmine/native/__init__.py:150: in run
+    return self.request(request)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tested_native_binding.NativeLibrary object at 0x77c887e7cc20&gt;
+value = {'backend': 'gamma', 'command': 'run', 'device': 'gpu', 'gpu_device': 0, ...}
+
+    def request(self, value):
+        raw = json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        output = ctypes.c_void_p()
+        length = ctypes.c_size_t()
+        status = self._library.graphmine_runtime_request(
+            raw, len(raw), ctypes.byref(output), ctypes.byref(length)
+        )
+        if status != 0:
+            raise NativeError("resource_limit", "Native response allocation failed")
+        try:
+            response = json.loads(ctypes.string_at(output, length.value))
+        finally:
+            self._library.graphmine_runtime_free(output)
+        if "error" in response:
+&gt;           raise NativeError(response["error"]["code"], response["error"]["message"])
+E           tested_native_binding.NativeError: GAMMA execution failed: copy_if failed on 2nd step: cudaErrorInvalidValue: invalid argument
+
+python/graphmine/graphmine/native/__init__.py:67: NativeError</failure></testcase><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-gamma-parameters9-count-1-1-triangle]" time="0.006"><failure message="tested_native_binding.NativeError: GAMMA execution failed: copy_if failed on 2nd step: cudaErrorInvalidValue: invalid argument">operation = 'k-cliques', backend = 'gamma', parameters = {'k': 3}
+field = 'count', expected = 1, gpu_device = 1, shape = 'triangle'
+
+    @pytest.mark.parametrize("shape", ["triangle", "cycle"])
+    @pytest.mark.parametrize("gpu_device", [0, 1])
+    @pytest.mark.parametrize(
+        ("operation", "backend", "parameters", "field", "expected"),
+        [("triangle-counting", b, {}, "count", 1) for b in ("tot", "wetric")]
+        + [("maximal-cliques", b, {}, "count", 2) for b in ("rdmce", "mce-gpu", "g2-aimd")]
+        + [
+            ("maximum-clique", b, {}, "maximum_size", 3)
+            for b in ("cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu")
+        ]
+        + [("k-cliques", b, {"k": 3}, "count", 1) for b in ("graphset", "gamma", "kcgpu")]
+        + [
+            ("k-core", b, {}, "core_numbers", [2, 2, 2, 0])
+            for b in ("kcore-gpu", "libcugraph")
+        ],
+    )
+    def test_original_cuda_backends_keep_cli_json_and_restore_device(
+        operation, backend, parameters, field, expected, gpu_device, shape
+    ):
+        lib = library(ORIGINAL)
+        runtime = ctypes.CDLL(ctypes.util.find_library("cudart"))
+        runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
+        runtime.cudaSetDevice.argtypes = [ctypes.c_int]
+        before = ctypes.c_int()
+        assert runtime.cudaSetDevice(1 - gpu_device) == 0
+        assert runtime.cudaGetDevice(ctypes.byref(before)) == 0
+        selected = gpu_device
+        value = graph()
+        value["graph"]["directed"] = False
+        value["edges"].append({"id": 2, "source": 9007199254740993, "target": 0})
+        if shape == "cycle":
+            value["vertices"] = [{"id": i} for i in range(5)]
+            value["edges"] = [
+                {"id": i, "source": i, "target": (i + 1) % 5} for i in range(5)
+            ]
+            expected = {
+                "triangle-counting": 0,
+                "maximal-cliques": 5,
+                "maximum-clique": 2,
+                "k-cliques": 0,
+                "k-core": [2] * 5,
+            }[operation]
+&gt;       result = lib.run(
+            operation,
+            value,
+            parameters=parameters,
+            device="gpu",
+            backend=backend,
+            gpu_device=selected,
+        )
+
+library/tests/test_native_binding.py:388: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+python/graphmine/graphmine/native/__init__.py:150: in run
+    return self.request(request)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tested_native_binding.NativeLibrary object at 0x77c887e7fb60&gt;
+value = {'backend': 'gamma', 'command': 'run', 'device': 'gpu', 'gpu_device': 1, ...}
+
+    def request(self, value):
+        raw = json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        output = ctypes.c_void_p()
+        length = ctypes.c_size_t()
+        status = self._library.graphmine_runtime_request(
+            raw, len(raw), ctypes.byref(output), ctypes.byref(length)
+        )
+        if status != 0:
+            raise NativeError("resource_limit", "Native response allocation failed")
+        try:
+            response = json.loads(ctypes.string_at(output, length.value))
+        finally:
+            self._library.graphmine_runtime_free(output)
+        if "error" in response:
+&gt;           raise NativeError(response["error"]["code"], response["error"]["message"])
+E           tested_native_binding.NativeError: GAMMA execution failed: copy_if failed on 2nd step: cudaErrorInvalidValue: invalid argument
+
+python/graphmine/graphmine/native/__init__.py:67: NativeError</failure></testcase><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-gamma-parameters9-count-1-1-cycle]" time="0.007"><failure message="tested_native_binding.NativeError: GAMMA execution failed: copy_if failed on 2nd step: cudaErrorInvalidValue: invalid argument">operation = 'k-cliques', backend = 'gamma', parameters = {'k': 3}
+field = 'count', expected = 0, gpu_device = 1, shape = 'cycle'
+
+    @pytest.mark.parametrize("shape", ["triangle", "cycle"])
+    @pytest.mark.parametrize("gpu_device", [0, 1])
+    @pytest.mark.parametrize(
+        ("operation", "backend", "parameters", "field", "expected"),
+        [("triangle-counting", b, {}, "count", 1) for b in ("tot", "wetric")]
+        + [("maximal-cliques", b, {}, "count", 2) for b in ("rdmce", "mce-gpu", "g2-aimd")]
+        + [
+            ("maximum-clique", b, {}, "maximum_size", 3)
+            for b in ("cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu")
+        ]
+        + [("k-cliques", b, {"k": 3}, "count", 1) for b in ("graphset", "gamma", "kcgpu")]
+        + [
+            ("k-core", b, {}, "core_numbers", [2, 2, 2, 0])
+            for b in ("kcore-gpu", "libcugraph")
+        ],
+    )
+    def test_original_cuda_backends_keep_cli_json_and_restore_device(
+        operation, backend, parameters, field, expected, gpu_device, shape
+    ):
+        lib = library(ORIGINAL)
+        runtime = ctypes.CDLL(ctypes.util.find_library("cudart"))
+        runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
+        runtime.cudaSetDevice.argtypes = [ctypes.c_int]
+        before = ctypes.c_int()
+        assert runtime.cudaSetDevice(1 - gpu_device) == 0
+        assert runtime.cudaGetDevice(ctypes.byref(before)) == 0
+        selected = gpu_device
+        value = graph()
+        value["graph"]["directed"] = False
+        value["edges"].append({"id": 2, "source": 9007199254740993, "target": 0})
+        if shape == "cycle":
+            value["vertices"] = [{"id": i} for i in range(5)]
+            value["edges"] = [
+                {"id": i, "source": i, "target": (i + 1) % 5} for i in range(5)
+            ]
+            expected = {
+                "triangle-counting": 0,
+                "maximal-cliques": 5,
+                "maximum-clique": 2,
+                "k-cliques": 0,
+                "k-core": [2] * 5,
+            }[operation]
+&gt;       result = lib.run(
+            operation,
+            value,
+            parameters=parameters,
+            device="gpu",
+            backend=backend,
+            gpu_device=selected,
+        )
+
+library/tests/test_native_binding.py:388: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+python/graphmine/graphmine/native/__init__.py:150: in run
+    return self.request(request)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tested_native_binding.NativeLibrary object at 0x77c887e3b440&gt;
+value = {'backend': 'gamma', 'command': 'run', 'device': 'gpu', 'gpu_device': 1, ...}
+
+    def request(self, value):
+        raw = json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        output = ctypes.c_void_p()
+        length = ctypes.c_size_t()
+        status = self._library.graphmine_runtime_request(
+            raw, len(raw), ctypes.byref(output), ctypes.byref(length)
+        )
+        if status != 0:
+            raise NativeError("resource_limit", "Native response allocation failed")
+        try:
+            response = json.loads(ctypes.string_at(output, length.value))
+        finally:
+            self._library.graphmine_runtime_free(output)
+        if "error" in response:
+&gt;           raise NativeError(response["error"]["code"], response["error"]["message"])
+E           tested_native_binding.NativeError: GAMMA execution failed: copy_if failed on 2nd step: cudaErrorInvalidValue: invalid argument
+
+python/graphmine/graphmine/native/__init__.py:67: NativeError</failure></testcase><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-kcgpu-parameters10-count-1-0-triangle]" time="0.375" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-kcgpu-parameters10-count-1-0-cycle]" time="0.360" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-kcgpu-parameters10-count-1-1-triangle]" time="0.542" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-cliques-kcgpu-parameters10-count-1-1-cycle]" time="0.555" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-core-kcore-gpu-parameters11-core_numbers-expected11-0-triangle]" time="0.343" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-core-kcore-gpu-parameters11-core_numbers-expected11-0-cycle]" time="0.350" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-core-kcore-gpu-parameters11-core_numbers-expected11-1-triangle]" time="0.524" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-core-kcore-gpu-parameters11-core_numbers-expected11-1-cycle]" time="0.519" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-core-libcugraph-parameters12-core_numbers-expected12-0-triangle]" time="0.421" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-core-libcugraph-parameters12-core_numbers-expected12-0-cycle]" time="0.447" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-core-libcugraph-parameters12-core_numbers-expected12-1-triangle]" time="0.599" /><testcase classname="library.tests.test_native_binding" name="test_original_cuda_backends_keep_cli_json_and_restore_device[k-core-libcugraph-parameters12-core_numbers-expected12-1-cycle]" time="0.634" /></testsuite></testsuites>

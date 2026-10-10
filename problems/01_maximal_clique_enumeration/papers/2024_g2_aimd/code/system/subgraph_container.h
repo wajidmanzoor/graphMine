@@ -197,7 +197,9 @@ public:
             chunk[0] = max(chunk[0] / DECFACTOR, MINCHUNK); // chunk size is reduced by factor
             step = max((int)(chunk[0] * ADDPC), MINSTEP); // additive increment
             addStep = step;
+#ifndef GRAPHMINE_LIBRARY
             std::cout<<"--- chunk: "<<chunk[0];
+#endif
             successCount = 0;
         }
         // Increasing Chunk
@@ -213,10 +215,15 @@ public:
             else
                 chunk[0] = min(chunk[0]+addStep, MAXCHUNK);
             step*=2;
+#ifndef GRAPHMINE_LIBRARY
             std::cout<<"+++ chunk: "<<chunk[0];
+#endif
         }
-        else
+        else {
+#ifndef GRAPHMINE_LIBRARY
             std::cout<<"... chunk: "<<chunk[0];
+#endif
+        }
         // reset tail pointers... 
         recover = true;
         // hostBuff.clear();

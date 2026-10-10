@@ -34,14 +34,29 @@ def build_evidence(directory, source_root, dependency_hashes):
         == catalog["implementation_sha256"]
     )
     source_files = {}
+    staged_build_script = None
     for line in inventory.splitlines():
         name, expected = line.rsplit(":", 1)
         path = (source_root / "library" / name).resolve()
         assert sha(path) == expected, f"Source changed since build: {path}"
         relative = path.relative_to(source_root.resolve())
-        assert sha(ROOT / relative) == expected, (
-            f"Repository source differs: {relative}"
-        )
+        working_hash = sha(ROOT / relative)
+        if working_hash != expected:
+            # The root build file can contain unrelated pre-existing work.
+            # Only an exact staged/index match is accepted for its isolated build.
+            assert (
+                str(relative) == "library/CMakeLists.txt"
+                and source_root.resolve() != ROOT
+            )
+            staged = subprocess.check_output(["git", "show", f":{relative}"], cwd=ROOT)
+            assert hashlib.sha256(staged).hexdigest() == expected, (
+                f"Staged source differs: {relative}"
+            )
+            staged_build_script = {
+                "index_sha256": expected,
+                "working_sha256": working_hash,
+            }
+
         source_files[str(relative)] = expected
     library = directory / "libgraphmine_runtime.so"
     dependencies = []
@@ -61,6 +76,7 @@ def build_evidence(directory, source_root, dependency_hashes):
             "graphmine-native",
             "graphmine_runtime_test",
             "graphmine_reference_test",
+            "graphmine_mining_test",
         )
     }
     cache = directory / "CMakeCache.txt"
@@ -84,6 +100,7 @@ def build_evidence(directory, source_root, dependency_hashes):
         "build_directory": str(directory),
         "catalog": catalog,
         "source_files": source_files,
+        "staged_root_build_script": staged_build_script,
         "binaries": binaries,
         "native_dependencies": dependencies,
         "ldd": linkage,
@@ -199,6 +216,47 @@ def audit(
             ("rank", "gpu", 514),
             ("similarity", "gpu", 128),
         ]
+    expected["mining-cpu"] = [
+        (s, "cpp", n)
+        for s, n in (
+            ("contracts", 48),
+            ("maximal", 4104),
+            ("maximum", 2052),
+            ("fixed", 18468),
+            ("core", 4104),
+            ("optimization", 3078),
+            ("boundaries", 161),
+        )
+    ]
+    for ordinal in (0, 1):
+        for backend, cases in (
+            *[
+                (b, [("contracts", 4), ("maximal", 264), ("boundaries", 21)])
+                for b in ("rdmce", "mce-gpu", "g2-aimd")
+            ],
+            *[
+                (
+                    b,
+                    [
+                        ("contracts", 12),
+                        ("maximum", 132),
+                        ("optimization", 198),
+                        ("boundaries", 25),
+                    ],
+                )
+                for b in ("cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu")
+            ],
+            ("graphset", [("contracts", 4), ("fixed", 792), ("boundaries", 64)]),
+            ("gamma", [("contracts", 4), ("fixed", 990), ("boundaries", 79)]),
+            ("kcgpu", [("contracts", 4), ("fixed", 1584), ("boundaries", 124)]),
+            *[
+                (b, [("contracts", 4), ("core", 264), ("boundaries", 20)])
+                for b in ("kcore-gpu", "libcugraph")
+            ],
+        ):
+            expected[f"mining-{backend}-gpu-{ordinal}"] = [
+                (s, backend, n) for s, n in cases
+            ]
     for name, cases in expected.items():
         path = report_root / f"{name}.json"
         rows = json.loads(path.read_text())
@@ -232,8 +290,43 @@ def audit(
             "metadata_sha256": sha(metadata_path),
             "results": rows,
         }
+    depth_path = report_root / "depth-sanitizers/summary.json"
+    depth = json.loads(depth_path.read_text())
+    assert depth["passed"] == 8 and depth["failed"] == 0
+    assert depth["build_unchanged_during_run"]
+    assert (
+        depth["implementation_sha256"]
+        == builds["gpu"]["catalog"]["implementation_sha256"]
+    )
+    for path, digest in depth["binary_files"].items():
+        assert sha(path) == digest
+    assert depth["sanitizer_binary_sha256"] == sha("/usr/bin/compute-sanitizer")
+    expected_depth = {
+        f"{backend}-K{n}-k{k}-gpu-{i}"
+        for i in (0, 1)
+        for backend, n, k in (
+            ("kcgpu", 514, 3),
+            ("gamma", 12, 7),
+            ("kcgpu", 1002, 3),
+            ("kcgpu", 514, 10),
+        )
+    }
+    assert {row["case"] for row in depth["cases"]} == expected_depth
+    for row in depth["cases"]:
+        assert row["passed"]
+        log = depth_path.parent / f"{row['case']}.stderr.log"
+        assert sha(log) == row["log_sha256"]
+        assert (
+            json.loads((depth_path.parent / f"{row['case']}.stdout.json").read_text())
+            == row["response"]
+        )
+    reports["depth_sanitizers"] = {
+        "path": str(depth_path.relative_to(ROOT)),
+        "sha256": sha(depth_path),
+        "passed": 8,
+    }
     reports["binding_ingestion"] = xml_evidence(
-        report_root / "binding-ingestion.xml", ROOT, 30
+        report_root / "binding-ingestion.xml", ROOT, 88
     )
     native_uploads = staged_app_root is not None
     if native_uploads:
@@ -252,6 +345,11 @@ def audit(
     installed_path = report_root / "installed-consumers.json"
     installed = json.loads(installed_path.read_text())
     assert installed["cpp_consumer"] and installed["c_consumer"]
+    assert installed["results"]["cpp_consumer"]["result"]["maximum_size"] == 3
+    assert [
+        row["core_number"]
+        for row in installed["results"]["c_consumer"]["result"]["vertices"]
+    ] == [2, 2, 2, 0]
     assert not installed["python_on_path"] and not installed["cuda_visible_devices"]
     assert (
         installed["implementation_sha256"]

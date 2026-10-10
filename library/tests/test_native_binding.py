@@ -178,6 +178,12 @@ print(len(library.list_algorithms()))
         ("pagerank", {"weight_mode": "edge_weight"}, False),
         ("personalized-pagerank", {"seed_vertices": [0], "top_k": 1}, False),
         ("link-prediction", {"scoring_measure": "resource_allocation"}, True),
+        ("maximal-cliques", {"result_limit": 1}, True),
+        ("maximum-clique", {"return_all_ties": True}, True),
+        ("k-cliques", {"k": 2, "mode": "enumerate"}, True),
+        ("k-core", {"requested_k": 0}, True),
+        ("maximum-independent-set", {}, True),
+        ("minimum-vertex-cover", {"mode": "decision", "k": 0}, True),
     ],
 )
 def test_migrated_families_match_native_cli(
@@ -337,28 +343,70 @@ def test_cudf_reader_refuses_cpu_only_build(tmp_path):
     assert caught.value.code == "backend_unavailable"
 
 
-@pytest.mark.parametrize("backend", ["tot", "wetric"])
-def test_original_cuda_backends_keep_cli_json_and_restore_device(backend):
+@pytest.mark.parametrize("shape", ["triangle", "cycle"])
+@pytest.mark.parametrize("gpu_device", [0, 1])
+@pytest.mark.parametrize(
+    ("operation", "backend", "parameters", "field", "expected"),
+    [("triangle-counting", b, {}, "count", 1) for b in ("tot", "wetric")]
+    + [("maximal-cliques", b, {}, "count", 2) for b in ("rdmce", "mce-gpu", "g2-aimd")]
+    + [
+        ("maximum-clique", b, {}, "maximum_size", 3)
+        for b in ("cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu")
+    ]
+    + [("k-cliques", b, {"k": 3}, "count", 1) for b in ("graphset", "gamma", "kcgpu")]
+    + [
+        ("k-core", b, {}, "core_numbers", [2, 2, 2, 0])
+        for b in ("kcore-gpu", "libcugraph")
+    ],
+)
+def test_original_cuda_backends_keep_cli_json_and_restore_device(
+    operation, backend, parameters, field, expected, gpu_device, shape
+):
     lib = library(ORIGINAL)
     runtime = ctypes.CDLL(ctypes.util.find_library("cudart"))
     runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
     runtime.cudaSetDevice.argtypes = [ctypes.c_int]
     before = ctypes.c_int()
+    assert runtime.cudaSetDevice(1 - gpu_device) == 0
     assert runtime.cudaGetDevice(ctypes.byref(before)) == 0
-    selected = 1 - before.value if before.value in (0, 1) else 0
+    selected = gpu_device
     value = graph()
     value["graph"]["directed"] = False
     value["edges"].append({"id": 2, "source": 9007199254740993, "target": 0})
+    if shape == "cycle":
+        value["vertices"] = [{"id": i} for i in range(5)]
+        value["edges"] = [
+            {"id": i, "source": i, "target": (i + 1) % 5} for i in range(5)
+        ]
+        expected = {
+            "triangle-counting": 0,
+            "maximal-cliques": 5,
+            "maximum-clique": 2,
+            "k-cliques": 0,
+            "k-core": [2] * 5,
+        }[operation]
     result = lib.run(
-        "triangle-counting", value, device="gpu", backend=backend, gpu_device=selected
+        operation,
+        value,
+        parameters=parameters,
+        device="gpu",
+        backend=backend,
+        gpu_device=selected,
     )
     after = ctypes.c_int()
     assert runtime.cudaGetDevice(ctypes.byref(after)) == 0
     assert after.value == before.value
-    assert result["result"]["count"] == 1
+    actual = (
+        [row["core_number"] for row in result["result"]["vertices"]]
+        if field == "core_numbers"
+        else result["result"][field]
+    )
+    assert actual == expected
+    assert result["backend"]["hardware"]["device_ordinal"] == selected
     request = {
         "command": "run",
-        "operation": "triangle-counting",
+        "operation": operation,
+        "parameters": parameters,
         "graph": value,
         "device": "gpu",
         "backend": backend,
@@ -375,4 +423,29 @@ def test_original_cuda_backends_keep_cli_json_and_restore_device(backend):
     # corrupted it even though the C++ count itself was correct.
     cli = json.loads(process.stdout)
     assert cli["backend"]["id"] == backend
-    assert cli["result"]["count"] == 1
+    assert without_timing(cli) == without_timing(result)
+
+
+@pytest.mark.parametrize("order", [(0, 1), (1, 0)])
+def test_graphset_and_gamma_can_share_a_host_process_across_devices(order):
+    lib = library(ORIGINAL)
+    value = graph()
+    value["graph"]["directed"] = False
+    value["vertices"] = [{"id": v} for v in range(12)]
+    value["edges"] = [
+        {"id": f"{u}-{v}", "source": u, "target": v}
+        for u in range(12)
+        for v in range(u + 1, 12)
+    ]
+    for backend, k, expected in [("graphset", 6, 924), ("gamma", 7, 792)]:
+        for device in order:
+            result = lib.run(
+                "k-cliques",
+                value,
+                parameters={"k": k},
+                device="gpu",
+                backend=backend,
+                gpu_device=device,
+            )
+            assert result["result"]["count"] == expected
+            assert result["backend"]["hardware"]["device_ordinal"] == device

@@ -954,7 +954,9 @@ namespace graph
 
 			k = level;
 
+#ifndef GRAPHMINE_LIBRARY
 			printf("Max Core = %d\n", k - 1);
+#endif
 
 			find_heur_clique(g);
 

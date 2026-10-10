@@ -83,7 +83,9 @@ public:
 
         // std::cout << "available mem after: " << cuda_context_->GetDeviceMemoryInfo()->GetAvailableMemorySizeMB() << " MB" << std::endl;
         timer.EndTimer();
+#ifndef GRAPHMINE_LIBRARY
         timer.PrintElapsedMicroSeconds(tag_.str() + " executor construction");
+#endif
 
         // TODO: allcate space for rdBuffer and wrBuffer??
 
@@ -136,7 +138,9 @@ public:
 
     void Transfer(std::unique_ptr<ViewBinHolder> &vbh)
     {
+#ifndef GRAPHMINE_LIBRARY
         std::cout << tag_.str() << " transfer view bin " << vbh->GetId() << std::endl;
+#endif
         // copy view bin sources and csr to gpu memory
         Timer timer;
         timer.StartTimer();
@@ -189,7 +193,9 @@ public:
                         {
                             break;
                         }
+#ifndef GRAPHMINE_LIBRARY
                         std::cout << "[" << app.sgHost->rdBuff.otail[0] << ", " << app.sgHost->rdBuff.vtail[0] << "]" << std::endl;
+#endif
                     }
 
                     loadFromHost<<<BLK_NUMS, BLK_DIM>>>(app);

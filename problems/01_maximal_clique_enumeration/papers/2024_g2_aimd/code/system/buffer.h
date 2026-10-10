@@ -69,7 +69,9 @@ public:
         // todo HOST_BUFF_SZ should be small in final release
         allocatePtrs();
         buffsize[0] = HOST_BUFF_SZ;
+#ifndef GRAPHMINE_LIBRARY
         std::cout << "Host allocated Buffer: " << buffsize[0] << std::endl;
+#endif
     }
 
     void allocateMemory(size_t sz)
@@ -79,7 +81,9 @@ public:
 
         allocatePtrs();
         buffsize[0] = sz;
+#ifndef GRAPHMINE_LIBRARY
         std::cout << "Device allocated Buffer: " << buffsize[0] << std::endl;
+#endif
     }
 
     void releaseMemory()

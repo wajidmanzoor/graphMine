@@ -1,4 +1,7 @@
 #pragma once
+#ifdef GRAPHMINE_LIBRARY
+#include <stdexcept>
+#endif
 #include "utils.cuh"
 
 //logger for IBM Machines
@@ -17,6 +20,11 @@
 template<bool NEWLINE = true, typename... Args>
 void Log(LogPriorityEnum l, const char* f, Args... args)
 {
+#ifdef GRAPHMINE_LIBRARY
+  // Embedded algorithms report failures to their caller and keep stdout free
+  // for the native CLI protocol. Standalone artifacts retain their logging.
+  if (l == critical || l == error) throw std::runtime_error(f);
+#else
 
 	bool print = true;
 #ifndef __DEBUG__
@@ -67,6 +75,7 @@ void Log(LogPriorityEnum l, const char* f, Args... args)
 
 		printf("\033[0m");
 	}
+#endif
 }
 
 //#define Log(l_, f_, ...)printf((f_), __VA_ARGS__);

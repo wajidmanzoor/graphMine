@@ -63,6 +63,7 @@ json::object execute(const json::object& request) {
   const auto graph = parse_graph(request.at("graph"));
   const auto parameters = request.contains("parameters") ? object(request.at("parameters"), "parameters") : json::object{};
   const auto gpu_reason = gpu_support_reason(operation, graph, parameters);
+  std::string selection_reason = gpu_reason;
   bool compiled = false;
   if (backend == "auto") {
     backend = "cpp";
@@ -70,10 +71,13 @@ json::object execute(const json::object& request) {
       for (const auto& row : card.at("backends").as_array()) {
         const auto& candidate = row.as_object();
         if (candidate.at("device") == "gpu" && candidate.at("compiled").as_bool() && gpu_available(device)) {
-          backend = string(candidate.at("id"), "backend id"); break;
+          const auto id = string(candidate.at("id"), "backend id");
+          const auto reason = backend_support_reason(operation, id, graph, parameters, work);
+          if (!reason.empty()) { selection_reason = reason; continue; }
+          backend = id; break;
         }
       }
-      if (policy == "gpu" && backend == "cpp") throw Failure("backend_unavailable", "No compiled GPU backend and usable device for " + operation);
+      if (policy == "gpu" && backend == "cpp") throw Failure(selection_reason.empty() ? "backend_unavailable" : "unsupported_input", selection_reason.empty() ? "No compiled GPU backend and usable device for " + operation : selection_reason);
     }
   }
   if (policy == "gpu" && !gpu_reason.empty()) throw Failure("unsupported_input", gpu_reason);
@@ -88,6 +92,8 @@ json::object execute(const json::object& request) {
   require(!((policy == "cpu" && backend != "cpp") || (policy == "gpu" && backend == "cpp")), "Backend conflicts with requested device policy");
   if (!compiled) throw Failure("backend_unavailable", "Selected native backend was not compiled");
   if (backend != "cpp" && !gpu_reason.empty()) throw Failure("unsupported_input", gpu_reason);
+  const auto backend_reason = backend_support_reason(operation, backend, graph, parameters, work);
+  if (!backend_reason.empty()) throw Failure("unsupported_input", backend_reason);
   if (backend != "cpp" && !gpu_available(device)) throw Failure("backend_unavailable", "Selected CUDA device is unavailable");
   std::optional<DeviceScope> device_scope;
   if (backend != "cpp") device_scope.emplace(device);
@@ -111,7 +117,7 @@ json::object execute(const json::object& request) {
                           {"implementation_language", "c++/cuda"}, {"python_runtime_required", false}};
   if (backend == "libcugraph") provenance["version"] = cugraph_version();
   if (backend != "cpp") provenance["hardware"] = gpu_description(device);
-  if (policy == "auto" && backend == "cpp") provenance["selection_reason"] = gpu_reason.empty() ? "Selected the compiled native CPU implementation" : gpu_reason;
+  if (policy == "auto" && backend == "cpp") provenance["selection_reason"] = selection_reason.empty() ? "Selected the compiled native CPU implementation" : selection_reason;
   result["backend"] = provenance;
   result["budget"] = json::object{{"max_candidates", work.max_candidates}, {"max_output_items", work.max_output_items}, {"timeout_seconds", work.timeout_seconds}};
   result["elapsed_seconds"] = std::chrono::duration<double>(std::chrono::steady_clock::now() - work.started).count();

@@ -614,8 +614,12 @@ acc_t BkSolverWrapper(Graph &graph, size_t device_id)
   cudaDeviceProp prop;
   cudaGetDeviceProperties(&prop, device_id);
   size_t sm_num = prop.multiProcessorCount;
+#ifndef GRAPHMINE_LIBRARY
   printf("\033[90m[GPU] SM: %lu  \tWARP_PER_BLOCK: %d\tBLOCK_PER_SM: %d\033[0m\n", sm_num, WARP_PER_BLOCK, BLOCK_PER_SM);
+#endif
+#ifndef GRAPHMINE_LIBRARY
   printf("\033[90m[GPU] TASK_SHARE_BOUND: %d\033[0m\n", TASK_SHARE_BOUND);
+#endif
 
   GraphGpu graph_gpu;
   ContextManagerBkpb context_gpu;
@@ -637,14 +641,22 @@ acc_t BkSolverWrapper(Graph &graph, size_t device_id)
   size_t max_usage = bitmap_size + rpxv_size;
   size_t total_size = min(max_usage, max_available_size);
 
+#ifndef GRAPHMINE_LIBRARY
   printf("\033[90m[GPU] Context memory usage: %lf MB\033[0m\n", total_size * num_warps / 1024.0 / 1024.0);
+#endif
+#ifndef GRAPHMINE_LIBRARY
   printf("      \033[90m- Bitmap: %lf MB\n", (total_size - rpxv_size) * num_warps / 1024.0 / 1024.0);
+#endif
+#ifndef GRAPHMINE_LIBRARY
   printf("      - Rpx buffer: %lf MB\033[0m\n", rpxv_size * num_warps / 1024.0 / 1024.0);
+#endif
 
   if(max_usage < max_available_size)
     context_gpu.buffers_.Allocate(num_warps, max_usage);
   else{
+#ifndef GRAPHMINE_LIBRARY
     printf("\033[90m[GPU] Context memory usage exceeds 95%% of available memory on GPUs, using unified memory instead\033[0m\n");
+#endif
     context_gpu.buffers_.AllocateManaged(num_warps, max_usage);
   }
 

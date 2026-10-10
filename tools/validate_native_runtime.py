@@ -24,6 +24,7 @@ def snapshot(build):
             "graphmine-native",
             "graphmine_runtime_test",
             "graphmine_reference_test",
+            "graphmine_mining_test",
             "native-source-hashes.txt",
         )
     ]
@@ -64,6 +65,46 @@ def validate(build, label, ordinal, output):
             ],
         ),
     ]
+    if cpu:
+        groups.append(
+            (
+                "mining-cpu",
+                "graphmine_mining_test",
+                [
+                    (s, "cpp")
+                    for s in (
+                        "contracts",
+                        "maximal",
+                        "maximum",
+                        "fixed",
+                        "core",
+                        "optimization",
+                        "boundaries",
+                    )
+                ],
+            )
+        )
+    else:
+        for backend, algorithms in (
+            ("rdmce", ["maximal"]),
+            ("mce-gpu", ["maximal"]),
+            ("g2-aimd", ["maximal"]),
+            ("cuda-ms", ["maximum", "optimization"]),
+            ("gpu-maximum-clique", ["maximum", "optimization"]),
+            ("maximum-clique-on-gpu", ["maximum", "optimization"]),
+            ("graphset", ["fixed"]),
+            ("gamma", ["fixed"]),
+            ("kcgpu", ["fixed"]),
+            ("kcore-gpu", ["core"]),
+            ("libcugraph", ["core"]),
+        ):
+            groups.append(
+                (
+                    f"mining-{backend}-{label}",
+                    "graphmine_mining_test",
+                    [(s, backend) for s in ["contracts", *algorithms, "boundaries"]],
+                )
+            )
     for report_name, executable, cases in groups:
         rows = []
         for suite, backend in cases:

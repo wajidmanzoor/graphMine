@@ -7,27 +7,12 @@
 #include <mutex>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <cuda_runtime.h>
-#include <thrust/copy.h>
-#include <thrust/execution_policy.h>
-#include <thrust/sequence.h>
 
 #include "utils.h"
 #include "accessMode.cuh"
-
-__global__ void set_validation(OffsetT* row_start,
-                               std::uint8_t* valid_candidates,
-                               std::uint32_t vertex_count,
-                               std::uint32_t minimum_degree) {
-  const auto thread = threadIdx.x + blockDim.x * blockIdx.x;
-  for (std::uint32_t vertex = thread; vertex < vertex_count;
-       vertex += blockDim.x * gridDim.x) {
-    if (row_start[vertex + 1] - row_start[vertex] >= minimum_degree) {
-      valid_candidates[vertex] = 1;
-    }
-  }
-}
 
 namespace graphmine::detail {
 namespace {
@@ -59,9 +44,9 @@ bool gamma_kclique_backend_compiled() noexcept { return true; }
 KCliqueBackendResult run_gamma_kclique(const CsrGraph& graph,
                                         std::uint32_t k,
                                         int device_id) {
-  if (k < 3 || k > 5) {
+  if (k < 3 || k > embedding_max_length) {
     return {{StatusCode::unsupported,
-             "the validated GAMMA path supports 3 <= k <= 5"},
+             "the GAMMA path supports 3 <= k <= 7"},
             0, 0.0};
   }
   if (graph.vertex_count() < k) {
@@ -74,13 +59,13 @@ KCliqueBackendResult run_gamma_kclique(const CsrGraph& graph,
             0, 0.0};
   }
 
-  std::size_t valid_roots = 0;
+  std::vector<KeyT> eligible_roots;
   for (VertexIndex vertex = 0; vertex < graph.vertex_count(); ++vertex) {
     if (graph.offsets[vertex + 1] - graph.offsets[vertex] >= k - 1U) {
-      ++valid_roots;
+      eligible_roots.push_back(static_cast<KeyT>(vertex));
     }
   }
-  if (valid_roots == 0) {
+  if (eligible_roots.empty()) {
     return {Status::success(), 0, 0.0};
   }
 
@@ -98,9 +83,7 @@ KCliqueBackendResult run_gamma_kclique(const CsrGraph& graph,
   access_mode_controller access_controller;
   bool embeddings_initialized = false;
   bool access_initialized = false;
-  KeyT* sequence = nullptr;
   KeyT* roots = nullptr;
-  std::uint8_t* valid_candidates = nullptr;
 
   try {
     data_graph.memory_type = UNIFIED_MEM;
@@ -132,32 +115,15 @@ KCliqueBackendResult run_gamma_kclique(const CsrGraph& graph,
     log_set_quiet(1);
     const auto started = std::chrono::steady_clock::now();
 
-    check_cuda_error(cudaMalloc(reinterpret_cast<void**>(&sequence),
-                                graph.vertex_count() * sizeof(KeyT)));
+    // CSR degrees are already on the host. Select eligible roots there rather
+    // than launching a second GPU filter for the same information. This also
+    // avoids the artifact's Thrust copy_if initialization path, which fails
+    // after a GraphSet call in a mixed-backend process on the tested runtime.
+    const auto root_count = static_cast<std::uint32_t>(eligible_roots.size());
     check_cuda_error(cudaMalloc(reinterpret_cast<void**>(&roots),
-                                graph.vertex_count() * sizeof(KeyT)));
-    check_cuda_error(cudaMemset(roots, 0xff,
-                               graph.vertex_count() * sizeof(KeyT)));
-    check_cuda_error(cudaMalloc(
-        reinterpret_cast<void**>(&valid_candidates),
-        graph.vertex_count() * sizeof(std::uint8_t)));
-    check_cuda_error(cudaMemset(valid_candidates, 0,
-                               graph.vertex_count() * sizeof(std::uint8_t)));
-
-    set_validation<<<10000, 256>>>(data_graph.row_start, valid_candidates,
-                                   data_graph.nnodes, k - 1U);
-    thrust::sequence(thrust::device, sequence,
-                     sequence + data_graph.nnodes);
-    const auto root_count = static_cast<std::uint32_t>(
-        thrust::copy_if(thrust::device, sequence,
-                        sequence + data_graph.nnodes, valid_candidates,
-                        roots, is_valid()) -
-        roots);
-    check_cuda_error(cudaDeviceSynchronize());
-    check_cuda_error(cudaFree(sequence));
-    sequence = nullptr;
-    check_cuda_error(cudaFree(valid_candidates));
-    valid_candidates = nullptr;
+                                root_count * sizeof(KeyT)));
+    check_cuda_error(cudaMemcpy(roots, eligible_roots.data(),
+                                root_count * sizeof(KeyT), cudaMemcpyHostToDevice));
 
     embeddings_initialized = true;
     embeddings.init(root_count, k, UNIFIED_MEM, false);
@@ -195,9 +161,7 @@ KCliqueBackendResult run_gamma_kclique(const CsrGraph& graph,
             std::chrono::duration<double, std::milli>(finished - started)
                 .count()};
   } catch (const std::exception& error) {
-    if (sequence != nullptr) cudaFree(sequence);
     if (roots != nullptr) cudaFree(roots);
-    if (valid_candidates != nullptr) cudaFree(valid_candidates);
     release_gamma_resources(data_graph, embeddings, access_controller,
                             embeddings_initialized, access_initialized);
     return {{StatusCode::execution_failed,

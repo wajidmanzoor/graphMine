@@ -1,0 +1,8 @@
+Validated 500 native requests on gpu 1
+Validated 1000 native requests on gpu 1
+Validated 1500 native requests on gpu 1
+Validated 2000 native requests on gpu 1
+Validated 2500 native requests on gpu 1
+Validated 3000 native requests on gpu 1
+Validated 3500 native requests on gpu 1
+{"suite":"paths","backend":"gpu","gpu_device":1,"passed_requests":3645,"failed":0,"implementation_sha256":"f34ec6ad688f0e511a74ceb2aec7d19fca4a8a4ed26b7d2e816bfea211d0e196"}

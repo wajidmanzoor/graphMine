@@ -1,4 +1,8 @@
 #pragma once
+#ifdef GRAPHMINE_LIBRARY
+#include <stdexcept>
+#include <string>
+#endif
 
 #define likely(x) __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
@@ -6,9 +10,14 @@
     { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort = true) {
     if (code != cudaSuccess) {
+#ifdef GRAPHMINE_LIBRARY
+        throw std::runtime_error(std::string("GraphSet CUDA failure at ") + file + ":" +
+                                 std::to_string(line) + ": " + cudaGetErrorString(code));
+#else
         fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
         if (abort)
             exit(code);
+#endif
     }
 }
 
