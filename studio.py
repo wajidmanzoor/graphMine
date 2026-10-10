@@ -13,10 +13,12 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import hmac
 import json
 import mimetypes
 import os
 import re
+import secrets
 import sys
 import threading
 import time
@@ -214,7 +216,7 @@ def discover(root: Path, max_depth: int = 3) -> list[dict]:
         depth = len(path.relative_to(root).parts)
         dirs[:] = sorted(
             d for d in dirs
-            if d not in SKIP_DIRS and not d.endswith("-triton")
+            if d not in SKIP_DIRS and not d.startswith(".") and not d.endswith("-triton")
             and "checkpoint" not in d and "runtime" not in d and depth < max_depth
         )
         names = set(files)
@@ -294,6 +296,9 @@ def parse_turn(role: str, content: str) -> dict:
         payload = None
     if isinstance(payload, dict):
         text = payload.get("message")
+        if not isinstance(text, str):
+            # The agent's reply after an answer carries the interpretation, not a message.
+            text = get_path(payload, "interpretation.summary")
         if not isinstance(text, str):
             text = json.dumps(payload, ensure_ascii=False)
         return {"role": role, "text": text, "status": payload.get("status"), "payload": payload}
@@ -489,6 +494,130 @@ def _primary(rec) -> str:
     return prompts[0]["value"] if prompts else ""
 
 
+def _message_of(row) -> str:
+    """The user message a step answers (the analyst's request for analyst steps)."""
+    fields = {p["path"]: p["value"] for p in row.get("prompts") or []}
+    if row.get("adapter") == "analyst":
+        return fields.get("user_message") or fields.get("answer.question") or ""
+    return fields.get("message") or ""
+
+
+def _after_answer(row) -> bool:
+    """A follow-up: the agent already answered once before this step.
+
+    Earlier turns alone do not say so, because production sends the planner's
+    messages as history to the main analyst answer too."""
+    if row.get("schema") == "TurnDecision":
+        return True
+    for turn in row.get("turns") or []:
+        payload = turn.get("payload") if isinstance(turn.get("payload"), dict) else {}
+        if turn.get("role") == "assistant" and (
+                turn.get("status") == "answered" or payload.get("result_id") or payload.get("interpretation")):
+            return True
+    return False
+
+
+def _is_clarify_reply(row) -> bool:
+    turns = row.get("turns") or []
+    return (row.get("schema") in ("RouteDecision", "PlanDraft") and bool(turns) and not _after_answer(row)
+            and turns[-1].get("role") == "assistant" and turns[-1].get("status") == "needs_information")
+
+
+def _is_pipeline_only(row) -> bool:
+    """Retries and alternative analyst requests come from the pipeline; replays do not make them."""
+    variant = row.get("variant") or ""
+    return (variant in ("recovery", "custom_chart") or "-recovery-" in row["id"]
+            or "-custom-chart" in row["id"])
+
+
+def conversation_script(rows: list[dict]) -> tuple[dict, list[str]]:
+    """Turn one conversation's live steps into the replay script the engine runs.
+
+    Mirrors the conversation view's order: question → [Understanding asking for
+    more information → reply] → Understanding → Planning → GraphMine → analyst
+    answer, then follow-up branches keyed by their message.
+    """
+    notes = []
+    live = [r for r in rows if not r.get("deleted") and not _is_pipeline_only(r)]
+    step = lambda r: {"row": r["id"], "output": r.get("output")}  # noqa: E731
+
+    def first(candidates, what):
+        if len(candidates) > 1:
+            notes.append(f"{len(candidates)} {what} steps; the replay uses the first.")
+        return candidates[0] if candidates else None
+
+    opening = [r for r in live if r["schema"] in ("RouteDecision", "PlanDraft")
+               and not _after_answer(r) and not _is_clarify_reply(r)]
+    replies = [r for r in live if _is_clarify_reply(r)]
+    answers = [r for r in live if r["schema"] == "GroundedNarrative" and not _after_answer(r)]
+    script = {"question": "", "clarify": None, "reply": None, "route": None, "plan": None, "answer": None,
+              "followups": []}
+    open_route = first([r for r in opening if r["schema"] == "RouteDecision"], "opening Understanding")
+    open_plan = first([r for r in opening if r["schema"] == "PlanDraft"], "opening Planning")
+    if replies:
+        script["clarify"] = step(open_route) if open_route else None
+        script["reply"] = _message_of(replies[0])
+        route = first([r for r in replies if r["schema"] == "RouteDecision"], "reply Understanding")
+        plan = first([r for r in replies if r["schema"] == "PlanDraft"], "reply Planning")
+        script["question"] = replies[0]["turns"][0]["text"] if replies[0]["turns"][0].get("role") == "user" else ""
+    else:
+        route, plan = open_route, open_plan
+    script["route"] = step(route) if route else None
+    script["plan"] = step(plan) if plan else None
+    answer = first(answers, "main Analyst answer")
+    script["answer"] = step(answer) if answer else None
+    if not script["question"]:
+        anchor = open_route or open_plan or route or plan
+        if anchor:
+            script["question"] = _message_of(anchor)
+        elif answer:
+            script["question"] = {p["path"]: p["value"] for p in answer["prompts"]}.get("answer.question", "")
+    branches: dict[str, dict] = {}
+    for r in live:
+        if not _after_answer(r):
+            continue
+        message = _message_of(r)
+        if not message and r["schema"] != "TurnDecision":
+            continue
+        key = "fu-" + digest(norm_text(message))[:12]
+        branch = branches.setdefault(key, {"key": key, "message": message, "check": None, "route": None,
+                                           "plan": None, "answer": None})
+        slot = {"TurnDecision": "check", "RouteDecision": "route", "PlanDraft": "plan",
+                "GroundedNarrative": "answer"}[r["schema"]]
+        if branch[slot] is None:
+            branch[slot] = step(r)
+        else:
+            notes.append(f"Two {slot} steps answer the same follow-up; the replay uses the first.")
+    script["followups"] = list(branches.values())
+    return script, notes
+
+
+def script_fingerprint(script: dict, settings: dict) -> str:
+    """What a replay depends on: written messages and outputs, graph and domain (not derived text)."""
+    def strip(s):
+        return {"output": s["output"]} if s else None
+    return digest({
+        "graph": (settings.get("graph") or {}).get("id"),
+        "domain": settings.get("domain_id"),
+        "question": script["question"], "reply": script["reply"],
+        "steps": {k: strip(script[k]) for k in ("clarify", "route", "plan", "answer")},
+        "followups": sorted(([f["message"]] + [strip(f[k]) for k in ("check", "route", "plan", "answer")]
+                             for f in script["followups"]), key=json.dumps),
+    })
+
+
+def _payload(capture) -> dict | None:
+    """The user payload of a captured model call."""
+    try:
+        return json.loads(capture["messages"][-1]["content"])
+    except (TypeError, KeyError, IndexError, ValueError):
+        return None
+
+
+def _safe(name: str) -> str:
+    return re.sub(r"[^A-Za-z0-9._-]", "_", name)[:120]
+
+
 def _asks_for_information(output) -> bool:
     return isinstance(output, dict) and bool(
         output.get("ambiguity") or output.get("missing_information") or output.get("supported") is False
@@ -557,11 +686,12 @@ def _auto_tags(rec, problem_id, operation_id, ref_backends) -> dict:
 
 
 class Store:
-    def __init__(self, data_root: Path, workspace: Path, catalog: Catalog, schemas: Schemas):
+    def __init__(self, data_root: Path, workspace: Path, catalog: Catalog, schemas: Schemas, engine=None):
         self.data_root = data_root.resolve()
         self.workspace = workspace
         self.catalog = catalog
         self.schemas = schemas
+        self.engine = engine
         self.lock = threading.RLock()
         self.current = None
         self.datasets: list[dict] = []
@@ -576,6 +706,10 @@ class Store:
         self.journal_path: Path | None = None
         self._strict_cache: dict[tuple, tuple] = {}
         self._issues: dict[str, list] = {}
+        self._cases: dict[str, dict] | None = None
+        self._contexts: dict[str, dict | None] = {}
+        self._library: list[dict] | None = None
+        self._settings_cache: dict | None = None
 
     # ---------------- dataset lifecycle ----------------
     def dataset(self, key: str) -> dict:
@@ -584,16 +718,36 @@ class Store:
                 return d
         raise KeyError(f"unknown dataset {key!r}")
 
+    def home(self, info: dict) -> Path:
+        """Where a dataset's studio files live. A dataset made in the studio keeps
+        everything in its own folder; for pipeline datasets the source stays
+        untouched and the studio writes to its workspace."""
+        if info["layout"] == "studio":
+            return self.data_root / info["path"]
+        return self.workspace / info["key"]
+
+    def engine_dir(self, info: dict) -> Path:
+        return self.home(info) / "engine"
+
     def refresh_datasets(self) -> None:
         datasets = discover(self.data_root)
         name_datasets(datasets, NAMES_FILE)
         for d in datasets:
             if d["layout"] == "studio":
-                overlay, _ = self._read_journal(self.workspace / d["key"] / "journal.jsonl")
+                self._adopt_workspace_journal(d)
+                overlay, _ = self._read_journal(self.home(d) / "journal.jsonl")
                 d["rows"] = sum(1 for state in overlay.values() if not state.get("deleted"))
         if self.current:
             self.current = next((d for d in datasets if d["key"] == self.current["key"]), self.current)
         self.datasets = datasets
+
+    def _adopt_workspace_journal(self, info: dict) -> None:
+        """Older studio versions kept a created dataset's journal in the workspace."""
+        old = self.workspace / info["key"] / "journal.jsonl"
+        new = self.home(info) / "journal.jsonl"
+        if old.is_file() and not new.exists():
+            new.write_bytes(old.read_bytes())
+            old.rename(old.with_suffix(".jsonl.moved"))
 
     @staticmethod
     def _read_journal(path: Path) -> tuple[dict, list[str]]:
@@ -639,28 +793,29 @@ class Store:
             self.base = {r["id"]: r for r in base}
             self.group_alias = link_clarifications(base)
             self.order = [r["id"] for r in base]
-            self.journal_path = self.workspace / key / "journal.jsonl"
+            home = self.home(info)
+            home.mkdir(parents=True, exist_ok=True)
+            self.journal_path = home / "journal.jsonl"
             self.overlay, seen = self._read_journal(self.journal_path)
             self.order += [rid for rid in seen if rid not in self.base]
+            self._cases = None
+            self._contexts = {}
+            self._settings_cache = None
             self._recompute_issues()
             return {"dataset": info, "count": len(self.order)}
 
+    def _key_of(self, folder: Path) -> str:
+        return re.sub(r"[^A-Za-z0-9._-]", "__", str(folder.relative_to(self.data_root)))
+
     def create_dataset(self, name: str, description: str = "") -> dict:
         """Create an empty dataset under ``studio-datasets/`` and open it."""
-        name = (name or "").strip()
-        if not name:
-            raise ValueError("Give the dataset a name")
-        if len(name) > 80:
-            raise ValueError("Keep the name to 80 characters or fewer")
+        name = self._check_name(name)
         with self.lock:
-            if any(d["name"].lower() == name.lower() for d in self.datasets):
-                raise ValueError(f"A dataset named {name!r} already exists")
             slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")[:60] or "dataset"
             parent = self.data_root / STUDIO_DIR
             folder, n = parent / slug, 2
-            key_of = lambda p: re.sub(r"[^A-Za-z0-9._-]", "__", str(p.relative_to(self.data_root)))  # noqa: E731
             # A leftover workspace would bring back an old journal, so skip those names too.
-            while folder.exists() or (self.workspace / key_of(folder)).exists():
+            while folder.exists() or (self.workspace / self._key_of(folder)).exists():
                 folder, n = parent / f"{slug}-{n}", n + 1
             folder.mkdir(parents=True)
             marker = {
@@ -668,12 +823,129 @@ class Store:
                 "name": name,
                 "description": (description or "").strip(),
                 "created_at": utc_now(),
-                "note": "Created empty in Dataset Studio. Its conversations live in the studio workspace "
-                        "journal and export to needs-context.jsonl.",
+                "note": "Created in Dataset Studio. journal.jsonl holds every step; conversations.json the graph "
+                        "and domain of each conversation; engine/ the replayed model inputs and GraphMine results.",
             }
             (folder / STUDIO_MARKER).write_text(json.dumps(marker, indent=2, ensure_ascii=False) + "\n")
             self.refresh_datasets()
-            return {**self.open(key_of(folder)), "datasets": self.datasets}
+            return {**self.open(self._key_of(folder)), "datasets": self.datasets}
+
+    def _check_name(self, name: str, *, except_key: str | None = None) -> str:
+        name = (name or "").strip()
+        if not name:
+            raise ValueError("Give the dataset a name")
+        if len(name) > 80:
+            raise ValueError("Keep the name to 80 characters or fewer")
+        if any(d["name"].lower() == name.lower() and d["key"] != except_key for d in self.datasets):
+            raise ValueError(f"A dataset named {name!r} already exists")
+        return name
+
+    def update_dataset(self, key: str, name: str, description: str = "") -> dict:
+        """Rename or re-describe a dataset made in the studio (its folder keeps its name)."""
+        with self.lock:
+            info = self.dataset(key)
+            if info["layout"] != "studio":
+                raise ValueError("Only datasets made in the studio can be renamed here; "
+                                 "name pipeline datasets in dataset-names.json")
+            name = self._check_name(name, except_key=key)
+            path = self.home(info) / STUDIO_MARKER
+            marker = json.loads(path.read_text())
+            marker.update({"name": name, "description": (description or "").strip(), "updated_at": utc_now()})
+            path.write_text(json.dumps(marker, indent=2, ensure_ascii=False) + "\n")
+            self.refresh_datasets()
+            return {"dataset": self.dataset(key), "datasets": self.datasets}
+
+    def delete_dataset(self, key: str) -> dict:
+        """Move a studio-made dataset to studio-datasets/.deleted/ (restorable by moving it back)."""
+        with self.lock:
+            info = self.dataset(key)
+            if info["layout"] != "studio":
+                raise ValueError("Only datasets made in the studio can be deleted here")
+            folder = self.home(info)
+            trash = self.data_root / STUDIO_DIR / ".deleted"
+            trash.mkdir(parents=True, exist_ok=True)
+            target = trash / f"{folder.name}-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+            folder.rename(target)
+            was_open = self.current and self.current["key"] == key
+            self.refresh_datasets()
+            if was_open:
+                self.current = None
+                fallback = next((d for d in self.datasets if d["layout"] == "reusable"),
+                                self.datasets[0] if self.datasets else None)
+                if fallback:
+                    self.open(fallback["key"])
+                else:
+                    self.base, self.order, self.overlay, self.journal_path = {}, [], {}, None
+            return {"moved_to": str(target), "datasets": self.datasets,
+                    "current": self.current["key"] if self.current else None}
+
+    # ---------------- conversation settings: graph and domain ----------------
+    def _settings_path(self) -> Path:
+        return self.home(self.current) / "conversations.json"
+
+    def _studio_settings(self) -> dict:
+        if self._settings_cache is None:
+            path = self._settings_path() if self.current else None
+            self._settings_cache = json.loads(path.read_text()) if path and path.is_file() else {}
+        return self._settings_cache
+
+    def _write_settings(self, settings: dict) -> None:
+        path = self._settings_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(settings, indent=2, ensure_ascii=False) + "\n")
+        tmp.replace(path)
+        self._settings_cache = settings
+
+    def _case_map(self) -> dict:
+        """Graph, attachments and domain of every case in a pipeline dataset."""
+        if self._cases is None:
+            self._cases = {}
+            path = self.data_root / self.current["path"] / "cases.jsonl"
+            if self.current["layout"] == "reusable" and path.is_file():
+                for line in path.open():
+                    c = json.loads(line)
+                    self._cases[c["id"]] = {"graph": c.get("graph"), "attachments": c.get("attachments") or {},
+                                            "domain_id": c.get("domain_id") or "general", "lineage": c.get("lineage")}
+        return self._cases
+
+    def conversation_settings(self, group: str) -> dict | None:
+        """Graph and domain the agent replays this conversation on, or None."""
+        own = self._studio_settings().get(group)
+        if own:
+            return own
+        case = self._case_map().get(group)
+        if case and case.get("graph"):
+            graph_id = digest({"graph": case["graph"], "attachments": case["attachments"]})[:16]
+            return {"domain_id": case["domain_id"], "source": "case",
+                    "graph": {"id": graph_id, "name": case["lineage"] or group, "origin": "case",
+                              "vertices": len(case["graph"].get("vertices", [])),
+                              "edges": len(case["graph"].get("edges", []))}}
+        return None
+
+    def set_conversation_settings(self, group: str, *, domain_id: str, graph_id: str) -> dict:
+        with self.lock:
+            if domain_id not in {d["id"] for d in self.catalog.domains}:
+                raise ValueError(f"Unknown domain {domain_id!r}")
+            graph = self._graph_meta(graph_id)
+            settings = self._studio_settings()
+            entry = settings.get(group, {"created_at": utc_now()})
+            entry.update({"domain_id": domain_id, "graph": graph, "updated_at": utc_now()})
+            settings[group] = entry
+            self._write_settings(settings)
+            self._contexts.pop(group, None)
+            return entry
+
+    def _graph_input(self, settings: dict, group: str) -> tuple[dict, dict]:
+        """(graph file for the agent, attachments) for a conversation's settings."""
+        if settings.get("source") == "case":
+            case = self._case_map()[group]
+            return ({"filename": "dataset.json", "content": json.dumps(case["graph"], allow_nan=False).encode(),
+                     "media_type": "application/json", "directed": False}, case["attachments"])
+        stored = self._read_graph(settings["graph"]["id"])
+        return ({"filename": stored["filename"], "content": stored["content"].encode(),
+                 "media_type": stored.get("media_type"), "directed": stored.get("directed", False)},
+                stored.get("attachments") or {})
 
     def template(self, schema: str, want: str = "any", operation: str | None = None) -> dict:
         """A real expected output to start a new step from: the open dataset first, then the others."""
@@ -705,6 +977,293 @@ class Store:
                 if pick:
                     return {"output": pick["output"], "source": f"{info['name']} · {pick['id']}"}
         raise KeyError(f"no {schema} example in any dataset")
+
+    # ---------------- graphs: the open dataset's own and the case library ----------------
+    def _graphs_dir(self) -> Path:
+        return self.home(self.current) / "graphs"
+
+    def _read_graph(self, graph_id: str) -> dict:
+        path = self._graphs_dir() / f"{_safe(graph_id)}.json"
+        if not path.is_file():
+            raise KeyError(f"graph {graph_id}")
+        return json.loads(path.read_text())
+
+    def _graph_meta(self, graph_id: str) -> dict:
+        stored = self._read_graph(graph_id)
+        return {k: stored.get(k) for k in ("id", "name", "origin", "filename", "directed", "vertices", "edges")}
+
+    def _library_index(self) -> list[dict]:
+        """Distinct graphs (with attachments) used by cases of every pipeline dataset."""
+        if self._library is None:
+            seen = {}
+            for info in self.datasets:
+                path = self.data_root / info["path"] / "cases.jsonl"
+                if info["layout"] != "reusable" or not path.is_file():
+                    continue
+                for line in path.open():
+                    c = json.loads(line)
+                    if not c.get("graph"):
+                        continue
+                    gid = digest({"graph": c["graph"], "attachments": c.get("attachments") or {}})[:16]
+                    if gid not in seen:
+                        seen[gid] = {"id": gid, "name": c.get("lineage") or c["id"], "origin": "library",
+                                     "vertices": len(c["graph"].get("vertices", [])),
+                                     "edges": len(c["graph"].get("edges", [])),
+                                     "attachments": sorted((c.get("attachments") or {}).keys()),
+                                     "example_question": (c.get("task") or {}).get("question", "")[:160],
+                                     "dataset": info["name"],
+                                     "_graph": c["graph"], "_attachments": c.get("attachments") or {}}
+            self._library = list(seen.values())
+        return self._library
+
+    def graphs(self) -> dict:
+        with self.lock:
+            own = []
+            if self.current and self._graphs_dir().is_dir():
+                for path in sorted(self._graphs_dir().glob("*.json")):
+                    stored = json.loads(path.read_text())
+                    own.append({k: stored.get(k) for k in ("id", "name", "origin", "filename", "directed",
+                                                           "vertices", "edges", "added_at")})
+            library = [{k: v for k, v in g.items() if not k.startswith("_")} for g in self._library_index()]
+            return {"dataset": own, "library": library}
+
+    def _store_graph(self, record: dict) -> dict:
+        folder = self._graphs_dir()
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / f"{_safe(record['id'])}.json"
+        if not path.is_file():
+            path.write_text(json.dumps({**record, "added_at": utc_now()}, ensure_ascii=False))
+        return self._graph_meta(record["id"])
+
+    def use_library_graph(self, library_id: str) -> dict:
+        with self.lock:
+            item = next((g for g in self._library_index() if g["id"] == library_id), None)
+            if item is None:
+                raise KeyError(f"library graph {library_id}")
+            return self._store_graph({
+                "id": item["id"], "name": item["name"], "origin": "library", "filename": "dataset.json",
+                "media_type": "application/json", "directed": False,
+                "content": json.dumps(item["_graph"], allow_nan=False), "attachments": item["_attachments"],
+                "vertices": item["vertices"], "edges": item["edges"]})
+
+    def upload_graph(self, name: str, filename: str, content: str, directed: bool) -> dict:
+        """Store an uploaded graph after the agent's own ingestion accepts it."""
+        if not content:
+            raise ValueError("The file is empty")
+        filename = Path(filename or "graph.json").name
+        suffix = Path(filename).suffix.lower()
+        if suffix not in (".json", ".csv", ".tsv", ".txt"):
+            raise ValueError("Upload a GraphMine graph (.json) or an edge list (.csv, .tsv, .txt)")
+        media = "application/json" if suffix == ".json" else "text/csv"
+        if not self.engine or not self.engine.available:
+            raise ValueError("Uploads are checked by the GraphMine agent, which is not available: "
+                             + ((self.engine and self.engine.error) or "start the studio with the repository's .venv"))
+        meta = self.engine.inspect_graph(filename, content.encode(), media, directed, self.engine_dir(self.current) / "tmp")
+        with self.lock:
+            return self._store_graph({
+                "id": digest({"content": content, "directed": directed, "filename": filename})[:16],
+                "name": (name or "").strip() or meta.get("name") or filename, "origin": "upload",
+                "filename": filename, "media_type": media, "directed": directed, "content": content,
+                "attachments": {}, "vertices": meta.get("vertices"), "edges": meta.get("edges")})
+
+    # ---------------- replaying conversations through the agent ----------------
+    def _context_path(self, group: str) -> Path:
+        return self.engine_dir(self.current) / "context" / f"{_safe(group)[:80]}-{digest(group)[:8]}.json"
+
+    def _context(self, group: str) -> dict | None:
+        if group not in self._contexts:
+            path = self._context_path(group)
+            self._contexts[group] = json.loads(path.read_text()) if path.is_file() else None
+        return self._contexts[group]
+
+    def _group_rows(self, group: str) -> list[dict]:
+        return [ex for ex in (self.effective(i) for i in self.ids()) if ex["group"] == group]
+
+    def _fingerprint_of(self, group: str, rows: list[dict] | None = None) -> str | None:
+        settings = self.conversation_settings(group)
+        if not settings:
+            return None
+        script, _ = conversation_script(rows if rows is not None else self._group_rows(group))
+        return script_fingerprint(script, settings)
+
+    def conversation_summary(self, group: str, rows: list[dict] | None = None) -> dict:
+        """What the studio knows about replaying this conversation."""
+        settings = self.conversation_settings(group)
+        engine_ok = bool(self.engine and self.engine.available)
+        out = {"group": group, "replayable": bool(settings) and engine_ok, "settings": settings,
+               "built": False, "fresh": False}
+        report = self._context(group)
+        if report:
+            out.update({
+                "built": True,
+                "fresh": settings is not None and report.get("fingerprint") == self._fingerprint_of(group, rows),
+                "built_at": report.get("built_at"), "needs_run": report.get("needs_run", False),
+                "ran": bool(report.get("facts")) or bool(report.get("runs")) or bool(report.get("cached_runs")),
+                "main": {k: (report.get("main") or {}).get(k) for k in ("status", "message", "operation_id")},
+                "facts": len(report.get("facts") or []),
+                "captured": sorted(report.get("steps") or {}),
+                "next": [{k: n.get(k) for k in ("branch", "schema", "operation_id")} for n in report.get("next") or []],
+                "events": report.get("events") or [],
+                "notes": report.get("notes") or [],
+            })
+        return out
+
+    def conversation_summaries(self, examples: list[dict]) -> dict:
+        groups = defaultdict(list)
+        for ex in examples:
+            groups[ex["group"]].append(ex)
+        wanted = set(self._studio_settings()) | {g for g in groups if self._context(g)}
+        out = {g: self.conversation_summary(g, groups.get(g, [])) for g in wanted if g in groups}
+        if self.current and self.current["layout"] == "reusable":
+            # Every case can be replayed; report that cheaply without fingerprints.
+            cases = self._case_map()
+            for g in groups:
+                if g not in out and g in cases:
+                    out[g] = {"group": g, "replayable": bool(self.engine and self.engine.available),
+                              "settings": None, "built": False, "fresh": False, "case": True}
+        return out
+
+    def build_context(self, group: str, *, run: bool = False) -> dict:
+        if not self.engine or not self.engine.available:
+            raise ValueError("The replay engine is not available: "
+                             + ((self.engine and self.engine.error) or "start the studio with the repository's .venv"))
+        with self.lock:
+            rows = [r for r in self._group_rows(group) if not r["deleted"]]
+            if not rows:
+                raise KeyError(f"conversation {group}")
+            settings = self.conversation_settings(group)
+            if not settings:
+                raise ValueError("Choose a graph and domain for this conversation first")
+            script, notes = conversation_script(rows)
+            graph, attachments = self._graph_input(settings, group)
+            engine_dir = self.engine_dir(self.current)
+            fingerprint = script_fingerprint(script, settings)
+            dataset_key = self.current["key"]
+        # The engine has its own lock; a GraphMine run must not block browsing.
+        report = self.engine.build({**script, "graph": graph, "attachments": attachments,
+                                    "domain_id": settings["domain_id"]},
+                                   run=run, run_dir=engine_dir / "runs", tmp_root=engine_dir / "tmp")
+        report.update({"group": group, "fingerprint": fingerprint, "notes": notes, "question": script["question"]})
+        with self.lock:
+            if not self.current or self.current["key"] != dataset_key:
+                raise LookupError("The open dataset changed while the conversation was being built")
+            path = self._context_path(group)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(report, ensure_ascii=False))
+            self._contexts[group] = report
+            before = dict(self._issues)
+            changed = self._apply_context(group, report)
+            self._recompute_issues()
+            return {"summary": self.conversation_summary(group), "context": self._public_context(report),
+                    "examples": [self.effective(i) for i in changed], "issues": self._changed_issue_map(before)}
+
+    def _apply_context(self, group: str, report: dict) -> list[str]:
+        """Show a step written here with the history and request the agent actually sends."""
+        changed = []
+        for rid, capture in (report.get("steps") or {}).items():
+            if rid in self.base or rid not in self.overlay or self.overlay[rid].get("clone_of"):
+                continue
+            messages = capture["messages"]
+            try:
+                payload = json.loads(messages[-1]["content"])
+            except ValueError:
+                continue
+            state = dict(self.overlay[rid])
+            turns = [parse_turn(m["role"], m["content"]) for m in messages[1:-1]]
+            fields = prompt_fields(payload) or state.get("prompt_fields", [])
+            if turns == state.get("turns") and fields == state.get("prompt_fields") and "prompts" not in state:
+                continue
+            state.update({"turns": turns, "prompt_fields": fields})
+            state.pop("prompts", None)
+            self._write("context", rid, state)
+            changed.append(rid)
+        return changed
+
+    @staticmethod
+    def _public_context(report: dict) -> dict:
+        """The build report for the browser: inputs of the next steps and the facts."""
+        return {k: report.get(k) for k in ("built_at", "seconds", "next", "events", "main", "facts",
+                                            "followup_options", "derived", "needs_run", "runs", "cached_runs",
+                                            "notes", "question")}
+
+    def conversation_context(self, group: str) -> dict:
+        with self.lock:
+            report = self._context(group)
+            return {"summary": self.conversation_summary(group),
+                    "context": self._public_context(report) if report else None}
+
+    def preview_understanding(self, *, question: str, domain_id: str, graph_id: str) -> dict:
+        """The Understanding input for a question that has no steps yet."""
+        if not self.engine or not self.engine.available:
+            raise ValueError("The replay engine is not available")
+        with self.lock:
+            settings = {"domain_id": domain_id, "graph": self._graph_meta(graph_id), "source": "studio"}
+            graph, attachments = self._graph_input(settings, "")
+            engine_dir = self.engine_dir(self.current)
+        script = {"question": question, "clarify": None, "reply": None, "route": None, "plan": None,
+                  "answer": None, "followups": [], "graph": graph, "attachments": attachments,
+                  "domain_id": domain_id}
+        report = self.engine.build(script, run=False, run_dir=engine_dir / "runs", tmp_root=engine_dir / "tmp")
+        first = next((n for n in report["next"] if n.get("messages")), None)
+        return {"messages": first["messages"] if first else None, "events": report["events"]}
+
+    def _freshness(self) -> dict:
+        """group -> (fresh, captured row ids) for every conversation that was built."""
+        out = {}
+        if not self.current:
+            return out
+        folder = self.engine_dir(self.current) / "context"
+        if folder.is_dir():
+            for path in folder.glob("*.json"):
+                try:
+                    report = json.loads(path.read_text())
+                except ValueError:
+                    continue
+                group = report.get("group")
+                if group:
+                    self._contexts.setdefault(group, report)
+        groups = defaultdict(list)
+        contexts = {g: r for g, r in self._contexts.items() if r}
+        if not contexts:
+            return out
+        for ex in (self.effective(i) for i in self.ids()):
+            if ex["group"] in contexts:
+                groups[ex["group"]].append(ex)
+        for group, report in contexts.items():
+            fresh = report.get("fingerprint") == self._fingerprint_of(group, groups.get(group, []))
+            out[group] = (fresh, set(report.get("steps") or {}))
+        return out
+
+    def duplicate_conversation(self, group: str) -> dict:
+        """Copy every step into a new conversation; original steps keep their model context."""
+        with self.lock:
+            rows = [r for r in self._group_rows(group) if not r["deleted"]]
+            if not rows:
+                raise KeyError(f"conversation {group}")
+            new_group = f"studio-conv-{uuid.uuid4().hex[:12]}"
+            before = dict(self._issues)
+            ids = []
+            for r in rows:
+                if r["kind"] == "new":
+                    state = {k: v for k, v in self.overlay[r["id"]].items()
+                             if k in ("adapter", "schema", "split", "prompt_fields", "prompts", "turns", "output", "tags")}
+                else:
+                    state = {"clone_of": r.get("clone_of") or r["id"], "split": r["split"], "turns": r["turns"],
+                             "prompts": {p["path"]: p["value"] for p in r["prompts"]}, "output": r["output"]}
+                    if r["manual_tags"]:
+                        state["tags"] = dict(r["manual_tags"])
+                state["group"] = new_group
+                rid = f"studio-{uuid.uuid4().hex[:12]}"
+                self._write("duplicate", rid, state)
+                ids.append(rid)
+            settings = self.conversation_settings(group)
+            if settings and self.current["layout"] == "studio":
+                own = self._studio_settings()
+                own[new_group] = {**settings, "created_at": utc_now(), "duplicated_from": group}
+                self._write_settings(own)
+            self._recompute_issues()
+            return {"group": new_group, "examples": [self.effective(i) for i in ids],
+                    "issues": self._changed_issue_map(before)}
 
     @staticmethod
     def _fingerprint(ds_path: Path) -> list:
@@ -764,7 +1323,9 @@ class Store:
             "schema": state.get("schema") or base.get("schema"),
             "variant": base.get("variant") if kind != "new" else "manual",
             "group": self.group_alias.get(group, group),
-            "lineage": base.get("lineage"),
+            # A step written here takes the source of its conversation's graph.
+            "lineage": base.get("lineage") or (((self._studio_settings().get(self.group_alias.get(group, group)) or {}).get("graph") or {})
+                                                .get("name") if kind == "new" else None),
             "case_tags": base.get("case_tags", []),
             "expected_status": base.get("expected_status"),
             "domain_id": base.get("domain_id"),
@@ -856,7 +1417,31 @@ class Store:
         if not prompts or not any((p.get("value") or "").strip() for p in prompts):
             add("error", "prompts", "The user question is empty.")
         if ex.get("needs_context"):
-            add("info", "context", "New example without model context: exported to needs-context.jsonl, not to SFT files.")
+            replay = (context or {}).get("replay", {}).get(ex.get("group"))
+            if replay is None:
+                add("info", "context", "Written here, so it has no model input yet. Choose a graph and build the "
+                                       "conversation to export it as a training row; until then it goes to "
+                                       "needs-context.jsonl.")
+            elif ex["id"] not in replay[1]:
+                add("warning", "context", "The last build of this conversation did not reach this step, so it has no "
+                                          "model input and goes to needs-context.jsonl.")
+            elif not replay[0]:
+                add("warning", "context", "The conversation changed after its last build: rebuild it so this step's "
+                                          "model input matches the steps before it.")
+            elif schema == "GroundedNarrative" and isinstance(output, dict):
+                problem = ((self._contexts.get(ex["group"]) or {}).get("checks") or {}).get(ex["id"])
+                if problem:
+                    add("error", "output", f"The agent rejects this answer: {problem}")
+            if replay is not None and ex["id"] in replay[1] and schema == "GroundedNarrative" \
+                    and isinstance(output, dict) and self.engine and self.engine.available:
+                # Cited facts can be checked at once against the last analyst input.
+                capture = ((self._contexts.get(ex["group"]) or {}).get("steps") or {}).get(ex["id"])
+                payload = _payload(capture)
+                if payload:
+                    from studio_engine import narrative_problem
+                    problem = narrative_problem(self.engine.m, None, output, payload)
+                    if problem and not any(i["message"].endswith(problem) for i in issues):
+                        add("error", "output", f"The agent would reject this answer: {problem}")
         if ex.get("integrity"):
             add("warning", "integrity", ex["integrity"])
         if context and not ex.get("deleted"):
@@ -880,8 +1465,10 @@ class Store:
                 lineage_splits[ex["lineage"]].add(ex["split"])
             if ex["prompts"]:
                 question_splits[norm_text(ex["prompts"][0]["value"])].add(ex["split"])
-        context = {"lineage_splits": lineage_splits, "question_splits": question_splits}
+        context = {"lineage_splits": lineage_splits, "question_splits": question_splits,
+                   "replay": self._freshness()}
         self._issues = {ex["id"]: self.validate(ex, context) for ex in exs}
+
 
     # ---------------- mutations ----------------
     def _write(self, op: str, rid: str, state: dict | None) -> None:
@@ -1002,36 +1589,6 @@ class Store:
             self._recompute_issues()
             return {"examples": [self.effective(i) for i in ids], "issues": self._changed_issue_map(before)}
 
-    def create(self, draft: dict) -> dict:
-        with self.lock:
-            before = dict(self._issues)
-            clone_of = draft.get("clone_of")
-            rid = draft.get("id") or f"studio-{uuid.uuid4().hex[:12]}"
-            if rid in self.base or rid in self.overlay:
-                raise ValueError("id already exists")
-            if clone_of:
-                source = self.effective(clone_of)
-                if source["kind"] == "new":
-                    raise ValueError("Clone an example that has model context")
-                root = self.overlay.get(clone_of, {}).get("clone_of") or clone_of
-                if root not in self.base:
-                    raise ValueError("clone source has no base row")
-                state = {
-                    "clone_of": root,
-                    "prompts": {p["path"]: p["value"] for p in source["prompts"]},
-                    "turns": source["turns"],
-                    "output": source["output"],
-                    "split": source["split"],
-                    "group": source["group"],
-                }
-                if source["manual_tags"]:
-                    state["tags"] = dict(source["manual_tags"])
-            else:
-                state = self._new_state(draft)
-            self._write("create", rid, state)
-            self._recompute_issues()
-            return {"example": self.effective(rid), "issues": self._changed_issue_map(before)}
-
     @staticmethod
     def _new_state(draft: dict) -> dict:
         """Journal state for an example written in the studio (no model context)."""
@@ -1125,10 +1682,27 @@ class Store:
             stream.seek(base["offset"])
             return json.loads(stream.readline())
 
+    def captured_messages(self, ex: dict) -> tuple[list | None, bool]:
+        """(messages the agent sends for a step written here, whether its build is current)."""
+        report = self._context(ex["group"])
+        capture = ((report or {}).get("steps") or {}).get(ex["id"])
+        if not capture:
+            return None, False
+        return capture["messages"], report.get("fingerprint") == self._fingerprint_of(ex["group"])
+
     def context(self, rid: str) -> dict:
         row = self.raw_row(rid)
         if row is None:
-            return {"available": False}
+            ex = self.effective(rid)
+            messages, fresh = self.captured_messages(ex)
+            if not messages:
+                return {"available": False, "replayable": bool(self.conversation_settings(ex["group"]))}
+            return {"available": True, "captured": True, "fresh": fresh,
+                    "built_at": (self._context(ex["group"]) or {}).get("built_at"),
+                    "system": messages[0]["content"] if messages[0]["role"] == "system" else "",
+                    "history": [parse_turn(m["role"], m["content"]) for m in messages[1:-1]],
+                    "payload": _payload({"messages": messages}) or {"text": messages[-1]["content"]},
+                    "user_chars": len(messages[-1]["content"]), "source_id": None}
         messages = row["messages"]
         try:
             payload = json.loads(messages[-2]["content"])
@@ -1147,7 +1721,7 @@ class Store:
         if not re.fullmatch(r"[A-Za-z0-9._-]{1,80}", name or ""):
             raise ValueError("Export name may use letters, digits, dot, dash and underscore only")
         with self.lock:
-            dest = self.workspace / self.current["key"] / "exports" / name
+            dest = self.home(self.current) / "exports" / name
             if dest.exists():
                 raise ValueError(f"Export {name!r} already exists")
             dest.mkdir(parents=True)
@@ -1157,6 +1731,7 @@ class Store:
             index_rows = []
             annotations = []
             needs_context = []
+            freshness = self._freshness()
 
             def emit(fname, obj):
                 if fname not in streams:
@@ -1184,17 +1759,28 @@ class Store:
                         "manual_tags": ex["manual_tags"], "labels": ex["labels"], "review": ex["review"],
                         "notes": ex["notes"], "lineage": ex["lineage"],
                     })
+                    captured = None
                     if ex["needs_context"]:
-                        needs_context.append({
-                            "id": rid, "conversation": ex["group"], "adapter": ex["adapter"], "schema": ex["schema"], "split": ex["split"],
-                            "turns": ex["turns"], "prompts": ex["prompts"], "output": ex["output"],
-                            "tags": ex["tags"], "labels": ex["labels"], "notes": ex["notes"],
-                        })
-                        counts["needs_context"] += 1
-                        continue
+                        replay = freshness.get(ex["group"])
+                        if replay and replay[0] and rid in replay[1]:
+                            captured = ((self._contexts.get(ex["group"]) or {}).get("steps") or {})[rid]["messages"]
+                        else:
+                            reason = ("not built" if replay is None else "not reached by the last build"
+                                      if rid not in replay[1] else "changed after the last build")
+                            needs_context.append({
+                                "id": rid, "conversation": ex["group"], "reason": reason, "adapter": ex["adapter"],
+                                "schema": ex["schema"], "split": ex["split"], "turns": ex["turns"],
+                                "prompts": ex["prompts"], "output": ex["output"], "tags": ex["tags"],
+                                "labels": ex["labels"], "notes": ex["notes"],
+                            })
+                            counts["needs_context"] += 1
+                            continue
                     if errors:
                         warnings.append(f"{rid}: exported with {len(errors)} validation error(s): {errors[0]['message'][:200]}")
-                    messages, replaced = self._messages_for(ex)
+                    if captured is not None:
+                        messages, replaced = self._captured_row(ex, captured), 0
+                    else:
+                        messages, replaced = self._messages_for(ex)
                     if replaced:
                         counts["propagated_question_edits"] += replaced
                     fname = f"sft/{ex['adapter']}/{ex['split']}.jsonl"
@@ -1202,7 +1788,8 @@ class Store:
                     emit(fname, row)
                     index_rows.append({
                         "id": rid, "file": fname, "row": counts[fname], "row_sha256": digest(row),
-                        "source": ex["lineage"], "origin": ex["kind"],
+                        "source": ex["lineage"], "conversation": ex["group"],
+                        "origin": "studio-replay" if captured is not None else ex["kind"],
                         "base_row_sha256": (self.base.get(rid) or self.base.get(ex.get("clone_of") or "") or {}).get("row_sha256"),
                     })
                     counts[fname] += 1
@@ -1239,6 +1826,12 @@ class Store:
             (dest / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
             return {"path": str(dest), "counts": dict(counts), "warnings": warnings[:50],
                     "warning_count": len(warnings)}
+
+    def _captured_row(self, ex: dict, captured: list[dict]) -> list[dict]:
+        """A step written here: the agent's replayed input plus the expected output."""
+        canonical, _ = self._strict(ex["schema"], ex["output"]) if self.schemas.strict else (None, None)
+        content = canonical or json.dumps(ex["output"], ensure_ascii=False, separators=(",", ":"))
+        return [dict(m) for m in captured] + [{"role": "assistant", "content": content}]
 
     def _messages_for(self, ex: dict) -> tuple[list[dict], int]:
         source_id = ex["id"] if ex["id"] in self.base else ex.get("clone_of")
@@ -1291,7 +1884,8 @@ class Store:
 
 class Handler(BaseHTTPRequestHandler):
     store: Store = None  # type: ignore[assignment]
-    server_version = "GraphMineDatasetStudio/1.0"
+    token: str | None = None
+    server_version = "GraphMineDatasetStudio/2.0"
 
     def log_message(self, fmt, *args):  # quieter console
         if self.path.startswith("/api/") and not self.path.startswith("/api/examples"):
@@ -1323,49 +1917,75 @@ class Handler(BaseHTTPRequestHandler):
         if not self.store.current:
             raise LookupError("No dataset is open")
 
+    def _authorized(self) -> bool:
+        """Pages load freely; every data request needs the token when one is set."""
+        if not self.token or not self.path.startswith("/api/"):
+            return True
+        sent = self.headers.get("X-Studio-Token") or ""
+        return hmac.compare_digest(sent.encode(), self.token.encode())
+
+    def _with_summaries(self, result: dict) -> dict:
+        """Mutations also report where their conversations now stand (progress, rebuild needed)."""
+        examples = result.get("examples") or ([result["example"]] if result.get("example") else [])
+        groups = {ex["group"] for ex in examples}
+        if result.get("group"):
+            groups.add(result["group"])
+        result["conversations"] = {g: self.store.conversation_summary(g) for g in groups}
+        return result
+
     def do_GET(self):
         url = urlparse(self.path)
         q = {k: v[0] for k, v in parse_qs(url.query).items()}
+        if not self._authorized():
+            return self._error("This studio needs its access token", HTTPStatus.UNAUTHORIZED)
+        s = self.store
         try:
             if url.path == "/api/datasets":
-                return self._json({"datasets": self.store.datasets,
-                                   "current": self.store.current and self.store.current["key"]})
+                return self._json({"datasets": s.datasets, "current": s.current and s.current["key"]})
             if url.path == "/api/meta":
                 return self._json({
-                    "catalog": self.store.catalog.public(),
-                    "strict_schema": self.store.schemas.strict,
-                    "strict_schema_error": self.store.schemas.error,
+                    "catalog": s.catalog.public(),
+                    "strict_schema": s.schemas.strict,
+                    "strict_schema_error": s.schemas.error,
+                    "engine": s.engine.status() if s.engine else {"available": False, "error": "not loaded"},
                     "schemas": list(SCHEMAS),
                     "review_states": list(REVIEW_STATES),
-                    "dataset": self.store.current,
-                    "data_root": str(self.store.data_root),
-                    "workspace": str(self.store.workspace),
+                    "dataset": s.current,
+                    "data_root": str(s.data_root),
+                    "workspace": str(s.workspace),
                 })
+            self._require_dataset()
             if url.path == "/api/examples":
-                self._require_dataset()
-                return self._json({"dataset": self.store.current, "examples": self.store.all_effective()})
+                with s.lock:
+                    examples = s.all_effective()
+                    return self._json({"dataset": s.current, "examples": examples,
+                                       "conversations": s.conversation_summaries(examples)})
             if url.path == "/api/original":
-                self._require_dataset()
-                return self._json({"original": self.store.original(q["id"])})
+                return self._json({"original": s.original(q["id"])})
             if url.path == "/api/context":
-                self._require_dataset()
-                return self._json(self.store.context(q["id"]))
+                return self._json(s.context(q["id"]))
+            if url.path == "/api/conversation":
+                return self._json(s.conversation_context(q["group"]))
+            if url.path == "/api/graphs":
+                return self._json(s.graphs())
             if url.path == "/api/history":
-                self._require_dataset()
-                return self._json({"history": self.store.history(q["id"])})
+                return self._json({"history": s.history(q["id"])})
             if url.path == "/api/changes":
-                self._require_dataset()
-                return self._json({"changes": self.store.changes()})
+                return self._json({"changes": s.changes()})
             return self._static(url.path)
         except KeyError as error:
             return self._error(f"Not found: {error}", HTTPStatus.NOT_FOUND)
         except LookupError as error:
-            return self._error(str(error), HTTPStatus.CONFLICT)
+            if url.path.startswith("/api/"):
+                return self._error(str(error), HTTPStatus.CONFLICT)
+            return self._static(url.path)
         except Exception as error:  # noqa: BLE001
             return self._error(f"{type(error).__name__}: {error}", HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_POST(self):
         url = urlparse(self.path)
+        if not self._authorized():
+            return self._error("This studio needs its access token", HTTPStatus.UNAUTHORIZED)
         try:
             body = self._body()
             s = self.store
@@ -1373,19 +1993,38 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(s.open(body["key"]))
             if url.path == "/api/new-dataset":
                 return self._json(s.create_dataset(body.get("name", ""), body.get("description", "")))
+            if url.path == "/api/dataset/update":
+                return self._json(s.update_dataset(body["key"], body.get("name", ""), body.get("description", "")))
+            if url.path == "/api/dataset/delete":
+                return self._json(s.delete_dataset(body["key"]))
             self._require_dataset()
             if url.path == "/api/template":
                 return self._json(s.template(body.get("schema"), body.get("want") or "any", body.get("operation") or None))
             if url.path == "/api/update":
-                return self._json(s.update(body["id"], body.get("patch") or {}))
+                return self._json(self._with_summaries(s.update(body["id"], body.get("patch") or {})))
             if url.path == "/api/bulk":
-                return self._json(s.bulk(body["ids"], body.get("patch") or {}))
+                return self._json(self._with_summaries(s.bulk(body["ids"], body.get("patch") or {})))
             if url.path == "/api/update-many":
-                return self._json(s.update_many(body["patches"]))
-            if url.path == "/api/create":
-                return self._json(s.create(body))
+                return self._json(self._with_summaries(s.update_many(body["patches"])))
             if url.path == "/api/create-conversation":
-                return self._json(s.create_conversation(body))
+                return self._json(self._with_summaries(s.create_conversation(body)))
+            if url.path == "/api/conversation/duplicate":
+                return self._json(self._with_summaries(s.duplicate_conversation(body["group"])))
+            if url.path == "/api/conversation/settings":
+                s.set_conversation_settings(body["group"], domain_id=body.get("domain_id") or "general",
+                                            graph_id=body["graph_id"])
+                return self._json({"summary": s.conversation_summary(body["group"])})
+            if url.path == "/api/conversation/build":
+                return self._json(self._with_summaries(s.build_context(body["group"], run=bool(body.get("run")))))
+            if url.path == "/api/preview-understanding":
+                return self._json(s.preview_understanding(question=body.get("question", ""),
+                                                          domain_id=body.get("domain_id") or "general",
+                                                          graph_id=body["graph_id"]))
+            if url.path == "/api/graphs/use":
+                return self._json({"graph": s.use_library_graph(body["id"])})
+            if url.path == "/api/graphs/upload":
+                return self._json({"graph": s.upload_graph(body.get("name", ""), body.get("filename", ""),
+                                                           body.get("content", ""), bool(body.get("directed")))})
             if url.path == "/api/revert":
                 return self._json(s.revert(body["ids"]))
             if url.path == "/api/validate":
@@ -1398,7 +2037,9 @@ class Handler(BaseHTTPRequestHandler):
                 ex.setdefault("manual_tags", {})
                 if "tags" in draft:
                     ex["tags"] = {**ex["tags"], **{k: v for k, v in draft["tags"].items() if v}}
-                return self._json({"issues": s.validate(ex)})
+                with s.lock:
+                    context = {"lineage_splits": {}, "question_splits": {}, "replay": s._freshness()}
+                    return self._json({"issues": s.validate(ex, context)})
             if url.path == "/api/export":
                 return self._json(s.export(body.get("name", ""),
                                            exclude_rejected=bool(body.get("exclude_rejected", True)),
@@ -1425,6 +2066,26 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(HTTPStatus.OK, target.read_bytes(), ctype)
 
 
+LOOPBACK = ("127.0.0.1", "localhost", "::1")
+
+
+def access_token(args, workspace: Path) -> str | None:
+    """A token is required whenever the studio listens beyond this machine.
+    It is kept in the workspace so bookmarked links survive restarts."""
+    if args.token:
+        return args.token
+    if args.host in LOOPBACK or args.no_token:
+        return None
+    path = workspace / ".studio-token"
+    if path.is_file() and path.read_text().strip():
+        return path.read_text().strip()
+    workspace.mkdir(parents=True, exist_ok=True)
+    token = secrets.token_urlsafe(24)
+    path.write_text(token + "\n")
+    path.chmod(0o600)
+    return token
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="GraphMine Dataset Studio")
     parser.add_argument("--repo", type=Path, default=DEFAULT_REPO,
@@ -1433,32 +2094,40 @@ def main(argv=None):
                         help="Directory searched for datasets (default: <repo>/.graphmine-learning)")
     parser.add_argument("--dataset", default=None, help="Dataset key or relative path to open at startup")
     parser.add_argument("--workspace", type=Path, default=APP_DIR / "workspace",
-                        help="Where edits (journal) and exports are stored")
+                        help="Where edits to pipeline datasets, their exports and the access token are kept")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8877)
+    parser.add_argument("--token", default=None, help="Access token (default: generated when --host is not local)")
+    parser.add_argument("--no-token", action="store_true", help="Serve beyond localhost without a token (unsafe)")
     args = parser.parse_args(argv)
 
     repo = args.repo.resolve()
     data_root = (args.data_root or repo / ".graphmine-learning").resolve()
     if not data_root.is_dir():
         parser.error(f"data root not found: {data_root}")
+    workspace = args.workspace.resolve()
     schemas = Schemas(repo / "agent")
     catalog = Catalog(repo)
-    store = Store(data_root, args.workspace.resolve(), catalog, schemas)
-    if not store.datasets:
-        parser.error(f"no datasets found under {data_root}")
+    from studio_engine import Engine
+    engine = Engine(repo)
+    store = Store(data_root, workspace, catalog, schemas, engine)
     wanted = args.dataset
     choice = next((d for d in store.datasets if wanted in (d["key"], d["path"])), None) if wanted else None
-    if choice is None:
+    if choice is None and store.datasets:
         choice = next((d for d in store.datasets if d["layout"] == "reusable"), store.datasets[0])
-    store.open(choice["key"])
+    if choice:
+        store.open(choice["key"])
     Handler.store = store
-    if args.host not in ("127.0.0.1", "localhost", "::1"):
-        print("[studio] WARNING: listening beyond localhost; there is no authentication.")
+    Handler.token = access_token(args, workspace)
+    if args.host not in LOOPBACK and not Handler.token:
+        print("[studio] WARNING: listening beyond localhost without a token; anyone on the network can edit.")
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     print(f"[studio] strict schema validation: {'on' if schemas.strict else 'off (' + str(schemas.error) + ')'}")
-    print(f"[studio] {len(store.datasets)} dataset(s) under {data_root}; opened {choice['path']}")
-    print(f"[studio] open http://{args.host}:{args.port}/")
+    print(f"[studio] replay engine: {'on' if engine.available else 'off (' + str(engine.error) + ')'}")
+    print(f"[studio] {len(store.datasets)} dataset(s) under {data_root}; "
+          f"opened {choice['path'] if choice else 'none (create one in the picker)'}")
+    shown = "localhost" if args.host in ("0.0.0.0", "::") else args.host
+    print(f"[studio] open http://{shown}:{args.port}/" + (f"?token={Handler.token}" if Handler.token else ""))
     try:
         server.serve_forever()
     except KeyboardInterrupt:
