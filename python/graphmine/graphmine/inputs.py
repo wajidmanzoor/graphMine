@@ -61,6 +61,47 @@ class _VertexInput:
         return deepcopy(self._data)
 
 
+class GraphCollection:
+    """Transactions with separate vertex namespaces and unique graph IDs."""
+
+    kind = "graph_collection"
+
+    def __init__(self, data):
+        if not isinstance(data, dict) or set(data) != {"dataset_id", "graphs"}:
+            raise GraphMineError("Graph collections require dataset_id and graphs")
+        if not isinstance(data["dataset_id"], str) or not data["dataset_id"]:
+            raise GraphMineError("dataset_id must be a nonempty string")
+        if not isinstance(data["graphs"], list):
+            raise GraphMineError("Collection graphs must be an array")
+        self._graphs = tuple(Graph(row) for row in data["graphs"])
+        ids = [row["graph"]["id"] for row in data["graphs"]]
+        if len(set(ids)) != len(ids):
+            raise GraphMineError("Collection graph IDs must be unique")
+        if len({graph.directed for graph in self._graphs}) > 1:
+            raise GraphMineError("Collection graphs must have consistent direction")
+        self._data = deepcopy(data)
+        self._fingerprint = hashlib.sha256(
+            json.dumps(
+                data, sort_keys=True, separators=(",", ":"), allow_nan=False
+            ).encode()
+        ).hexdigest()
+
+    @property
+    def graphs(self):
+        return self._graphs
+
+    @property
+    def graph_count(self):
+        return len(self._graphs)
+
+    @property
+    def fingerprint(self):
+        return self._fingerprint
+
+    def to_canonical(self):
+        return deepcopy(self._data)
+
+
 class FeatureVectors(_VertexInput):
     kind = "feature_vectors"
 
@@ -170,12 +211,13 @@ class Hypergraph(_VertexInput):
 def load_input(data, kind):
     classes = {
         "graph": Graph,
+        "graph_collection": GraphCollection,
         "feature_vectors": FeatureVectors,
         "hypergraph": Hypergraph,
     }
     expected = classes[kind]
     if isinstance(data, expected):
         return data
-    if isinstance(data, (Graph, FeatureVectors, Hypergraph)):
+    if isinstance(data, (Graph, GraphCollection, FeatureVectors, Hypergraph)):
         raise GraphMineError(f"This operation requires {kind} input")
     return expected(data)

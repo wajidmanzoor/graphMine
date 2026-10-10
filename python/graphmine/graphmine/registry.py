@@ -53,6 +53,7 @@ def _load():
             density,
             entity_resolution,
             enumeration,
+            frequent_patterns,
             hypergraphs,
             influence,
             layout,

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graph_collection_input.schema.json",
+  "title": "Graph collection with independent transaction namespaces",
+  "description": "Graph IDs must be unique and all members must agree on direction. These cross-member constraints are checked by GraphCollection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dataset_id", "graphs"],
+  "properties": {
+    "dataset_id": {"type": "string", "minLength": 1},
+    "graphs": {
+      "type": "array",
+      "items": {"$ref": "graph_input.schema.json"}
+    }
+  }
+}

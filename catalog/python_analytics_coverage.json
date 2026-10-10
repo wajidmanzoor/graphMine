@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 62,
-  "problems_with_cpu_profile": 60,
+  "cpu_operation_count": 64,
+  "problems_with_cpu_profile": 62,
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-diffusion-geometry",
+      "id": "cpu-frequent-patterns",
       "status": "passed",
-      "tests": 22136,
+      "tests": 24436,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
@@ -20,16 +20,17 @@
         "tests/test_evidence_worker.py",
         "tests/test_extended_contracts.py",
         "tests/test_extended_oracles.py",
+        "tests/test_frequent_patterns.py",
         "tests/test_numerical_construction.py",
         "tests/test_small_graph_oracles.py",
         "tests/test_temporal_sampling.py",
         "tests/test_weighted_directed.py",
         "tests/test_workflows.py"
       ],
-      "report": "validation/python_analytics/cpu-diffusion-geometry.xml",
-      "report_sha256": "3d0afffaae6e0818ca2fe3ff83e79df45a26596e59f9ef6121d9f2b9e5dbcbb1",
-      "metadata": "validation/python_analytics/cpu-diffusion-geometry.xml.metadata.json",
-      "metadata_sha256": "308d4c310abb0da11223b4b121857fd727f0684a068a0fe4f599431135060ad4",
+      "report": "validation/python_analytics/cpu-frequent-patterns.xml",
+      "report_sha256": "416b0d3d1b2efc24ec4b634cf90cb6b2b39cd6d58eb11fb9462476d2d8f77cef",
+      "metadata": "validation/python_analytics/cpu-frequent-patterns.xml.metadata.json",
+      "metadata_sha256": "7a3cc2c61a079734026e7a8d35bf1dd0419fde628fe6f6d958520612efb19d6c",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -38,13 +39,14 @@
         "clarabel": "0.11.1",
         "gudhi": "3.13.0",
         "rapidfuzz": "3.14.6",
+        "igraph": "1.0.0",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
       }
     },
     {
-      "id": "gpu-0-diffusion-geometry",
+      "id": "gpu-0-frequent-patterns",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -55,10 +57,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-diffusion-geometry.xml",
-      "report_sha256": "e9f062654b0bac9f05273728709400346aa7f6d5445a67712e0daaf302deed85",
-      "metadata": "validation/python_analytics/gpu-0-diffusion-geometry.xml.metadata.json",
-      "metadata_sha256": "7616ff7ac81797c09ad22759f6371a5b18583084a7dfa512a9603622750fdfea",
+      "report": "validation/python_analytics/gpu-0-frequent-patterns.xml",
+      "report_sha256": "9ad28ca838ac18b81a2cc06d61b1566580df5455114d73af73b99efda5ed1128",
+      "metadata": "validation/python_analytics/gpu-0-frequent-patterns.xml.metadata.json",
+      "metadata_sha256": "fcefa89a084e5a428588ad087e2ca2aae2018520a4aaeb819cbb525bdd8f304a",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -67,13 +69,14 @@
         "clarabel": "0.11.1",
         "gudhi": "3.13.0",
         "rapidfuzz": "3.14.6",
+        "igraph": "1.0.0",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
       }
     },
     {
-      "id": "gpu-1-diffusion-geometry",
+      "id": "gpu-1-frequent-patterns",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -84,10 +87,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-diffusion-geometry.xml",
-      "report_sha256": "be9f756bd8747bb743377a022dc430c46a1136e062395a83f94f1d5691012073",
-      "metadata": "validation/python_analytics/gpu-1-diffusion-geometry.xml.metadata.json",
-      "metadata_sha256": "5164976425273bf2b3071bc7017061011d89eedfc15dff5924277f3b10aaff3b",
+      "report": "validation/python_analytics/gpu-1-frequent-patterns.xml",
+      "report_sha256": "8b887389e2b103e33950b0d7a410a8aa2af52a77a522b3f6b7f9bcb4b75fe8b7",
+      "metadata": "validation/python_analytics/gpu-1-frequent-patterns.xml.metadata.json",
+      "metadata_sha256": "74b31fce8395b23f0385743b27db265c581c634ae5d1fe74904c40e62e21f972",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -96,6 +99,7 @@
         "clarabel": "0.11.1",
         "gudhi": "3.13.0",
         "rapidfuzz": "3.14.6",
+        "igraph": "1.0.0",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
@@ -271,9 +275,11 @@
       "name": "Frequent Subgraph Mining",
       "contract": "problems/14_frequent_subgraph_mining/problem.json",
       "contract_sha256": "9c2cac193fd47c31c8b0d18604ebda21d65455caeb4a4614091ce3b69f4c7aad",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "frequent-subgraphs"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -924,9 +930,11 @@
       "name": "Frequent Subgraphs in One Labeled Graph",
       "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json",
       "contract_sha256": "413eb8726676ba79232e92fd7faeed081d7555115de6665f233431f214d9bc3c",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "single-graph-frequent-subgraphs"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -2951,6 +2959,121 @@
       "profile_sha256": "0b0899503d27e760cba1254c3ff86d5afa30e3065394285255e9c18db48b2b1e"
     },
     {
+      "id": "frequent-subgraphs",
+      "problem_id": "frequent_subgraph_mining",
+      "family": "pattern_mining",
+      "title": "Frequent patterns across graphs",
+      "description": "Exhaustive simple directed/undirected transaction mining. Support counts graphs, not occurrences. Includes disconnected patterns and isolated vertices within the declared edge/vertex bounds. Types are categorical; weights/times are ignored. Nonempty patterns by default; minimum_vertices=0 includes the empty pattern. BLISS canonicalization; exponential enumeration uses explicit work/output budgets.",
+      "parameters": {
+        "minimum_support_fraction": {
+          "kind": "number",
+          "required": true,
+          "description": "Strictly positive fraction of transactions containing the pattern.",
+          "minimum": 0,
+          "maximum": 1,
+          "nullable": false
+        },
+        "minimum_edges": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1,
+          "nullable": false
+        },
+        "maximum_edges": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 0,
+          "nullable": false
+        },
+        "minimum_vertices": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1,
+          "nullable": false
+        },
+        "maximum_vertices": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        },
+        "induced": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "label_semantics": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "vertex_and_edge_type",
+          "choices": [
+            "unlabeled",
+            "vertex_type",
+            "edge_type",
+            "vertex_and_edge_type"
+          ],
+          "nullable": false
+        },
+        "self_loops": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "reject",
+          "choices": [
+            "reject",
+            "drop"
+          ],
+          "nullable": false
+        },
+        "parallel_edges": {
+          "kind": "string",
+          "required": false,
+          "description": "Collapse requires identical selected edge types.",
+          "default": "reject",
+          "choices": [
+            "reject",
+            "collapse"
+          ],
+          "nullable": false
+        },
+        "include_supporting_graph_ids": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        }
+      },
+      "library": "igraph",
+      "quality": "exact",
+      "references": [
+        "https://python.igraph.org/en/main/api/igraph.GraphBase.html#canonical_permutation",
+        "https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html"
+      ],
+      "input_kind": "graph_collection",
+      "output_ports": {
+        "patterns": {
+          "type": "pattern_collection",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "0e5061233e0e5857c7b9cad7b443c3eabfa1f22179678310cc0f6b4855a9a2df"
+    },
+    {
       "id": "graphlet-counting",
       "problem_id": "graphlet_counting",
       "family": "pattern_mining",
@@ -3066,6 +3189,98 @@
         }
       },
       "profile_sha256": "00d0d4f3f25e61625cf3e04e1ce38e97b7a4440549ceb6247c2b5cd1873ff166"
+    },
+    {
+      "id": "single-graph-frequent-subgraphs",
+      "problem_id": "single_graph_frequent_subgraph_mining",
+      "family": "pattern_mining",
+      "title": "Frequent labeled patterns within one graph",
+      "description": "Exact connected labeled patterns, including single-vertex patterns, in an undirected graph. Minimum-image support is the smallest distinct host image-set size across pattern vertices over all VF2 embeddings. BLISS deduplicates patterns. Every vertex needs the selected string label/type. Edge labels, weights and times are ignored. Count mode does not provide a pattern collection. Exponential work is budgeted.",
+      "parameters": {
+        "minimum_image_support": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "max_pattern_edges": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "match_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "non_induced",
+          "choices": [
+            "non_induced",
+            "induced"
+          ],
+          "nullable": false
+        },
+        "output_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "count",
+          "choices": [
+            "count",
+            "patterns"
+          ],
+          "nullable": false
+        },
+        "vertex_label_field": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "label",
+          "choices": [
+            "label",
+            "type"
+          ],
+          "nullable": false
+        },
+        "parallel_edges": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "reject",
+          "choices": [
+            "reject",
+            "collapse"
+          ],
+          "nullable": false
+        },
+        "include_images": {
+          "kind": "boolean",
+          "required": false,
+          "description": "Include original host image sets per pattern vertex; requires patterns output.",
+          "default": false,
+          "nullable": false
+        }
+      },
+      "library": "igraph",
+      "quality": "exact",
+      "references": [
+        "https://python.igraph.org/en/main/api/igraph.GraphBase.html#canonical_permutation",
+        "https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html"
+      ],
+      "input_kind": "graph",
+      "output_ports": {
+        "patterns": {
+          "type": "pattern_collection",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "419e9dd2ad5b609b405474baac0b6b44ef83bb7b3847f0750920634151926343"
     },
     {
       "id": "subgraph-isomorphism",

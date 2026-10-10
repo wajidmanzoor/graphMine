@@ -25,14 +25,14 @@
         <p class="eyebrow">1 · Bring your data</p>
         <label class="upload-zone">Choose a file<input id="data-upload" type="file" accept=".json,.csv,.txt"><span>Graph JSON or relationship CSV</span></label>
         <details><summary>Upload settings</summary>
-          <label>Input kind<select id="upload-kind"><option value="graph">Graph</option><option value="feature_vectors">Feature vectors (JSON)</option><option value="hypergraph">Hypergraph (JSON)</option></select></label>
+          <label>Input kind<select id="upload-kind"><option value="graph">Graph</option><option value="graph_collection">Collection of graphs (JSON)</option><option value="feature_vectors">Feature vectors (JSON)</option><option value="hypergraph">Hypergraph (JSON)</option></select></label>
           <label class="check"><input id="csv-directed" type="checkbox"> CSV connections have a direction</label>
           <label>CSV from column<input id="csv-source" placeholder="source (automatic)"></label>
           <label>CSV to column<input id="csv-target" placeholder="target (automatic)"></label>
         </details>
         <button id="sample-data" class="secondary full-width">Try example team data</button>
         <label>Active input<select id="active-input"><option value="">Upload data to begin</option></select></label>
-        <label id="active-kind-label" hidden>Declared input kind<select id="active-kind"><option value="graph">Graph</option><option value="feature_vectors">Feature vectors</option><option value="hypergraph">Hypergraph</option></select></label>
+        <label id="active-kind-label" hidden>Declared input kind<select id="active-kind"><option value="graph">Graph</option><option value="graph_collection">Collection of graphs</option><option value="feature_vectors">Feature vectors</option><option value="hypergraph">Hypergraph</option></select></label>
         <p id="data-summary" class="muted">Your analysis uses the full uploaded input.</p>
         <div id="input-aliases" class="alias-list"></div>
       </div>

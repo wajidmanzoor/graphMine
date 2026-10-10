@@ -413,3 +413,55 @@ reported score substitutes for local integration tests.
   adaptation, deployed-model evaluation, deterministic queries/table operations,
   MCP, reviewed examples, memory-aware scheduling, representation caching and
   external-scale evaluation remain open. The overall goal is not complete.
+
+### Frequent-pattern and graph-collection checkpoint
+
+- Added two exact CPU profiles, bringing coverage to **64 operations across
+  62 of 70 problem contracts**. Transaction mining measures presence across
+  graphs; single-graph mining measures minimum-image support over all vertex
+  embeddings. The profiles retain their different definitions and input kinds.
+  Neither has a fixed five/six-edge cap. Candidate, time and output exhaustion
+  fail without a completed enumeration claim.
+- Transaction mining preserves direction and selected categorical types, and
+  includes disconnected patterns and isolates. Explicit vertex bounds can
+  include the empty pattern. MNI mining requires an undirected labeled host and
+  connected patterns, including singletons. Count-only output has no pattern
+  collection port. Requested image sets preserve the original typed host IDs.
+- Added public `GraphCollection` inputs, a JSON schema, API/browser upload kind,
+  and bounded per-transaction planning context. Transactions keep separate
+  vertex namespaces. The fixed `pattern_graph` selector supplies a canonical
+  pattern to downstream library calculations with its own graph fingerprint.
+  The predefined browser view displays the selected pattern and labels its
+  local vertex IDs; it does not identify them with host vertices.
+- igraph 1.0.0 supplies BLISS canonicalization, with edge subdivision encoding
+  for selected edge types. MNI uses NetworkX VF2 embeddings. Full canonical
+  keys deduplicate patterns; hashes only name results. Added igraph/texttable
+  dependency pins and igraph version provenance; the README records igraph's
+  GPL-2.0-or-later license.
+- The new suite contributes **2,300 checks**, including all 64 four-vertex
+  graphs with all 16 two-label assignments under both matching modes, directed
+  transaction shapes, independent complete pattern universes, brute-force
+  injection/image-set references, decimal support boundaries, transaction
+  multiplicity, disconnected patterns, seven/eight-edge patterns, normalization,
+  budgets and dependent pattern graphs. The initial fixture incorrectly reused
+  one mutable graph object for two transaction IDs; independent fixture copies
+  fixed it. The corrected focused suite passed before the full regression.
+- `cpu-frequent-patterns.xml` passed **24,436 tests** with CUDA hidden.
+  `gpu-0-frequent-patterns.xml` and `gpu-1-frequent-patterns.xml` each passed
+  **1,546 tests** on their physical devices. All three reports have zero
+  failures/skips and current source/contract/dependency snapshots. The audit
+  now references them. GPU coverage remains **13 cuGraph profiles**; the two
+  new mining profiles are CPU integrations.
+- Application/planner reports passed **39 tests** on both working-tree and
+  staged application sources. Firefox reports passed **nine tests** on each
+  source version, with Node absent from the server PATH. These cover graph-collection
+  upload, pattern-specific views, pattern-to-degree workflows, MNI image IDs,
+  count-only output, and all previous workspace cases. Authored model decisions
+  remain transport/schema integration evidence, not deployed-model accuracy.
+- Eight CPU contracts remain: graph edit distance/maximum common subgraph,
+  node embedding, knowledge-graph embedding, node prediction, graph prediction,
+  geolocation, hypergraph node learning and graph condensation. Native
+  adaptation, deterministic queries/table construction, MCP, reviewed examples,
+  deployed-model evaluation, memory-aware two-GPU scheduling, representation
+  caching and external-scale validation remain open. This checkpoint does not
+  complete the overall goal.

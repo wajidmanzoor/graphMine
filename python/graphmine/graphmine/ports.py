@@ -3,6 +3,11 @@
 from .exceptions import GraphMineError
 
 OUTPUT_PORTS = {
+    "frequent-subgraphs": {"patterns": "pattern_collection", "count": "scalar"},
+    "single-graph-frequent-subgraphs": {
+        "patterns": "pattern_collection",
+        "count": "scalar",
+    },
     "force-directed-layout": {"positions": "vertex_positions"},
     "influence-maximization": {"vertices": "vertex_set", "spread": "scalar"},
     "spectral-sparsification": {"graph": "graph"},

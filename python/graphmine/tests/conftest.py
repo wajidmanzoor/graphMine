@@ -57,6 +57,7 @@ def record_execution_evidence(request):
         "clarabel",
         "gudhi",
         "rapidfuzz",
+        "igraph",
         "cugraph-cu12",
         "nx-cugraph-cu12",
         "cupy-cuda12x",

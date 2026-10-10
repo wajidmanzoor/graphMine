@@ -196,6 +196,99 @@ def test_live_modes_dependent_results_and_pagination(settings, triangle_graph, m
         )
 
 
+def test_live_graph_collection_patterns_and_derived_graph(settings, triangle_graph):
+    first = json.loads(triangle_graph)
+    second = json.loads(triangle_graph)
+    second["graph"]["id"] = "path"
+    second["edges"].pop()
+    data = {"dataset_id": "two-transactions", "graphs": [first, second]}
+    with TestClient(create_app(settings)) as client:
+        session, _ = upload(client, triangle_graph)
+        response = client.post(
+            f"/api/sessions/{session}/files",
+            headers=AUTH,
+            files={
+                "file": (
+                    "transactions.json",
+                    json.dumps(data).encode(),
+                    "application/json",
+                )
+            },
+            data={"role": "attachment"},
+        )
+        assert response.status_code == 201, response.text
+        request = {
+            "mode": "normal",
+            "inputs": {
+                "database": {
+                    "file_id": response.json()["id"],
+                    "kind": "graph_collection",
+                }
+            },
+            "plan": {
+                "version": 1,
+                "device": "cpu",
+                "steps": [
+                    {
+                        "id": "mine",
+                        "operation": "frequent-subgraphs",
+                        "input": {"input": "database"},
+                        "parameters": {
+                            "minimum_support_fraction": 1,
+                            "minimum_edges": 2,
+                            "maximum_edges": 2,
+                            "minimum_vertices": 3,
+                            "maximum_vertices": 3,
+                            "include_supporting_graph_ids": True,
+                        },
+                    },
+                    {
+                        "id": "degree",
+                        "operation": "degree-centrality",
+                        "input": {
+                            "step": "mine",
+                            "port": "patterns",
+                            "select": {"kind": "pattern_graph", "index": 0},
+                        },
+                    },
+                ],
+            },
+        }
+        response = client.post(
+            f"/api/sessions/{session}/workflows", headers=AUTH, json=request
+        )
+        assert response.status_code == 201, response.text
+        record = wait(client, response.json()["id"])
+        assert record["status"] == "completed", record
+        result = client.get(
+            f"/api/workflows/{record['id']}/result", headers=AUTH
+        ).json()
+        mining = result["steps"]["mine"]["result"]
+        assert (
+            mining["input_kind"] == "graph_collection"
+            and "graph_fingerprint" not in mining
+        )
+        patterns = mining["result"]["patterns"]
+        assert len(patterns) == 1
+        assert patterns[0]["supporting_graph_ids"] == ["path", "triangle"]
+        assert (
+            patterns[0]["support_graph_count"] == 2
+            and patterns[0]["support_fraction"] == 1
+        )
+        degrees = result["steps"]["degree"]["result"]
+        assert sorted(row["score"] for row in degrees["ports"]["scores"]["value"]) == [
+            0.5,
+            0.5,
+            1,
+        ]
+        assert degrees["graph_fingerprint"] != mining["input_fingerprint"]
+        page = client.get(
+            f"/api/workflows/{record['id']}/steps/mine/ports/patterns?offset=0&limit=1",
+            headers=AUTH,
+        ).json()
+        assert page["items"] == patterns and page["complete"] and not page["has_more"]
+
+
 def test_live_review_revision_and_cache_recovery(settings, triangle_graph):
     with TestClient(create_app(settings)) as client:
         session, graph = upload(client, triangle_graph)

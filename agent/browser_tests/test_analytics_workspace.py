@@ -251,12 +251,15 @@ def typed_graph():
     }
 
 
-def upload(browser, tmp_path, graph=None):
+def upload(browser, tmp_path, graph=None, kind="graph"):
     before = browser.execute_script(
         "return window.GraphMineWorkspace.state.files.length"
     )
     path = tmp_path / "typed-graph.json"
     path.write_text(json.dumps(graph or typed_graph()))
+    if not browser.find_element(By.ID, "upload-kind").is_displayed():
+        browser.find_element(By.CSS_SELECTOR, ".data-section details summary").click()
+    Select(browser.find_element(By.ID, "upload-kind")).select_by_value(kind)
     browser.find_element(By.ID, "data-upload").send_keys(str(path))
     WebDriverWait(browser, 30).until(
         lambda d: (
@@ -265,9 +268,10 @@ def upload(browser, tmp_path, graph=None):
             and "Your data is ready" in d.find_element(By.ID, "notice").text
         )
     )
-    WebDriverWait(browser, 10).until(
-        lambda d: d.execute_script("return !!window.GraphMineWorkspace.state.cy")
-    )
+    if kind == "graph":
+        WebDriverWait(browser, 10).until(
+            lambda d: d.execute_script("return !!window.GraphMineWorkspace.state.cy")
+        )
 
 
 def status(browser, expected):
@@ -553,6 +557,139 @@ def test_pattern_input_can_bind_another_uploaded_graph(browser, tmp_path):
         )
         == 8
     )
+
+
+def test_collection_patterns_have_independent_graph_views_and_can_feed_workflow(
+    browser, tmp_path
+):
+    source = typed_graph()
+    source["vertices"] = source["vertices"][:3]
+    source["edges"] = source["edges"][:3]
+    other = json.loads(json.dumps(source))
+    other["graph"]["id"] = "path"
+    other["edges"].pop()
+    upload(
+        browser,
+        tmp_path,
+        {"dataset_id": "observations", "graphs": [source, other]},
+        kind="graph_collection",
+    )
+    assert "Each collection member" in browser.find_element(By.ID, "preview-scope").text
+    assert browser.execute_script("return window.GraphMineWorkspace.state.cy") is None
+    browser.find_element(By.CSS_SELECTOR, '[data-family="patterns"]').click()
+    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+        "frequent-subgraphs"
+    )
+    browser.find_element(By.ID, "parameter-minimum_support_fraction").send_keys("1")
+    browser.find_element(By.ID, "parameter-maximum_edges").send_keys("2")
+    browser.find_element(By.ID, "use-operation").click()
+    done(browser)
+    rows = browser.execute_script(
+        "return window.GraphMineWorkspace.state.rows.map(r=>[r.vertex_count,r.edge_count,r.support_graph_count,r.support_fraction])"
+    )
+    assert sorted(rows) == [[2, 1, 2, 1], [3, 1, 2, 1], [3, 2, 2, 1]]
+    assert (
+        "vertex IDs are local to this pattern"
+        in browser.find_element(By.ID, "preview-scope").text
+    )
+    for index in range(3):
+        browser.find_element(
+            By.CSS_SELECTOR, f'#result-table [data-result-row="{index}"] button'
+        ).click()
+        observed = browser.execute_script(
+            "const s=window.GraphMineWorkspace.state;return [s.graph.vertices.length,s.graph.edges.length,s.cy.nodes().map(n=>n.id()),s.patternId===s.rows[arguments[0]].pattern_id]",
+            index,
+        )
+        assert observed[:2] == rows[index][:2]
+        assert observed[2] == [f"i:{i}" for i in range(rows[index][0])]
+        assert observed[3]
+        selected = browser.find_elements(
+            By.CSS_SELECTOR, '#result-table tr[aria-selected="true"]'
+        )
+        assert len(selected) == 1 and selected[0].get_attribute(
+            "data-result-row"
+        ) == str(index)
+    capture(browser, "frequent-pattern-graph.png")
+    # A fixed selector supplies a graph to another registered calculation.
+    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
+    plan = browser.execute_script(
+        "return window.GraphMineWorkspace.state.record.validation.plan"
+    )
+    selected_index = next(i for i, row in enumerate(rows) if row[:2] == [3, 2])
+    plan["steps"].append(
+        {
+            "id": "degree",
+            "operation": "degree-centrality",
+            "input": {
+                "step": plan["steps"][0]["id"],
+                "port": "patterns",
+                "select": {"kind": "pattern_graph", "index": selected_index},
+            },
+        }
+    )
+    editor = browser.find_element(By.ID, "plan-editor")
+    editor.clear()
+    editor.send_keys(json.dumps(plan))
+    browser.find_element(By.ID, "save-editor").click()
+    status(browser, "ready")
+    browser.find_element(By.ID, "approve-plan").click()
+    done(browser)
+    assert sorted(row[2] for row in values(browser)) == [0.5, 0.5, 1]
+    assert "3 of 3 vertices" in browser.find_element(By.ID, "preview-scope").text
+
+
+def test_mni_pattern_images_and_count_only_output(browser, tmp_path):
+    source = typed_graph()
+    source["vertices"] = source["vertices"][:3]
+    source["edges"] = source["edges"][:3]
+    for vertex in source["vertices"]:
+        vertex["label"] = "same"
+    upload(browser, tmp_path, source)
+    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
+    plan = {
+        "version": 1,
+        "device": "cpu",
+        "steps": [
+            {
+                "id": "mni",
+                "operation": "single-graph-frequent-subgraphs",
+                "input": {"input": "main"},
+                "parameters": {
+                    "minimum_image_support": 3,
+                    "max_pattern_edges": 3,
+                    "match_mode": "induced",
+                    "output_mode": "patterns",
+                    "include_images": True,
+                },
+            },
+        ],
+    }
+    editor = browser.find_element(By.ID, "plan-editor")
+    editor.clear()
+    editor.send_keys(json.dumps(plan))
+    browser.find_element(By.ID, "save-editor").click()
+    status(browser, "ready")
+    browser.find_element(By.ID, "approve-plan").click()
+    done(browser)
+    assert browser.execute_script(
+        "return window.GraphMineWorkspace.state.rows.map(r=>r.minimum_image_support)"
+    ) == [3, 3, 3]
+    assert browser.execute_script(
+        "return window.GraphMineWorkspace.state.rows[0].images[0].host_vertices.map(v=>[typeof v,String(v)])"
+    ) == [["number", "0"], ["string", "0"], ["bigint", "9007199254740993"]]
+    plan["steps"][0]["parameters"].update(output_mode="count", include_images=False)
+    editor.clear()
+    editor.send_keys(json.dumps(plan))
+    browser.find_element(By.ID, "save-editor").click()
+    status(browser, "ready")
+    browser.find_element(By.ID, "approve-plan").click()
+    done(browser)
+    assert [
+        option.get_attribute("value")
+        for option in browser.find_elements(By.CSS_SELECTOR, "#result-port option")
+    ] == ["count"]
+    assert browser.find_element(By.CSS_SELECTOR, "#metrics strong").text == "3"
+    assert "Canonical pattern" not in browser.find_element(By.ID, "preview-scope").text
 
 
 def test_lossless_json_rejects_invalid_values_and_preserves_export(browser):

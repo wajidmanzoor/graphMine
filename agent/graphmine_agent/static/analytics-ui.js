@@ -106,7 +106,7 @@
     const f = activeFile();
     $("active-kind-label").hidden = f?.role !== "attachment";
     $("active-kind").value = state.kinds[state.active] || "graph";
-    $("data-summary").textContent = f ? `${f.original_name} · ${f.metadata?.vertex_count ?? "?"} vertices · ${f.metadata?.edge_count ?? "?"} connections. The calculation uses the full input.` : "Your analysis uses the full uploaded input.";
+    $("data-summary").textContent = f ? (state.kinds[f.id] === "graph" ? `${f.original_name} · ${f.metadata?.vertex_count ?? "?"} vertices · ${f.metadata?.edge_count ?? "?"} connections. The calculation uses the full input.` : `${f.original_name} · ${title(state.kinds[f.id] || "input")}. The calculation uses the full input.`) : "Your analysis uses the full uploaded input.";
     if (state.session) save(`graphmine.inputKinds.${state.session.id}`, W.stringify(state.kinds));
     renderParameters();
   }
@@ -125,7 +125,7 @@
     return state.previews.get(fileId);
   }
   async function previewActive() {
-    if (state.kinds[state.active] !== "graph") { renderGraph(null); $("preview-scope").textContent = "This input is not a graph. A generated graph can be viewed after computation."; return; }
+    if (state.kinds[state.active] !== "graph") { renderGraph(null); $("preview-scope").textContent = state.kinds[state.active] === "graph_collection" ? "Each collection member has its own vertices. Computed patterns can be viewed after mining." : "A generated graph can be viewed after computation."; renderParameters(); return; }
     const id = state.active, value = await preview(id);
     if (id === state.active && !state.result) renderGraph(value);
     renderParameters();
@@ -361,6 +361,7 @@
       return input?.kind === "graph" ? preview(input.file_id) : null;
     }
     const port = state.result.steps[step.input.step]?.result?.ports[step.input.port];
+    if (port?.type === "pattern_collection" && step.input.select?.kind === "pattern_graph") return port.value[Number(step.input.select.index)]?.pattern || null;
     return port?.type === "graph" ? port.value : null;
   }
   async function selectStep() {
@@ -380,7 +381,8 @@
     const port = state.port; state.rows = Array.isArray(port.value) ? port.value : [port.value]; state.page = 0; state.selected.clear(); $("table-search").value = "";
     $("result-completeness").classList.toggle("incomplete", !port.complete || !result.complete);
     $("result-completeness").textContent = `${port.complete ? "This output collection is complete." : "This output is incomplete or count-only; it cannot supply a full downstream collection."} Method quality: ${title(result.quality)}. Computed by ${result.backend.library} on ${result.backend.device.toUpperCase()}.`;
-    const graph = port.type === "graph" ? port.value : await graphForStep(stepId);
+    state.patternId = port.type === "pattern_collection" ? port.value[0]?.pattern_id || null : null;
+    const graph = port.type === "graph" ? port.value : port.type === "pattern_collection" ? port.value[0]?.pattern || null : await graphForStep(stepId);
     if (port.type === "vertex_positions") $("graph-layout").value = "computed";
     renderGraph(graph); renderOutput();
   }
@@ -416,7 +418,7 @@
   function renderPreviewScope() {
     if (!state.graph) return;
     const computed = $("graph-layout").value === "computed" && state.port?.type === "vertex_positions";
-    $("preview-scope").textContent = state.previewScope + (computed ? `Computed coordinates${state.port.value[0]?.coordinates?.length === 3 ? " (XY projection of 3D)" : ""}; display scale is uniform.` : "Layout positions are for display only.");
+    $("preview-scope").textContent = state.previewScope + (state.port?.type === "pattern_collection" ? "Canonical pattern; vertex IDs are local to this pattern. " : "") + (computed ? `Computed coordinates${state.port.value[0]?.coordinates?.length === 3 ? " (XY projection of 3D)" : ""}; display scale is uniform.` : "Layout positions are for display only.");
   }
   function layoutOptions() {
     if ($("graph-layout").value === "computed" && state.port?.type === "vertex_positions") {
@@ -429,6 +431,7 @@
   }
   function rowVertices(row) {
     if (!state.port) return [];
+    if (state.port.type === "pattern_collection") return [];
     if (state.port.type === "vertex_set") return [row];
     if (!row || typeof row !== "object" || Array.isArray(row)) return [];
     if (Array.isArray(row.vertices)) return row.vertices;
@@ -437,6 +440,9 @@
     return [];
   }
   function selectRow(row) {
+    if (state.port?.type === "pattern_collection") {
+      state.patternId = row.pattern_id; state.selected.clear(); renderGraph(row.pattern); applySelection(); return;
+    }
     const ids = rowVertices(row); if (!ids.length) return;
     state.selected = new Set(ids.map(W.idKey));
     const visible = ids.filter(id => state.cy?.getElementById(W.idKey(id)).length);
@@ -449,7 +455,7 @@
       state.cy.edges().forEach(e => e.toggleClass("faded", state.selected.size > 0 && !(state.selected.has(e.source().id()) || state.selected.has(e.target().id()))));
     }
     document.querySelectorAll("[data-result-row]").forEach(el => {
-      const ids = rowVertices(state.rows[Number(el.dataset.resultRow)]), active = ids.length > 0 && ids.every(id => state.selected.has(W.idKey(id)));
+      const row = state.rows[Number(el.dataset.resultRow)], ids = rowVertices(row), active = state.port?.type === "pattern_collection" ? row.pattern_id === state.patternId : ids.length > 0 && ids.every(id => state.selected.has(W.idKey(id)));
       el.setAttribute(el.tagName === "TR" ? "aria-selected" : "aria-pressed", String(active));
     });
   }
@@ -492,8 +498,8 @@
       const row = state.rows[index], record = objectRows && row && typeof row === "object" && !Array.isArray(row) ? row : {value: row};
       const tr = node("tr", {"data-result-row": index, "aria-selected": "false"});
       keys.forEach((key, position) => {
-        const value = record[key] ?? null, text = ["vertex", "source", "target"].includes(key) && value !== null ? W.idLabel(value) : display(value), td = node("td", {title: text});
-        if (position === 0 && rowVertices(row).length) { const button = node("button", {}, text); button.addEventListener("click", () => selectRow(row)); td.append(button); } else td.textContent = text;
+        const value = record[key] ?? null, text = state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : ["vertex", "source", "target"].includes(key) && value !== null ? W.idLabel(value) : display(value), td = node("td", {title: text});
+        if (position === 0 && (rowVertices(row).length || state.port?.type === "pattern_collection")) { const button = node("button", {}, state.port?.type === "pattern_collection" ? `View pattern ${index + 1}` : text); button.addEventListener("click", () => selectRow(row)); td.append(button); } else td.textContent = text;
         tr.append(td);
       }); body.append(tr);
     });

@@ -182,16 +182,27 @@ when cancellation of native numerical calls is required.
 ## Binding rules and results
 
 Graph inputs can refer to an uploaded graph or a generated graph port. Feature
-vector and hypergraph inputs use their declared input kinds and can be uploaded
-as JSON attachments. Input kinds must match the algorithm card.
+vector, hypergraph and graph-collection inputs use their declared input kinds
+and can be uploaded as JSON attachments. A graph collection has `dataset_id`
+and a `graphs` array of canonical graphs with unique graph IDs and consistent
+direction. Its members keep separate vertex namespaces. Input kinds must match
+the algorithm card.
 
 Available selectors are `top_vertices`, `top_vertex`, `group_vertices`,
-`vertex`, `flatten_groups`, and `groups`. They have fixed typed contracts;
+`vertex`, `flatten_groups`, `groups`, and `pattern_graph`. They have fixed typed contracts;
 arbitrary JSON paths, functions and expressions are not accepted. Vertex IDs
 remain integers or strings, preserving the distinction between `0` and `"0"`.
 Bindings of vertex sets, individual vertices or groups must match the actual
 input graph's fingerprint. Transferring IDs to a different graph, including a
 coarsened graph, requires an explicit mapping integration that is not yet added.
+
+`{"step":"mine","port":"patterns","select":{"kind":"pattern_graph","index":0}}`
+selects a canonical graph from a complete `pattern_collection` port. Its graph
+fingerprint and vertex namespace belong to that pattern. Pattern vertices must
+not be treated as original host vertices; MNI image sets explicitly record the
+host IDs when requested. Count-only mining has no patterns port. The browser's
+fixed pattern view lets users select a row to inspect that pattern's graph and
+support, and labels the separate vertex namespace.
 
 The executor validates cycles and references before running any step. It then
 checks actual output availability, completeness, graph identity and resolved

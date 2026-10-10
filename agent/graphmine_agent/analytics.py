@@ -27,7 +27,9 @@ class AnalyticsError(ValueError):
 class InputReference(BaseModel):
     model_config = ConfigDict(extra="forbid")
     file_id: str
-    kind: Literal["graph", "feature_vectors", "hypergraph"] = "graph"
+    kind: Literal["graph", "graph_collection", "feature_vectors", "hypergraph"] = (
+        "graph"
+    )
 
 
 class WorkflowRequest(BaseModel):

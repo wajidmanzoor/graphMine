@@ -283,6 +283,69 @@ Equality uses typed JSON values. Ordering applies to numbers or strings;
 timestamp strings are compared lexically and must already use a comparable
 canonical representation if temporal ordering is intended.
 
+## Frequent-pattern mining
+
+`frequent-subgraphs` takes a `GraphCollection` (`dataset_id` plus a `graphs`
+array). All members use the canonical graph format, have unique graph IDs,
+and agree on direction. A vertex ID belongs to its transaction; equal vertex
+IDs across transactions do not merge vertices or transactions. Identical graph
+content with distinct graph IDs counts as separate observations.
+
+The exact reference enumerates vertex subsets and bounded edge subsets, or
+induced vertex subsets when requested. This includes disconnected patterns
+and patterns with isolated vertices. `minimum_vertices` defaults to one;
+setting it to zero explicitly includes the empty pattern when the edge bounds
+permit it. `maximum_vertices=null` considers every size occurring in a member.
+No fixed maximum edge count is imposed. The support of an isomorphism class
+is the number of transactions containing it, regardless of occurrence count.
+The supplied decimal support fraction is compared as an exact rational; the
+displayed fraction is rounded floating point. An empty database has no patterns.
+
+`label_semantics` selects vertex `type`, edge `type`, both, or neither. Selected
+missing types form a category distinct from the empty string. Display labels,
+weights, timestamps and unselected attributes do not participate. Loops are
+rejected or explicitly dropped. Parallel edges are rejected by default; an
+explicit collapse requires identical selected edge types. The same policies
+apply to every transaction.
+
+`single-graph-frequent-subgraphs` takes one simple undirected host. It discovers
+connected patterns, including single-vertex patterns, through
+`max_pattern_edges`. Every vertex must have the selected string `label` or
+`type`; repeated values never merge distinct host vertices. Edge attributes
+are ignored. Loops are rejected and parallel-edge collapse must be explicit.
+For each canonical pattern vertex, NetworkX VF2 enumerates all induced
+isomorphisms or non-induced monomorphisms and collects distinct host images.
+MNI support is the smallest of those image-set sizes. It is neither the
+number of embeddings nor the number of edge-disjoint copies. Optional image
+sets preserve the original typed host IDs. `output_mode=count` returns an exact
+count and no pattern port; `include_images` requires pattern output.
+
+Both profiles use igraph's BLISS canonical permutation, encoding each edge as
+a subdivision vertex with a separate color category. Directed edges become
+directed two-arc paths; selected types color the original and subdivision
+vertices. The complete serialized canonical key, including categorical values,
+deduplicates patterns. SHA-256 names the resulting pattern graph; the digest
+is not the equality test. Canonical IDs are reproducible within the recorded
+library version, not promised stable across canonicalizer upgrades. Pattern
+vertex IDs are local to each pattern; they are not host identifiers.
+
+These are exponential reference integrations, subject to explicit candidate,
+time and output budgets. Budget exhaustion fails without a completed claim.
+Direct calls cooperate between library calls; the application additionally
+uses cancellable workers for hard deadlines. Pattern ports can be selected by
+the fixed `pattern_graph` workflow selector, creating a graph with its own
+fingerprint and namespace. The browser's fixed renderer switches to the graph
+belonging to the selected pattern row.
+
+Primary implementation references: [igraph BLISS canonicalization](https://python.igraph.org/en/main/api/igraph.GraphBase.html#canonical_permutation)
+and [NetworkX VF2 matching semantics](https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html).
+The independently generated graph universes and brute-force vertex injections
+in `test_frequent_patterns.py` do not use either production routine. They cover
+all 64 four-vertex graphs with all 16 binary vertex-label assignments under
+both match modes, transaction/occurrence distinctions, directed shapes, empty
+and disconnected patterns, categorical semantics, original-ID permutations,
+seven/eight-edge patterns, budget failures and downstream pattern graphs.
+
 ## Independent evidence
 
 The new oracle suite uses subsets, permutations and set partitions to check

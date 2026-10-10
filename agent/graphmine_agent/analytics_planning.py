@@ -204,7 +204,7 @@ def plan_schema(cards, aliases, device):
             ),
             _object(
                 {
-                    "kind": {"enum": ["group_vertices", "vertex"]},
+                    "kind": {"enum": ["group_vertices", "vertex", "pattern_graph"]},
                     "index": {"type": "integer", "minimum": 0},
                 }
             ),
@@ -353,6 +353,32 @@ class AnalyticsPlanner:
                 "kind": descriptor["kind"],
                 "metadata": data.get("graph", data.get("hypergraph", {})),
             }
+            if descriptor["kind"] == "graph_collection":
+                members = data.get("graphs")
+                if not isinstance(members, list) or any(
+                    not isinstance(g, dict)
+                    or not isinstance(g.get("graph"), dict)
+                    or not isinstance(g.get("vertices"), list)
+                    or not isinstance(g.get("edges"), list)
+                    for g in members
+                ):
+                    raise AnalyticsError(
+                        "Graph collections need a graphs array of canonical graph objects"
+                    )
+                context[alias]["metadata"] = {"dataset_id": data.get("dataset_id")}
+                context[alias]["graphs_count"] = len(members)
+                context[alias]["graphs_sample"] = [
+                    {
+                        "metadata": g.get("graph", {}),
+                        "vertices_count": len(g.get("vertices", [])),
+                        "edges_count": len(g.get("edges", [])),
+                        "vertices_sample": g.get("vertices", [])[:8],
+                        "edges_sample": g.get("edges", [])[:8],
+                    }
+                    for g in members[:8]
+                ]
+                if len(json.dumps(context[alias]["graphs_sample"])) > 16000:
+                    context[alias]["graphs_sample"] = []
             if len(json.dumps(context[alias]["metadata"])) > 4000:
                 context[alias]["metadata"] = {
                     "description": "Metadata omitted from bounded planning context"
@@ -473,7 +499,7 @@ class AnalyticsPlanner:
                 planning = {
                     **payload,
                     "operations": selected_cards,
-                    "binding_rules": "Only graph ports are graph inputs. Vertex selections retain their graph namespace. Every selected objective must be represented.",
+                    "binding_rules": "Graph ports and pattern_graph selections are graph inputs. Each canonical pattern has its own vertex namespace. Vertex selections retain their graph namespace. Every selected objective must be represented.",
                 }
                 for attempt in range(2):
                     proposal = await self._generate("plan", planning, schema)

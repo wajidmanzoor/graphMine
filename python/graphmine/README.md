@@ -2,7 +2,7 @@
 
 The public library separates graph input, mathematical algorithm families,
 backend selection, and result provenance. It uses NetworkX, NumPy, SciPy, CVXPY,
-GUDHI and RapidFuzz on CPU, and cuGraph on GPU. Native GraphMine and agent integration are tracked in
+GUDHI, RapidFuzz and igraph on CPU, and cuGraph on GPU. Native GraphMine and agent integration are tracked in
 [`docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md`](../../docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md).
 
 The agent now exposes evidence-checked, typed workflow endpoints for this library.
@@ -49,7 +49,7 @@ hash separately; vertex selections retain the source graph's ID namespace.
 Operations on feature vectors or hypergraphs report `input_kind` and
 `input_fingerprint`. They do not label those inputs as ordinary graphs.
 
-`FeatureVectors` and `Hypergraph` are public input classes alongside `Graph`.
+`GraphCollection`, `FeatureVectors` and `Hypergraph` are public input classes alongside `Graph`.
 Each operation card declares its `input_kind`; supplying a different kind
 raises a validation error. For example:
 
@@ -70,8 +70,32 @@ neighbors = run("knn-graph", vectors, parameters={"k": 1}, device="cpu")
 ```
 
 CPU provenance identifies the primary library (`networkx`, `numpy`, `scipy`,
-`cvxpy`, `gudhi` or `rapidfuzz`) and records dependency versions. Some operations
+`cvxpy`, `gudhi`, `rapidfuzz` or `igraph`) and records dependency versions. Some operations
 use several libraries; per-result diagnostics identify the method actually used.
+
+For transaction-based mining, each graph keeps its own vertex namespace and
+needs a unique `graph.id`:
+
+```python
+from graphmine import GraphCollection, run
+
+transactions = GraphCollection({
+    "dataset_id": "observations",
+    "graphs": [first_canonical_graph, second_canonical_graph],
+})
+patterns = run("frequent-subgraphs", transactions, device="cpu", parameters={
+    "minimum_support_fraction": 0.5,
+    "maximum_edges": 3,
+})
+```
+
+This counts transactions containing each pattern. The separate
+`single-graph-frequent-subgraphs` operation takes one undirected labeled graph
+and computes minimum-image support over all embeddings. Both use igraph BLISS
+canonical forms; MNI embeddings use NetworkX VF2. Pattern size has no fixed
+five/six-edge ceiling, although exhaustive enumeration can exhaust work budgets.
+igraph is a GPL-2.0-or-later dependency; retain its license obligations when
+redistributing an application that includes it.
 
 ## Additional CPU profiles
 

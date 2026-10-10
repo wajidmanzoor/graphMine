@@ -1,0 +1,16 @@
+{
+  "scope": "Fixed pattern renderer; source-matched staged Firefox run without Node in server PATH",
+  "report": "validation/python_analytics/browser-frequent-patterns-index.xml",
+  "image": "frequent-pattern-graph.png",
+  "image_sha256": "dac1096c22fc0123413c517fa02a6b8b19b35b0e110ce81071633041f7dd4a28",
+  "viewport": [
+    1500,
+    1050
+  ],
+  "visually_inspected": true,
+  "observations": [
+    "Selected pattern row is highlighted; pattern size and transaction support appear in the table.",
+    "The viewport shows the upper graph area; complete graph vertex/edge counts and local-ID scope are asserted by the browser test.",
+    "The same test uses the selected pattern as input to degree centrality and checks the resulting scores."
+  ]
+}

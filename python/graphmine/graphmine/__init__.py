@@ -3,7 +3,7 @@
 from .contracts import Budget
 from .dispatch import run
 from .graph import Graph
-from .inputs import FeatureVectors, Hypergraph
+from .inputs import FeatureVectors, GraphCollection, Hypergraph
 from .registry import algorithms as list_algorithms
 from .registry import families as list_families
 
@@ -12,6 +12,7 @@ __all__ = [
     "Budget",
     "FeatureVectors",
     "Graph",
+    "GraphCollection",
     "Hypergraph",
     "list_algorithms",
     "list_families",

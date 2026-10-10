@@ -390,3 +390,105 @@ async def test_previous_plan_must_belong_to_current_workspace(setup):
     with pytest.raises(AnalyticsError, match="another workspace"):
         await planner.plan(session, body)
     assert planner.calls == []
+
+
+@pytest.mark.asyncio
+async def test_graph_collection_context_and_pattern_selector_schema(
+    setup, triangle_graph
+):
+    settings, analytics, events, session, _ = setup
+    members = []
+    for i in range(10):
+        member = json.loads(triangle_graph)
+        member["graph"]["id"] = f"transaction-{i}"
+        member["vertices"].extend({"id": v, "type": "isolated"} for v in range(3, 10))
+        members.append(member)
+    file = analytics.graph_store.ingest(
+        session_id=session,
+        role=FileRole.attachment,
+        filename="transactions.json",
+        content=json.dumps({"dataset_id": "test", "graphs": members}).encode(),
+    )
+    body = PlanningRequest(
+        message="Find patterns shared by at least half of the graphs.",
+        device="cpu",
+        inputs={"main": {"file_id": file.id, "kind": "graph_collection"}},
+    )
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[
+            family(),
+            operation("frequent-subgraphs"),
+            proposal(
+                "frequent-subgraphs",
+                {"minimum_support_fraction": 0.5, "maximum_edges": 2},
+            ),
+        ],
+    )
+    result = await planner.plan(session, body)
+    assert result["status"] == "ready"
+    context = planner.calls[0][1]["inputs"]["main"]
+    assert context["kind"] == "graph_collection" and context["graphs_count"] == 10
+    assert context["metadata"] == {"dataset_id": "test"}
+    assert len(context["graphs_sample"]) == 8 and context["samples_are_excerpts"]
+    assert context["graphs_sample"][0]["vertices_count"] == 10
+    assert len(context["graphs_sample"][0]["vertices_sample"]) == 8
+    assert "vertices_count" not in context  # No combined host vertex namespace.
+    caps = await analytics.capabilities()
+    cards = [
+        c
+        for c in caps["operations"]
+        if c["id"] in {"frequent-subgraphs", "degree-centrality"}
+    ]
+    # The model schema describes a proposal, before execution policy and work
+    # budgets are added by deterministic workflow normalization.
+    plan = proposal(
+        "frequent-subgraphs", {"minimum_support_fraction": 0.5, "maximum_edges": 2}
+    )["plan"]
+    plan["steps"].append(
+        {
+            "id": "degree",
+            "operation": "degree-centrality",
+            "parameters": {},
+            "bindings": {},
+            "input": {
+                "step": "answer",
+                "port": "patterns",
+                "select": {"kind": "pattern_graph", "index": 0},
+            },
+        }
+    )
+    jsonschema.validate(
+        {"status": "ready", "message": "Inspect the first pattern", "plan": plan},
+        plan_schema(cards, {"main": {}}, "cpu"),
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "members",
+    [
+        [None],
+        [{"graph": {}, "vertices": None, "edges": []}],
+        [{"graph": {}, "vertices": [], "edges": "invalid"}],
+    ],
+)
+async def test_malformed_collection_never_reaches_model(setup, members):
+    settings, analytics, events, session, _ = setup
+    file = analytics.graph_store.ingest(
+        session_id=session,
+        role=FileRole.attachment,
+        filename="malformed-transactions.json",
+        content=json.dumps({"dataset_id": "test", "graphs": members}).encode(),
+    )
+    body = PlanningRequest(
+        message="Find recurring patterns",
+        device="cpu",
+        inputs={"main": {"file_id": file.id, "kind": "graph_collection"}},
+    )
+    planner = ReplayPlanner(settings, analytics, events, responses=[])
+    with pytest.raises(AnalyticsError, match="graphs array"):
+        await planner.plan(session, body)
+    assert planner.calls == []

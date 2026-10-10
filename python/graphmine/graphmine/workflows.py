@@ -13,7 +13,7 @@ from graphlib import CycleError, TopologicalSorter
 from .contracts import Budget
 from .dispatch import implementation_hash, run
 from .exceptions import GraphMineError
-from .graph import external_id
+from .graph import Graph, external_id
 from .inputs import load_input
 from .ports import OUTPUT_PORTS
 from .registry import algorithm
@@ -61,7 +61,12 @@ def prepare_inputs(inputs):
         _object(value, {"kind", "data"}, "workflow input")
         if set(value) != {"kind", "data"}:
             raise GraphMineError("Every workflow input needs kind and data")
-        if value["kind"] not in ("graph", "feature_vectors", "hypergraph"):
+        if value["kind"] not in (
+            "graph",
+            "graph_collection",
+            "feature_vectors",
+            "hypergraph",
+        ):
             raise GraphMineError("Unknown workflow input kind")
         result[name] = load_input(value["data"], value["kind"])
     return result
@@ -92,6 +97,16 @@ def _reference(reference, inputs, steps):
         return kind
     _object(selection, {"kind", "k", "index", "descending"}, "selection")
     method = selection.get("kind")
+    if method == "pattern_graph" and kind == "pattern_collection":
+        if (
+            set(selection) != {"kind", "index"}
+            or type(selection["index"]) is not int
+            or selection["index"] < 0
+        ):
+            raise GraphMineError(
+                "Pattern selection requires a nonnegative integer index"
+            )
+        return "graph"
     if method in ("top_vertices", "top_vertex") and kind == "vertex_scores":
         expected = {"kind", "descending"} | (
             {"k"} if method == "top_vertices" else set()
@@ -234,6 +249,7 @@ def validate_workflow(plan, inputs):
         "clarabel",
         "gudhi",
         "rapidfuzz",
+        "igraph",
         "cugraph-cu12",
         "nx-cugraph-cu12",
         "cupy-cuda12x",
@@ -282,7 +298,12 @@ def _resolve(reference, inputs, results):
     selection = reference.get("select")
     if selection:
         method = selection["kind"]
-        if method in ("top_vertices", "top_vertex"):
+        if method == "pattern_graph":
+            if selection["index"] >= len(value):
+                raise GraphMineError("Workflow selection index is out of range")
+            value = value[selection["index"]]["pattern"]
+            kind, namespace = "graph", Graph(value).fingerprint
+        elif method in ("top_vertices", "top_vertex"):
             field = port.get("score_field", "score")
             rows = [row for row in value if row.get(field) is not None]
             rows.sort(
