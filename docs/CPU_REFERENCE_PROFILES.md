@@ -87,6 +87,83 @@ remain necessary. The empirical p-value is the declared extreme-sample count
 divided by sample count, without a hidden pseudocount. Zero null variance
 produces a null z-score.
 
+### Comparison, connection and record-analysis profiles
+
+| Operation | Implemented objective and method | Limits and result interpretation |
+|---|---|---|
+| `group-steiner-tree` | SciPy/HiGHS selects vertices, edges and a root, enforces group coverage and tree edge count, then separates valid connectivity cuts until the selected graph is connected. | Returns a validated tree and a representative from every group, or explicit infeasibility. Overlapping groups may share representatives. Keeps the cheapest original parallel edge ID and removes loops. Requires nonnegative weights. Completed solver optimality is numerical, not a formal rational certificate. |
+| `network-alignment` | SciPy/HiGHS linearizes injective vertex assignment and conserved-edge terms. Every vertex in the smaller graph must be mapped. | Supports global one-to-one alignment; local many-to-one and `top_k` are not accepted. Prior rows preserve both graphs' typed IDs. Weighted conservation sums parallel weights and takes the minimum normalized weight of the conserved edge pair; unweighted conservation counts edges. Weights are nonnegative. |
+| `entity-resolution` | RapidFuzz unit-cost Levenshtein plus declared equality, shared-token and numeric-distance predicates; NetworkX connected components or a SciPy/HiGHS correlation-clustering model. | Blocking rules are a disjunction of predicate conjunctions. Missing required attributes are errors; an optional missing field makes its predicate false. Correlation clustering minimizes unit disagreements on candidate pairs; noncandidate pairs are neutral and clusters remain within candidate-graph components. Connected-component resolution may transitively merge a pair that its direct match rule rejects. |
+| `graph-anomalies` | NetworkX feature extraction and SciPy reference statistics, followed by declared standardized L1, L2 or maximum-absolute scoring. | Supports vertices, original edge instances and explicitly listed induced subgraphs. Candidate selection does not alter the reference population. Scores measure deviation from that reference, not ground-truth anomaly labels. A top-k ranking port is incomplete when other scored entities are omitted. |
+
+Alignment maximizes
+`topology_weight * sum(conserved_edge_values) + sum(selected_pair_priors)`.
+The per-pair score allocates half each incident conserved-edge contribution to
+each endpoint, so pair scores sum to the reported objective. Direction must
+match across the two graphs. Conserved edge correctness is the fraction of
+normalized graph-A edges conserved; it is null when graph A has no edges.
+
+For entity resolution, record fields are paths relative to vertex `attributes`.
+An example blocking rule is:
+
+```json
+{
+  "id": "similar_names_in_city",
+  "all": [
+    {"field": "city", "operator": "eq", "normalization": "nfkc_casefold"},
+    {"field": "name", "operator": "edit_distance", "max_distance": 2}
+  ]
+}
+```
+
+Supported operators are `eq`, `shared_token`, `edit_distance` and
+`numeric_difference`. Distance predicates require `max_distance`; edit
+distance uses a nonnegative integer and numeric distance a nonnegative number.
+Text normalization is `none`, `casefold` or `nfkc_casefold`, the last applying
+NFKC before case folding. Tokenization splits on Unicode whitespace without
+discarding punctuation. Equality distinguishes JSON value types. Optional
+missing values never match one another. `match_decision_rule` contains the
+same nonempty `all` array without a rule ID. Input edges are unused hints and
+cannot override the declared candidate or match rules. With fewer than two
+records, the reduction ratio is defined as zero because no comparisons exist.
+
+Anomaly feature definitions have a unique `name` and a `measure`:
+
+- Vertices: `degree`, `in_degree`, `out_degree`, `strength`, `in_strength`,
+  `out_strength`, `triangle_count`, `ego_edge_count`, `event_count`,
+  `in_event_count`, `out_event_count`, or `numeric_attribute`.
+- Edges: `edge_weight`, `source_degree`, `target_degree`, `common_neighbors`,
+  or `numeric_attribute`.
+- Subgraphs: `vertex_count`, `edge_count`, `density`, `weight_sum`, or
+  `numeric_attribute`.
+
+Numeric attributes additionally declare `field`. In/out features require
+directed graphs; triangle, ego and common-neighbor features require undirected
+graphs. Structural degree collapses parallel edges and counts a self-loop
+twice; strength sums weights. Incident event count retains parallel events and
+counts a self-event once. Subgraph edge counts and weight sums retain original
+edge instances; density uses the loop-free simple projection. Subgraphs are
+declared as `{id, vertices, attributes?}`; no implicit subgraph search is claimed.
+
+A normality reference is either `kind=population`, optionally naming another
+graph and a subset of its entities, or `kind=statistics` with explicit
+`location`/`scale` arrays. Features are computed against their full source graph
+before reference-entity selection. Population scale uses standard deviation
+with `ddof=0`. Centering retains a numerical origin and mean offset to avoid
+losing small deviations around large values; constant columns have exactly
+zero scale. Reference subgraphs must be supplied for an external subgraph
+population.
+
+Scoring declares `method` (`standardized_l1`, `standardized_l2`, `max_abs_z`),
+optional nonnegative `feature_weights`, and optional nonnegative
+`minimum_scale`. Let `z_j = (x_j-location_j)/max(scale_j,minimum_scale)`.
+Scores are `sum(w_j*abs(z_j))`, `sqrt(sum(w_j*z_j^2))`, or
+`max(w_j*abs(z_j))`, respectively. A zero denominator with zero deviation
+contributes zero. A nonzero deviation in an active zero-scale feature is an
+error unless the user supplied a positive floor. Zero-weight features make no
+score contribution. Results include feature values and contributions, with
+deterministic ties ordered by typed entity ID (integers before strings).
+
 ## Numerical and resource limits
 
 The mathematical models implement the stated objectives. SciPy's `milp` wraps
@@ -96,6 +173,15 @@ variables and constraints, and compares the recomputed objective with the dual
 bound. It rejects unrepresentable integer coefficients and total objective
 magnitude beyond the supported float64 integer range. A numerical certificate
 is labeled `numerical_optimum`; it is not a formal rational proof.
+
+Binary objectives are reduced onto their exact rational coefficient grid when
+the reduced integer coefficients fit the supported range. Otherwise they are
+normalized by their largest absolute coefficient, with numerical status still
+explicit. This prevents uniformly tiny costs from being discarded by absolute
+solver tolerances while preserving integer objective differences. Diagnostics
+record the scaling rule and rational unit, scaled objective/dual bound, and
+the bound and tolerance converted back to original objective units. Coefficient
+underflow after scaling is rejected.
 
 For unconstrained clique density, floating edge values are converted to their
 exact rational representation, integer capacity units preserve ordering, and
@@ -181,3 +267,5 @@ The authoritative inventory is generated by
 - [NetworkX configuration model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.degree_seq.configuration_model.html): stub sampling and why removing loops/parallel edges would change the degree sequence.
 - [NetworkX G(n,m)](https://networkx.org/documentation/stable/reference/generated/networkx.generators.random_graphs.gnm_random_graph.html): uniform simple graphs at fixed vertex/edge counts.
 - [node2vec paper](https://arxiv.org/abs/1607.00653): second-order return and exploration biases. The directed extension used here is separately declared in the profile.
+- [RapidFuzz Levenshtein](https://rapidfuzz.github.io/RapidFuzz/Usage/distance/Levenshtein.html): unit edit costs and bounded-distance evaluation.
+- [SciPy standardized scores](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.zscore.html): reference mean, standard deviation and degrees-of-freedom convention.

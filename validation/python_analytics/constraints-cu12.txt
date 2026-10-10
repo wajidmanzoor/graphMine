@@ -87,6 +87,7 @@ python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 qdldl==0.1.9.post1
 raft-dask-cu12==26.10.0
+RapidFuzz==3.14.6
 rapids-dask-dependency==26.10.0
 rapids-logger==0.3.0
 rich==15.0.0

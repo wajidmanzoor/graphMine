@@ -56,6 +56,7 @@ def record_execution_evidence(request):
         "cvxpy",
         "clarabel",
         "gudhi",
+        "rapidfuzz",
         "cugraph-cu12",
         "nx-cugraph-cu12",
         "cupy-cuda12x",

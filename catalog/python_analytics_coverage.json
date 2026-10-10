@@ -1,19 +1,20 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 55,
-  "problems_with_cpu_profile": 53,
+  "cpu_operation_count": 59,
+  "problems_with_cpu_profile": 57,
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-temporal",
+      "id": "cpu-comparison",
       "status": "passed",
-      "tests": 16556,
+      "tests": 19251,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
       "changed_dependencies": [],
       "test_modules": [
+        "tests/test_comparison_data_oracles.py",
         "tests/test_contracts.py",
         "tests/test_extended_contracts.py",
         "tests/test_extended_oracles.py",
@@ -22,9 +23,9 @@
         "tests/test_temporal_sampling.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/cpu-temporal.xml",
-      "report_sha256": "7b5c618804fbe1535575008876de6efe9b2966b496ecf364f70768f4e307317d",
-      "metadata": "validation/python_analytics/cpu-temporal.xml.metadata.json",
+      "report": "validation/python_analytics/cpu-comparison.xml",
+      "report_sha256": "796275e63383fd464d2a1e7753dbdfd9d0467d252e2b137832f1dec29253dc54",
+      "metadata": "validation/python_analytics/cpu-comparison.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -32,13 +33,14 @@
         "cvxpy": "1.9.3",
         "clarabel": "0.11.1",
         "gudhi": "3.13.0",
+        "rapidfuzz": "3.14.6",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
       }
     },
     {
-      "id": "gpu-0-temporal",
+      "id": "gpu-0-comparison",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -49,9 +51,9 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-temporal.xml",
-      "report_sha256": "f129bb6a133abb3f39b1117a3c3002b44af905f6f6ff1467b892ba69132425ce",
-      "metadata": "validation/python_analytics/gpu-0-temporal.xml.metadata.json",
+      "report": "validation/python_analytics/gpu-0-comparison.xml",
+      "report_sha256": "c19c83fc308b1d3061662cce4bf97d0ca6f9e9db34f196470a61ede62309cb7e",
+      "metadata": "validation/python_analytics/gpu-0-comparison.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -59,13 +61,14 @@
         "cvxpy": "1.9.3",
         "clarabel": "0.11.1",
         "gudhi": "3.13.0",
+        "rapidfuzz": "3.14.6",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
       }
     },
     {
-      "id": "gpu-1-temporal",
+      "id": "gpu-1-comparison",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -76,9 +79,9 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-temporal.xml",
-      "report_sha256": "375b00491e80793bdf6a90d033970c7a5aba976827ad659a4f91afc509fd43b6",
-      "metadata": "validation/python_analytics/gpu-1-temporal.xml.metadata.json",
+      "report": "validation/python_analytics/gpu-1-comparison.xml",
+      "report_sha256": "f1fe911a0d819fd7943246bfec31bb6000582d0be11f6625646d108a50b8403b",
+      "metadata": "validation/python_analytics/gpu-1-comparison.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -86,6 +89,7 @@
         "cvxpy": "1.9.3",
         "clarabel": "0.11.1",
         "gudhi": "3.13.0",
+        "rapidfuzz": "3.14.6",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
@@ -338,9 +342,11 @@
       "name": "Graph Anomaly Detection",
       "contract": "problems/20_graph_anomaly_detection/problem.json",
       "contract_sha256": "410df95e9d954ef070287dae8fcf224c43fcda4353bd937e9f2f50a424ea2dc1",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "graph-anomalies"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -396,9 +402,11 @@
       "name": "Pairwise Network Alignment",
       "contract": "problems/25_network_alignment/problem.json",
       "contract_sha256": "6c2b929ead094e972709dbd5ca0354e46611135609b8a90c6c07495b04c2d35a",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "network-alignment"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -418,9 +426,11 @@
       "name": "Group Steiner Tree",
       "contract": "problems/27_group_steiner_tree/problem.json",
       "contract_sha256": "4c8ae79bbe621d3577778e2bbc7e8f67d604c91d24da038177044c673e021088",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "group-steiner-tree"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -498,9 +508,11 @@
       "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
       "contract": "problems/34_entity_resolution_blocking/problem.json",
       "contract_sha256": "af6c356f965cd6aff9810f7ae1fdaf85ab2d30b0673f30611877c0b40538749d",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "entity-resolution"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -1411,6 +1423,75 @@
       "profile_sha256": "4cbe88e25ca0e57843c851e38b053df8c00e03900f333a335353d90aef7faf26"
     },
     {
+      "id": "network-alignment",
+      "problem_id": "network_alignment",
+      "family": "comparison",
+      "title": "Align two graphs while conserving topology and supplied similarities",
+      "description": "SciPy/HiGHS linearized quadratic assignment for a global one-to-one mapping covering every vertex of the smaller graph. Maximizes topology_weight times conserved-edge value plus supplied pair similarities. Weighted conservation uses the minimum of the two normalized nonnegative edge weights; unweighted conservation counts edges.",
+      "parameters": {
+        "other_graph": {
+          "kind": "object",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "alignment_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "global_one_to_one",
+          "choices": [
+            "global_one_to_one"
+          ],
+          "nullable": false
+        },
+        "node_similarity_prior": {
+          "kind": "array",
+          "required": false,
+          "description": "Rows with graph_a_vertex, graph_b_vertex, value; unspecified pairs have prior zero.",
+          "default": null,
+          "nullable": true
+        },
+        "topology_weight": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1,
+          "nullable": false
+        },
+        "weight_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "unweighted",
+          "choices": [
+            "unweighted",
+            "edge_weight"
+          ],
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical_optimum",
+      "references": [
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "03ef77d97771bb187410103c8467811b6cdb6101998d03da56d2a3cac01b06a0"
+    },
+    {
       "id": "biconnected-components",
       "problem_id": "biconnected_components",
       "family": "connectivity",
@@ -1602,6 +1683,68 @@
       "references": [],
       "input_kind": "graph",
       "profile_sha256": "db5695a50a9b58b5c27e1994ebf6daa0d94081005fd39b6e18891734a6d25f3a"
+    },
+    {
+      "id": "entity-resolution",
+      "problem_id": "entity_resolution_blocking",
+      "family": "data_preparation",
+      "title": "Generate candidate record pairs and resolve entities using declared rules",
+      "description": "RapidFuzz Levenshtein and declared equality/token/numeric predicates generate complete candidate pairs. NetworkX components provide transitive resolution; SciPy/HiGHS can minimize unit candidate-pair disagreements instead. Noncandidate pairs are neutral; clusters never cross candidate-graph components. Input graph edges are unused hints, not match decisions.",
+      "parameters": {
+        "task": {
+          "kind": "string",
+          "required": true,
+          "description": "",
+          "choices": [
+            "blocking",
+            "resolution"
+          ],
+          "nullable": false
+        },
+        "blocking_rules": {
+          "kind": "array",
+          "required": true,
+          "description": "Nonempty rules with id and all predicates. Each predicate needs field (attributes path), operator (eq/shared_token/edit_distance/numeric_difference), optional=false, normalization=none|casefold|nfkc_casefold. Distance operators require nonnegative max_distance (integer for edit distance). Rules form a disjunction; predicates within each all form a conjunction.",
+          "nullable": false
+        },
+        "match_decision_rule": {
+          "kind": "object",
+          "required": false,
+          "description": "An all predicate array, required for resolution.",
+          "default": null,
+          "nullable": true
+        },
+        "clustering_policy": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "connected_components",
+          "choices": [
+            "connected_components",
+            "correlation_clustering"
+          ],
+          "nullable": false
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "rapidfuzz",
+      "quality": "exact",
+      "references": [
+        "https://rapidfuzz.github.io/RapidFuzz/Usage/distance/Levenshtein.html",
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "290823c66295230411fa828d2ff5acdf6796010a107806e12c084c2b5a46ca2a"
     },
     {
       "id": "densest-k-subgraph",
@@ -2038,6 +2181,46 @@
       "references": [],
       "input_kind": "graph",
       "profile_sha256": "3fba1bcbd1989aea269a4b3037fc664f8f7299d352c5142c2bba827d7b004115"
+    },
+    {
+      "id": "group-steiner-tree",
+      "problem_id": "group_steiner_tree",
+      "family": "optimization",
+      "title": "Connect at least one representative of every required group",
+      "description": "SciPy/HiGHS binary tree model with separated connectivity cuts. Covers every group and required vertex, removes self-loops, and retains the cheapest original parallel edge. Requires a completed numerical optimum; no terminal-only approximation is substituted for the group problem.",
+      "parameters": {
+        "groups": {
+          "kind": "array",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "required_vertices": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical_optimum",
+      "references": [
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "06cd48ee81161dd9ebfc55d3030a94c1f13636e686e0d118a584303bf58265c5"
     },
     {
       "id": "balanced-partitioning",
@@ -2872,6 +3055,72 @@
       ],
       "input_kind": "graph",
       "profile_sha256": "349c616fdc4f79859839fc5f9c373ebde4522af9fc1a79715100d91744c7cd9e"
+    },
+    {
+      "id": "graph-anomalies",
+      "problem_id": "graph_anomaly_detection",
+      "family": "statistics",
+      "title": "Rank graph entities against an explicit normality reference",
+      "description": "NetworkX structural features and SciPy population statistics with declared standardized L1/L2/max scores. Supports vertices, original edge instances and explicitly supplied induced subgraphs. Reference populations are selected independently from candidates; no learned ground-truth anomaly claim is made.",
+      "parameters": {
+        "anomaly_target": {
+          "kind": "string",
+          "required": true,
+          "description": "",
+          "choices": [
+            "vertex",
+            "edge",
+            "subgraph"
+          ],
+          "nullable": false
+        },
+        "feature_definitions": {
+          "kind": "array",
+          "required": true,
+          "description": "Rows with unique name and measure; numeric_attribute also needs field relative to attributes. Supported measures by target: vertex: degree, ego_edge_count, event_count, in_degree, in_event_count, in_strength, numeric_attribute, out_degree, out_event_count, out_strength, strength, triangle_count; edge: common_neighbors, edge_weight, numeric_attribute, source_degree, target_degree; subgraph: density, edge_count, numeric_attribute, vertex_count, weight_sum",
+          "nullable": false
+        },
+        "normality_reference": {
+          "kind": "object",
+          "required": true,
+          "description": "kind=population with optional graph/entities/subgraphs, or kind=statistics with location/scale arrays.",
+          "nullable": false
+        },
+        "scoring_definition": {
+          "kind": "object",
+          "required": true,
+          "description": "method=standardized_l1|standardized_l2|max_abs_z; optional feature_weights and minimum_scale.",
+          "nullable": false
+        },
+        "candidate_entities": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "subgraphs": {
+          "kind": "array",
+          "required": false,
+          "description": "Required for subgraph target: id, vertices, optional attributes.",
+          "default": null,
+          "nullable": true
+        },
+        "top_k": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical",
+      "references": [
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.zscore.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "3f5269c441f12c508bfd8f0c2cf3860fa0404272ba534b8cd017c84879c9d28f"
     },
     {
       "id": "null-model-significance",

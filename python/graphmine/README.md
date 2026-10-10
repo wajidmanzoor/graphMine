@@ -1,8 +1,8 @@
 # GraphMine Python analytics
 
 The public library separates graph input, mathematical algorithm families,
-backend selection, and result provenance. It uses NetworkX, NumPy, SciPy, CVXPY and
-GUDHI on CPU, and cuGraph on GPU. Native GraphMine and agent integration are tracked in
+backend selection, and result provenance. It uses NetworkX, NumPy, SciPy, CVXPY,
+GUDHI and RapidFuzz on CPU, and cuGraph on GPU. Native GraphMine and agent integration are tracked in
 [`docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md`](../../docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md).
 
 ```sh
@@ -63,9 +63,9 @@ vectors = FeatureVectors(
 neighbors = run("knn-graph", vectors, parameters={"k": 1}, device="cpu")
 ```
 
-CPU provenance identifies the primary library (`networkx`, `numpy`, `scipy`, `cvxpy` or `gudhi`) and
-records the installed numerical-library versions. Some operations use
-both libraries; per-result solver diagnostics identify the method actually used.
+CPU provenance identifies the primary library (`networkx`, `numpy`, `scipy`,
+`cvxpy`, `gudhi` or `rapidfuzz`) and records dependency versions. Some operations
+use several libraries; per-result diagnostics identify the method actually used.
 
 ## Additional CPU profiles
 
@@ -84,6 +84,14 @@ the sampling distribution, event identity and order, completeness, or heuristic
 quality. Null-model samples preserve the stated invariants; a local community
 includes an actual selected vertex set and recomputed conductance.
 
+Comparison and record-analysis profiles add group Steiner trees, global graph
+alignment, declarative entity blocking/resolution, and reference-based anomaly
+scores. These expose their actual objectives and accepted rule languages.
+Anomaly scores retain the chosen normality reference; entity clusters retain
+the match decisions; optimization outputs include a checked witness and solver
+bound. Unknown predicates, score methods and unsupported alignment modes are
+rejected.
+
 In particular, `densest-subgraph.clique_order` changes the density numerator;
 `densest-k-subgraph.k` fixes the size of the selected vertex set. These are
 different problems. Graphlet classification uses the complete NetworkX atlas
@@ -95,6 +103,9 @@ bound and gap, and check feasibility and objective values after solving. They
 are numerical optimality certificates, not exact-arithmetic proofs. Timed-out
 incumbents are never labeled optimal. Unconstrained clique-density uses exact
 integer-capacity min cuts and records the resulting rational density.
+Binary objective scaling preserves small costs that would otherwise disappear
+under absolute solver tolerances. Evidence records the scale and converts the
+reported bound and tolerance back to the original objective units.
 
 The runtime currently invokes algorithms synchronously; the agent integration
 must use cancellable subprocesses for hard time and memory limits. Cooperative

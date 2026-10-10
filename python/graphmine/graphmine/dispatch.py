@@ -15,6 +15,7 @@ from .inputs import FeatureVectors, Hypergraph, load_input
 from .registry import algorithm
 
 _backend_configuration_lock = RLock()
+_CPU_BACKENDS = frozenset({"networkx", "numpy", "scipy", "cvxpy", "gudhi", "rapidfuzz"})
 
 
 def implementation_hash() -> str:
@@ -46,12 +47,11 @@ def run(
     if not isinstance(device, str) or device not in {"auto", "cpu", "gpu"}:
         raise GraphMineError("device must be auto, cpu, or gpu")
     if backend is not None and (
-        not isinstance(backend, str)
-        or backend not in {"networkx", "numpy", "scipy", "cvxpy", "gudhi", "cugraph"}
+        not isinstance(backend, str) or backend not in _CPU_BACKENDS | {"cugraph"}
     ):
         raise GraphMineError("Unknown backend")
     if (device == "cpu" and backend == "cugraph") or (
-        device == "gpu" and backend in {"networkx", "numpy", "scipy", "cvxpy", "gudhi"}
+        device == "gpu" and backend in _CPU_BACKENDS
     ):
         raise GraphMineError("Backend conflicts with the requested device policy")
     if backend:
@@ -63,10 +63,7 @@ def run(
         json.dumps(args, allow_nan=False)
     except (ValueError, TypeError) as exc:
         raise GraphMineError("parameters must contain finite JSON values") from exc
-    if (
-        backend in {"networkx", "numpy", "scipy", "cvxpy", "gudhi"}
-        and backend != definition.library
-    ):
+    if backend in _CPU_BACKENDS and backend != definition.library:
         raise UnsupportedOperation(
             f"{operation} uses the {definition.library} CPU integration"
         )
@@ -82,7 +79,15 @@ def run(
         "version": importlib.metadata.version(definition.library),
         "dependencies": {
             name: importlib.metadata.version(name)
-            for name in ("networkx", "numpy", "scipy", "cvxpy", "clarabel", "gudhi")
+            for name in (
+                "networkx",
+                "numpy",
+                "scipy",
+                "cvxpy",
+                "clarabel",
+                "gudhi",
+                "rapidfuzz",
+            )
         },
     }
     if device != "cpu":

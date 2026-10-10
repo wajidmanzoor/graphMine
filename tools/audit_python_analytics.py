@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def audit():
     library = ROOT / "python/graphmine"
     reports = []
-    for name in ("cpu-temporal", "gpu-0-temporal", "gpu-1-temporal"):
+    for name in ("cpu-comparison", "gpu-0-comparison", "gpu-1-comparison"):
         xml = ROOT / "validation/python_analytics" / f"{name}.xml"
         metadata_path = xml.with_name(xml.name + ".metadata.json")
         if not xml.exists() or not metadata_path.exists():

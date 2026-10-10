@@ -213,3 +213,52 @@ reported score substitutes for local integration tests.
   routing, workflow, modes, visualization, scheduling, caching, MCP, reviewed
   example retrieval and scale evaluation requirements remain in the active
   goal.
+
+### Connection, comparison and record-analysis checkpoint
+
+- CPU coverage is now **59 operations across 57 of 70 problem contracts**.
+  Four additional integrations cover group Steiner trees, global network
+  alignment, entity blocking/resolution and reference-based graph anomalies.
+  Thirteen problem contracts still need CPU integrations. Local many-to-one
+  alignment and arbitrary learned anomaly models are not advertised as
+  executable variants of these profiles.
+- Group Steiner uses a binary tree model and separated connectivity cuts,
+  verifies group/required-vertex coverage and tree structure, and retains the
+  correct cheapest original parallel edge. Alignment optimizes an injective
+  mapping covering the smaller graph and recomputes conserved-edge and prior
+  contributions. Weighted edge conservation is explicitly defined as the
+  minimum of the two normalized nonnegative edge weights.
+- Entity rules use RapidFuzz 3.14.6 unit edit distance, declared typed equality,
+  token overlap and exact numeric differences. Resolution supports transitive
+  components and globally optimized unit candidate-pair disagreement. Rules
+  retain provenance and missing-field semantics; no arbitrary expressions or
+  trained-model guesses are executed. RapidFuzz is now a pinned CPU dependency
+  included in provenance and the evidence audit.
+- Anomaly features cover vertices, original edge instances and declared
+  induced subgraphs. Normality populations are separate from candidates and
+  may use another graph or supplied baseline statistics. Tests verify features,
+  population standardization, contribution formulas, typed-ID tie ordering,
+  constant columns and stable centering around large numeric offsets. Scores
+  remain relative to the chosen normality reference, not ground-truth labels.
+- The initial focused suite passed **2,618 checks**. Additional tiny-cost probes
+  then exposed a shared solver issue: an alignment with priors 1e-9 and 2e-9
+  could choose the smaller prior; a Steiner instance with optimal cost 2e-12
+  could return cost 5e-12. The binary wrapper now reduces an exact rational
+  objective grid when supported, otherwise normalizes coefficient scale, and
+  converts solver evidence back to original units. Integer objective differences
+  remain preserved. A second focused suite passed **2,626 checks**, including
+  these regressions down to cost scale 1e-200 and a large-integer distinction.
+- Latest complete reports: `cpu-comparison.xml` has **19,251 passes** with CUDA
+  hidden; `gpu-0-comparison.xml` and `gpu-1-comparison.xml` each have **1,546
+  passes**, with no failures or skips. All previous operations were rerun after
+  the shared optimization change. New references enumerate tree edge subsets,
+  all injective mappings for the graph-pair fixtures, edit-distance dynamic
+  programs, all partitions for 729 signed four-record instances, and direct
+  feature/score formulas. The final sweep includes 69 further feature and input
+  boundary cases beyond the second focused report.
+- Source/dependency/contract freshness, dependency consistency, lint, formatting
+  and formal-contract synchronization pass. The audit points to the latest full
+  reports; earlier focused reports are retained separately as historical evidence.
+- The agent/browser is still on its native execution path. All remaining CPU,
+  library-to-agent, family-routing, workflow, mode/UI, scheduling/cache, MCP,
+  reviewed-example and external-scale requirements remain open.

@@ -51,6 +51,32 @@ def coefficient(value):
     return converted
 
 
+def objective_grid(costs):
+    """Preserve an exact rational grid when it fits; otherwise normalize scale.
+
+    Uniformly tiny objectives can be lost to a solver's absolute tolerances.
+    Grid reduction handles integers and common-scale decimals without changing
+    their ordering. General float objectives still carry a numerical certificate.
+    """
+    rational = [Fraction(c) for c in costs]
+    denominator = math.lcm(*(v.denominator for v in rational))
+    integers = [int(v * denominator) for v in rational]
+    divisor = reduce(math.gcd, integers, 0) or 1
+    reduced = [v // divisor for v in integers]
+    if sum(abs(v) for v in reduced) <= 2**53:
+        return reduced, Fraction(divisor, denominator), "exact_rational_grid"
+    maximum = max(abs(v) for v in rational)
+    scaled = [float(v / maximum) for v in rational]
+    if any(
+        value and scaled_value == 0
+        for value, scaled_value in zip(rational, scaled, strict=True)
+    ):
+        raise GraphMineError(
+            "Optimization objective coefficients underflow after scaling"
+        )
+    return scaled, maximum, "largest_coefficient"
+
+
 class BinaryModel:
     def __init__(self, costs, work):
         self.costs = list(costs)
@@ -92,8 +118,11 @@ class BinaryModel:
         )
         if remaining <= 0:
             raise ResourceLimit("Optimization time budget exhausted")
+        for cost in self.costs:
+            coefficient(cost)
+        solver_costs, unit, scaling = objective_grid(self.costs)
         result = milp(
-            np.asarray([coefficient(c) for c in self.costs]),
+            np.asarray([coefficient(c) for c in solver_costs]),
             integrality=np.ones(len(self.costs)),
             bounds=Bounds(0, 1),
             constraints=LinearConstraint(matrix, lower, upper),
@@ -125,10 +154,18 @@ class BinaryModel:
                     "Rounded optimization result violates a constraint"
                 )
         objective = sum(c * v for c, v in zip(self.costs, rounded, strict=True))
-        dual = float(result.mip_dual_bound)
-        tolerance = 1e-8 * max(1.0, abs(objective))
-        if not math.isfinite(dual) or abs(objective - dual) > tolerance:
+        solver_objective = sum(
+            c * v for c, v in zip(solver_costs, rounded, strict=True)
+        )
+        solver_dual = float(result.mip_dual_bound)
+        solver_tolerance = 1e-8 * max(1.0, abs(solver_objective))
+        if (
+            not math.isfinite(solver_dual)
+            or abs(solver_objective - solver_dual) > solver_tolerance
+        ):
             raise GraphMineError("Solver objective and optimality bound disagree")
+        dual = float(Fraction(solver_dual) * unit)
+        tolerance = float(Fraction(solver_tolerance) * unit)
         return rounded, {
             "solver": "scipy.optimize.milp/HiGHS",
             "status": "optimal",
@@ -138,6 +175,10 @@ class BinaryModel:
             "certificate": "floating_point_solver_optimality",
             "integer_feasibility_checked": True,
             "objective_tolerance": tolerance,
+            "objective_scaling": scaling,
+            "objective_unit_fraction": str(unit),
+            "scaled_objective": solver_objective,
+            "scaled_dual_bound": solver_dual,
         }
 
 

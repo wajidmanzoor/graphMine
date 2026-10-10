@@ -7,7 +7,7 @@ name = "graphmine"
 version = "2.0.0.dev0"
 description = "Contract-driven graph analytics with explicit CPU and GPU execution"
 requires-python = ">=3.11"
-dependencies = ["networkx>=3.7,<4", "numpy>=2,<3", "scipy>=1.14,<2", "cvxpy>=1.6,<2", "gudhi>=3.11,<4"]
+dependencies = ["networkx>=3.7,<4", "numpy>=2,<3", "scipy>=1.14,<2", "cvxpy>=1.6,<2", "gudhi>=3.11,<4", "rapidfuzz>=3.14,<4"]
 
 [project.optional-dependencies]
 gpu = ["cugraph-cu12>=25.6,<27", "nx-cugraph-cu12>=25.6,<27"]

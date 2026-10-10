@@ -45,10 +45,13 @@ def _load():
     global _loaded
     if not _loaded:
         from .algorithms import (  # noqa: F401
+            alignment,
+            anomalies,
             bipartite,
             centrality,
             construction,
             density,
+            entity_resolution,
             enumeration,
             hypergraphs,
             local_community,
@@ -60,6 +63,7 @@ def _load():
             sampling,
             similarity,
             spectral,
+            steiner,
             structure,
             temporal,
             topology,
