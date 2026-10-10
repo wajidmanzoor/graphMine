@@ -8,6 +8,7 @@ import json
 import re
 from copy import deepcopy
 from dataclasses import asdict
+from fractions import Fraction
 from graphlib import CycleError, TopologicalSorter
 
 from .contracts import Budget
@@ -143,6 +144,8 @@ def _reference(reference, inputs, steps):
 
 
 def _compatible(name, parameter, kind):
+    if kind == "edge_ids":
+        return parameter.kind == "array" and name == "edge_ids"
     if kind == "vertex_set":
         return parameter.kind == "array" and name in _VERTEX_ARRAYS
     if kind == "vertex_id":
@@ -213,6 +216,10 @@ def validate_workflow(plan, inputs):
         definition = algorithm(step["operation"])
         if _reference(step["input"], loaded, steps) != definition.input_kind:
             raise GraphMineError(f"Input kind mismatch for {name}")
+        if definition.input_validator is not None and "input" in step["input"]:
+            definition.input_validator(
+                loaded[step["input"]["input"]], step["parameters"]
+            )
         refs = [step["input"], *step["bindings"].values()]
         for key, reference in step["bindings"].items():
             kind = _reference(reference, loaded, steps)
@@ -306,9 +313,16 @@ def _resolve(reference, inputs, results):
         elif method in ("top_vertices", "top_vertex"):
             field = port.get("score_field", "score")
             rows = [row for row in value if row.get(field) is not None]
+
+            def exact_score(row):
+                if port.get("exact_score_field"):
+                    exact = row[port["exact_score_field"]]
+                    return Fraction(exact["numerator"], exact["denominator"])
+                return row[field]
+
             rows.sort(
                 key=lambda row: (
-                    (-1 if selection.get("descending", True) else 1) * row[field],
+                    (-1 if selection.get("descending", True) else 1) * exact_score(row),
                     0 if type(row["vertex"]) is int else 1,
                     row["vertex"],
                 )
@@ -382,6 +396,10 @@ def execute_workflow(
             parameters = deepcopy(step["parameters"])
             for key, reference in step["bindings"].items():
                 value, kind, namespace = _resolve(reference, loaded, results)
+                if kind == "edge_ids" and namespace != graph.fingerprint:
+                    raise GraphMineError(
+                        "Edge binding belongs to a different input graph; an explicit ID mapping is required"
+                    )
                 if kind in {"vertex_set", "vertex_id", "vertex_group_arrays"}:
                     if namespace != graph.fingerprint:
                         raise GraphMineError(

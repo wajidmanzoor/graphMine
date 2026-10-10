@@ -11,6 +11,10 @@ The default browser workspace uses this path with Normal, Interactive and
 Expert modes, a family-first question planner and predefined linked views.
 The previous native workspace remains available at `/classic`.
 
+The [record-query family](../../docs/RECORD_QUERIES.md) adds seven deterministic
+Python utilities for lookup, filtering, neighbors, paths, aggregation and graph
+extraction. It uses the same typed workflows and correctness evidence gate.
+
 ```sh
 python -m pip install -e 'python/graphmine[test]'
 # Optional NVIDIA CUDA 12 backend:

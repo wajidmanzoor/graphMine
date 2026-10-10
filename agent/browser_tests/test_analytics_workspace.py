@@ -309,6 +309,89 @@ def capture(browser, name):
     browser.save_screenshot(str(destination / name))
 
 
+def test_lookup_family_filters_and_links_original_ids(browser, tmp_path):
+    upload(browser, tmp_path)
+    browser.find_element(By.CSS_SELECTOR, '[data-family="query"]').click()
+    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+        "node-lookup"
+    )
+    browser.find_element(
+        By.CSS_SELECTOR, "#operation-parameters details summary"
+    ).click()
+    field = browser.find_element(By.ID, "parameter-vertex_filters")
+    field.clear()
+    field.send_keys('[{"field":"id","op":"eq","value":"0"}]')
+    browser.find_element(By.ID, "use-operation").click()
+    done(browser)
+    assert browser.execute_script(
+        "return window.GraphMineWorkspace.state.rows.map(r=>[typeof r.id,String(r.id)])"
+    ) == [["string", "0"]]
+    browser.find_element(
+        By.CSS_SELECTOR, '#result-table tr[data-result-row="0"] button'
+    ).click()
+    assert browser.execute_script(
+        "return window.GraphMineWorkspace.state.cy.nodes('.chosen').map(n=>n.id())"
+    ) == ["s:0"]
+    capture(browser, "query-lookup-linked.png")
+
+
+def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
+    graph = typed_graph()
+    graph["graph"]["directed"] = True
+    for edge, weight in zip(graph["edges"], [0.1, 0.2, 0.3, 0.4], strict=True):
+        edge["weight"] = weight
+    upload(browser, tmp_path, graph)
+    browser.find_element(By.CSS_SELECTOR, '[data-family="query"]').click()
+    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+        "graph-aggregate"
+    )
+    browser.find_element(
+        By.CSS_SELECTOR, "#operation-parameters details summary"
+    ).click()
+    Select(browser.find_element(By.ID, "parameter-metric")).select_by_value('"avg"')
+    browser.find_element(By.ID, "parameter-field").send_keys("weight")
+    browser.find_element(By.ID, "parameter-group_by").send_keys("vertex")
+    browser.find_element(By.ID, "use-operation").click()
+    done(browser)
+    assert "≈" in browser.find_element(By.ID, "result-table").text
+    assert (
+        "numerators and denominators" in browser.find_element(By.ID, "table-scope").text
+    )
+    assert (
+        browser.execute_script(
+            "return window.GraphMineWorkspace.state.port.exact_score_field"
+        )
+        == "exact_value"
+    )
+    capture(browser, "query-aggregate-exact.png")
+    browser.find_element(By.CSS_SELECTOR, '[data-family="query"]').click()
+    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+        "node-lookup"
+    )
+    browser.find_element(
+        By.CSS_SELECTOR, "#operation-parameters details summary"
+    ).click()
+    browser.find_element(By.ID, "parameter-result_limit").send_keys("1")
+    previous_workflow = browser.execute_script(
+        "return window.GraphMineWorkspace.state.record.id"
+    )
+    browser.find_element(By.ID, "use-operation").click()
+    WebDriverWait(browser, 20).until(
+        lambda d: (
+            d.execute_script("return window.GraphMineWorkspace.state.record?.id")
+            != previous_workflow
+        )
+    )
+    done(browser)
+    assert (
+        "Add field filters" in browser.find_element(By.ID, "result-completeness").text
+    )
+    assert (
+        browser.execute_script("return window.GraphMineWorkspace.state.port.complete")
+        is False
+    )
+
+
 def test_interactive_review_edit_linked_views_and_large_ids(browser, tmp_path):
     upload(browser, tmp_path)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="interactive"]').click()

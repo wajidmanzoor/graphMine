@@ -19,6 +19,7 @@ def register(
     quality="exact",
     references=(),
     input_kind="graph",
+    input_validator=None,
 ):
     def decorate(function):
         if id in _algorithms:
@@ -35,6 +36,7 @@ def register(
             quality,
             tuple(references),
             input_kind,
+            input_validator,
         )
         return function
 
@@ -64,6 +66,7 @@ def _load():
             partitioning,
             paths,
             patterns,
+            queries,
             sampling,
             similarity,
             sparsification,

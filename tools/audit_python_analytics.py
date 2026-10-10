@@ -20,9 +20,9 @@ def audit():
     library = ROOT / "python/graphmine"
     reports = []
     for name in (
-        "cpu-graph-pair",
-        "gpu-0-graph-pair",
-        "gpu-1-graph-pair",
+        "cpu-record-queries",
+        "gpu-0-record-queries",
+        "gpu-1-record-queries",
     ):
         xml = ROOT / "validation/python_analytics" / f"{name}.xml"
         metadata_path = xml.with_name(xml.name + ".metadata.json")
@@ -114,6 +114,11 @@ def audit():
         "schema_version": "1.0.0",
         "problem_count": len(problems),
         "cpu_operation_count": len(cards),
+        "cpu_problem_operation_count": sum(len(p["cpu_operations"]) for p in problems),
+        "workflow_utility_operation_count": sum(
+            card["problem_id"] not in {p["problem_id"] for p in problems}
+            for card in cards
+        ),
         "problems_with_cpu_profile": sum(bool(p["cpu_operations"]) for p in problems),
         "cugraph_operation_count": len(OPERATIONS),
         "reports": reports,
@@ -138,6 +143,8 @@ def main():
                 for key in (
                     "problem_count",
                     "cpu_operation_count",
+                    "cpu_problem_operation_count",
+                    "workflow_utility_operation_count",
                     "problems_with_cpu_profile",
                     "cugraph_operation_count",
                     "reports",

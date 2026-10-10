@@ -17,6 +17,12 @@ from .analytics import AnalyticsError, InputReference
 # executable operation must belong to exactly one group; nothing is guessed.
 FAMILIES = (
     (
+        "query",
+        "Look up & summarize records",
+        "Look up entities, filter relationships, find neighbors and paths, or aggregate recorded values.",
+        {"query"},
+    ),
+    (
         "routes",
         "Routes & reachability",
         "Find paths, capacity, connection costs, arrival times or dependency order.",
@@ -175,7 +181,7 @@ def parameter_schema(spec):
         "object": {"type": "object"},
         "vertex_id": {"type": ["integer", "string"]},
     }
-    value = deepcopy(types[spec["kind"]])
+    value = deepcopy(spec.get("json_schema", types[spec["kind"]]))
     for key in ("minimum", "maximum"):
         if key in spec:
             value[key] = spec[key]

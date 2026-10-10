@@ -512,3 +512,72 @@ reported score substitutes for local integration tests.
   construction, MCP, reviewed examples, deployed-model evaluation,
   memory-aware two-GPU scheduling, representation caching and external-scale
   validation remain open. The overall goal remains active.
+
+### Review integration resumed: canonical record queries
+
+The resumed user goal is to finish the review-based integration on this feature
+branch. The A1–A7, R1–R11 and B1–B4 requirements above remain the acceptance
+scope; algorithm coverage alone does not complete it. The review's P0 query
+and workflow-evaluation gaps take priority in the resumed work.
+
+- Added seven CPU utilities: `node-lookup`, `edge-filter`, `neighbors`,
+  `common-neighbors`, `query-paths`, `graph-aggregate` and `query-subgraph`.
+  Their contracts are documented in `RECORD_QUERIES.md` and advertised in
+  the new **Look up & summarize records** family. CPU problem coverage remains
+  **66 algorithm operations across 63 of 70 formal problems**; the seven
+  utilities are counted separately. The total executable CPU operation count
+  is now **73**. GPU coverage remains **13 cuGraph profiles**.
+- Literal nested predicates and actual input fields are validated before
+  queueing; derived records are checked at execution. Original typed vertex
+  and edge IDs, parallel records, loops, direction and attributes survive
+  filtering and extraction. New edge-ID ports bind only to the same source
+  graph. Graph fingerprints and completeness checks continue through dependent
+  query-to-algorithm workflows.
+- Aggregates retain exact rational values, including decimal sums and averages
+  and integers beyond JavaScript's safe range. Top-vertex workflow selection
+  and chart ordering use those values. The browser marks rounded displays and
+  links lookup rows to their original vertices. Capped output retains exact
+  counts, remains incomplete, and offers narrowing guidance.
+- The final CPU regression passed **29,769 tests**, including **671 query
+  checks**, with GPUs hidden. Both GPU shards passed **1,546 tests** each.
+  Reports are `cpu-record-queries.xml` and `gpu-*-record-queries.xml`; no failures
+  or skips occurred, sources stayed unchanged during execution, and the updated
+  capability audit verifies all source/contract/dependency hashes. Oracles cover
+  exhaustive small directed path and neighbor universes, parallel/loop/typed-ID
+  cases, exact expected aggregates, cross-dataset rejection, empty scopes and
+  schema/default mutation isolation.
+- Review found two scope defects after the first focused run: neighborhood
+  extraction originally applied explicit edge IDs only to output, and vertex-
+  record aggregation initialized groups before filtering. Both were reproduced,
+  repaired and covered by new regression cases. The initial CPU sweep was
+  deliberately stopped; it is not acceptance evidence. Final reports above
+  test the repaired sources.
+- API/planner/evaluation acceptance passed **54 tests** on both the working
+  tree and the staged application. This includes real CPU/GPU workers, all
+  three execution modes, query-to-graph-to-algorithm dependencies, pagination,
+  preflight rejection and the original workflow/route regressions.
+- Firefox acceptance passed **12 tests** on both the working tree and staged
+  application, with Node absent from the server PATH. Final result screenshots
+  confirm typed-ID row linking, graph selection, exact aggregate fractions and
+  marked rounded displays. A stale-result wait in the new browser test was
+  corrected before these final runs. Indexed sources match the recorded staged
+  snapshots; all final reports have zero failures and skips.
+- Added 20 assistant-authored development probes under
+  `graphmine_agent.learning.analytics_queries`: ten lookups and ten dependent
+  workflows sharing a small fictional fixture. The isolated reference replay
+  passed **20/20**, with operation, normalized-parameter, wiring, completion and
+  output-value grading. The grader rejects ID-type changes, truncation,
+  mismatched parameters and extra operations. This is application execution
+  evidence, not real-model accuracy, human labels, held-out or external-benchmark
+  evidence. No training data was changed. `--mode model` requires an explicitly
+  enabled model endpoint and retains the planning trace.
+
+Remaining review work includes joins and multi-table construction (R2/R8),
+additional workflow selection/clarification behavior (R1/R5), richer operation
+cards and schema mapping (R3), automatic bounded affected-step recovery (R6),
+per-port planning summaries (R7), deployed-model and external evaluation (R9),
+MCP and its client guide (R10), and approved-example retrieval (R11). Seven CPU
+problem integrations, native/unified evidence, scheduler/cache work and scale
+verification remain required under A3/B1–B4. Existing browser modes, routing
+and workflow execution are implemented, but their remaining review acceptance
+details must still be verified before the overall goal can be complete.

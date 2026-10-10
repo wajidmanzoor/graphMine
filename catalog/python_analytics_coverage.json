@@ -1,14 +1,16 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 66,
+  "cpu_operation_count": 73,
+  "cpu_problem_operation_count": 66,
+  "workflow_utility_operation_count": 7,
   "problems_with_cpu_profile": 63,
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-graph-pair",
+      "id": "cpu-record-queries",
       "status": "passed",
-      "tests": 29098,
+      "tests": 29769,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
@@ -23,15 +25,16 @@
         "tests/test_frequent_patterns.py",
         "tests/test_graph_comparison.py",
         "tests/test_numerical_construction.py",
+        "tests/test_queries.py",
         "tests/test_small_graph_oracles.py",
         "tests/test_temporal_sampling.py",
         "tests/test_weighted_directed.py",
         "tests/test_workflows.py"
       ],
-      "report": "validation/python_analytics/cpu-graph-pair.xml",
-      "report_sha256": "a0111d001aed054d8e3885ebef55aa7b1d2acf7855b2950387a875091c20fb10",
-      "metadata": "validation/python_analytics/cpu-graph-pair.xml.metadata.json",
-      "metadata_sha256": "631ee8541ae4df4099802071007bf18c7fdf48be4704ba29a9e4322faa55406a",
+      "report": "validation/python_analytics/cpu-record-queries.xml",
+      "report_sha256": "4766745ad9279b7ef09615795e5bb8d83152df8489ceda687c76d4686ec73198",
+      "metadata": "validation/python_analytics/cpu-record-queries.xml.metadata.json",
+      "metadata_sha256": "935e9ec17894c1a9b879c0c3e12a2ebd83282d49f755550c46e7bec8abdd0e9c",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -47,7 +50,7 @@
       }
     },
     {
-      "id": "gpu-0-graph-pair",
+      "id": "gpu-0-record-queries",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -58,10 +61,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-graph-pair.xml",
-      "report_sha256": "3eed391ad005e90b225b26ad05a00e1f73b58ae248757bfe7637815c23d8fba6",
-      "metadata": "validation/python_analytics/gpu-0-graph-pair.xml.metadata.json",
-      "metadata_sha256": "88071d603951b78b8c49155752a22b6f53f37efbad4af4b6b3a49be6797b2e61",
+      "report": "validation/python_analytics/gpu-0-record-queries.xml",
+      "report_sha256": "2896740ee011b37b539a74f551c4d806cf8ca51974526ee1ae6569ad3546677c",
+      "metadata": "validation/python_analytics/gpu-0-record-queries.xml.metadata.json",
+      "metadata_sha256": "1ed69ec866e2e77144711141bc99a303806df3ceac7c22f402144a397defd816",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -77,7 +80,7 @@
       }
     },
     {
-      "id": "gpu-1-graph-pair",
+      "id": "gpu-1-record-queries",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -88,10 +91,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-graph-pair.xml",
-      "report_sha256": "133849ee4a349e12694370ff85d3b742fc21722ec5f81e46e49fb958c1b6b6da",
-      "metadata": "validation/python_analytics/gpu-1-graph-pair.xml.metadata.json",
-      "metadata_sha256": "2dcd1d5546778ec3dd3b626c31018cb81efa0d356cb9340e4c1c1eaf90378c9b",
+      "report": "validation/python_analytics/gpu-1-record-queries.xml",
+      "report_sha256": "70ec296f9e82ca15c7ac25ac60f06bd813c80fd4f9a26a4ebc899b6c5a20fa03",
+      "metadata": "validation/python_analytics/gpu-1-record-queries.xml.metadata.json",
+      "metadata_sha256": "00e256a16e571386e37e08746b333a485a4262bb2566402cfacdd2767e4a0c49",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -3597,6 +3600,1128 @@
         }
       },
       "profile_sha256": "d870106a47c6a859e5fd6688a23af10dd528dd9ba4e9cba6bd5752c912da9b5b"
+    },
+    {
+      "id": "common-neighbors",
+      "problem_id": "graph_record_queries",
+      "family": "query",
+      "title": "Find shared neighbors",
+      "description": "Intersect the direct neighbor sets of two typed entities in the requested direction. Self-loops retain their adjacency meaning.",
+      "parameters": {
+        "source": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "target": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "direction": {
+          "kind": "string",
+          "required": false,
+          "description": "Traversal or per-vertex edge direction. Undirected edges are traversable both ways; self-loops count once per vertex.",
+          "default": "out",
+          "choices": [
+            "out",
+            "in",
+            "both"
+          ],
+          "nullable": false
+        },
+        "edge_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "Optional retained-row cap. All matches are counted; capped collections are incomplete and cannot feed a downstream step.",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "python",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "output_ports": {
+        "rows": {
+          "type": "table",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "31e5941b0e2b701dd9c35edb628d4aa4c405cd3c51a5e6b0457cc90b5f122d40"
+    },
+    {
+      "id": "edge-filter",
+      "problem_id": "graph_record_queries",
+      "family": "query",
+      "title": "Filter relationships",
+      "description": "Select original relationship records without collapsing parallel edges or loops. Endpoint predicates use the stored source/target even on undirected inputs.",
+      "parameters": {
+        "edge_ids": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "edge_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "source_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "target_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "Optional retained-row cap. All matches are counted; capped collections are incomplete and cannot feed a downstream step.",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "python",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "output_ports": {
+        "rows": {
+          "type": "table",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        },
+        "edges": {
+          "type": "edge_ids",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "7a51782d3aea8be78891d54fbfd1410084f72c2f683d74b2bd6941173b8465c0"
+    },
+    {
+      "id": "graph-aggregate",
+      "problem_id": "graph_record_queries",
+      "family": "query",
+      "title": "Summarize recorded values",
+      "description": "Count records or sum/average/min/max an explicit numeric field, grouped by a field or vertex. Decimal arithmetic is exact in exact_value; value may be rounded. Missing numeric fields are errors. Per-vertex edge groups include isolates and count loops once.",
+      "parameters": {
+        "scope": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "edges",
+          "choices": [
+            "vertices",
+            "edges"
+          ],
+          "nullable": false
+        },
+        "filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "metric": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "count",
+          "choices": [
+            "count",
+            "sum",
+            "avg",
+            "min",
+            "max"
+          ],
+          "nullable": false
+        },
+        "field": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "group_by": {
+          "kind": "string",
+          "required": false,
+          "description": "A record field, vertex for per-vertex groups, or null for one overall group. Edge source/target group by stored endpoints; vertex uses direction.",
+          "default": null,
+          "nullable": true
+        },
+        "direction": {
+          "kind": "string",
+          "required": false,
+          "description": "Traversal or per-vertex edge direction. Undirected edges are traversable both ways; self-loops count once per vertex.",
+          "default": "out",
+          "choices": [
+            "out",
+            "in",
+            "both"
+          ],
+          "nullable": false
+        },
+        "order": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "input",
+          "choices": [
+            "input",
+            "ascending",
+            "descending"
+          ],
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "Optional retained-row cap. All matches are counted; capped collections are incomplete and cannot feed a downstream step.",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "python",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "output_ports": {
+        "rows": {
+          "type": "table",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        },
+        "scores": {
+          "type": "vertex_scores",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "e80d82fe7a3a995806d110addc2341d377d6f9d6294845d0905342e45fc9cc0a"
+    },
+    {
+      "id": "neighbors",
+      "problem_id": "graph_record_queries",
+      "family": "query",
+      "title": "Find nearby entities",
+      "description": "Find vertices reachable within hops over filtered relationships, with exact hop distances. Parallel edges do not duplicate vertices; include_seed controls the starting vertex.",
+      "parameters": {
+        "entity": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "hops": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1,
+          "nullable": false
+        },
+        "direction": {
+          "kind": "string",
+          "required": false,
+          "description": "Traversal or per-vertex edge direction. Undirected edges are traversable both ways; self-loops count once per vertex.",
+          "default": "out",
+          "choices": [
+            "out",
+            "in",
+            "both"
+          ],
+          "nullable": false
+        },
+        "edge_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "include_seed": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": false,
+          "nullable": false
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "Optional retained-row cap. All matches are counted; capped collections are incomplete and cannot feed a downstream step.",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "python",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "output_ports": {
+        "rows": {
+          "type": "table",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "1a4301554ace1ca20541413c996a0d4bd9492ee333edb1ce2a6428ffdc1a89fe"
+    },
+    {
+      "id": "node-lookup",
+      "problem_id": "graph_record_queries",
+      "family": "query",
+      "title": "Look up entities",
+      "description": "Select original vertex records by typed IDs and AND predicates; no fuzzy name matching. An explicit empty IDs array selects nothing.",
+      "parameters": {
+        "vertices": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "vertex_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "Optional retained-row cap. All matches are counted; capped collections are incomplete and cannot feed a downstream step.",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "python",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "output_ports": {
+        "rows": {
+          "type": "table",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "59d7bafdf16ec8cfba0e6bbced27b72cf50db227f5cb8dcbe5e070fde0752618"
+    },
+    {
+      "id": "query-paths",
+      "problem_id": "graph_record_queries",
+      "family": "query",
+      "title": "Find connections between two entities",
+      "description": "Enumerate all hop-shortest or all vertex-simple paths within max_hops, preserving edge IDs and parallel-edge alternatives. This is unweighted hop length, not minimum weight.",
+      "parameters": {
+        "source": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "target": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "shortest",
+          "choices": [
+            "shortest",
+            "all_simple"
+          ],
+          "nullable": false
+        },
+        "max_hops": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 3,
+          "nullable": false
+        },
+        "direction": {
+          "kind": "string",
+          "required": false,
+          "description": "Traversal or per-vertex edge direction. Undirected edges are traversable both ways; self-loops count once per vertex.",
+          "default": "out",
+          "choices": [
+            "out",
+            "in",
+            "both"
+          ],
+          "nullable": false
+        },
+        "edge_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "result_limit": {
+          "kind": "integer",
+          "required": false,
+          "description": "Optional retained-row cap. All matches are counted; capped collections are incomplete and cannot feed a downstream step.",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "python",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "output_ports": {
+        "rows": {
+          "type": "table",
+          "availability": "runtime_checked"
+        },
+        "count": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        },
+        "edges": {
+          "type": "edge_ids",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "66f441c42587af8b4279f06b40a50c28458517437ebdf35ba168b97fafca654b"
+    },
+    {
+      "id": "query-subgraph",
+      "problem_id": "graph_record_queries",
+      "family": "query",
+      "title": "Extract records as a graph",
+      "description": "Extract a vertex-induced, edge-induced, or filtered-neighborhood graph. Preserve original records, direction, weights, loops and parallel edges. Edge mode retains only endpoints; vertices mode can retain isolates.",
+      "parameters": {
+        "mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "vertices",
+          "choices": [
+            "vertices",
+            "edges",
+            "neighborhood"
+          ],
+          "nullable": false
+        },
+        "vertices": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "edge_ids": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "entity": {
+          "kind": "vertex_id",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "hops": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1,
+          "nullable": false
+        },
+        "direction": {
+          "kind": "string",
+          "required": false,
+          "description": "Traversal or per-vertex edge direction. Undirected edges are traversable both ways; self-loops count once per vertex.",
+          "default": "out",
+          "choices": [
+            "out",
+            "in",
+            "both"
+          ],
+          "nullable": false
+        },
+        "vertex_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "edge_filters": {
+          "kind": "array",
+          "required": false,
+          "description": "AND of {field, op, value} predicates. Use explicit paths such as attributes.amount. Missing fields never match except exists=false; ID types are preserved.",
+          "default": [],
+          "nullable": false,
+          "json_schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "enum": [
+                    "eq",
+                    "ne",
+                    "lt",
+                    "lte",
+                    "gt",
+                    "gte",
+                    "in",
+                    "not_in",
+                    "contains",
+                    "exists"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": [
+                        "string",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "library": "python",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "output_ports": {
+        "graph": {
+          "type": "graph",
+          "availability": "runtime_checked"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "availability": "runtime_checked"
+        },
+        "edges": {
+          "type": "edge_ids",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "d673175a7c088730f454bd40538729266417737aefdc7b348f88409319de6874"
     },
     {
       "id": "neighborhood-sampling",

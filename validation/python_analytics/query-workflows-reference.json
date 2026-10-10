@@ -1,0 +1,840 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "reference",
+  "model_accuracy_measured": false,
+  "suite_sha256": "2416b48935c4cc9144ec374c7d07c9f9ba62b9d3820172688cad0bd7046be066",
+  "capabilities_sha256": "772e7eb438d18a41d8a7ae8a4eee894ccbeb2a970b1d72e087e1846a7124923a",
+  "implementation_sha256": "2c98ded6992edf5d57491b60812fa692915826f5711782d0e97b330000d26420",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A"
+          ],
+          "observed": [
+            "A"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "177adeeb-2dfc-45d2-a24e-6e665b53a9fa",
+      "workflow_hash": "87f78e160a90ba3bddf32a810499597d513915bf80a65262ec31750965788fe1",
+      "elapsed_seconds": 2.31207456625998
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "C"
+          ],
+          "observed": [
+            "A",
+            "C"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "0f8b2428-27d1-4aac-9a8b-59d08c65d153",
+      "workflow_hash": "9901beebe3d0fe7729b9ff8fb0c8aab52a03fc08131db41dcf2f293513719fd3",
+      "elapsed_seconds": 2.335219569504261
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "edges",
+          "passed": true,
+          "expected": [
+            "AC",
+            "CD"
+          ],
+          "observed": [
+            "AC",
+            "CD"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "9dd8dcd7-01a6-4a4c-a476-56d2b7dd3bb3",
+      "workflow_hash": "cd96b2ed5d0c1d9a45857b88de6374a433af45598b4eeaf5df89c8130bc15bb0",
+      "elapsed_seconds": 2.282098287716508
+    },
+    {
+      "id": "source_record_filter",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "edges",
+          "passed": true,
+          "expected": [
+            "AB",
+            "AC",
+            "CD"
+          ],
+          "observed": [
+            "AB",
+            "AC",
+            "CD"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "1471ff06-3901-4414-8b7a-91107fe0b875",
+      "workflow_hash": "84e2dca4f604fe9eda9cbef7d0f16a233388dd01b1cc60c7c4b87cd4d3af4b8a",
+      "elapsed_seconds": 2.3365966957062483
+    },
+    {
+      "id": "outgoing_neighbors",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "B",
+            "C"
+          ],
+          "observed": [
+            "B",
+            "C"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "f6d0b966-96fa-4916-918a-ceac521c9470",
+      "workflow_hash": "a89e75f1b69613db242232bda87ac05b57c28c3ed99545e2ca3020eb66e5f328",
+      "elapsed_seconds": 2.337350394576788
+    },
+    {
+      "id": "incoming_neighbors",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "B"
+          ],
+          "observed": [
+            "A",
+            "B"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "ca0d7241-21c1-49d0-9ea3-013489c69501",
+      "workflow_hash": "b4981630f0dccba442f07df6c7a028877db3d682ed7e87965fa91f22aae66061",
+      "elapsed_seconds": 2.3872759956866503
+    },
+    {
+      "id": "two_hops",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "B",
+            "C",
+            "D"
+          ],
+          "observed": [
+            "B",
+            "C",
+            "D"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "18c381b9-90b5-4184-bc4f-c5ed0bf6a391",
+      "workflow_hash": "e0dcf698d0449d901a586239aaba1a8ece7762de676fbb00747966e85cb0a3be",
+      "elapsed_seconds": 2.2710734978318214
+    },
+    {
+      "id": "shared_neighbors",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "C"
+          ],
+          "observed": [
+            "C"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "0954030f-a63b-46c3-8049-4584ac466bd3",
+      "workflow_hash": "5f4487581163184c3c2d5d3a6614d9f657132aa32a8f89c45dc189085cd4140c",
+      "elapsed_seconds": 2.281028725206852
+    },
+    {
+      "id": "shortest_paths",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "rows",
+          "passed": true,
+          "expected": [
+            {
+              "vertices": [
+                "A",
+                "C",
+                "D"
+              ],
+              "edges": [
+                "AC",
+                "CD"
+              ],
+              "hops": 2
+            }
+          ],
+          "observed": [
+            {
+              "vertices": [
+                "A",
+                "C",
+                "D"
+              ],
+              "edges": [
+                "AC",
+                "CD"
+              ],
+              "hops": 2
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "85818485-2577-4c46-a06c-9b59c5822609",
+      "workflow_hash": "5f51f65464066e5e7d8e2517595a8c3709532687afcb56e572b6447e2f705e9a",
+      "elapsed_seconds": 2.3187283854931593
+    },
+    {
+      "id": "all_paths",
+      "slice": "lookup",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "count",
+          "passed": true,
+          "expected": 2,
+          "observed": 2
+        }
+      ],
+      "passed": true,
+      "workflow_id": "8a988057-9f0e-4adb-832a-924a55d9b5e6",
+      "workflow_hash": "e7668476fc236fb0f6f37a7b38fe0e754a7ee71b03110888392c37924132ae5f",
+      "elapsed_seconds": 2.357277112081647
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "filter",
+          "port": "edges",
+          "passed": true,
+          "expected": [
+            "AC",
+            "CD"
+          ],
+          "observed": [
+            "AC",
+            "CD"
+          ]
+        },
+        {
+          "step": "sub",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "C",
+            "D"
+          ],
+          "observed": [
+            "A",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "step": "answer",
+          "port": "rows",
+          "passed": true,
+          "expected": [
+            {
+              "group": null,
+              "value": 2,
+              "exact_value": {
+                "numerator": 2,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 2
+            }
+          ],
+          "observed": [
+            {
+              "group": null,
+              "value": 2,
+              "exact_value": {
+                "numerator": 2,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 2
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "1ee94651-b3ad-43fb-b974-3f362e193a6f",
+      "workflow_hash": "06c5f5275b9a49d29486cf5d6f0c16aff852b3005679f1cbe1ed3fe67143cb1e",
+      "elapsed_seconds": 2.3343844190239906
+    },
+    {
+      "id": "branch_network",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "lookup",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "C"
+          ],
+          "observed": [
+            "A",
+            "C"
+          ]
+        },
+        {
+          "step": "sub",
+          "port": "edges",
+          "passed": true,
+          "expected": [
+            "AC"
+          ],
+          "observed": [
+            "AC"
+          ]
+        },
+        {
+          "step": "answer",
+          "port": "rows",
+          "passed": true,
+          "expected": [
+            {
+              "group": null,
+              "value": 1,
+              "exact_value": {
+                "numerator": 1,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 1
+            }
+          ],
+          "observed": [
+            {
+              "group": null,
+              "value": 1,
+              "exact_value": {
+                "numerator": 1,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 1
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "4c196880-0af8-4a32-86cd-5105576f19bc",
+      "workflow_hash": "f29ea26bef900321cb01253563b7019d00a098250cf74177b1454b87ff90fb58",
+      "elapsed_seconds": 2.3790371492505074
+    },
+    {
+      "id": "neighbor_network",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "near",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "B",
+            "C",
+            "D"
+          ],
+          "observed": [
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "step": "sub",
+          "port": "edges",
+          "passed": true,
+          "expected": [
+            "BC",
+            "CD"
+          ],
+          "observed": [
+            "BC",
+            "CD"
+          ]
+        },
+        {
+          "step": "answer",
+          "port": "rows",
+          "passed": true,
+          "expected": [
+            {
+              "group": null,
+              "value": 2,
+              "exact_value": {
+                "numerator": 2,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 2
+            }
+          ],
+          "observed": [
+            {
+              "group": null,
+              "value": 2,
+              "exact_value": {
+                "numerator": 2,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 2
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "b9870c53-0ffc-4143-add3-44f8cf9af4bf",
+      "workflow_hash": "e168df838ce172179e45483a3780b6a656c3081be968b0304b07005833ab5fb2",
+      "elapsed_seconds": 2.310329955071211
+    },
+    {
+      "id": "isolate_network",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "sub",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "E"
+          ],
+          "observed": [
+            "E"
+          ]
+        },
+        {
+          "step": "answer",
+          "port": "rows",
+          "passed": true,
+          "expected": [
+            {
+              "group": null,
+              "value": 0,
+              "exact_value": {
+                "numerator": 0,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 0
+            }
+          ],
+          "observed": [
+            {
+              "group": null,
+              "value": 0,
+              "exact_value": {
+                "numerator": 0,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 0
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "a7be287b-9b6a-474a-9d78-ede8c22471fa",
+      "workflow_hash": "7bd70a407f81676798e7d4e8469f0ad1dcc19db36b34034407ea71be78dc8c79",
+      "elapsed_seconds": 2.3172855973243713
+    },
+    {
+      "id": "empty_network",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "lookup",
+          "port": "vertices",
+          "passed": true,
+          "expected": [],
+          "observed": []
+        },
+        {
+          "step": "sub",
+          "port": "vertices",
+          "passed": true,
+          "expected": [],
+          "observed": []
+        },
+        {
+          "step": "answer",
+          "port": "rows",
+          "passed": true,
+          "expected": [
+            {
+              "group": null,
+              "value": 0,
+              "exact_value": {
+                "numerator": 0,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 0
+            }
+          ],
+          "observed": [
+            {
+              "group": null,
+              "value": 0,
+              "exact_value": {
+                "numerator": 0,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 0
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "e515d037-fd53-4c11-b664-59dcc2664909",
+      "workflow_hash": "df8801b51b9ef8a0dff647b956b31e625742804cc0eb20f35078835e018e19bd",
+      "elapsed_seconds": 2.346581870689988
+    },
+    {
+      "id": "path_network",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "sub",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "C",
+            "D"
+          ],
+          "observed": [
+            "A",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "step": "answer",
+          "port": "rows",
+          "passed": true,
+          "expected": [
+            {
+              "group": null,
+              "value": 2,
+              "exact_value": {
+                "numerator": 2,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 2
+            }
+          ],
+          "observed": [
+            {
+              "group": null,
+              "value": 2,
+              "exact_value": {
+                "numerator": 2,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 2
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "688f3af8-5f6f-4315-b044-e5ec15aed187",
+      "workflow_hash": "d4f423259e6e9cf54e947a7e462b4cbd731efc1ec948e5e54a01c94a84f4d678",
+      "elapsed_seconds": 2.31319891102612
+    },
+    {
+      "id": "common_network",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "sub",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "C"
+          ],
+          "observed": [
+            "C"
+          ]
+        },
+        {
+          "step": "answer",
+          "port": "rows",
+          "passed": true,
+          "expected": [
+            {
+              "group": null,
+              "value": 0,
+              "exact_value": {
+                "numerator": 0,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 0
+            }
+          ],
+          "observed": [
+            {
+              "group": null,
+              "value": 0,
+              "exact_value": {
+                "numerator": 0,
+                "denominator": 1
+              },
+              "rounded": false,
+              "record_count": 0
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "746c910f-4dc3-4d6b-82df-d25356eb3fcd",
+      "workflow_hash": "486c4fd6dd3773d3e7b5b275afc797309587f3da0fe25cfbbc6e4e61e1ff5b55",
+      "elapsed_seconds": 2.30738889798522
+    },
+    {
+      "id": "top_sender",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A"
+          ],
+          "observed": [
+            "A"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "236391ab-7c0d-4b98-b688-5bb7abe7b662",
+      "workflow_hash": "030994084c5da33d86f6d8c434bbbde8f28ff78b84ca424d163f97e92feca6ea",
+      "elapsed_seconds": 2.2012636959552765
+    },
+    {
+      "id": "filtered_reachability",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "C",
+            "D"
+          ],
+          "observed": [
+            "C",
+            "D"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "d9852111-a4dc-4d52-be8a-03f41d0fcdd2",
+      "workflow_hash": "fbe91289925aefabcd904ffba67a2389feb3c78278be24b72c13a86dcc20ad9d",
+      "elapsed_seconds": 2.1806321665644646
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": null,
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "C",
+            "D"
+          ],
+          "observed": [
+            "A",
+            "C",
+            "D"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "44a555f3-a961-412b-8fa4-27c8f9a772be",
+      "workflow_hash": "aca2d703bd1af90d8e1e2525184622bed552feca9d381e8d5c304592265d5d32",
+      "elapsed_seconds": 2.1765368580818176
+    }
+  ],
+  "passed": 20,
+  "total": 20,
+  "by_slice": {
+    "dependent": {
+      "passed": 10,
+      "total": 10
+    },
+    "lookup": {
+      "passed": 10,
+      "total": 10
+    }
+  }
+}

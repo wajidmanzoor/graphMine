@@ -381,6 +381,7 @@
     const port = state.port; state.rows = Array.isArray(port.value) ? port.value : [port.value]; state.page = 0; state.selected.clear(); $("table-search").value = "";
     $("result-completeness").classList.toggle("incomplete", !port.complete || !result.complete);
     $("result-completeness").textContent = `${port.complete ? "This output collection is complete." : "This output is incomplete or count-only; it cannot supply a full downstream collection."} Method quality: ${title(result.quality)}. Computed by ${result.backend.library} on ${result.backend.device.toUpperCase()}.`;
+    if (!port.complete && result.diagnostics?.narrowing_hint) $("result-completeness").textContent += ` ${result.diagnostics.narrowing_hint}`;
     state.patternId = port.type === "pattern_collection" ? port.value[0]?.pattern_id || null : null;
     const graph = port.type === "graph" ? port.value : port.type === "pattern_collection" ? port.value[0]?.pattern || null : await graphForStep(stepId);
     if (port.type === "vertex_positions") $("graph-layout").value = "computed";
@@ -433,7 +434,12 @@
     if (!state.port) return [];
     if (state.port.type === "pattern_collection") return [];
     if (state.port.type === "vertex_set") return [row];
+    if (state.port.type === "edge_ids") {
+      const edge = state.graph?.edges?.find(e => W.idKey(e.id) === W.idKey(row));
+      return edge ? [edge.source, edge.target] : [];
+    }
     if (!row || typeof row !== "object" || Array.isArray(row)) return [];
+    if (state.port.vertex_field && row[state.port.vertex_field] !== undefined) return [row[state.port.vertex_field]];
     if (Array.isArray(row.vertices)) return row.vertices;
     if (row.vertex !== undefined) return [row.vertex];
     if (row.source !== undefined && row.target !== undefined) return [row.source, row.target];
@@ -473,7 +479,14 @@
       chartRows = state.rows.map((row, index) => ({index, row, label: W.idLabel(row.vertex), value: row[field]})).filter(x => typeof x.value === "number" || typeof x.value === "bigint");
     } else if (state.port?.type === "vertex_groups") chartRows = state.rows.map((row, index) => ({index, row, label: `Group ${row.group ?? index + 1}`, value: row.vertices.length}));
     if (chartRows.length) {
-      chartRows.sort((a, b) => a.value > b.value ? -1 : a.value < b.value ? 1 : a.index - b.index);
+      chartRows.sort((a, b) => {
+        const field = state.port.exact_score_field, x = field && a.row[field], y = field && b.row[field];
+        if (x && y) {
+          const left = BigInt(x.numerator) * BigInt(y.denominator), right = BigInt(y.numerator) * BigInt(x.denominator);
+          return left > right ? -1 : left < right ? 1 : a.index - b.index;
+        }
+        return a.value > b.value ? -1 : a.value < b.value ? 1 : a.index - b.index;
+      });
       const visible = chartRows.slice(0, 20), max = Math.max(...visible.map(r => Math.abs(Number(r.value))), 0);
       $("chart").append(node("p", {class: "chart-heading"}, `${state.port.type === "vertex_groups" ? "Members in each returned group" : title(state.port.score_field || "score")} · highest ${visible.length} of ${chartRows.length} scored rows`));
       if (visible.some(row => row.value < 0)) $("chart").append(node("p", {class: "muted"}, "Bar length shows magnitude; negative values are orange. Labels retain the sign."));
@@ -481,7 +494,7 @@
       else for (const item of visible) {
         const button = node("button", {class: "bar-row", "data-result-row": item.index, "aria-pressed": "false", title: `${item.label}: ${display(item.value)}`});
         const track = node("span", {class: "bar-track", "aria-hidden": "true"}), fill = node("span", {class: "bar-fill"}); fill.style.display = "block"; fill.style.width = `${max ? Math.abs(Number(item.value)) / max * 100 : 0}%`; if (Number(item.value) < 0) fill.style.backgroundColor = "#c27b65"; track.append(fill);
-        button.append(node("span", {class: "bar-label"}, item.label), track, node("span", {class: "bar-value"}, display(item.value)));
+        button.append(node("span", {class: "bar-label"}, item.label), track, node("span", {class: "bar-value"}, `${item.row.rounded ? "≈ " : ""}${display(item.value)}`));
         button.addEventListener("click", () => selectRow(item.row)); $("chart").append(button);
       }
     }
@@ -501,7 +514,7 @@
       const row = state.rows[index], record = objectRows && row && typeof row === "object" && !Array.isArray(row) ? row : {value: row};
       const tr = node("tr", {"data-result-row": index, "aria-selected": "false"});
       keys.forEach((key, position) => {
-        const value = record[key] ?? null, text = state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : ["vertex", "source", "target"].includes(key) && value !== null ? W.idLabel(value) : display(value), td = node("td", {title: text});
+        const value = record[key] ?? null, text = state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : ["vertex", "source", "target", state.port?.vertex_field].includes(key) && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value ? "≈ " : ""}${display(value)}`, td = node("td", {title: text});
         if (position === 0 && (rowVertices(row).length || state.port?.type === "pattern_collection")) { const button = node("button", {}, state.port?.type === "pattern_collection" ? `View pattern ${index + 1}` : text); button.addEventListener("click", () => selectRow(row)); td.append(button); } else td.textContent = text;
         tr.append(td);
       }); body.append(tr);
@@ -512,6 +525,7 @@
     $("table-page").textContent = `${state.page + 1} / ${pages}`;
     $("table-prev").disabled = state.page === 0; $("table-next").disabled = state.page + 1 >= pages;
     $("table-scope").textContent = state.port ? `This table pages over the retained output. ${state.port.complete ? "The output collection is complete." : "The output collection is incomplete or count-only."} Search filters this table, not the computation.` : "Computed values will appear after an analysis.";
+    if (state.rows.some(row => row?.rounded && row?.exact_value)) $("table-scope").textContent += " Approximate displays use ≈. Exact numerators and denominators are preserved in the table and download.";
     applySelection();
   }
   async function connect() {

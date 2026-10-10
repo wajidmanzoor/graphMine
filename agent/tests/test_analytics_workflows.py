@@ -473,6 +473,81 @@ def test_live_capabilities_authorization_and_input_scope(settings, triangle_grap
         )
 
 
+@pytest.mark.parametrize("mode", ["normal", "interactive", "expert"])
+def test_live_record_query_to_filtered_graph_to_count(settings, triangle_graph, mode):
+    with TestClient(create_app(settings)) as client:
+        session, graph = upload(client, triangle_graph)
+        request = body(graph, mode)
+        request["plan"]["steps"] = [
+            {
+                "id": "lookup",
+                "operation": "edge-filter",
+                "input": {"input": "main"},
+                "parameters": {
+                    "edge_filters": [{"field": "id", "op": "in", "value": ["01", "12"]}]
+                },
+            },
+            {
+                "id": "sub",
+                "operation": "query-subgraph",
+                "input": {"input": "main"},
+                "parameters": {"mode": "edges"},
+                "bindings": {"edge_ids": {"step": "lookup", "port": "edges"}},
+            },
+            {
+                "id": "count",
+                "operation": "triangle-counting",
+                "input": {"step": "sub", "port": "graph"},
+            },
+        ]
+        response = client.post(
+            f"/api/sessions/{session}/workflows", headers=AUTH, json=request
+        )
+        assert response.status_code == 201, response.text
+        record = response.json()
+        if mode != "normal":
+            assert not record["steps"]
+            approve(client, record)
+        final = wait(client, record["id"])
+        assert final["status"] == "completed", final
+        result = client.get(
+            f"/api/workflows/{record['id']}/result", headers=AUTH
+        ).json()
+        assert result["steps"]["lookup"]["result"]["ports"]["edges"]["value"] == [
+            "01",
+            "12",
+        ]
+        assert result["steps"]["count"]["result"]["ports"]["count"]["value"] == 0
+        page = client.get(
+            f"/api/workflows/{record['id']}/steps/lookup/ports/rows?offset=1&limit=1",
+            headers=AUTH,
+        ).json()
+        assert page["items"][0]["id"] == "12" and page["complete"]
+
+
+def test_query_input_rejected_before_any_worker_is_queued(settings, triangle_graph):
+    with TestClient(create_app(settings)) as client:
+        session, graph = upload(client, triangle_graph)
+        request = body(graph, "normal")
+        request["plan"]["steps"] = [
+            {
+                "id": "query",
+                "operation": "edge-filter",
+                "input": {"input": "main"},
+                "parameters": {
+                    "edge_filters": [
+                        {"field": "attributes.invented", "op": "eq", "value": 10}
+                    ]
+                },
+            }
+        ]
+        response = client.post(
+            f"/api/sessions/{session}/workflows", headers=AUTH, json=request
+        )
+        assert response.status_code == 422, response.text
+        assert "Unknown edges field" in response.text
+
+
 def _service(settings, database, graph_store):
     return AnalyticsService(settings, database, graph_store, EventBus(database))
 

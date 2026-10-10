@@ -3,6 +3,23 @@
 from .exceptions import GraphMineError
 
 OUTPUT_PORTS = {
+    "node-lookup": {"rows": "table", "count": "scalar", "vertices": "vertex_set"},
+    "edge-filter": {
+        "rows": "table",
+        "count": "scalar",
+        "edges": "edge_ids",
+        "vertices": "vertex_set",
+    },
+    "neighbors": {"rows": "table", "count": "scalar", "vertices": "vertex_set"},
+    "common-neighbors": {"rows": "table", "count": "scalar", "vertices": "vertex_set"},
+    "query-paths": {
+        "rows": "table",
+        "count": "scalar",
+        "vertices": "vertex_set",
+        "edges": "edge_ids",
+    },
+    "graph-aggregate": {"rows": "table", "count": "scalar", "scores": "vertex_scores"},
+    "query-subgraph": {"graph": "graph", "vertices": "vertex_set", "edges": "edge_ids"},
     "graph-edit-distance": {
         "distance": "rational_scalar",
         "mapping": "cross_graph_mapping",

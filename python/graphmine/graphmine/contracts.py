@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 import time
 from collections.abc import Callable
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -19,6 +20,8 @@ class Parameter:
     choices: tuple[Any, ...] = ()
     nullable: bool = False
     description: str = ""
+    validator: Callable | None = None
+    json_schema: dict | None = None
 
     def validate(self, name: str, value: Any) -> Any:
         if value is None and self.nullable:
@@ -42,7 +45,9 @@ class Parameter:
             raise GraphMineError(f"{name} must be <= {self.maximum}")
         if self.choices and value not in self.choices:
             raise GraphMineError(f"{name} must be one of {self.choices}")
-        return value
+        if self.validator is not None:
+            self.validator(value)
+        return deepcopy(value)
 
     def schema(self) -> dict:
         result = {
@@ -59,7 +64,9 @@ class Parameter:
         if self.choices:
             result["choices"] = list(self.choices)
         result["nullable"] = self.nullable
-        return result
+        if self.json_schema is not None:
+            result["json_schema"] = self.json_schema
+        return deepcopy(result)
 
 
 @dataclass(frozen=True)
@@ -128,6 +135,7 @@ class Algorithm:
     quality: str = "exact"
     references: tuple[str, ...] = ()
     input_kind: str = "graph"
+    input_validator: Callable | None = None
 
     def arguments(self, supplied: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(supplied, dict):

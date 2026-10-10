@@ -34,6 +34,36 @@ class ReplayPlanner(AnalyticsPlanner):
         return deepcopy(self.responses.pop(0))
 
 
+@pytest.mark.asyncio
+async def test_lookup_family_routes_nested_filters_through_real_preflight(setup):
+    settings, analytics, events, session, body = setup
+    body.message = "Look up vertex 0 by its numeric ID."
+    params = {"vertex_filters": [{"field": "id", "op": "eq", "value": 0}]}
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[
+            family("query"),
+            operation("node-lookup"),
+            proposal("node-lookup", params),
+        ],
+    )
+    result = await planner.plan(session, body)
+    assert result["status"] == "ready"
+    assert (
+        result["plan"]["steps"][0]["parameters"]["vertex_filters"]
+        == params["vertex_filters"]
+    )
+    schema = planner.calls[-1][2]
+    invalid = proposal(
+        "node-lookup",
+        {"vertex_filters": [{"field": "id", "op": "execute", "value": 0}]},
+    )
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(invalid, schema)
+
+
 @pytest.fixture
 def setup(settings, database, graph_store, session, triangle_graph):
     file = graph_store.ingest(

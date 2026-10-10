@@ -7,8 +7,14 @@ inputs. Neither algorithm code nor expressions are generated or evaluated.
 
 The default browser workspace at `/` uses this library and the three modes.
 The previous native workspace remains at `/classic`. Native adaptation,
-deterministic table operations, MCP access and two-GPU scheduling are still
+multi-table operations, MCP access and two-GPU scheduling are still
 separate work in the active implementation plan.
+
+The **Look up & summarize records** family provides deterministic entity and
+relationship queries, neighbors, paths, exact aggregates, and graph extraction.
+Its typed vertex/edge outputs can feed later steps. See the
+[record-query guide](RECORD_QUERIES.md) for predicates, direction, exact values,
+completeness and a dependent workflow example.
 
 ## Browser workspace
 

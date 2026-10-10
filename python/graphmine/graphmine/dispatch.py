@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.metadata
 import json
+import platform
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -17,7 +18,7 @@ from .registry import algorithm
 
 _backend_configuration_lock = RLock()
 _CPU_BACKENDS = frozenset(
-    {"networkx", "numpy", "scipy", "cvxpy", "gudhi", "rapidfuzz", "igraph"}
+    {"networkx", "numpy", "scipy", "cvxpy", "gudhi", "rapidfuzz", "igraph", "python"}
 )
 
 
@@ -62,6 +63,8 @@ def run(
     definition = algorithm(operation)
     graph = load_input(graph, definition.input_kind)
     args = definition.arguments({} if parameters is None else parameters)
+    if definition.input_validator is not None:
+        definition.input_validator(graph, args)
     try:
         json.dumps(args, allow_nan=False)
     except (ValueError, TypeError) as exc:
@@ -79,7 +82,9 @@ def run(
         "id": definition.library,
         "device": "cpu",
         "library": definition.library,
-        "version": importlib.metadata.version(definition.library),
+        "version": platform.python_version()
+        if definition.library == "python"
+        else importlib.metadata.version(definition.library),
         "dependencies": {
             name: importlib.metadata.version(name)
             for name in (
