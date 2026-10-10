@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "feature_vectors_input.schema.json",
+  "title": "Feature Vectors for Graph Construction v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dataset_id",
+    "dimension",
+    "vectors"
+  ],
+  "properties": {
+    "dataset_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dimension": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "vectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "values"
+        ],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "values": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  },
+  "semantic_constraints": [
+    "IDs are unique, preserving type (integer 1 differs from string \"1\").",
+    "Every values array has exactly dimension finite entries."
+  ]
+}

@@ -11,7 +11,7 @@ from ..contracts import Parameter as P
 from ..exceptions import GraphMineError
 from ..registry import register
 from ._common import simple, vertex_set, vertex_values
-from ._milp import BinaryModel
+from ._milp import BinaryModel, integral_balance_row
 
 
 def _assignment_output(graph, parts, data, *, quality, diagnostics=None):
@@ -217,6 +217,9 @@ def balanced_partitioning(graph, args, work, backend="networkx"):
     ideal = sum(rational.values()) / k
     tolerance = Fraction(str(args["imbalance_tolerance"]))
     lower, upper = max(Fraction(), (1 - tolerance) * ideal), (1 + tolerance) * ideal
+    balance, balance_lower, balance_upper = integral_balance_row(
+        [weights[v] for v in g], lower=lower, upper=upper
+    )
     if args["objective"] == "edge_cut":
         edges = list(g.edges(data=True))
         model = BinaryModel([0] * (n * k) + [d["weight"] for _, _, d in edges], work)
@@ -224,7 +227,7 @@ def balanced_partitioning(graph, args, work, backend="networkx"):
             model.constrain({v * k + p: 1 for p in range(k)}, 1, 1)
         for p in range(k):
             model.constrain(
-                {v * k + p: weights[v] for v in g}, float(lower), float(upper)
+                {v * k + p: balance[v] for v in g}, balance_lower, balance_upper
             )
             model.constrain({v * k + p: 1 for v in g}, lower=1)
         model.constrain({0: 1}, 1, 1)

@@ -23,6 +23,7 @@ def record_execution_evidence(request):
 
     def contracts():
         paths = sorted((repository / "problems").glob("[0-9][0-9]_*/problem.json"))
+        paths += sorted((repository / "problems").glob("*_input.schema.json"))
         paths.append(root / "pyproject.toml")
         return {
             str(path.relative_to(repository)): hashlib.sha256(
@@ -52,6 +53,9 @@ def record_execution_evidence(request):
         "networkx",
         "numpy",
         "scipy",
+        "cvxpy",
+        "clarabel",
+        "gudhi",
         "cugraph-cu12",
         "nx-cugraph-cu12",
         "cupy-cuda12x",

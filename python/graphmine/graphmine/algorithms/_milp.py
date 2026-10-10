@@ -10,12 +10,33 @@ from __future__ import annotations
 
 import math
 import time
+from fractions import Fraction
+from functools import reduce
 
 import numpy as np
 from scipy.optimize import Bounds, LinearConstraint, milp
 from scipy.sparse import coo_array
 
 from ..exceptions import GraphMineError, ResourceLimit
+
+
+def integral_balance_row(weights, *, lower=None, upper):
+    """Keep subset-weight bounds exact on the rational input weight grid."""
+    rational = [Fraction(w) for w in weights]
+    denominator = math.lcm(*(w.denominator for w in rational))
+    integers = [int(w * denominator) for w in rational]
+    divisor = reduce(math.gcd, integers, 0) or 1
+    scale = Fraction(denominator, divisor)
+    integers = [v // divisor for v in integers]
+    if sum(abs(v) for v in integers) > 2**53:
+        raise GraphMineError(
+            "Balance weights exceed the exact float64 integer range after rational scaling"
+        )
+    return (
+        integers,
+        (math.ceil(Fraction(lower) * scale) if lower is not None else -math.inf),
+        math.floor(Fraction(upper) * scale),
+    )
 
 
 def coefficient(value):

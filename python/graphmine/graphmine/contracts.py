@@ -127,6 +127,7 @@ class Algorithm:
     library: str = "networkx"
     quality: str = "exact"
     references: tuple[str, ...] = ()
+    input_kind: str = "graph"
 
     def arguments(self, supplied: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(supplied, dict):
@@ -154,4 +155,5 @@ class Algorithm:
             "library": self.library,
             "quality": self.quality,
             "references": list(self.references),
+            "input_kind": self.input_kind,
         }

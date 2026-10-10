@@ -24,6 +24,8 @@ class Graph:
     The canonical input is retained independently of any algorithm projection.
     """
 
+    kind = "graph"
+
     def __init__(self, data: dict[str, Any]):
         if not isinstance(data, dict):
             raise GraphMineError("Graph input must be an object")

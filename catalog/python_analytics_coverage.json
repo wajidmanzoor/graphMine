@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 39,
-  "problems_with_cpu_profile": 37,
+  "cpu_operation_count": 48,
+  "problems_with_cpu_profile": 46,
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-extended",
+      "id": "cpu-numerical",
       "status": "passed",
-      "tests": 11677,
+      "tests": 14800,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
@@ -17,23 +17,27 @@
         "tests/test_contracts.py",
         "tests/test_extended_contracts.py",
         "tests/test_extended_oracles.py",
+        "tests/test_numerical_construction.py",
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/cpu-extended.xml",
-      "report_sha256": "5e8958e9f97475e840011efd321dadd393e3a9be1215f465ec8f3033124cd99a",
-      "metadata": "validation/python_analytics/cpu-extended.xml.metadata.json",
+      "report": "validation/python_analytics/cpu-numerical.xml",
+      "report_sha256": "8dc9bba652b99898f21e0b5837db7a5ec30a59231b4e9815ba9974349910ab0d",
+      "metadata": "validation/python_analytics/cpu-numerical.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
         "scipy": "1.18.1",
+        "cvxpy": "1.9.3",
+        "clarabel": "0.11.1",
+        "gudhi": "3.13.0",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
       }
     },
     {
-      "id": "gpu-0-extended",
+      "id": "gpu-0-numerical",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -44,20 +48,23 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-extended.xml",
-      "report_sha256": "b163031650afd5b4af81352b833f8d77ff9ddf6d56d180d4b7ec327918164eb4",
-      "metadata": "validation/python_analytics/gpu-0-extended.xml.metadata.json",
+      "report": "validation/python_analytics/gpu-0-numerical.xml",
+      "report_sha256": "ddb9da1fd6254afcd15df9a145dddd9830720afe88b6d35e0a611d28a6447cba",
+      "metadata": "validation/python_analytics/gpu-0-numerical.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
         "scipy": "1.18.1",
+        "cvxpy": "1.9.3",
+        "clarabel": "0.11.1",
+        "gudhi": "3.13.0",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
       }
     },
     {
-      "id": "gpu-1-extended",
+      "id": "gpu-1-numerical",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -68,13 +75,16 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-extended.xml",
-      "report_sha256": "527039994083271e224ecc872313b08f8352913a8c564e45bce3b0bd76d40b2a",
-      "metadata": "validation/python_analytics/gpu-1-extended.xml.metadata.json",
+      "report": "validation/python_analytics/gpu-1-numerical.xml",
+      "report_sha256": "675d2d7cbffc0bcd3b18032d25f5bd44e26ad2ce8dc57ffab2074a4846d95f80",
+      "metadata": "validation/python_analytics/gpu-1-numerical.xml.metadata.json",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
         "scipy": "1.18.1",
+        "cvxpy": "1.9.3",
+        "clarabel": "0.11.1",
+        "gudhi": "3.13.0",
         "cugraph-cu12": "26.10.0",
         "nx-cugraph-cu12": "26.10.0",
         "cupy-cuda12x": "14.2.0"
@@ -423,9 +433,11 @@
       "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
       "contract": "problems/29_simrank_vertex_similarity/problem.json",
       "contract_sha256": "4b755fcbcabf242d62a79a2331242a0c3c8ad0969d6fbd3a48b8d3083cf9e2d3",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "simrank"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -713,9 +725,11 @@
       "name": "Balanced Hypergraph Partitioning",
       "contract": "problems/54_hypergraph_partitioning/problem.json",
       "contract_sha256": "d84535d348db8033db996050918c83ee53a29e859106634454a00dc125ee63c3",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "hypergraph-partitioning"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -755,9 +769,11 @@
       "name": "Top-k Critical Paths in DAGs",
       "contract": "problems/58_top_k_critical_paths_dag/problem.json",
       "contract_sha256": "db8cb1e46348083889099e373f10b9a8ed1048a38b86fe8d97bd1673b109f634",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "top-k-critical-paths"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -765,9 +781,11 @@
       "name": "Graph Signal Denoising and Trend Filtering",
       "contract": "problems/59_graph_signal_denoising/problem.json",
       "contract_sha256": "28ac5a1ef502393314064e2fc90e090a4527414a0e6de54ac13d85d19cfe4e26",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "graph-signal-denoising"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -785,9 +803,11 @@
       "name": "Single-Source Widest Paths",
       "contract": "problems/61_widest_paths/problem.json",
       "contract_sha256": "6e69017e6c18ab73a70e1c363fa310618964642d67a41dd94f0a7759c3e3e84a",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "widest-paths"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -795,9 +815,11 @@
       "name": "Graph Coarsening and Quotient Construction",
       "contract": "problems/62_graph_coarsening/problem.json",
       "contract_sha256": "04fb7c06c6fd891fe90b5d9273215da0105092ff02e380fbaa6c2a5a7c8359da",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "graph-coarsening"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -805,9 +827,11 @@
       "name": "Graph Laplacian Eigenpairs",
       "contract": "problems/63_graph_laplacian_eigenpairs/problem.json",
       "contract_sha256": "39e828c3d5d6b1d7754c2f596ed3c991dfe9b44bf0a43f12b5f0b3328474a2e3",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "laplacian-eigenpairs"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -815,9 +839,11 @@
       "name": "k-Nearest-Neighbor Graph Construction",
       "contract": "problems/64_knn_graph_construction/problem.json",
       "contract_sha256": "a16850fcc2d14a0de56f57de94a81828742ac9f06e7852a186b08d1027b00aa2",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "knn-graph"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -847,9 +873,11 @@
       "name": "Flag-Complex Persistent Homology",
       "contract": "problems/67_persistent_homology/problem.json",
       "contract_sha256": "b13beec1c5a3ec34226bef03f88ea8405c506ed23b190f74582910900e376351",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "persistent-homology"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -915,7 +943,8 @@
       "library": "networkx",
       "quality": "numerical",
       "references": [],
-      "profile_sha256": "d79f63422d0d75e13b02d2f51bc6188c9aa242e6ea69523857219705d396fefd"
+      "input_kind": "graph",
+      "profile_sha256": "fcdfbfef59595fcd97d7f15f671b84024a1de24a8a84702225445e934b004d6b"
     },
     {
       "id": "degree-centrality",
@@ -947,7 +976,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "73f9679f8177402ca4e03455d39159cf99a699f44760deaf1e0fa664a328cf1c"
+      "input_kind": "graph",
+      "profile_sha256": "e14bac9ecde3d1bb2c36622edea53c438e5b4e2e3b33511980b36f9cd9241566"
     },
     {
       "id": "pagerank",
@@ -996,7 +1026,8 @@
       "library": "networkx",
       "quality": "numerical",
       "references": [],
-      "profile_sha256": "af422d2ea37e0442390c45e60d24cd2782bec8b840bd1e3d00377b1c50d48880"
+      "input_kind": "graph",
+      "profile_sha256": "9ef277f2dedd0c958150664e8bc8d10af073fd50bbcc98e2e975a5ce59a20d01"
     },
     {
       "id": "personalized-pagerank",
@@ -1090,7 +1121,8 @@
       "library": "networkx",
       "quality": "numerical",
       "references": [],
-      "profile_sha256": "b13ce942315f69636241aa26acfb7242bd8c711ba66d10fb6025fa90eacaf37f"
+      "input_kind": "graph",
+      "profile_sha256": "1db6b264ddf9230e1640a03df416a2d19d8cbca8729c01e7e42045ccf9fa9d09"
     },
     {
       "id": "k-cliques",
@@ -1129,7 +1161,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "cec0af34b5e4662a42acfc3b109d93f528f6d4fe49299b086fe41f33e6ec954d"
+      "input_kind": "graph",
+      "profile_sha256": "be2d231ffbede60fc5a2557d3bd880d0eab6e6c0f750daca260a7dbd2ccddd71"
     },
     {
       "id": "maximal-cliques",
@@ -1158,7 +1191,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "c579e25c28accdc5aa013794690c4afcbf491983af27ad59944addc94c18e7e6"
+      "input_kind": "graph",
+      "profile_sha256": "6eac8570b13c55a0c500e22e9ab6a663fcb0795d6d921af310a25bf7bdda5960"
     },
     {
       "id": "maximum-clique",
@@ -1178,7 +1212,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "7ea6d0d166530ce00301317cf151986a2916273f93d9a294263a483b3a3aea75"
+      "input_kind": "graph",
+      "profile_sha256": "f31911ef39acd372e67cb236f665a906036ded7b9db8137cb8eed551f19af3e7"
     },
     {
       "id": "vertex-coloring",
@@ -1209,7 +1244,8 @@
       "library": "networkx",
       "quality": "feasible",
       "references": [],
-      "profile_sha256": "9f87bf95a4c5a998031e8856137a5ac9bf9040d14466309e96bf8720db4827d0"
+      "input_kind": "graph",
+      "profile_sha256": "e853e66d39872a7daceee62ebe1cb68bbf69b2112c1bbb7647386eeaeebccfea"
     },
     {
       "id": "community-detection",
@@ -1273,7 +1309,8 @@
       "references": [
         "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.louvain.louvain_communities.html"
       ],
-      "profile_sha256": "909c2e3aa3f7dcc9fd474f013df3d49292aa8f896aaa82345e25e73eb20265f5"
+      "input_kind": "graph",
+      "profile_sha256": "92db29a609336ad4295c8d0ebc0450d08a5ebafc7d8a91a52fdc3d9bdb7ec1a2"
     },
     {
       "id": "overlapping-communities",
@@ -1308,7 +1345,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "f1ca836fa23219cd22a770a330d1bc98de063323b8ec68eb96aa71f957fe88a6"
+      "input_kind": "graph",
+      "profile_sha256": "4cbe88e25ca0e57843c851e38b053df8c00e03900f333a335353d90aef7faf26"
     },
     {
       "id": "biconnected-components",
@@ -1320,7 +1358,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "f9408f936a91de8519e9f172a2be041c610c39bace38131f89504a72d67a2d3e"
+      "input_kind": "graph",
+      "profile_sha256": "1a1381986d769e4127980022893ce2f688b17cc6f9b4e6f8b83df6bbe061f017"
     },
     {
       "id": "connected-components",
@@ -1344,7 +1383,119 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "135469f633b6219523c07a96b8fac42803bef5f176aaa1ca6a3422ce0e060a4e"
+      "input_kind": "graph",
+      "profile_sha256": "f38264544b21cc85a3504179c88ebc50035d2c49ab5ca4c41ba4db3af0d5ce8f"
+    },
+    {
+      "id": "graph-coarsening",
+      "problem_id": "graph_coarsening",
+      "family": "construction",
+      "title": "Group vertices and build their weighted quotient graph",
+      "description": "Use a supplied partition or NetworkX maximal matching, then aggregate all fine-edge weights and numeric vertex feature vectors by the declared rule.",
+      "parameters": {
+        "cluster_assignment": {
+          "kind": "array",
+          "required": false,
+          "description": "One {vertex, value} row per vertex, with integer cluster values.",
+          "default": null,
+          "nullable": true
+        },
+        "method": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "greedy_matching",
+          "choices": [
+            "greedy_matching"
+          ],
+          "nullable": false
+        },
+        "self_loop_policy": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "keep",
+          "choices": [
+            "keep",
+            "drop"
+          ],
+          "nullable": false
+        },
+        "feature_reduction": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "sum",
+          "choices": [
+            "sum",
+            "mean"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "profile_sha256": "34f3e04ffcc7076ab4d7959fc33126616e10e59368239598b4c99e118e740a00"
+    },
+    {
+      "id": "knn-graph",
+      "problem_id": "knn_graph_construction",
+      "family": "construction",
+      "title": "Build a graph from nearby feature vectors",
+      "description": "Exact all-pairs SciPy distance search with explicit self-exclusion, metric and symmetrization. Equal-distance ties follow original vector order.",
+      "parameters": {
+        "k": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 0,
+          "nullable": false
+        },
+        "distance": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "squared_euclidean",
+          "choices": [
+            "squared_euclidean",
+            "euclidean",
+            "cosine"
+          ],
+          "nullable": false
+        },
+        "search_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        },
+        "symmetrization": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "directed",
+          "choices": [
+            "directed",
+            "union",
+            "mutual"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical",
+      "references": [
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html"
+      ],
+      "input_kind": "feature_vectors",
+      "profile_sha256": "f5601988096dc9680c80e7bca57d6234211e184b6f2d83761e9227191151cfdc"
     },
     {
       "id": "k-core",
@@ -1365,7 +1516,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "32cab5067191e9419a1df04c5127fafb00b708496d0176fd32910ad9b37dcd12"
+      "input_kind": "graph",
+      "profile_sha256": "c9f51df586088823eff511a10b18433a304a4b23cd98d68ec86983a459feaf6e"
     },
     {
       "id": "k-truss",
@@ -1386,7 +1538,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "d2767e052639c1a0003e0a2cb4c24c06ff61b98e2806127af4d9e4308227049e"
+      "input_kind": "graph",
+      "profile_sha256": "db5695a50a9b58b5c27e1994ebf6daa0d94081005fd39b6e18891734a6d25f3a"
     },
     {
       "id": "densest-k-subgraph",
@@ -1430,7 +1583,8 @@
       "references": [
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html"
       ],
-      "profile_sha256": "cae842a2fcf9fff2e812f8e11987c0838ed1e47919715ef1b76d133be9b0c9a6"
+      "input_kind": "graph",
+      "profile_sha256": "109b2221c483b72c6c12a68e16cb0cdd45eaf1ecca02a4e0ca463744353e2e1e"
     },
     {
       "id": "densest-subgraph",
@@ -1483,7 +1637,8 @@
       "references": [
         "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.flow.minimum_cut.html"
       ],
-      "profile_sha256": "a270c3ae93bbe03ef1509745a8ba3f7f1c04bc6b4d81668f01e1479ea597de64"
+      "input_kind": "graph",
+      "profile_sha256": "976a3a433f7a14766c57122f888f0a72612297ad2638bec73c1216f414b999c8"
     },
     {
       "id": "maximal-bicliques",
@@ -1532,7 +1687,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "1e1fb8ad97d7b57e139e239c67570d0d7a1213a78bd0f20c8f71594438fe3888"
+      "input_kind": "graph",
+      "profile_sha256": "c88664264219473524a40503d6313fc467661c6d75ded0b7d462c6acc5b9ae77"
     },
     {
       "id": "quasi-cliques",
@@ -1575,7 +1731,8 @@
       "library": "scipy",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "ae2bead18b85ff611c0d37d3cfd1abcb43abef82a1bac99d2c0dd8817c35fc4b"
+      "input_kind": "graph",
+      "profile_sha256": "3ca429b259f8bee17911864d98a6fe44343ecaa290cced72b0714a501b40634c"
     },
     {
       "id": "max-flow-min-cut",
@@ -1618,7 +1775,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "05b52600190def51caf1e4c17bb1303f451a6d3548a04ef920d2154735dfd068"
+      "input_kind": "graph",
+      "profile_sha256": "1ec1752b43d028074c0479f6e99828608abce24260c1d25a7ba6e831512aaffb"
     },
     {
       "id": "maximal-independent-set",
@@ -1638,7 +1796,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "17a8193a4c08d34c919858cc99c2eb0ef1739329ff1a56228c8e00c23caa688f"
+      "input_kind": "graph",
+      "profile_sha256": "654cae256e0f4934803afcd29946ed89bc5be0bf89211189e72745c3e643f98f"
     },
     {
       "id": "maximum-independent-set",
@@ -1661,7 +1820,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "1317c8b6b9625243d3d221c98deab6360de58a2d898b534272facf6829979724"
+      "input_kind": "graph",
+      "profile_sha256": "5c3b06f0c1f2a205800d2ff5464b886229e1e23397fbcef1a3955d2f435a9107"
     },
     {
       "id": "minimum-vertex-cover",
@@ -1693,7 +1853,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "405ab33fbbc1dd99056cc3ba264337570b1cd80335d6eecac069f98e9e954a2d"
+      "input_kind": "graph",
+      "profile_sha256": "4090f01ff5f102572c6e9c8f9d40bab5c76c9ac70b2be2f873e64c136cc44a2f"
     },
     {
       "id": "bipartite-matching",
@@ -1746,7 +1907,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "d63d87b5bce3a4d6af9b28c94a5788b25ab4c68514a49e6fbac1f488af0b1502"
+      "input_kind": "graph",
+      "profile_sha256": "0b56f259c8c5697fe3928a75adc18a8ab28e3b77c4560e8829203ffa01f64bae"
     },
     {
       "id": "weighted-matching",
@@ -1769,7 +1931,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "bf95d4a9ba4172178fa83d9615e4ed7d694831ec71c1d1dc27ed764302dd26e4"
+      "input_kind": "graph",
+      "profile_sha256": "2b6a10b17d59447647ed7d66b22eb8bbd2c05a98232fb245fc9b59f8a525dbf6"
     },
     {
       "id": "triangle-counting",
@@ -1811,7 +1974,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "33bc1b47ac2e0a0f22d8cd19ba8e675417a96d84f4bbbb93d36de5db236d3876"
+      "input_kind": "graph",
+      "profile_sha256": "3fba1bcbd1989aea269a4b3037fc664f8f7299d352c5142c2bba827d7b004115"
     },
     {
       "id": "balanced-partitioning",
@@ -1890,7 +2054,48 @@
       "library": "scipy",
       "quality": "numerical_optimum",
       "references": [],
-      "profile_sha256": "251850a83cfcdba8d0c28419ab10c5cee7cd6883a1b4bfc8d7b35ea724c722bd"
+      "input_kind": "graph",
+      "profile_sha256": "1d59e1e6b7f9a6acd2b44a5b69fc80404133578a39f7d4b3e3df08ec7d8f7caa"
+    },
+    {
+      "id": "hypergraph-partitioning",
+      "problem_id": "hypergraph_partitioning",
+      "family": "partitioning",
+      "title": "Partition a hypergraph while preserving whole-group connections",
+      "description": "Binary assignment and hyperedge-part incidence optimize cut-net or connectivity-minus-one cost without a graph projection. Every part is nonempty and respects the upper weight bound.",
+      "parameters": {
+        "num_parts": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "imbalance_tolerance": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 0.03,
+          "nullable": false
+        },
+        "objective": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "cut_net",
+          "choices": [
+            "cut_net",
+            "connectivity_minus_one"
+          ],
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical_optimum",
+      "references": [],
+      "input_kind": "hypergraph",
+      "profile_sha256": "c0f8a0840f9f2c1aefd08d077dbebe25e87580f2d75576e19fee39841cd1a0d9"
     },
     {
       "id": "signed-balance",
@@ -1935,7 +2140,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "788c83a900e6b9c2c53022c1985af935450267545323478ba756b7ef26b76dae"
+      "input_kind": "graph",
+      "profile_sha256": "f0c92d5eb360d936014c2a63a4f6e08331f63af20ecdf942789799bf16b16752"
     },
     {
       "id": "butterfly-counting",
@@ -1999,7 +2205,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "2b0397a28ca29fe531edd24dfea49257317ec61bc51cfc1ec25cfd12081ed559"
+      "input_kind": "graph",
+      "profile_sha256": "0c9f5b4319c551222e838fd5eff74b1c6be9089d498d739c7ac79c3432b448a7"
     },
     {
       "id": "graphlet-counting",
@@ -2042,7 +2249,8 @@
       "references": [
         "https://networkx.org/documentation/stable/reference/generated/networkx.generators.atlas.graph_atlas_g.html"
       ],
-      "profile_sha256": "bd0283fbe6372831975689de9e1610349809c3bacc91035e797aa5732069c02c"
+      "input_kind": "graph",
+      "profile_sha256": "bfccf3697c3966e203c76305c628fcf22a8db9384fd7a6dc52518b1d7aded821"
     },
     {
       "id": "motif-counting",
@@ -2094,7 +2302,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "f1449a25412cbc5ef167f00b110f476b19865772251a8418b1c57ceb9b684cd4"
+      "input_kind": "graph",
+      "profile_sha256": "8a9ae0d22fc81f365e8ffdfe8d90692545654d045f6fc1ba0e0b06b103681782"
     },
     {
       "id": "subgraph-isomorphism",
@@ -2144,7 +2353,8 @@
       "references": [
         "https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html"
       ],
-      "profile_sha256": "c977624b4c57c35d9ae6d3f5c531ac41e4f56f428daa1db23b08c8d4bd9027d9"
+      "input_kind": "graph",
+      "profile_sha256": "25b32a503293326dcd1b253ba07ee1a0dd12295b418d6a0bee2bdd07d2d8d0ce"
     },
     {
       "id": "link-prediction",
@@ -2196,7 +2406,218 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "a5462aa1342f5b1a11b023b2d7551b62700ae0378d5c20a485684a43ffabbb64"
+      "input_kind": "graph",
+      "profile_sha256": "974811d9f8e0f52e2f3e9b36dc73c245bdc815b1eb5923e9f82d13e2101ac8de"
+    },
+    {
+      "id": "simrank",
+      "problem_id": "simrank_vertex_similarity",
+      "family": "similarity",
+      "title": "Compare vertices by the similarity of their neighbors",
+      "description": "SciPy solves the SimRank fixed-point equations with a separately recomputed residual and contraction error bound. Direction and output-pair scope are explicit.",
+      "parameters": {
+        "query_mode": {
+          "kind": "string",
+          "required": true,
+          "description": "",
+          "choices": [
+            "single_pair",
+            "single_source_all",
+            "top_k_pairs"
+          ],
+          "nullable": false
+        },
+        "source_vertex": {
+          "kind": "vertex_id",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "target_vertex": {
+          "kind": "vertex_id",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "decay_factor": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.8,
+          "nullable": false
+        },
+        "direction_mode": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "incoming",
+          "choices": [
+            "incoming",
+            "undirected_projection"
+          ],
+          "nullable": false
+        },
+        "top_k": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": null,
+          "nullable": true
+        },
+        "solution_quality": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "approximate"
+          ],
+          "nullable": false
+        },
+        "convergence_tolerance": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1e-06,
+          "nullable": false
+        },
+        "max_iterations": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1000,
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical",
+      "references": [],
+      "input_kind": "graph",
+      "profile_sha256": "a46a35f9c608095723a27c5629f9ae91ee8010685cd45ec1ed890d22787c16cd"
+    },
+    {
+      "id": "graph-signal-denoising",
+      "problem_id": "graph_signal_denoising",
+      "family": "spectral",
+      "title": "Smooth noisy measurements over a graph",
+      "description": "Minimize one-half squared observation error plus a declared Laplacian, total-variation or graph-trend penalty. Numerical accuracy is checked with stationarity or a feasible dual bound.",
+      "parameters": {
+        "observed_signal": {
+          "kind": "array",
+          "required": true,
+          "description": "One {vertex, value} row per vertex; values are scalars or equal-width vectors.",
+          "nullable": false
+        },
+        "regularizer": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "total_variation",
+          "choices": [
+            "total_variation",
+            "trend_filtering",
+            "laplacian_quadratic"
+          ],
+          "nullable": false
+        },
+        "regularization_strength": {
+          "kind": "number",
+          "required": true,
+          "description": "",
+          "minimum": 0,
+          "nullable": false
+        },
+        "difference_order": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 0,
+          "nullable": false
+        },
+        "tolerance": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1e-06,
+          "nullable": false
+        },
+        "max_iterations": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 1,
+          "default": 1000,
+          "nullable": false
+        }
+      },
+      "library": "cvxpy",
+      "quality": "numerical",
+      "references": [],
+      "input_kind": "graph",
+      "profile_sha256": "671d87a09d6b742423abcf1d851948a1dac70961ff72c193d5b3696a94f66036"
+    },
+    {
+      "id": "laplacian-eigenpairs",
+      "problem_id": "graph_laplacian_eigenpairs",
+      "family": "spectral",
+      "title": "Compute graph Laplacian eigenvalues and eigenvectors",
+      "description": "SciPy symmetric eigensolver with explicit residual and orthogonality checks. The direct solver has no max_iterations parameter.",
+      "parameters": {
+        "num_eigenpairs": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "laplacian": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "combinatorial",
+          "choices": [
+            "combinatorial",
+            "symmetric_normalized"
+          ],
+          "nullable": false
+        },
+        "selection": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "smallest",
+          "choices": [
+            "smallest",
+            "largest"
+          ],
+          "nullable": false
+        },
+        "tolerance": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1e-06,
+          "nullable": false
+        }
+      },
+      "library": "scipy",
+      "quality": "numerical",
+      "references": [
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.eigh.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "349c616fdc4f79859839fc5f9c373ebde4522af9fc1a79715100d91744c7cd9e"
     },
     {
       "id": "induced-subgraph",
@@ -2246,7 +2667,49 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "b633e433bc464ab7d2744cc23afd0fb0041d243dcce55803bc0f65dff32888f6"
+      "input_kind": "graph",
+      "profile_sha256": "67fb9088884ae56412b2c0c529612ecff2fd4f1faf4753016577afc5f5e238df"
+    },
+    {
+      "id": "persistent-homology",
+      "problem_id": "persistent_homology",
+      "family": "topology",
+      "title": "Track components, loops and higher-dimensional holes across edge thresholds",
+      "description": "GUDHI flag-complex persistence over a declared prime field. Includes essential H0 intervals and enough cofaces to compute deaths in every requested homology dimension.",
+      "parameters": {
+        "max_homology_dimension": {
+          "kind": "integer",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": 1,
+          "nullable": false
+        },
+        "max_filtration": {
+          "kind": "number",
+          "required": false,
+          "description": "",
+          "minimum": 0,
+          "default": null,
+          "nullable": true
+        },
+        "field_prime": {
+          "kind": "integer",
+          "required": false,
+          "description": "Prime modulus; 46337 is GUDHI's documented maximum.",
+          "minimum": 2,
+          "maximum": 46337,
+          "default": 2,
+          "nullable": false
+        }
+      },
+      "library": "gudhi",
+      "quality": "exact",
+      "references": [
+        "https://gudhi.inria.fr/python/latest/simplex_tree_ref.html"
+      ],
+      "input_kind": "graph",
+      "profile_sha256": "c86f5b5e8ae442bf4dde9f60c98e82b2759b43a3d2b0896034e71d22798864f5"
     },
     {
       "id": "breadth-first-search",
@@ -2291,7 +2754,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "8109a52ea6aac5f8f9773ec9a78e8244bb59d5e7580165340b36dc999e88eeb1"
+      "input_kind": "graph",
+      "profile_sha256": "fbc11d8afb400134c26706fc3991a36dd9626126c07ad34463af0c49027f5a18"
     },
     {
       "id": "many-source-shortest-paths",
@@ -2329,7 +2793,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "7a2715207ad05c5bb31870391a8fd8bb5a4a8ec774f734cf857b42db98d2b2b7"
+      "input_kind": "graph",
+      "profile_sha256": "503f5d7d8ae83c76955f0e00a240e3cf7a9321d91aad990e77e8f76c594b1755"
     },
     {
       "id": "single-source-shortest-paths",
@@ -2363,7 +2828,43 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "e4c959f1c17e9bffb65ababc0254465c77deb3c710a9e26a6fee72eac5ac3cb5"
+      "input_kind": "graph",
+      "profile_sha256": "e477bc58ace3fa5a03b1dd6ec5ae7c4710a8806ed3acdcff2633eadc71a0a7d8"
+    },
+    {
+      "id": "top-k-critical-paths",
+      "problem_id": "top_k_critical_paths_dag",
+      "family": "traversal",
+      "title": "Find the k highest-cost paths through a DAG",
+      "description": "Edge-identity expansion plus exact rational Johnson reweighting allows NetworkX's shortest-simple-path iterator to rank longest DAG paths, including negative weights and parallel arcs.",
+      "parameters": {
+        "k": {
+          "kind": "integer",
+          "required": true,
+          "description": "",
+          "minimum": 1,
+          "nullable": false
+        },
+        "sources": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        },
+        "sinks": {
+          "kind": "array",
+          "required": false,
+          "description": "",
+          "default": null,
+          "nullable": true
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "profile_sha256": "d1d5a546f5ebc30df779c2da0da1b830202c0785d8c0b0adb6afae9f677ebbed"
     },
     {
       "id": "topological-sort",
@@ -2375,7 +2876,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "d572ca68a72d40917658a92216d63dfbbf47adddd875a79f04a3737e24a581af"
+      "input_kind": "graph",
+      "profile_sha256": "7e2bd064e4684450cc5f6f34a58c7eb2f03e39d948e5d0a5d0fd3d6200762150"
     },
     {
       "id": "transitive-closure",
@@ -2414,7 +2916,28 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "d7e9aae1f90229f590c8fa02206b88de9c295f36c7a77bdfd0eea68b403b7e03"
+      "input_kind": "graph",
+      "profile_sha256": "80db8068d91f5b90b1299baac93eb7b74edb6012cb1f819a7d817cebc90f0632"
+    },
+    {
+      "id": "widest-paths",
+      "problem_id": "widest_paths",
+      "family": "traversal",
+      "title": "Find the greatest bottleneck capacity from a source",
+      "description": "Threshold reachability using NetworkX BFS computes the max-min path objective with exact comparisons and witness predecessors. Zero capacity remains reachable.",
+      "parameters": {
+        "source_vertex": {
+          "kind": "vertex_id",
+          "required": true,
+          "description": "",
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [],
+      "input_kind": "graph",
+      "profile_sha256": "60e4e5aaea2456c7a65fc7cff17d9f2f99531d78829c242767ca53d8911b1060"
     },
     {
       "id": "spanning-tree-forest",
@@ -2445,7 +2968,8 @@
       "library": "networkx",
       "quality": "exact",
       "references": [],
-      "profile_sha256": "69dc37f771bacf58c2e4901683e41e3b7f808db3ebb503dd49b924254a199cc8"
+      "input_kind": "graph",
+      "profile_sha256": "b1ee692202fa386d056ae60bbd27588a9255838f62309b7ee40bcc06e5e465ed"
     }
   ]
 }

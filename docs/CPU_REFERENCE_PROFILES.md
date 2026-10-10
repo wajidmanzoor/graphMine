@@ -27,6 +27,34 @@ an undirected objective is required. For ordinary unweighted structure, parallel
 edges collapse; weighted density and partitioning sum parallel weights. Matching
 retains the original ID of the edge with the best applicable objective value.
 
+### Numerical, construction and topology profiles
+
+| Operation | Implemented objective and method | Limits and result interpretation |
+|---|---|---|
+| `laplacian-eigenpairs` | SciPy `eigh` for selected smallest/largest combinatorial or symmetric-normalized eigenpairs, including isolates. Recompute every residual and orthogonality error. | `num_eigenpairs` may equal the vertex count. The direct solver has no iteration-limit parameter; `max_iterations` is rejected rather than ignored. Dense workspace is charged to the work budget. |
+| `graph-signal-denoising` | SciPy linear solve for quadratic smoothing; CVXPY/CLARABEL for total variation and graph trend filtering. | Objective is half squared observation error plus the declared penalty. `tolerance` bounds objective suboptimality, not coordinate error. The result reports an L2 solution-error bound separately. Signal values may be scalars or equal-width vectors. |
+| `knn-graph` | Exhaustive SciPy distances on a `FeatureVectors` input, followed by explicit self-exclusion and directed/union/mutual symmetrization. | Supports Euclidean, squared Euclidean and cosine distance. Zero vectors are rejected for cosine. Exact means exhaustive float64 search; no approximate index or random seed is used. An approximate request may receive this stronger exact-search result. |
+| `graph-coarsening` | A supplied vertex partition or NetworkX maximal matching, followed by exact aggregation of fine edges and declared numeric features. | Each undirected fine edge contributes once, including to a quotient self-loop when requested. Deterministic matching has no seed parameter. Vertices with supplied features use `attributes.features`; partial or mismatched feature arrays are rejected. |
+| `hypergraph-partitioning` | SciPy binary assignment and hyperedge-part incidence models for cut-net or connectivity-minus-one cost. | Accepts a `Hypergraph`, not a graph projection. Parts are nonempty and meet the contract's upper weight limit. Balance bounds are rounded inward on the exact rational input-weight grid. Impossible requests return an infeasibility result. |
+| `simrank` | SciPy GMRES solves the full SimRank fixed-point equations. Recompute maximum residual and divide by `1-decay_factor` for an absolute error bound. | NetworkX's internal relative stopping tolerance could fail a tighter absolute request, so this profile uses the explicit equation solve. `max_iterations` counts inner GMRES iterations. Single-source results exclude the source itself; a same-vertex single-pair query returns one. |
+| `widest-paths` | Descending capacity thresholds and NetworkX reachability produce max-min capacities with a witness predecessor tree. | Preserves direction and exact integer capacity comparisons. Zero capacity is reachable. Source infinity and unreachable values both serialize as null but have distinct `reachable` and `is_source` flags. |
+| `top-k-critical-paths` | Expand parallel edges into unique edge nodes, negate costs, perform exact rational Johnson reweighting, then use NetworkX's shortest-simple-path iterator. | Requires a DAG. Handles negative and large integer weights without changing path ranking. Zero-edge paths are included when a source is also a sink. A completed top-k request is distinct from a port containing all paths. |
+| `persistent-homology` | GUDHI flag-complex expansion and persistence, with every original vertex inserted at filtration zero. | Computes enough cofaces to determine deaths in the requested dimensions and retains essential H0 intervals. Fields must be prime and at most GUDHI's documented limit of 46337. Cutoffs explicitly distinguish right-censored from complete-filtration essential intervals. |
+
+For quadratic denoising the penalty is
+`strength / 2 * trace(X.T @ L @ X)`. Total variation uses
+`strength * sum(abs(diag(edge_weight) @ B @ X))`, with oriented unweighted
+incidence `B`. For trend order `k`, let `Bw = diag(sqrt(edge_weight)) @ B`
+and `L = Bw.T @ Bw`; the difference operator is `Bw @ L^(k/2)` for even
+`k` and `L^((k+1)/2)` for odd `k`. The penalty is `strength * ||D X||_1`.
+These explicit weighted conventions avoid substituting a different regularizer.
+
+For the nonsmooth objectives, the wrapper obtains a feasible dual vector,
+recomputes primal and dual objectives, and verifies the gap. Strong convexity
+gives `||X-X_opt||_F <= sqrt(2 * gap)`. Quadratic smoothing uses its stationarity
+residual and the system's minimum eigenvalue bound of one for the same purpose.
+All these are floating-point certificates with their arithmetic disclosed.
+
 ## Numerical and resource limits
 
 The mathematical models implement the stated objectives. SciPy's `milp` wraps
@@ -114,3 +142,6 @@ The authoritative inventory is generated by
 - [NetworkX graph atlas](https://networkx.org/documentation/stable/reference/generated/networkx.generators.atlas.graph_atlas_g.html): complete unlabeled graph dictionary through seven vertices.
 - [NetworkX Louvain](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.louvain.louvain_communities.html): modularity optimization and resolution.
 - [VLDB 2025 bipartite community paper, Definition 2.1](https://www.vldb.org/2025/Workshops/VLDB-Workshops-2025/LSGDA/LSGDA25_02.pdf): degree-based (alpha,beta)-core definition.
+- [SciPy GMRES](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.gmres.html): absolute residual stopping and iteration-count semantics.
+- [GUDHI simplex tree](https://gudhi.inria.fr/python/latest/simplex_tree_ref.html): flag expansion, persistence in the top complex dimension and supported prime fields.
+- [CVXPY solver interface](https://www.cvxpy.org/tutorial/solvers/index.html): declared solver choice, termination status and solver statistics.

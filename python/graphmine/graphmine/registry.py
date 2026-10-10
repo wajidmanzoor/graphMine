@@ -18,6 +18,7 @@ def register(
     library="networkx",
     quality="exact",
     references=(),
+    input_kind="graph",
 ):
     def decorate(function):
         if id in _algorithms:
@@ -33,6 +34,7 @@ def register(
             library,
             quality,
             tuple(references),
+            input_kind,
         )
         return function
 
@@ -45,11 +47,17 @@ def _load():
         from .algorithms import (  # noqa: F401
             bipartite,
             centrality,
+            construction,
             density,
+            hypergraphs,
             optimization,
             partitioning,
+            paths,
             patterns,
+            similarity,
+            spectral,
             structure,
+            topology,
             traversal,
         )
 

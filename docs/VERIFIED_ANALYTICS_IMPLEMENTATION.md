@@ -133,3 +133,40 @@ reported score substitutes for local integration tests.
 - The browser and agent still use the existing native path. All application,
   remaining CPU, native adapter, routing, workflow, scheduler, cache, MCP,
   reviewed-example retrieval and scale requirements above remain open.
+
+### Numerical, construction and topology checkpoint
+
+- CPU coverage is now **48 operations across 46 of 70 problem contracts**.
+  Nine additional profiles cover Laplacian eigenpairs, signal denoising,
+  nearest-neighbor graph construction, coarsening, hypergraph partitioning,
+  SimRank, widest paths, critical DAG paths and flag-complex persistence.
+  The remaining 24 problem contracts still need CPU integrations.
+- Added validated `FeatureVectors` and `Hypergraph` input classes. Operation
+  cards declare the accepted input kind. Result lineage distinguishes original
+  input fingerprints from generated graph fingerprints, preserving typed IDs.
+- Added CPU dependencies CVXPY 1.9.3, CLARABEL 0.11.1 and GUDHI 3.13.0 in the
+  analytics environment. Updated reproducible dependency pins and included
+  input-schema hashes in test evidence.
+- Corrected balance-bound rounding for graph and hypergraph integer assignment
+  models. Strict bounds are converted to the exact rational weight grid before
+  optimization, preventing an infeasible extra vertex from being admitted by
+  floating-point rounding.
+- SimRank uses SciPy GMRES and an independently recomputed contraction error
+  bound. NetworkX's internal relative stopping tolerance failed a tighter
+  absolute-accuracy smoke check, so it is not the implementation for this
+  profile. Denoising checks stationarity or a feasible primal-dual gap; spectral
+  outputs check residuals and orthogonality.
+- Persistent homology retains essential H0 intervals, expands sufficient
+  cofaces for the requested dimensions, and discloses cutoff censoring. Tests
+  verify the entire homology rank invariant over pairs of filtration levels
+  using independent finite-field boundary algebra, not only final Betti counts.
+- Latest complete reports: `cpu-numerical.xml` has **14,800 passes** with CUDA
+  hidden; `gpu-0-numerical.xml` and `gpu-1-numerical.xml` each have **1,546 passes**,
+  with no skips. The first 3,121-check numerical sweep is retained separately.
+  New tests also cover signed/large-weight DAG ranking, capacity-zero
+  reachability, all small hypergraphs, feature symmetrization and quotient
+  aggregation. Every previous library operation was rerun in the full suite.
+- These profiles are library integrations. They are not yet connected to the
+  existing native agent/browser. Remaining CPU coverage and every open
+  application/routing/workflow/UI/scheduling/evaluation requirement above remain
+  part of the active goal.

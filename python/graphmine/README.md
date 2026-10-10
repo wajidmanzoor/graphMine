@@ -1,8 +1,8 @@
 # GraphMine Python analytics
 
 The public library separates graph input, mathematical algorithm families,
-backend selection, and result provenance. It uses NetworkX/SciPy on CPU and
-cuGraph on GPU. Native GraphMine and agent integration are tracked in
+backend selection, and result provenance. It uses NetworkX, SciPy, CVXPY and
+GUDHI on CPU, and cuGraph on GPU. Native GraphMine and agent integration are tracked in
 [`docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md`](../../docs/VERIFIED_ANALYTICS_IMPLEMENTATION.md).
 
 ```sh
@@ -40,9 +40,31 @@ ports. A complete count does not imply that a materialized instance list is
 complete. A budget failure does not return an apparently exhaustive answer.
 Graph-valued ports carry the derived graph's content hash and the source graph's
 hash separately; vertex selections retain the source graph's ID namespace.
+Operations on feature vectors or hypergraphs report `input_kind` and
+`input_fingerprint`. They do not label those inputs as ordinary graphs.
 
-CPU provenance identifies the primary library (`networkx` or `scipy`) and
-records the installed NetworkX, NumPy and SciPy versions. Some operations use
+`FeatureVectors` and `Hypergraph` are public input classes alongside `Graph`.
+Each operation card declares its `input_kind`; supplying a different kind
+raises a validation error. For example:
+
+```python
+from graphmine import FeatureVectors, run
+
+vectors = FeatureVectors(
+    {
+        "dataset_id": "measurements",
+        "dimension": 2,
+        "vectors": [
+            {"id": 0, "values": [1, 2]},
+            {"id": "0", "values": [2, 3]},
+        ],
+    }
+)
+neighbors = run("knn-graph", vectors, parameters={"k": 1}, device="cpu")
+```
+
+CPU provenance identifies the primary library (`networkx`, `scipy`, `cvxpy` or `gudhi`) and
+records the installed numerical-library versions. Some operations use
 both libraries; per-result solver diagnostics identify the method actually used.
 
 ## Additional CPU profiles

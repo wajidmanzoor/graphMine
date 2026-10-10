@@ -11,6 +11,7 @@ from threading import RLock
 from .contracts import Budget, WorkCounter
 from .exceptions import BackendUnavailable, GraphMineError, UnsupportedOperation
 from .graph import Graph
+from .inputs import FeatureVectors, Hypergraph, load_input
 from .registry import algorithm
 
 _backend_configuration_lock = RLock()
@@ -27,7 +28,7 @@ def implementation_hash() -> str:
 
 def run(
     operation: str,
-    graph: Graph | dict,
+    graph: Graph | FeatureVectors | Hypergraph | dict,
     *,
     parameters: dict | None = None,
     device: str = "auto",
@@ -36,7 +37,7 @@ def run(
 ) -> dict:
     """Run a declared library operation with explicit execution provenance.
 
-    CPU always invokes NetworkX's own implementation. GPU requests never
+    CPU always invokes the declared CPU library integration. GPU requests never
     silently execute an unsupported CPU algorithm. Automatic selection may use
     CPU when the GPU capability is absent, preserving all requested parameters.
     """
@@ -45,23 +46,27 @@ def run(
     if not isinstance(device, str) or device not in {"auto", "cpu", "gpu"}:
         raise GraphMineError("device must be auto, cpu, or gpu")
     if backend is not None and (
-        not isinstance(backend, str) or backend not in {"networkx", "scipy", "cugraph"}
+        not isinstance(backend, str)
+        or backend not in {"networkx", "scipy", "cvxpy", "gudhi", "cugraph"}
     ):
         raise GraphMineError("Unknown backend")
     if (device == "cpu" and backend == "cugraph") or (
-        device == "gpu" and backend in {"networkx", "scipy"}
+        device == "gpu" and backend in {"networkx", "scipy", "cvxpy", "gudhi"}
     ):
         raise GraphMineError("Backend conflicts with the requested device policy")
     if backend:
         device = "gpu" if backend == "cugraph" else "cpu"
-    graph = graph if isinstance(graph, Graph) else Graph(graph)
     definition = algorithm(operation)
+    graph = load_input(graph, definition.input_kind)
     args = definition.arguments({} if parameters is None else parameters)
     try:
         json.dumps(args, allow_nan=False)
     except (ValueError, TypeError) as exc:
         raise GraphMineError("parameters must contain finite JSON values") from exc
-    if backend in {"networkx", "scipy"} and backend != definition.library:
+    if (
+        backend in {"networkx", "scipy", "cvxpy", "gudhi"}
+        and backend != definition.library
+    ):
         raise UnsupportedOperation(
             f"{operation} uses the {definition.library} CPU integration"
         )
@@ -77,7 +82,7 @@ def run(
         "version": importlib.metadata.version(definition.library),
         "dependencies": {
             name: importlib.metadata.version(name)
-            for name in ("networkx", "numpy", "scipy")
+            for name in ("networkx", "numpy", "scipy", "cvxpy", "clarabel", "gudhi")
         },
     }
     if device != "cpu":
@@ -119,9 +124,14 @@ def run(
         if port.get("type") == "graph":
             derived = Graph(port["value"])
             port["graph_fingerprint"] = derived.fingerprint
-            port["source_graph_fingerprint"] = graph.fingerprint
+            port["source_input_fingerprint"] = graph.fingerprint
+            port["source_input_kind"] = graph.kind
+            if graph.kind == "graph":
+                port["source_graph_fingerprint"] = graph.fingerprint
         else:
-            port.setdefault("graph_fingerprint", graph.fingerprint)
+            port.setdefault("input_fingerprint", graph.fingerprint)
+            if graph.kind == "graph":
+                port.setdefault("graph_fingerprint", graph.fingerprint)
     return {
         "schema_version": "2.0.0",
         "operation": operation,
@@ -130,7 +140,9 @@ def run(
         "requested_device": device,
         "backend": provenance,
         "implementation_sha256": implementation_hash(),
-        "graph_fingerprint": graph.fingerprint,
+        "input_kind": graph.kind,
+        "input_fingerprint": graph.fingerprint,
+        **({"graph_fingerprint": graph.fingerprint} if graph.kind == "graph" else {}),
         "complete": output.complete,
         "quality": output.quality,
         "result": output.data,
