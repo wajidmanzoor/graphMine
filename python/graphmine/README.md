@@ -79,14 +79,21 @@ needs a unique `graph.id`:
 ```python
 from graphmine import GraphCollection, run
 
-transactions = GraphCollection({
-    "dataset_id": "observations",
-    "graphs": [first_canonical_graph, second_canonical_graph],
-})
-patterns = run("frequent-subgraphs", transactions, device="cpu", parameters={
-    "minimum_support_fraction": 0.5,
-    "maximum_edges": 3,
-})
+transactions = GraphCollection(
+    {
+        "dataset_id": "observations",
+        "graphs": [first_canonical_graph, second_canonical_graph],
+    }
+)
+patterns = run(
+    "frequent-subgraphs",
+    transactions,
+    device="cpu",
+    parameters={
+        "minimum_support_fraction": 0.5,
+        "maximum_edges": 3,
+    },
+)
 ```
 
 This counts transactions containing each pattern. The separate
@@ -121,6 +128,15 @@ Anomaly scores retain the chosen normality reference; entity clusters retain
 the match decisions; optimization outputs include a checked witness and solver
 bound. Unknown predicates, score methods and unsupported alignment modes are
 rejected.
+
+Graph comparison additionally provides exact `graph-edit-distance` and
+`maximum-common-subgraph` CPU references. Edit distance returns an ordered,
+replayable edit script and a rational cost that preserves tiny decimal
+differences. Common-subgraph search maximizes vertex count, with induced
+matching by default, and returns a graph usable in later workflow steps.
+Both accept a second graph through `other_graph`; their cards declare category
+matching and normalization. Exponential search is budgeted without a fixed
+five/six-vertex ceiling or a partial-result optimality claim.
 
 Diffusion and geometry profiles add exact influence maximization under the
 declared cascade/threshold model, fixed-iteration force-directed layouts with

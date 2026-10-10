@@ -54,6 +54,7 @@ def _load():
             entity_resolution,
             enumeration,
             frequent_patterns,
+            graph_comparison,
             hypergraphs,
             influence,
             layout,

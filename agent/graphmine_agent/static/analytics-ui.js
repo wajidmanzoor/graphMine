@@ -461,8 +461,11 @@
   }
   function renderOutput() {
     $("metrics").replaceChildren(); $("chart").replaceChildren();
-    if (state.port?.type === "scalar") {
-      const metric = node("div", {class: "metric"}); metric.append(node("strong", {}, display(state.port.value)), node("span", {}, $("result-port").selectedOptions[0]?.textContent || "Value")); $("metrics").append(metric);
+    if (["scalar", "rational_scalar"].includes(state.port?.type)) {
+      const rational = state.port.type === "rational_scalar", value = rational ? state.port.value.display : state.port.value;
+      const metric = node("div", {class: "metric"}); metric.append(node("strong", {}, `${rational && !state.port.value.display_is_exact ? "≈ " : ""}${display(value)}`), node("span", {}, $("result-port").selectedOptions[0]?.textContent || "Value"));
+      if (rational) metric.append(node("p", {class: "parameter-hint"}, state.port.value.display_is_exact ? "Exact cost. The numerator and denominator are preserved in the output." : "Display rounded. The exact numerator and denominator are preserved below and in the download."));
+      $("metrics").append(metric);
     }
     let chartRows = [];
     if (state.port?.type === "vertex_scores") {

@@ -289,6 +289,107 @@ def test_live_graph_collection_patterns_and_derived_graph(settings, triangle_gra
         assert page["items"] == patterns and page["complete"] and not page["has_more"]
 
 
+def test_live_graph_pair_fraction_witness_and_common_graph(settings, triangle_graph):
+    a = json.loads(triangle_graph)
+    a["edges"].pop()
+    for row in a["vertices"]:
+        row["label"] = "A"
+    for row in a["edges"]:
+        row["type"] = "x"
+    b = json.loads(json.dumps(a))
+    b["graph"]["id"] = "target"
+    b["vertices"].append({"id": "inserted", "label": "A"})
+    b["edges"].append({"id": "new", "source": 2, "target": "inserted"})
+    for edge, category in zip(b["edges"], ["y", "x", "y"], strict=True):
+        edge["type"] = category
+    with TestClient(create_app(settings)) as client:
+        session, first = upload(client, json.dumps(a).encode())
+        response = client.post(
+            f"/api/sessions/{session}/files",
+            headers=AUTH,
+            files={"file": ("target.json", json.dumps(b).encode(), "application/json")},
+            data={"role": "graph"},
+        )
+        assert response.status_code == 201, response.text
+        request = {
+            "mode": "normal",
+            "inputs": {
+                "a": {"file_id": first},
+                "b": {"file_id": response.json()["id"]},
+            },
+            "plan": {
+                "version": 1,
+                "device": "cpu",
+                "steps": [
+                    {
+                        "id": "edits",
+                        "operation": "graph-edit-distance",
+                        "input": {"input": "a"},
+                        "bindings": {"other_graph": {"input": "b"}},
+                        "parameters": {
+                            "edit_costs": {
+                                "edge_substitution": 1e-200,
+                                "edge_insertion": 0,
+                            }
+                        },
+                    },
+                    {
+                        "id": "common",
+                        "operation": "maximum-common-subgraph",
+                        "input": {"input": "a"},
+                        "bindings": {"other_graph": {"input": "b"}},
+                    },
+                    {
+                        "id": "degree",
+                        "operation": "degree-centrality",
+                        "input": {"step": "common", "port": "graph"},
+                    },
+                ],
+            },
+        }
+        response = client.post(
+            f"/api/sessions/{session}/workflows", headers=AUTH, json=request
+        )
+        assert response.status_code == 201, response.text
+        record = wait(client, response.json()["id"])
+        assert record["status"] == "completed", record
+        results = client.get(
+            f"/api/workflows/{record['id']}/result", headers=AUTH
+        ).json()["steps"]
+        distance = results["edits"]["result"]["ports"]["distance"]
+        assert distance["type"] == "rational_scalar"
+        assert distance["value"] == {
+            "display": 1,
+            "display_is_exact": False,
+            "numerator": 10**200 + 1,
+            "denominator": 10**200,
+        }
+        path = results["edits"]["result"]["result"]["edit_path"]
+        assert any(row["operation"] == "vertex_insertion" for row in path)
+        page = client.get(
+            f"/api/workflows/{record['id']}/steps/edits/ports/edits?offset=0&limit=1",
+            headers=AUTH,
+        ).json()
+        assert page["items"] == path[:1] and page["has_more"]
+        common = results["common"]["result"]["result"]["task_result"]
+        assert common["vertex_count"] == 2
+        degrees = results["degree"]["result"]["ports"]["scores"]["value"]
+        assert [row["score"] for row in degrees] == [common["edge_count"]] * 2
+        request["plan"]["steps"] = [
+            request["plan"]["steps"][0],
+            {
+                "id": "unsafe_rounding",
+                "operation": "k-cliques",
+                "input": {"input": "a"},
+                "bindings": {"k": {"step": "edits", "port": "distance"}},
+            },
+        ]
+        response = client.post(
+            f"/api/sessions/{session}/workflows", headers=AUTH, json=request
+        )
+        assert response.status_code == 422, response.text
+
+
 def test_live_review_revision_and_cache_recovery(settings, triangle_graph):
     with TestClient(create_app(settings)) as client:
         session, graph = upload(client, triangle_graph)

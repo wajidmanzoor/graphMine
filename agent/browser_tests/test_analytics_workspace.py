@@ -692,6 +692,109 @@ def test_mni_pattern_images_and_count_only_output(browser, tmp_path):
     assert "Canonical pattern" not in browser.find_element(By.ID, "preview-scope").text
 
 
+def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
+    a = typed_graph()
+    a["vertices"] = a["vertices"][:3]
+    a["edges"] = a["edges"][:2]
+    for row in a["vertices"]:
+        row["label"] = "A"
+    for row in a["edges"]:
+        row["type"] = "x"
+    b = json.loads(json.dumps(a))
+    b["graph"]["id"] = "target"
+    b["vertices"].append({"id": 9007199254740994, "label": "A"})
+    b["edges"].append(
+        {"id": "new", "source": 9007199254740993, "target": 9007199254740994}
+    )
+    for edge, category in zip(b["edges"], ["y", "x", "y"], strict=True):
+        edge["type"] = category
+    upload(browser, tmp_path, a)
+    upload(browser, tmp_path, b)
+    first_input = browser.execute_script(
+        "return window.GraphMineWorkspace.state.files[0].id"
+    )
+    Select(browser.find_element(By.ID, "active-input")).select_by_value(first_input)
+    WebDriverWait(browser, 10).until(
+        lambda d: (
+            d.execute_script(
+                "return window.GraphMineWorkspace.state.graph?.vertices.length"
+            )
+            == 3
+        )
+    )
+    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
+    plan = {
+        "version": 1,
+        "device": "cpu",
+        "steps": [
+            {
+                "id": "compare",
+                "operation": "graph-edit-distance",
+                "input": {"input": "main"},
+                "bindings": {"other_graph": {"input": "data_2"}},
+                "parameters": {
+                    "edit_costs": {"edge_substitution": 1e-200, "edge_insertion": 0}
+                },
+            },
+        ],
+    }
+    editor = browser.find_element(By.ID, "plan-editor")
+    editor.clear()
+    editor.send_keys(json.dumps(plan))
+    browser.find_element(By.ID, "save-editor").click()
+    status(browser, "ready")
+    browser.find_element(By.ID, "approve-plan").click()
+    done(browser)
+    assert browser.find_element(By.CSS_SELECTOR, "#metrics strong").text == "≈ 1"
+    assert "Display rounded" in browser.find_element(By.ID, "metrics").text
+    assert browser.execute_script(
+        "const v=window.GraphMineWorkspace.state.port.value;return [typeof v.numerator,String(v.numerator),String(v.denominator)]"
+    ) == ["bigint", str(10**200 + 1), str(10**200)]
+    browser.execute_script(
+        "document.getElementById('result-controls').scrollIntoView()"
+    )
+    capture(browser, "graph-edit-cost.png")
+    Select(browser.find_element(By.ID, "result-port")).select_by_value("edits")
+    WebDriverWait(browser, 10).until(
+        lambda d: (
+            d.execute_script("return window.GraphMineWorkspace.state.port.type")
+            == "table"
+        )
+    )
+    assert "vertex_insertion" in browser.find_element(By.ID, "result-table").text
+    assert browser.execute_script(
+        "return window.GraphMineWorkspace.state.rows.some(r=>r.vertex_record && typeof r.vertex_record.id==='bigint')"
+    )
+    browser.execute_script(
+        "document.getElementById('result-controls').scrollIntoView()"
+    )
+    capture(browser, "graph-edit-script.png")
+    plan["steps"] = [
+        {
+            "id": "common",
+            "operation": "maximum-common-subgraph",
+            "input": {"input": "main"},
+            "bindings": {"other_graph": {"input": "data_2"}},
+        },
+        {
+            "id": "degree",
+            "operation": "degree-centrality",
+            "input": {"step": "common", "port": "graph"},
+        },
+    ]
+    editor.clear()
+    editor.send_keys(json.dumps(plan))
+    browser.find_element(By.ID, "save-editor").click()
+    status(browser, "ready")
+    browser.find_element(By.ID, "approve-plan").click()
+    done(browser)
+    assert "2 of 2 vertices" in browser.find_element(By.ID, "preview-scope").text
+    assert len(values(browser)) == 2
+    assert browser.execute_script(
+        "return window.GraphMineWorkspace.state.cy.nodes().map(n=>n.id()).every(k=>['i:0','s:0','i:9007199254740993'].includes(k))"
+    )
+
+
 def test_lossless_json_rejects_invalid_values_and_preserves_export(browser):
     result = browser.execute_script("""
       const w=window.AnalyticsWire;

@@ -465,3 +465,50 @@ reported score substitutes for local integration tests.
   deployed-model evaluation, memory-aware two-GPU scheduling, representation
   caching and external-scale validation remain open. This checkpoint does not
   complete the overall goal.
+
+### Exact graph-comparison checkpoint
+
+- Added `graph-edit-distance` and `maximum-common-subgraph`, bringing CPU
+  coverage to **66 operations across 63 of 70 problem contracts**. Both preserve
+  direction and selected categorical labels, with explicit loop/parallel-edge
+  normalization. Their exact profiles have work budgets and no fixed small
+  vertex ceiling. Approximate modes, custom predicates and timed incumbent
+  results are not advertised.
+- Edit distance uses NetworkX shortest paths on a rational correspondence-state
+  DAG, with matching/isomorphism fast paths. Decimal cost differences and large
+  integers survive optimization. Its rational cost port preserves numerator
+  and denominator; a rounded browser value is marked with `≈` and cannot
+  implicitly supply an ordinary numeric workflow parameter.
+- Ordered edit scripts retain stable handles, source/target records, original
+  typed IDs and exact per-edit charges. Independent replay checks endpoint
+  existence, ID swaps, final graph reconstruction and total cost. Inserted and
+  deleted vertices also appear in the complete correspondence.
+- MCS maximizes vertex count. Its induced variant uses VF2; the non-induced
+  variant allows disconnected/edgeless results and uses maximum label matching.
+  It does not claim to maximize common edges. The graph port is a usable
+  downstream input. A discovered identity collision was fixed by incorporating
+  both parent fingerprints; workflow tests reject vertex bindings between
+  otherwise identical-looking results from separate datasets.
+- The comparison suite adds **4,662 checks**, including all 361 pairs of
+  atlas graphs through four vertices, all 4,096 pairs of three-vertex directed
+  graphs, both MCS modes, varied labels and edit costs, zero/large/tiny costs,
+  typed identities, normalization and budget failures. Independent references
+  enumerate partial injections without the production matching/path routines.
+- `cpu-graph-pair.xml` passed **29,098 tests** with GPUs hidden.
+  `gpu-0-graph-pair.xml` and `gpu-1-graph-pair.xml` each passed **1,546 tests** on
+  their physical GPUs. No failures or skips occurred. The regenerated audit
+  confirms current source, contract and dependency snapshots. GPU coverage
+  remains **13 cuGraph profiles**; these two comparison integrations use CPU.
+- API/planner runs passed **40 tests** on both working-tree and staged
+  application sources. Firefox runs passed **10 tests** on both versions, with
+  Node absent from the server PATH. They verify exact-cost transport/display,
+  edit-script paging, common-subgraph workflows and all prior workspace cases.
+  Final screenshots were inspected, and indexed sources match the recorded
+  staged snapshots. The model transport remains authored integration evidence,
+  not a deployed-model accuracy measurement.
+- Seven CPU contracts remain: node embedding, knowledge-graph embedding,
+  node prediction, graph prediction, geolocation, hypergraph node learning and
+  graph condensation. Native adaptation, deterministic queries/table
+  construction, MCP, reviewed examples, deployed-model evaluation,
+  memory-aware two-GPU scheduling, representation caching and external-scale
+  validation remain open. The overall goal remains active.

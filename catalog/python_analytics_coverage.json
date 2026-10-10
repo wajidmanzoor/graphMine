@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 64,
-  "problems_with_cpu_profile": 62,
+  "cpu_operation_count": 66,
+  "problems_with_cpu_profile": 63,
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-frequent-patterns",
+      "id": "cpu-graph-pair",
       "status": "passed",
-      "tests": 24436,
+      "tests": 29098,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
@@ -21,16 +21,17 @@
         "tests/test_extended_contracts.py",
         "tests/test_extended_oracles.py",
         "tests/test_frequent_patterns.py",
+        "tests/test_graph_comparison.py",
         "tests/test_numerical_construction.py",
         "tests/test_small_graph_oracles.py",
         "tests/test_temporal_sampling.py",
         "tests/test_weighted_directed.py",
         "tests/test_workflows.py"
       ],
-      "report": "validation/python_analytics/cpu-frequent-patterns.xml",
-      "report_sha256": "416b0d3d1b2efc24ec4b634cf90cb6b2b39cd6d58eb11fb9462476d2d8f77cef",
-      "metadata": "validation/python_analytics/cpu-frequent-patterns.xml.metadata.json",
-      "metadata_sha256": "7a3cc2c61a079734026e7a8d35bf1dd0419fde628fe6f6d958520612efb19d6c",
+      "report": "validation/python_analytics/cpu-graph-pair.xml",
+      "report_sha256": "a0111d001aed054d8e3885ebef55aa7b1d2acf7855b2950387a875091c20fb10",
+      "metadata": "validation/python_analytics/cpu-graph-pair.xml.metadata.json",
+      "metadata_sha256": "631ee8541ae4df4099802071007bf18c7fdf48be4704ba29a9e4322faa55406a",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -46,7 +47,7 @@
       }
     },
     {
-      "id": "gpu-0-frequent-patterns",
+      "id": "gpu-0-graph-pair",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -57,10 +58,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-frequent-patterns.xml",
-      "report_sha256": "9ad28ca838ac18b81a2cc06d61b1566580df5455114d73af73b99efda5ed1128",
-      "metadata": "validation/python_analytics/gpu-0-frequent-patterns.xml.metadata.json",
-      "metadata_sha256": "fcefa89a084e5a428588ad087e2ca2aae2018520a4aaeb819cbb525bdd8f304a",
+      "report": "validation/python_analytics/gpu-0-graph-pair.xml",
+      "report_sha256": "3eed391ad005e90b225b26ad05a00e1f73b58ae248757bfe7637815c23d8fba6",
+      "metadata": "validation/python_analytics/gpu-0-graph-pair.xml.metadata.json",
+      "metadata_sha256": "88071d603951b78b8c49155752a22b6f53f37efbad4af4b6b3a49be6797b2e61",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -76,7 +77,7 @@
       }
     },
     {
-      "id": "gpu-1-frequent-patterns",
+      "id": "gpu-1-graph-pair",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -87,10 +88,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-frequent-patterns.xml",
-      "report_sha256": "8b887389e2b103e33950b0d7a410a8aa2af52a77a522b3f6b7f9bcb4b75fe8b7",
-      "metadata": "validation/python_analytics/gpu-1-frequent-patterns.xml.metadata.json",
-      "metadata_sha256": "74b31fce8395b23f0385743b27db265c581c634ae5d1fe74904c40e62e21f972",
+      "report": "validation/python_analytics/gpu-1-graph-pair.xml",
+      "report_sha256": "133849ee4a349e12694370ff85d3b742fc21722ec5f81e46e49fb958c1b6b6da",
+      "metadata": "validation/python_analytics/gpu-1-graph-pair.xml.metadata.json",
+      "metadata_sha256": "2dcd1d5546778ec3dd3b626c31018cb81efa0d356cb9340e4c1c1eaf90378c9b",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -404,9 +405,12 @@
       "name": "Graph Edit Distance and Maximum Common Subgraph",
       "contract": "problems/24_graph_edit_distance_mcs/problem.json",
       "contract_sha256": "2b300980b0c1681143cb88fc3b6f7ba1a2885f43347c97c11c73f18cd47db17e",
-      "cpu_operations": [],
+      "cpu_operations": [
+        "graph-edit-distance",
+        "maximum-common-subgraph"
+      ],
       "cugraph_operations": [],
-      "status": "integration_required",
+      "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
@@ -1569,6 +1573,197 @@
         }
       },
       "profile_sha256": "2e8d3045ee953de27dc1d7a73dfca11ee2d75bfb8aef694fb295b8838497c304"
+    },
+    {
+      "id": "graph-edit-distance",
+      "problem_id": "graph_edit_distance_mcs",
+      "family": "comparison",
+      "title": "Minimum graph edit cost",
+      "description": "Exact reference edit distance between simple directed/undirected graphs using NetworkX rational shortest paths over partial correspondences. Exact vertex-label replacement costs insertion+deletion; equal selected labels cost zero. Edge relabeling competes with deletion+insertion. Weights/times/unselected attributes are ignored. Returns an ordered edit script on normalized graphs with stable handles and original IDs. Exponential work is budgeted; no timed-out or approximate result is advertised as optimal.",
+      "parameters": {
+        "other_graph": {
+          "kind": "object",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "label_match_policy": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "ignore_labels"
+          ],
+          "nullable": false
+        },
+        "vertex_label_fields": {
+          "kind": "array",
+          "required": false,
+          "description": "Distinct selected categorical fields: label and/or type. Missing differs from empty.",
+          "default": [
+            "label",
+            "type"
+          ],
+          "nullable": false
+        },
+        "edge_label_fields": {
+          "kind": "array",
+          "required": false,
+          "description": "Either [type] or [] for no edge category.",
+          "default": [
+            "type"
+          ],
+          "nullable": false
+        },
+        "self_loops": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "drop",
+          "choices": [
+            "drop",
+            "reject"
+          ],
+          "nullable": false
+        },
+        "parallel_edges": {
+          "kind": "string",
+          "required": false,
+          "description": "Collapse retains the first edge and requires equal selected types unless labels are ignored.",
+          "default": "reject",
+          "choices": [
+            "reject",
+            "collapse"
+          ],
+          "nullable": false
+        },
+        "edit_costs": {
+          "kind": "object",
+          "required": false,
+          "description": "Optional nonnegative decimal costs: vertex_insertion, vertex_deletion, edge_insertion, edge_deletion, edge_substitution. Each defaults to 1. Vertex-label replacement is their insertion+deletion sum, so independent vertex_substitution is not accepted.",
+          "default": {},
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_dijkstra.html"
+      ],
+      "input_kind": "graph",
+      "output_ports": {
+        "distance": {
+          "type": "rational_scalar",
+          "availability": "runtime_checked"
+        },
+        "mapping": {
+          "type": "cross_graph_mapping",
+          "availability": "runtime_checked"
+        },
+        "edits": {
+          "type": "table",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "75c2c1c69a086fc95927269ecae454057b92bb127a6c0e0f34af7e0da72789c1"
+    },
+    {
+      "id": "maximum-common-subgraph",
+      "problem_id": "graph_edit_distance_mcs",
+      "family": "comparison",
+      "title": "Largest common subgraph by vertex count",
+      "description": "Exact maximum vertex count, with a checked graph and injective correspondence. Induced matching uses NetworkX VF2 on successively smaller subsets. Non-induced matching permits disconnected/edgeless results and uses maximum label-compatible matching; it does not maximize the number of edges. Preserves direction and selected categorical labels; ignores weights/times. Exponential induced search is budgeted.",
+      "parameters": {
+        "other_graph": {
+          "kind": "object",
+          "required": true,
+          "description": "",
+          "nullable": false
+        },
+        "label_match_policy": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "exact",
+          "choices": [
+            "exact",
+            "ignore_labels"
+          ],
+          "nullable": false
+        },
+        "vertex_label_fields": {
+          "kind": "array",
+          "required": false,
+          "description": "Distinct selected categorical fields: label and/or type. Missing differs from empty.",
+          "default": [
+            "label",
+            "type"
+          ],
+          "nullable": false
+        },
+        "edge_label_fields": {
+          "kind": "array",
+          "required": false,
+          "description": "Either [type] or [] for no edge category.",
+          "default": [
+            "type"
+          ],
+          "nullable": false
+        },
+        "self_loops": {
+          "kind": "string",
+          "required": false,
+          "description": "",
+          "default": "drop",
+          "choices": [
+            "drop",
+            "reject"
+          ],
+          "nullable": false
+        },
+        "parallel_edges": {
+          "kind": "string",
+          "required": false,
+          "description": "Collapse retains the first edge and requires equal selected types unless labels are ignored.",
+          "default": "reject",
+          "choices": [
+            "reject",
+            "collapse"
+          ],
+          "nullable": false
+        },
+        "induced": {
+          "kind": "boolean",
+          "required": false,
+          "description": "",
+          "default": true,
+          "nullable": false
+        }
+      },
+      "library": "networkx",
+      "quality": "exact",
+      "references": [
+        "https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html",
+        "https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.matching.hopcroft_karp_matching.html"
+      ],
+      "input_kind": "graph",
+      "output_ports": {
+        "graph": {
+          "type": "graph",
+          "availability": "runtime_checked"
+        },
+        "mapping": {
+          "type": "cross_graph_mapping",
+          "availability": "runtime_checked"
+        },
+        "size": {
+          "type": "scalar",
+          "availability": "runtime_checked"
+        }
+      },
+      "profile_sha256": "bebca9b1bb431a7ab6258af2a1325e515e0f58c22411a6c62b8d0c5e71b2344b"
     },
     {
       "id": "network-alignment",

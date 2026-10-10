@@ -3,6 +3,16 @@
 from .exceptions import GraphMineError
 
 OUTPUT_PORTS = {
+    "graph-edit-distance": {
+        "distance": "rational_scalar",
+        "mapping": "cross_graph_mapping",
+        "edits": "table",
+    },
+    "maximum-common-subgraph": {
+        "graph": "graph",
+        "mapping": "cross_graph_mapping",
+        "size": "scalar",
+    },
     "frequent-subgraphs": {"patterns": "pattern_collection", "count": "scalar"},
     "single-graph-frequent-subgraphs": {
         "patterns": "pattern_collection",

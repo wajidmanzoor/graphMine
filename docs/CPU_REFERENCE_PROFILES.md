@@ -346,6 +346,70 @@ both match modes, transaction/occurrence distinctions, directed shapes, empty
 and disconnected patterns, categorical semantics, original-ID permutations,
 seven/eight-edge patterns, budget failures and downstream pattern graphs.
 
+## Exact graph edit distance and common subgraphs
+
+`graph-edit-distance` and `maximum-common-subgraph` take two graphs with the
+same direction. Selected categorical vertex fields default to `label` and
+`type`; the edge field defaults to `type`. Missing and empty categories differ.
+`ignore_labels` disables category matching. Weights, timestamps and unselected
+attributes do not affect either objective. Loops are dropped by default or
+explicitly rejected. Parallel edges require explicit collapse, which retains
+the first edge and requires matching selected categories unless labels are
+ignored. Both result witnesses refer to these normalized graphs.
+
+Edit distance supports five nonnegative decimal costs: vertex insertion and
+deletion, and edge insertion, deletion and substitution. Each defaults to one.
+Equal or ignored vertex labels have zero replacement cost; unequal selected
+labels cost vertex insertion plus deletion, as specified by this contract's
+exact label policy. An independent `vertex_substitution` parameter is rejected.
+Edge relabeling uses the cheaper of substitution and deletion plus insertion.
+Graph IDs, vertex IDs and edge IDs are identities, not paid-for labels.
+
+The exact reference reduces partial injective vertex correspondences to a
+nonnegative rational-weighted state DAG and calls NetworkX Dijkstra. A feasible
+incumbent permits pruning states whose accumulated cost cannot improve it.
+Label-compatible bipartite matching handles edgeless inputs, and VF2 detects
+zero-cost isomorphisms. Every returned objective is independently recomputed
+from its correspondence. Arithmetic uses exact fractions of the supplied
+decimal numbers, preserving costs such as `1 + 1e-200` and large integers.
+The `rational_scalar` distance port retains numerator, denominator and a
+possibly rounded display value. It cannot bind implicitly to a floating-point
+or integer workflow parameter.
+
+The ordered edit script includes per-operation rational costs and stable
+vertex/edge handles. Original and target external IDs remain record data until
+final serialization; swapping IDs cannot collide with a still-live object.
+Incident edges are deleted before a vertex is deleted, and all endpoints exist
+before an edge is inserted. Source handle tables and normalized source/target
+graphs make the script independently replayable. The correspondence includes
+matched, inserted and deleted vertices; a missing side is `null`.
+
+Common-subgraph search maximizes **vertex count**. The default induced variant
+uses NetworkX VF2 on subsets in decreasing size. Non-induced subgraphs may be
+disconnected or edgeless, so their maximum vertex count reduces to
+label-compatible bipartite matching. The returned graph includes compatible
+common edges for that mapping; there is no secondary edge-count objective.
+Its vertices retain the first graph's IDs. Its graph identity incorporates both
+parent fingerprints, preventing a downstream selection from crossing into an
+unrelated comparison with identical-looking IDs and topology.
+
+These are completed exact reference profiles, with no fixed small vertex
+ceiling. Search remains exponential, and exhausted candidate/time/output
+budgets fail without an optimum claim. Approximate modes, timed incumbent
+results, custom predicates, connected-only MCS and maximum-edge MCS are not
+advertised. The agent's worker enforces hard deadlines around library calls.
+
+`test_graph_comparison.py` independently enumerates partial injections and
+replays edit scripts. It covers all 361 pairs of graph-atlas graphs through
+four vertices, all 4,096 pairs of three-vertex directed graphs, selected
+categorical labels, both MCS modes, unequal and zero costs, tiny decimal
+differences, large costs and typed IDs, normalization, budgets and dependent
+workflows. These oracles do not use Dijkstra, VF2 or bipartite matching.
+
+Primary implementation references: [NetworkX single-source Dijkstra](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_dijkstra.html),
+[VF2](https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html)
+and [Hopcroft–Karp matching](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.bipartite.matching.hopcroft_karp_matching.html).
+
 ## Independent evidence
 
 The new oracle suite uses subsets, permutations and set partitions to check

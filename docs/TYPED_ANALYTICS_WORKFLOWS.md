@@ -204,6 +204,14 @@ host IDs when requested. Count-only mining has no patterns port. The browser's
 fixed pattern view lets users select a row to inspect that pattern's graph and
 support, and labels the separate vertex namespace.
 
+Graph edit distance exposes its exact cost as a `rational_scalar`, retaining
+integer numerator and denominator alongside a display value. The browser
+marks a rounded display with `≈`; the exact fraction remains in the table and
+download. This port cannot be bound implicitly to an ordinary numeric
+parameter. Its edit table uses stable handles and retains original IDs in
+record payloads. Maximum common subgraph returns a regular graph port for
+downstream analysis, with identity derived from both comparison inputs.
+
 The executor validates cycles and references before running any step. It then
 checks actual output availability, completeness, graph identity and resolved
 parameters. A count-only or truncated collection cannot become an exhaustive
@@ -250,7 +258,7 @@ are trusted local artifacts, not client-submitted results or signed certificates
 
 ## Verification for this checkpoint
 
-- 22,136 CPU library tests passed with GPUs hidden; 1,546 cuGraph tests passed on
+- 29,098 CPU library tests passed with GPUs hidden; 1,546 cuGraph tests passed on
   each physical GPU. No failures or skips. As before, weighted/boundary cases
   repeat on both GPUs, so these counts are test executions, not distinct graphs.
 - The workflow suite includes dependent 2-core/extraction/PageRank workflows
@@ -266,7 +274,12 @@ are trusted local artifacts, not client-submitted results or signed certificates
   is checked independently by integrating threshold intervals; sparsifier bounds
   use an independent orthogonal Laplacian basis. Work-budget failures and
   unsupported options are included.
-- The application/planner suite passed all 34 checks on both working-tree and
+- Pattern mining adds 2,300 checks covering independent transaction/MNI support,
+  complete pattern universes, labels, direction, image sets and dependent pattern
+  graphs. Graph comparison adds 4,662 checks using exhaustive partial vertex
+  injections and independently replayed edit scripts, including exact cost
+  fractions and rejection of bindings across distinct comparison inputs.
+- The application/planner suite passed all 40 checks on both working-tree and
   staged application sources. These exercise all three
   API modes with the actual library,
   approval revision changes, pagination, stale evidence at execution, retries
@@ -277,18 +290,24 @@ are trusted local artifacts, not client-submitted results or signed certificates
   evidence of concurrent two-GPU scheduling. Routing tests replay authored
   decisions, including ambiguity, rerouting, bounded repair, follow-up scope
   and attempts to escape the allowed operation/parameter schema.
-- Seven browser checks passed on both working-tree and staged application
+- Ten browser checks passed on both working-tree and staged application
   sources. They use actual Firefox, API and library computations with Node
   absent from the server PATH. They cover approval/editing, dependent plans,
   lossless IDs and downloads, narrow-screen layout, linked selections, paging,
   preview limits, graph-input bindings, workspace reset and question-to-workflow
   transport. The coordinate-view test checks uniform scaling, typed vertex IDs,
   the explicit 3D-to-XY projection and switching to a display-only layout.
+  Pattern checks cover graph-collection upload, selected canonical patterns,
+  original MNI image IDs and count-only output. Graph-comparison checks cover
+  lossless exact fractions, visibly rounded display values, edit records and
+  common-subgraph-to-degree workflows.
   The model transport is an authored fixture, not a real LLM.
-  The two existing `/classic` browser regressions also passed against the
-  working tree, using their synthetic native executable fixture.
+  The two `/classic` browser regressions passed at the earlier workspace
+  checkpoint against the working tree, using their synthetic native executable
+  fixture; they were not rerun for these library additions.
 
 Reports and source/dependency metadata are in `validation/python_analytics/`.
-CPU contract coverage is 60 of 70, with ten integrations still required.
+Current reports use the `graph-pair` suffix. CPU contract coverage is 63 of 70,
+with seven integrations still required. GPU coverage remains 13 cuGraph profiles.
 The browser tests cover the new workspace;
 the retained `/classic` workspace still has its earlier execution policy.
