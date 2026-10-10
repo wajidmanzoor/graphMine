@@ -241,6 +241,7 @@ def k_cliques(graph, args, work, backend="networkx"):
         sets
     )
     result.ports["count"] = {"type": "scalar", "value": total, "complete": True}
+    result.complete = args["mode"] == "count" or result.ports["groups"]["complete"]
     return result
 
 
@@ -290,6 +291,7 @@ def triangles(graph, args, work, backend="networkx"):
         )
         result.data["triangles"] = [row["vertices"] for row in listed.data["groups"]]
         result.ports["groups"] = listed.ports["groups"]
+        result.complete = listed.complete
     return result
 
 

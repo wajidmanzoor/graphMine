@@ -63,7 +63,7 @@ OUTPUT_PORTS = {
     "maximal-cliques": {"groups": "vertex_groups"},
     "maximum-clique": {"groups": "vertex_groups", "vertices": "vertex_set"},
     "k-cliques": {"groups": "vertex_groups", "count": "scalar"},
-    "triangle-counting": {"count": "scalar"},
+    "triangle-counting": {"count": "scalar", "groups": "vertex_groups"},
     "overlapping-communities": {"groups": "vertex_groups"},
     "maximal-independent-set": {"vertices": "vertex_set"},
     "vertex-coloring": {"scores": "vertex_scores"},

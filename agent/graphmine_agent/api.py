@@ -41,6 +41,7 @@ from .analytics import (
     WorkflowRequest,
     WorkflowRevision,
 )
+from .analytics_planning import AnalyticsPlanner, PlanningRequest
 from .catalog import Catalog, CatalogError
 from .config import Settings
 from .database import Database, RecordNotFound
@@ -645,6 +646,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def create_workflow(session_id: str, body: WorkflowRequest, request: Request):
         return await _runtime(request).analytics.create(session_id, body)
 
+    @router.post("/sessions/{session_id}/analytics/plan")
+    async def plan_analytics(session_id: str, body: PlanningRequest, request: Request):
+        runtime = _runtime(request)
+        return await AnalyticsPlanner(
+            runtime.settings, runtime.analytics, runtime.events
+        ).plan(session_id, body)
+
     @router.get("/sessions/{session_id}/workflows")
     async def list_workflows(session_id: str, request: Request):
         return _runtime(request).analytics.list(session_id)
@@ -672,6 +680,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @router.get("/workflows/{workflow_id}/result")
     async def workflow_result(workflow_id: str, request: Request):
         return _runtime(request).analytics.result(workflow_id)
+
+    @router.get("/workflows/{workflow_id}/steps/{step}/result")
+    async def workflow_step_result(workflow_id: str, step: str, request: Request):
+        return _runtime(request).analytics.result(workflow_id, step=step)
 
     @router.get("/workflows/{workflow_id}/steps/{step}/ports/{port}")
     async def workflow_port(
@@ -732,6 +744,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     static = Path(__file__).with_name("static")
     if static.is_dir():
+
+        @app.get("/", response_class=HTMLResponse, include_in_schema=False)
+        async def analytics_workspace():
+            return HTMLResponse((static / "analytics.html").read_text(encoding="utf-8"))
+
+        @app.get("/classic", response_class=HTMLResponse, include_in_schema=False)
+        async def classic_workspace():
+            return HTMLResponse((static / "index.html").read_text(encoding="utf-8"))
+
         app.mount("/", StaticFiles(directory=static, html=True), name="ui")
     return app
 

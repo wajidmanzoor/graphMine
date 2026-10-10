@@ -1,0 +1,12 @@
+{
+  "inspected_at": "2026-10-10T10:52:43.049176+00:00",
+  "scope": "Visually inspected Firefox desktop workflow and 500-pixel narrow viewport; fixed predefined views; no phone-device emulation claimed",
+  "test_report": "../browser-workspace-index.xml",
+  "test_report_sha256": "c3c69313d60e08bb210696407c3004210fa37b7a043b8c9204836ae9349b64bf",
+  "source_metadata": "../browser-workspace-index.xml.metadata.json",
+  "source_metadata_sha256": "37d3389d4705f8f8a335a3edb81377e7739797adc4b9e7bd21e2d7dca7c41479",
+  "images_sha256": {
+    "dependent-workflow.png": "6981947f03d06a0125f63d9650a06b21624d47c9c545080f53691e55dce70ddd",
+    "linked-results-mobile.png": "bbd96bff7b1040d15bfaaba8556512494b8be8e81822a9ea9611e0cd04b8451a"
+  }
+}

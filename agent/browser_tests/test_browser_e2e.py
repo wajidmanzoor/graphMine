@@ -157,7 +157,7 @@ def test_complete_browser_upload_chat_result_and_followup(
         )
         driver.set_window_size(1440, 1000)
         wait = WebDriverWait(driver, 20)
-        driver.get(base)
+        driver.get(base + "/classic")
         driver.execute_script(
             "localStorage.setItem('graphmine.apiToken', 'browser-test-secret');"
         )
@@ -387,7 +387,7 @@ def test_complete_browser_upload_chat_result_and_followup(
         wait.until(lambda _: not driver.find_element(By.ID, "file-list").text)
         assert "Useful groups" not in driver.find_element(By.ID, "messages").text
         assert not driver.find_elements(By.CLASS_NAME, "result-link")
-        driver.get(base + "#" + session_hash)
+        driver.get(base + "/classic#" + session_hash)
         wait.until(
             conditions.text_to_be_present_in_element(
                 (By.ID, "feedback-count"), "2 saved annotations"

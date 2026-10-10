@@ -323,7 +323,16 @@ class AnalyticsService:
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def capabilities(self):
-        return await self._call({"command": "capabilities"})
+        from .analytics_planning import family_catalog
+
+        result = await self._call({"command": "capabilities"})
+        result["task_families"] = family_catalog(result["operations"])
+        result["question_planner_enabled"] = self.settings.llm_enabled
+        result["device_configuration"] = {
+            "cpu": True,
+            "gpu_configured": bool(self.settings.graph_gpu_uuid),
+        }
+        return result
 
     async def create(self, session_id, body):
         inputs = self._inputs(session_id, body.inputs)

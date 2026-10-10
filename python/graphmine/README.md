@@ -7,7 +7,9 @@ GUDHI and RapidFuzz on CPU, and cuGraph on GPU. Native GraphMine and agent integ
 
 The agent now exposes evidence-checked, typed workflow endpoints for this library.
 See [workflow modes, bindings, cancellation and reuse](../../docs/TYPED_ANALYTICS_WORKFLOWS.md).
-The existing chat/browser migration remains in progress.
+The default browser workspace uses this path with Normal, Interactive and
+Expert modes, a family-first question planner and predefined linked views.
+The previous native workspace remains available at `/classic`.
 
 ```sh
 python -m pip install -e 'python/graphmine[test]'
@@ -111,9 +113,10 @@ Binary objective scaling preserves small costs that would otherwise disappear
 under absolute solver tolerances. Evidence records the scale and converts the
 reported bound and tolerance back to the original objective units.
 
-The runtime currently invokes algorithms synchronously; the agent integration
-must use cancellable subprocesses for hard time and memory limits. Cooperative
-enumeration counters do not interrupt a running native library call.
+Direct library calls invoke algorithms synchronously. The agent integration
+uses cancellable subprocesses for hard time limits and enforces declared input
+and output byte budgets. Cooperative enumeration counters do not interrupt a
+running native library call. OS-level memory admission remains separate work.
 
 ## Verification
 

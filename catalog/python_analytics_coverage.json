@@ -6,9 +6,9 @@
   "cugraph_operation_count": 13,
   "reports": [
     {
-      "id": "cpu-workflows",
+      "id": "cpu-workspace",
       "status": "passed",
-      "tests": 19505,
+      "tests": 19611,
       "failures": 0,
       "skipped": 0,
       "changed_sources": [],
@@ -25,10 +25,10 @@
         "tests/test_weighted_directed.py",
         "tests/test_workflows.py"
       ],
-      "report": "validation/python_analytics/cpu-workflows.xml",
-      "report_sha256": "24e8ec2f2d9a14ee298d539dfaf3620f1cdc6abafe8a989df009ae16f438029a",
-      "metadata": "validation/python_analytics/cpu-workflows.xml.metadata.json",
-      "metadata_sha256": "688772561dae2f77ef375448b32365de6c89e1dadd8e52c3eddf0e17b8e536a0",
+      "report": "validation/python_analytics/cpu-workspace.xml",
+      "report_sha256": "f1fd53606b42ca170be1d9ed80f74790ff2d960b3134ee99438c4829674b07b7",
+      "metadata": "validation/python_analytics/cpu-workspace.xml.metadata.json",
+      "metadata_sha256": "391e8cf0f1e29c78c158e00b0087b401415d5ba4023c4cecdc3d93ec8b2e9f72",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -43,7 +43,7 @@
       }
     },
     {
-      "id": "gpu-0-workflows",
+      "id": "gpu-0-workspace",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -54,10 +54,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-0-workflows.xml",
-      "report_sha256": "9131d095eff92ffdaebdbc144b180e43cf1dddc35a82efaf13e6d6e2bb2a27c3",
-      "metadata": "validation/python_analytics/gpu-0-workflows.xml.metadata.json",
-      "metadata_sha256": "b58d73c8d13a857e1840e7f38416be6e1d34a865a485e22be8cc3e4e04f34064",
+      "report": "validation/python_analytics/gpu-0-workspace.xml",
+      "report_sha256": "092a007f83c3a433c7b01d83edc12c690216741ff3357a8d3f876a87b4d665d2",
+      "metadata": "validation/python_analytics/gpu-0-workspace.xml.metadata.json",
+      "metadata_sha256": "2189a0cd8199925f2ba30fd9c21d4aaf19b7dd87e5fe188a52e939e09a5bfac5",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -72,7 +72,7 @@
       }
     },
     {
-      "id": "gpu-1-workflows",
+      "id": "gpu-1-workspace",
       "status": "passed",
       "tests": 1546,
       "failures": 0,
@@ -83,10 +83,10 @@
         "tests/test_small_graph_oracles.py",
         "tests/test_weighted_directed.py"
       ],
-      "report": "validation/python_analytics/gpu-1-workflows.xml",
-      "report_sha256": "ab697c31db7db833e33b8d4d7f5bfb69d952f9cbb70ccc8f609cb20468ba6d16",
-      "metadata": "validation/python_analytics/gpu-1-workflows.xml.metadata.json",
-      "metadata_sha256": "735926d32350a6e114cfb3fca93c2df9fc956a1597ac0566332c1e78c16fdd65",
+      "report": "validation/python_analytics/gpu-1-workspace.xml",
+      "report_sha256": "bb7a6593d71aebbf5bbad8eb6b15af560df020681af0ed8a39c58f03a4c5c82b",
+      "metadata": "validation/python_analytics/gpu-1-workspace.xml.metadata.json",
+      "metadata_sha256": "489c8216f366e8b9ee5799c3a5539c03d5bd6010408b7eae148a5c19134fae85",
       "packages": {
         "networkx": "3.7",
         "numpy": "2.4.6",
@@ -2403,9 +2403,13 @@
         "count": {
           "type": "scalar",
           "availability": "runtime_checked"
+        },
+        "groups": {
+          "type": "vertex_groups",
+          "availability": "runtime_checked"
         }
       },
-      "profile_sha256": "01ee225725bb95fa02581d49a70d7574d7c67e3585a4fa5f530414330c0e58ef"
+      "profile_sha256": "768c05b47d42bb18f9fe9d5e219f2e3f96fec403ad5c38cfecb877c0771f8217"
     },
     {
       "id": "group-steiner-tree",

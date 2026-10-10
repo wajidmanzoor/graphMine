@@ -1,11 +1,12 @@
 """Dependent results checked against independent peeling and linear algebra."""
 
 from copy import deepcopy
+from itertools import combinations
 
 import networkx as nx
 import numpy as np
 import pytest
-from graphmine import Graph, list_algorithms
+from graphmine import Graph, list_algorithms, run
 from graphmine.exceptions import GraphMineError
 from graphmine.ports import OUTPUT_PORTS
 from graphmine.workflows import execute_workflow, validate_workflow
@@ -45,6 +46,45 @@ def workflow():
 CASES = [
     (i, len(g), list(g.edges)) for i, g in enumerate(nx.graph_atlas_g()) if len(g) <= 6
 ]
+
+
+@pytest.mark.parametrize("operation", ["k-cliques", "triangle-counting"])
+@pytest.mark.parametrize("case,n,edges", [case for case in CASES if case[1] <= 5])
+def test_requested_listing_completeness_separate_from_exact_count(
+    operation, case, n, edges
+):
+    graph = Graph.from_edges(edges, vertices=range(n))
+    edge_set = {frozenset(edge) for edge in edges}
+    expected = {
+        frozenset(group)
+        for group in combinations(range(n), 3)
+        if all(frozenset(edge) in edge_set for edge in combinations(group, 2))
+    }
+    parameters = {
+        "result_limit": 1,
+        **(
+            {"k": 3, "mode": "enumerate"}
+            if operation == "k-cliques"
+            else {"list_instances": True}
+        ),
+    }
+    result = run(operation, graph, parameters=parameters, device="cpu")
+    assert result["ports"]["count"]["value"] == len(expected)
+    assert result["ports"]["count"]["complete"]
+    rows = result["ports"]["groups"]["value"]
+    assert {frozenset(row["vertices"]) for row in rows} <= expected
+    assert len(rows) == min(1, len(expected))
+    assert (
+        result["complete"]
+        == result["ports"]["groups"]["complete"]
+        == (len(expected) <= 1)
+    )
+    if operation == "k-cliques":
+        counted = run(
+            operation, graph, parameters={"k": 3, "mode": "count"}, device="cpu"
+        )
+        assert counted["complete"]
+        assert not counted["ports"]["groups"]["complete"]
 
 
 @pytest.mark.parametrize("case,n,edges", CASES)

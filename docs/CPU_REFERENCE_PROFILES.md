@@ -1,9 +1,10 @@
 # CPU reference profiles
 
-These executable profiles are part of `python/graphmine`. They are not yet
-connected to the browser agent. Device selection and capabilities in the
-existing native application remain separate until the integration step in
-`VERIFIED_ANALYTICS_IMPLEMENTATION.md` is complete.
+These executable profiles are part of `python/graphmine` and are connected to
+the default browser workspace through evidence-checked typed workflows. See
+`TYPED_ANALYTICS_WORKFLOWS.md` for modes, device policy and result views. The
+retained `/classic` native workspace still uses its earlier execution path;
+native adaptation remains tracked in `VERIFIED_ANALYTICS_IMPLEMENTATION.md`.
 
 ## Objectives and implementations
 

@@ -5,10 +5,65 @@ The application can now execute the verified Python library through
 and its parameters. Dependencies connect declared output ports to declared
 inputs. Neither algorithm code nor expressions are generated or evaluated.
 
-This is the API integration. The existing chat planner and browser still use
-their earlier native execution path. The new browser modes, family-first
-routing, native adapter, table operations, MCP access and two-GPU scheduler
-remain separate work in the active implementation plan.
+The default browser workspace at `/` uses this library and the three modes.
+The previous native workspace remains at `/classic`. Native adaptation,
+deterministic table operations, MCP access and two-GPU scheduling are still
+separate work in the active implementation plan.
+
+## Browser workspace
+
+Open `/`, configure the API token through **Connection** if required, and upload
+a canonical graph or relationship CSV. Upload settings also accept feature
+vector and hypergraph JSON with an explicit input kind. Choose **CPU only**,
+**GPU only**, or **Automatic**, then either describe a question or browse a task
+family and select an exact calculation. The available choices come from the
+current evidence-checked operation cards. The task picker works with the
+question planner disabled.
+
+Interactive mode shows the input scope, dependency sources, parameters, method
+quality and execution device before approval. Step settings can be edited in
+place; every edit creates a new review revision. Expert mode exposes the same
+validated workflow as structured JSON. Uploaded inputs use `main` for the
+active input and stable `data_N` aliases for the other files. Pattern matching
+and graph comparison fields can bind another uploaded graph directly.
+
+The browser uses locally served Cytoscape and plain JavaScript/CSS. No Node.js
+runtime or build step is needed. Graph layouts, score bars, group-size bars and
+result tables are predefined. A model cannot supply rendering code. Selecting
+a graph vertex, score bar or result row links the other views. Graph previews
+show at most 500 vertices and 2,000 edges; calculations still use the full
+input. Selection outside the preview is identified explicitly. Layout positions
+are display coordinates, not computed graph metrics.
+
+Tables search and page the retained result collection; they do not change the
+calculation. Output completeness is distinct from pagination and graph-preview
+limits. The raw provenance preview is bounded, with a full JSON download.
+Cancelled/interrupted workflows can expose their completed steps without
+pretending that the whole workflow finished. A lossless JSON codec and typed
+vertex keys preserve `0`, `"0"` and adjacent integers beyond JavaScript's safe
+integer range through plans, tables, graph selection and exported results.
+
+## Question planning
+
+`POST /api/sessions/{session_id}/analytics/plan` first selects a task family,
+then a shortlist of exact operations within that family, then a typed workflow.
+Each stage uses a constrained JSON schema. A wrong-family decision may reroute
+once. A rejected workflow may receive one contract-based repair while retaining
+the selected operations and device policy. Unresolved ambiguity returns a
+question rather than a guessed execution. Planning alone does not save or run
+a workflow; the selected execution mode governs the next API request.
+
+The request contains `message`, uploaded `inputs`, `device`, optionally
+`family_id`, and optionally `previous_workflow_id` for a follow-up. A previous
+workflow must belong to the current session. Context includes its reviewed plan
+and bounded input metadata/samples; samples are identified as excerpts.
+
+The planner uses the configured base model through the OpenAI-compatible
+`GRAPHMINE_LLM_BASE_URL`, with `GRAPHMINE_LLM_ENABLED=true`. Its schema differs
+from the previous native-operation routing adapter. Authored-decision and HTTP
+transport tests verify the constraints and application wiring. They are not
+evidence of a model's routing accuracy. Held-out evaluation against the deployed
+model and full natural-language conversation evaluation remain open.
 
 ## Configuration and capabilities
 
@@ -145,6 +200,7 @@ steps may still complete. A completed workflow with capped output retains
 | `GET /api/sessions/{session_id}/workflows` | Saved workflows in a session |
 | `GET /api/workflows/{id}` | Status, reviewed plan, per-step summaries and errors |
 | `GET /api/workflows/{id}/result` | Full saved workflow result for the current revision |
+| `GET /api/workflows/{id}/steps/{step}/result` | A completed step, including when another step failed or execution was cancelled |
 | `GET /api/workflows/{id}/steps/{step}/ports/{port}?offset=0&limit=100` | A bounded port page with collection completeness and total retained items |
 | `DELETE /api/workflows/{id}` | Cancel queued or running execution |
 
@@ -178,22 +234,38 @@ are trusted local artifacts, not client-submitted results or signed certificates
 
 ## Verification for this checkpoint
 
-- 19,505 CPU library tests passed with GPUs hidden; 1,546 cuGraph tests passed on
+- 19,611 CPU library tests passed with GPUs hidden; 1,546 cuGraph tests passed on
   each physical GPU. No failures or skips. As before, weighted/boundary cases
   repeat on both GPUs, so these counts are test executions, not distinct graphs.
-- 254 new focused checks include dependent 2-core/extraction/PageRank workflows
+- The workflow suite includes dependent 2-core/extraction/PageRank workflows
   on all atlas graphs through six vertices, checked by independent peeling and
   linear algebra. They also cover malformed DAGs, typed IDs, namespaces,
-  incompleteness, cache invalidation and evidence rejection.
-- Fifteen application tests passed on both the working tree and staged
-  application sources. These exercise all three API modes with the actual library,
+  incompleteness, cache invalidation and evidence rejection. An additional 106
+  checks compare capped clique/triangle lists with independent combinations
+  across atlas graphs through five vertices. Capped listings now propagate
+  `complete: false` to the operation and workflow, while count-only operations
+  retain complete counts with incomplete materialized-list ports.
+- The application/planner suite passed all 34 checks on both working-tree and
+  staged application sources. These exercise all three
+  API modes with the actual library,
   approval revision changes, pagination, stale evidence at execution, retries
   and result reuse. Separate fault-injection tests verify process-group
   cancellation/deadlines, CPU isolation and exclusive ledger ownership. Actual
   GPU workflows ran on each configured physical GPU and checked its recorded
   device assignment and numerical result. These are serial device checks, not
-  evidence of concurrent two-GPU scheduling.
+  evidence of concurrent two-GPU scheduling. Routing tests replay authored
+  decisions, including ambiguity, rerouting, bounded repair, follow-up scope
+  and attempts to escape the allowed operation/parameter schema.
+- Six browser checks passed on both working-tree and staged application
+  sources. They use actual Firefox, API and library computations with Node
+  absent from the server PATH. They cover approval/editing, dependent plans,
+  lossless IDs and downloads, narrow-screen layout, linked selections, paging,
+  preview limits, graph-input bindings, workspace reset and question-to-workflow
+  transport. The model transport is an authored fixture, not a real LLM.
+  The two existing `/classic` browser regressions also passed against the
+  working tree, using their synthetic native executable fixture.
 
 Reports and source/dependency metadata are in `validation/python_analytics/`.
 CPU contract coverage remains 57 of 70; these workflow additions do not claim
-new algorithm or browser coverage.
+new problem-contract coverage. The browser tests cover the new workspace;
+the retained `/classic` workspace still has its earlier execution policy.

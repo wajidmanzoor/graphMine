@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore networks with verified library algorithms and inspectable workflows">
+  <title>GraphMine · Network workspace</title>
+  <link rel="stylesheet" href="/analytics.css">
+  <script src="/vendor/cytoscape.min.js" defer></script>
+  <script src="/analytics-wire.js" defer></script>
+  <script src="/analytics-ui.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to analysis</a>
+  <header class="app-header">
+    <a class="brand" href="/" aria-label="GraphMine home"><svg aria-hidden="true" viewBox="0 0 36 36"><path d="M9 25 18 9 28 24Z"/><circle cx="9" cy="25" r="4"/><circle cx="18" cy="9" r="4"/><circle cx="28" cy="24" r="4"/></svg><span>GraphMine<small>NETWORK WORKSPACE</small></span></a>
+    <div class="header-actions"><span id="connection-state" role="status">Connecting…</span><a href="/classic">Previous workspace</a><button id="connection-button" class="quiet">Connection</button></div>
+  </header>
+  <div class="app-shell">
+    <aside class="data-sidebar" aria-label="Data and saved work">
+      <div class="sidebar-heading"><h2>Your workspace</h2><button id="new-session" class="quiet">New</button></div>
+      <label>Saved workspace<select id="session-select"><option value="">New analysis</option></select></label>
+      <label>Workspace name<input id="session-name" placeholder="e.g. Team connections" maxlength="200"></label>
+      <div class="data-section">
+        <p class="eyebrow">1 · Bring your data</p>
+        <label class="upload-zone">Choose a file<input id="data-upload" type="file" accept=".json,.csv,.txt"><span>Graph JSON or relationship CSV</span></label>
+        <details><summary>Upload settings</summary>
+          <label>Input kind<select id="upload-kind"><option value="graph">Graph</option><option value="feature_vectors">Feature vectors (JSON)</option><option value="hypergraph">Hypergraph (JSON)</option></select></label>
+          <label class="check"><input id="csv-directed" type="checkbox"> CSV connections have a direction</label>
+          <label>CSV from column<input id="csv-source" placeholder="source (automatic)"></label>
+          <label>CSV to column<input id="csv-target" placeholder="target (automatic)"></label>
+        </details>
+        <button id="sample-data" class="secondary full-width">Try example team data</button>
+        <label>Active input<select id="active-input"><option value="">Upload data to begin</option></select></label>
+        <label id="active-kind-label" hidden>Declared input kind<select id="active-kind"><option value="graph">Graph</option><option value="feature_vectors">Feature vectors</option><option value="hypergraph">Hypergraph</option></select></label>
+        <p id="data-summary" class="muted">Your analysis uses the full uploaded input.</p>
+        <div id="input-aliases" class="alias-list"></div>
+      </div>
+      <div class="data-section">
+        <p class="eyebrow">Execution</p>
+        <label>Compute on<select id="device"><option value="auto">Automatic</option><option value="cpu">CPU only</option><option value="gpu">GPU only</option></select></label>
+        <p id="device-note" class="muted">Automatic keeps the requested calculation when choosing a device.</p>
+      </div>
+      <div class="data-section"><h3>Saved analyses</h3><div id="saved-workflows" class="saved-list"><p class="muted">Your workflows will appear here.</p></div></div>
+      <p class="sidebar-note">Data, plans and computed results are saved in this workspace.</p>
+    </aside>
+    <main id="workspace" tabindex="-1">
+      <div class="workspace-heading"><div><p class="eyebrow">From connections to answers</p><h1>Explore what connects your data.</h1></div><span id="verified-count" class="pill">Checking capabilities</span></div>
+      <section class="mode-panel" aria-label="Analysis mode">
+        <div class="mode-switch" role="group" aria-label="Choose an analysis mode"><button data-mode="normal" aria-pressed="true">Normal</button><button data-mode="interactive" aria-pressed="false">Interactive</button><button data-mode="expert" aria-pressed="false">Expert</button></div>
+        <p id="mode-description">Describe your question or choose a task. Validated plans run automatically.</p>
+      </section>
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+      <section class="question-panel panel" aria-labelledby="question-heading">
+        <div class="section-heading"><div><p class="eyebrow">2 · Choose your question</p><h2 id="question-heading">What would you like to learn?</h2></div><button id="toggle-tasks" class="quiet" aria-expanded="true" aria-controls="task-picker">Browse tasks</button></div>
+        <form id="question-form"><label class="visually-hidden" for="question">Your question about the data</label><textarea id="question" rows="2" maxlength="20000" placeholder="For example: who connects otherwise separate teams?"></textarea><div class="question-actions"><span id="planner-note" class="muted">The planner chooses a family, then a specific calculation.</span><button id="plan-question" class="primary" type="submit">Build my analysis <span aria-hidden="true">↗</span></button></div></form>
+        <div id="routing-trace" class="routing-trace" aria-live="polite"></div>
+        <div id="task-picker">
+          <p class="field-heading">Or start with a task family</p><div id="family-cards" class="family-cards"></div>
+          <div id="operation-panel" hidden><label>What should the calculation find?<select id="operation-select"></select></label><p id="operation-description"></p><div id="operation-quality" class="muted"></div><form id="operation-form"><div id="operation-parameters" class="parameter-grid"></div><div class="form-actions"><button id="use-operation" type="submit" class="primary">Run this analysis</button></div></form></div>
+        </div>
+      </section>
+      <section id="expert-panel" class="panel" hidden aria-labelledby="expert-heading">
+        <div class="section-heading"><div><p class="eyebrow">Explicit plan</p><h2 id="expert-heading">Workflow editor</h2></div><button id="load-editor" class="quiet">Load current plan</button></div>
+        <p class="muted">Use registered operations and the input aliases shown on the left. Validation checks parameters, dependencies and output types.</p>
+        <label class="visually-hidden" for="plan-editor">Structured workflow JSON</label><textarea id="plan-editor" rows="16" spellcheck="false" class="code-editor"></textarea><div class="form-actions"><button id="save-editor" class="primary">Validate and save plan</button></div>
+      </section>
+      <section id="workflow-panel" class="panel" hidden aria-labelledby="workflow-heading">
+        <div class="section-heading"><div><p class="eyebrow">3 · Your analysis</p><h2 id="workflow-heading">Review the steps</h2></div><span id="workflow-status" class="pill"></span></div>
+        <p id="workflow-summary" class="muted"></p><ol id="workflow-steps" class="workflow-steps"></ol>
+        <div id="review-actions" class="form-actions"><button id="approve-plan" class="primary">Approve and run</button><button id="edit-plan" class="secondary">Edit plan</button><button id="cancel-workflow" class="secondary danger" hidden>Cancel execution</button></div>
+        <details><summary>Plan and execution details</summary><pre id="plan-details"></pre></details>
+      </section>
+      <section id="evidence-panel" class="panel" aria-labelledby="evidence-heading">
+        <div class="section-heading"><div><p class="eyebrow">Explore the evidence</p><h2 id="evidence-heading">Connections & results</h2></div><button id="download-result" class="secondary" disabled>Download full result</button></div>
+        <p id="result-completeness" class="completeness">Upload a graph to preview its connections.</p>
+        <div id="result-controls" class="result-controls" hidden><label>Step<select id="result-step"></select></label><label>Output<select id="result-port"></select></label></div>
+        <div class="evidence-grid">
+          <div class="graph-card"><div class="graph-tools"><label>View layout<select id="graph-layout"><option value="cose">Spread connections</option><option value="circle">Circle</option><option value="grid">Grid</option></select></label><button id="fit-graph" class="quiet">Fit graph</button><button id="clear-selection" class="quiet">Clear selection</button></div><div id="network" role="img" aria-label="Network preview; choose a result row to highlight its entities"></div><p id="preview-scope" class="muted"></p><div id="selection-detail" role="status" class="selection-detail">Select a node or a result row to inspect it.</div></div>
+          <div class="result-card"><div id="metrics" class="metrics"></div><div id="chart" class="fixed-chart"></div><div class="table-toolbar"><label>Find in this output<input id="table-search" type="search" placeholder="Filter displayed result values"></label><span id="table-count" class="muted"></span></div><div class="table-scroll" tabindex="0" role="region" aria-label="Result rows"><table id="result-table"><caption class="visually-hidden">Computed output values</caption><thead></thead><tbody></tbody></table></div><div class="pagination"><button id="table-prev" class="secondary">Previous</button><span id="table-page"></span><button id="table-next" class="secondary">Next</button></div><p id="table-scope" class="muted">Computed values will appear after an analysis.</p></div>
+        </div>
+        <details id="raw-details" hidden><summary>Recorded result and provenance</summary><pre id="raw-result"></pre></details>
+      </section>
+    </main>
+  </div>
+  <dialog id="connection-dialog"><form id="connection-form" method="dialog"><div class="section-heading"><h2>Connect to GraphMine</h2><button value="cancel" type="button" id="close-connection" class="quiet" aria-label="Close connection settings">Close</button></div><label>API base URL<input id="api-base" placeholder="Same server"></label><label>API token<input id="api-token" type="password" autocomplete="off"></label><p class="muted">Connection settings stay in this browser.</p><button type="submit" class="primary">Save and connect</button></form></dialog>
+</body>
+</html>

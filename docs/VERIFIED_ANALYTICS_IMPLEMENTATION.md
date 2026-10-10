@@ -314,3 +314,56 @@ reported score substitutes for local integration tests.
   language workflow planning, browser modes/visuals, deterministic queries/table
   construction, MCP, reviewed-example retrieval, memory-aware scheduling and
   external-scale evaluation all remain part of the active goal.
+
+### Browser workspace and family routing checkpoint
+
+- `/` now opens a library-backed workspace with Normal, Interactive and Expert
+  modes. `/classic` retains the earlier native workspace. The new page uses
+  local Cytoscape and plain JavaScript/CSS, with no Node runtime or build step.
+  Its score/group charts, graph layouts, linked selection and paged tables are
+  fixed renderers. A model cannot generate algorithm or visualization code on
+  this path. This implements the interaction ideas using our own code; no
+  YiGraph source or visual assets were copied.
+- A family decision precedes exact-operation selection and typed workflow
+  planning. Shortlists come from executable evidence-checked cards and accepted
+  parameter schemas. One wrong-family reroute and one contract-based plan repair
+  are allowed. Follow-ups receive the previous reviewed plan only within their
+  current workspace. Planning does not approve or execute a workflow.
+- Interactive plans expose step settings, dependency sources and input scope.
+  Edits create a new revision requiring approval. Expert plans use the same
+  engine and checks. Additional uploaded graphs can bind pattern/comparison
+  parameters. Workspace changes clear previous results and pending plan text.
+- Full result downloads preserve typed IDs and adjacent integers larger than
+  JavaScript's safe integer range. Graph previews are bounded independently of
+  computation. Outside-preview selections are disclosed; raw previews are
+  labeled when shortened. Completed steps remain accessible after cancellation
+  or interruption. Retained-output completeness is separate from table paging.
+- Browser testing exposed a real completeness error: capped `k-cliques`
+  enumeration had an incomplete groups port but a complete operation flag.
+  The flag now propagates to triangle listing and workflows. Triangle listing's
+  groups port is also declared in the capability schema. An independent
+  combination oracle adds 106 cases across atlas graphs through five vertices.
+- After the shared-library fix, the complete `cpu-workspace.xml` run passed
+  **19,611 checks** with CUDA hidden. `gpu-0-workspace.xml` and
+  `gpu-1-workspace.xml` each passed **1,546 checks** with no failures/skips.
+  Both fixture shards and the repeated weighted/directed/boundary cases ran.
+- `agent-workspace.xml` and `agent-workspace-index.xml` each passed **34
+  checks**, including actual CPU/GPU execution, schema constraints, rerouting,
+  bounded repair, follow-up isolation and failed-workflow step access. These
+  reports include source/dependency snapshots. Planning decisions are authored
+  test fixtures; this does not establish a real model's routing accuracy.
+- `browser-workspace.xml` and `browser-workspace-index.xml` each passed **six
+  Firefox checks** against the working tree and staged application sources,
+  respectively. The server PATH contains no Node and the native executable is
+  absent. Tests cover modes, approval/editing, dependent numerical results,
+  lossless IDs and export, bounded preview/paging, cross-input pattern matching,
+  workspace reset and the question-planning HTTP path. The latter uses an
+  authored model transport. Desktop and narrow-screen screenshots were visually
+  inspected. Two existing `/classic` browser regressions also passed on the
+  working tree using their synthetic native executable fixture.
+- CPU coverage remains **59 operations across 57 of 70 contracts**. Thirteen
+  CPU integrations, native adaptation/unified evidence, deployed-model routing
+  and conversation evaluation, deterministic queries/table construction, MCP,
+  reviewed examples, memory-aware two-GPU scheduling, representation caching
+  and external-scale validation remain part of the active goal. The earlier
+  native workspace has not been migrated to the new execution policy.

@@ -34,6 +34,7 @@ def analytics_application_evidence(request):
             Path(__file__),
             Path(__file__).with_name("conftest.py"),
         ]
+        paths += [Path(path) for path in {item.path for item in request.session.items}]
         paths += [repository / "catalog/python_analytics_coverage.json"]
         return {
             str(path): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -46,7 +47,7 @@ def analytics_application_evidence(request):
     xml = getattr(request.config.option, "xmlpath", None)
     if xml:
         metadata = {
-            "scope": "Actual library API workflows and synthetic process/ledger fault injection; no browser coverage",
+            "scope": "Actual library API workflows, synthetic process/ledger fault injection and authored planning decisions; no browser or LLM accuracy coverage",
             "python": sys.version,
             "gpu_test_devices": os.environ.get("GRAPHMINE_ANALYTICS_TEST_GPUS"),
             "source_files": before,
@@ -302,6 +303,23 @@ def test_live_failed_step_recovery_reuses_only_valid_steps(settings, triangle_gr
         assert record["status"] == "failed"
         assert record["steps"]["rank"]["status"] == "blocked"
         assert record["steps"]["independent"]["status"] == "completed"
+        partial = client.get(
+            f"/api/workflows/{record['id']}/steps/independent/result", headers=AUTH
+        )
+        assert partial.status_code == 200, partial.text
+        assert partial.json()["result"]["ports"]["count"]["value"] == 1
+        assert (
+            client.get(
+                f"/api/workflows/{record['id']}/steps/rank/result", headers=AUTH
+            ).status_code
+            == 409
+        )
+        assert (
+            client.get(
+                f"/api/workflows/{record['id']}/steps/independent/result"
+            ).status_code
+            == 401
+        )
         request.update(mode="interactive", expected_revision=1)
         request["plan"]["steps"][0]["budget"] = {"max_output_items": 100}
         revised = client.post(
