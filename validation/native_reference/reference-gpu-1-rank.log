@@ -1,0 +1,2 @@
+Validated 500 native requests on gpu 1
+{"suite":"rank","backend":"gpu","gpu_device":1,"passed_requests":514,"failed":0,"implementation_sha256":"41a75ed11e66cfee804a2816766817fa66a632ce02d89915a22952bf3445821d"}

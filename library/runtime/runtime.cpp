@@ -48,32 +48,6 @@ json::object execute(const json::object& request) {
   require(ordinal <= INT32_MAX, "gpu_device is out of range");
   const auto device = static_cast<int>(ordinal);
   std::string backend = request.contains("backend") ? string(request.at("backend"), "backend") : "auto";
-  bool compiled = false;
-  if (backend == "auto") {
-    backend = "cpp";
-    if (policy != "cpu") {
-      for (const auto& row : card.at("backends").as_array()) {
-        const auto& candidate = row.as_object();
-        if (candidate.at("device") == "gpu" && candidate.at("compiled").as_bool() && gpu_available(device)) {
-          backend = string(candidate.at("id"), "backend id"); break;
-        }
-      }
-      if (policy == "gpu" && backend == "cpp") throw Failure("backend_unavailable", "No compiled GPU backend and usable device for " + operation);
-    }
-  }
-  bool known = false;
-  for (const auto& row : card.at("backends").as_array()) {
-    const auto& candidate = row.as_object();
-    if (candidate.at("id").as_string() == backend) {
-      known = true; compiled = candidate.at("compiled").as_bool(); break;
-    }
-  }
-  require(known, "Backend is not declared for this native operation");
-  require(!((policy == "cpu" && backend != "cpp") || (policy == "gpu" && backend == "cpp")), "Backend conflicts with requested device policy");
-  if (!compiled) throw Failure("backend_unavailable", "Selected native backend was not compiled");
-  if (backend != "cpp" && !gpu_available(device)) throw Failure("backend_unavailable", "Selected CUDA device is unavailable");
-  std::optional<DeviceScope> device_scope;
-  if (backend != "cpp") device_scope.emplace(device);
   Work work;
   if (request.contains("budget")) {
     const auto budget = object(request.at("budget"), "budget");
@@ -88,7 +62,36 @@ json::object execute(const json::object& request) {
   }
   const auto graph = parse_graph(request.at("graph"));
   const auto parameters = request.contains("parameters") ? object(request.at("parameters"), "parameters") : json::object{};
-  auto result = operation == "breadth-first-search" ? bfs(graph, parameters, backend, device, work) : triangles(graph, parameters, backend, device, work);
+  const auto gpu_reason = gpu_support_reason(operation, graph, parameters);
+  bool compiled = false;
+  if (backend == "auto") {
+    backend = "cpp";
+    if (policy != "cpu" && gpu_reason.empty()) {
+      for (const auto& row : card.at("backends").as_array()) {
+        const auto& candidate = row.as_object();
+        if (candidate.at("device") == "gpu" && candidate.at("compiled").as_bool() && gpu_available(device)) {
+          backend = string(candidate.at("id"), "backend id"); break;
+        }
+      }
+      if (policy == "gpu" && backend == "cpp") throw Failure("backend_unavailable", "No compiled GPU backend and usable device for " + operation);
+    }
+  }
+  if (policy == "gpu" && !gpu_reason.empty()) throw Failure("unsupported_input", gpu_reason);
+  bool known = false;
+  for (const auto& row : card.at("backends").as_array()) {
+    const auto& candidate = row.as_object();
+    if (candidate.at("id").as_string() == backend) {
+      known = true; compiled = candidate.at("compiled").as_bool(); break;
+    }
+  }
+  require(known, "Backend is not declared for this native operation");
+  require(!((policy == "cpu" && backend != "cpp") || (policy == "gpu" && backend == "cpp")), "Backend conflicts with requested device policy");
+  if (!compiled) throw Failure("backend_unavailable", "Selected native backend was not compiled");
+  if (backend != "cpp" && !gpu_reason.empty()) throw Failure("unsupported_input", gpu_reason);
+  if (backend != "cpp" && !gpu_available(device)) throw Failure("backend_unavailable", "Selected CUDA device is unavailable");
+  std::optional<DeviceScope> device_scope;
+  if (backend != "cpp") device_scope.emplace(device);
+  auto result = operation_handler(operation)(graph, parameters, backend, device, work);
   work.tick(0);
   const auto fingerprint = hash(request.at("graph"));
   for (auto& port : result.at("ports").as_object()) {
@@ -108,7 +111,7 @@ json::object execute(const json::object& request) {
                           {"implementation_language", "c++/cuda"}, {"python_runtime_required", false}};
   if (backend == "libcugraph") provenance["version"] = cugraph_version();
   if (backend != "cpp") provenance["hardware"] = gpu_description(device);
-  if (policy == "auto" && backend == "cpp") provenance["selection_reason"] = "Selected the compiled native CPU implementation";
+  if (policy == "auto" && backend == "cpp") provenance["selection_reason"] = gpu_reason.empty() ? "Selected the compiled native CPU implementation" : gpu_reason;
   result["backend"] = provenance;
   result["budget"] = json::object{{"max_candidates", work.max_candidates}, {"max_output_items", work.max_output_items}, {"timeout_seconds", work.timeout_seconds}};
   result["elapsed_seconds"] = std::chrono::duration<double>(std::chrono::steady_clock::now() - work.started).count();
@@ -119,7 +122,7 @@ int abi_version() noexcept { return 1; }
 std::string request(std::string_view raw) {
   try {
     if (raw.size() > 64 * 1024 * 1024) throw Failure("resource_limit", "Native request exceeds 64 MiB");
-    const auto value = object(json::parse(raw), "request");
+    const auto value = object(strict_json(raw), "request");
     require(value.contains("command"), "Missing command");
     const auto command = string(value.at("command"), "command");
     if (command == "catalog") {

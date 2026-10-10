@@ -169,6 +169,27 @@ void contract_tests() {
   graphmine_runtime_free(output);
   check(graphmine_runtime_request(nullptr, 2, &output, &size) == -1, "Invalid C ABI pointer accepted");
   graphmine_runtime_free(nullptr);
+  auto raw_error = [&](const std::string& input, const std::string& message) {
+    const auto response = json::parse(graphmine::runtime::request(input)).as_object();
+    check(response.contains("error") && response.at("error").as_object().at("code") == "invalid_input" &&
+          std::string(response.at("error").as_object().at("message").as_string()).find(message) != std::string::npos,
+          "Original JSON token was not rejected: " + input);
+    ++cases;
+  };
+  auto numbered = good;
+  numbered.at("graph").as_object().at("vertices").as_array()[0].as_object()["attributes"] = json::object{{"number", "__NUMBER__"}};
+  const auto serialized = json::serialize(numbered);
+  for (const auto literal : {"18446744073709551616", "18446744073709551617", "-9223372036854775809"}) {
+    auto input = serialized;
+    input.replace(input.find("\"__NUMBER__\""), 12, literal);
+    raw_error(input, "integer range");
+  }
+  raw_error(R"({"command":"catalog","command":"catalog"})", "Duplicate JSON");
+  raw_error(R"({"command":"catalog","a":{"count":1,"c\u006funt":2}})", "Duplicate JSON");
+  for (const auto text : {"18446744073709551616", "18446744073709551617"}) {
+    numbered.at("graph").as_object().at("vertices").as_array()[0].as_object().at("attributes").as_object()["number"] = text;
+    call(numbered);
+  }
 }
 }
 int main(int argc, char** argv) {

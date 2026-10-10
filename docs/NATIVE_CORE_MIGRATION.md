@@ -14,12 +14,26 @@ The catalog marks profiles still awaiting migration as `pending`.
 
 ## Current migration boundary
 
-The new runtime implements native CPU breadth-first search and triangle
-counting. BFS can dispatch directly to `libcugraph` through its native API.
-When built from the original library tree, triangle counting also uses the
-existing ToT and WeTriC CUDA implementations. The original `Graph` and typed
-external IDs are reused. Existing native APIs remain available while their
-remaining profiles are brought into the shared runtime.
+The shared runtime has native profiles for ten formal problems. All ten have C++ CPU
+implementations. GPU dispatch calls native libraries directly:
+
+| Operation | Family | GPU implementation |
+| --- | --- | --- |
+| Breadth-first search | traversal | libcugraph |
+| Single-source shortest paths | traversal | libcugraph, bounded float64 costs |
+| Many-source shortest paths | traversal | libcugraph, bounded float64 costs |
+| Topological sort | traversal | CPU profile |
+| Spanning tree/forest | trees | libcugraph, minimum and maximum |
+| Connected components | connectivity | libcugraph, weak and strong |
+| PageRank | centrality | libcugraph |
+| Personalized PageRank | centrality | libcugraph; custom uniform dangling redistribution uses CPU |
+| Local link prediction | similarity | libcugraph Jaccard; eight CPU measures |
+| Triangle counting/listing | motifs | Original ToT and WeTriC CUDA backends |
+
+The original `Graph` and typed external IDs are reused. Existing native APIs
+remain available while their remaining profiles are brought into the shared
+runtime. Original triangle backends are included when building from the
+`library` project with their corresponding options enabled.
 
 `graphmine.native.NativeLibrary` is the thin Python binding. Its family methods
 are obtained from the native catalog. It does not import NetworkX, cuGraph,
@@ -91,8 +105,10 @@ result = library.family("traversal").breadth_first_search(
 ```
 
 `cpu` never invokes CUDA; `gpu` fails when the requested backend/device is
-unavailable. `auto` may choose a compiled GPU profile or the native CPU
-implementation. A failed GPU computation is reported; requested parameters
+unavailable. `auto` chooses a compiled GPU profile when the device and requested
+variant are supported, otherwise the native CPU implementation with a recorded
+reason. An explicit GPU request for a CPU-only variant fails.
+A failed GPU computation is reported; requested parameters
 are not altered to manufacture success. Backend selection and validation occur
 in C++, including for Python calls.
 
@@ -159,11 +175,43 @@ does not render this workspace.
 
 ## Contracts and remaining work
 
-The initial profiles preserve string versus signed 64-bit integer IDs, including
+The native profiles preserve string versus signed 64-bit integer IDs, including
 integers above JavaScript's safe range. Unsupported larger integers and integer
 weights that the original native `Graph` cannot represent exactly are rejected.
 Extending native numeric storage is required before porting the exact rational
 query and graph-comparison profiles; silently narrowing them is unacceptable.
+Original JSON tokens are checked before constructing a DOM: overflowing
+integer literals, nonfinite numbers and duplicate object keys are rejected.
+Escaped spellings of the same key also count as duplicates. This applies to
+native requests and CLI graph/parameter files.
+
+CPU weighted paths use exact rational arithmetic over the binary64 weights
+admitted by the original `Graph`. Each reachable distance includes
+`distance_exact: {"numerator": "...", "denominator": "..."}`. The convenient
+`distance` field is an integer when representable, otherwise a finite double
+with `distance_rounded`, or a rational object if it exceeds floating range.
+Only unreachable/cutoff-excluded vertices have null distance. Integer cutoff
+values are compared without conversion to double. This preserves exact sums
+but does not add arbitrary-precision input weights or IDs to `Graph`.
+
+GPU shortest paths return numerical float64 results and an acyclic path
+witness, including for zero-weight cycles. Bounds that could reach the
+float64 unreachable sentinel or lose exact large integral costs require CPU.
+All-zero lengths use native libcugraph BFS reachability and assign distance
+zero to reached vertices. This avoids a reproduced libcugraph SSSP stall on
+a single directed zero-weight edge; it does not substitute a CPU algorithm.
+Spanning forests preserve original weights and exact total-weight fractions.
+The GPU solver receives consecutive weight ranks (reversed for maximum);
+this preserves the optimal forest while avoiding overflow in upstream weight
+adjustments. Parallel edges collapse according to the requested objective.
+
+Both PageRank solvers validate probability mass and independently recompute
+the fixed-point L1 residual. Diagnostics record the requested tolerance,
+accepted residual (with a 1e-12 numerical floor) and residual-based L1 error
+estimate. Dangling policies and direction projections retain the reference
+contract. A displayed personalized ranking may be filtered/capped while its
+full score port remains complete. Link prediction instead marks its pair port
+incomplete when `top_k` omits candidates; budgets apply before that cap.
 
 BFS preserves direction, ignores weights, drops loops and collapses parallel
 arcs. Its independent and nearest-source modes share exact hop distances;
@@ -171,7 +219,8 @@ nearest-source ties use the supplied source order. Triangle counting requires
 explicit undirected input and uses the corresponding simple graph. Capped
 triangle membership is incomplete even though its total count remains exact.
 GPU triangle enumeration materializes and checks memberships in native CPU
-code. Budgets bound CPU search, output and BFS working-state size; timeouts on
+code. Budgets bound CPU search, output, GPU PageRank iterations and path
+working-state size; timeouts on
 uninterruptible native GPU calls require the isolated worker boundary.
 
 Before completing the user goal, migrate the remaining algorithms and native
@@ -184,25 +233,52 @@ recovery, MCP, reviewed examples, scheduling and representation caching.
 
 ## Validation at this checkpoint
 
-`validation/native_ingestion` records 19,981 successful native requests: 13
-contract cases, 4,608 BFS requests on each of CPU/GPU 0/GPU 1, and 2,048 triangle
-requests on each of native CPU/ToT GPU 0/WeTriC GPU 1. The C++ oracles use
-independent shortest-path matrices and exhaustive vertex triples. A further
-19 tests cover the Python/C boundary, catalog parity, concurrent calls,
-libcudf text ingestion on both GPUs, CLI JSON output and CUDA device restoration.
-Installed C and C++ consumers were also checked without Python on PATH.
+`validation/native_reference` records **39,231 successful native requests**:
 
-The ingestion extension adds 64 native cuDF/construction tests on both GPUs.
-Application acceptance passed 41 checks against the preserved working tree
-and 25 against the exact staged application; the former includes additional
-pre-existing streaming tests. These check actual native uploads, API graph
-previews, original-byte preservation, failure cleanup and bounded process
-transport. Test reports include source, configuration and binary snapshots.
-The earlier foundation reports remain in `validation/native_runtime`.
+| Suite | CPU | GPU 0 | GPU 1 |
+| --- | ---: | ---: | ---: |
+| Original runtime contracts | 20 | — | — |
+| BFS | 4,608 | 4,608 | 4,608 |
+| Triangles | 2,048 | 2,048 ToT | 2,048 WeTriC |
+| New profile contracts | 28 | 30 | 30 |
+| Weighted paths | 3,645 | 3,645 | 3,645 |
+| Minimum/maximum forests | 1,458 | 1,458 | 1,458 |
+| Connectivity/topological order | 320 | 256 | 256 |
+| PageRank/personalized PageRank | 706 | 514 | 514 |
+| Local link scores | 1,024 | 128 | 128 |
+
+The independent C++ oracles use Floyd–Warshall matrices, exhaustive spanning
+edge subsets, reachability equivalence, topological witnesses, pivoted linear
+systems for PageRank, adjacency-matrix local scores and exhaustive triangle
+triples. They cover typed IDs, isolates, zero lengths/cycles, negative forest
+weights, parallel records, inclusive cutoffs, exact large costs, output
+completeness, strict parameter validation and resource limits. Both physical
+GPUs run the same supported profiles. CPU-only variants are explicitly tested
+as CPU capabilities rather than counted as skipped GPU checks.
+
+A further **30 binding/CLI tests**, **64 cuDF/construction tests**, and **41
+working-app / 25 staged-app acceptance tests** passed with zero failures or
+skips. Installed C and C++ consumers ran with Python off PATH and GPUs hidden;
+the CPU shared library has no Python or CUDA linkage. The preserved working
+tree retains additional streaming tests. Native, binding and app reports
+record unchanged source/configuration/binary snapshots. Earlier checkpoints
+remain under `validation/native_runtime` and `validation/native_ingestion`.
+
+To reproduce the native matrix after building both configurations:
+
+```sh
+python tools/validate_native_runtime.py --cpu-build build/native-cpu \
+  --gpu-build build/original-with-rapids/runtime --output validation/native_reference
+```
+
+The GPU build must include libcugraph, libcudf, ToT and WeTriC, with both physical
+devices visible. The runner records source-bound implementation hashes,
+immutable binary snapshots and per-suite logs; an external watchdog bounds
+each oracle process.
 
 `tools/audit_native_runtime.py` verifies these reports, the source inventory
 embedded in each build, current source contents and the binding test snapshot.
 It records binary and resolved dependency hashes in
-`catalog/native_runtime_coverage.json`. This is migration evidence for the two
-implemented problems; it does not establish coverage of pending profiles or
+`catalog/native_runtime_coverage.json`. This is migration evidence for the ten
+integrated problems and their listed profiles; it does not establish coverage of pending profiles or
 replace the application's evidence gate.

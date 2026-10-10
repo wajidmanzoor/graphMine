@@ -60,6 +60,7 @@ def build_evidence(directory, source_root, dependency_hashes):
             "libgraphmine_runtime.so",
             "graphmine-native",
             "graphmine_runtime_test",
+            "graphmine_reference_test",
         )
     }
     cache = directory / "CMakeCache.txt"
@@ -174,13 +175,30 @@ def audit(
     reports = {}
     expected = {
         "cpu": [
-            ("contracts", "cpu", 13),
+            ("contracts", "cpu", 20),
             ("bfs", "cpu", 4608),
             ("triangles", "cpp", 2048),
         ],
         "gpu-0": [("bfs", "gpu", 4608), ("triangles", "tot", 2048)],
         "gpu-1": [("bfs", "gpu", 4608), ("triangles", "wetric", 2048)],
+        "reference-cpu": [
+            ("contracts", "cpu", 28),
+            ("paths", "cpu", 3645),
+            ("forests", "cpu", 1458),
+            ("connectivity", "cpu", 320),
+            ("rank", "cpu", 706),
+            ("similarity", "cpu", 1024),
+        ],
     }
+    for ordinal in (0, 1):
+        expected[f"reference-gpu-{ordinal}"] = [
+            ("contracts", "gpu", 30),
+            ("paths", "gpu", 3645),
+            ("forests", "gpu", 1458),
+            ("connectivity", "gpu", 256),
+            ("rank", "gpu", 514),
+            ("similarity", "gpu", 128),
+        ]
     for name, cases in expected.items():
         path = report_root / f"{name}.json"
         rows = json.loads(path.read_text())
@@ -192,15 +210,30 @@ def audit(
                 row["passed_requests"],
                 row["failed"],
             ) == (suite, backend, count, 0)
-            if name.startswith("gpu-"):
+            if "gpu-" in name:
                 assert row["gpu_device"] == int(name[-1])
+            build = builds["gpu" if "gpu-" in name else "cpu"]
+            assert (
+                row["implementation_sha256"]
+                == build["catalog"]["implementation_sha256"]
+            )
+        metadata_path = path.with_suffix(".json.metadata.json")
+        metadata = json.loads(metadata_path.read_text())
+        assert metadata["build_unchanged_during_run"]
+        assert (
+            metadata["implementation_sha256"]
+            == build["catalog"]["implementation_sha256"]
+        )
+        for binary, digest in metadata["binary_files"].items():
+            assert sha(binary) == digest, binary
         reports[name] = {
             "path": str(path.relative_to(ROOT)),
             "sha256": sha(path),
+            "metadata_sha256": sha(metadata_path),
             "results": rows,
         }
     reports["binding_ingestion"] = xml_evidence(
-        report_root / "binding-ingestion.xml", ROOT, 19
+        report_root / "binding-ingestion.xml", ROOT, 30
     )
     native_uploads = staged_app_root is not None
     if native_uploads:
@@ -259,7 +292,13 @@ def audit(
     return {
         "schema_version": 1,
         "scope": "Native runtime migration checkpoint; not a complete architecture migration or application gate",
-        "native_formal_problem_count": 2,
+        "native_formal_problem_count": len(
+            {
+                row["problem_id"]
+                for row in builds["cpu"]["catalog"]["operations"]
+                if row["problem_id"] != "graph_record_queries"
+            }
+        ),
         "formal_problem_count": 70,
         "cpu_runtime_operations": [
             row["id"] for row in builds["cpu"]["catalog"]["operations"]

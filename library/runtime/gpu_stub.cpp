@@ -6,4 +6,19 @@ std::vector<Search> cugraph_bfs(const Graph&, const std::vector<VertexIndex>&,
                               std::optional<std::uint64_t>, int, Work&) {
   throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
 }
+std::vector<WeightedSearch> cugraph_shortest_paths(const WeightedGraph&, const std::vector<VertexIndex>&, int, Work&) {
+  throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
+}
+std::vector<std::pair<VertexIndex, VertexIndex>> cugraph_spanning_forest(const WeightedGraph&, bool, int, Work&) {
+  throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
+}
+std::vector<std::vector<VertexIndex>> cugraph_components(const WeightedGraph&, bool, int, Work&) {
+  throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
+}
+std::vector<double> cugraph_pagerank(const WeightedGraph&, const std::vector<double>&, double, double, std::uint64_t, int, Work&) {
+  throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
+}
+std::vector<double> cugraph_jaccard(const WeightedGraph&, const std::vector<std::pair<VertexIndex, VertexIndex>>&, int, Work&) {
+  throw Failure("backend_unavailable", "libcugraph is not linked in this native build");
+}
 }

@@ -164,7 +164,82 @@ print(len(library.list_algorithms()))
         text=True,
         check=True,
     )
-    assert process.stdout.strip() == "2"
+    assert int(process.stdout.strip()) == len(library().list_algorithms())
+
+
+@pytest.mark.parametrize(
+    ("operation", "parameters", "undirected"),
+    [
+        ("single-source-shortest-paths", {"source": 0}, False),
+        ("many-source-shortest-paths", {"origins": [0, "0"]}, False),
+        ("spanning-tree-forest", {"objective": "maximum"}, True),
+        ("connected-components", {"connectivity_mode": "strongly_connected"}, False),
+        ("topological-sort", {}, False),
+        ("pagerank", {"weight_mode": "edge_weight"}, False),
+        ("personalized-pagerank", {"seed_vertices": [0], "top_k": 1}, False),
+        ("link-prediction", {"scoring_measure": "resource_allocation"}, True),
+    ],
+)
+def test_migrated_families_match_native_cli(
+    operation, parameters, undirected, tmp_path
+):
+    lib = library()
+    data = graph()
+    data["graph"]["directed"] = not undirected
+    card = next(row for row in lib.list_algorithms() if row["id"] == operation)
+    method = getattr(lib.family(card["family"]), operation.replace("-", "_"))
+    wrapped = method(data, parameters=parameters, device="cpu")
+    process = subprocess.run(
+        [CPU / "graphmine-native", "request"],
+        input=json.dumps(
+            {
+                "command": "run",
+                "operation": operation,
+                "graph": data,
+                "parameters": parameters,
+                "device": "cpu",
+            }
+        ),
+        text=True,
+        capture_output=True,
+        env={"PATH": str(tmp_path), "CUDA_VISIBLE_DEVICES": ""},
+        check=True,
+    )
+    assert without_timing(wrapped) == without_timing(json.loads(process.stdout))
+    assert wrapped["family"] == card["family"]
+    assert wrapped["backend"]["python_runtime_required"] is False
+
+
+@pytest.mark.parametrize(
+    "literal",
+    ["18446744073709551616", "18446744073709551617", "-9223372036854775809"],
+)
+def test_cli_validates_original_graph_numeric_tokens(tmp_path, literal):
+    data = graph()
+    data["vertices"][0]["attributes"] = {"value": "replace_number"}
+    path = tmp_path / "input.json"
+    path.write_text(json.dumps(data).replace('"replace_number"', literal))
+    parameters = tmp_path / "params.json"
+    parameters.write_text('{"sources":[0]}')
+    process = subprocess.run(
+        [
+            CPU / "graphmine-native",
+            "run",
+            "breadth-first-search",
+            path,
+            "--parameters",
+            parameters,
+            "--device",
+            "cpu",
+        ],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert process.returncode == 2
+    error = json.loads(process.stderr)["error"]
+    assert error["code"] == "invalid_input"
+    assert "integer range" in error["message"]
 
 
 def test_concurrent_binding_calls_keep_results_and_memory_ownership_separate():

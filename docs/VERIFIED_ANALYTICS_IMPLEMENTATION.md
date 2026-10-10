@@ -694,3 +694,53 @@ runtime. The public reference algorithm API and application algorithm worker,
 other native backends, exact-number support, multi-table/task-aware projections
 and all other open review acceptance requirements still need migration or
 completion. The overall goal remains active.
+
+### Native reference algorithms and numeric input boundaries
+
+- Added native C++ CPU profiles for single-/many-source weighted paths,
+  minimum/maximum spanning forests, weak/strong connected components,
+  topological sort, PageRank, personalized PageRank and all eight local link
+  scores. Alongside BFS and triangles, **10 of 70 formal problems now have
+  profiles in the shared runtime**. Other profiles of those problems and the
+  remaining formal problems still require migration.
+- Weighted paths, forests, both connectivity modes, PageRank, supported
+  personalized variants and Jaccard call libcugraph directly through its C API.
+  Unsupported GPU variants select native CPU in auto mode with a reason;
+  explicit GPU requests fail. The same registered definitions provide native
+  dispatch, capability cards and Python family methods.
+- CPU path costs and forest totals use exact rationals over admitted binary64
+  weights, with exact fields and explicit rounded displays. Reachable values
+  above floating range remain rational objects rather than null/unreachable.
+  Large integer cutoff values retain their exact value. Native input storage
+  still needs wider ID/integer/rational support before the remaining exact
+  query and graph-comparison profiles can migrate.
+- Raw JSON validation now rejects overflowing integer literals before
+  Boost.JSON can convert them to doubles, and rejects duplicate/escaped
+  duplicate keys. Both native requests and CLI graph/parameter files use this
+  boundary. This prevents distinct oversized integers from collapsing to an
+  identical graph fingerprint.
+- Exhaustive GPU testing reproduced a libcugraph SSSP stall on one directed
+  zero-weight edge. All-zero length graphs now use native GPU BFS reachability
+  with exact zero distances. Mixed lengths still use libcugraph SSSP, with
+  an acyclic tight-edge witness tree and explicit cost bounds. GPU forests use
+  weight-order ranks to avoid upstream arithmetic overflow without changing
+  the optimal edge order. PageRank independently verifies its residual and
+  keeps full score ports complete when only its displayed ranking is capped.
+- **39,231 native oracle requests passed** against frozen standalone CPU and
+  exact staged GPU builds, including both physical GPUs and the original
+  ToT/WeTriC regressions. Oracles use independent shortest-path matrices,
+  exhaustive edge subsets, connectivity/witness checks, dense linear solves
+  and local adjacency formulas. **30 binding/CLI, 64 native ingestion, 41
+  working-app and 25 staged-app tests passed**, with no skips or failures.
+  Installed C/C++ consumers run without Python or CUDA on the CPU path.
+- Reports are under `validation/native_reference`; the audit checks source,
+  binary, configuration and resolved dependency hashes and updates
+  `catalog/native_runtime_coverage.json`. Existing Python reference package
+  sources were unchanged, so their prior matching evidence remains applicable.
+
+The application's algorithm worker and public reference API still await the
+native migration. This checkpoint does not complete the overall goal. Keep
+the remaining native profiles/backends, native evidence gate, seven missing
+formal integrations, table projections/joins, interaction and recovery work,
+external/model evaluation, MCP/examples, two-GPU scheduling/caching and scale
+validation in scope.

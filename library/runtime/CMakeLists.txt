@@ -80,8 +80,10 @@ string(SHA256 GRAPHMINE_NATIVE_SOURCE_SHA256 "${GRAPHMINE_NATIVE_SOURCE_DIGEST}"
 configure_file(catalog_data.hpp.in generated/catalog_data.hpp @ONLY)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/native-source-hashes.txt" "${GRAPHMINE_NATIVE_SOURCE_DIGEST}")
 
-add_library(graphmine_runtime SHARED runtime.cpp registry.cpp json_graph.cpp c_api.cpp
-            families/traversal.cpp families/patterns.cpp io/graph_projection.cpp ../src/core/json.cpp)
+add_library(graphmine_runtime SHARED runtime.cpp registry.cpp json_graph.cpp json_input.cpp c_api.cpp
+            families/traversal.cpp families/patterns.cpp families/common.cpp
+            families/weighted_paths.cpp families/connectivity.cpp families/centrality.cpp
+            families/similarity.cpp io/graph_projection.cpp ../src/core/json.cpp)
 add_library(GraphMine::runtime ALIAS graphmine_runtime)
 target_compile_features(graphmine_runtime PUBLIC cxx_std_17)
 target_include_directories(graphmine_runtime PUBLIC
@@ -106,7 +108,7 @@ if(GRAPHMINE_NATIVE_CUGRAPH)
   find_package(CUDAToolkit REQUIRED)
   find_path(GRAPHMINE_CUGRAPH_INCLUDE cugraph_c/graph.h HINTS "${GRAPHMINE_LIBCUGRAPH_ROOT}/include" REQUIRED)
   find_library(GRAPHMINE_CUGRAPH_LIBRARY cugraph_c HINTS "${GRAPHMINE_LIBCUGRAPH_ROOT}/lib64" "${GRAPHMINE_LIBCUGRAPH_ROOT}/lib" REQUIRED)
-  target_sources(graphmine_runtime PRIVATE cugraph.cpp)
+  target_sources(graphmine_runtime PRIVATE cugraph.cpp cugraph_reference.cpp)
   target_include_directories(graphmine_runtime PRIVATE "${GRAPHMINE_CUGRAPH_INCLUDE}")
   target_link_libraries(graphmine_runtime PRIVATE "${GRAPHMINE_CUGRAPH_LIBRARY}" CUDA::cudart)
   # Native wheels carry normal ELF libraries. Explicit dependency directories
@@ -167,4 +169,10 @@ if(BUILD_TESTING OR GRAPHMINE_BUILD_TESTS)
   add_test(NAME graphmine_runtime_contracts COMMAND graphmine_runtime_test contracts)
   add_test(NAME graphmine_runtime_bfs_cpu COMMAND graphmine_runtime_test bfs cpu)
   add_test(NAME graphmine_runtime_triangles_cpu COMMAND graphmine_runtime_test triangles cpp)
+  add_executable(graphmine_reference_test tests/reference_test.cpp ../src/core/json.cpp)
+  target_include_directories(graphmine_reference_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
+  target_link_libraries(graphmine_reference_test PRIVATE GraphMine::runtime)
+  foreach(suite IN ITEMS contracts paths forests connectivity rank similarity)
+    add_test(NAME graphmine_reference_${suite}_cpu COMMAND graphmine_reference_test ${suite} cpu)
+  endforeach()
 endif()
