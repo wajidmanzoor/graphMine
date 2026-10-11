@@ -1,0 +1,10 @@
+{
+  "scope": "Public native package and typed workflow imported and executed under Python -S without optional algorithm dependencies",
+  "passed": true,
+  "operation_count": 80,
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "cuda_visible_devices": "",
+  "loaded_optional_algorithm_modules": [],
+  "workflow_hash": "478feee22ea916090c05811f27783ce87dfc1f5a1fe5897000c1979e87421c3d",
+  "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78"
+}

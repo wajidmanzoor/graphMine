@@ -1,0 +1,289 @@
+{
+  "scope": "Frozen independent answers cross-checked through native C ABI before held-out model evaluation",
+  "suite_sha256": "fc50960d12e4f23cdf696281a6f3f3451d57346c7fb706ad0cedb26b2010c74b",
+  "passed": 17,
+  "cases": [
+    {
+      "id": "triangles",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "triangle-counting",
+          "parameters": {},
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "maximum_clique",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "maximum-clique",
+          "parameters": {},
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "independent_optimum",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "maximum-independent-set",
+          "parameters": {},
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "cover_optimum",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "minimum-vertex-cover",
+          "parameters": {},
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "components",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "connected-components",
+          "parameters": {},
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "bfs",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "breadth-first-search",
+          "parameters": {
+            "sources": [
+              "station-7267"
+            ]
+          },
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "weighted_distance",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "single-source-shortest-paths",
+          "parameters": {
+            "source": "station-7267"
+          },
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "filtered_records",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "edge-filter",
+          "parameters": {
+            "edge_filters": [
+              {
+                "field": "attributes.amount",
+                "op": "gte",
+                "value": 50
+              }
+            ]
+          },
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "incoming_records",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "neighbors",
+          "parameters": {
+            "entity": "station-3720"
+          },
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "vertex_filter",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "node-lookup",
+          "parameters": {
+            "vertex_filters": [
+              {
+                "field": "attributes.zone",
+                "op": "eq",
+                "value": "blue"
+              }
+            ]
+          },
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "aggregate",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "graph-aggregate",
+          "parameters": {
+            "scope": "edges",
+            "metric": "sum",
+            "field": "attributes.amount"
+          },
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "numeric_identity",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "node-lookup",
+          "parameters": {
+            "vertices": [
+              0
+            ]
+          },
+          "input_sha256": "f26f299134bbe01b2235b4ef8fd3e12cef8de41309023c24bac3485b0f21b8fe"
+        }
+      ]
+    },
+    {
+      "id": "string_identity",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "node-lookup",
+          "parameters": {
+            "vertices": [
+              "0"
+            ]
+          },
+          "input_sha256": "f26f299134bbe01b2235b4ef8fd3e12cef8de41309023c24bac3485b0f21b8fe"
+        }
+      ]
+    },
+    {
+      "id": "flow_capacity",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "max-flow-min-cut",
+          "parameters": {
+            "source": "supply",
+            "sink": "demand",
+            "capacity_mode": "edge_weight"
+          },
+          "input_sha256": "956049dc1c40c2271ebd54ae5a5285497e5d58efbe78e2343aafb74b83c6b5e3"
+        }
+      ]
+    },
+    {
+      "id": "derived_network",
+      "checks": [
+        true,
+        true
+      ],
+      "requests": [
+        {
+          "operation": "query-subgraph",
+          "parameters": {
+            "mode": "vertices",
+            "vertices": [
+              "station-7267",
+              "station-9446",
+              "station-8405",
+              "station-8641"
+            ]
+          },
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        },
+        {
+          "operation": "triangle-counting",
+          "parameters": {},
+          "input_sha256": "d5f11504a440b9fdb404bf83607df6584cd6e6714c8615cb285b134dad0a2964"
+        }
+      ]
+    },
+    {
+      "id": "followup_scope",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "breadth-first-search",
+          "parameters": {
+            "sources": [
+              "station-7267"
+            ],
+            "depth_limit": 2
+          },
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    },
+    {
+      "id": "wrong_family_recovery",
+      "checks": [
+        true
+      ],
+      "requests": [
+        {
+          "operation": "triangle-counting",
+          "parameters": {},
+          "input_sha256": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+        }
+      ]
+    }
+  ],
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "grader_source_sha256": "d7fec10137de49b649f8714b21d6569908625353987165299a3049422b713e16"
+}

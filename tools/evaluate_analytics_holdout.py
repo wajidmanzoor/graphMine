@@ -24,7 +24,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "agent"))
+APP = Path(os.getenv("GRAPHMINE_APPLICATION_SOURCE", str(ROOT / "agent")))
+sys.path.insert(0, str(APP))
 
 
 def digest(value):
@@ -366,7 +367,7 @@ def check_value(check, port):
             frozenset(typed_set(row)) for row in want
         }
     if kind == "scores":
-        actual = {row["vertex"]: row["score"] for row in value}
+        actual = {row["vertex"]: row[port.get("score_field", "score")] for row in value}
         return actual.keys() == want.keys() and all(actual[v] == want[v] for v in want)
     if kind == "aggregate_total":
         return (
@@ -375,6 +376,82 @@ def check_value(check, port):
             and value[0]["exact_value"]["denominator"] == "1"
         )
     raise ValueError(kind)
+
+
+def validate_oracles(suite, output):
+    """Check fixed answers and their port parser before exposing cases to the model."""
+    sys.path.insert(0, str(ROOT / "python/graphmine"))
+    from graphmine.native import NativeLibrary
+
+    library = NativeLibrary()
+    rows = []
+    for case in suite["cases"]:
+        if case["expected_status"] != "ready":
+            continue
+        data, results, requests = case["input"], {}, []
+        for operation in case["operations"]:
+            params = dict(case.get("required_parameters", {}).get(operation, {}))
+            current = data
+            if operation == "edge-filter":
+                params = {
+                    "edge_filters": [
+                        {"field": "attributes.amount", "op": "gte", "value": 50}
+                    ]
+                }
+            if operation == "neighbors":
+                params = {"entity": data["vertices"][5]["id"]}
+            if operation == "node-lookup":
+                params = (
+                    {"vertices": [0]}
+                    if case["id"] == "numeric_identity"
+                    else {"vertices": ["0"]}
+                    if case["id"] == "string_identity"
+                    else {
+                        "vertex_filters": [
+                            {"field": "attributes.zone", "op": "eq", "value": "blue"}
+                        ]
+                    }
+                )
+            if operation == "query-subgraph":
+                params = {
+                    "mode": "vertices",
+                    "vertices": [v["id"] for v in data["vertices"][:4]],
+                }
+            if operation == "triangle-counting" and "query-subgraph" in results:
+                current = results["query-subgraph"]["ports"]["graph"]["value"]
+            results[operation] = library.run(
+                operation, current, parameters=params, device="cpu"
+            )
+            requests.append(
+                {
+                    "operation": operation,
+                    "parameters": params,
+                    "input_sha256": digest(current),
+                }
+            )
+        checks = [
+            check_value(c, results[c["operation"]]["ports"].get(c["port"]))
+            for c in case["checks"]
+        ]
+        assert all(checks), case["id"]
+        rows.append({"id": case["id"], "checks": checks, "requests": requests})
+    output.write_text(
+        json.dumps(
+            {
+                "scope": "Frozen independent answers cross-checked through native C ABI before held-out model evaluation",
+                "suite_sha256": digest(suite),
+                "passed": len(rows),
+                "cases": rows,
+                "implementation_sha256": library.catalog()["implementation_sha256"],
+                "grader_source_sha256": hashlib.sha256(
+                    Path(__file__).read_bytes()
+                ).hexdigest(),
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+    print("Verified independent answers and port parsing for", len(rows), "cases")
 
 
 async def evaluate(settings, suite, output):
@@ -528,7 +605,7 @@ async def evaluate(settings, suite, output):
     return {
         "scope": suite["scope"],
         "suite_sha256": digest(suite),
-        "model_accuracy_measured": True,
+        "model_accuracy_measured": any(row.get("planning") is not None for row in rows),
         "reviewed_examples_excluded": True,
         "cases": rows,
         "passed": sum(r["passed"] for r in rows),
@@ -542,10 +619,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--suite", type=Path, required=True)
     parser.add_argument("--freeze", action="store_true")
+    parser.add_argument("--check-oracles", action="store_true")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     if args.freeze:
         freeze(args.suite)
+        return
+    if args.check_oracles:
+        validate_oracles(json.loads(args.suite.read_text()), args.output)
         return
     from graphmine_agent.config import Settings
 
@@ -553,7 +634,7 @@ def main():
     files = [
         Path(__file__),
         args.suite,
-        *sorted((ROOT / "agent/graphmine_agent").rglob("*.py")),
+        *sorted((APP / "graphmine_agent").rglob("*.py")),
         ROOT / "catalog/native_execution_evidence.json",
     ]
     before = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
@@ -571,6 +652,7 @@ def main():
             "name": settings.analytics_planner_model or settings.llm_model,
             "base_revision": os.getenv("GRAPHMINE_LLM_REVISION"),
             "reasoning_effort": settings.analytics_reasoning_effort,
+            "max_completion_tokens": settings.llm_plan_max_tokens,
             "temperature": 0,
             "seed": 0,
         },
