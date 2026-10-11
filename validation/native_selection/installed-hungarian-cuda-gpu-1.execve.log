@@ -1,0 +1,13 @@
+3903831 execve("/tmp/graphmine-selection-20261011-install-gpu/bin/graphmine-native", ["/tmp/graphmine-selection-2026101"..., "request"], 0x7ffc369befb0 /* 52 vars */) = 0
+3903847 execve("/tmp/graphmine-selection-20261011-install-gpu/bin/../lib/../libexec/graphmine/graphmine-worker-hungarian-cuda", ["/tmp/graphmine-selection-2026101"..., "/tmp/graphmine-worker-BCalfi/ass"...], 0x5f9b659bc8e0 /* 53 vars */) = 0
+3903858 +++ exited with 0 +++
+3903857 +++ exited with 0 +++
+3903848 +++ exited with 0 +++
+3903847 +++ exited with 0 +++
+3903831 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3903847, si_uid=1002, si_status=0, si_utime=1 /* 0.01 s */, si_stime=25 /* 0.25 s */} ---
+3903884 +++ exited with 0 +++
+3903883 +++ exited with 0 +++
+3903840 +++ exited with 0 +++
+3903839 +++ exited with 0 +++
+3903834 +++ exited with 0 +++
+3903831 +++ exited with 0 +++

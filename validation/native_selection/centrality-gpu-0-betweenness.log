@@ -1,0 +1,6 @@
+Validated 500 centrality requests
+Validated 1000 centrality requests
+Validated 1500 centrality requests
+Validated 2000 centrality requests
+Validated 2500 centrality requests
+{"suite":"betweenness","backend":"libcugraph","gpu_device":0,"passed_requests":2658,"failed":0,"implementation_sha256":"0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"}

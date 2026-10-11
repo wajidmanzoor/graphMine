@@ -188,6 +188,41 @@ print(len(library.list_algorithms()))
         ("biconnected-components", {}, True),
         ("maximum-independent-set", {}, True),
         ("minimum-vertex-cover", {"mode": "decision", "k": 0}, True),
+        ("maximal-independent-set", {"random_seed": 19}, True),
+        ("vertex-coloring", {"distance": 2, "random_seed": 19}, True),
+        (
+            "random-walks",
+            {"start_vertices": [0, "0", 0], "length": 4, "random_seed": 19},
+            False,
+        ),
+        (
+            "random-walks",
+            {
+                "start_vertices": [0],
+                "length": 4,
+                "walk_model": "node2vec",
+                "p": 0.5,
+                "q": 2,
+                "random_seed": 19,
+            },
+            False,
+        ),
+        (
+            "neighborhood-sampling",
+            {"seeds": [0, "0"], "fanouts": [-1, 2], "random_seed": 19},
+            False,
+        ),
+        ("induced-subgraph", {"mode": "induced", "vertices_or_seeds": [0, "0"]}, False),
+        (
+            "induced-subgraph",
+            {
+                "mode": "ego",
+                "vertices_or_seeds": [9007199254740993],
+                "radius": 1,
+                "direction_mode": "incoming",
+            },
+            False,
+        ),
     ],
 )
 def test_migrated_families_match_native_cli(
@@ -218,6 +253,139 @@ def test_migrated_families_match_native_cli(
     assert without_timing(wrapped) == without_timing(json.loads(process.stdout))
     assert wrapped["family"] == card["family"]
     assert wrapped["backend"]["python_runtime_required"] is False
+
+
+@pytest.mark.parametrize("gpu_device", [0, 1])
+@pytest.mark.parametrize(
+    ("operation", "parameters", "undirected"),
+    [
+        ("maximal-independent-set", {"random_seed": 19}, True),
+        ("vertex-coloring", {"distance": 1, "random_seed": 19}, True),
+        ("vertex-coloring", {"distance": 2, "random_seed": 19}, True),
+        (
+            "random-walks",
+            {"start_vertices": [0, "0", 0], "length": 4, "random_seed": 19},
+            False,
+        ),
+        (
+            "random-walks",
+            {
+                "start_vertices": [0],
+                "length": 4,
+                "walk_model": "weighted",
+                "random_seed": 19,
+            },
+            False,
+        ),
+        (
+            "induced-subgraph",
+            {
+                "mode": "ego",
+                "vertices_or_seeds": [9007199254740993],
+                "radius": 1,
+                "direction_mode": "incoming",
+            },
+            False,
+        ),
+    ],
+)
+def test_native_selection_gpu_matches_cli_and_restores_device(
+    operation, parameters, undirected, gpu_device, tmp_path
+):
+    lib = library(ORIGINAL)
+    data = graph()
+    data["graph"]["directed"] = not undirected
+    runtime = ctypes.CDLL(ctypes.util.find_library("cudart"))
+    runtime.cudaSetDevice.argtypes = [ctypes.c_int]
+    runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
+    assert runtime.cudaSetDevice(1 - gpu_device) == 0
+    card = next(row for row in lib.list_algorithms() if row["id"] == operation)
+    wrapped = getattr(lib.family(card["family"]), operation.replace("-", "_"))(
+        data, parameters=parameters, device="gpu", gpu_device=gpu_device
+    )
+    after = ctypes.c_int()
+    assert runtime.cudaGetDevice(ctypes.byref(after)) == 0
+    assert after.value == 1 - gpu_device
+    direct = json.loads(
+        subprocess.check_output(
+            [ORIGINAL / "graphmine-native", "request"],
+            input=json.dumps(
+                {
+                    "command": "run",
+                    "operation": operation,
+                    "graph": data,
+                    "parameters": parameters,
+                    "device": "gpu",
+                    "gpu_device": gpu_device,
+                }
+            ),
+            text=True,
+            env={"PATH": str(tmp_path)},
+        )
+    )
+    assert without_timing(direct) == without_timing(wrapped)
+    assert wrapped["backend"]["id"] == "libcugraph"
+    assert wrapped["backend"]["hardware"]["device_ordinal"] == gpu_device
+
+
+@pytest.mark.parametrize("gpu_device", [0, 1])
+def test_native_selection_auto_preserves_unsupported_gpu_semantics(gpu_device):
+    lib = library(ORIGINAL)
+    for operation, parameters in [
+        (
+            "random-walks",
+            {
+                "start_vertices": [0],
+                "length": 4,
+                "walk_model": "node2vec",
+                "p": 0.5,
+                "random_seed": 19,
+            },
+        ),
+        ("induced-subgraph", {"mode": "induced", "vertices_or_seeds": [0, "0"]}),
+        ("neighborhood-sampling", {"seeds": [0], "fanouts": [-1], "random_seed": 19}),
+    ]:
+        with pytest.raises(binding.NativeError) as error:
+            lib.run(
+                operation,
+                graph(),
+                parameters=parameters,
+                device="gpu",
+                gpu_device=gpu_device,
+            )
+        assert error.value.code in {"unsupported_input", "backend_unavailable"}
+        automatic = lib.run(
+            operation,
+            graph(),
+            parameters=parameters,
+            device="auto",
+            gpu_device=gpu_device,
+        )
+        cpu = library().run(operation, graph(), parameters=parameters, device="cpu")
+        assert automatic["backend"]["id"] == "cpp"
+        assert automatic["backend"]["selection_reason"]
+        assert automatic["result"] == cpu["result"]
+        assert automatic["parameters"] == cpu["parameters"]
+
+
+def test_native_subgraph_port_chains_with_derived_fingerprint():
+    lib = library()
+    original = graph()
+    output = lib.run(
+        "induced-subgraph",
+        original,
+        parameters={"mode": "induced", "vertices_or_seeds": [0, "0"]},
+        device="cpu",
+    )
+    port = output["ports"]["graph"]
+    result = lib.family("traversal").breadth_first_search(
+        port["value"], parameters={"sources": [0]}, device="cpu"
+    )
+    assert port["input_fingerprint"] == output["input_fingerprint"]
+    assert port["graph_fingerprint"] != output["input_fingerprint"]
+    assert result["input_fingerprint"] == port["graph_fingerprint"]
+    assert [row["distance"] for row in result["result"]["distances"]] == [0, 1]
+    assert port["value"]["vertices"] == [{"id": 0}, {"id": "0"}]
 
 
 @pytest.mark.parametrize(

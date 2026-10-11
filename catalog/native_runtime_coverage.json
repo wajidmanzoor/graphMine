@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "scope": "Native runtime migration checkpoint; not a complete architecture migration or application gate",
-  "native_formal_problem_count": 21,
+  "native_formal_problem_count": 26,
   "formal_problem_count": 70,
   "cpu_runtime_operations": [
     "breadth-first-search",
@@ -16,6 +16,11 @@
     "betweenness-centrality",
     "personalized-pagerank",
     "link-prediction",
+    "maximal-independent-set",
+    "vertex-coloring",
+    "random-walks",
+    "neighborhood-sampling",
+    "induced-subgraph",
     "max-flow-min-cut",
     "weighted-matching",
     "bipartite-matching",
@@ -35,7 +40,7 @@
   "remaining_native_profile_migration_required": true,
   "builds": {
     "cpu": {
-      "build_directory": "/tmp/graphmine-native-matching-cpu",
+      "build_directory": "/tmp/graphmine-native-selection-20261011-cpu",
       "catalog": {
         "schema_version": 1,
         "scope": "Authoritative native and wrapper problem/family taxonomy; membership is not execution or validation evidence.",
@@ -62,7 +67,9 @@
           {
             "id": "coloring",
             "title": "Coloring",
-            "operations": []
+            "operations": [
+              "vertex-coloring"
+            ]
           },
           {
             "id": "communities",
@@ -126,6 +133,7 @@
             "id": "independent_sets",
             "title": "Independent Sets",
             "operations": [
+              "maximal-independent-set",
               "maximum-independent-set",
               "minimum-vertex-cover"
             ]
@@ -178,7 +186,10 @@
           {
             "id": "sampling",
             "title": "Sampling",
-            "operations": []
+            "operations": [
+              "random-walks",
+              "neighborhood-sampling"
+            ]
           },
           {
             "id": "similarity",
@@ -200,7 +211,9 @@
           {
             "id": "subgraphs",
             "title": "Subgraphs",
-            "operations": []
+            "operations": [
+              "induced-subgraph"
+            ]
           },
           {
             "id": "temporal",
@@ -598,16 +611,20 @@
             "name": "Maximal Independent Set",
             "family": "independent_sets",
             "contract": "problems/42_maximal_independent_set/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "maximal-independent-set"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "vertex_coloring",
             "name": "Vertex Coloring",
             "family": "coloring",
             "contract": "problems/43_vertex_coloring/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "vertex-coloring"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "general_graph_weighted_matching",
@@ -634,24 +651,30 @@
             "name": "Graph Random-Walk Generation",
             "family": "sampling",
             "contract": "problems/46_random_walk_generation/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "random-walks"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "neighborhood_sampling",
             "name": "Neighborhood Sampling",
             "family": "sampling",
             "contract": "problems/47_neighborhood_sampling/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "neighborhood-sampling"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "induced_subgraph_ego_extraction",
             "name": "Induced Subgraph and Ego-Network Extraction",
             "family": "subgraphs",
             "contract": "problems/48_induced_subgraph_ego_extraction/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "induced-subgraph"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "seeded_local_community_detection",
@@ -1531,6 +1554,311 @@
             ]
           },
           {
+            "id": "maximal-independent-set",
+            "problem_id": "maximal_independent_set",
+            "family": "independent_sets",
+            "title": "Find a non-conflicting group that cannot be extended",
+            "description": "Greedy maximal independent set with verified independence and maximality; no maximum-size claim. Undirected simple projection; discard loops and duplicate edges, ignore weights and preserve isolates.",
+            "input_kind": "graph",
+            "parameters": {
+              "random_seed": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null
+              }
+            },
+            "output_ports": {
+              "vertices": {
+                "type": "vertex_set",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": false
+              }
+            ],
+            "quality": "exact",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          },
+          {
+            "id": "vertex-coloring",
+            "problem_id": "vertex_coloring",
+            "family": "coloring",
+            "title": "Assign different colors to nearby vertices",
+            "description": "Proper greedy distance-1 or distance-2 coloring; no minimum-color claim. Undirected simple projection with isolates preserved. GPU colors the native C++ constructed distance conflict graph.",
+            "input_kind": "graph",
+            "parameters": {
+              "distance": {
+                "kind": "integer",
+                "required": false,
+                "nullable": false,
+                "default": 1,
+                "choices": [
+                  1,
+                  2
+                ]
+              },
+              "random_seed": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null
+              }
+            },
+            "output_ports": {
+              "colors": {
+                "type": "table",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": false
+              }
+            ],
+            "quality": "heuristic",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          },
+          {
+            "id": "random-walks",
+            "problem_id": "random_walk_generation",
+            "family": "sampling",
+            "title": "Generate walks from chosen vertices",
+            "description": "Uniform, weighted or node2vec walks with length measured in transitions. Preserve direction and loops. Uniform walks collapse parallel neighbors; weighted walks sum parallel weights. CPU probabilities use exact rational arithmetic. Repeated starts produce separate walks.",
+            "input_kind": "graph",
+            "parameters": {
+              "start_vertices": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "length": {
+                "kind": "integer",
+                "required": true,
+                "nullable": false,
+                "minimum": 0
+              },
+              "walk_model": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "uniform",
+                "choices": [
+                  "uniform",
+                  "weighted",
+                  "node2vec"
+                ]
+              },
+              "p": {
+                "kind": "number",
+                "required": false,
+                "nullable": false,
+                "default": 1.0,
+                "minimum": 0.0
+              },
+              "q": {
+                "kind": "number",
+                "required": false,
+                "nullable": false,
+                "default": 1.0,
+                "minimum": 0.0
+              },
+              "random_seed": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null
+              }
+            },
+            "output_ports": {
+              "walks": {
+                "type": "walk_sample",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": false
+              }
+            ],
+            "quality": "stochastic",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report",
+            "gpu_limitations": [
+              "Uniform and weighted models; node2vec uses exact native CPU",
+              "Dense allocation must fit the output budget; positive normalized weights must not underflow float64"
+            ]
+          },
+          {
+            "id": "neighborhood-sampling",
+            "problem_id": "neighborhood_sampling",
+            "family": "sampling",
+            "title": "Sample connections around starting vertices",
+            "description": "Outgoing edge-instance sampling with hop and seed-batch provenance. Support uniform or exact weighted draws, replacement, typed fanouts and inclusive time cutoff. Fanout -1 includes every eligible edge, including zero-weight edges; loops and parallel identities are retained.",
+            "input_kind": "graph",
+            "parameters": {
+              "seeds": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "fanouts": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "replacement": {
+                "kind": "boolean",
+                "required": false,
+                "nullable": false,
+                "default": false
+              },
+              "sampling_model": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "uniform",
+                "choices": [
+                  "uniform",
+                  "weighted"
+                ]
+              },
+              "edge_type_fanouts": {
+                "kind": "object",
+                "required": false,
+                "nullable": true,
+                "default": null
+              },
+              "time_cutoff": {
+                "kind": "number",
+                "required": false,
+                "nullable": true,
+                "default": null
+              },
+              "random_seed": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null
+              }
+            },
+            "output_ports": {
+              "edges": {
+                "type": "edge_sample",
+                "availability": "runtime_checked"
+              },
+              "vertices": {
+                "type": "vertex_set",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              }
+            ],
+            "quality": "stochastic",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          },
+          {
+            "id": "induced-subgraph",
+            "problem_id": "induced_subgraph_ego_extraction",
+            "family": "subgraphs",
+            "title": "Extract a graph around selected vertices",
+            "description": "Exact induced or ego subgraph, preserving typed IDs, edge instances and properties. Ego radius includes all vertices within that distance. Direction affects discovery only; output retains original edge direction. GPU ego discovery uses libcugraph BFS with native materialization.",
+            "input_kind": "graph",
+            "parameters": {
+              "mode": {
+                "kind": "string",
+                "required": true,
+                "nullable": false,
+                "choices": [
+                  "induced",
+                  "ego"
+                ]
+              },
+              "vertices_or_seeds": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "radius": {
+                "kind": "integer",
+                "required": false,
+                "nullable": false,
+                "default": 1,
+                "minimum": 0
+              },
+              "direction_mode": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "outgoing",
+                "choices": [
+                  "outgoing",
+                  "incoming",
+                  "undirected_projection"
+                ]
+              }
+            },
+            "output_ports": {
+              "graph": {
+                "type": "graph",
+                "availability": "runtime_checked"
+              },
+              "vertices": {
+                "type": "vertex_set",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": false
+              }
+            ],
+            "quality": "exact",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report",
+            "gpu_limitations": [
+              "GPU ego discovery; explicit induced selection uses native CPU"
+            ]
+          },
+          {
             "id": "max-flow-min-cut",
             "problem_id": "max_flow_min_cut",
             "family": "flow",
@@ -2146,7 +2474,7 @@
           }
         ],
         "abi_version": 1,
-        "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496",
+        "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72",
         "python_runtime_required": false,
         "file_readers": [
           {
@@ -2166,58 +2494,68 @@
         "library/manifests/problem_families.json": "7c5c7945fd3fb3089b8e5f9e1bc0c0e7a52d564065f3a9361a1489ca2372b9d9",
         "library/src/core/graph.cpp": "adda75f2932369d622bd010a80c95f405242f26390f19054f71ac6fae658f8bf",
         "library/src/core/json.cpp": "154e142cf081b143e69a2f8afa9362cf52dc74597ecc9f4ff5c0f765af4d4459",
-        "library/runtime/CMakeLists.txt": "1a030b7945e5daa0712dfd667c1c98587769a79e5afb06c42a8b659ca8d9a7dd",
+        "library/runtime/CMakeLists.txt": "486b816ebecc983378d96b2efa7330dd0c9da0390f68664bb38525717679af0b",
         "library/runtime/c_api.cpp": "ee34caa2f97ddec7423578d9e39a863cb1ebee9cd5a938a8c9da798211959db8",
         "library/runtime/catalog_data.hpp.in": "781969d0766237e6a345e4151dc94771f839a446cdeb33397131244044bc0af1",
         "library/runtime/cli.cpp": "38a73c6071a50cd3486fc7bde487b3452568294b2957cab54ed2e9d2b9655528",
         "library/runtime/cuda_device.cpp": "d19b2a91f1f284324a86be83a1ca4d0241d00be881c2460fccc70884f8ce6a1c",
         "library/runtime/cugraph.cpp": "5e8117cb4cb4caebd377f282fed64c773d256125f77a800119ef71603fce033e",
-        "library/runtime/cugraph_reference.cpp": "8c33648988eb31f765d918c7938f07b696059f1b5eb8503b7470342492ca5bf8",
+        "library/runtime/cugraph_cpp.cpp": "8ff2e6788b08ea4d1c8fce29e4a4e1ccaa2760f52ba4614bf01bde7c39513b64",
+        "library/runtime/cugraph_cpp_stub.cpp": "17ce29934bd7d4e167e290dd2190a270fb46b565cb59561e172a01803f36b297",
+        "library/runtime/cugraph_reference.cpp": "bf0a689ab761e38afcba3b27ff4ecaceeddf5d67f7dced31178da45b6b32d833",
         "library/runtime/device_stub.cpp": "ab753eb75b6156a9854bc0b5d448819d7bd8e78f980979446db4cbbed2d17c71",
         "library/runtime/exact_flow.hpp": "f7803323dfadaf8a197db8ba6fa3dfad13ab158d07d1eff29d992ac0aba9a731",
         "library/runtime/exact_number.hpp": "11588551972f6cfc78d900029c8e170382920e40a306ac40c31ed825cb34bf25",
         "library/runtime/families/centrality.cpp": "295e453425aa7a683c38237f7d399d4749c95474a9405ed544480008d9cad96d",
         "library/runtime/families/centrality_measures.cpp": "d9b8dfa063a3209f0807d2d95d26179b5ad944c607b6cdc2e91acc165104d82e",
         "library/runtime/families/cliques.cpp": "e43a7fc14c096e94e016cf2028df48413878d3acb0801f34e649b6627d6771b6",
-        "library/runtime/families/common.cpp": "865c3f9257c9c0088566212c9f59b1220b9bd828dae7ed7432364cc717f9a759",
+        "library/runtime/families/coloring.cpp": "55ea6d50d7cc46fbdc0751cfcdfe8c524858c2ca12a3f3bfcd85c12c1a1d656d",
+        "library/runtime/families/common.cpp": "2368225c85a717f3599a0f64f57ea860a4704db14a056076c6cfdd44cbbf14d5",
         "library/runtime/families/connectivity.cpp": "895d22ae9eda3d18af741d1bac1702714ce9716d8beab90e00aa45120ba403df",
         "library/runtime/families/flow.cpp": "13ded13a30fbe566dc2b13dd009f9661698c567a3dda72a69b7ea13194720c87",
         "library/runtime/families/matching.cpp": "a6e10097126d6b6dba4f7ee9fd4851850af23944b321fbd9121fcf681881b083",
         "library/runtime/families/patterns.cpp": "4a5aff96d263a27cda0e159e34395180c5539ba8ccc12ee3933cac5599e49712",
+        "library/runtime/families/sampling.cpp": "7bfe78dad929c828cb406339acc50e6b1e3fd4be4a231ecc9e927abed9540789",
         "library/runtime/families/similarity.cpp": "52b55c7947b95ec513d9002eca83ff56764f58e9d94fecb8fec5c5948b1413bb",
         "library/runtime/families/structure.cpp": "7f39c41e47cb7a13718f5d765163b8201754f117b50036883acc8d09fc6bf379",
+        "library/runtime/families/subgraphs.cpp": "562bf31f235abc07c314ccdaf66a49d0f0323476790117a74206b564bb6b4b94",
         "library/runtime/families/traversal.cpp": "340f4daa73e358cd2b20ff22a307ff509cfd74c7131c32170e80221f4d892ee3",
         "library/runtime/families/weighted_paths.cpp": "fbe5a1e7c84699f521bc731899f5c69295f186f2049f03e5a92b40b817687929",
-        "library/runtime/gpu_stub.cpp": "bf708e4eedbfa24ab7f6e4544841f295ab19f4912b18a63520b8cff7e808f44f",
-        "library/runtime/internal.hpp": "29d156d3322b11dd3116c589a9e05c6735278ebcfb506f0fa8a5354ac33ef756",
+        "library/runtime/gpu_stub.cpp": "b60d767a3db16d4b97b13ce7bb0326ec489434f7ea21dcf7109c9c739a14a4d4",
+        "library/runtime/graph_output.cpp": "60217433dcc559f2fcb978e81bac15b4180a67c5dd6ab963051b6372b5302d33",
+        "library/runtime/internal.hpp": "07b0895320cce284005dfc4124f19273f2101063912cb2fbeb179a898db6b5a7",
         "library/runtime/io/cudf_csv.cpp": "a722332b57f6b3c660fd3adae63fb7e835829ff11f7c41da03ab7e8d4d0a8642",
         "library/runtime/io/graph_projection.cpp": "3dd7595ddf6872a01934d9ad0192edd96b770c357812eb522d47c9cee8561733",
         "library/runtime/io_stub.cpp": "199c1f514a463c93615285a797abe8696e29a6d7c4fc0c11936ef0fe1821c2f0",
         "library/runtime/json_graph.cpp": "ec351b5f76510b09be256dc72b11f0fb5eefd7b8ff5f0f4e3f57561bbff1b009",
         "library/runtime/json_input.cpp": "d43cc45c827c5f6b9b4331f1b493cd326f1015f9010d699c149ccb19194bf90d",
+        "library/runtime/native_random.hpp": "6364a3dd34fd1c9a9fec49d5ad884bced5ae83188334cb92a187bff4df5aec04",
+        "library/runtime/native_time.hpp": "3bfa1693ee76e0cd70bcf23cdb024f47ef8b82f738f7cb19e15ad0646e7807f5",
         "library/runtime/original_mining.cpp": "d61012f43d2fe69ffbb4e216c3618496c553c57d0360417c588a42b5226bf430",
         "library/runtime/original_optimization.cpp": "1842be2385182540e246901010c328bfa08c6e17e42b72feb6be9abee6947cc5",
-        "library/runtime/registry.cpp": "9881ec328d736c850125f092cd044d1011d344422483c6ce0df663f943cab418",
-        "library/runtime/runtime.cpp": "039fda352dce4e9eed6e9cd3abd65c53049f1aa43ef511605276ad23b711f717",
+        "library/runtime/registry.cpp": "d633623a7230646fb8b3674e2d96bdc20194b906a2f5de5bf9aca1db3a88c052",
+        "library/runtime/runtime.cpp": "794c86012cd99f7d1a1cafae36219d3f19bba272b2ccad8a247e94d27a30b187",
         "library/runtime/tests/centrality_test.cpp": "6bb274a373e86015bfeccc97082e8154d9d63082a6a3a0a97bb0324fed9cd3ab",
         "library/runtime/tests/flow_test.cpp": "f02f84808242815f9776dc10e9bb599aeace6297b6b77f0038b28d935d114a05",
         "library/runtime/tests/matching_test.cpp": "926808767f0eb6e89764c8ec6c1669b13615737bbe5eb47b45f1692f43921142",
         "library/runtime/tests/mining_test.cpp": "824616a4d0f3f0c0e827756ddf7a40029ba27d5fb4b37f5b765393fafedadb89",
         "library/runtime/tests/reference_test.cpp": "dbff62d7f2ff135d960d9249b59cc23225aab0ac9028745642b0a00b958b13fc",
         "library/runtime/tests/runtime_test.cpp": "e02a788baa6b45b37dd83be704200b1cafda56d7c3d69fcd67947db4bcbf3799",
+        "library/runtime/tests/selection_test.cpp": "b08b94dba7255d9c72aeb1c3dd5967b6874330e395e6ca6cdc38afc1f1fb1700",
         "library/runtime/tests/structure_test.cpp": "f544795b4cebeace51e71f128588aa5b13e883d854960706b791e288fc2ff0e8"
       },
       "staged_root_build_script": null,
       "binaries": {
-        "libgraphmine_runtime.so": "1bcab22bdc0503707025d17207f4bff47e185580e09bc58568c2acfa4f34b6cb",
-        "graphmine-native": "5484b4c3cb8c7f0253b601204cd2f93838a731a2e0f7bb099c890bb0e3cfe0b7",
-        "graphmine_runtime_test": "575c098ef0c76334c37b2a1111abf356d74b92a7361504553c9f3302527a00b4",
-        "graphmine_reference_test": "97ae77ce79b923cbd15d9a009fb8d6441f166090c0060446f96b3d5f0a4cfffd",
-        "graphmine_mining_test": "a58ac32a7a6b700615015b07aeada6e3cffd2b692a2ffd44c3abd30b1b70d71f",
-        "graphmine_structure_test": "bdad71a60ffc5a5eb13042e73afa7ebd3eaf7593dfb56f15fffa35e062f7f0d3",
-        "graphmine_centrality_test": "3c4ee44082cd49531468177f2daaee185bbddbcf9898726255dee6dd9c2894fb",
-        "graphmine_matching_test": "f5f6c6afe6ffa292692b556c7a8cb5d914f950d21f4fe37b8f5aa2cbed42ee99",
-        "graphmine_flow_test": "1cdfb04657eab00f88f650c80d9e649a8ce9a796861020822039fa98dd350f88"
+        "libgraphmine_runtime.so": "91d9d6d55552bf7c3826cf0cd515405e6dea8b19b179e2004b5450924a7220ca",
+        "graphmine-native": "7f318d46240e5042d93e35af80c44e43b35ed1a18c44d7859be0bd328f87d148",
+        "graphmine_runtime_test": "23f7fdd12e7fe2ff3d7540f7bcacdd2feda2174dd1ee03fa9d5f3b1a9738c94f",
+        "graphmine_reference_test": "8928f247ddea3494af81b0cc4c48cb3ace3f94be06901c0408189b397ed75935",
+        "graphmine_mining_test": "73e7b665841c40649620bb7617007ee6000dcb86770fc022c87daf19d2b9c459",
+        "graphmine_structure_test": "c3ba73f3f993a8aa9f69d403889241d7d34565c51fce69e7d5f79cec3c2b6d66",
+        "graphmine_centrality_test": "3b2c1855209bf8317f40d9d34d9d7cbd34be7abd5385f3e9ffe750186ba5ab7c",
+        "graphmine_matching_test": "1be04413f1b73a1fe7f690223b5ccfda2c0279bacc4d6287b624f4a1f6bff0a0",
+        "graphmine_flow_test": "1e769a45236da30601e886057186ec8fab6d0163df5ddd27e9ee11a2225977bf",
+        "graphmine_selection_test": "05f7741a1f32cc2652e28a26c4025fcf01c1afd01855dae099aeb1acdf7244e3"
       },
       "generated_worker_sources": {},
       "native_dependencies": [
@@ -2227,7 +2565,7 @@
         "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
         "/usr/lib/x86_64-linux-gnu/libc.so.6"
       ],
-      "ldd": "\tlinux-vdso.so.1 (0x00007dcec7d51000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007dcec7600000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007dcec7200000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007dcec7517000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007dcec7b7d000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007dcec6e00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007dcec7d53000)\n",
+      "ldd": "\tlinux-vdso.so.1 (0x000072d8054e7000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x000072d804c00000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000072d804800000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000072d80522a000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000072d8051fc000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000072d804400000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000072d8054e9000)\n",
       "build_configuration": [
         "CMAKE_BUILD_TYPE:STRING=Release",
         "CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++",
@@ -2236,6 +2574,7 @@
         "GRAPHMINE_LIBCUGRAPH_ROOT:PATH=",
         "GRAPHMINE_NATIVE_CUDF:BOOL=OFF",
         "GRAPHMINE_NATIVE_CUGRAPH:BOOL=OFF",
+        "GRAPHMINE_NATIVE_CUGRAPH_CPP:BOOL=OFF",
         "GRAPHMINE_NATIVE_OPTIMIZATION:BOOL=OFF",
         "GRAPHMINE_NATIVE_OPTIMIZATION_ARCHITECTURES:STRING=89-real;89-virtual",
         "GRAPHMINE_RAPIDS_INCLUDE_DIRS:STRING=",
@@ -2246,7 +2585,7 @@
       "root_build_script_sha256": null
     },
     "gpu": {
-      "build_directory": "/tmp/graphmine-native-matching-original-build/runtime",
+      "build_directory": "/tmp/graphmine-native-selection-20261011-gpu/runtime",
       "catalog": {
         "schema_version": 1,
         "scope": "Authoritative native and wrapper problem/family taxonomy; membership is not execution or validation evidence.",
@@ -2273,7 +2612,9 @@
           {
             "id": "coloring",
             "title": "Coloring",
-            "operations": []
+            "operations": [
+              "vertex-coloring"
+            ]
           },
           {
             "id": "communities",
@@ -2337,6 +2678,7 @@
             "id": "independent_sets",
             "title": "Independent Sets",
             "operations": [
+              "maximal-independent-set",
               "maximum-independent-set",
               "minimum-vertex-cover"
             ]
@@ -2389,7 +2731,10 @@
           {
             "id": "sampling",
             "title": "Sampling",
-            "operations": []
+            "operations": [
+              "random-walks",
+              "neighborhood-sampling"
+            ]
           },
           {
             "id": "similarity",
@@ -2411,7 +2756,9 @@
           {
             "id": "subgraphs",
             "title": "Subgraphs",
-            "operations": []
+            "operations": [
+              "induced-subgraph"
+            ]
           },
           {
             "id": "temporal",
@@ -2809,16 +3156,20 @@
             "name": "Maximal Independent Set",
             "family": "independent_sets",
             "contract": "problems/42_maximal_independent_set/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "maximal-independent-set"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "vertex_coloring",
             "name": "Vertex Coloring",
             "family": "coloring",
             "contract": "problems/43_vertex_coloring/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "vertex-coloring"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "general_graph_weighted_matching",
@@ -2845,24 +3196,30 @@
             "name": "Graph Random-Walk Generation",
             "family": "sampling",
             "contract": "problems/46_random_walk_generation/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "random-walks"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "neighborhood_sampling",
             "name": "Neighborhood Sampling",
             "family": "sampling",
             "contract": "problems/47_neighborhood_sampling/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "neighborhood-sampling"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "induced_subgraph_ego_extraction",
             "name": "Induced Subgraph and Ego-Network Extraction",
             "family": "subgraphs",
             "contract": "problems/48_induced_subgraph_ego_extraction/problem.json",
-            "operations": [],
-            "runtime_integration": "pending"
+            "operations": [
+              "induced-subgraph"
+            ],
+            "runtime_integration": "implemented"
           },
           {
             "id": "seeded_local_community_detection",
@@ -3742,6 +4099,311 @@
             ]
           },
           {
+            "id": "maximal-independent-set",
+            "problem_id": "maximal_independent_set",
+            "family": "independent_sets",
+            "title": "Find a non-conflicting group that cannot be extended",
+            "description": "Greedy maximal independent set with verified independence and maximality; no maximum-size claim. Undirected simple projection; discard loops and duplicate edges, ignore weights and preserve isolates.",
+            "input_kind": "graph",
+            "parameters": {
+              "random_seed": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null
+              }
+            },
+            "output_ports": {
+              "vertices": {
+                "type": "vertex_set",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": true
+              }
+            ],
+            "quality": "exact",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          },
+          {
+            "id": "vertex-coloring",
+            "problem_id": "vertex_coloring",
+            "family": "coloring",
+            "title": "Assign different colors to nearby vertices",
+            "description": "Proper greedy distance-1 or distance-2 coloring; no minimum-color claim. Undirected simple projection with isolates preserved. GPU colors the native C++ constructed distance conflict graph.",
+            "input_kind": "graph",
+            "parameters": {
+              "distance": {
+                "kind": "integer",
+                "required": false,
+                "nullable": false,
+                "default": 1,
+                "choices": [
+                  1,
+                  2
+                ]
+              },
+              "random_seed": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null
+              }
+            },
+            "output_ports": {
+              "colors": {
+                "type": "table",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": true
+              }
+            ],
+            "quality": "heuristic",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          },
+          {
+            "id": "random-walks",
+            "problem_id": "random_walk_generation",
+            "family": "sampling",
+            "title": "Generate walks from chosen vertices",
+            "description": "Uniform, weighted or node2vec walks with length measured in transitions. Preserve direction and loops. Uniform walks collapse parallel neighbors; weighted walks sum parallel weights. CPU probabilities use exact rational arithmetic. Repeated starts produce separate walks.",
+            "input_kind": "graph",
+            "parameters": {
+              "start_vertices": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "length": {
+                "kind": "integer",
+                "required": true,
+                "nullable": false,
+                "minimum": 0
+              },
+              "walk_model": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "uniform",
+                "choices": [
+                  "uniform",
+                  "weighted",
+                  "node2vec"
+                ]
+              },
+              "p": {
+                "kind": "number",
+                "required": false,
+                "nullable": false,
+                "default": 1.0,
+                "minimum": 0.0
+              },
+              "q": {
+                "kind": "number",
+                "required": false,
+                "nullable": false,
+                "default": 1.0,
+                "minimum": 0.0
+              },
+              "random_seed": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null
+              }
+            },
+            "output_ports": {
+              "walks": {
+                "type": "walk_sample",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": true
+              }
+            ],
+            "quality": "stochastic",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report",
+            "gpu_limitations": [
+              "Uniform and weighted models; node2vec uses exact native CPU",
+              "Dense allocation must fit the output budget; positive normalized weights must not underflow float64"
+            ]
+          },
+          {
+            "id": "neighborhood-sampling",
+            "problem_id": "neighborhood_sampling",
+            "family": "sampling",
+            "title": "Sample connections around starting vertices",
+            "description": "Outgoing edge-instance sampling with hop and seed-batch provenance. Support uniform or exact weighted draws, replacement, typed fanouts and inclusive time cutoff. Fanout -1 includes every eligible edge, including zero-weight edges; loops and parallel identities are retained.",
+            "input_kind": "graph",
+            "parameters": {
+              "seeds": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "fanouts": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "replacement": {
+                "kind": "boolean",
+                "required": false,
+                "nullable": false,
+                "default": false
+              },
+              "sampling_model": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "uniform",
+                "choices": [
+                  "uniform",
+                  "weighted"
+                ]
+              },
+              "edge_type_fanouts": {
+                "kind": "object",
+                "required": false,
+                "nullable": true,
+                "default": null
+              },
+              "time_cutoff": {
+                "kind": "number",
+                "required": false,
+                "nullable": true,
+                "default": null
+              },
+              "random_seed": {
+                "kind": "integer",
+                "required": false,
+                "nullable": true,
+                "default": null
+              }
+            },
+            "output_ports": {
+              "edges": {
+                "type": "edge_sample",
+                "availability": "runtime_checked"
+              },
+              "vertices": {
+                "type": "vertex_set",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              }
+            ],
+            "quality": "stochastic",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report"
+          },
+          {
+            "id": "induced-subgraph",
+            "problem_id": "induced_subgraph_ego_extraction",
+            "family": "subgraphs",
+            "title": "Extract a graph around selected vertices",
+            "description": "Exact induced or ego subgraph, preserving typed IDs, edge instances and properties. Ego radius includes all vertices within that distance. Direction affects discovery only; output retains original edge direction. GPU ego discovery uses libcugraph BFS with native materialization.",
+            "input_kind": "graph",
+            "parameters": {
+              "mode": {
+                "kind": "string",
+                "required": true,
+                "nullable": false,
+                "choices": [
+                  "induced",
+                  "ego"
+                ]
+              },
+              "vertices_or_seeds": {
+                "kind": "array",
+                "required": true,
+                "nullable": false
+              },
+              "radius": {
+                "kind": "integer",
+                "required": false,
+                "nullable": false,
+                "default": 1,
+                "minimum": 0
+              },
+              "direction_mode": {
+                "kind": "string",
+                "required": false,
+                "nullable": false,
+                "default": "outgoing",
+                "choices": [
+                  "outgoing",
+                  "incoming",
+                  "undirected_projection"
+                ]
+              }
+            },
+            "output_ports": {
+              "graph": {
+                "type": "graph",
+                "availability": "runtime_checked"
+              },
+              "vertices": {
+                "type": "vertex_set",
+                "availability": "runtime_checked"
+              }
+            },
+            "backends": [
+              {
+                "id": "cpp",
+                "device": "cpu",
+                "compiled": true
+              },
+              {
+                "id": "libcugraph",
+                "device": "gpu",
+                "compiled": true
+              }
+            ],
+            "quality": "exact",
+            "implementation_language": "c++/cuda",
+            "evidence_status": "requires_matching_validation_report",
+            "gpu_limitations": [
+              "GPU ego discovery; explicit induced selection uses native CPU"
+            ]
+          },
+          {
             "id": "max-flow-min-cut",
             "problem_id": "max_flow_min_cut",
             "family": "flow",
@@ -4357,7 +5019,7 @@
           }
         ],
         "abi_version": 1,
-        "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6",
+        "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2",
         "python_runtime_required": false,
         "file_readers": [
           {
@@ -5377,45 +6039,54 @@
         "library/src/problems/triangle_counting.cpp": "44210e4cc1d69984cef50f8b26d45276d18bf22f5fc220de480e28c6d188e5e3",
         "library/src/worker_process.hpp": "26dcfd65168ac8d43f743cca7ab9176c5aaf452993e597d068d5f6d1f0ba03a4",
         "library/tools/prepare_expansion_workers.py": "ab3ae3bf23df9cc1e750a9c1cb33b95f6243e7aae76076ece92db48741cfbabb",
-        "library/runtime/CMakeLists.txt": "1a030b7945e5daa0712dfd667c1c98587769a79e5afb06c42a8b659ca8d9a7dd",
+        "library/runtime/CMakeLists.txt": "486b816ebecc983378d96b2efa7330dd0c9da0390f68664bb38525717679af0b",
         "library/runtime/c_api.cpp": "ee34caa2f97ddec7423578d9e39a863cb1ebee9cd5a938a8c9da798211959db8",
         "library/runtime/catalog_data.hpp.in": "781969d0766237e6a345e4151dc94771f839a446cdeb33397131244044bc0af1",
         "library/runtime/cli.cpp": "38a73c6071a50cd3486fc7bde487b3452568294b2957cab54ed2e9d2b9655528",
         "library/runtime/cuda_device.cpp": "d19b2a91f1f284324a86be83a1ca4d0241d00be881c2460fccc70884f8ce6a1c",
         "library/runtime/cugraph.cpp": "5e8117cb4cb4caebd377f282fed64c773d256125f77a800119ef71603fce033e",
-        "library/runtime/cugraph_reference.cpp": "8c33648988eb31f765d918c7938f07b696059f1b5eb8503b7470342492ca5bf8",
+        "library/runtime/cugraph_cpp.cpp": "8ff2e6788b08ea4d1c8fce29e4a4e1ccaa2760f52ba4614bf01bde7c39513b64",
+        "library/runtime/cugraph_cpp_stub.cpp": "17ce29934bd7d4e167e290dd2190a270fb46b565cb59561e172a01803f36b297",
+        "library/runtime/cugraph_reference.cpp": "bf0a689ab761e38afcba3b27ff4ecaceeddf5d67f7dced31178da45b6b32d833",
         "library/runtime/device_stub.cpp": "ab753eb75b6156a9854bc0b5d448819d7bd8e78f980979446db4cbbed2d17c71",
         "library/runtime/exact_flow.hpp": "f7803323dfadaf8a197db8ba6fa3dfad13ab158d07d1eff29d992ac0aba9a731",
         "library/runtime/exact_number.hpp": "11588551972f6cfc78d900029c8e170382920e40a306ac40c31ed825cb34bf25",
         "library/runtime/families/centrality.cpp": "295e453425aa7a683c38237f7d399d4749c95474a9405ed544480008d9cad96d",
         "library/runtime/families/centrality_measures.cpp": "d9b8dfa063a3209f0807d2d95d26179b5ad944c607b6cdc2e91acc165104d82e",
         "library/runtime/families/cliques.cpp": "e43a7fc14c096e94e016cf2028df48413878d3acb0801f34e649b6627d6771b6",
-        "library/runtime/families/common.cpp": "865c3f9257c9c0088566212c9f59b1220b9bd828dae7ed7432364cc717f9a759",
+        "library/runtime/families/coloring.cpp": "55ea6d50d7cc46fbdc0751cfcdfe8c524858c2ca12a3f3bfcd85c12c1a1d656d",
+        "library/runtime/families/common.cpp": "2368225c85a717f3599a0f64f57ea860a4704db14a056076c6cfdd44cbbf14d5",
         "library/runtime/families/connectivity.cpp": "895d22ae9eda3d18af741d1bac1702714ce9716d8beab90e00aa45120ba403df",
         "library/runtime/families/flow.cpp": "13ded13a30fbe566dc2b13dd009f9661698c567a3dda72a69b7ea13194720c87",
         "library/runtime/families/matching.cpp": "a6e10097126d6b6dba4f7ee9fd4851850af23944b321fbd9121fcf681881b083",
         "library/runtime/families/patterns.cpp": "4a5aff96d263a27cda0e159e34395180c5539ba8ccc12ee3933cac5599e49712",
+        "library/runtime/families/sampling.cpp": "7bfe78dad929c828cb406339acc50e6b1e3fd4be4a231ecc9e927abed9540789",
         "library/runtime/families/similarity.cpp": "52b55c7947b95ec513d9002eca83ff56764f58e9d94fecb8fec5c5948b1413bb",
         "library/runtime/families/structure.cpp": "7f39c41e47cb7a13718f5d765163b8201754f117b50036883acc8d09fc6bf379",
+        "library/runtime/families/subgraphs.cpp": "562bf31f235abc07c314ccdaf66a49d0f0323476790117a74206b564bb6b4b94",
         "library/runtime/families/traversal.cpp": "340f4daa73e358cd2b20ff22a307ff509cfd74c7131c32170e80221f4d892ee3",
         "library/runtime/families/weighted_paths.cpp": "fbe5a1e7c84699f521bc731899f5c69295f186f2049f03e5a92b40b817687929",
-        "library/runtime/gpu_stub.cpp": "bf708e4eedbfa24ab7f6e4544841f295ab19f4912b18a63520b8cff7e808f44f",
-        "library/runtime/internal.hpp": "29d156d3322b11dd3116c589a9e05c6735278ebcfb506f0fa8a5354ac33ef756",
+        "library/runtime/gpu_stub.cpp": "b60d767a3db16d4b97b13ce7bb0326ec489434f7ea21dcf7109c9c739a14a4d4",
+        "library/runtime/graph_output.cpp": "60217433dcc559f2fcb978e81bac15b4180a67c5dd6ab963051b6372b5302d33",
+        "library/runtime/internal.hpp": "07b0895320cce284005dfc4124f19273f2101063912cb2fbeb179a898db6b5a7",
         "library/runtime/io/cudf_csv.cpp": "a722332b57f6b3c660fd3adae63fb7e835829ff11f7c41da03ab7e8d4d0a8642",
         "library/runtime/io/graph_projection.cpp": "3dd7595ddf6872a01934d9ad0192edd96b770c357812eb522d47c9cee8561733",
         "library/runtime/io_stub.cpp": "199c1f514a463c93615285a797abe8696e29a6d7c4fc0c11936ef0fe1821c2f0",
         "library/runtime/json_graph.cpp": "ec351b5f76510b09be256dc72b11f0fb5eefd7b8ff5f0f4e3f57561bbff1b009",
         "library/runtime/json_input.cpp": "d43cc45c827c5f6b9b4331f1b493cd326f1015f9010d699c149ccb19194bf90d",
+        "library/runtime/native_random.hpp": "6364a3dd34fd1c9a9fec49d5ad884bced5ae83188334cb92a187bff4df5aec04",
+        "library/runtime/native_time.hpp": "3bfa1693ee76e0cd70bcf23cdb024f47ef8b82f738f7cb19e15ad0646e7807f5",
         "library/runtime/original_mining.cpp": "d61012f43d2fe69ffbb4e216c3618496c553c57d0360417c588a42b5226bf430",
         "library/runtime/original_optimization.cpp": "1842be2385182540e246901010c328bfa08c6e17e42b72feb6be9abee6947cc5",
-        "library/runtime/registry.cpp": "9881ec328d736c850125f092cd044d1011d344422483c6ce0df663f943cab418",
-        "library/runtime/runtime.cpp": "039fda352dce4e9eed6e9cd3abd65c53049f1aa43ef511605276ad23b711f717",
+        "library/runtime/registry.cpp": "d633623a7230646fb8b3674e2d96bdc20194b906a2f5de5bf9aca1db3a88c052",
+        "library/runtime/runtime.cpp": "794c86012cd99f7d1a1cafae36219d3f19bba272b2ccad8a247e94d27a30b187",
         "library/runtime/tests/centrality_test.cpp": "6bb274a373e86015bfeccc97082e8154d9d63082a6a3a0a97bb0324fed9cd3ab",
         "library/runtime/tests/flow_test.cpp": "f02f84808242815f9776dc10e9bb599aeace6297b6b77f0038b28d935d114a05",
         "library/runtime/tests/matching_test.cpp": "926808767f0eb6e89764c8ec6c1669b13615737bbe5eb47b45f1692f43921142",
         "library/runtime/tests/mining_test.cpp": "824616a4d0f3f0c0e827756ddf7a40029ba27d5fb4b37f5b765393fafedadb89",
         "library/runtime/tests/reference_test.cpp": "dbff62d7f2ff135d960d9249b59cc23225aab0ac9028745642b0a00b958b13fc",
         "library/runtime/tests/runtime_test.cpp": "e02a788baa6b45b37dd83be704200b1cafda56d7c3d69fcd67947db4bcbf3799",
+        "library/runtime/tests/selection_test.cpp": "b08b94dba7255d9c72aeb1c3dd5967b6874330e395e6ca6cdc38afc1f1fb1700",
         "library/runtime/tests/structure_test.cpp": "f544795b4cebeace51e71f128588aa5b13e883d854960706b791e288fc2ff0e8",
         "library/src/backends/cuda_ms.cpp": "4694444220c7dfa42d066157e14f3a40bb2ae5bc8f43fa8f4b83d7463aba617c",
         "library/src/backends/gamma_kclique.cu": "d16109ee33acdf8f689625e103fd3e8cc0228efc3c3b7991d24455944dd2fb13",
@@ -5434,17 +6105,18 @@
         "working_sha256": "dfd649a75f13ae7245049a17161da1f039e3469bbf0431023d9a539cd6160ae5"
       },
       "binaries": {
-        "libgraphmine_runtime.so": "2fcef37735d2d2c33a95f02ad8f8db92b08f651677e6115118a8408e6356b378",
-        "graphmine-native": "6ba945e266a9927012a19a240316418fbe001542fcc6e2c0d90b81565a00a017",
-        "graphmine_runtime_test": "c9046c8d590beee6e80b38d105cb5ee9f36cba943702067bd57e22cb8a55d4f1",
-        "graphmine_reference_test": "fe0aca44bdad4011206fac211c3d6280ecbb0f8466340a5ff6c76b74ce32b9d0",
-        "graphmine_mining_test": "8e707cff62bc052d5edede80edc3e600f6d46d0505d1740b4ace773a62635a9d",
-        "graphmine_structure_test": "92822cac6385bb81b72673394e59809049a2d71075ba4788d6d2d1c84dc02cb4",
-        "graphmine_centrality_test": "496382f8f15196e343c3f45ec1275d41c0577c15e2c83cf53c611de7ae5170c2",
-        "graphmine_matching_test": "e2fa1c0d56fb766f10fe131e6703b639bb28e55e7cec475d777afd882e1a4fc5",
-        "graphmine_flow_test": "90e2fc4c74404b6e232903786f07300cb0f9504fc0e674161737a08820c8d9ab",
-        "optimization-workers/graphmine-worker-ecl-maxflow": "89fa9dda777febfce6eca4378834eddd079d16c7731f2da5ca9bf2bc99e84ac6",
-        "optimization-workers/graphmine-worker-hungarian-cuda": "ceb31c966d50289f6362a81de42ffd2eac8cbb8015611a423c12a18aaf637f32"
+        "libgraphmine_runtime.so": "0a0e76970b2600e1ba9ff18d955c9750158f9a55207acffce52d717c7b8e9b85",
+        "graphmine-native": "5bb8323f24cc75e036f2b0e9117f6544f22386bae3dfbe9e4fb23bfd1ced6180",
+        "graphmine_runtime_test": "dcd8bb50c2b3eb0c052f3303c6598a5b9d1e7dea97ab4ed8f797547eccb42a75",
+        "graphmine_reference_test": "66aadd3e3686c8f0a628b92d659dbb387c7d79ff0812b38395b8f735ab55ac03",
+        "graphmine_mining_test": "f0d4334630beebb7ab82469fb22d5109f664fdae60d2fe7fe8d2a1a1b3190afb",
+        "graphmine_structure_test": "e47c42377084b54490bfa8f54fa20b0af12656ac5046d26a4271bdf316b59633",
+        "graphmine_centrality_test": "398bb581750343bf148c93adac7daa2be840fd42b5e2ec41d4586ca33be707e2",
+        "graphmine_matching_test": "c8d3dceb7155f57a4044dabccc630b6ad711b32c188f76076f899d9f1f01613e",
+        "graphmine_flow_test": "2d52604f2be8018dd572aafe80e30bbfc003b46d6e6c6af6604d823c34d895b2",
+        "graphmine_selection_test": "92d167bcd363cdf58a9afdad5467eb5f5884b518e0c3d3f146057cf2a653e4e9",
+        "optimization-workers/graphmine-worker-ecl-maxflow": "de73d1dd2f95e9359732c28f2f155886d283d18baf6b00d6df5c09c8b4345ffb",
+        "optimization-workers/graphmine-worker-hungarian-cuda": "4f842e76863bd84b13077543fb3a266fb7102f30bf86b5230fd81422d8ef54a8"
       },
       "generated_worker_sources": {
         "optimization-generated/ecl_flow.cu": "5521193806d646f8fdf3ba6fbd237dca5227bffa3a1d7cb023b1d3b5349a64ed",
@@ -5457,6 +6129,7 @@
         "/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/librmm/lib64/librmm.so",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/rapids_logger/lib64/librapids_logger.so",
@@ -5473,21 +6146,20 @@
         "/usr/lib/x86_64-linux-gnu/libdl.so.2",
         "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
         "/usr/lib/x86_64-linux-gnu/librt.so.1",
-        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_mg.so",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_common.so",
-        "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
-        "/usr/lib/x86_64-linux-gnu/libnvrtc.so.12.8.93",
-        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph_cu12.libs/libgomp-855c301a.so.1.0.0",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusolver/lib/libcusolver.so.11",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10",
-        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12",
-        "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft_cu12.libs/libgomp-855c301a.so.1.0.0",
+        "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+        "/usr/lib/x86_64-linux-gnu/libnvrtc.so.12.8.93",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio_cu12.libs/libzstd-0d65387f.so.1.5.7"
       ],
-      "ldd": "\tlinux-vdso.so.1 (0x0000776f3210e000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x0000776f2fa00000)\n\tlibcudart.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12 (0x0000776f2f600000)\n\tlibcugraph_c.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so (0x0000776f2ea00000)\n\tlibcudf.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so (0x0000776ef3000000)\n\tlibrmm.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/librmm/lib64/librmm.so (0x0000776f31fcd000)\n\tlibrapids_logger.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/rapids_logger/lib64/librapids_logger.so (0x0000776f2ff64000)\n\tlibraft.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/libraft.so (0x0000776ef1400000)\n\tlibcuvs.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcuvs/lib64/libcuvs.so (0x0000776ece800000)\n\tlibkvikio.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/libkvikio.so (0x0000776ece200000)\n\tlibnvcomp.so.5 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/libnvcomp/lib64/libnvcomp.so.5 (0x0000776ecb600000)\n\tlibnvJitLink.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12 (0x0000776ec5800000)\n\tlibgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x0000776f31f73000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x0000776ec5400000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x0000776f2f917000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x0000776f31f45000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000776ec5000000)\n\t/lib64/ld-linux-x86-64.so.2 (0x0000776f32110000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x0000776f31f3e000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x0000776f31f39000)\n\tlibrt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x0000776f2ff5f000)\n\tlibcugraph.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so (0x0000776ea6400000)\n\tlibcugraph_mg.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_mg.so (0x0000776e83800000)\n\tlibcugraph_common.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_common.so (0x0000776e73a00000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x0000776f2ff43000)\n\tlibnvrtc.so.12 => /lib/x86_64-linux-gnu/libnvrtc.so.12 (0x0000776e6d200000)\n\tlibcublas.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/cublas/lib/libcublas.so.12 (0x0000776e66a00000)\n\tlibcusolver.so.11 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/cusolver/lib/libcusolver.so.11 (0x0000776e54600000)\n\tlibcusparse.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/cusparse/lib/libcusparse.so.12 (0x0000776e37200000)\n\tlibcurand.so.10 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/curand/lib/libcurand.so.10 (0x0000776e2ca00000)\n\tlibcublasLt.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../nvidia/cublas/lib/libcublasLt.so.12 (0x0000776dfa600000)\n\tlibgomp-855c301a.so.1.0.0 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/../../libraft_cu12.libs/libgomp-855c301a.so.1.0.0 (0x0000776dfa000000)\n\tlibnccl.so.2 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcuvs/lib64/../../nvidia/nccl/lib/libnccl.so.2 (0x0000776de0e00000)\n\tlibzstd-0d65387f.so.1.5.7 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/../../libkvikio_cu12.libs/libzstd-0d65387f.so.1.5.7 (0x0000776de0800000)\n",
+      "ldd": "\tlinux-vdso.so.1 (0x000079e93c8ae000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x000079e93a200000)\n\tlibcudart.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12 (0x000079e939e00000)\n\tlibcugraph_c.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so (0x000079e939200000)\n\tlibcugraph.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so (0x000079e91a600000)\n\tlibcudf.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so (0x000079e8dec00000)\n\tlibrmm.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/librmm/lib64/librmm.so (0x000079e93a0de000)\n\tlibrapids_logger.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/rapids_logger/lib64/librapids_logger.so (0x000079e93c7f1000)\n\tlibraft.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft/lib64/libraft.so (0x000079e8dd000000)\n\tlibcuvs.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcuvs/lib64/libcuvs.so (0x000079e8ba400000)\n\tlibkvikio.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/libkvikio.so (0x000079e8b9e00000)\n\tlibnvcomp.so.5 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/libnvcomp/lib64/libnvcomp.so.5 (0x000079e8b7200000)\n\tlibnvJitLink.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nvjitlink/lib/libnvJitLink.so.12 (0x000079e8b1400000)\n\tlibgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x000079e93c799000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000079e8b1000000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000079e93a717000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000079e939dd2000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000079e8b0c00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000079e93c8b0000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x000079e93c792000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x000079e93c78d000)\n\tlibrt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x000079e93c788000)\n\tlibcugraph_mg.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_mg.so (0x000079e88e000000)\n\tlibcugraph_common.so => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_common.so (0x000079e87e200000)\n\tlibgomp-855c301a.so.1.0.0 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/../../libcugraph_cu12.libs/libgomp-855c301a.so.1.0.0 (0x000079e87dc00000)\n\tlibcusolver.so.11 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/../../nvidia/cusolver/lib/libcusolver.so.11 (0x000079e86b800000)\n\tlibcublas.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/../../nvidia/cublas/lib/libcublas.so.12 (0x000079e865000000)\n\tlibcublasLt.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/../../nvidia/cublas/lib/libcublasLt.so.12 (0x000079e832c00000)\n\tlibcusparse.so.12 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/../../nvidia/cusparse/lib/libcusparse.so.12 (0x000079e815800000)\n\tlibcurand.so.10 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/../../nvidia/curand/lib/libcurand.so.10 (0x000079e80b000000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x000079e93a0c2000)\n\tlibnvrtc.so.12 => /lib/x86_64-linux-gnu/libnvrtc.so.12 (0x000079e804800000)\n\tlibnccl.so.2 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcuvs/lib64/../../nvidia/nccl/lib/libnccl.so.2 (0x000079e7eb600000)\n\tlibzstd-0d65387f.so.1.5.7 => /home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/../../libkvikio_cu12.libs/libzstd-0d65387f.so.1.5.7 (0x000079e7eb000000)\n",
       "build_configuration": [
         "CMAKE_BUILD_TYPE:STRING=Release",
         "CMAKE_CUDA_COMPILER:STRING=/usr/bin/nvcc",
@@ -5502,6 +6174,7 @@
         "GRAPHMINE_CUDADEVRT_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libcudadevrt.a",
         "GRAPHMINE_CUDF_INCLUDE:PATH=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/include",
         "GRAPHMINE_CUDF_LIBRARY:FILEPATH=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so",
+        "GRAPHMINE_CUGRAPH_CPP_LIBRARY:FILEPATH=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so",
         "GRAPHMINE_CUGRAPH_INCLUDE:PATH=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/include",
         "GRAPHMINE_CUGRAPH_LIBRARY:FILEPATH=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so",
         "GRAPHMINE_CUQC_CUDA_ARCHITECTURES:STRING=native",
@@ -5548,12 +6221,13 @@
         "GRAPHMINE_MCE_GPU_CUDA_ARCHITECTURES:STRING=80-real;80-virtual",
         "GRAPHMINE_NATIVE_CUDF:BOOL=ON",
         "GRAPHMINE_NATIVE_CUGRAPH:BOOL=ON",
+        "GRAPHMINE_NATIVE_CUGRAPH_CPP:BOOL=ON",
         "GRAPHMINE_NATIVE_OPTIMIZATION:BOOL=ON",
         "GRAPHMINE_NATIVE_OPTIMIZATION_ARCHITECTURES:STRING=89-real;89-virtual",
         "GRAPHMINE_RAPIDS_INCLUDE_DIRS:STRING=",
         "GRAPHMINE_RAPIDS_LIBRARY_DIRS:STRING=",
         "GRAPHMINE_RAPIDS_ROOT:PATH=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages",
-        "GRAPHMINE_REPAIRED_WORKER_DIR:PATH=/tmp/graphmine-native-matching-staged-xx2r9dk_/library/repaired-workers",
+        "GRAPHMINE_REPAIRED_WORKER_DIR:PATH=/tmp/graphmine-native-selection-20261011-staged/library/repaired-workers",
         "GRAPHMINE_RUNTIME_BOOST_INCLUDE:PATH=/usr/include",
         "GRAPHMINE_TOT_CUDA_ARCHITECTURES:STRING=70",
         "GRAPHMINE_WETRIC_CUDA_ARCHITECTURES:STRING=70"
@@ -5563,9 +6237,9 @@
   },
   "reports": {
     "cpu": {
-      "path": "validation/native_optimization/cpu.json",
-      "sha256": "e7d1e4cf23fece23d38646c28ef33f1d8383f24981de5022ade75f12b6c3abe8",
-      "metadata_sha256": "a697222d6f500bec3cb1e339bead47e8a9cf3cbea7f8b1b7579cf542d9ea2c34",
+      "path": "validation/native_selection/cpu.json",
+      "sha256": "62b4ea052b73a3519a5ce90c4840030fd129be7b632df7573b1b03d788972bb0",
+      "metadata_sha256": "7410bdf433a59e846acf8de73b9d7c079069b4f120390a5dd08583335953a95c",
       "results": [
         {
           "suite": "contracts",
@@ -5573,7 +6247,7 @@
           "gpu_device": 0,
           "passed_requests": 20,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "bfs",
@@ -5581,7 +6255,7 @@
           "gpu_device": 0,
           "passed_requests": 4608,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "triangles",
@@ -5589,14 +6263,14 @@
           "gpu_device": 0,
           "passed_requests": 2048,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         }
       ]
     },
     "gpu-0": {
-      "path": "validation/native_optimization/gpu-0.json",
-      "sha256": "9dca74d694cd1600995cb363a85c9f6beff0155d7b85ba08d77f8734561825ae",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/gpu-0.json",
+      "sha256": "fc1956e0629625ae0ed0f3bb992e957b330cb479433df408a567173258c8db14",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "bfs",
@@ -5604,7 +6278,7 @@
           "gpu_device": 0,
           "passed_requests": 4608,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "triangles",
@@ -5612,14 +6286,14 @@
           "gpu_device": 0,
           "passed_requests": 2048,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "gpu-1": {
-      "path": "validation/native_optimization/gpu-1.json",
-      "sha256": "dfd324f6d7b8071954cccde034ab322c05abfd0f3d2590f7d254db160f422610",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/gpu-1.json",
+      "sha256": "20487aa5014f543465d5bbb0341a4da5251d58f185f340a988894356af6021c1",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "bfs",
@@ -5627,7 +6301,7 @@
           "gpu_device": 1,
           "passed_requests": 4608,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "triangles",
@@ -5635,14 +6309,14 @@
           "gpu_device": 1,
           "passed_requests": 2048,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "reference-cpu": {
-      "path": "validation/native_optimization/reference-cpu.json",
-      "sha256": "9d0bd7ec04000a3d57a1584c3ba777f7964f3731d8be8bb79e2c3fe2d75152cd",
-      "metadata_sha256": "a697222d6f500bec3cb1e339bead47e8a9cf3cbea7f8b1b7579cf542d9ea2c34",
+      "path": "validation/native_selection/reference-cpu.json",
+      "sha256": "e2030b4084300d9c6523d674b470528d79cd36f259cda80922468d37e49633f0",
+      "metadata_sha256": "7410bdf433a59e846acf8de73b9d7c079069b4f120390a5dd08583335953a95c",
       "results": [
         {
           "suite": "contracts",
@@ -5650,7 +6324,7 @@
           "gpu_device": 0,
           "passed_requests": 28,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "paths",
@@ -5658,7 +6332,7 @@
           "gpu_device": 0,
           "passed_requests": 3645,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "forests",
@@ -5666,7 +6340,7 @@
           "gpu_device": 0,
           "passed_requests": 1458,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "connectivity",
@@ -5674,7 +6348,7 @@
           "gpu_device": 0,
           "passed_requests": 320,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "rank",
@@ -5682,7 +6356,7 @@
           "gpu_device": 0,
           "passed_requests": 706,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "similarity",
@@ -5690,14 +6364,14 @@
           "gpu_device": 0,
           "passed_requests": 1024,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         }
       ]
     },
     "reference-gpu-0": {
-      "path": "validation/native_optimization/reference-gpu-0.json",
-      "sha256": "c225f606256347f72ed1848c686b5a7653af57a832421666eb5ef50c5d7a6842",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/reference-gpu-0.json",
+      "sha256": "66ff6cd10ddfbf9872ae8603a7af2c0c37d51ccc69e719bdb129f544fc60ad09",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -5705,7 +6379,7 @@
           "gpu_device": 0,
           "passed_requests": 30,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "paths",
@@ -5713,7 +6387,7 @@
           "gpu_device": 0,
           "passed_requests": 3645,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "forests",
@@ -5721,7 +6395,7 @@
           "gpu_device": 0,
           "passed_requests": 1458,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "connectivity",
@@ -5729,7 +6403,7 @@
           "gpu_device": 0,
           "passed_requests": 256,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "rank",
@@ -5737,7 +6411,7 @@
           "gpu_device": 0,
           "passed_requests": 514,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "similarity",
@@ -5745,14 +6419,14 @@
           "gpu_device": 0,
           "passed_requests": 128,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "reference-gpu-1": {
-      "path": "validation/native_optimization/reference-gpu-1.json",
-      "sha256": "1c0deb5182c09f8a97c1946fb7943aa4a83fbed2523657d951a9011428f4e408",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/reference-gpu-1.json",
+      "sha256": "1a64f287372b9e6f0cc8e04eac05ecfbfff16d0ff8304cf5507803b307b4fd35",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -5760,7 +6434,7 @@
           "gpu_device": 1,
           "passed_requests": 30,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "paths",
@@ -5768,7 +6442,7 @@
           "gpu_device": 1,
           "passed_requests": 3645,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "forests",
@@ -5776,7 +6450,7 @@
           "gpu_device": 1,
           "passed_requests": 1458,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "connectivity",
@@ -5784,7 +6458,7 @@
           "gpu_device": 1,
           "passed_requests": 256,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "rank",
@@ -5792,7 +6466,7 @@
           "gpu_device": 1,
           "passed_requests": 514,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "similarity",
@@ -5800,14 +6474,14 @@
           "gpu_device": 1,
           "passed_requests": 128,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-cpu": {
-      "path": "validation/native_optimization/mining-cpu.json",
-      "sha256": "bb0e5e5c26a8f3ccf999a2c96419ca8b11bb7b51ff2d1aa66ed0b4019c7650f8",
-      "metadata_sha256": "a697222d6f500bec3cb1e339bead47e8a9cf3cbea7f8b1b7579cf542d9ea2c34",
+      "path": "validation/native_selection/mining-cpu.json",
+      "sha256": "8463f9ffcf0993e678b5a2756ee87e3009d12a30ea4d3ec86bc03732d9ef938d",
+      "metadata_sha256": "7410bdf433a59e846acf8de73b9d7c079069b4f120390a5dd08583335953a95c",
       "results": [
         {
           "suite": "contracts",
@@ -5815,7 +6489,7 @@
           "gpu_device": 0,
           "passed_requests": 48,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "maximal",
@@ -5823,7 +6497,7 @@
           "gpu_device": 0,
           "passed_requests": 4104,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "maximum",
@@ -5831,7 +6505,7 @@
           "gpu_device": 0,
           "passed_requests": 2052,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "fixed",
@@ -5839,7 +6513,7 @@
           "gpu_device": 0,
           "passed_requests": 18468,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "core",
@@ -5847,7 +6521,7 @@
           "gpu_device": 0,
           "passed_requests": 4104,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "optimization",
@@ -5855,7 +6529,7 @@
           "gpu_device": 0,
           "passed_requests": 3078,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "boundaries",
@@ -5863,14 +6537,14 @@
           "gpu_device": 0,
           "passed_requests": 161,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         }
       ]
     },
     "structure-cpu": {
-      "path": "validation/native_optimization/structure-cpu.json",
-      "sha256": "ba0c01f6cd56d9bcf7251d378dfe2248a4264fb9bac03d4ad8990984b116be1e",
-      "metadata_sha256": "a697222d6f500bec3cb1e339bead47e8a9cf3cbea7f8b1b7579cf542d9ea2c34",
+      "path": "validation/native_selection/structure-cpu.json",
+      "sha256": "eb04ad89dacb30dde9e612cacfd11167308d012aaaf14282ff806e81ddec62b7",
+      "metadata_sha256": "7410bdf433a59e846acf8de73b9d7c079069b4f120390a5dd08583335953a95c",
       "results": [
         {
           "suite": "contracts",
@@ -5878,7 +6552,7 @@
           "gpu_device": 0,
           "passed_requests": 14,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "truss",
@@ -5886,7 +6560,7 @@
           "gpu_device": 0,
           "passed_requests": 5135,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "blocks",
@@ -5894,7 +6568,7 @@
           "gpu_device": 0,
           "passed_requests": 1027,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "boundaries",
@@ -5902,14 +6576,14 @@
           "gpu_device": 0,
           "passed_requests": 37,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         }
       ]
     },
     "centrality-cpu": {
-      "path": "validation/native_optimization/centrality-cpu.json",
-      "sha256": "b605df25e39fe5fcd8b8bb174b6f91b2c81a8aea10869d0cb9b0608008f37a6e",
-      "metadata_sha256": "a697222d6f500bec3cb1e339bead47e8a9cf3cbea7f8b1b7579cf542d9ea2c34",
+      "path": "validation/native_selection/centrality-cpu.json",
+      "sha256": "ca7d7db9cef336402b011aaa44a7e242818b1becdac5d99b743de632d3bb94cc",
+      "metadata_sha256": "7410bdf433a59e846acf8de73b9d7c079069b4f120390a5dd08583335953a95c",
       "results": [
         {
           "suite": "contracts",
@@ -5917,7 +6591,7 @@
           "gpu_device": 0,
           "passed_requests": 14,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "degree",
@@ -5925,7 +6599,7 @@
           "gpu_device": 0,
           "passed_requests": 10632,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "betweenness",
@@ -5933,7 +6607,7 @@
           "gpu_device": 0,
           "passed_requests": 2658,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "weighted",
@@ -5941,7 +6615,7 @@
           "gpu_device": 0,
           "passed_requests": 2916,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "boundaries",
@@ -5949,14 +6623,14 @@
           "gpu_device": 0,
           "passed_requests": 39,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         }
       ]
     },
     "structure-gpu-0": {
-      "path": "validation/native_optimization/structure-gpu-0.json",
-      "sha256": "e902a18bf1e73b6e49c505443f15afdc5a707cd2fff15875d982941257431a39",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/structure-gpu-0.json",
+      "sha256": "8a47028baa03a377a1f36eb65a9fe2e6732ff42cb206167c99c8ffb8fa5604b8",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -5964,7 +6638,7 @@
           "gpu_device": 0,
           "passed_requests": 9,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "truss",
@@ -5972,7 +6646,7 @@
           "gpu_device": 0,
           "passed_requests": 5135,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -5980,14 +6654,14 @@
           "gpu_device": 0,
           "passed_requests": 31,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "centrality-gpu-0": {
-      "path": "validation/native_optimization/centrality-gpu-0.json",
-      "sha256": "1fb925dcce35bde6d2f6aecd9693e9aecd7758c017f0a3eabfbba615306a3d20",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/centrality-gpu-0.json",
+      "sha256": "4748c38eab8f1b7eb5da675bd1c6faf6bfca65b98f36b35dec67193d53d4abec",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -5995,7 +6669,7 @@
           "gpu_device": 0,
           "passed_requests": 7,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "betweenness",
@@ -6003,7 +6677,7 @@
           "gpu_device": 0,
           "passed_requests": 2658,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6011,14 +6685,14 @@
           "gpu_device": 0,
           "passed_requests": 9,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "centrality-turbo-bc-gpu-0": {
-      "path": "validation/native_optimization/centrality-turbo-bc-gpu-0.json",
-      "sha256": "3d9d746bb39d14aa03326b764b6fccbda4feabc8604f48a37a9d56b289882e55",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/centrality-turbo-bc-gpu-0.json",
+      "sha256": "9fc25ea27e933caa3de5882c5f5d1c38f8a5750b731510820117c9b2a06d4d0d",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6026,7 +6700,7 @@
           "gpu_device": 0,
           "passed_requests": 8,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "betweenness",
@@ -6034,7 +6708,7 @@
           "gpu_device": 0,
           "passed_requests": 2048,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6042,14 +6716,14 @@
           "gpu_device": 0,
           "passed_requests": 9,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-rdmce-gpu-0": {
-      "path": "validation/native_optimization/mining-rdmce-gpu-0.json",
-      "sha256": "2592e623dd01b4483d88ad6d231341b28fea780defa5bed0044a3a5814902010",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-rdmce-gpu-0.json",
+      "sha256": "dc59bce498f45020812ea43639b89e7bfcfc95036aa8d1ca36b805322af28b18",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6057,7 +6731,7 @@
           "gpu_device": 0,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximal",
@@ -6065,7 +6739,7 @@
           "gpu_device": 0,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6073,14 +6747,14 @@
           "gpu_device": 0,
           "passed_requests": 21,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-mce-gpu-gpu-0": {
-      "path": "validation/native_optimization/mining-mce-gpu-gpu-0.json",
-      "sha256": "90f45f79a785151632435be8389627a629d2497ac864450092a72ab3bf62d0e5",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-mce-gpu-gpu-0.json",
+      "sha256": "675ace412e5b8e0b097a1f81add3a997c4ad0f529955f895780e107fc500a642",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6088,7 +6762,7 @@
           "gpu_device": 0,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximal",
@@ -6096,7 +6770,7 @@
           "gpu_device": 0,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6104,14 +6778,14 @@
           "gpu_device": 0,
           "passed_requests": 21,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-g2-aimd-gpu-0": {
-      "path": "validation/native_optimization/mining-g2-aimd-gpu-0.json",
-      "sha256": "6f281e5474e49c2393b9f794f8e6b2bd13a4f0c0be49e6e303e5a74f402460e9",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-g2-aimd-gpu-0.json",
+      "sha256": "ac153a69a924201b8d708ea29563e709a468f68ec154582c452928a65fa16f18",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6119,7 +6793,7 @@
           "gpu_device": 0,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximal",
@@ -6127,7 +6801,7 @@
           "gpu_device": 0,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6135,14 +6809,14 @@
           "gpu_device": 0,
           "passed_requests": 21,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-cuda-ms-gpu-0": {
-      "path": "validation/native_optimization/mining-cuda-ms-gpu-0.json",
-      "sha256": "31d10dbe15c57c945820f5c77fe81e29026ef406a224aaefe4f0c7e3343b8ba6",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-cuda-ms-gpu-0.json",
+      "sha256": "f6bf01c9f692974809717d1a8ad50370ecbbf3d30c3b39df9f46ba23721becd0",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6150,7 +6824,7 @@
           "gpu_device": 0,
           "passed_requests": 12,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximum",
@@ -6158,7 +6832,7 @@
           "gpu_device": 0,
           "passed_requests": 132,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "optimization",
@@ -6166,7 +6840,7 @@
           "gpu_device": 0,
           "passed_requests": 198,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6174,14 +6848,14 @@
           "gpu_device": 0,
           "passed_requests": 25,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-gpu-maximum-clique-gpu-0": {
-      "path": "validation/native_optimization/mining-gpu-maximum-clique-gpu-0.json",
-      "sha256": "43b102be574903ca418646655431433b07dbd0c17f211d2ae97c5a7972029505",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-gpu-maximum-clique-gpu-0.json",
+      "sha256": "9426b7cd188160cd8a52152e709bf2bf14b9dc223491568a438eee4392de73fa",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6189,7 +6863,7 @@
           "gpu_device": 0,
           "passed_requests": 12,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximum",
@@ -6197,7 +6871,7 @@
           "gpu_device": 0,
           "passed_requests": 132,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "optimization",
@@ -6205,7 +6879,7 @@
           "gpu_device": 0,
           "passed_requests": 198,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6213,14 +6887,14 @@
           "gpu_device": 0,
           "passed_requests": 25,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-maximum-clique-on-gpu-gpu-0": {
-      "path": "validation/native_optimization/mining-maximum-clique-on-gpu-gpu-0.json",
-      "sha256": "6e5634e295efe88353ba1aa1c9af86665e7e180ff4954b1192e2a82eb02c8ca1",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-maximum-clique-on-gpu-gpu-0.json",
+      "sha256": "6092dc6c7b387b5864c5f6b53d74adbe9386b96a6c3389c4c2c40b3e7c794e5d",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6228,7 +6902,7 @@
           "gpu_device": 0,
           "passed_requests": 12,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximum",
@@ -6236,7 +6910,7 @@
           "gpu_device": 0,
           "passed_requests": 132,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "optimization",
@@ -6244,7 +6918,7 @@
           "gpu_device": 0,
           "passed_requests": 198,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6252,14 +6926,14 @@
           "gpu_device": 0,
           "passed_requests": 25,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-graphset-gpu-0": {
-      "path": "validation/native_optimization/mining-graphset-gpu-0.json",
-      "sha256": "101a582e5d49569f5459e707b1fdc326f564588f76c54bb98dea7e4f478e033c",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-graphset-gpu-0.json",
+      "sha256": "2409d768152d543aa12aa9e5d9a68b513eddeeac93a84ebf2a7d03ec51cbdaba",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6267,7 +6941,7 @@
           "gpu_device": 0,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "fixed",
@@ -6275,7 +6949,7 @@
           "gpu_device": 0,
           "passed_requests": 792,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6283,14 +6957,14 @@
           "gpu_device": 0,
           "passed_requests": 64,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-gamma-gpu-0": {
-      "path": "validation/native_optimization/mining-gamma-gpu-0.json",
-      "sha256": "5b2c7e959db7e0e02337768563293cdc7c36d7d581aa74e823d42abcfafacc57",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-gamma-gpu-0.json",
+      "sha256": "0e21ba3f6e88e5755a49c8d4c9700f1b311fb54ed0baea1ca8bc9e687a55f40c",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6298,7 +6972,7 @@
           "gpu_device": 0,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "fixed",
@@ -6306,7 +6980,7 @@
           "gpu_device": 0,
           "passed_requests": 990,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6314,14 +6988,14 @@
           "gpu_device": 0,
           "passed_requests": 79,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-kcgpu-gpu-0": {
-      "path": "validation/native_optimization/mining-kcgpu-gpu-0.json",
-      "sha256": "872b403acaae38c00741a049cac02bcabef17ae499867bd518e1ce4f6e1041c5",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-kcgpu-gpu-0.json",
+      "sha256": "f8b49677c76e22107a3ec448b9a9c4b6a1940e411a65c62261a07b6eba24d82d",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6329,7 +7003,7 @@
           "gpu_device": 0,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "fixed",
@@ -6337,7 +7011,7 @@
           "gpu_device": 0,
           "passed_requests": 1584,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6345,14 +7019,14 @@
           "gpu_device": 0,
           "passed_requests": 124,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-kcore-gpu-gpu-0": {
-      "path": "validation/native_optimization/mining-kcore-gpu-gpu-0.json",
-      "sha256": "f4d692c9616e8ff94c7675852220bc308574a4a46a6544f0741856d141907db9",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-kcore-gpu-gpu-0.json",
+      "sha256": "139f0bec9842d1475b1b2912fa140289d53bbc86f60ebd5d723c06bdd54eaeb3",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6360,7 +7034,7 @@
           "gpu_device": 0,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "core",
@@ -6368,7 +7042,7 @@
           "gpu_device": 0,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6376,14 +7050,14 @@
           "gpu_device": 0,
           "passed_requests": 20,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-libcugraph-gpu-0": {
-      "path": "validation/native_optimization/mining-libcugraph-gpu-0.json",
-      "sha256": "a83f2e7003124261d13fe54583ddfa2614ad246815bc2dc5f9e069e1a735ef95",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-libcugraph-gpu-0.json",
+      "sha256": "c8307ad3b90136022fd176773240b41d652d07db798b702a385f6022efd18c1e",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6391,7 +7065,7 @@
           "gpu_device": 0,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "core",
@@ -6399,7 +7073,7 @@
           "gpu_device": 0,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6407,14 +7081,14 @@
           "gpu_device": 0,
           "passed_requests": 20,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "structure-gpu-1": {
-      "path": "validation/native_optimization/structure-gpu-1.json",
-      "sha256": "acbeaa9159b8f81b2efe70242ff08c3adca3d447d3634be9a11523f09bd8e9fb",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/structure-gpu-1.json",
+      "sha256": "361b378651bd73c0c6bc8ab8afce086ab9c201b55d28d73c45d74907f185ee4d",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6422,7 +7096,7 @@
           "gpu_device": 1,
           "passed_requests": 9,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "truss",
@@ -6430,7 +7104,7 @@
           "gpu_device": 1,
           "passed_requests": 5135,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6438,14 +7112,14 @@
           "gpu_device": 1,
           "passed_requests": 31,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "centrality-gpu-1": {
-      "path": "validation/native_optimization/centrality-gpu-1.json",
-      "sha256": "314219ab8c9727e9f0c16ec81b8f33996a63d2bdaa1e893ba49b93ddb50dbaf8",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/centrality-gpu-1.json",
+      "sha256": "199bf20d6b91e7673ed7591fec9961b7bec2d5bfa079775eba6cf9518238f255",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6453,7 +7127,7 @@
           "gpu_device": 1,
           "passed_requests": 7,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "betweenness",
@@ -6461,7 +7135,7 @@
           "gpu_device": 1,
           "passed_requests": 2658,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6469,14 +7143,14 @@
           "gpu_device": 1,
           "passed_requests": 9,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "centrality-turbo-bc-gpu-1": {
-      "path": "validation/native_optimization/centrality-turbo-bc-gpu-1.json",
-      "sha256": "20dd682ff361f7fa260849a910b2eb3fe1e368b0857d45d1716ec7a57e29bc51",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/centrality-turbo-bc-gpu-1.json",
+      "sha256": "536d57db798496e1cdecc8733130e2e2f9a7460ed7d9114ba2ff757841b155df",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6484,7 +7158,7 @@
           "gpu_device": 1,
           "passed_requests": 8,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "betweenness",
@@ -6492,7 +7166,7 @@
           "gpu_device": 1,
           "passed_requests": 2048,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6500,14 +7174,14 @@
           "gpu_device": 1,
           "passed_requests": 9,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-rdmce-gpu-1": {
-      "path": "validation/native_optimization/mining-rdmce-gpu-1.json",
-      "sha256": "63195305139f07b13e420103b53489a1d37108477aa49462c147f9b2d4260bf1",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-rdmce-gpu-1.json",
+      "sha256": "a7e807ed6a8cea1a706e165c314f933749f8206d506353909082e5c9671ff9c6",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6515,7 +7189,7 @@
           "gpu_device": 1,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximal",
@@ -6523,7 +7197,7 @@
           "gpu_device": 1,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6531,14 +7205,14 @@
           "gpu_device": 1,
           "passed_requests": 21,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-mce-gpu-gpu-1": {
-      "path": "validation/native_optimization/mining-mce-gpu-gpu-1.json",
-      "sha256": "d8d3ed1a745e5a1440fa5c0d9396f311ae731a3c890a9ab164ebaf8311830f56",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-mce-gpu-gpu-1.json",
+      "sha256": "8114f8c15bd797edb1ed51c28e3f82de9618e2dc77e098f17f37e62a21da0d32",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6546,7 +7220,7 @@
           "gpu_device": 1,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximal",
@@ -6554,7 +7228,7 @@
           "gpu_device": 1,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6562,14 +7236,14 @@
           "gpu_device": 1,
           "passed_requests": 21,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-g2-aimd-gpu-1": {
-      "path": "validation/native_optimization/mining-g2-aimd-gpu-1.json",
-      "sha256": "77183595438e67bea7773e86580f44fdbfc128c121b8ca05d49522de4faef427",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-g2-aimd-gpu-1.json",
+      "sha256": "826bb2655bbe20b0aa282a4a9a7f07c23e20087b554f0a75de89f3ffd3265f5e",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6577,7 +7251,7 @@
           "gpu_device": 1,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximal",
@@ -6585,7 +7259,7 @@
           "gpu_device": 1,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6593,14 +7267,14 @@
           "gpu_device": 1,
           "passed_requests": 21,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-cuda-ms-gpu-1": {
-      "path": "validation/native_optimization/mining-cuda-ms-gpu-1.json",
-      "sha256": "fb95e21247116b0b2c4ba4d22274b427e34875635f04bd7c30adc51170e13ebb",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-cuda-ms-gpu-1.json",
+      "sha256": "73d4fa9b3eba30325a50f372e0bfe8c4b4f4aea6a6745df020e8efe471702bcc",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6608,7 +7282,7 @@
           "gpu_device": 1,
           "passed_requests": 12,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximum",
@@ -6616,7 +7290,7 @@
           "gpu_device": 1,
           "passed_requests": 132,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "optimization",
@@ -6624,7 +7298,7 @@
           "gpu_device": 1,
           "passed_requests": 198,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6632,14 +7306,14 @@
           "gpu_device": 1,
           "passed_requests": 25,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-gpu-maximum-clique-gpu-1": {
-      "path": "validation/native_optimization/mining-gpu-maximum-clique-gpu-1.json",
-      "sha256": "176d57a589bf77d1e91faafe1c9e12864a1689ffb209fcb57c1de8eaf5eaf12a",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-gpu-maximum-clique-gpu-1.json",
+      "sha256": "02377d3c7743298043bbdce098e452fb073750f7cfecda8a1e4e72ec224db269",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6647,7 +7321,7 @@
           "gpu_device": 1,
           "passed_requests": 12,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximum",
@@ -6655,7 +7329,7 @@
           "gpu_device": 1,
           "passed_requests": 132,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "optimization",
@@ -6663,7 +7337,7 @@
           "gpu_device": 1,
           "passed_requests": 198,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6671,14 +7345,14 @@
           "gpu_device": 1,
           "passed_requests": 25,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-maximum-clique-on-gpu-gpu-1": {
-      "path": "validation/native_optimization/mining-maximum-clique-on-gpu-gpu-1.json",
-      "sha256": "e8593b42dc979124f8155c3c69de9ef6b307b5a1c5a4b5db2479a7a6c0d9e67a",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-maximum-clique-on-gpu-gpu-1.json",
+      "sha256": "0b869c6f98caa6e599c42e76d3b93eead57c7055e6750ff60d6bc5b366809e26",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6686,7 +7360,7 @@
           "gpu_device": 1,
           "passed_requests": 12,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "maximum",
@@ -6694,7 +7368,7 @@
           "gpu_device": 1,
           "passed_requests": 132,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "optimization",
@@ -6702,7 +7376,7 @@
           "gpu_device": 1,
           "passed_requests": 198,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6710,14 +7384,14 @@
           "gpu_device": 1,
           "passed_requests": 25,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-graphset-gpu-1": {
-      "path": "validation/native_optimization/mining-graphset-gpu-1.json",
-      "sha256": "73714b6e3aaaf0f88206de95ac8aae717967966e65b1647728f465703ea4a45c",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-graphset-gpu-1.json",
+      "sha256": "beb76d5de837723018f33de29934d9259b76c7e276b6d6deb3a04d95b16df0f6",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6725,7 +7399,7 @@
           "gpu_device": 1,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "fixed",
@@ -6733,7 +7407,7 @@
           "gpu_device": 1,
           "passed_requests": 792,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6741,14 +7415,14 @@
           "gpu_device": 1,
           "passed_requests": 64,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-gamma-gpu-1": {
-      "path": "validation/native_optimization/mining-gamma-gpu-1.json",
-      "sha256": "3cbcca4cec54575e3dc9c2909860f0c2c1426fd1f7fca5c8dd0f9fdc054e7fbf",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-gamma-gpu-1.json",
+      "sha256": "1beaadb53284e153687dca2bdcd6d7aa3b5485ee533522dec83a5d4c2384804a",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6756,7 +7430,7 @@
           "gpu_device": 1,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "fixed",
@@ -6764,7 +7438,7 @@
           "gpu_device": 1,
           "passed_requests": 990,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6772,14 +7446,14 @@
           "gpu_device": 1,
           "passed_requests": 79,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-kcgpu-gpu-1": {
-      "path": "validation/native_optimization/mining-kcgpu-gpu-1.json",
-      "sha256": "91d471209743b3231e690a77c661014cad67e893a49d6ecb1e6126f19252358e",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-kcgpu-gpu-1.json",
+      "sha256": "9a4e6d88c43f876eec08f3a1967d290bdd6973d921e0d07bcfa504d27437bdbe",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6787,7 +7461,7 @@
           "gpu_device": 1,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "fixed",
@@ -6795,7 +7469,7 @@
           "gpu_device": 1,
           "passed_requests": 1584,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6803,14 +7477,14 @@
           "gpu_device": 1,
           "passed_requests": 124,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-kcore-gpu-gpu-1": {
-      "path": "validation/native_optimization/mining-kcore-gpu-gpu-1.json",
-      "sha256": "c4eb4b72c073db26eee1b3b6411aba4d51611b4820ddac7fdf3ad9296b184dde",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-kcore-gpu-gpu-1.json",
+      "sha256": "490a76b61350a3bad5650f573d24d638beba4715f11bb50ed69fa056a1acffe0",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6818,7 +7492,7 @@
           "gpu_device": 1,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "core",
@@ -6826,7 +7500,7 @@
           "gpu_device": 1,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6834,14 +7508,14 @@
           "gpu_device": 1,
           "passed_requests": 20,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "mining-libcugraph-gpu-1": {
-      "path": "validation/native_optimization/mining-libcugraph-gpu-1.json",
-      "sha256": "a7b84a0703020694348b2d24d2b8db149f53f96b532af9558eb5efe90d36ee21",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/mining-libcugraph-gpu-1.json",
+      "sha256": "76fe9d802e2285dad33774e1db768f4a058272369439e91b5313518568acb916",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6849,7 +7523,7 @@
           "gpu_device": 1,
           "passed_requests": 4,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "core",
@@ -6857,7 +7531,7 @@
           "gpu_device": 1,
           "passed_requests": 264,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6865,14 +7539,14 @@
           "gpu_device": 1,
           "passed_requests": 20,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "matching-cpu": {
-      "path": "validation/native_optimization/matching-cpu.json",
-      "sha256": "e3bad27d77f63bc2bc12433d633b4c1ac2f30eade67565ee4af983355e0ad83c",
-      "metadata_sha256": "a697222d6f500bec3cb1e339bead47e8a9cf3cbea7f8b1b7579cf542d9ea2c34",
+      "path": "validation/native_selection/matching-cpu.json",
+      "sha256": "55259c609eb896cff01c470c827b22dee1620272258ffa1743ef7c8c3f6aef88",
+      "metadata_sha256": "7410bdf433a59e846acf8de73b9d7c079069b4f120390a5dd08583335953a95c",
       "results": [
         {
           "suite": "contracts",
@@ -6880,7 +7554,7 @@
           "gpu_device": null,
           "passed_requests": 19,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "general",
@@ -6888,7 +7562,7 @@
           "gpu_device": null,
           "passed_requests": 5120,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "bipartite",
@@ -6896,7 +7570,7 @@
           "gpu_device": null,
           "passed_requests": 7446,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "boundaries",
@@ -6904,14 +7578,14 @@
           "gpu_device": null,
           "passed_requests": 155,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         }
       ]
     },
     "flow-cpu": {
-      "path": "validation/native_optimization/flow-cpu.json",
-      "sha256": "021ef4738b623da371b4f223e83a70e78007b13c553d2841990c0a14971d1d8a",
-      "metadata_sha256": "a697222d6f500bec3cb1e339bead47e8a9cf3cbea7f8b1b7579cf542d9ea2c34",
+      "path": "validation/native_selection/flow-cpu.json",
+      "sha256": "af557a938ced3991047a8c9a6ddd8eef0548b79a8c4566b75c62fe5388ab7963",
+      "metadata_sha256": "7410bdf433a59e846acf8de73b9d7c079069b4f120390a5dd08583335953a95c",
       "results": [
         {
           "suite": "contracts",
@@ -6919,7 +7593,7 @@
           "gpu_device": null,
           "passed_requests": 16,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "edges",
@@ -6927,7 +7601,7 @@
           "gpu_device": null,
           "passed_requests": 17369,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "vertices",
@@ -6935,7 +7609,7 @@
           "gpu_device": null,
           "passed_requests": 8192,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         },
         {
           "suite": "boundaries",
@@ -6943,14 +7617,14 @@
           "gpu_device": null,
           "passed_requests": 10,
           "failed": 0,
-          "implementation_sha256": "e3ef7006e7411784d7291cad2ca31b65ec327b64c955d0b9c413f2fa7a4cf496"
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
         }
       ]
     },
     "matching-gpu-0": {
-      "path": "validation/native_optimization/matching-gpu-0.json",
-      "sha256": "016d0efb44e7afc7e99cc4276db5bee0f2168899e3645363da718113d15b7a27",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/matching-gpu-0.json",
+      "sha256": "3669c21fd2cb20de40165476f3a65dd177245e1217ed55e7c4452d975a296826",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6958,7 +7632,7 @@
           "gpu_device": 0,
           "passed_requests": 9,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "assignment",
@@ -6966,7 +7640,7 @@
           "gpu_device": 0,
           "passed_requests": 721,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -6974,14 +7648,14 @@
           "gpu_device": 0,
           "passed_requests": 21,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "flow-gpu-0": {
-      "path": "validation/native_optimization/flow-gpu-0.json",
-      "sha256": "2aabf6890551ceb9c238dd92fdda0a5957338a6b4572bf167a48a8153ae3d21b",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/flow-gpu-0.json",
+      "sha256": "d313b7f38a955c240ecf1191c7eaaf5ab81ff22a828e299f3a6e62f7241147f8",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -6989,7 +7663,7 @@
           "gpu_device": 0,
           "passed_requests": 8,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "edges",
@@ -6997,7 +7671,7 @@
           "gpu_device": 0,
           "passed_requests": 1049,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -7005,14 +7679,14 @@
           "gpu_device": 0,
           "passed_requests": 12,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "matching-gpu-1": {
-      "path": "validation/native_optimization/matching-gpu-1.json",
-      "sha256": "3e1275c6744d518dfc2cb953442d185cacb736124fef11af1121c2f857012fb3",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/matching-gpu-1.json",
+      "sha256": "81dba400f8fb757643467aeda0e075cc10a383c8f38c1a4343c5216cf24a4616",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -7020,7 +7694,7 @@
           "gpu_device": 1,
           "passed_requests": 9,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "assignment",
@@ -7028,7 +7702,7 @@
           "gpu_device": 1,
           "passed_requests": 721,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -7036,14 +7710,14 @@
           "gpu_device": 1,
           "passed_requests": 21,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "flow-gpu-1": {
-      "path": "validation/native_optimization/flow-gpu-1.json",
-      "sha256": "d29578e4038d84af4faaa2222a77a29b2a8e6101d31ee5494fe95de361207ee2",
-      "metadata_sha256": "da5af5bef1821ee22158eca3492485f2cf6769d951f6151481474cd58c778c37",
+      "path": "validation/native_selection/flow-gpu-1.json",
+      "sha256": "33b95a9153c207eada8de7390fc0d1107abf2f46f111a7c5bf10e3d2ab5dd260",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
       "results": [
         {
           "suite": "contracts",
@@ -7051,7 +7725,7 @@
           "gpu_device": 1,
           "passed_requests": 8,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "edges",
@@ -7059,7 +7733,7 @@
           "gpu_device": 1,
           "passed_requests": 1049,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         },
         {
           "suite": "boundaries",
@@ -7067,57 +7741,283 @@
           "gpu_device": 1,
           "passed_requests": 12,
           "failed": 0,
-          "implementation_sha256": "0f23259ecd2bbf051bf51a836ff49735d8914610c094a07d4b5e69539c2ca6f6"
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        }
+      ]
+    },
+    "selection-cpu": {
+      "path": "validation/native_selection/selection-cpu.json",
+      "sha256": "1e64fd9ff10c7ca781f462855720564114f8e1a8dee2bb58fa51902920a4f5f7",
+      "metadata_sha256": "7410bdf433a59e846acf8de73b9d7c079069b4f120390a5dd08583335953a95c",
+      "results": [
+        {
+          "suite": "contracts",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 28,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        },
+        {
+          "suite": "independent",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 2286,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        },
+        {
+          "suite": "coloring",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 2200,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        },
+        {
+          "suite": "subgraphs",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 13762,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        },
+        {
+          "suite": "walks",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 1788,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        },
+        {
+          "suite": "sampling",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 2304,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        },
+        {
+          "suite": "probability",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 7,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        },
+        {
+          "suite": "boundaries",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 16,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        },
+        {
+          "suite": "large",
+          "backend": "cpp",
+          "gpu_device": 0,
+          "passed_requests": 11,
+          "failed": 0,
+          "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+        }
+      ]
+    },
+    "selection-gpu-0": {
+      "path": "validation/native_selection/selection-gpu-0.json",
+      "sha256": "a1e4d83dc6aa884ea38104de5b1a8816f9dc74d20aab1878a3e3277a60fe7bd8",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
+      "results": [
+        {
+          "suite": "contracts",
+          "backend": "libcugraph",
+          "gpu_device": 0,
+          "passed_requests": 25,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "independent",
+          "backend": "libcugraph",
+          "gpu_device": 0,
+          "passed_requests": 2200,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "coloring",
+          "backend": "libcugraph",
+          "gpu_device": 0,
+          "passed_requests": 2200,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "subgraphs",
+          "backend": "libcugraph",
+          "gpu_device": 0,
+          "passed_requests": 8642,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "walks",
+          "backend": "libcugraph",
+          "gpu_device": 0,
+          "passed_requests": 1192,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "probability",
+          "backend": "libcugraph",
+          "gpu_device": 0,
+          "passed_requests": 2,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "boundaries",
+          "backend": "libcugraph",
+          "gpu_device": 0,
+          "passed_requests": 2,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "large",
+          "backend": "libcugraph",
+          "gpu_device": 0,
+          "passed_requests": 11,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        }
+      ]
+    },
+    "selection-gpu-1": {
+      "path": "validation/native_selection/selection-gpu-1.json",
+      "sha256": "a8bdbe8fc0353a92694fc7d80e7fd8660bc95036266e52a60de2a7c9d3887e46",
+      "metadata_sha256": "fdd6944495c2c61af231660f4639729d6f3edc06212b750724c4fd865ea9e196",
+      "results": [
+        {
+          "suite": "contracts",
+          "backend": "libcugraph",
+          "gpu_device": 1,
+          "passed_requests": 25,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "independent",
+          "backend": "libcugraph",
+          "gpu_device": 1,
+          "passed_requests": 2200,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "coloring",
+          "backend": "libcugraph",
+          "gpu_device": 1,
+          "passed_requests": 2200,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "subgraphs",
+          "backend": "libcugraph",
+          "gpu_device": 1,
+          "passed_requests": 8642,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "walks",
+          "backend": "libcugraph",
+          "gpu_device": 1,
+          "passed_requests": 1192,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "probability",
+          "backend": "libcugraph",
+          "gpu_device": 1,
+          "passed_requests": 2,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "boundaries",
+          "backend": "libcugraph",
+          "gpu_device": 1,
+          "passed_requests": 2,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+        },
+        {
+          "suite": "large",
+          "backend": "libcugraph",
+          "gpu_device": 1,
+          "passed_requests": 11,
+          "failed": 0,
+          "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
         }
       ]
     },
     "depth_sanitizers": {
-      "path": "validation/native_optimization/depth-sanitizers/summary.json",
-      "sha256": "b54fefd4b2f8581e02972413db3c3737d62ffa1712acb9c4eb8446978d7021aa",
+      "path": "validation/native_selection/depth-sanitizers/summary.json",
+      "sha256": "0a3b4ccf56e3ed4631e99a247f49d6c0726c4963bd900e73ef69a430febbac85",
       "passed": 8
     },
     "centrality_sanitizers": {
-      "path": "validation/native_optimization/centrality-sanitizers/summary.json",
-      "sha256": "f6e149d7aa36cb087fe643105fd83acf083cd1a7fae1a8a44f29be7ad143d80a",
+      "path": "validation/native_selection/centrality-sanitizers/summary.json",
+      "sha256": "f30e95d2a3ed098311ddbcc70dbacc14813f5b1fd8fa63d4e4b3407685c01639",
       "passed": 8
     },
+    "selection_sanitizers": {
+      "path": "validation/native_selection/selection-sanitizers/summary.json",
+      "sha256": "fd908960c5dd5ef7692716719256fff45317fb759dfba879a8190b1accfda08c",
+      "passed": 4
+    },
     "optimization_sanitizers": {
-      "path": "validation/native_optimization/optimization-sanitizers/summary.json",
-      "sha256": "05728cbc04ea63f61d66494fa7c72e2e53ddeff0cdb0215b9669a210480ebcdc",
+      "path": "validation/native_selection/optimization-sanitizers/summary.json",
+      "sha256": "6f9e7f5d172c85f3a69552ab3657e70903dd4b553fec8aac2dca35c6188114b1",
       "passed": 16
     },
     "installed_optimization": {
-      "path": "validation/native_optimization/installed-optimization.json",
-      "sha256": "80d865025b96ac505ccf50f08d5e6caefeb7e8725d3280b4cf453b868d6c6a24",
+      "path": "validation/native_selection/installed-optimization.json",
+      "sha256": "176e706ef1995100c31662829d62fecf8aedd34631c62728fe0a8f79185e375b",
       "passed": 4
     },
     "binding_ingestion": {
-      "path": "validation/native_optimization/binding-ingestion.xml",
-      "sha256": "fae9c1532e57fcfaeae151e09b40c3a4cc5d5506405ef5e15210e2f3099bac3d",
-      "metadata_sha256": "045e56f671f44660cd15d29ba6298767c1d199fb596a25217fbd851b50c2db0b",
-      "passed": 117
+      "path": "validation/native_selection/binding-ingestion.xml",
+      "sha256": "f3d4f58b88e8d08bcc135cbda2754468cf509fd45b08443047b323c26365e67f",
+      "metadata_sha256": "72e0b1bf88c282012dd0dc296022b3b9c79002e70c33d2baae729362057344e0",
+      "passed": 139
     },
     "cudf_construction": {
-      "path": "validation/native_optimization/cudf-construction.xml",
-      "sha256": "d720b628943142fe0821a9c5190527964ef3477e88634dc99d44739d76e22663",
-      "metadata_sha256": "058c25cb91322d4d3834c156626ceb0bf96b1d9cd47132a9cbecd395c04c5837",
+      "path": "validation/native_selection/cudf-construction.xml",
+      "sha256": "213404828cf55ab1a3711ba3d031434c25617ac63c38c0e5fc4740a1915fe7bd",
+      "metadata_sha256": "01a725b4a2126448f5ccc1bab5677b2c4b82e5c47ef459be6905d6c8bfb63d0b",
       "passed": 64
     },
     "app-working": {
-      "path": "validation/native_optimization/app-working.xml",
-      "sha256": "da614bfffbea09cc81c82e1ccb42d6bea0481b5b1c9a53bc80976ff65f3b606e",
-      "metadata_sha256": "59c306ff9244279ffbbd47e9008aa06b451ccb6eaa4704f2deff934801f3bf12",
+      "path": "validation/native_selection/app-working.xml",
+      "sha256": "b6195954c8d26d4cf8f0dd18b4cca2ebd844cc0836abd359be4e43737a6488ba",
+      "metadata_sha256": "62fcd034ea23ccb43f36209acf5a1693d55c766fa70825a585f98f44a474e753",
       "passed": 41
     },
     "app-staged": {
-      "path": "validation/native_optimization/app-staged.xml",
-      "sha256": "75e8888c4558fefe32dd7bde2bba0cc0f756ec95fe7fd13b3038b1d4d8176c10",
-      "metadata_sha256": "83e75e40c02e970e56d6f49ff319a86843d6f68c7b378374fcee8d2fb95a3cf8",
+      "path": "validation/native_selection/app-staged.xml",
+      "sha256": "dd2ae0a87b8e6b68034a7898be0eb4928535acd823efe87df49ac2cc88fee77d",
+      "metadata_sha256": "1ff0215d77ac06a2d627bd9ed9c683845824ba49bf317bb1edc2b1e8565f2379",
       "passed": 25
     },
     "installed_consumers": {
-      "path": "validation/native_optimization/installed-consumers.json",
-      "sha256": "3e62a4aac641315ff652676c12beb97ef19a50631e2192c2b047b78508db4343",
+      "path": "validation/native_selection/installed-consumers.json",
+      "sha256": "58d658fb6275f985d3d75f4b597c7047fc9f010890863b5bc2fec61076c858ec",
       "cpp_consumer": true,
       "c_consumer": true,
       "python_on_path": false
@@ -7131,6 +8031,7 @@
     "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12": "256e6409e4f06f618e1fb53d4844a6b81cdded1013afa8ade40c22f99eb133b7",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so": "fd616ca986a7eb40e0ff67923a173b64e7703fe7b291cbee5a49d0658699d7ed",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so": "fa287858d8838079897efe86adf1e849ba8d7f6d397d8bc355090783d57c7acf",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so": "a999887d2ad8abfce62bf916409c98ce7f0452912accaf6c69c720734230c698",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/librmm/lib64/librmm.so": "583120f5f81d720b56c7778fe9b67425911044b3470e15a2c27009ff96c0e378",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/rapids_logger/lib64/librapids_logger.so": "f18caaf7d1889e71a6f0216f7de092168b02249ed9d19f7c8a2df171a130d429",
@@ -7143,17 +8044,16 @@
     "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
     "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
     "/usr/lib/x86_64-linux-gnu/librt.so.1": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
-    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so": "fa287858d8838079897efe86adf1e849ba8d7f6d397d8bc355090783d57c7acf",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_mg.so": "338eac79972831d22d9e34a787b749901ae495eea17380dad3cc5ae697c1f9c7",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_common.so": "e8387db31b9ff1c596efaa3f04a5f4570fcd0a72a0f52ddd45a7d8ff6b6900bf",
-    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
-    "/usr/lib/x86_64-linux-gnu/libnvrtc.so.12.8.93": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a",
-    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12": "5757ab5839fb4f203ca47ecb336110d10f4a5606b1e097f195fbca89774569e2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph_cu12.libs/libgomp-855c301a.so.1.0.0": "c690c02c7a6be4037ce2eabeab0fc78c7c0b2194f3d98f13ade54c25875be149",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusolver/lib/libcusolver.so.11": "30a1fe2fe22dad7141afaa2878fb6e9d7360b016e164d2153e1f31a46f2a9833",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12": "5757ab5839fb4f203ca47ecb336110d10f4a5606b1e097f195fbca89774569e2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12": "2c9006a75c74b3bea2dc7ae2ec38ab038b0e45ea02cb4b717a915e8a5796acb1",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12": "6d85ab1acdabfe3b5a54aa76bc948c719bcd03e07eede3eb8122b083c1a6ecf7",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10": "ab8c07338fa663c018b16df5b3f3878c84aaae98bda930e9e8bad340427b0faa",
-    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12": "2c9006a75c74b3bea2dc7ae2ec38ab038b0e45ea02cb4b717a915e8a5796acb1",
-    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libraft_cu12.libs/libgomp-855c301a.so.1.0.0": "c690c02c7a6be4037ce2eabeab0fc78c7c0b2194f3d98f13ade54c25875be149",
+    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
+    "/usr/lib/x86_64-linux-gnu/libnvrtc.so.12.8.93": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2": "a23d2e3e47ad7f8987ac73eb04a373d6d40cfbb3a7a5bf41a9e0e8434817559b",
     "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio_cu12.libs/libzstd-0d65387f.so.1.5.7": "a87a8635928f0e17a6c74289469c95206f35cdb457eb4596664f325dcf2e9e4d"
   },

@@ -1,0 +1,18 @@
+{
+  "binary_files": {
+    "/tmp/graphmine-native-selection-20261011-cpu/libgraphmine_runtime.so.2.0.0": "91d9d6d55552bf7c3826cf0cd515405e6dea8b19b179e2004b5450924a7220ca",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine-native": "7f318d46240e5042d93e35af80c44e43b35ed1a18c44d7859be0bd328f87d148",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine_runtime_test": "23f7fdd12e7fe2ff3d7540f7bcacdd2feda2174dd1ee03fa9d5f3b1a9738c94f",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine_reference_test": "8928f247ddea3494af81b0cc4c48cb3ace3f94be06901c0408189b397ed75935",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine_mining_test": "73e7b665841c40649620bb7617007ee6000dcb86770fc022c87daf19d2b9c459",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine_structure_test": "c3ba73f3f993a8aa9f69d403889241d7d34565c51fce69e7d5f79cec3c2b6d66",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine_centrality_test": "3b2c1855209bf8317f40d9d34d9d7cbd34be7abd5385f3e9ffe750186ba5ab7c",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine_matching_test": "1be04413f1b73a1fe7f690223b5ccfda2c0279bacc4d6287b624f4a1f6bff0a0",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine_flow_test": "1e769a45236da30601e886057186ec8fab6d0163df5ddd27e9ee11a2225977bf",
+    "/tmp/graphmine-native-selection-20261011-cpu/graphmine_selection_test": "05f7741a1f32cc2652e28a26c4025fcf01c1afd01855dae099aeb1acdf7244e3",
+    "/tmp/graphmine-native-selection-20261011-cpu/native-source-hashes.txt": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  "build_unchanged_during_run": true,
+  "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72",
+  "cuda_visible_devices": ""
+}

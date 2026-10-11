@@ -1,0 +1,25 @@
+{
+  "binary_files": {
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/libgraphmine_runtime.so.2.0.0": "0a0e76970b2600e1ba9ff18d955c9750158f9a55207acffce52d717c7b8e9b85",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine-native": "5bb8323f24cc75e036f2b0e9117f6544f22386bae3dfbe9e4fb23bfd1ced6180",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_runtime_test": "dcd8bb50c2b3eb0c052f3303c6598a5b9d1e7dea97ab4ed8f797547eccb42a75",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_reference_test": "66aadd3e3686c8f0a628b92d659dbb387c7d79ff0812b38395b8f735ab55ac03",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_mining_test": "f0d4334630beebb7ab82469fb22d5109f664fdae60d2fe7fe8d2a1a1b3190afb",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_structure_test": "e47c42377084b54490bfa8f54fa20b0af12656ac5046d26a4271bdf316b59633",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_centrality_test": "398bb581750343bf148c93adac7daa2be840fd42b5e2ec41d4586ca33be707e2",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_matching_test": "c8d3dceb7155f57a4044dabccc630b6ad711b32c188f76076f899d9f1f01613e",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_flow_test": "2d52604f2be8018dd572aafe80e30bbfc003b46d6e6c6af6604d823c34d895b2",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_selection_test": "92d167bcd363cdf58a9afdad5467eb5f5884b518e0c3d3f146057cf2a653e4e9",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/native-source-hashes.txt": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/optimization-workers/graphmine-worker-ecl-maxflow": "de73d1dd2f95e9359732c28f2f155886d283d18baf6b00d6df5c09c8b4345ffb",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/optimization-workers/graphmine-worker-hungarian-cuda": "4f842e76863bd84b13077543fb3a266fb7102f30bf86b5230fd81422d8ef54a8",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/optimization-generated/ecl_flow.cu": "5521193806d646f8fdf3ba6fbd237dca5227bffa3a1d7cb023b1d3b5349a64ed",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/optimization-generated/ecl_scc.cu": "af92ce618507b9b8878807f36981b6703c7322f2b540995e2e52addb2a16dae3",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/optimization-generated/gdlog_tc.cu": "78dc8f41a7981b5c1a5bc3a33adfd9362e78e6fb6872298201a04f97b0feb41e",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/optimization-generated/hungarian.cu": "f345ec5f559a86593c65e3bff8609a5c36390c7542addd961993efb2f2cf720d",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/optimization-generated/maxflow.cu": "215c6610a31861073de19b699d5630a5faff2d32c6212e23f7f1323db2722d89"
+  },
+  "build_unchanged_during_run": true,
+  "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2",
+  "cuda_visible_devices": null
+}

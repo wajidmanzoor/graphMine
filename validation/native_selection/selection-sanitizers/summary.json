@@ -1,0 +1,72 @@
+{
+  "passed": 4,
+  "failed": 0,
+  "cases": [
+    {
+      "case": "libcugraph-memcheck-gpu-0",
+      "passed": true,
+      "result": {
+        "suite": "large",
+        "backend": "libcugraph",
+        "gpu_device": 0,
+        "passed_requests": 11,
+        "failed": 0,
+        "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "b46e2b7f48d6b344c7a630a32b796b131b3e8faf0daa2f2c848d5da1a2f2e1e5"
+    },
+    {
+      "case": "libcugraph-initcheck-gpu-0",
+      "passed": true,
+      "result": {
+        "suite": "large",
+        "backend": "libcugraph",
+        "gpu_device": 0,
+        "passed_requests": 11,
+        "failed": 0,
+        "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "b46e2b7f48d6b344c7a630a32b796b131b3e8faf0daa2f2c848d5da1a2f2e1e5"
+    },
+    {
+      "case": "libcugraph-memcheck-gpu-1",
+      "passed": true,
+      "result": {
+        "suite": "large",
+        "backend": "libcugraph",
+        "gpu_device": 1,
+        "passed_requests": 11,
+        "failed": 0,
+        "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "0c7f1f0fc392d076a2305faae16c5bc7e4c03066f9bf1edf358fcbcb76eee661"
+    },
+    {
+      "case": "libcugraph-initcheck-gpu-1",
+      "passed": true,
+      "result": {
+        "suite": "large",
+        "backend": "libcugraph",
+        "gpu_device": 1,
+        "passed_requests": 11,
+        "failed": 0,
+        "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+      },
+      "log_sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "output_sha256": "0c7f1f0fc392d076a2305faae16c5bc7e4c03066f9bf1edf358fcbcb76eee661"
+    }
+  ],
+  "binary_files": {
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine_selection_test": "92d167bcd363cdf58a9afdad5467eb5f5884b518e0c3d3f146057cf2a653e4e9",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/graphmine-native": "5bb8323f24cc75e036f2b0e9117f6544f22386bae3dfbe9e4fb23bfd1ced6180",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/libgraphmine_runtime.so": "0a0e76970b2600e1ba9ff18d955c9750158f9a55207acffce52d717c7b8e9b85",
+    "/tmp/graphmine-native-selection-20261011-gpu/runtime/native-source-hashes.txt": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/validate_native_selection_sanitizers.py": "419a9f6d27057d2a6fdbc2e03bb4e1fa1867e04b7b452500bfbe4995caab57c1"
+  },
+  "sanitizer_binary_sha256": "ddb2dbfd04b20e9cddf263ec9831335b92395225acf89d81cd9b3bf60476bae8",
+  "build_unchanged_during_run": true,
+  "implementation_sha256": "0d98d137ad903916bbaf36c9a97293f221ea3a01f215431b284a222a986569e2"
+}

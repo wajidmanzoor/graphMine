@@ -14,8 +14,8 @@ The catalog marks profiles still awaiting migration as `pending`.
 
 ## Current migration boundary
 
-The shared runtime has 23 operations covering profiles for 21 formal
-problems. All 23 have C++ CPU implementations. GPU dispatch calls native
+The shared runtime has 28 operations covering profiles for 26 formal
+problems. All 28 have C++ CPU implementations. GPU dispatch calls native
 libraries or isolated native CUDA workers:
 
 | Operation | Family | GPU implementation |
@@ -43,6 +43,11 @@ libraries or isolated native CUDA workers:
 | Truss decomposition | cores | Native libcugraph |
 | Maximum independent set | independent_sets | Original maximum-clique kernels on the native complement, with optimality check |
 | Minimum vertex cover | independent_sets | Exact complement reduction using the same maximum-clique kernels |
+| Maximal independent set | independent_sets | Direct libcugraph C++ interface; independence and maximality checked in C++ |
+| Vertex coloring | coloring | Direct libcugraph C++ interface; distance-1 and distance-2 conflict graphs |
+| Random walk generation | sampling | Native libcugraph uniform and weighted walks; weighted node2vec uses CPU |
+| Neighborhood sampling | sampling | CPU profile with exact weighted draws, typed fanouts and temporal cutoff |
+| Induced/ego subgraphs | subgraphs | Native libcugraph BFS for ego discovery; C++ preserves original records |
 
 The original `Graph` and typed external IDs are reused. Existing native APIs
 remain available while their remaining profiles are brought into the shared
@@ -294,9 +299,54 @@ each oracle process.
 `tools/audit_native_runtime.py` verifies these reports, the source inventory
 embedded in each build, current source contents and the binding test snapshot.
 It records binary and resolved dependency hashes in
-`catalog/native_runtime_coverage.json`. This is migration evidence for the eighteen
+`catalog/native_runtime_coverage.json`. This is migration evidence for the 26
 integrated problems and their listed profiles; it does not establish coverage of pending profiles or
 replace the application's evidence gate.
+
+## Native selection and sampling contracts
+
+Maximal independent sets are checked for independence and maximality; they do
+not claim maximum cardinality. Greedy distance-1 and distance-2 coloring returns
+proper colors and discloses that its color count is heuristic. Both use an
+undirected simple projection with isolates preserved, loops discarded and
+parallel edges collapsed. The optional native cuGraph C++ adapter is controlled
+by `GRAPHMINE_NATIVE_CUGRAPH_CPP`, enabled by default with native cuGraph.
+
+Random walks preserve direction, loops and repeated starting vertices. Length
+counts transitions. Uniform walks sample distinct neighbors; weighted walks
+sum parallel weights. C++ uses exact rational mass and integer rejection
+sampling, including probabilities that underflow floating point. Weighted
+node2vec applies return/outward bias against the previous-to-candidate arc.
+The native GPU profile supports uniform and weighted walks with float64
+probabilities. It rejects underflowing positive weights and oversized dense
+walk allocations. Node2vec requests use C++ in automatic mode; explicit GPU
+requests fail instead of changing the model. Seeds and the generator are
+recorded; CPU and GPU random streams are not required to match.
+
+Neighborhood sampling is a native CPU profile over original edge instances.
+It supports replacement, exact weighted draws, repeated seed batches,
+per-edge-type fanouts and inclusive temporal cutoffs. Fanout `-1` includes
+all eligible edges, including zero-weight edges; finite weighted draws require
+positive mass. Integer epoch seconds and timezone-aware RFC 3339 timestamps
+are compared exactly, including fractional seconds and timezone offsets.
+The frontier contains distinct vertices per hop and seed batch. Sample ports
+describe the requested sample rather than an exhaustive graph traversal.
+
+Induced and ego extraction preserve vertex/edge IDs, direction, parallel edge
+instances and nested properties. Empty optional attribute maps are omitted.
+Incoming, outgoing and undirected discovery affect ego membership; the returned
+graph retains the original direction and records. Each graph port has its own
+fingerprint plus the original input fingerprint, so it can feed another native
+operation without losing lineage. Explicit induced selection uses CPU; GPU ego
+discovery uses native libcugraph BFS followed by native record materialization.
+
+Independent checks cover all undirected graphs through five vertices for
+independence/coloring, exhaustive small directed and undirected selections,
+edge-instance sampling, empirical seeded probabilities and exact timestamp
+boundaries. Larger path/isolate fixtures cross GPU block boundaries and check
+output budgets and deadlines. The Python family methods and standalone CLI use
+the same native catalog, preserve typed IDs and restore the caller's GPU device.
+Acceptance reports for this checkpoint are in `validation/native_selection`.
 
 
 ## Native mining contracts and verification

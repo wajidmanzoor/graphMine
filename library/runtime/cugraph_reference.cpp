@@ -11,6 +11,8 @@
 #include <cugraph_c/similarity_algorithms.h>
 #include <cugraph_c/traversal_algorithms.h>
 #include <cugraph_c/tree_algorithms.h>
+#include <cugraph_c/sampling_algorithms.h>
+#include <cugraph_c/random.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -91,6 +93,44 @@ template<class T> std::vector<T> mapped(const std::vector<std::int32_t>& ids, co
   }
   return result;
 }
+}
+
+std::vector<std::vector<VertexIndex>> cugraph_walks(const WeightedGraph& input, const std::vector<VertexIndex>& starts,
+    std::uint64_t length, const std::string& model, double p, double q, std::uint64_t seed, int device, Work& work) {
+  if (starts.empty()) return {};
+  if (!length || edgeless(input)) {
+    work.output(starts.size()); std::vector<std::vector<VertexIndex>> output;
+    for (const auto v : starts) output.push_back({v}); return output;
+  }
+  // cuGraph allocates a dense matrix even when walks reach dead ends early.
+  if (length == UINT64_MAX || starts.size() > work.max_output_items / (length+1))
+    throw Failure("resource_limit", "Dense GPU walk allocation exceeds the output budget");
+  const auto capacity = starts.size()*(length+1); work.output(capacity); work.tick(capacity);
+  Instance instance(input, device, work); std::vector<std::int32_t> ids(starts.begin(), starts.end());
+  Array sources(instance.handle.get(), ids); Error error; cugraph_rng_state_t* raw_rng = nullptr;
+  auto status = cugraph_rng_state_create(instance.handle.get(),seed,&raw_rng,&error.value);
+  Owned<cugraph_rng_state_t,cugraph_rng_state_free> rng(raw_rng,cugraph_rng_state_free); error.check(status);
+  cugraph_random_walk_result_t* raw = nullptr;
+  if (model == "uniform") status = ::cugraph_uniform_random_walks(instance.handle.get(),rng.get(),instance.graph.get(),sources.view.get(),length,&raw,&error.value);
+  else if (model == "weighted") status = ::cugraph_biased_random_walks(instance.handle.get(),rng.get(),instance.graph.get(),sources.view.get(),length,&raw,&error.value);
+  else throw Failure("unsupported_input", "Native GPU walks support uniform and weighted models; node2vec uses native CPU");
+  Owned<cugraph_random_walk_result_t,cugraph_random_walk_result_free> result(raw,cugraph_random_walk_result_free); error.check(status); work.tick(0);
+  const auto values = copy<std::int32_t>(instance.handle.get(),cugraph_random_walk_result_get_paths(result.get()));
+  if (cugraph_random_walk_result_get_max_path_length(result.get()) != length || values.size() != capacity)
+    throw Failure("correctness_mismatch", "libcugraph returned an invalid walk matrix shape");
+  std::vector<std::vector<VertexIndex>> output;
+  for (std::size_t row = 0; row < starts.size(); ++row) {
+    std::vector<VertexIndex> path; bool stopped = false;
+    for (std::uint64_t col = 0; col <= length; ++col) {
+      work.tick(); const auto v = values[row*(length+1)+col];
+      if (v == -1) { stopped = true; continue; }
+      if (stopped || v < 0 || static_cast<std::size_t>(v) >= input.rows.size())
+        throw Failure("correctness_mismatch", "libcugraph returned an invalid walk vertex or padding");
+      path.push_back(v);
+    }
+    output.push_back(std::move(path));
+  }
+  return output;
 }
 
 std::vector<WeightedSearch> cugraph_shortest_paths(const WeightedGraph& input, const std::vector<VertexIndex>& sources, int device, Work& work) {

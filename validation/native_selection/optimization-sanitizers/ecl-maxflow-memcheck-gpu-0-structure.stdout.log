@@ -1,0 +1,29 @@
+ECL-Maxflow
+Copyright 2025 Avery VanAusdal and Martin Burtscher
+input graph: 256 nodes and 1017 edges
+input: /home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/native_selection/optimization-sanitizers/ecl-maxflow-memcheck-gpu-0-structure.input
+nodes: 256
+edges: 1017
+source: 0
+sink:   255
+runs: 1
+GPU: NVIDIA RTX 6000 Ada Generation with 142 SMs and 1536 mTpSM (2505.0 MHz and 10001.0 MHz)
+source info: 1 in-edges, 3 out-edges
+sink max capacity: 7 across 3 in-edges
+header total init time: 0.010544s (including building rcsr: 0.000027s)
+Global relabeling frequency: 100
+initial global relabel from sink: 128 iters in 0.007394s
+Global relabel from sink on iter 100: 128 iters in 0.007388s
+---Phase 1 complete, minimum cut found in 0.018266s ---
+	iterations: 130
+	push-relabel kernel time: 0.010262s
+	global relabeled 1 times in 0.007388s
+	avg percent of graph in BFS WL: 0.78% over 128 total BFS iters
+No active nodes remaining, Phase 2 not needed!
+runtime: 0.025931s
+Maximum flow from nodes 0 to 255: 7
+Verified valid final flow state, no excess nodes remaining, and same absolute excess in source and sink.
+
+median runtime: 0.025931s
+Throughput: 0.000039 gigaedges/s
+GRAPHMINE_FLOW 3 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 3 0 0 0 4 0 0 0 4 1 3 0

@@ -893,3 +893,50 @@ The remaining **49 formal problems**, unfinished variants within migrated
 problems, the native application worker/evidence gate, and the remaining A/R/B
 requirements still need implementation and verification. The overall review
 integration goal remains active.
+
+### Native selection and sampling checkpoint (2026-10-11)
+
+- The standalone core now exposes **28 operations covering supported profiles
+  for 26 of 70 formal problems**. The five additions are maximal independent
+  sets, vertex coloring, random walks, neighborhood sampling and induced/ego
+  subgraphs. Their family methods come from the same native catalog in C++,
+  the CLI and the thin Python wrapper.
+- Maximal independent sets are verified for independence and maximality.
+  Distance-1 and distance-2 colorings are verified on their conflict graphs;
+  minimum color count is not claimed. Both have C++ CPU and direct libcugraph
+  C++ implementations, preserve isolates and declare their simple projection.
+- C++ walks and sampling use exact rational weights and integer rejection
+  sampling. Walks retain direction, loops and repeated starts; GPU uniform
+  and weighted walks use native libcugraph. Weighted node2vec, typed fanouts,
+  replacement and exact temporal sampling are native CPU profiles. Unsupported
+  explicit GPU variants fail; automatic selection records its CPU choice.
+- Subgraphs retain original typed IDs, parallel records and nested properties.
+  Ego discovery supports incoming/outgoing/undirected traversal. Derived graph
+  ports now carry a fingerprint of the returned graph alongside input lineage,
+  verified by chaining another native operation on that output.
+- The new independent suites passed **50,950 requests**: **22,402 CPU** and
+  **14,274 per GPU**. They cover exhaustive small graphs, seeded probability
+  checks, exact timestamps, resource limits and a 257-vertex path plus an
+  isolate. Four new CUDA memory/initialization runs passed; the 32 existing
+  mining/centrality/optimization sanitizer or admission checks also passed.
+- **139 binding/CLI checks**, **64 native cuDF construction checks**, and
+  **41 working-app / 25 staged-app checks** passed without failures or skips.
+  The app suites retain the existing Starlette deprecation warning. Installed
+  C/C++ consumers run without Python or visible CUDA; installed optimization
+  workers and wrapper parity pass on both GPUs.
+
+Final acceptance, including all prior native regressions: **218,841 requests
+passed** (**129,073 CPU**, **44,884 per GPU**). The complete source, binary,
+dependency and report audit passed and updated
+`catalog/native_runtime_coverage.json`. No acceptance checks failed or skipped.
+
+Reports are under `validation/native_selection`. The source inventory covers
+58 CPU files, 1,069 GPU files and 32 resolved native dependencies. The isolated
+GPU build uses the committed root build configuration and preserves unrelated
+working changes.
+
+The remaining **44 formal problems**, unimplemented variants within migrated
+problems, the native application algorithm worker/evidence gate, and the
+remaining routing, recovery, table projection, MCP, reviewed-example,
+scheduling/cache and scale-evaluation requirements remain open. This is a
+native library checkpoint, not completion of the full redesign.

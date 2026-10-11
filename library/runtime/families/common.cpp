@@ -56,6 +56,8 @@ WeightedGraph weighted_graph(const Graph& graph, bool weighted, bool nonnegative
 }
 
 std::string gpu_support_reason(const std::string& operation, const Graph& graph, const json::object& args) {
+  if (operation == "induced-subgraph" && args.contains("mode") && args.at("mode") == "induced")
+    return "Explicit induced selection uses native CPU; GPU supports ego discovery";
   if (operation == "betweenness-centrality" && args.contains("weight_mode") && args.at("weight_mode") == "edge_weight")
     return "Native GPU betweenness profiles support unweighted paths; positive weighted paths use exact C++ CPU code";
   if (operation == "link-prediction" && args.contains("scoring_measure") && args.at("scoring_measure") != "jaccard")
@@ -82,6 +84,23 @@ std::string gpu_support_reason(const std::string& operation, const Graph& graph,
 }
 std::string backend_support_reason(const std::string& operation, const std::string& backend, const Graph& graph, const json::object& args, Work& work) {
   if (backend == "cpp") return {};
+  if (operation == "random-walks") {
+    const auto model = args.contains("walk_model") ? args.at("walk_model") : json::value("uniform");
+    if (model == "node2vec") return "Node2vec uses exact native CPU: the linked cuGraph bias operator does not implement weighted node2vec probabilities";
+    if (model == "weighted") {
+      std::vector<std::map<VertexIndex, Exact>> rows(graph.vertex_count()); work.tick(graph.vertex_count());
+      for (const auto& edge : graph.canonical().edges) {
+        work.tick(); const auto weight = edge.weight.value_or(1); if (weight < 0) return {};
+        const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target); rows[u][v] += Exact(weight);
+        if (!graph.directed() && u != v) rows[v][u] += Exact(weight);
+      }
+      for (const auto& row : rows) {
+        Exact maximum = 0; for (const auto& [v,w] : row) { work.tick(); maximum = std::max(maximum,w); }
+        for (const auto& [v,w] : row) { work.tick(); if (w > 0 && (w/maximum).convert_to<double>() == 0)
+          return "A positive GPU walk probability underflows float64; exact rational sampling uses native CPU"; }
+      }
+    }
+  }
   if (operation == "max-flow-min-cut") {
     if (graph.vertex_count() > 1000000 || graph.edge_count() > 10000000) return "ECL flow supports at most 1M vertices and 10M input edges";
     if (args.contains("vertex_capacities") && !args.at("vertex_capacities").is_null() &&

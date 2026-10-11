@@ -7,6 +7,7 @@ import argparse
 import concurrent.futures
 import hashlib
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -29,6 +30,7 @@ def snapshot(build):
             "graphmine_centrality_test",
             "graphmine_matching_test",
             "graphmine_flow_test",
+            "graphmine_selection_test",
             "native-source-hashes.txt",
         )
     ]
@@ -43,6 +45,9 @@ def validate(build, label, ordinal, output):
         subprocess.check_output([build / "graphmine-native", "catalog"])
     )
     cpu = label == "cpu"
+    environment = dict(os.environ)
+    if cpu:
+        environment["CUDA_VISIBLE_DEVICES"] = ""
     device = "cpu" if cpu else "gpu"
     suites = (
         [
@@ -123,8 +128,26 @@ def validate(build, label, ordinal, output):
             ],
         ),
     ]
-    groups = (
-        groups[-2:] + groups[:-2]
+    groups.insert(
+        0,
+        (
+            f"selection-{label}",
+            "graphmine_selection_test",
+            [
+                (suite, "cpp" if cpu else "libcugraph")
+                for suite in (
+                    "contracts",
+                    "independent",
+                    "coloring",
+                    "subgraphs",
+                    "walks",
+                    *(["sampling"] if cpu else []),
+                    "probability",
+                    "boundaries",
+                    "large",
+                )
+            ],
+        ),
     )  # Exercise newly migrated profiles before regressions.
     if cpu:
         groups.append(
@@ -188,6 +211,7 @@ def validate(build, label, ordinal, output):
                     and executable in {"graphmine_matching_test", "graphmine_flow_test"}
                     else 300,
                     check=False,
+                    env=environment,
                 )
             log_text = log_path.read_text()
             if process.returncode:
@@ -213,6 +237,7 @@ def validate(build, label, ordinal, output):
                     "binary_files": before,
                     "build_unchanged_during_run": True,
                     "implementation_sha256": catalog["implementation_sha256"],
+                    "cuda_visible_devices": environment.get("CUDA_VISIBLE_DEVICES"),
                 },
                 indent=2,
             )

@@ -13,6 +13,10 @@ else()
 endif()
 
 option(GRAPHMINE_NATIVE_CUGRAPH "Link native libcugraph without Python" OFF)
+option(GRAPHMINE_NATIVE_CUGRAPH_CPP "Link native cuGraph C++ MIS and coloring interfaces" ${GRAPHMINE_NATIVE_CUGRAPH})
+if(GRAPHMINE_NATIVE_CUGRAPH_CPP AND NOT GRAPHMINE_NATIVE_CUGRAPH)
+  message(FATAL_ERROR "GRAPHMINE_NATIVE_CUGRAPH_CPP requires GRAPHMINE_NATIVE_CUGRAPH")
+endif()
 option(GRAPHMINE_NATIVE_CUDF "Read CSV files through native libcudf" OFF)
 set(GRAPHMINE_LIBCUGRAPH_ROOT "" CACHE PATH "Native libcugraph prefix with include and lib64")
 set(GRAPHMINE_LIBCUDF_ROOT "" CACHE PATH "Native libcudf prefix with include and lib64")
@@ -26,6 +30,8 @@ if(GRAPHMINE_RAPIDS_ROOT)
       "${GRAPHMINE_RAPIDS_ROOT}/libcudf/include/rapids"
       "${GRAPHMINE_RAPIDS_ROOT}/librmm/include/rapids"
       "${GRAPHMINE_RAPIDS_ROOT}/librmm/include"
+      "${GRAPHMINE_RAPIDS_ROOT}/libraft/include"
+      "${GRAPHMINE_RAPIDS_ROOT}/libraft/include/rapids"
       "${GRAPHMINE_RAPIDS_ROOT}/rapids_logger/include"
       "${GRAPHMINE_RAPIDS_ROOT}/nvidia/cuda_runtime/include")
   file(GLOB GRAPHMINE_RAPIDS_LIBRARY_DIRS LIST_DIRECTORIES TRUE
@@ -160,7 +166,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/native-source-hashes.txt" "${GRAPHMINE_N
 add_library(graphmine_runtime SHARED runtime.cpp registry.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp original_optimization.cpp
             families/traversal.cpp families/patterns.cpp families/common.cpp
             families/weighted_paths.cpp families/connectivity.cpp families/centrality.cpp
-            families/similarity.cpp families/cliques.cpp families/structure.cpp families/centrality_measures.cpp families/matching.cpp families/flow.cpp io/graph_projection.cpp ../src/core/json.cpp)
+            families/similarity.cpp families/cliques.cpp families/structure.cpp families/centrality_measures.cpp families/matching.cpp families/flow.cpp families/coloring.cpp families/subgraphs.cpp families/sampling.cpp graph_output.cpp io/graph_projection.cpp ../src/core/json.cpp)
 add_library(GraphMine::runtime ALIAS graphmine_runtime)
 target_compile_features(graphmine_runtime PUBLIC cxx_std_17)
 target_include_directories(graphmine_runtime PUBLIC
@@ -205,6 +211,15 @@ if(GRAPHMINE_NATIVE_CUGRAPH)
   # support them without importing their Python distributions at runtime.
 else()
   target_sources(graphmine_runtime PRIVATE gpu_stub.cpp)
+endif()
+if(GRAPHMINE_NATIVE_CUGRAPH_CPP)
+  find_library(GRAPHMINE_CUGRAPH_CPP_LIBRARY cugraph HINTS "${GRAPHMINE_LIBCUGRAPH_ROOT}/lib64" "${GRAPHMINE_LIBCUGRAPH_ROOT}/lib" REQUIRED)
+  target_sources(graphmine_runtime PRIVATE cugraph_cpp.cpp)
+  target_compile_features(graphmine_runtime PRIVATE cxx_std_20)
+  target_include_directories(graphmine_runtime PRIVATE ${GRAPHMINE_RAPIDS_INCLUDE_DIRS})
+  target_link_libraries(graphmine_runtime PRIVATE "${GRAPHMINE_CUGRAPH_CPP_LIBRARY}")
+else()
+  target_sources(graphmine_runtime PRIVATE cugraph_cpp_stub.cpp)
 endif()
 if(GRAPHMINE_NATIVE_CUDF)
   find_package(CUDAToolkit REQUIRED)
@@ -253,6 +268,12 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" "include(\
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GraphMineRuntime)
 
 if(BUILD_TESTING OR GRAPHMINE_BUILD_TESTS)
+  add_executable(graphmine_selection_test tests/selection_test.cpp ../src/core/json.cpp)
+  target_include_directories(graphmine_selection_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
+  target_link_libraries(graphmine_selection_test PRIVATE GraphMine::runtime)
+  foreach(suite IN ITEMS contracts independent coloring subgraphs walks sampling probability boundaries large)
+    add_test(NAME graphmine_selection_${suite}_cpu COMMAND graphmine_selection_test ${suite} cpp)
+  endforeach()
   add_executable(graphmine_flow_test tests/flow_test.cpp ../src/core/json.cpp)
   target_include_directories(graphmine_flow_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
   target_link_libraries(graphmine_flow_test PRIVATE GraphMine::runtime)

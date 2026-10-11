@@ -1,0 +1,20 @@
+kernel 	 time (ms) 	 runs
+init	 0.789441 	 1
+calc_min_in_rows	 1.03601 	 1
+step_1_row_sub	 0.133111 	 1
+calc_min_in_cols	 0.151098 	 1
+step_1_col_sub	 0.296738 	 1
+compress_matrix	 0.089745 	 1
+step_2	 0.332922 	 2
+step_3ini	 0.137758 	 1
+step_3	 0.088013 	 1
+step_4_init	 0 	 0
+step_4	 0 	 0
+min_reduce_kernel1	 0 	 0
+min_reduce_kernel2	 0 	 0
+step_6_add_sub	 0 	 0
+step_5a	 0 	 0
+step_5b	 0 	 0
+step_5c	 0 	 0
+Total time(ms) 	 3.15787
+GRAPHMINE_ASSIGNMENT 63 0 2 38 8 14 6 42 56 57 53 61 60 27 28 41 32 31 16 58 35 52 11 18 47 23 33 34 12 21 46 20 22 4 24 50 37 3 43 59 30 36 29 55 39 26 40 10 48 45 17 9 15 1 19 54 62 49 25 13 7 5 44 51

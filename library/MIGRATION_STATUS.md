@@ -1,5 +1,12 @@
 # GraphMine migration status
 
+The current C++/CUDA runtime migration is tracked in
+[Native Core Migration](../docs/NATIVE_CORE_MIGRATION.md). It exposes 28 native
+operations covering supported profiles for 26 of 70 formal problems; the
+application's algorithm worker still needs to move to that runtime.
+
+The inventory below records the earlier 13-operation GPU adapter checkpoint.
+
 All implementations that passed the repository's GPU validation are now
 available behind canonical in-memory APIs. Original kernels and search logic
 remain the computational backend; adapters replace file/CLI boundaries,

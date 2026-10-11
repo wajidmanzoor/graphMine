@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "8d7227decee699172f6bca552cf17dd2770afeaf24abbe22904c60ebd8c9fd72"
+  }
+]

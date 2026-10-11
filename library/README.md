@@ -5,6 +5,14 @@ passed this repository's GPU correctness validation. Applications provide one
 canonical `graphmine::Graph`; dense IDs, CSR variants, temporal incidence
 indexes, and artifact-specific representations stay inside backend adapters.
 
+The ongoing [native runtime migration](../docs/NATIVE_CORE_MIGRATION.md) adds
+a shared family catalog, CPU/GPU dispatch, a standalone `graphmine-native` CLI,
+and thin Python bindings over a C ABI. It currently exposes 28 operations with
+supported profiles for 26 of 70 formal problems. Its implementation lives in
+`runtime/`; the existing typed APIs documented below remain available while
+their remaining profiles migrate. See the [selection and sampling checkpoint](../validation/native_selection/README.md)
+for the latest verification scope.
+
 Every problem class follows the same high-level shape:
 
 - construct an options object, including a backend choice when several passed;

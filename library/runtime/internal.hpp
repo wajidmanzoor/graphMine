@@ -91,6 +91,7 @@ std::vector<double> cugraph_pagerank(const WeightedGraph& graph,
     std::uint64_t iterations, int device, Work& work);
 std::vector<double> cugraph_jaccard(const WeightedGraph& graph,
     const std::vector<std::pair<VertexIndex, VertexIndex>>& pairs, int device, Work& work);
+std::vector<std::vector<VertexIndex>> cugraph_walks(const WeightedGraph&, const std::vector<VertexIndex>&, std::uint64_t, const std::string&, double, double, std::uint64_t, int, Work&);
 std::vector<double> cugraph_betweenness(const WeightedGraph&, int, Work&);
 std::vector<std::uint32_t> cugraph_truss_numbers(const WeightedGraph&, const std::vector<std::pair<VertexIndex, VertexIndex>>&, int, Work&);
 std::vector<std::uint32_t> cugraph_core_numbers(const WeightedGraph&, int, Work&);
@@ -136,6 +137,15 @@ json::object minimum_vertex_cover(const Graph&, const json::object&, const std::
 json::object weighted_matching(const Graph&, const json::object&, const std::string&, int, Work&);
 json::object bipartite_matching(const Graph&, const json::object&, const std::string&, int, Work&);
 json::object max_flow(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object maximal_independent(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object vertex_coloring(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object induced_subgraph(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object random_walks(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object neighborhood_sampling(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object selected_graph(const Graph&, const std::vector<bool>&, Work&);
+bool cugraph_cpp_compiled() noexcept;
+std::vector<VertexIndex> cugraph_maximal_independent(const MiningGraph&, std::uint64_t, int, Work&);
+std::vector<std::uint32_t> cugraph_vertex_coloring(const MiningGraph&, std::uint64_t, int, Work&);
 json::array operation_cards();
 json::object catalog();
 json::object execute(const json::object& request);

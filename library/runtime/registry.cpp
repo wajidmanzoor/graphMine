@@ -40,6 +40,8 @@ std::vector<Operation> definitions() {
   auto positive = [](json::value initial, bool nullable = false) { auto p = parameter("integer", initial, false, nullable); p["minimum"] = 1; return p; };
   auto real = [](double initial, double minimum, std::optional<double> maximum = {}) { auto p = parameter("number", initial); p["minimum"] = minimum; if (maximum) p["maximum"] = *maximum; return p; };
   const json::array gpu{json::object{{"id", "libcugraph"}, {"device", "gpu"}, {"compiled", cugraph_compiled()}}};
+  const json::array cpp_gpu{json::object{{"id", "libcugraph"}, {"device", "gpu"}, {"compiled", cugraph_cpp_compiled()}}};
+  const auto seed = parameter("integer", nullptr, false, true);
   const auto weights = choice("unweighted", {"unweighted", "edge_weight"});
   auto core_backends = gpu;
   for (const auto& backend : original_mining_backends("k-core")) core_backends.push_back(backend);
@@ -99,6 +101,28 @@ std::vector<Operation> definitions() {
          {{"scoring_measure", choice("jaccard", {"jaccard", "common_neighbors", "adamic_adar", "resource_allocation", "preferential_attachment", "sorensen", "overlap", "cosine"})},
           {"candidate_pairs", parameter("array", nullptr, false, true)}, {"exclude_existing_edges", parameter("boolean", true)}, {"top_k", positive(nullptr, true)}},
          {{"pairs", port("table")}}, gpu), link_prediction},
+    {card("maximal-independent-set", "maximal_independent_set", "Find a non-conflicting group that cannot be extended",
+         "Greedy maximal independent set with verified independence and maximality; no maximum-size claim. Undirected simple projection; discard loops and duplicate edges, ignore weights and preserve isolates.",
+         {{"random_seed", seed}}, {{"vertices", port("vertex_set")}}, cpp_gpu), maximal_independent},
+    {card("vertex-coloring", "vertex_coloring", "Assign different colors to nearby vertices",
+         "Proper greedy distance-1 or distance-2 coloring; no minimum-color claim. Undirected simple projection with isolates preserved. GPU colors the native C++ constructed distance conflict graph.",
+         {{"distance", parameter("integer", 1)}, {"random_seed", seed}}, {{"colors", port("table")}}, cpp_gpu), vertex_coloring},
+    {card("random-walks", "random_walk_generation", "Generate walks from chosen vertices",
+         "Uniform, weighted or node2vec walks with length measured in transitions. Preserve direction and loops. Uniform walks collapse parallel neighbors; weighted walks sum parallel weights. CPU probabilities use exact rational arithmetic. Repeated starts produce separate walks.",
+         {{"start_vertices", parameter("array", nullptr, true)}, {"length", parameter("integer", nullptr, true)},
+          {"walk_model", choice("uniform", {"uniform", "weighted", "node2vec"})}, {"p", real(1, 0)}, {"q", real(1, 0)}, {"random_seed", seed}},
+         {{"walks", port("walk_sample")}}, gpu), random_walks},
+    {card("neighborhood-sampling", "neighborhood_sampling", "Sample connections around starting vertices",
+         "Outgoing edge-instance sampling with hop and seed-batch provenance. Support uniform or exact weighted draws, replacement, typed fanouts and inclusive time cutoff. Fanout -1 includes every eligible edge, including zero-weight edges; loops and parallel identities are retained.",
+         {{"seeds", parameter("array", nullptr, true)}, {"fanouts", parameter("array", nullptr, true)}, {"replacement", parameter("boolean", false)},
+          {"sampling_model", choice("uniform", {"uniform", "weighted"})}, {"edge_type_fanouts", parameter("object", nullptr, false, true)},
+          {"time_cutoff", parameter("number", nullptr, false, true)}, {"random_seed", seed}},
+         {{"edges", port("edge_sample")}, {"vertices", port("vertex_set")}}, {}), neighborhood_sampling},
+    {card("induced-subgraph", "induced_subgraph_ego_extraction", "Extract a graph around selected vertices",
+         "Exact induced or ego subgraph, preserving typed IDs, edge instances and properties. Ego radius includes all vertices within that distance. Direction affects discovery only; output retains original edge direction. GPU ego discovery uses libcugraph BFS with native materialization.",
+         {{"mode", parameter("string", nullptr, true)}, {"vertices_or_seeds", parameter("array", nullptr, true)}, {"radius", parameter("integer", 1)},
+          {"direction_mode", choice("outgoing", {"outgoing", "incoming", "undirected_projection"})}},
+         {{"graph", port("graph")}, {"vertices", port("vertex_set")}}, gpu), induced_subgraph},
     {card("max-flow-min-cut", "max_flow_min_cut", "Find capacity and bottlenecks between two places",
          "Exact rational flow and cut certificate. Sum parallel capacities, discard loops and treat undirected edges as two directed arcs. Optional vertex capacities use typed {vertex,capacity} records and include explicitly limited terminals. Mixed cuts return original edge IDs plus cut vertices.",
          {{"source", parameter("vertex_id", nullptr, true)}, {"sink", parameter("vertex_id", nullptr, true)},
@@ -143,6 +167,18 @@ std::vector<Operation> definitions() {
   for (auto& definition : result) {
     auto& metadata = definition.metadata;
     const auto id = string(metadata.at("id"), "operation");
+    if (id == "vertex-coloring") {
+      metadata["quality"] = "heuristic";
+      metadata.at("parameters").as_object().at("distance").as_object()["choices"] = json::array{1,2};
+    }
+    if (id == "random-walks" || id == "neighborhood-sampling") metadata["quality"] = "stochastic";
+    if (id == "random-walks") metadata["gpu_limitations"] = json::array{"Uniform and weighted models; node2vec uses exact native CPU", "Dense allocation must fit the output budget; positive normalized weights must not underflow float64"};
+    if (id == "random-walks") metadata.at("parameters").as_object().at("length").as_object()["minimum"] = 0;
+    if (id == "induced-subgraph") {
+      metadata.at("parameters").as_object().at("mode").as_object()["choices"] = json::array{"induced","ego"};
+      metadata.at("parameters").as_object().at("radius").as_object()["minimum"] = 0;
+      metadata["gpu_limitations"] = json::array{"GPU ego discovery; explicit induced selection uses native CPU"};
+    }
     if (id == "bipartite-matching") metadata.at("parameters").as_object().at("objective").as_object()["choices"] = json::array{"maximum_cardinality", "maximum_weight", "minimum_cost"};
     if (id == "max-flow-min-cut") metadata["gpu_limitations"] = json::array{"ecl-maxflow: nonnegative integral normalized capacities with total <=1e9; no vertex capacities", "At most 1M vertices and 10M input edges; exact residual flow/cut certification"};
     if (id == "bipartite-matching") metadata["gpu_limitations"] = json::array{"hungarian-cuda: minimum-cost perfect assignment, complete equal sides, at most 64 per side", "Every input cost must be an integer in [0,999]; native C++ verifies the optimum"};

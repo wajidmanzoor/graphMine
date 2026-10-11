@@ -102,7 +102,8 @@ json::object execute(const json::object& request) {
   const auto fingerprint = hash(request.at("graph"));
   for (auto& port : result.at("ports").as_object()) {
     port.value().as_object()["input_fingerprint"] = fingerprint;
-    port.value().as_object()["graph_fingerprint"] = fingerprint;
+    auto& record = port.value().as_object();
+    record["graph_fingerprint"] = record.at("type") == "graph" ? hash(record.at("value")) : fingerprint;
   }
   result["schema_version"] = "2.0.0";
   result["operation"] = operation;

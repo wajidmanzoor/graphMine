@@ -81,6 +81,7 @@ def build_evidence(directory, source_root, dependency_hashes):
             "graphmine_centrality_test",
             "graphmine_matching_test",
             "graphmine_flow_test",
+            "graphmine_selection_test",
         )
     }
     for path in sorted((directory / "optimization-workers").glob("graphmine-worker-*")):
@@ -326,6 +327,34 @@ def audit(
             (s, "ecl-maxflow", n)
             for s, n in (("contracts", 8), ("edges", 1049), ("boundaries", 12))
         ]
+    expected["selection-cpu"] = [
+        (suite, "cpp", count)
+        for suite, count in (
+            ("contracts", 28),
+            ("independent", 2286),
+            ("coloring", 2200),
+            ("subgraphs", 13762),
+            ("walks", 1788),
+            ("sampling", 2304),
+            ("probability", 7),
+            ("boundaries", 16),
+            ("large", 11),
+        )
+    ]
+    for device in (0, 1):
+        expected[f"selection-gpu-{device}"] = [
+            (suite, "libcugraph", count)
+            for suite, count in (
+                ("contracts", 25),
+                ("independent", 2200),
+                ("coloring", 2200),
+                ("subgraphs", 8642),
+                ("walks", 1192),
+                ("probability", 2),
+                ("boundaries", 2),
+                ("large", 11),
+            )
+        ]
     for name, cases in expected.items():
         path = report_root / f"{name}.json"
         rows = json.loads(path.read_text())
@@ -347,6 +376,8 @@ def audit(
         metadata_path = path.with_suffix(".json.metadata.json")
         metadata = json.loads(metadata_path.read_text())
         assert metadata["build_unchanged_during_run"]
+        if "gpu-" not in name:
+            assert metadata["cuda_visible_devices"] == ""
         assert (
             metadata["implementation_sha256"]
             == build["catalog"]["implementation_sha256"]
@@ -430,6 +461,44 @@ def audit(
         "sha256": sha(centrality_path),
         "passed": 8,
     }
+    selection_path = report_root / "selection-sanitizers/summary.json"
+    selection = json.loads(selection_path.read_text())
+    assert selection["passed"] == 4 and selection["failed"] == 0
+    assert selection["build_unchanged_during_run"]
+    assert (
+        selection["implementation_sha256"]
+        == builds["gpu"]["catalog"]["implementation_sha256"]
+    )
+    assert selection["sanitizer_binary_sha256"] == sha("/usr/bin/compute-sanitizer")
+    for path, digest in selection["binary_files"].items():
+        assert sha(path) == digest
+    assert {row["case"] for row in selection["cases"]} == {
+        f"libcugraph-{tool}-gpu-{device}"
+        for tool in ("memcheck", "initcheck")
+        for device in (0, 1)
+    }
+    for row in selection["cases"]:
+        assert (
+            row["passed"]
+            and row["result"]["passed_requests"] == 11
+            and row["result"]["failed"] == 0
+        )
+        assert (
+            row["result"]["implementation_sha256"] == selection["implementation_sha256"]
+        )
+        assert (
+            sha(selection_path.parent / f"{row['case']}.stderr.log")
+            == row["log_sha256"]
+        )
+        assert (
+            sha(selection_path.parent / f"{row['case']}.stdout.json")
+            == row["output_sha256"]
+        )
+    reports["selection_sanitizers"] = {
+        "path": str(selection_path.relative_to(ROOT)),
+        "sha256": sha(selection_path),
+        "passed": 4,
+    }
     optimization_path = report_root / "optimization-sanitizers/summary.json"
     optimization = json.loads(optimization_path.read_text())
     assert optimization["passed"] == 16 and optimization["failed"] == 0
@@ -487,7 +556,7 @@ def audit(
         "passed": 4,
     }
     reports["binding_ingestion"] = xml_evidence(
-        report_root / "binding-ingestion.xml", ROOT, 117
+        report_root / "binding-ingestion.xml", ROOT, 139
     )
     native_uploads = staged_app_root is not None
     if native_uploads:
