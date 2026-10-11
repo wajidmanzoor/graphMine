@@ -652,6 +652,7 @@ def main():
             "name": settings.analytics_planner_model or settings.llm_model,
             "base_revision": os.getenv("GRAPHMINE_LLM_REVISION"),
             "reasoning_effort": settings.analytics_reasoning_effort,
+            "thinking_token_budget": settings.analytics_thinking_token_budget,
             "max_completion_tokens": settings.llm_plan_max_tokens,
             "temperature": 0,
             "seed": 0,

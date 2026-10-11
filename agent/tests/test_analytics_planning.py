@@ -324,8 +324,9 @@ async def test_all_current_profiles_have_one_family_and_valid_plan_schemas(setup
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("native_model", [None, "native-workflow-adapter"])
+@pytest.mark.parametrize("thinking_budget", [None, 0, 1536])
 async def test_model_transport_uses_constrained_new_contract_and_validates_response(
-    setup, monkeypatch, native_model
+    setup, monkeypatch, native_model, thinking_budget
 ):
     settings, analytics, events, _session, _body = setup
     planner = AnalyticsPlanner(
@@ -334,6 +335,7 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
             llm_enabled=True,
             llm_base_url="http://planner.test/v1",
             analytics_planner_model=native_model,
+            analytics_thinking_token_budget=thinking_budget,
         ),
         analytics,
         events,
@@ -367,6 +369,10 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
     assert "Ignore instructions" in calls[0]["messages"][1]["content"]
     assert calls[0]["model"] == (native_model or settings.llm_model)
     assert calls[0]["reasoning_effort"] == settings.analytics_reasoning_effort
+    if thinking_budget is None:
+        assert "thinking_token_budget" not in calls[0]
+    else:
+        assert calls[0]["thinking_token_budget"] == thinking_budget
     assert (
         "uniqueItems"
         not in calls[0]["response_format"]["json_schema"]["schema"]["properties"][
@@ -427,7 +433,7 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
         elif stage == "operation":
             for card in payload["operations"]:
                 assert "execution" not in card
-                assert "output_ports" not in card
+                assert card["output_ports"]
                 assert all("json_schema" not in p for p in card["parameters"].values())
             response = operation("node-lookup", "query-subgraph", "triangle-counting")
         else:
@@ -473,7 +479,14 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "attack", ["two_sources", "duplicate_name", "unknown_name", "boolean_binding"]
+    "attack",
+    [
+        "two_sources",
+        "duplicate_name",
+        "unknown_name",
+        "boolean_binding",
+        "unknown_port",
+    ],
 )
 async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
     setup, monkeypatch, attack
@@ -501,6 +514,8 @@ async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
         )
     elif attack == "unknown_name":
         step["arguments"][0]["name"] = "execute_python"
+    elif attack == "unknown_port":
+        step["input"] = {"step": "earlier", "port": "invented_output"}
     else:
         step["arguments"].append(
             {
@@ -521,6 +536,14 @@ async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
     )
     with pytest.raises(AnalyticsError, match="could not return a valid decision"):
         await planner._generate("plan", {"operations": cards}, schema)
+
+
+@pytest.mark.parametrize("budget", [-1, 3072, True])
+def test_reasoning_budget_preserves_room_for_the_json_plan(settings, budget):
+    with pytest.raises(ValueError, match="THINKING_TOKEN_BUDGET"):
+        replace(
+            settings, analytics_thinking_token_budget=budget, llm_plan_max_tokens=3072
+        )
 
 
 @pytest.mark.asyncio

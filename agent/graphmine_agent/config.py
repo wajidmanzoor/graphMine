@@ -67,6 +67,7 @@ class Settings:
     allow_shared_gpu: bool = False
     analytics_planner_model: str | None = None
     analytics_reasoning_effort: str = "medium"
+    analytics_thinking_token_budget: int | None = None
 
     @property
     def routing_contract_version(self) -> str:
@@ -96,6 +97,14 @@ class Settings:
             raise ValueError("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES must be positive")
         if self.analytics_cpu_workers < 1:
             raise ValueError("GRAPHMINE_ANALYTICS_CPU_WORKERS must be positive")
+        if self.analytics_thinking_token_budget is not None and (
+            type(self.analytics_thinking_token_budget) is not int
+            or not 0 <= self.analytics_thinking_token_budget < self.llm_plan_max_tokens
+        ):
+            raise ValueError(
+                "GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET must be a nonnegative "
+                "integer smaller than GRAPHMINE_LLM_PLAN_MAX_TOKENS"
+            )
         if min(self.analytics_gpu_headroom_bytes, self.analytics_llm_reserve_bytes) < 0:
             raise ValueError("Analytics memory reservations must be nonnegative")
         if self.job_timeout_seconds < 1:
@@ -206,6 +215,11 @@ class Settings:
             analytics_reasoning_effort=os.getenv(
                 "GRAPHMINE_ANALYTICS_REASONING_EFFORT", "medium"
             ),
+            analytics_thinking_token_budget=_integer(
+                "GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET", 0
+            )
+            if os.getenv("GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET", "").strip()
+            else None,
             llm_base_url=os.getenv(
                 "GRAPHMINE_LLM_BASE_URL", "http://127.0.0.1:8001/v1"
             ).rstrip("/"),

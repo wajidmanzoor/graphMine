@@ -195,6 +195,7 @@ def parameter_schema(spec):
 
 def plan_schema(cards, aliases, device):
     name = {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"}
+    ports = sorted({port for card in cards for port in card["output_ports"]})
     selector = {
         "oneOf": [
             _object(
@@ -222,7 +223,7 @@ def plan_schema(cards, aliases, device):
         "oneOf": [
             _object({"input": {"enum": list(aliases)}}),
             _object(
-                {"step": name, "port": {"type": "string"}, "select": selector},
+                {"step": name, "port": {"enum": ports}, "select": selector},
                 ["step", "port"],
             ),
         ]
@@ -394,6 +395,7 @@ class AnalyticsPlanner:
                                 "description",
                                 "input_kind",
                                 "quality",
+                                "output_ports",
                             )
                         },
                         "parameters": {
@@ -440,6 +442,12 @@ class AnalyticsPlanner:
                 },
             },
         }
+        if self.settings.analytics_thinking_token_budget is not None:
+            # Optional vLLM extension: reserve output tokens for the structured
+            # decision without disabling the reasoning needed for selection.
+            request["thinking_token_budget"] = (
+                self.settings.analytics_thinking_token_budget
+            )
         try:
             async with httpx.AsyncClient(
                 base_url=self.settings.llm_base_url,
