@@ -76,13 +76,32 @@ reported score substitutes for local integration tests.
 
 ## Current evidence and open work
 
-- Separate branch created from the existing working tree. Earlier changes are
-  present and must be preserved; no previous changes have been discarded.
-- Both RTX 6000 Ada GPUs are available. A new `.venv-analytics` environment keeps
-  CPU/cuGraph dependencies separate from the existing agent environment.
-- YiGraph source confirms Normal, Interactive, and Expert modes. Its interaction
-  ideas will be implemented using our own code and existing browser libraries.
-- Implementation and requirement-by-requirement verification remain open.
+- The native migration and redesigned workspace are implemented in commits
+  `957dc206` and `462ae1ca`, with planner fixes through `92663fc6`.
+  Unrelated pre-existing work remains in the working
+  tree; the isolated committed app was also tested independently.
+- All 70 formal contracts have native CPU profiles across 80 operations.
+  Twenty-three operations have admitted GPU profiles on both tested RTX 6000
+  Ada devices. Python algorithm integrations are explicit reference oracles.
+- Final evidence includes native CPU/GPU oracle sweeps, 127 completion tests
+  per build with CUDA hidden, 214 binding/ingestion checks, 36 sanitizer checks,
+  installed C/C++ consumers, 77 app checks, three physical-GPU app checks,
+  14 Firefox checks without Node, and 60 scale comparisons. Counts include
+  repeated cases across builds/devices and are not counts of distinct inputs.
+- [The workspace guide](ANALYTICS_WORKSPACE.md) covers configuration, modes,
+  native table construction, MCP, scheduling and reviewed examples.
+  [The native profile guide](NATIVE_COMPLETION_PROFILES.md) states mathematical
+  objectives, learning architectures and limits. Exact per-contract coverage is
+  in `catalog/native_runtime_coverage.json`.
+- Real-model development and held-out evaluation are recorded separately in
+  `validation/native_final/`; authored routing fixtures are not model-accuracy
+  evidence. Final measured results are summarized in the
+  [acceptance report](NATIVE_ANALYTICS_ACCEPTANCE.md). The final local-model
+  run passed 16/20 cases; four requests stopped during planning. Native
+  migration and workspace implementation are complete; dependable unattended
+  natural-language planning remains a measured limitation.
+
+The checkpoints below are historical and do not describe current coverage.
 
 ### First library checkpoint
 

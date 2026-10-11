@@ -1,0 +1,957 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization; existing development subset for the argument transport repair",
+  "mode": "model",
+  "model_accuracy_measured": true,
+  "suite_sha256": "d138df954b0544ea809691228b04e9fe56b10bd5f92e5414edfc2a497c81257a",
+  "capabilities_sha256": "70fbb579eb1b68592fa4dd9723e2eb55a5453d49c814de7e44973060a282664b",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Filtering edges by attributes.amount >= 30.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "filter_amount_gte_30",
+              "operation": "edge-filter",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "edge_filters": [
+                  {
+                    "field": "attributes.amount",
+                    "op": "gte",
+                    "value": 30
+                  }
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "filter_amount_gte_30",
+                "operation": "edge-filter",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "edge_filters": [
+                    {
+                      "field": "attributes.amount",
+                      "op": "gte",
+                      "value": 30
+                    }
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "filter_amount_gte_30"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "089603396e9b88a26e95b3591526ef74b9ea234ebdb13b846a6ec6651dae0618",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is to filter edge records by an attribute threshold (amount >= 30), which is a basic lookup/filtering operation covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "edge-filter"
+            ],
+            "reroute_families": [],
+            "message": "Select edges where the recorded 'amount' attribute is at least 30 (>= 30). The edge-filter operation with an edge_filters predicate on the 'amount' field satisfies this directly.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Filter edges where amount >= 30."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Filtering edges by attributes.amount >= 30."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "edges",
+          "passed": true,
+          "expected": [
+            "AC",
+            "CD"
+          ],
+          "observed": [
+            "AC",
+            "CD"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "f59fbc4a-1ecb-4fbe-8caa-6c37133de158",
+      "workflow_hash": "089603396e9b88a26e95b3591526ef74b9ea234ebdb13b846a6ec6651dae0618",
+      "elapsed_seconds": 43.971521601080894
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 161.21248790994287
+    },
+    {
+      "id": "neighbor_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: Unknown workflow step reference",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a neighborhood expansion (two outgoing hops from A, excluding A), a subgraph induction, and an edge count, all of which are lookup, filtering, subgraph extraction, and aggregation operations covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "neighbors",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Three sequential operations in the query family: (1) neighbors to find vertices within 2 outgoing hops of A (include_seed=false excludes A by default), (2) query-subgraph in vertex mode to induce the subgraph on those vertices, (3) graph-aggregate with scope=edges and metric=count to count the relationships in the induced subgraph.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: find 2-hop outgoing neighbors of A (excluding A), induce their subgraph, then count edges."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: find 2-hop outgoing neighbors of A (excluding A), induce their subgraph, then count edges."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 141.16531340777874
+    },
+    {
+      "id": "top_sender",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The graph-aggregate operation's 'scores' output port (type: vertex_scores) cannot be bound to the node-lookup 'vertices' parameter (type: array of string/integer IDs). No available operation can extract a single vertex ID from the aggregate result to feed into a record lookup. The tie-breaking by smallest string ID also cannot be expressed as a secondary sort key in the available operations.",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task aggregates outgoing edge amounts per vertex, selects the maximum (with a lexicographic tie-break), and retrieves that vertex's record\u2014all basic lookup, filtering, and aggregation operations covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "graph-aggregate",
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "graph-aggregate (scope=edges, metric=sum, field=amount, group_by=source vertex, direction=out) produces the per-vertex outgoing amount totals. node-lookup then retrieves the record of the vertex with the maximum total, using lexicographically smallest vertex ID as the tie-breaker.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: aggregate outgoing edge amounts per source vertex (descending, top 1), then look up that vertex's full record."
+          },
+          {
+            "stage": "plan",
+            "status": "unsupported",
+            "message": "The graph-aggregate operation's 'scores' output port (type: vertex_scores) cannot be bound to the node-lookup 'vertices' parameter (type: array of string/integer IDs). No available operation can extract a single vertex ID from the aggregate result to feed into a record lookup. The tie-breaking by smallest string ID also cannot be expressed as a secondary sort key in the available operations."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 263.6259653158486
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed: filter edges with amount >= 30, extract edge-induced subgraph, then BFS from A.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "filter_edges",
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "mode": "edges",
+                "edge_filters": [
+                  {
+                    "field": "attributes.amount",
+                    "op": "gte",
+                    "value": 30
+                  }
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            },
+            {
+              "id": "bfs_from_A",
+              "operation": "breadth-first-search",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "sources": [
+                  "A"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "filter_edges",
+                "operation": "query-subgraph",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "mode": "edges",
+                  "edge_filters": [
+                    {
+                      "field": "attributes.amount",
+                      "op": "gte",
+                      "value": 30
+                    }
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              },
+              {
+                "id": "bfs_from_A",
+                "operation": "breadth-first-search",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "sources": [
+                    "A"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "filter_edges",
+            "bfs_from_A"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "2df107ed8e1396af85869d6f8172f233ea2b19701e2b448558193199b7620c5e",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query",
+              "routes"
+            ],
+            "message": "The task filters edges by amount >= 30 and extracts the resulting subgraph (query), then performs BFS reachability from vertex A to list all reached vertices (routes).",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "query-subgraph",
+              "breadth-first-search"
+            ],
+            "reroute_families": [],
+            "message": "Step 1: query-subgraph in 'edges' mode with edge_filters [{field: amount, op: >=, value: 30}] to keep only relationships with amount at least 30 and extract the induced subgraph (endpoints retained). Step 2: breadth-first-search with sources [A] on the extracted graph to return all reached vertices. No ambiguity in the objective.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: filter edges with amount >= 30, extract edge-induced subgraph, then BFS from A."
+          }
+        ]
+      },
+      "operations": false,
+      "parameters": false,
+      "wiring": false,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": false,
+          "expected": [
+            "A",
+            "C",
+            "D"
+          ],
+          "observed": null
+        }
+      ],
+      "passed": false,
+      "workflow_id": "a4391ac3-65ef-431c-918f-efb6eb81006c",
+      "workflow_hash": "2df107ed8e1396af85869d6f8172f233ea2b19701e2b448558193199b7620c5e",
+      "elapsed_seconds": 93.79191675595939
+    }
+  ],
+  "passed": 1,
+  "total": 5,
+  "by_slice": {
+    "dependent": {
+      "passed": 0,
+      "total": 4
+    },
+    "lookup": {
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "source_files": {
+    "agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "agent/graphmine_agent/adapter_server.py": "e28d4cba1d1b561c344ce89a64a9703f3345b0358a728b3a38c0fd4c90b2f3d5",
+    "agent/graphmine_agent/agent_service.py": "32fbe6afa3a873cb976350e516d3390f839fd0097909f6f1905a7500190efe7c",
+    "agent/graphmine_agent/analysis.py": "9bf1da63fbea61f9006b6297eeb4997dd446efef34b118c7d99e692cba20473c",
+    "agent/graphmine_agent/analytics.py": "39444541a7350ec6ca45a8a0e4f80b2c8093522a50739fd1444f9e019a19c857",
+    "agent/graphmine_agent/analytics_examples.py": "d8a83de876dc3efc2229516d5c294773a1c77c9e9032944099a0651988d77889",
+    "agent/graphmine_agent/analytics_planning.py": "7fc8d5dfef2d1f79a17c57bc612cb62090cd30d31adef469f49148bab5e21b6f",
+    "agent/graphmine_agent/analytics_projection.py": "d82d212966f2f272e5953266fb7b8f9f8fc529d3dee3ddabc5e76ff8746cb422",
+    "agent/graphmine_agent/analytics_scheduler.py": "c268085c92f600d255d953886440ffe5119a379f0110a9362387a95d3e4d034d",
+    "agent/graphmine_agent/answers.py": "ade789d9aa26f6328189b745bd3d77d2a2407b8faa6765d106339883207c8d9a",
+    "agent/graphmine_agent/api.py": "0ee5523ad08315ed00701fdee5d5f4529b7e855e8668860278c9023518e28a4f",
+    "agent/graphmine_agent/backup.py": "afb09ed39983d8f8fe8c8a41f3dd9f9024e8ecf651987781877aa311d6f529af",
+    "agent/graphmine_agent/benchmarking.py": "ba5c66d9b97554d6153d5aaf0b6b297a9302f1e888253fcf3851aa4ac4b6abe0",
+    "agent/graphmine_agent/catalog.py": "1946a9134f7457dde6a16e6d234037302bac44e4273a2ce53d7c3300be938fb7",
+    "agent/graphmine_agent/cli.py": "2930fd1c264ced34a594e70d85abdcdae5864cf2afc26be2ccc129f077cd9e38",
+    "agent/graphmine_agent/commands.py": "c13d73c454ae46a378559cf622d44e6ca3e040f5ab550be408d0397dee34a7d6",
+    "agent/graphmine_agent/config.py": "66586dff49a782eb0a40af3e62a96992ad86888dd667d7050587a2ac29109a42",
+    "agent/graphmine_agent/database.py": "75fae2208af7d93c5f9da86edc2b5d37080290c7878420155837e29a5c500acf",
+    "agent/graphmine_agent/evaluation.py": "76aa2a3693626f38df228c8268d3fb61d1380b873eac3b4d599eccdbfcd6017b",
+    "agent/graphmine_agent/execution.py": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+    "agent/graphmine_agent/graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+    "agent/graphmine_agent/graph_store.py": "076b072662b138d2ab47506b46b4662d51af55be478d089ed76b0c624ff4fecd",
+    "agent/graphmine_agent/history.py": "fb689749f6dfbe6ac338ba77ac83ef9e7a1bd692b512012fa90b251aa46e8585",
+    "agent/graphmine_agent/jobs.py": "0f8a3f6c2dbc676accb745f96e1c2393eeda81a0834fdaf6944dece777cf6089",
+    "agent/graphmine_agent/learning/__init__.py": "18ddf5f2ec79711640cab59ce8da25a7ac4f51be8b239a1c0236714f094eca22",
+    "agent/graphmine_agent/learning/adapter_eval.py": "7746a5a21eff011159112d2446795d6d01f150ff01d6e77ef9172d03b63713f4",
+    "agent/graphmine_agent/learning/adapter_holdout.py": "e7312abd87246a461cd199fe793672de0e9314bf6df4947c2a040756630644d9",
+    "agent/graphmine_agent/learning/adapter_review.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "agent/graphmine_agent/learning/adapter_workflows.py": "983fe356689dd1b42457a5edeceaa84b6a05a0539c3f7766324350901f31d01a",
+    "agent/graphmine_agent/learning/analytics_queries.py": "19a460a4cc7bbe50ad5a79c22f762fd222e2c261baddc3a043b783de9dfee1b1",
+    "agent/graphmine_agent/learning/business_curriculum.py": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e",
+    "agent/graphmine_agent/learning/business_eval.py": "79690c067c8970134844756eb940a985b0bad8801876fc2d0c1effb214ea9e35",
+    "agent/graphmine_agent/learning/business_questions.py": "be434b7d19de01af6fb1efa6d0a7d440a8cb2145b064695b11870f57b0e18c91",
+    "agent/graphmine_agent/learning/business_workflows.py": "4a6a7cad745154b7cb0adc3f17df360099312a3ee3c3c00a888a7c0eae03296b",
+    "agent/graphmine_agent/learning/catalog_audit.py": "04a4e92c23c4f53a894ef510b80251cdf6b99db044cb268b7b5bf375f14adb1e",
+    "agent/graphmine_agent/learning/catalog_compare.py": "a40d8614263fdbf7256b45c4589a24c4f6b692ebd68a408d9caceec7a7b98a4c",
+    "agent/graphmine_agent/learning/catalog_grade.py": "fbba5b4aaa25b42f49fa2d7492a089973553623841a60c76e1a7ff3751ab27e1",
+    "agent/graphmine_agent/learning/catalog_reference.py": "f25f1eb15140657f20890eb28a24c6ad04489d1dc3a6193120fcf241e16748d6",
+    "agent/graphmine_agent/learning/catalog_replay.py": "ef402b3622b4637d54489c79d0fa6c3423bfc8ab479a8924bef9cb034352d71d",
+    "agent/graphmine_agent/learning/catalog_suite.py": "d4bce53394f5179106949d20c58e937958b4ac8ec615f81a37104b34589d43ed",
+    "agent/graphmine_agent/learning/cli.py": "b40522f3a6b6ec8fff7636d0cbe46739bdb189091ad79df01a9746c880cce488",
+    "agent/graphmine_agent/learning/codex.py": "e54bec1c8b27e8d29cd993057056c8f3bfe2d2884be6fe7db4cab666e3fc2488",
+    "agent/graphmine_agent/learning/collection_only.py": "77e964f823962d10f1ebaebf63b33491dc232cd35cb18a602491e9eae9eb2b78",
+    "agent/graphmine_agent/learning/corpus.py": "28426df22611b633b670b352bdbd8b463246c086c6a24ca33bb1603f06f8dbb5",
+    "agent/graphmine_agent/learning/data_selection.py": "dd46a5df60414326adf2e49d8ff1e723969e7974f0c6b518a2d6d08997ad61b4",
+    "agent/graphmine_agent/learning/dual_conversations.py": "b1306f9c23262ee3b807ab3abe72d652af447a6388a7cbbbaca39d26ea52b83c",
+    "agent/graphmine_agent/learning/dual_corpus.py": "88f51d46e8c45e87ea43581d5bc288d788dd91cb66e2c89b35cd610406dc7e77",
+    "agent/graphmine_agent/learning/dual_eval.py": "be116d0fc960328021797967612b45d29a507fff37607236f7c964bf5c65c277",
+    "agent/graphmine_agent/learning/dual_finetune.py": "741dba75a00ad6e6cb316719c0a89c322a6b36201e72bd6d31f6c32309997cde",
+    "agent/graphmine_agent/learning/dual_questions.py": "386bb9ecd3a6c7cd274edf5c6b1e3a06bf6125819081895cbfcaea45aee1dbce",
+    "agent/graphmine_agent/learning/dual_recovery.py": "6acdfecf8dce283cdd5ac8587b4bb6e413cae1c907892b7d17072c653e8ea890",
+    "agent/graphmine_agent/learning/dual_review.py": "da314beb58340cb25b782cdd0c6db370dac03c43e3f072e7e353711e48676b38",
+    "agent/graphmine_agent/learning/dual_teacher.py": "38f2bf9cde59cdad39c2f1380c4473912f63f3a0d59e517bfdc1831e4dd9eac3",
+    "agent/graphmine_agent/learning/dual_workflows.py": "4809730d157aac5b2cc558cc839b098461cda6a619347629c54f30af51d26696",
+    "agent/graphmine_agent/learning/failure_candidates.py": "0ecd4bd56d60a9ac2298497d4ee86a4093bd6a5f2ce2febd036aa93e7a6cd6cd",
+    "agent/graphmine_agent/learning/finetune.py": "eb82044cbfcffd93298b13a9b5ea8fd007b50111c8d34c89f1c0edbe0f039c77",
+    "agent/graphmine_agent/learning/full_corpus.py": "b79e36f6588ae5eeb8e17956026ca28f59fb60502c8078e4de9af6c2e0ad585d",
+    "agent/graphmine_agent/learning/full_cycle.py": "465fad192d370b70ae44a42bc765f628b83c728c4bd1084d04281c2ccdcac6d5",
+    "agent/graphmine_agent/learning/full_train.py": "f4067dc7b8e416a4d10aeba3c5a5949add24dfc2d623e6a00ac73d4ce19803e6",
+    "agent/graphmine_agent/learning/inference.py": "3023803c04ccd7f531b3c86e6053c83451686e25fd2552f09a59e7609d1e1ded",
+    "agent/graphmine_agent/learning/meaning.py": "3c311efeda051b8bebdc0469e4e6cc95baa5afbcb296b7ef38bd115597823a62",
+    "agent/graphmine_agent/learning/oracles.py": "1fc123db7341013db41fdb16a2f82057b9e1374efb8d735cbe868e6241f415a2",
+    "agent/graphmine_agent/learning/pipeline.py": "48530cd37e6c7bd55ecb326650074eaf76b0a7c3aa4732ab06bb69ba579c4545",
+    "agent/graphmine_agent/learning/presentation_checks.py": "af7ba952b04b0eb3867c24308351159227a622220d136b475ea2fc51f2dfb6d3",
+    "agent/graphmine_agent/learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "agent/graphmine_agent/learning/realworld.py": "abab014d564a29f0cadea7cf3d4258f7b18f2f88531cb2a911b6ff0510d1a821",
+    "agent/graphmine_agent/learning/realworld_cases.py": "b5102f1f7e0f69a1c62ab786282d8fc46bec187c5a785d3e773935be1b46d1a0",
+    "agent/graphmine_agent/learning/realworld_eval.py": "0a67a79a71b82cc556df2dc65974870da8307c21910c0275acf176e1f4c3d8b0",
+    "agent/graphmine_agent/learning/reusable_data.py": "8b0027db41f5ae8e65bd9fc4b4191afc6ae1d9f3181c3f9ff59c3384c11013a4",
+    "agent/graphmine_agent/learning/review.py": "6d80d189514e402b0313076c08c52b4332d5955e7da420f4f5fdb0522f738ee0",
+    "agent/graphmine_agent/learning/review_export.py": "3f6ea7880fad4113a1df506f7566960fd160a2fbd9ebec333117f3feb6bde9ed",
+    "agent/graphmine_agent/learning/serving_adapter.py": "485b15c324c194596f24f526a77944fa84858e14bd85c2f20fa5ce6764dbd507",
+    "agent/graphmine_agent/learning/teacher.py": "ff1ff2960631abfc02d410af5ea7fefd6a6a28f22ebd48d7d9ceaa9e1255d819",
+    "agent/graphmine_agent/learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+    "agent/graphmine_agent/llm.py": "a75fcff150612da8c9e55e698ce7b2d27ef6d9260bbb5934b80995b527c61609",
+    "agent/graphmine_agent/mcp.py": "4ae616802c3e18dc5e96758ab924da9f465a62a15b2a91e75fce9e7f181db1db",
+    "agent/graphmine_agent/models.py": "50251702ba3e4c61ca4a4f74bcc2b7982141d97e19fa9d8003b66d3cd10a44f8",
+    "agent/graphmine_agent/native_ingestion.py": "1f3d9c8fcf958aebf2f70e823d9247620ac2cbd513c169e8c55bb7362b3a642c",
+    "agent/graphmine_agent/ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+    "agent/graphmine_agent/planning.py": "bcbf32fff78b72a62bad018d9e4b2b4047e74dc6598d21c148a93e537c963d43",
+    "agent/graphmine_agent/presentation.py": "9e64444b889753fb2d7102477d01301b95fe5b26e93f81f29ca47b5e369153a9",
+    "agent/graphmine_agent/profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+    "agent/graphmine_agent/reporting.py": "4c5d195eb79ed7432e849f4ae8b9a73cb38a3511e3021444b2cc03437543262d",
+    "agent/graphmine_agent/results.py": "28f0acb4135b5c541647a1a2984eb54e16e18094f48b1d12099d4361c52e5a50",
+    "agent/graphmine_agent/selector.py": "9df8959a0c33f9c645360285cb19ef60df0a0fa2edf5e37a3e6e83876244e68d",
+    "agent/graphmine_agent/smoke.py": "f00c6794494ccd502b3475bc7013e35689178a17d9ac18b85b86844f53ac7f14",
+    "agent/graphmine_agent/terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+    "agent/graphmine_agent/usability.py": "23f31bb2e0d39ce626ec30e44c47f8b19f47614a44c9db4d8f4a512838db80a5",
+    "agent/graphmine_agent/visualization.py": "ad2f3f96812b5d0db128e0ecdb3313342d1b7adb0ede75437d1a0963edaad71c"
+  },
+  "sources_unchanged_during_run": true,
+  "stage_observations": [
+    {
+      "stage": "family",
+      "question": "Return relationships whose recorded amount is at least 30.",
+      "result": {
+        "families": [
+          "query"
+        ],
+        "message": "The task is to filter edge records by an attribute threshold (amount >= 30), which is a basic lookup/filtering operation covered by the query family.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 5.524371610954404
+    },
+    {
+      "stage": "operation",
+      "question": "Return relationships whose recorded amount is at least 30.",
+      "result": {
+        "operations": [
+          "edge-filter"
+        ],
+        "reroute_families": [],
+        "message": "Select edges where the recorded 'amount' attribute is at least 30 (>= 30). The edge-filter operation with an edge_filters predicate on the 'amount' field satisfies this directly.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 9.284122118726373
+    },
+    {
+      "stage": "plan",
+      "question": "Return relationships whose recorded amount is at least 30.",
+      "result": {
+        "status": "ready",
+        "message": "Filter edges where amount >= 30.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "filter_amount_gte_30",
+              "operation": "edge-filter",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "edge_filters": [
+                  {
+                    "field": "amount",
+                    "op": "gte",
+                    "value": 30
+                  }
+                ]
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "elapsed_seconds": 14.741211827844381
+    },
+    {
+      "stage": "plan",
+      "question": "Return relationships whose recorded amount is at least 30.",
+      "result": {
+        "status": "ready",
+        "message": "Filtering edges by attributes.amount >= 30.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "filter_amount_gte_30",
+              "operation": "edge-filter",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "edge_filters": [
+                  {
+                    "field": "attributes.amount",
+                    "op": "gte",
+                    "value": 30
+                  }
+                ]
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "elapsed_seconds": 13.074861424043775
+    },
+    {
+      "stage": "family",
+      "question": "Keep relationships with amount at least 30, extract their endpoint graph, then count its relationships.",
+      "result": {
+        "families": [
+          "query"
+        ],
+        "message": "The task filters edges by an attribute threshold, extracts the subgraph induced by those edges, and counts the resulting edges\u2014all of which are filtering, subgraph extraction, and aggregation operations covered by the query family.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 21.713718807324767
+    },
+    {
+      "stage": "operation",
+      "question": "Keep relationships with amount at least 30, extract their endpoint graph, then count its relationships.",
+      "result": {
+        "operations": [
+          "query-subgraph",
+          "graph-aggregate"
+        ],
+        "reroute_families": [],
+        "message": "Pipeline: (1) query-subgraph in edges mode with edge_filters amount>=30 to extract the endpoint graph from qualifying relationships; (2) graph-aggregate on the resulting subgraph with scope=edges, metric=count to count its relationships.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 33.98842357844114
+    },
+    {
+      "stage": "plan",
+      "question": "Keep relationships with amount at least 30, extract their endpoint graph, then count its relationships.",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "cause": "the JSON object must be str, bytes or bytearray, not NoneType",
+      "elapsed_seconds": 105.11815729551017
+    },
+    {
+      "stage": "family",
+      "question": "Find vertices within two outgoing hops of A excluding A, induce their graph, then count its relationships.",
+      "result": {
+        "families": [
+          "query"
+        ],
+        "message": "The task is a neighborhood expansion (two outgoing hops from A, excluding A), a subgraph induction, and an edge count, all of which are lookup, filtering, subgraph extraction, and aggregation operations covered by the query family.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 26.429349711164832
+    },
+    {
+      "stage": "operation",
+      "question": "Find vertices within two outgoing hops of A excluding A, induce their graph, then count its relationships.",
+      "result": {
+        "operations": [
+          "neighbors",
+          "query-subgraph",
+          "graph-aggregate"
+        ],
+        "reroute_families": [],
+        "message": "Three sequential operations in the query family: (1) neighbors to find vertices within 2 outgoing hops of A (include_seed=false excludes A by default), (2) query-subgraph in vertex mode to induce the subgraph on those vertices, (3) graph-aggregate with scope=edges and metric=count to count the relationships in the induced subgraph.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 17.836232541128993
+    },
+    {
+      "stage": "plan",
+      "question": "Find vertices within two outgoing hops of A excluding A, induce their graph, then count its relationships.",
+      "result": {
+        "status": "ready",
+        "message": "Plan constructed: find 2-hop outgoing neighbors of A (excluding A), induce their subgraph, then count edges.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "s1",
+              "operation": "neighbors",
+              "input": {
+                "step": "main",
+                "port": "graph"
+              },
+              "parameters": {
+                "entity": "A",
+                "hops": 2
+              },
+              "bindings": {}
+            },
+            {
+              "id": "s2",
+              "operation": "query-subgraph",
+              "input": {
+                "step": "main",
+                "port": "graph"
+              },
+              "parameters": {
+                "mode": "vertices"
+              },
+              "bindings": {
+                "vertices": {
+                  "step": "s1",
+                  "port": "vertices"
+                }
+              }
+            },
+            {
+              "id": "s3",
+              "operation": "graph-aggregate",
+              "input": {
+                "step": "s2",
+                "port": "graph"
+              },
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "elapsed_seconds": 50.394421046599746
+    },
+    {
+      "stage": "plan",
+      "question": "Find vertices within two outgoing hops of A excluding A, induce their graph, then count its relationships.",
+      "result": {
+        "status": "ready",
+        "message": "Plan constructed: find 2-hop outgoing neighbors of A (excluding A), induce their subgraph, then count edges.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "s1",
+              "operation": "neighbors",
+              "input": {
+                "step": "main",
+                "port": "graph"
+              },
+              "parameters": {
+                "entity": "A",
+                "hops": 2
+              },
+              "bindings": {}
+            },
+            {
+              "id": "s2",
+              "operation": "query-subgraph",
+              "input": {
+                "step": "main",
+                "port": "graph"
+              },
+              "parameters": {
+                "mode": "vertices"
+              },
+              "bindings": {
+                "vertices": {
+                  "step": "s1",
+                  "port": "vertices"
+                }
+              }
+            },
+            {
+              "id": "s3",
+              "operation": "graph-aggregate",
+              "input": {
+                "step": "s2",
+                "port": "graph"
+              },
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "elapsed_seconds": 45.52229776419699
+    },
+    {
+      "stage": "family",
+      "question": "Sum outgoing relationship amounts per vertex. Look up the top vertex's record; break a tie by the smallest string ID.",
+      "result": {
+        "families": [
+          "query"
+        ],
+        "message": "The task aggregates outgoing edge amounts per vertex, selects the maximum (with a lexicographic tie-break), and retrieves that vertex's record\u2014all basic lookup, filtering, and aggregation operations covered by the query family.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 11.725886283442378
+    },
+    {
+      "stage": "operation",
+      "question": "Sum outgoing relationship amounts per vertex. Look up the top vertex's record; break a tie by the smallest string ID.",
+      "result": {
+        "operations": [
+          "graph-aggregate",
+          "node-lookup"
+        ],
+        "reroute_families": [],
+        "message": "graph-aggregate (scope=edges, metric=sum, field=amount, group_by=source vertex, direction=out) produces the per-vertex outgoing amount totals. node-lookup then retrieves the record of the vertex with the maximum total, using lexicographically smallest vertex ID as the tie-breaker.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 29.722531516104937
+    },
+    {
+      "stage": "plan",
+      "question": "Sum outgoing relationship amounts per vertex. Look up the top vertex's record; break a tie by the smallest string ID.",
+      "result": {
+        "status": "ready",
+        "message": "Plan constructed: aggregate outgoing edge amounts per source vertex (descending, top 1), then look up that vertex's full record.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "sum_outgoing_per_vertex",
+              "operation": "graph-aggregate",
+              "input": {
+                "step": "main",
+                "port": "graph"
+              },
+              "parameters": {
+                "metric": "sum",
+                "field": "amount",
+                "group_by": "source",
+                "order": "descending",
+                "result_limit": 1
+              },
+              "bindings": {}
+            },
+            {
+              "id": "lookup_top_record",
+              "operation": "node-lookup",
+              "input": {
+                "step": "main",
+                "port": "graph"
+              },
+              "parameters": {},
+              "bindings": {
+                "vertices": {
+                  "step": "sum_outgoing_per_vertex",
+                  "port": "scores"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "elapsed_seconds": 112.27065367810428
+    },
+    {
+      "stage": "plan",
+      "question": "Sum outgoing relationship amounts per vertex. Look up the top vertex's record; break a tie by the smallest string ID.",
+      "result": {
+        "status": "unsupported",
+        "message": "The graph-aggregate operation's 'scores' output port (type: vertex_scores) cannot be bound to the node-lookup 'vertices' parameter (type: array of string/integer IDs). No available operation can extract a single vertex ID from the aggregate result to feed into a record lookup. The tie-breaking by smallest string ID also cannot be expressed as a secondary sort key in the available operations.",
+        "plan": null
+      },
+      "elapsed_seconds": 109.20009291917086
+    },
+    {
+      "stage": "family",
+      "question": "Keep relationships with amount at least 30, extract their graph, then run breadth-first search from A and return reached vertices.",
+      "result": {
+        "families": [
+          "query",
+          "routes"
+        ],
+        "message": "The task filters edges by amount >= 30 and extracts the resulting subgraph (query), then performs BFS reachability from vertex A to list all reached vertices (routes).",
+        "status": "selected"
+      },
+      "elapsed_seconds": 22.520783104002476
+    },
+    {
+      "stage": "operation",
+      "question": "Keep relationships with amount at least 30, extract their graph, then run breadth-first search from A and return reached vertices.",
+      "result": {
+        "operations": [
+          "query-subgraph",
+          "breadth-first-search"
+        ],
+        "reroute_families": [],
+        "message": "Step 1: query-subgraph in 'edges' mode with edge_filters [{field: amount, op: >=, value: 30}] to keep only relationships with amount at least 30 and extract the induced subgraph (endpoints retained). Step 2: breadth-first-search with sources [A] on the extracted graph to return all reached vertices. No ambiguity in the objective.",
+        "status": "selected"
+      },
+      "elapsed_seconds": 46.47206419892609
+    },
+    {
+      "stage": "plan",
+      "question": "Keep relationships with amount at least 30, extract their graph, then run breadth-first search from A and return reached vertices.",
+      "result": {
+        "status": "ready",
+        "message": "Plan constructed: filter edges with amount >= 30, extract edge-induced subgraph, then BFS from A.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "filter_edges",
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "mode": "edges",
+                "edge_filters": [
+                  {
+                    "field": "attributes.amount",
+                    "op": "gte",
+                    "value": 30
+                  }
+                ]
+              },
+              "bindings": {}
+            },
+            {
+              "id": "bfs_from_A",
+              "operation": "breadth-first-search",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "sources": [
+                  "A"
+                ]
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "elapsed_seconds": 23.579979360103607
+    }
+  ]
+}

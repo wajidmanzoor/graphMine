@@ -41,6 +41,23 @@ the same actual-input validation used for manually edited plans. Routing may
 request clarification; model accuracy is reported separately from executable
 algorithm correctness. A plan is never a computed answer.
 
+For the local vLLM server started with `--reasoning-parser qwen3`, set
+`GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET=1536` to reserve part of the 3072-token
+response allowance for the structured decision. This optional server extension
+is omitted when the setting is blank; leave it blank on servers that do not
+support `thinking_token_budget`. Its value must be smaller than
+`GRAPHMINE_LLM_PLAN_MAX_TOKENS`. Reasoning remains enabled.
+
+Model generation assigns each argument either a literal or a reference to an
+earlier result. Operation selection sees output-port contracts, and generated
+references can name only ports from selected operations. The server converts
+that representation to the public workflow
+format, rejects duplicate argument names and validates the complete dependency
+graph. There is at most one family reroute and one plan repair. Individual model
+requests have a 120-second deadline and the entire planning attempt is bounded
+at 360 seconds. See the [acceptance report](NATIVE_ANALYTICS_ACCEPTANCE.md) for
+the measured accuracy and timing of the local model.
+
 ## Construct a graph from tables
 
 Choose **Build a graph from tables**, upload CSV files, and select the endpoint

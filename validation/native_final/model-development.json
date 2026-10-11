@@ -1,0 +1,203 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "model",
+  "model_accuracy_measured": false,
+  "suite_sha256": "baa825745a42806243bd536cd3a587cce88473e73819c031344f954bf7d970e8",
+  "capabilities_sha256": "799f86781cc42ccc7092973c2efee1ddc1a22b8ecb92d963a522682752ee6ff2",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.4709487408399582
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.3996185455471277
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.3959460873156786
+    },
+    {
+      "id": "source_record_filter",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.3961999285966158
+    },
+    {
+      "id": "outgoing_neighbors",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.3942119311541319
+    },
+    {
+      "id": "incoming_neighbors",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.394242936745286
+    },
+    {
+      "id": "two_hops",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.39556863345205784
+    },
+    {
+      "id": "shared_neighbors",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.3963593374937773
+    },
+    {
+      "id": "shortest_paths",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.39277199655771255
+    },
+    {
+      "id": "all_paths",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.3976805601269007
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.4057814609259367
+    },
+    {
+      "id": "branch_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.40427462942898273
+    },
+    {
+      "id": "neighbor_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.4087023679167032
+    },
+    {
+      "id": "isolate_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.40380297787487507
+    },
+    {
+      "id": "empty_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.411186246201396
+    },
+    {
+      "id": "path_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.4115273002535105
+    },
+    {
+      "id": "common_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.41954004764556885
+    },
+    {
+      "id": "top_sender",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.4046171735972166
+    },
+    {
+      "id": "filtered_reachability",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.4123025890439749
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 0.4067419618368149
+    }
+  ],
+  "passed": 0,
+  "total": 20,
+  "by_slice": {
+    "dependent": {
+      "passed": 0,
+      "total": 10
+    },
+    "lookup": {
+      "passed": 0,
+      "total": 10
+    }
+  }
+}

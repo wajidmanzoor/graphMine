@@ -1,0 +1,83 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "model",
+  "model_accuracy_measured": true,
+  "suite_sha256": "3bfc08f2d607c1987c1f23c9d6d0568592854de1a12ceca29f35b5010974ee46",
+  "capabilities_sha256": "b9bfa03589fe1cfb82b4976e6e5aaf79541011f8b4a6a316e28f3d60bdbcf0cf",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Please specify the exact string ID to look up.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Please specify the exact string ID to look up."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.6819365713745356
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Please specify the exact attribute name and value to filter by.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [],
+            "message": "Please specify the exact attribute name and value to filter by."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.4706822093576193
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which specific attribute or field on the relationships contains the 'recorded amount'?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Which specific attribute or field on the relationships contains the 'recorded amount'?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.8988370951265097
+    }
+  ],
+  "passed": 0,
+  "total": 3,
+  "by_slice": {
+    "lookup": {
+      "passed": 0,
+      "total": 3
+    }
+  }
+}

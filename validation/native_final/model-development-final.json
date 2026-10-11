@@ -1,0 +1,1201 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "model",
+  "model_accuracy_measured": true,
+  "suite_sha256": "baa825745a42806243bd536cd3a587cce88473e73819c031344f954bf7d970e8",
+  "capabilities_sha256": "b9bfa03589fe1cfb82b4976e6e5aaf79541011f8b4a6a316e28f3d60bdbcf0cf",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Look up vertex A and return its record.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "lookup_A",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": [
+                  "A"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "lookup_A",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertices": [
+                    "A"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "lookup_A"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "e0d1cbb437fcd6e55c5e690013e1bd004bee18d3a0ca7a978c4560078c93e057",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a direct vertex lookup by string ID, which is a basic entity retrieval covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "Select vertex A by its string ID using node-lookup with vertices=[A]. No additional operations or reroutes are needed.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Look up vertex A and return its record."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A"
+          ],
+          "observed": [
+            "A"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "80fae974-5a71-4532-87cf-4f1429308c50",
+      "workflow_hash": "e0d1cbb437fcd6e55c5e690013e1bd004bee18d3a0ca7a978c4560078c93e057",
+      "elapsed_seconds": 24.96586056612432
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Filter vertices where attributes.branch equals east.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "filter-east",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertex_filters": [
+                  {
+                    "field": "attributes.branch",
+                    "op": "eq",
+                    "value": "east"
+                  }
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "filter-east",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertex_filters": [
+                    {
+                      "field": "attributes.branch",
+                      "op": "eq",
+                      "value": "east"
+                    }
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "filter-east"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "f7f046e59ae8ec6f7fcf2b66ac73b757a3402a498047953c2e3a12a693aded9f",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The request is a simple attribute-based vertex filter (branch == east), which is a basic lookup/filtering operation covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "Select vertices where attributes.branch equals 'east' using a single vertex filter predicate (field: attributes.branch, op: eq, value: east).",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Filter vertices where attributes.branch equals east."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "C"
+          ],
+          "observed": [
+            "A",
+            "C"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "2d788244-f27e-43fd-8969-1d1c8a5b05d0",
+      "workflow_hash": "f7f046e59ae8ec6f7fcf2b66ac73b757a3402a498047953c2e3a12a693aded9f",
+      "elapsed_seconds": 28.785012666136026
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "The edge-filter operation rejected 'amount' as a record field. Could you clarify how edge attributes should be referenced in the filter \u2014 for example, is the correct field name 'attributes.amount' or something else?",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is to filter edges by an attribute threshold (amount >= 30), which is a basic record lookup and filtering operation.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "edge-filter"
+            ],
+            "reroute_families": [],
+            "message": "Filter edges where the recorded 'amount' attribute is at least 30 (>= 30) using the edge-filter operation with an edge_filters predicate on field 'amount', op 'gte', value 30.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Filter edges where amount is at least 30."
+          },
+          {
+            "stage": "plan",
+            "status": "needs_information",
+            "message": "The edge-filter operation rejected 'amount' as a record field. Could you clarify how edge attributes should be referenced in the filter \u2014 for example, is the correct field name 'attributes.amount' or something else?"
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 67.58991746045649
+    },
+    {
+      "id": "source_record_filter",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 99.76543353684247
+    },
+    {
+      "id": "outgoing_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Direct outgoing neighbors of A, excluding A itself.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "s1",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "A"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "s1",
+                "operation": "neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "entity": "A"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "s1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "9da6bd360e729356510749e060ed2dbbcb9693b552ecc1fcbc2ac87503f4d60d",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "Finding the direct out-neighbors of vertex A (one-hop outgoing neighbors) with a simple exclusion filter is a basic neighbor lookup and filtering task.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "neighbors"
+            ],
+            "reroute_families": [],
+            "message": "Direct 1-hop outgoing neighbor lookup from A with include_seed=false (default) exactly matches the request.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Direct outgoing neighbors of A, excluding A itself."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "B",
+            "C"
+          ],
+          "observed": [
+            "B",
+            "C"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "462668ef-650d-4406-a6ad-02804200196d",
+      "workflow_hash": "9da6bd360e729356510749e060ed2dbbcb9693b552ecc1fcbc2ac87503f4d60d",
+      "elapsed_seconds": 44.224776642397046
+    },
+    {
+      "id": "incoming_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Find in-neighbors of C (directed, 1 hop, excluding C itself).",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "in_neighbors_of_C",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "C",
+                "direction": "in"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "in_neighbors_of_C",
+                "operation": "neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "entity": "C",
+                  "direction": "in"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "in_neighbors_of_C"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "d90b8958dbc838c7db5b2be7df36d1c79ce335923cf313bde7a2bbf8b58bd897",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The question asks for the in-neighbors of vertex C (directed edges pointing into C) with a self-exclusion filter, which is a basic neighbor lookup and filtering task covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "neighbors"
+            ],
+            "reroute_families": [],
+            "message": "Find the direct in-neighbors of vertex C (entities with an edge targeting C), excluding C itself. Use the neighbors operation with entity=C, direction=in, hops=1, include_seed=false.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Find in-neighbors of C (directed, 1 hop, excluding C itself)."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "B"
+          ],
+          "observed": [
+            "A",
+            "B"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "c06f9853-675b-48ab-93a9-6036c169373e",
+      "workflow_hash": "d90b8958dbc838c7db5b2be7df36d1c79ce335923cf313bde7a2bbf8b58bd897",
+      "elapsed_seconds": 43.136413253843784
+    },
+    {
+      "id": "two_hops",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "reachable",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "A",
+                "hops": 2
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "reachable",
+                "operation": "neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "entity": "A",
+                  "hops": 2
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "reachable"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "907fd02a2c0ba6c7f57d6d4a0437227cf2f80dd8dbf19858463829c10a7372c5",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "routes",
+              "query"
+            ],
+            "message": "The task is a bounded reachability traversal (vertices within two outgoing hops from A), which is a routes problem, combined with a simple filter to exclude the source vertex, which falls under query.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "neighbors"
+            ],
+            "reroute_families": [],
+            "message": "The 'neighbors' operation (query family) directly provides hop-constrained directed reachability. With entity=A, hops=2, direction=out, and include_seed=false (default), it returns exactly the vertices reachable from A within two outgoing hops, excluding A.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "B",
+            "C",
+            "D"
+          ],
+          "observed": [
+            "B",
+            "C",
+            "D"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "3b2ad2c1-0926-4c63-8c8f-ed3e98129bdc",
+      "workflow_hash": "907fd02a2c0ba6c7f57d6d4a0437227cf2f80dd8dbf19858463829c10a7372c5",
+      "elapsed_seconds": 59.376995449885726
+    },
+    {
+      "id": "shared_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "s1",
+              "operation": "common-neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "source": "A",
+                "target": "B"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "s1",
+                "operation": "common-neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "source": "A",
+                  "target": "B"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "s1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "c87cc24646ce6af29411e44254282843a578dd6e92f9788cb00aa54f715b5c7a",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task asks to find vertices that have incoming edges from both A and B, which is a basic neighbor-lookup and filtering operation on the edge set.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "common-neighbors"
+            ],
+            "reroute_families": [],
+            "message": "The question asks for vertices that are direct out-neighbors of both A and B (i.e., the intersection of A's out-neighborhood and B's out-neighborhood). The `common-neighbors` operation with source=A, target=B, and direction=out (default) computes exactly this intersection in one step.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "C"
+          ],
+          "observed": [
+            "C"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "77c58eb0-258b-49de-ba41-9d8d93fe55bb",
+      "workflow_hash": "c87cc24646ce6af29411e44254282843a578dd6e92f9788cb00aa54f715b5c7a",
+      "elapsed_seconds": 69.19274246133864
+    },
+    {
+      "id": "shortest_paths",
+      "slice": "lookup",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 136.56765674427152
+    },
+    {
+      "id": "all_paths",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "All outgoing vertex-simple paths from A to D within three hops.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "s1",
+              "operation": "query-paths",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "source": "A",
+                "target": "D",
+                "mode": "all_simple"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "s1",
+                "operation": "query-paths",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "source": "A",
+                  "target": "D",
+                  "mode": "all_simple"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "s1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "e2e8eb1edfe2ea2ed149c844f0ed00f4077f4240d9d4462027618fe6ada2be82",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "routes",
+              "query"
+            ],
+            "message": "The task is to enumerate all directed vertex-simple paths from A to D with a hop limit of 3, which is a path-finding/enumeration problem (routes) expressed as a filtered listing of path records (query).",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "query-paths"
+            ],
+            "reroute_families": [],
+            "message": "Single operation 'query-paths' (family: query) covers the request: enumerate all vertex-simple paths from A to D, direction out, max_hops 3, mode all_simple.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "All outgoing vertex-simple paths from A to D within three hops."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "count",
+          "passed": true,
+          "expected": 2,
+          "observed": 2
+        }
+      ],
+      "passed": true,
+      "workflow_id": "667cf37f-7472-4e75-9ea5-20c06bddcec3",
+      "workflow_hash": "e2e8eb1edfe2ea2ed149c844f0ed00f4077f4240d9d4462027618fe6ada2be82",
+      "elapsed_seconds": 108.10119482502341
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "The task filters edges by an amount threshold (query), extracts the subgraph induced by their endpoints (prepare), and then counts the resulting relationships (query).",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "edge-filter",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Pipeline: (1) edge-filter selects edges with amount >= 30, yielding their endpoint vertex set; (2) query-subgraph in vertex-induced mode builds the subgraph on those endpoints; (3) graph-aggregate with scope=edges, metric=count returns the relationship count of that subgraph.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: filter edges with amount >= 30, extract the edge-induced subgraph, then count its edges."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Corrected the count step: the graph from the extraction step is supplied as the step input (not as a parameter binding), and the scope/metric parameters remain as literals."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 156.07180169969797
+    },
+    {
+      "id": "branch_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 53.88559963181615
+    },
+    {
+      "id": "neighbor_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "The task requires finding neighbors within a bounded hop count and counting edges (query), plus extracting the induced subgraph from the discovered vertex set (prepare).",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "neighbors",
+              "induced-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [
+              "query",
+              "prepare",
+              "routes"
+            ],
+            "message": "Pipeline: (1) neighbors(entity=A, hops=2, direction=out, include_seed=false) \u2192 vertex_set; (2) induced-subgraph(mode=induced, vertices_or_seeds=<vertex_set>) \u2192 graph; (3) graph-aggregate(scope=edges, metric=count) on that graph \u2192 scalar count. The induced-subgraph operation lives in the 'subgraphs' family (rerouted in); the remaining two are in 'query'. No ambiguity in the mathematical objective: 'two outgoing hops' fixes direction and depth, 'excluding A' maps to include_seed=false, 'induce their graph' is a vertex-induced subgraph, and 'count its relationships' is an edge count on the induced subgraph.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: 3-step DAG (neighbors \u2192 induced-subgraph \u2192 graph-aggregate)."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Fixed step3: the induced subgraph is supplied as the step's graph input, and scope/metric are literal string parameters rather than bindings."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 170.20728214271367
+    },
+    {
+      "id": "isolate_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 73.45140958949924
+    },
+    {
+      "id": "empty_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "The task filters vertices by a branch attribute (query), extracts the induced subgraph on those vertices (prepare), and counts the edges in that subgraph (query).",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "node-lookup",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Pipeline: (1) node-lookup filters vertices where branch == 'south' (empty result is valid per user); (2) query-subgraph in vertex-induced mode extracts the subgraph on those vertices; (3) graph-aggregate with scope=edges, metric=count returns the relationship count of the extracted subgraph.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: select south-branch vertices, extract induced subgraph, count its edges."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Fixed the invalid binding: the subgraph is supplied via the step's input reference, not as a parameter binding. Removed the conflicting literal+binding on 'scope'."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 163.1976203341037
+    },
+    {
+      "id": "path_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 80.28888033889234
+    },
+    {
+      "id": "common_network",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 75.6457628197968
+    },
+    {
+      "id": "top_sender",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 122.0671012122184
+    },
+    {
+      "id": "filtered_reachability",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 85.37303601950407
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 163.18835070170462
+    }
+  ],
+  "passed": 7,
+  "total": 20,
+  "by_slice": {
+    "dependent": {
+      "passed": 0,
+      "total": 10
+    },
+    "lookup": {
+      "passed": 7,
+      "total": 10
+    }
+  }
+}

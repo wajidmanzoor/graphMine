@@ -14,6 +14,8 @@ Start with the [native library guide](docs/NATIVE_CORE_MIGRATION.md),
 [analysis workspace guide](docs/ANALYTICS_WORKSPACE.md). Exact source, binary,
 dependency and profile evidence controls what the application can execute.
 GPU coverage applies to declared parameter profiles, not every CPU operation.
+The [acceptance report](docs/NATIVE_ANALYTICS_ACCEPTANCE.md) records completed
+checks, measured model accuracy and remaining limits.
 
 The [repaired algorithm guide](library/docs/repaired_algorithms.md) documents the nine repaired integrations, their exact profiles, installation, and agent JSON contracts.
 
@@ -82,9 +84,9 @@ Compilation happens once. Later queries reuse the same executable and select
 the operation and backend at runtime. See the [library guide](library/README.md)
 for component-level C++ usage, optional dependencies, and tests.
 
-## Intelligent LAN system
+## Original V1 LAN system
 
-The [agent service](agent/) adds a domain-first conversational layer
+The original [agent service](agent/) adds a domain-first conversational layer
 without moving correctness decisions into the language model. One local Qwen
 instance produces schema-constrained plans and result interpretations; a
 deterministic orchestrator validates every request against the problem catalog
@@ -92,7 +94,8 @@ and invokes the precompiled CLI on a separate GPU. The bundled browser UI
 supports file uploads, streamed job progress, follow-up questions, and
 analyst-selected interactive visualizations. Its source is
 [`agent/graphmine_agent/static/`](agent/graphmine_agent/static/): `index.html`
-is the entry point, with behavior in `app.js` and presentation in `styles.css`.
+is served at `/classic`, with behavior in `app.js` and presentation in `styles.css`.
+The new default workspace is `analytics.html`, documented in the workspace guide above.
 The [system architecture page](docs/system/) documents the full two-machine
 flow, GPU isolation, planner/analyst boundary, and deployment sequence.
 

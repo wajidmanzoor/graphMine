@@ -1,0 +1,468 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "model",
+  "model_accuracy_measured": true,
+  "suite_sha256": "baa825745a42806243bd536cd3a587cce88473e73819c031344f954bf7d970e8",
+  "capabilities_sha256": "b9bfa03589fe1cfb82b4976e6e5aaf79541011f8b4a6a316e28f3d60bdbcf0cf",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which specific fields or attributes from the vertex record should be returned?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Which specific fields or attributes from the vertex record should be returned?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.66097310744226
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which attribute value should be used for the filter?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Which attribute value should be used for the filter?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.533255008980632
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which attribute should be used to determine the 'recorded amount' for the relationships?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Which attribute should be used to determine the 'recorded amount' for the relationships?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.774197453632951
+    },
+    {
+      "id": "source_record_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "What does 'sent' mean in this context? For example, should I return outgoing edges from vertices with branch='east', or something else?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [],
+            "message": "What does 'sent' mean in this context? For example, should I return outgoing edges from vertices with branch='east', or something else?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.8761934395879507
+    },
+    {
+      "id": "outgoing_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which specific relationship type or edge attribute should be used to determine 'directly reachable'?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Which specific relationship type or edge attribute should be used to determine 'directly reachable'?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.7709464989602566
+    },
+    {
+      "id": "incoming_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Please specify the exact vertex ID for 'C' to ensure the query targets the correct node.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Please specify the exact vertex ID for 'C' to ensure the query targets the correct node."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.810633923858404
+    },
+    {
+      "id": "two_hops",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which vertex should be treated as the starting point A?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "routes"
+            ],
+            "message": "Which vertex should be treated as the starting point A?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.5369446855038404
+    },
+    {
+      "id": "shared_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Please specify the exact relationship type or edge attribute filter to use for 'direct relationships'.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Please specify the exact relationship type or edge attribute filter to use for 'direct relationships'."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.8118413239717484
+    },
+    {
+      "id": "shortest_paths",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which edge attribute should define the path cost, or should the paths be ranked purely by hop count?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "routes"
+            ],
+            "message": "Which edge attribute should define the path cost, or should the paths be ranked purely by hop count?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.846278704702854
+    },
+    {
+      "id": "all_paths",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The requested operation to list all vertex-simple paths with a hop limit is not supported by the available operations in the 'routes' family.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [
+              "routes"
+            ],
+            "message": "The requested operation to list all vertex-simple paths with a hop limit is not supported by the available operations in the 'routes' family."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.9097067303955555
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which attribute should be used for the 'amount' filter?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "prepare"
+            ],
+            "message": "Which attribute should be used for the 'amount' filter?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.5984220895916224
+    },
+    {
+      "id": "branch_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which attribute value should be treated as the east branch?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Which attribute value should be treated as the east branch?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.7591694202274084
+    },
+    {
+      "id": "neighbor_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which vertex should be used as the starting point for the two-hop neighborhood?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Which vertex should be used as the starting point for the two-hop neighborhood?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.8711913507431746
+    },
+    {
+      "id": "isolate_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which relationships should be counted for E: all incident edges, only outgoing edges, or only incoming edges?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Which relationships should be counted for E: all incident edges, only outgoing edges, or only incoming edges?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 3.0607448052614927
+    },
+    {
+      "id": "empty_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The requested vertex attribute value 'south' does not appear in the provided input metadata or samples, and the available families do not include a generic attribute-based vertex selection operation.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The requested vertex attribute value 'south' does not appear in the provided input metadata or samples, and the available families do not include a generic attribute-based vertex selection operation."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.8481754139065742
+    },
+    {
+      "id": "path_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which vertex is the source (A) and which is the target (D) for the hop-shortest paths?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "routes",
+              "prepare",
+              "query"
+            ],
+            "message": "Which vertex is the source (A) and which is the target (D) for the hop-shortest paths?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 3.3355918526649475
+    },
+    {
+      "id": "common_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which relationship type or edge attribute should be counted in the induced subgraph?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Which relationship type or edge attribute should be counted in the induced subgraph?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.8668555840849876
+    },
+    {
+      "id": "top_sender",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which vertex attribute should be returned for the top vertex?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Which vertex attribute should be returned for the top vertex?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 3.0760007686913013
+    },
+    {
+      "id": "filtered_reachability",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which vertex attribute or edge attribute should be used to identify 'A' if it is not a vertex ID?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "prepare",
+              "routes"
+            ],
+            "message": "Which vertex attribute or edge attribute should be used to identify 'A' if it is not a vertex ID?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 4.538801630958915
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which vertex should be the start of the breadth-first search?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "prepare",
+              "routes"
+            ],
+            "message": "Which vertex should be the start of the breadth-first search?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 4.659062782302499
+    }
+  ],
+  "passed": 0,
+  "total": 20,
+  "by_slice": {
+    "dependent": {
+      "passed": 0,
+      "total": 10
+    },
+    "lookup": {
+      "passed": 0,
+      "total": 10
+    }
+  },
+  "model": "Qwen/Qwen3.8-27B-FP8"
+}

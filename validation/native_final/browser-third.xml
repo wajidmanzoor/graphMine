@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="57.188" timestamp="2026-10-11T06:22:45.386432-04:00" hostname="guoglambda01"><testcase classname="browser_tests.test_analytics_workspace" name="test_lookup_family_filters_and_links_original_ids" time="5.073" /><testcase classname="browser_tests.test_analytics_workspace" name="test_aggregate_exact_values_and_query_truncation_views" time="5.750" /><testcase classname="browser_tests.test_analytics_workspace" name="test_interactive_review_edit_linked_views_and_large_ids" time="7.487" /><testcase classname="browser_tests.test_analytics_workspace" name="test_expert_dependent_plan_and_incomplete_output" time="38.726"><failure message="selenium.common.exceptions.TimeoutException: Message:">agent/browser_tests/test_analytics_workspace.py:523: in test_expert_dependent_plan_and_incomplete_output
+    status(browser, "ready")
+agent/browser_tests/test_analytics_workspace.py:282: in status
+    WebDriverWait(browser, 35).until(
+.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: in until
+    raise TimeoutException(message, screen, stacktrace)
+E   selenium.common.exceptions.TimeoutException: Message:</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="3" failures="0" skipped="0" tests="3" time="127.848" timestamp="2026-10-11T06:16:33.392649-04:00" hostname="guoglambda01"><testcase classname="browser_tests.test_analytics_workspace" name="test_lookup_family_filters_and_links_original_ids" time="42.649"><error message="failed on setup with &quot;selenium.common.exceptions.TimeoutException: Message:&quot;">agent/browser_tests/test_analytics_workspace.py:225: in browser
+    WebDriverWait(driver, 40).until(
+.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: in until
+    raise TimeoutException(message, screen, stacktrace)
+E   selenium.common.exceptions.TimeoutException: Message:</error></testcase><testcase classname="browser_tests.test_analytics_workspace" name="test_aggregate_exact_values_and_query_truncation_views" time="41.978"><error message="failed on setup with &quot;selenium.common.exceptions.TimeoutException: Message:&quot;">agent/browser_tests/test_analytics_workspace.py:225: in browser
+    WebDriverWait(driver, 40).until(
+.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: in until
+    raise TimeoutException(message, screen, stacktrace)
+E   selenium.common.exceptions.TimeoutException: Message:</error></testcase><testcase classname="browser_tests.test_analytics_workspace" name="test_interactive_review_edit_linked_views_and_large_ids" time="41.970"><error message="failed on setup with &quot;selenium.common.exceptions.TimeoutException: Message:&quot;">agent/browser_tests/test_analytics_workspace.py:225: in browser
+    WebDriverWait(driver, 40).until(
+.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: in until
+    raise TimeoutException(message, screen, stacktrace)
+E   selenium.common.exceptions.TimeoutException: Message:</error></testcase></testsuite></testsuites>

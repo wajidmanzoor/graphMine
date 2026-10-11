@@ -1,0 +1,143 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "model",
+  "model_accuracy_measured": true,
+  "suite_sha256": "2a130c88778809fac26d08df4e3778f2db1d139a386ec6dc9f71300d8f9cc63e",
+  "capabilities_sha256": "b9bfa03589fe1cfb82b4976e6e5aaf79541011f8b4a6a316e28f3d60bdbcf0cf",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The request asks to return the raw record of a specific vertex by ID. The 'query' family is described as looking up entities, filtering, finding neighbors, or aggregating values, but does not explicitly cover simple record retrieval or projection of raw attributes without aggregation or relationship traversal. While 'query' is the closest match, the specific operation of 'return its record' (raw data access) is not clearly supported by the provided family descriptions which focus on analytical or relational operations.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The request asks to return the raw record of a specific vertex by ID. The 'query' family is described as looking up entities, filtering, finding neighbors, or aggregating values, but does not explicitly cover simple record retrieval or projection of raw attributes without aggregation or relationship traversal. While 'query' is the closest match, the specific operation of 'return its record' (raw data access) is not clearly supported by the provided family descriptions which focus on analytical or relational operations."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 4.887944873422384
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The request asks to return vertices based on an attribute filter. While the 'query' family description mentions 'Look up entities', the specific operation of filtering vertices by attribute equality is a basic record query. However, looking closely at the provided families, 'query' is the most appropriate fit for 'Look up entities, filter relationships...'. Let me re-evaluate. The description for 'query' is 'Look up entities, filter relationships, find neighbors and paths, or aggregate recorded values.' This explicitly covers looking up entities (vertices) and filtering. Therefore, 'query' is the correct family.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The request asks to return vertices based on an attribute filter. While the 'query' family description mentions 'Look up entities', the specific operation of filtering vertices by attribute equality is a basic record query. However, looking closely at the provided families, 'query' is the most appropriate fit for 'Look up entities, filter relationships...'. Let me re-evaluate. The description for 'query' is 'Look up entities, filter relationships, find neighbors and paths, or aggregate recorded values.' This explicitly covers looking up entities (vertices) and filtering. Therefore, 'query' is the correct family."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 5.634107591584325
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The request asks to return relationships based on a recorded attribute value, which is a direct record query. However, the provided 'query' family description explicitly includes 'filter relationships', making it the correct choice. Wait, let me re-read the instructions. 'Select every family or operation needed for the requested task.' The task is 'Return relationships whose recorded amount is at least 30.' This is a filtering task on edges. The 'query' family description says: 'Look up entities, filter relationships, find neighbors and paths, or aggregate recorded values.' This matches perfectly. Why did I think it was unsupported? I shouldn't declare it unsupported. I should select 'query'.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The request asks to return relationships based on a recorded attribute value, which is a direct record query. However, the provided 'query' family description explicitly includes 'filter relationships', making it the correct choice. Wait, let me re-read the instructions. 'Select every family or operation needed for the requested task.' The task is 'Return relationships whose recorded amount is at least 30.' This is a filtering task on edges. The 'query' family description says: 'Look up entities, filter relationships, find neighbors and paths, or aggregate recorded values.' This matches perfectly. Why did I think it was unsupported? I shouldn't declare it unsupported. I should select 'query'."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 6.267702484503388
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The request requires filtering edges by attribute, extracting a subgraph, and counting edges. While 'query' handles filtering and 'prepare' handles extraction, the specific combination of extracting an induced subgraph from filtered edges and then counting the resulting edges is not explicitly supported as a single atomic family operation in the provided catalog without further clarification on how 'extract endpoint graph' maps to standard operations (e.g., is it induced subgraph on vertices? or just the filtered edges?). However, looking closer: 'query' can filter relationships. 'prepare' can extract a graph. 'query' can count. The task is a pipeline. The prompt asks to select *families*. 'query' is needed for filtering and counting. 'prepare' is needed for extraction. Let's re-evaluate if this is 'unsupported'. The prompt says 'Do not declare an operation unsupported merely because this stage supplies only family descriptions.' It also says 'Select all families needed'. The task is: ",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The request requires filtering edges by attribute, extracting a subgraph, and counting edges. While 'query' handles filtering and 'prepare' handles extraction, the specific combination of extracting an induced subgraph from filtered edges and then counting the resulting edges is not explicitly supported as a single atomic family operation in the provided catalog without further clarification on how 'extract endpoint graph' maps to standard operations (e.g., is it induced subgraph on vertices? or just the filtered edges?). However, looking closer: 'query' can filter relationships. 'prepare' can extract a graph. 'query' can count. The task is a pipeline. The prompt asks to select *families*. 'query' is needed for filtering and counting. 'prepare' is needed for extraction. Let's re-evaluate if this is 'unsupported'. The prompt says 'Do not declare an operation unsupported merely because this stage supplies only family descriptions.' It also says 'Select all families needed'. The task is: "
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 8.363114483654499
+    },
+    {
+      "id": "isolate_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The request requires extracting an induced subgraph, which is not explicitly covered by the provided family descriptions. 'prepare' mentions 'extract' but typically refers to data preparation/sampling rather than specific graph-theoretic induced subgraph extraction followed by counting. 'query' covers looking up and counting, but the specific 'induced graph' operation is ambiguous in the provided catalog. To be safe and accurate, I will mark it as unsupported due to the specific 'induced graph' extraction step not being clearly mapped to a single family without assuming 'prepare' includes it.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The request requires extracting an induced subgraph, which is not explicitly covered by the provided family descriptions. 'prepare' mentions 'extract' but typically refers to data preparation/sampling rather than specific graph-theoretic induced subgraph extraction followed by counting. 'query' covers looking up and counting, but the specific 'induced graph' operation is ambiguous in the provided catalog. To be safe and accurate, I will mark it as unsupported due to the specific 'induced graph' extraction step not being clearly mapped to a single family without assuming 'prepare' includes it."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 5.439236018806696
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The request requires filtering edges by attribute (amount >= 30) and then performing a graph traversal (BFS). The 'prepare' family handles graph extraction/filtering, and 'routes' or 'query' might handle traversal, but the specific combination of 'extract graph based on edge attribute filter' followed by 'BFS' is not clearly mapped to a single standard family in the provided list without assuming specific operation capabilities. However, looking closer: 'prepare' covers 'extract' a graph. 'routes' covers 'reachability' (BFS is a reachability algorithm). So 'prepare' and 'routes' are the candidates. Let's re-evaluate if this is 'unsupported'. The prompt says 'Select every family or operation needed'. 'prepare' for the extraction/filtering step. 'routes' for the BFS/reachability step. Therefore, it is supported.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The request requires filtering edges by attribute (amount >= 30) and then performing a graph traversal (BFS). The 'prepare' family handles graph extraction/filtering, and 'routes' or 'query' might handle traversal, but the specific combination of 'extract graph based on edge attribute filter' followed by 'BFS' is not clearly mapped to a single standard family in the provided list without assuming specific operation capabilities. However, looking closer: 'prepare' covers 'extract' a graph. 'routes' covers 'reachability' (BFS is a reachability algorithm). So 'prepare' and 'routes' are the candidates. Let's re-evaluate if this is 'unsupported'. The prompt says 'Select every family or operation needed'. 'prepare' for the extraction/filtering step. 'routes' for the BFS/reachability step. Therefore, it is supported."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 7.671512596309185
+    }
+  ],
+  "passed": 0,
+  "total": 6,
+  "by_slice": {
+    "dependent": {
+      "passed": 0,
+      "total": 3
+    },
+    "lookup": {
+      "passed": 0,
+      "total": 3
+    }
+  }
+}

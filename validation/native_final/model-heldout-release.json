@@ -1,0 +1,2050 @@
+{
+  "scope": "20 assistant-authored held-out questions over new fictional graphs, frozen after development prompt changes and before model evaluation; no human labels, public NLP benchmark, or training use. Independent subset, cut, path-relaxation and record oracles.",
+  "suite_sha256": "fc50960d12e4f23cdf696281a6f3f3451d57346c7fb706ad0cedb26b2010c74b",
+  "model_accuracy_measured": true,
+  "reviewed_examples_excluded": true,
+  "cases": [
+    {
+      "id": "triangles",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Count undirected triangles in the whole network.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step-1",
+              "operation": "triangle-counting",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step-1",
+                "operation": "triangle-counting",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step-1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "ed0bfd12f7f0249749e81dfd9447b19a192e3d132eb5adf7f9e0e9fc9ac5916d",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "patterns"
+            ],
+            "message": "Counting undirected triangles (3-cycles) is a small-shape counting task, which falls under the patterns family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "triangle-counting"
+            ],
+            "reroute_families": [],
+            "message": "Count undirected triangles in the whole graph using the dedicated triangle-counting operation in count mode.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Count undirected triangles in the whole network."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 4,
+          "passed": true,
+          "observed": 4
+        }
+      ],
+      "workflow_hash": "ed0bfd12f7f0249749e81dfd9447b19a192e3d132eb5adf7f9e0e9fc9ac5916d",
+      "result_sha256": "efe85a244ebbb973a8b6cc0c36b643e747f71562d184491f3323701be8b6b26f",
+      "elapsed_seconds": 40.550416093319654
+    },
+    {
+      "id": "maximum_clique",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed: exact maximum clique on the undirected simple projection of the input graph, returning one optimal group.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step-max-clique",
+              "operation": "maximum-clique",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step-max-clique",
+                "operation": "maximum-clique",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step-max-clique"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "3db175aa9131c0d8ac7442a2989536daab027e9ed0ce27c91788cd7d3800e4b7",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "groups"
+            ],
+            "message": "The user requests the globally largest complete group (maximum clique), which is a core 'complete group' problem in the groups family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "maximum-clique"
+            ],
+            "reroute_families": [],
+            "message": "The request is unambiguous: one globally largest complete group (maximum clique), not a merely maximal one. The exact `maximum-clique` operation in the groups family matches directly. Default `return_all_ties: false` returns a single optimum, satisfying 'one maximum clique'.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: exact maximum clique on the undirected simple projection of the input graph, returning one optimal group."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "maximum-clique",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641"
+          ],
+          "passed": true,
+          "observed": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641"
+          ]
+        }
+      ],
+      "workflow_hash": "3db175aa9131c0d8ac7442a2989536daab027e9ed0ce27c91788cd7d3800e4b7",
+      "result_sha256": "e6975fffee30f55a465d99ccb5454e064225bb9dfdb61aaac30b688ee80b859f",
+      "elapsed_seconds": 36.859751146286726
+    },
+    {
+      "id": "independent_optimum",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Exact maximum independent set of the full undirected graph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step-1",
+              "operation": "maximum-independent-set",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step-1",
+                "operation": "maximum-independent-set",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step-1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "80a72a81c8af18ff9f7734bb9b3af110181b1570f6a9ea46ecf056e5e170ab3c",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "selection"
+            ],
+            "message": "Finding a maximum independent set is a classic non-conflicting-item selection problem: choose the largest subset of vertices with no edges among them.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "maximum-independent-set"
+            ],
+            "reroute_families": [],
+            "message": "Exact maximum independent set on the full undirected graph; the 'maximum' (largest-size) and 'exact' qualifiers map directly to the maximum-independent-set operation in the selection family. No ambiguity or additional operations required.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Exact maximum independent set of the full undirected graph."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "maximum-independent-set",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "station-6992",
+              "station-7267",
+              "station-7497"
+            ],
+            [
+              "station-3720",
+              "station-6992",
+              "station-7267"
+            ],
+            [
+              "station-6992",
+              "station-7497",
+              "station-9446"
+            ],
+            [
+              "station-3720",
+              "station-6992",
+              "station-9446"
+            ],
+            [
+              "station-6992",
+              "station-7497",
+              "station-8405"
+            ],
+            [
+              "station-3720",
+              "station-6992",
+              "station-8405"
+            ],
+            [
+              "station-3720",
+              "station-6992",
+              "station-8641"
+            ]
+          ],
+          "passed": true,
+          "observed": [
+            "station-7267",
+            "station-7497",
+            "station-6992"
+          ]
+        }
+      ],
+      "workflow_hash": "80a72a81c8af18ff9f7734bb9b3af110181b1570f6a9ea46ecf056e5e170ab3c",
+      "result_sha256": "fe41772f0fd4ae690fe1c3cac692ff03d2afee257ebe002277b68d21d8f0480c",
+      "elapsed_seconds": 39.45818583853543
+    },
+    {
+      "id": "cover_optimum",
+      "passed": false,
+      "planning": {
+        "status": "unsupported",
+        "message": "Exact minimum vertex cover on an undirected simple graph with no bound k. The minimum-vertex-cover operation in 'exact' mode (default) with k left null directly satisfies the request. No additional operations or reroutes are needed.",
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "selection"
+            ],
+            "message": "Finding an exact minimum vertex cover is a covering/selection problem: choose the smallest set of vertices that covers every edge, which maps directly to the 'cover connections' capability in the selection family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "minimum-vertex-cover"
+            ],
+            "reroute_families": [],
+            "message": "Exact minimum vertex cover on an undirected simple graph with no bound k. The minimum-vertex-cover operation in 'exact' mode (default) with k left null directly satisfies the request. No additional operations or reroutes are needed.",
+            "status": "unsupported"
+          }
+        ],
+        "plan": null
+      },
+      "elapsed_seconds": 28.95484741963446
+    },
+    {
+      "id": "components",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed for weakly connected components including isolated vertices.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "wcc",
+              "operation": "connected-components",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "connectivity_mode": "weakly_connected"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "wcc",
+                "operation": "connected-components",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "connectivity_mode": "weakly_connected"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "wcc"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "43c6ca59419b2fc9c25461e4ba4029ea871b4e6b66635c353f9f8a090dc08bb1",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "groups"
+            ],
+            "message": "Finding weakly connected components (including isolated vertices) is a connected-group decomposition task, which falls under the 'groups' family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "connected-components"
+            ],
+            "reroute_families": [],
+            "message": "The request maps directly to the connected-components operation with connectivity_mode set to weakly_connected (the default). Isolated vertices are included by definition in connected-component decomposition; no additional operation or parameter is needed.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed for weakly connected components including isolated vertices."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "connected-components",
+          "port": "groups",
+          "kind": "partition",
+          "value": [
+            [
+              "station-7267",
+              "station-9446",
+              "station-8405",
+              "station-8641",
+              "station-7497",
+              "station-3720"
+            ],
+            [
+              "station-6992"
+            ]
+          ],
+          "passed": true,
+          "observed": [
+            {
+              "group": 0,
+              "vertices": [
+                "station-7267",
+                "station-9446",
+                "station-8405",
+                "station-8641",
+                "station-7497",
+                "station-3720"
+              ],
+              "size": 6
+            },
+            {
+              "group": 1,
+              "vertices": [
+                "station-6992"
+              ],
+              "size": 1
+            }
+          ]
+        }
+      ],
+      "workflow_hash": "43c6ca59419b2fc9c25461e4ba4029ea871b4e6b66635c353f9f8a090dc08bb1",
+      "result_sha256": "04a11d6176592cbe429ee840d4d44082e65be2f79c0e8136725535728b965fda",
+      "elapsed_seconds": 53.16224026493728
+    },
+    {
+      "id": "bfs",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Breadth-first search from station-7267 on the full graph with no depth limit.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "bfs-1",
+              "operation": "breadth-first-search",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "sources": [
+                  "station-7267"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "bfs-1",
+                "operation": "breadth-first-search",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "sources": [
+                    "station-7267"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "bfs-1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "4469c9e9097931be4be15c9a6215c39e75a0bd0046c6f585f839ead57285f5b1",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "routes"
+            ],
+            "message": "BFS from a specified source with no depth limit is a reachability/traversal task that finds all reachable vertices and the BFS ordering, which falls under routes.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "breadth-first-search"
+            ],
+            "reroute_families": [],
+            "message": "BFS from station-7267 with no depth limit (default null) on the undirected graph. Weights are ignored per the operation contract.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Breadth-first search from station-7267 on the full graph with no depth limit."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "breadth-first-search",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641",
+            "station-7497",
+            "station-3720"
+          ],
+          "passed": true,
+          "observed": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641",
+            "station-7497",
+            "station-3720"
+          ]
+        }
+      ],
+      "workflow_hash": "4469c9e9097931be4be15c9a6215c39e75a0bd0046c6f585f839ead57285f5b1",
+      "result_sha256": "e4f425fa1014d7c494bcd802f35893e9287538c39e4f305bb8bbd1a7fe063768",
+      "elapsed_seconds": 47.57341280952096
+    },
+    {
+      "id": "weighted_distance",
+      "passed": false,
+      "planning": {
+        "status": "needs_information",
+        "message": "The request is unambiguous: compute single-source shortest paths from station-7267 using edge weights as travel costs with no cutoff. The operation single-source-shortest-paths in the routes family matches exactly. Parameters: source = station-7267, cutoff = null (no cutoff), return_predecessors = true (default). CPU device yields exact rational costs.",
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "routes"
+            ],
+            "message": "The task is a single-source shortest-path computation using edge weights as travel costs, which is a core routing/pathfinding operation.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [],
+            "reroute_families": [],
+            "message": "The request is unambiguous: compute single-source shortest paths from station-7267 using edge weights as travel costs with no cutoff. The operation single-source-shortest-paths in the routes family matches exactly. Parameters: source = station-7267, cutoff = null (no cutoff), return_predecessors = true (default). CPU device yields exact rational costs.",
+            "status": "selected"
+          }
+        ],
+        "plan": null
+      },
+      "elapsed_seconds": 28.93871258199215
+    },
+    {
+      "id": "filtered_records",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step-1",
+              "operation": "edge-filter",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "edge_filters": [
+                  {
+                    "field": "attributes.amount",
+                    "op": "gte",
+                    "value": 50
+                  }
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step-1",
+                "operation": "edge-filter",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "edge_filters": [
+                    {
+                      "field": "attributes.amount",
+                      "op": "gte",
+                      "value": 50
+                    }
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step-1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "7b5fcd8aa336d3033d1af679cdaf8ff11bf95ff9fd8756253db0c81b7976b316",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The request is a straightforward attribute filter on edge records (attributes.amount >= 50), which is a basic lookup/filtering task covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "edge-filter"
+            ],
+            "reroute_families": [],
+            "message": "Select all edge records where attributes.amount >= 50 using edge-filter with an edge_filters predicate on the amount field.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "edge-filter",
+          "port": "edges",
+          "kind": "set",
+          "value": [
+            "route-2",
+            "route-6"
+          ],
+          "passed": true,
+          "observed": [
+            "route-2",
+            "route-6"
+          ]
+        }
+      ],
+      "workflow_hash": "7b5fcd8aa336d3033d1af679cdaf8ff11bf95ff9fd8756253db0c81b7976b316",
+      "result_sha256": "951caace9884c1bcaec2bd2c8af2af05d1503ddf04eac22e9713c3b52c6a1040",
+      "elapsed_seconds": 30.234423156827688
+    },
+    {
+      "id": "incoming_records",
+      "passed": false,
+      "planning": {
+        "status": "needs_information",
+        "message": "The request is unambiguous: find all 1-hop neighbors of station-3720 on an undirected graph, excluding the seed vertex. A single `neighbors` operation from the `query` family covers this exactly with entity=station-3720, hops=1, direction=both (undirected traversal), include_seed=false (default, excludes the vertex itself), and no edge filters or result limit.",
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a direct one-hop neighbor lookup for a specific vertex on an undirected graph, which is explicitly covered by the query family's 'find neighbors' capability.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [],
+            "reroute_families": [],
+            "message": "The request is unambiguous: find all 1-hop neighbors of station-3720 on an undirected graph, excluding the seed vertex. A single `neighbors` operation from the `query` family covers this exactly with entity=station-3720, hops=1, direction=both (undirected traversal), include_seed=false (default, excludes the vertex itself), and no edge filters or result limit.",
+            "status": "selected"
+          }
+        ],
+        "plan": null
+      },
+      "elapsed_seconds": 26.760696737095714
+    },
+    {
+      "id": "vertex_filter",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step-1",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertex_filters": [
+                  {
+                    "field": "attributes.zone",
+                    "op": "eq",
+                    "value": "blue"
+                  }
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step-1",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertex_filters": [
+                    {
+                      "field": "attributes.zone",
+                      "op": "eq",
+                      "value": "blue"
+                    }
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step-1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "570ac374bc26243aea7c9ed759e19377cc26197269c7d86822939e52e2b08c52",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a simple attribute-based vertex filter (zone == blue), which is a basic lookup/filtering operation covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "Select all vertices whose attributes.zone equals 'blue' using a vertex filter predicate on the node-lookup operation.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-9446",
+            "station-8641",
+            "station-3720"
+          ],
+          "passed": true,
+          "observed": [
+            "station-9446",
+            "station-8641",
+            "station-3720"
+          ]
+        }
+      ],
+      "workflow_hash": "570ac374bc26243aea7c9ed759e19377cc26197269c7d86822939e52e2b08c52",
+      "result_sha256": "a42817642dd11f7050078d6a2a1aece9c13fa1f6c1ef56b4a256b257ab6e7efc",
+      "elapsed_seconds": 30.6081189699471
+    },
+    {
+      "id": "aggregate",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Sum attributes.amount over all edge records as one overall total; do not group the rows.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "sum_amount",
+              "operation": "graph-aggregate",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "metric": "sum",
+                "field": "attributes.amount"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "sum_amount",
+                "operation": "graph-aggregate",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "metric": "sum",
+                  "field": "attributes.amount"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "sum_amount"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "161093b3c688f714d4cd217f9133af9704a443404059abff0604698ee70444b1",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a single aggregate (sum) of the edge attribute `amount` across all edge records with no grouping, which falls under looking up and aggregating recorded values.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Sum attributes.amount over all edge records as one overall total; do not group the rows.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Sum attributes.amount over all edge records as one overall total; do not group the rows."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "graph-aggregate",
+          "port": "rows",
+          "kind": "aggregate_total",
+          "value": 327,
+          "passed": true,
+          "observed": [
+            {
+              "group": null,
+              "value": 327,
+              "exact_value": {
+                "numerator": "327",
+                "denominator": "1"
+              },
+              "rounded": false,
+              "record_count": 8
+            }
+          ]
+        }
+      ],
+      "workflow_hash": "161093b3c688f714d4cd217f9133af9704a443404059abff0604698ee70444b1",
+      "result_sha256": "42491145d60457aa53867b7c000cdf1223f4dd7b27c58ae4b46356c7536ae0ac",
+      "elapsed_seconds": 36.390305092558265
+    },
+    {
+      "id": "numeric_identity",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Look up the vertex with integer ID 0 and return its full record.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "lookup-vertex-0",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": [
+                  0
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "lookup-vertex-0",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertices": [
+                    0
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "lookup-vertex-0"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "f26f299134bbe01b2235b4ef8fd3e12cef8de41309023c24bac3485b0f21b8fe"
+            }
+          },
+          "workflow_hash": "0eb9487f75f0811c6cf1cb91cb6be5ff40eb92372704d77f2ef6c2424f63d567",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a direct vertex lookup by ID (integer 0) to retrieve its full record, which is a basic record-retrieval operation covered by the query family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "Select the vertex whose ID is the integer 0 (distinct from the string '0') and return its full record via node-lookup with vertices=[0].",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Look up the vertex with integer ID 0 and return its full record."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "kind": "equal",
+          "value": [
+            0
+          ],
+          "passed": true,
+          "observed": [
+            0
+          ]
+        }
+      ],
+      "workflow_hash": "0eb9487f75f0811c6cf1cb91cb6be5ff40eb92372704d77f2ef6c2424f63d567",
+      "result_sha256": "7b462e751cf042e38e645ba516ed0c4ae353f415aa135bddc2501aaa297e0893",
+      "elapsed_seconds": 29.842856446281075
+    },
+    {
+      "id": "string_identity",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "lookup_string_zero",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": [
+                  "0"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "lookup_string_zero",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertices": [
+                    "0"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "lookup_string_zero"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "f26f299134bbe01b2235b4ef8fd3e12cef8de41309023c24bac3485b0f21b8fe"
+            }
+          },
+          "workflow_hash": "5753e87214609982e961fa593e9a3307f9a5fdf00e891604470f344fbe4412cf",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a direct vertex record lookup by ID, which is a basic query operation.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "Selecting node-lookup to retrieve the full record of the vertex whose ID is the string '0' (distinct from the integer 0). The vertices parameter will be set to [the string '0'] to perform a typed-ID lookup.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "kind": "equal",
+          "value": [
+            "0"
+          ],
+          "passed": true,
+          "observed": [
+            "0"
+          ]
+        }
+      ],
+      "workflow_hash": "5753e87214609982e961fa593e9a3307f9a5fdf00e891604470f344fbe4412cf",
+      "result_sha256": "057b1b328dd86af9335747d28fa9eb892dca5da2dce782ee170bf429dc11f1d6",
+      "elapsed_seconds": 30.559816483408213
+    },
+    {
+      "id": "flow_capacity",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Exact max-flow/min-cut from 'supply' to 'demand' on the directed graph with edge-weight capacities, returning the cut side.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "s1",
+              "operation": "max-flow-min-cut",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "source": "supply",
+                "sink": "demand"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "s1",
+                "operation": "max-flow-min-cut",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "source": "supply",
+                  "sink": "demand"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "s1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "956049dc1c40c2271ebd54ae5a5285497e5d58efbe78e2343aafb74b83c6b5e3"
+            }
+          },
+          "workflow_hash": "dde23e5d2282b9ff3b44f5e25a7feec89254c836e3c34a006e51e8b96cdb3bd1",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "routes"
+            ],
+            "message": "Maximum flow with directed edge weights as capacities and the resulting min-cut partition is a capacity/flow problem squarely in the routes family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "max-flow-min-cut"
+            ],
+            "reroute_families": [],
+            "message": "Exact max-flow from 'supply' to 'demand' with edge-weight capacities and cut-side output. All parameters use documented defaults (capacity_mode=edge_weight, return_cut_side=true, solution_quality=exact).",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Exact max-flow/min-cut from 'supply' to 'demand' on the directed graph with edge-weight capacities, returning the cut side."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "max-flow-min-cut",
+          "port": "value",
+          "kind": "equal",
+          "value": 9,
+          "passed": true,
+          "observed": 9
+        }
+      ],
+      "workflow_hash": "dde23e5d2282b9ff3b44f5e25a7feec89254c836e3c34a006e51e8b96cdb3bd1",
+      "result_sha256": "1043209c9d6079e7fa6f75d83e2076caa1f85871f5952bed795a390a3c3e6af3",
+      "elapsed_seconds": 49.35005241818726
+    },
+    {
+      "id": "derived_network",
+      "passed": false,
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: Unknown workflow step reference",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query",
+              "patterns"
+            ],
+            "message": "The task requires extracting a vertex-induced subgraph (query) and then counting triangles, i.e., small 3-cycle shapes, within that derived subgraph (patterns).",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "query-subgraph",
+              "triangle-counting"
+            ],
+            "reroute_families": [],
+            "message": "Two operations are needed: (1) query-subgraph in vertex mode to induce the subgraph on the four named stations, then (2) triangle-counting on the resulting derived graph. Both are unambiguous; no clarification required.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Induced subgraph on the four stations, then exact triangle count on that derived graph."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: induce subgraph on the four named stations, then count triangles in the derived graph."
+          }
+        ]
+      },
+      "elapsed_seconds": 115.01241500303149
+    },
+    {
+      "id": "followup_scope",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "BFS from station-7267 limited to 2 hops on the same input graph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "reach",
+              "operation": "breadth-first-search",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "sources": [
+                  "station-7267"
+                ],
+                "depth_limit": 2
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "reach",
+                "operation": "breadth-first-search",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "sources": [
+                    "station-7267"
+                  ],
+                  "depth_limit": 2
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "reach"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "dec4d2e06446610f989efff5a6704f14fe953c6d84e6ac736a889fe8d3eb749b",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "routes"
+            ],
+            "message": "The request is a bounded BFS (reachability within 2 hops from a fixed source), which is a path/reachability task.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "breadth-first-search"
+            ],
+            "reroute_families": [],
+            "message": "Same BFS from station-7267 on the same graph, now with depth_limit=2 to restrict the search to two hops.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "BFS from station-7267 limited to 2 hops on the same input graph."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "breadth-first-search",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641",
+            "station-7497"
+          ],
+          "passed": true,
+          "observed": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641",
+            "station-7497"
+          ]
+        }
+      ],
+      "workflow_hash": "dec4d2e06446610f989efff5a6704f14fe953c6d84e6ac736a889fe8d3eb749b",
+      "result_sha256": "07aaee800145d52c57368dec8cf4e3176c13fde99fc0611a3d4e7f594bb4dcbd",
+      "elapsed_seconds": 41.69281675107777
+    },
+    {
+      "id": "wrong_family_recovery",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Counting all triangles in the undirected graph using exact triangle counting.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "count-triangles",
+              "operation": "triangle-counting",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "count-triangles",
+                "operation": "triangle-counting",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "count-triangles"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "521bfa41564b4f7b72b9ee2ca81fe822514bb82aba23bdfd36fb03b4003fe925",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "importance"
+            ],
+            "message": "Task family selected by the user."
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "pagerank",
+              "simrank",
+              "degree-centrality",
+              "betweenness-centrality",
+              "personalized-pagerank",
+              "link-prediction",
+              "influence-maximization"
+            ],
+            "reroute_families": [
+              "patterns"
+            ],
+            "message": "The request is to count all triangles (3-cliques) in an undirected graph. This is a small-shape counting task belonging to the 'patterns' family ('Count or match small shapes and ordered events in a network'), not 'importance'. Rerouting to 'patterns' to select the triangle-counting operation. The objective is unambiguous: exact count of all 3-cycles in the undirected simple graph.",
+            "status": "reroute"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "triangle-counting"
+            ],
+            "reroute_families": [],
+            "message": "Count all triangles (3-vertex cliques) in the undirected graph using the dedicated triangle-counting operation in count mode.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Counting all triangles in the undirected graph using exact triangle counting."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 4,
+          "passed": true,
+          "observed": 4
+        }
+      ],
+      "workflow_hash": "521bfa41564b4f7b72b9ee2ca81fe822514bb82aba23bdfd36fb03b4003fe925",
+      "result_sha256": "6b21174ae6dfb8d3475bdb6626069f802bdb194da2847be5abdbfbe9a4a1d3bc",
+      "elapsed_seconds": 55.91998063586652
+    },
+    {
+      "id": "ambiguous_importance",
+      "passed": true,
+      "planning": {
+        "status": "needs_information",
+        "message": "Could you clarify what you mean by 'most important'? Different centrality measures capture different notions of importance in a network. For example: degree centrality (most direct connections), betweenness centrality (most critical for connecting other nodes via shortest paths), or PageRank (most influential under a random-walk model). Which notion of importance are you looking for?",
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "importance"
+            ],
+            "message": "The question asks to rank nodes by their network centrality to identify the most important vertex, which is the core task of the importance family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [],
+            "reroute_families": [],
+            "message": "Could you clarify what you mean by 'most important'? Different centrality measures capture different notions of importance in a network. For example: degree centrality (most direct connections), betweenness centrality (most critical for connecting other nodes via shortest paths), or PageRank (most influential under a random-walk model). Which notion of importance are you looking for?",
+            "status": "needs_information"
+          }
+        ],
+        "plan": null
+      },
+      "elapsed_seconds": 30.006707960739732
+    },
+    {
+      "id": "ambiguous_group",
+      "passed": true,
+      "planning": {
+        "status": "needs_information",
+        "message": "The phrase 'best group of connected stations' is ambiguous about the optimization criterion. Could you clarify what 'best' means here? For example: (a) the densest subgraph (most internal edges per vertex), (b) the largest fully-connected group (maximum clique), (c) the largest connected component, or (d) some other quality measure such as modularity or total internal edge weight?",
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "groups"
+            ],
+            "message": "The task asks to find the best (optimal) connected group of stations, which maps directly to the groups family's scope of identifying connected, dense, or otherwise cohesive subgraphs.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [],
+            "reroute_families": [],
+            "message": "The phrase 'best group of connected stations' is ambiguous about the optimization criterion. Could you clarify what 'best' means here? For example: (a) the densest subgraph (most internal edges per vertex), (b) the largest fully-connected group (maximum clique), (c) the largest connected component, or (d) some other quality measure such as modularity or total internal edge weight?",
+            "status": "needs_information"
+          }
+        ],
+        "plan": null
+      },
+      "elapsed_seconds": 40.232080629095435
+    },
+    {
+      "id": "missing_training",
+      "passed": true,
+      "planning": {
+        "status": "needs_information",
+        "message": "You mentioned your private labels haven't been uploaded yet. Could you please provide the training labels (vertex ID \u2192 label value pairs) so I can set up the classifier? I also need to know which vertices are for training, validation, and testing.",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "learning"
+            ],
+            "message": "The user requests training a supervised node classifier, which is a prediction task using explicit labels on graph nodes.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "node-learning"
+            ],
+            "reroute_families": [],
+            "message": "The mathematical objective is unambiguous: a supervised vertex classifier (classification task on nodes). The correct operation is node-learning. Note: the user states their labels have not been uploaded yet, so the required training_labels parameter will be unavailable at plan time; this is a data-availability gap, not an objective ambiguity.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "needs_information",
+            "message": "You mentioned your private labels haven't been uploaded yet. Could you please provide the training labels (vertex ID \u2192 label value pairs) so I can set up the classifier? I also need to know which vertices are for training, validation, and testing."
+          }
+        ]
+      },
+      "elapsed_seconds": 52.258275831118226
+    }
+  ],
+  "passed": 16,
+  "total": 20,
+  "capabilities_sha256": "70fbb579eb1b68592fa4dd9723e2eb55a5453d49c814de7e44973060a282664b",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "source_files": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/evaluate_analytics_holdout.py": "606e62d5916756239bdb3becc94f75a04bba55e3198b5a123e48577921c64d7d",
+    "validation/native_final/heldout-suite.json": "e72cf9ef78f395ac9af5e13dc6977f929315377cee81b32ca90c6a0175de28d2",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/adapter_server.py": "c6c99b33ab122febd2cc60de839949c34f11a2071dd80177fa5c1ae30093a9c0",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/agent_service.py": "ac2d43861a2a0eae25128607152f80099e6c7997eee219a70a0ef538b7597c20",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/analytics.py": "39444541a7350ec6ca45a8a0e4f80b2c8093522a50739fd1444f9e019a19c857",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/analytics_examples.py": "d8a83de876dc3efc2229516d5c294773a1c77c9e9032944099a0651988d77889",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/analytics_planning.py": "f983407c19a76389d4eeb86fcfca1ea1c12b403ca2779e864c20947f191e74e9",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/analytics_projection.py": "d82d212966f2f272e5953266fb7b8f9f8fc529d3dee3ddabc5e76ff8746cb422",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/analytics_scheduler.py": "c268085c92f600d255d953886440ffe5119a379f0110a9362387a95d3e4d034d",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/answers.py": "bc1c9a5541bd17204b59461d989353383a01cc2371ebbc4a772be2fce3fbd73f",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/api.py": "875c347b969f39ae90b465db75900388bb916e1b86cfa8b81dc966b092da188b",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/benchmarking.py": "ba5c66d9b97554d6153d5aaf0b6b297a9302f1e888253fcf3851aa4ac4b6abe0",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/catalog.py": "1946a9134f7457dde6a16e6d234037302bac44e4273a2ce53d7c3300be938fb7",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/cli.py": "2930fd1c264ced34a594e70d85abdcdae5864cf2afc26be2ccc129f077cd9e38",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/commands.py": "213ab9d2148c78196752a53baa0e7518aa28cf8629140558a6eb46b425fc9f7e",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/config.py": "c41d032bc2256d9924b8942923f1844a2e2f9cc7dd9050a73c24a9cd4713a123",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/database.py": "8b1ca325e718867bdb17405c2486e2bec54ea7e029d5259520fa341b3d113e69",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/evaluation.py": "76aa2a3693626f38df228c8268d3fb61d1380b873eac3b4d599eccdbfcd6017b",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/execution.py": "c1404dbf5274116ed2a797bfe1e4db222f58e79eb8c8e59b54dd96b9df63a0f0",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/graph_store.py": "007fd2f71aaffdd2020b18565d9379275eb5ed312bcc85be2a08e1f60be8b6f9",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/history.py": "b17c8f3253cddca2496269955341a7520e1caa17a9d32d97fb2dbbd1139a0c06",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/jobs.py": "049a7eb9f18ca63ee229c58e0f79a3915f6947bc9cb438162c2726e9c1642193",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/__init__.py": "18ddf5f2ec79711640cab59ce8da25a7ac4f51be8b239a1c0236714f094eca22",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/adapter_eval.py": "7746a5a21eff011159112d2446795d6d01f150ff01d6e77ef9172d03b63713f4",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/adapter_holdout.py": "e7312abd87246a461cd199fe793672de0e9314bf6df4947c2a040756630644d9",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/adapter_review.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/adapter_workflows.py": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/analytics_queries.py": "19a460a4cc7bbe50ad5a79c22f762fd222e2c261baddc3a043b783de9dfee1b1",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/business_curriculum.py": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/business_eval.py": "79690c067c8970134844756eb940a985b0bad8801876fc2d0c1effb214ea9e35",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/business_questions.py": "be434b7d19de01af6fb1efa6d0a7d440a8cb2145b064695b11870f57b0e18c91",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/business_workflows.py": "4a6a7cad745154b7cb0adc3f17df360099312a3ee3c3c00a888a7c0eae03296b",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/cli.py": "d8f0dcdefc809ac07161429b5b00f3ad3e89f112093ef7fc2b1d5fcb1476ebf8",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/codex.py": "03f22ef40f24ed5fb71df8529c24b981e4fcc52bbf91f061cad8eabbd3e9c17a",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/corpus.py": "28426df22611b633b670b352bdbd8b463246c086c6a24ca33bb1603f06f8dbb5",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/finetune.py": "94321639fc9ce6328f1057427cfea3716d231dc87f0a0b038b1412a279291a53",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/inference.py": "21dc642486f8cc8a91092c6eea0eafbde52541c72f1ebc515600ece3bfa933fe",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/meaning.py": "3c311efeda051b8bebdc0469e4e6cc95baa5afbcb296b7ef38bd115597823a62",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/pipeline.py": "48530cd37e6c7bd55ecb326650074eaf76b0a7c3aa4732ab06bb69ba579c4545",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/presentation_checks.py": "af7ba952b04b0eb3867c24308351159227a622220d136b475ea2fc51f2dfb6d3",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/realworld.py": "abab014d564a29f0cadea7cf3d4258f7b18f2f88531cb2a911b6ff0510d1a821",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/realworld_cases.py": "b5102f1f7e0f69a1c62ab786282d8fc46bec187c5a785d3e773935be1b46d1a0",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/realworld_eval.py": "0a67a79a71b82cc556df2dc65974870da8307c21910c0275acf176e1f4c3d8b0",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/review.py": "6d80d189514e402b0313076c08c52b4332d5955e7da420f4f5fdb0522f738ee0",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/review_export.py": "3f6ea7880fad4113a1df506f7566960fd160a2fbd9ebec333117f3feb6bde9ed",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/teacher.py": "ff1ff2960631abfc02d410af5ea7fefd6a6a28f22ebd48d7d9ceaa9e1255d819",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/llm.py": "45bde2d59c1f912c485e8eb9e26f89c62f1e3c1fb92395522fcab6c6ba2f2498",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/mcp.py": "4ae616802c3e18dc5e96758ab924da9f465a62a15b2a91e75fce9e7f181db1db",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/models.py": "3fc6bb8f6c3ef81b6b4e0dddafe1cd9503d0ecebaf00ff1ca37cbf19cd07b78b",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/native_ingestion.py": "1f3d9c8fcf958aebf2f70e823d9247620ac2cbd513c169e8c55bb7362b3a642c",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/planning.py": "2f564b9fd0dbb4b687be19320488d961e0a4cc1699ebfe123ef12a06d6751d8b",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/presentation.py": "ac88977abe3b657243c2567dc47be160a55a150152edd2ab8bd1d700f2347778",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/reporting.py": "6a67ba6bb320443ab837039624052be594082421750308eef7f098a9819106a6",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/results.py": "28f0acb4135b5c541647a1a2984eb54e16e18094f48b1d12099d4361c52e5a50",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/selector.py": "9df8959a0c33f9c645360285cb19ef60df0a0fa2edf5e37a3e6e83876244e68d",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/smoke.py": "f00c6794494ccd502b3475bc7013e35689178a17d9ac18b85b86844f53ac7f14",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/usability.py": "23f31bb2e0d39ce626ec30e44c47f8b19f47614a44c9db4d8f4a512838db80a5",
+    "/tmp/graphmine-analytics-release-agent/graphmine_agent/visualization.py": "0ae31394caf9518d8004d513a3b2e2c4317ab08f937add922554db8542f7939d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/catalog/native_execution_evidence.json": "9ce25294f3e20e68314c46c7945a8d34fef3a098b7196c2c46a39b9ddc34f64c"
+  },
+  "sources_unchanged_during_run": true,
+  "model": {
+    "name": "Qwen/Qwen3.8-27B-FP8",
+    "base_revision": "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+    "reasoning_effort": "medium",
+    "thinking_token_budget": 1536,
+    "max_completion_tokens": 3072,
+    "temperature": 0,
+    "seed": 0
+  }
+}

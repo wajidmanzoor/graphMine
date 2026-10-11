@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="42.724" timestamp="2026-10-11T06:44:58.916115-04:00" hostname="guoglambda01"><testcase classname="tests.test_analytics_hardware" name="test_physical_gpu_concurrency_reservation_and_cancelled_waiter" time="6.913"><failure message="graphmine_agent.analytics.AnalyticsError: Invalid workflow input fields">agent/tests/test_analytics_hardware.py:59: in test_physical_gpu_concurrency_reservation_and_cancelled_waiter
+    checked = await service._call(
+agent/graphmine_agent/analytics.py:313: in _call
+    _, _, final = await asyncio.gather(*tasks)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent/graphmine_agent/analytics.py:293: in receive
+    raise AnalyticsError(error["message"], error["code"])
+E   graphmine_agent.analytics.AnalyticsError: Invalid workflow input fields</failure></testcase><testcase classname="tests.test_analytics_projection" name="test_native_table_join_builds_a_scoped_reusable_input[0]" time="18.031" /><testcase classname="tests.test_analytics_projection" name="test_native_table_join_builds_a_scoped_reusable_input[1]" time="17.533" /></testsuite></testsuites>

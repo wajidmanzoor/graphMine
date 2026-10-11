@@ -1,0 +1,713 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "model",
+  "model_accuracy_measured": true,
+  "suite_sha256": "baa825745a42806243bd536cd3a587cce88473e73819c031344f954bf7d970e8",
+  "capabilities_sha256": "b9bfa03589fe1cfb82b4976e6e5aaf79541011f8b4a6a316e28f3d60bdbcf0cf",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The supplied family descriptions do not identify an operation that can look up a vertex by its string ID and return its record.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The supplied family descriptions do not identify an operation that can look up a vertex by its string ID and return its record."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.4084964338690042
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which vertices should be returned: all matching vertices, or a limited preview?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Which vertices should be returned: all matching vertices, or a limited preview?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.1588587425649166
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The input metadata does not declare a relationship record type, so the requested relationship records cannot be selected.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The input metadata does not declare a relationship record type, so the requested relationship records cannot be selected."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.2539257127791643
+    },
+    {
+      "id": "source_record_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The question is clear, but no supplied family can return relationships sent by vertices in the east branch.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The question is clear, but no supplied family can return relationships sent by vertices in the east branch."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.21014790982008
+    },
+    {
+      "id": "outgoing_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The question is ambiguous: 'directly reachable' could mean one-hop outgoing neighbors or all vertices reachable through any number of outgoing relationships.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The question is ambiguous: 'directly reachable' could mean one-hop outgoing neighbors or all vertices reachable through any number of outgoing relationships."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.5094441063702106
+    },
+    {
+      "id": "incoming_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The graph metadata does not declare a relationship type, so the requested relationship cannot be identified.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The graph metadata does not declare a relationship type, so the requested relationship cannot be identified."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.1985647808760405
+    },
+    {
+      "id": "two_hops",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Which result should be returned: the complete set of reachable vertices, or only the number of reachable vertices?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "routes"
+            ],
+            "message": "Which result should be returned: the complete set of reachable vertices, or only the number of reachable vertices?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.3902167100459337
+    },
+    {
+      "id": "shared_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The question is clear, but no supplied family can identify vertices receiving direct relationships from both A and B.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The question is clear, but no supplied family can identify vertices receiving direct relationships from both A and B."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.256251098588109
+    },
+    {
+      "id": "shortest_paths",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The supplied family descriptions do not identify a family that can enumerate all shortest outgoing paths by hop count within a maximum of three hops.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The supplied family descriptions do not identify a family that can enumerate all shortest outgoing paths by hop count within a maximum of three hops."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.462931200861931
+    },
+    {
+      "id": "all_paths",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The supplied family descriptions do not identify a family that can enumerate all vertex-simple paths from A to D within three hops.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The supplied family descriptions do not identify a family that can enumerate all vertex-simple paths from A to D within three hops."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.413047395646572
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Selected families for the described steps."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "edge-filter",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Selected operations cover filtering relationships, extracting their endpoint graph, and counting its relationships."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 39.8673083409667
+    },
+    {
+      "id": "branch_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "prepare",
+              "patterns"
+            ],
+            "message": "Selected families for the described steps."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "node-lookup",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Selected operations cover finding east-branch vertices, extracting their induced graph, and counting its relationships."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "The workflow is ready to run."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 40.5841578617692
+    },
+    {
+      "id": "neighbor_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "prepare",
+              "patterns"
+            ],
+            "message": "Selected families for the described steps."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "neighbors",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Selected exact operations for two-hop outgoing discovery, induced extraction, and relationship counting."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "The plan is ready."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 39.129995653405786
+    },
+    {
+      "id": "isolate_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "How should the induced graph for E be defined? For example, should it include only E, or E plus its neighbors and the relationships among them?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "How should the induced graph for E be defined? For example, should it include only E, or E plus its neighbors and the relationships among them?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.920494019985199
+    },
+    {
+      "id": "empty_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "prepare",
+              "patterns"
+            ],
+            "message": "Selected families for the described steps."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "node-lookup",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Selected exact operations for selecting south-branch vertices, extracting their vertex-induced graph, and counting its relationships."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "The requested workflow can be constructed with the supplied operations."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 51.55063848383725
+    },
+    {
+      "id": "path_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "routes",
+              "prepare",
+              "query"
+            ],
+            "message": "Selected families for the described steps."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "query-paths",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Selected operations cover all stated dependencies."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "The plan is ready to execute."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 41.34193975664675
+    },
+    {
+      "id": "common_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "prepare",
+              "patterns"
+            ],
+            "message": "Selected families for finding common outgoing neighbors, inducing their graph, and counting its relationships."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "common-neighbors",
+              "query-subgraph",
+              "graph-aggregate"
+            ],
+            "reroute_families": [],
+            "message": "Selected operations cover finding common outgoing neighbors, inducing their graph, and counting its relationships."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "The requested workflow can be represented with the supplied operations."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "The workflow is ready to run."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 32.39151517674327
+    },
+    {
+      "id": "top_sender",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The requested tie-breaker requires comparing vertex IDs, but the supplied vertex records do not include an ID field.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The requested tie-breaker requires comparing vertex IDs, but the supplied vertex records do not include an ID field."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.3960806746035814
+    },
+    {
+      "id": "filtered_reachability",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "What is the exact name of the relationship attribute containing the amount?",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "extract_relationships",
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "mode": "edges",
+                "edge_filters": [
+                  {
+                    "field": "amount",
+                    "op": "gte",
+                    "value": 20
+                  }
+                ]
+              },
+              "bindings": {}
+            },
+            {
+              "id": "reachable_vertices",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "A",
+                "hops": 2,
+                "direction": "out",
+                "edge_filters": [
+                  {
+                    "field": "amount",
+                    "op": "gte",
+                    "value": 20
+                  }
+                ],
+                "include_seed": false
+              },
+              "bindings": {}
+            }
+          ]
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "prepare",
+              "routes"
+            ],
+            "message": "Selected families for filtering relationships, extracting the filtered graph, and finding vertices reachable within two outgoing hops."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "query-subgraph",
+              "neighbors"
+            ],
+            "reroute_families": [],
+            "message": "Selected operations cover the requested filtering, extraction, and bounded outgoing reachability."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          },
+          {
+            "stage": "plan",
+            "status": "needs_information",
+            "message": "What is the exact name of the relationship attribute containing the amount?"
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 29.95511627011001
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: A parameter cannot have both a literal and a binding",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "prepare",
+              "routes"
+            ],
+            "message": "Selected families for filtering relationships, extracting a graph, and running breadth-first search."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "query-subgraph",
+              "breadth-first-search"
+            ],
+            "reroute_families": [
+              "routes"
+            ],
+            "message": "Selected edge-induced extraction and breadth-first search. Rerouted to routes because breadth-first search is available there."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "The requested workflow is fully supported."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "The plan is ready."
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 25.22875895164907
+    }
+  ],
+  "passed": 0,
+  "total": 20,
+  "by_slice": {
+    "dependent": {
+      "passed": 0,
+      "total": 10
+    },
+    "lookup": {
+      "passed": 0,
+      "total": 10
+    }
+  }
+}

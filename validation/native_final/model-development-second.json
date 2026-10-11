@@ -1,0 +1,810 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "model",
+  "model_accuracy_measured": true,
+  "suite_sha256": "baa825745a42806243bd536cd3a587cce88473e73819c031344f954bf7d970e8",
+  "capabilities_sha256": "799f86781cc42ccc7092973c2efee1ddc1a22b8ecb92d963a522682752ee6ff2",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "lookup_vertex_a",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": [
+                  "A"
+                ],
+                "vertex_filters": [],
+                "result_limit": null
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "lookup_vertex_a",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertices": [
+                    "A"
+                  ],
+                  "vertex_filters": [],
+                  "result_limit": null
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "lookup_vertex_a"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "b431a710c3c60b77dfc5b0613c587485ae2792d64a0c7398af2c53d151268369",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "29b23cc3e0256d98b187e4e5d00a48f40a5c013fdca739c70c527fedce2818b2",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Selected task families."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "Selected operations for the requested task."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": false,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A"
+          ],
+          "observed": [
+            "A"
+          ]
+        }
+      ],
+      "passed": false,
+      "workflow_id": "393d4cdf-b065-4482-ac78-c62f4bc14636",
+      "workflow_hash": "b431a710c3c60b77dfc5b0613c587485ae2792d64a0c7398af2c53d151268369",
+      "elapsed_seconds": 13.8331707585603
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "What is the full attribute path for the branch field on vertices?",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "east-branch-vertices",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": null,
+                "vertex_filters": [
+                  {
+                    "field": "branch",
+                    "op": "eq",
+                    "value": "east"
+                  }
+                ],
+                "result_limit": null
+              },
+              "bindings": {}
+            }
+          ]
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Selected task families."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "The selected query family supports the requested operation."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          },
+          {
+            "stage": "plan",
+            "status": "needs_information",
+            "message": "What is the full attribute path for the branch field on vertices?"
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 16.43037365935743
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "What is the exact name of the relationship attribute that records the amount?",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "filter_relationships",
+              "operation": "edge-filter",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "edge_ids": null,
+                "edge_filters": [
+                  {
+                    "field": "amount",
+                    "op": "gte",
+                    "value": 30
+                  }
+                ],
+                "source_filters": [],
+                "target_filters": [],
+                "result_limit": null
+              },
+              "bindings": {}
+            }
+          ]
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Selected task families."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "edge-filter"
+            ],
+            "reroute_families": [],
+            "message": "Selected operations from the query family."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          },
+          {
+            "stage": "plan",
+            "status": "needs_information",
+            "message": "What is the exact name of the relationship attribute that records the amount?"
+          }
+        ]
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 17.186498122289777
+    },
+    {
+      "id": "source_record_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "No operation can return the complete relationship records sent by all vertices in the east branch.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Selected families for the requested computation."
+          },
+          {
+            "stage": "operation",
+            "status": "unsupported",
+            "operations": [],
+            "reroute_families": [],
+            "message": "No operation can return the complete relationship records sent by all vertices in the east branch."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 6.255246512591839
+    },
+    {
+      "id": "outgoing_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the result include only vertex IDs, or also the outgoing relationships used to reach them?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Should the result include only vertex IDs, or also the outgoing relationships used to reach them?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.1984240859746933
+    },
+    {
+      "id": "incoming_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the result include only vertex IDs, or also the relationship details for each sender?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query"
+            ],
+            "message": "Should the result include only vertex IDs, or also the relationship details for each sender?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.137888837605715
+    },
+    {
+      "id": "two_hops",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the two-hop limit count distinct vertices or distinct paths from A?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "routes"
+            ],
+            "message": "Should the two-hop limit count distinct vertices or distinct paths from A?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.0204226318746805
+    },
+    {
+      "id": "shared_neighbors",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "shared_targets",
+              "operation": "common-neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "source": "A",
+                "target": "B",
+                "direction": "in",
+                "edge_filters": [],
+                "result_limit": null
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "shared_targets",
+                "operation": "common-neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "source": "A",
+                  "target": "B",
+                  "direction": "in",
+                  "edge_filters": [],
+                  "result_limit": null
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "shared_targets"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "7caf2d302996e48d21961a9b24b2311f4e7afd705abb25cbf67b65e4472e390d",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "29b23cc3e0256d98b187e4e5d00a48f40a5c013fdca739c70c527fedce2818b2",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Selected families for the requested computation."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "common-neighbors"
+            ],
+            "reroute_families": [],
+            "message": "Selected common-neighbors."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": ""
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": false,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": false,
+          "expected": [
+            "C"
+          ],
+          "observed": []
+        }
+      ],
+      "passed": false,
+      "workflow_id": "8bd14159-6e06-4e69-8c9a-aa96fe8d06c7",
+      "workflow_hash": "7caf2d302996e48d21961a9b24b2311f4e7afd705abb25cbf67b65e4472e390d",
+      "elapsed_seconds": 21.110101006925106
+    },
+    {
+      "id": "shortest_paths",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the three-hop limit include paths of exactly three hops, or only paths with fewer than three hops?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "routes"
+            ],
+            "message": "Should the three-hop limit include paths of exactly three hops, or only paths with fewer than three hops?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.3136357571929693
+    },
+    {
+      "id": "all_paths",
+      "slice": "lookup",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the three-hop limit include paths with fewer than three hops?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "routes"
+            ],
+            "message": "Should the three-hop limit include paths with fewer than three hops?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.0200738273561
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The selected operations cannot extract an endpoint graph from filtered relationships.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Selected families for filtering relationships, extracting their endpoint graph, and counting relationships."
+          },
+          {
+            "stage": "operation",
+            "status": "unsupported",
+            "operations": [],
+            "reroute_families": [],
+            "message": "The selected operations cannot extract an endpoint graph from filtered relationships."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 8.487319987267256
+    },
+    {
+      "id": "branch_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the count include only relationships whose endpoints are both east-branch vertices, or all relationships in the induced graph?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Should the count include only relationships whose endpoints are both east-branch vertices, or all relationships in the induced graph?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.4996738005429506
+    },
+    {
+      "id": "neighbor_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the induced graph include only relationships between the selected vertices, or also relationships from A to them?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Should the induced graph include only relationships between the selected vertices, or also relationships from A to them?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.3671002313494682
+    },
+    {
+      "id": "isolate_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the count include only relationships between E and other entities, or all relationships within E's induced graph?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Should the count include only relationships between E and other entities, or all relationships within E's induced graph?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.4467525463551283
+    },
+    {
+      "id": "empty_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "What should the extracted graph contain: only the selected vertices, or also their relationships?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [],
+            "message": "What should the extracted graph contain: only the selected vertices, or also their relationships?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.1540758460760117
+    },
+    {
+      "id": "path_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the induced graph include only the vertices on the selected A-to-D paths, or all vertices within three outgoing hops from A?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "routes",
+              "prepare",
+              "query"
+            ],
+            "message": "Should the induced graph include only the vertices on the selected A-to-D paths, or all vertices within three outgoing hops from A?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.684579476714134
+    },
+    {
+      "id": "common_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the induced graph include only relationships between the common outgoing neighbors, or also relationships from A and B to those neighbors?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "Should the induced graph include only relationships between the common outgoing neighbors, or also relationships from A and B to those neighbors?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.4913090094923973
+    },
+    {
+      "id": "top_sender",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "No supplied operation can select the top vertex by outgoing amount with a smallest-string-ID tie-break and then look up its record.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Selected task families."
+          },
+          {
+            "stage": "operation",
+            "status": "unsupported",
+            "operations": [],
+            "reroute_families": [],
+            "message": "No supplied operation can select the top vertex by outgoing amount with a smallest-string-ID tie-break and then look up its record."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 7.1625432670116425
+    },
+    {
+      "id": "filtered_reachability",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "How should the amount filter be applied to the extracted graph? Keep only relationships with amount at least 20, or keep all relationships and mark those meeting the threshold?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "How should the amount filter be applied to the extracted graph? Keep only relationships with amount at least 20, or keep all relationships and mark those meeting the threshold?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.891297096386552
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": {
+        "status": "needs_information",
+        "message": "Should the breadth-first search follow the directed relationships, or treat them as undirected connections?",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "needs_information",
+            "families": [
+              "prepare",
+              "routes"
+            ],
+            "message": "Should the breadth-first search follow the directed relationships, or treat them as undirected connections?"
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 2.307779736816883
+    }
+  ],
+  "passed": 0,
+  "total": 20,
+  "by_slice": {
+    "dependent": {
+      "passed": 0,
+      "total": 10
+    },
+    "lookup": {
+      "passed": 0,
+      "total": 10
+    }
+  }
+}

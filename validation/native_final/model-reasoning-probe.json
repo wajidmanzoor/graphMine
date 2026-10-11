@@ -1,0 +1,362 @@
+{
+  "version": "review-query-workflows-v1",
+  "scope": "20 assistant-authored development cases sharing a small fictional graph; not human labels, held-out data, an external benchmark, or training authorization",
+  "mode": "model",
+  "model_accuracy_measured": true,
+  "suite_sha256": "2a130c88778809fac26d08df4e3778f2db1d139a386ec6dc9f71300d8f9cc63e",
+  "capabilities_sha256": "b9bfa03589fe1cfb82b4976e6e5aaf79541011f8b4a6a316e28f3d60bdbcf0cf",
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+  "cases": [
+    {
+      "id": "typed_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Look up vertex A and return its record.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "lookup_A",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": [
+                  "A"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "lookup_A",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertices": [
+                    "A"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "lookup_A"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "e0d1cbb437fcd6e55c5e690013e1bd004bee18d3a0ca7a978c4560078c93e057",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a direct vertex lookup by string ID and return of its record, which falls under the 'query' family (look up entities)."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "Single vertex record lookup by string ID 'A'. The node-lookup operation selects the original vertex record by typed ID and returns it."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Look up vertex A and return its record."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A"
+          ],
+          "observed": [
+            "A"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "7630d1b6-966b-4f5b-9bc5-4a355b339127",
+      "workflow_hash": "e0d1cbb437fcd6e55c5e690013e1bd004bee18d3a0ca7a978c4560078c93e057",
+      "elapsed_seconds": 26.71112672239542
+    },
+    {
+      "id": "branch_lookup",
+      "slice": "lookup",
+      "planning": {
+        "status": "ready",
+        "message": "Filter vertices where attributes.branch equals east.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "filter-east",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertex_filters": [
+                  {
+                    "field": "attributes.branch",
+                    "op": "eq",
+                    "value": "east"
+                  }
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "filter-east",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertex_filters": [
+                    {
+                      "field": "attributes.branch",
+                      "op": "eq",
+                      "value": "east"
+                    }
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "filter-east"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "905e09da267077c7a28bccdba8f2e0ee95a43d82c0b41a4636bfa11c09583182"
+            }
+          },
+          "workflow_hash": "f7f046e59ae8ec6f7fcf2b66ac73b757a3402a498047953c2e3a12a693aded9f",
+          "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "The task is to filter vertices by an attribute value (attributes.branch == 'east'), which is a record lookup/filter operation."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "node-lookup"
+            ],
+            "reroute_families": [],
+            "message": "Single vertex-attribute filter: select vertices where attributes.branch equals 'east'. Mapped to node-lookup with a vertex_filters predicate (field='attributes.branch', op='eq', value='east')."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Filter vertices where attributes.branch equals east."
+          }
+        ]
+      },
+      "operations": true,
+      "parameters": true,
+      "wiring": true,
+      "execution": true,
+      "result_checks": [
+        {
+          "step": "answer",
+          "port": "vertices",
+          "passed": true,
+          "expected": [
+            "A",
+            "C"
+          ],
+          "observed": [
+            "A",
+            "C"
+          ]
+        }
+      ],
+      "passed": true,
+      "workflow_id": "cdee3be9-2ddc-45c4-a62e-d669da3d1900",
+      "workflow_hash": "f7f046e59ae8ec6f7fcf2b66ac73b757a3402a498047953c2e3a12a693aded9f",
+      "elapsed_seconds": 30.970429982990026
+    },
+    {
+      "id": "relationship_filter",
+      "slice": "lookup",
+      "planning": {
+        "status": "unsupported",
+        "message": "The request asks to return relationships (edges) whose recorded 'amount' attribute is at least 30. This is a straightforward record-filtering task on edge attributes. The 'query' family covers 'filter relationships' and 'look up records', which matches this need exactly. However, the task is purely a record query with a simple threshold filter on an edge attribute, and no graph-structural computation is required. I will select the 'query' family.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [],
+            "message": "The request asks to return relationships (edges) whose recorded 'amount' attribute is at least 30. This is a straightforward record-filtering task on edge attributes. The 'query' family covers 'filter relationships' and 'look up records', which matches this need exactly. However, the task is purely a record query with a simple threshold filter on an edge attribute, and no graph-structural computation is required. I will select the 'query' family."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 8.455927731469274
+    },
+    {
+      "id": "filtered_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The task requires filtering edges by an attribute threshold (query), extracting the induced subgraph on the surviving edges' endpoints (prepare), and counting the resulting edges (query). Both families are available in the catalog.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "The task requires filtering edges by an attribute threshold (query), extracting the induced subgraph on the surviving edges' endpoints (prepare), and counting the resulting edges (query). Both families are available in the catalog."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 14.653719732537866
+    },
+    {
+      "id": "isolate_network",
+      "slice": "dependent",
+      "planning": {
+        "status": "unsupported",
+        "message": "The request involves looking up vertex E (query), extracting its induced subgraph (prepare), and counting the relationships/edges in that subgraph (query). Both the 'query' and 'prepare' families are needed to cover all described steps.",
+        "trace": [
+          {
+            "stage": "family",
+            "status": "unsupported",
+            "families": [
+              "query",
+              "prepare"
+            ],
+            "message": "The request involves looking up vertex E (query), extracting its induced subgraph (prepare), and counting the relationships/edges in that subgraph (query). Both the 'query' and 'prepare' families are needed to cover all described steps."
+          }
+        ],
+        "plan": null
+      },
+      "passed": false,
+      "failure_stage": "planning",
+      "elapsed_seconds": 13.190227972343564
+    },
+    {
+      "id": "query_to_algorithm",
+      "slice": "dependent",
+      "planning": null,
+      "passed": false,
+      "failure_stage": "validation_or_execution",
+      "error": "The question planner could not return a valid decision. Choose a task or try a more specific question.",
+      "elapsed_seconds": 162.41935378313065
+    }
+  ],
+  "passed": 2,
+  "total": 6,
+  "by_slice": {
+    "dependent": {
+      "passed": 0,
+      "total": 3
+    },
+    "lookup": {
+      "passed": 2,
+      "total": 3
+    }
+  }
+}
