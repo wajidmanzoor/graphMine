@@ -1,4 +1,4 @@
-"""Durable, reviewed workflows over the verified Python analytics library."""
+"""Durable, reviewed workflows over the verified C++/CUDA analytics library."""
 
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from .analytics_scheduler import AnalyticsScheduler, estimate_memory
 from .database import RecordNotFound
 from .ownership import StoreLock
 
@@ -37,6 +38,7 @@ class WorkflowRequest(BaseModel):
     mode: Literal["normal", "interactive", "expert"] = "interactive"
     plan: dict[str, Any]
     inputs: dict[str, InputReference]
+    evaluation_id: str | None = Field(default=None, min_length=1, max_length=200)
 
 
 class WorkflowRevision(WorkflowRequest):
@@ -60,8 +62,7 @@ def _json(value):
 class AnalyticsService:
     """One owned ledger; execution stays outside the ASGI process.
 
-    This initial execution queue is serial. The dedicated graph GPU is honored;
-    sharing the LLM GPU requires the existing explicit administrator setting.
+    Memory leases permit concurrent workers and preserve configured LLM space.
     """
 
     def __init__(self, settings, database, graph_store, events):
@@ -77,13 +78,16 @@ class AnalyticsService:
         self.owner = StoreLock(self.path)
         self.tasks = {}
         self.edit_lock = asyncio.Lock()
-        self.slot = asyncio.Semaphore(1)
+        self.scheduler = AnalyticsScheduler(settings)
         self.closed = False
         self.opened = False
         with closing(sqlite3.connect(self.path)) as db, db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS workflows (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, document TEXT NOT NULL)"
             )
+        from .analytics_examples import ReviewedExamples
+
+        self.examples = ReviewedExamples(self)
 
     def open(self):
         self.owner.acquire()
@@ -193,7 +197,7 @@ class AnalyticsService:
                     os.killpg(process.pid, signal.SIGKILL)
                 await process.wait()
 
-    async def _call(self, request, *, on_event=None):
+    async def _call(self, request, *, on_event=None, lease=None):
         python = (
             self.settings.analytics_python
             or self.settings.repository_root / ".venv-analytics/bin/python"
@@ -222,8 +226,15 @@ class AnalyticsService:
         )
         env.pop("PYTHONPATH", None)
         env.pop("PYTHONHOME", None)
+        native_library = self.settings.native_runtime_library
+        if native_library is None and not env.get("GRAPHMINE_NATIVE_LIBRARY"):
+            binary = self.settings.native_runtime_binary
+            if binary is not None:
+                native_library = binary.with_name("libgraphmine_runtime.so")
+        if native_library is not None:
+            env["GRAPHMINE_NATIVE_LIBRARY"] = str(native_library)
         policy = request.get("plan", {}).get("device", "auto")
-        gpu = self.settings.graph_gpu_uuid
+        gpu = lease.gpu_uuid if lease is not None else self.settings.graph_gpu_uuid
         if request["command"] != "run" or policy == "cpu":
             env["CUDA_VISIBLE_DEVICES"] = ""
         else:
@@ -332,7 +343,10 @@ class AnalyticsService:
         result["question_planner_enabled"] = self.settings.llm_enabled
         result["device_configuration"] = {
             "cpu": True,
-            "gpu_configured": bool(self.settings.graph_gpu_uuid),
+            "gpu_configured": bool(
+                self.settings.graph_gpu_uuid or self.settings.analytics_gpu_uuids
+            ),
+            "active_allocations": self.scheduler.snapshot(),
         }
         return result
 
@@ -346,6 +360,7 @@ class AnalyticsService:
             "session_id": session_id,
             "revision": 1,
             "mode": body.mode,
+            "evaluation_id": body.evaluation_id,
             "status": "awaiting_review" if body.mode == "interactive" else "ready",
             "created_at": _now(),
             "approved_hash": None,
@@ -381,6 +396,7 @@ class AnalyticsService:
                 **previous,
                 "revision": previous["revision"] + 1,
                 "mode": body.mode,
+                "evaluation_id": previous.get("evaluation_id") or body.evaluation_id,
                 "status": "awaiting_review" if body.mode == "interactive" else "ready",
                 "approved_hash": None,
                 "input_files": {k: v.model_dump() for k, v in body.inputs.items()},
@@ -458,9 +474,23 @@ class AnalyticsService:
         record = self.get(workflow_id)
         directory = self._directory(record)
         try:
-            async with self.slot:
+            plan = record["validation"]["plan"]
+            policy = (
+                "gpu"
+                if any(step["device"] == "gpu" for step in plan["steps"])
+                else plan["device"]
+            )
+            memory = estimate_memory(plan, (directory / "inputs.json").stat().st_size)
+            async with self.scheduler.reserve(
+                policy, memory, timeout=self.settings.job_timeout_seconds
+            ) as lease:
                 (directory / "result.json").unlink(missing_ok=True)
-                record.update(status="running", started_at=_now(), steps={})
+                record.update(
+                    status="running",
+                    started_at=_now(),
+                    steps={},
+                    allocation=lease.record(),
+                )
                 self._save(record)
 
                 async def event(message):
@@ -505,6 +535,7 @@ class AnalyticsService:
                         "resume": self._resume(record),
                     },
                     on_event=event,
+                    lease=lease,
                 )
                 if result["workflow_hash"] != record["approved_hash"]:
                     raise AnalyticsError(

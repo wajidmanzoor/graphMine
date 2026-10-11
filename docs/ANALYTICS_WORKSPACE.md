@@ -1,0 +1,180 @@
+# Native analysis workspace
+
+The browser at `/` provides three modes over the same validated workflow API.
+Normal runs a validated plan immediately. Interactive saves it for inspection
+and explicit approval. Expert accepts an explicit JSON workflow and also
+requires review before execution. Editing increments the revision and
+invalidates prior approval. `/classic` retains the earlier application.
+
+## Library and application setup
+
+Build the [native runtime](NATIVE_CORE_MIGRATION.md), install the thin Python
+package in the analytics worker environment, and configure the application:
+
+```sh
+python -m pip install -e python/graphmine
+export GRAPHMINE_NATIVE_LIBRARY=/absolute/build/libgraphmine_runtime.so
+export GRAPHMINE_NATIVE_BINARY=/absolute/build/graphmine-native
+export GRAPHMINE_ANALYTICS_PYTHON=/absolute/worker-environment/bin/python
+```
+
+`GRAPHMINE_NATIVE_BINARY` needs native libcudf for CSV loading. JSON graph
+analysis can use a CPU-only runtime. `GRAPHMINE_NATIVE_LIBRARY` is loaded by the
+worker; `GRAPHMINE_NATIVE_BINARY` handles native tabular reads and construction.
+The standalone library supports C, C++ and Python consumers; the application
+adds evidence admission, durable review, scheduling and cancellation.
+
+`catalog/native_execution_evidence.json` must match the binary, implementation,
+source files, linked dependencies, operation profile and, for GPU execution,
+physical GPU UUID. Missing or stale evidence disables the profile. Reproduce
+native tests and run `tools/build_native_execution_evidence.py` for each build;
+its `--help` documents required reports. `tools/audit_native_completion.py`
+generates the 70-contract inventory through that same gate. Historical reports
+and failed attempts remain archived but do not establish admission.
+
+The native planner uses `GRAPHMINE_LLM_MODEL` by default. A compatible model or
+adapter can be selected with `GRAPHMINE_ANALYTICS_PLANNER_MODEL`. Native planning
+uses `GRAPHMINE_ANALYTICS_REASONING_EFFORT=medium` by default. The legacy V1
+planner/analyst adapter settings remain scoped to the old protocol. Family,
+operation and workflow selection are separate constrained stages, followed by
+the same actual-input validation used for manually edited plans. Routing may
+request clarification; model accuracy is reported separately from executable
+algorithm correctness. A plan is never a computed answer.
+
+## Construct a graph from tables
+
+Choose **Build a graph from tables**, upload CSV files, and select the endpoint
+columns, direction, calculation, weight column and duplicate policy. IDs remain
+text by default, including leading zeros. The calculation determines the
+meaning of weights: cost, capacity or strength. The advanced settings support
+explicit joins, typed attributes and `[start,end)` time windows.
+
+The authenticated endpoints are:
+
+- `GET /api/sessions/{session}/tables/{file}/schema`
+- `POST /api/sessions/{session}/projections`
+
+The POST body maps aliases to files already uploaded in that workspace. The
+server resolves paths, loads CSV with native cuDF, and runs joins, conversions,
+aggregation and graph construction in C++. For example:
+
+```json
+{
+  "tables": {"transfers": "uploaded-file-id", "accounts": "other-file-id"},
+  "projection": {
+    "version": 1,
+    "id": "transfers-in-window",
+    "task": "max_flow",
+    "edge_table": "transfers",
+    "joins": [{
+      "table": "accounts", "alias": "sender", "left": "transfers.from",
+      "right": "id", "kind": "required", "cardinality": "many_to_one"
+    }],
+    "source": {
+      "field": "transfers.from", "type": "string",
+      "attributes": {"branch": {"field": "sender.branch", "type": "string"}}
+    },
+    "target": {"field": "transfers.to", "type": "string"},
+    "directed": true,
+    "weight": {"field": "transfers.amount", "type": "integer", "meaning": "capacity"},
+    "timestamp": {"field": "transfers.time", "type": "integer"},
+    "time_window": {"start": 10, "end": 20},
+    "duplicates": "sum"
+  }
+}
+```
+
+Joins compare exact text keys. Empty keys do not match; duplicate right-side
+keys violate the many-to-one contract. Required joins reject missing matches;
+inner joins discard them; left joins preserve unmatched rows. Counts and
+content hashes disclose every exclusion. Duplicate keys include endpoints and
+timestamp, with undirected endpoint normalization. Conflicting attributes and
+inexact numeric aggregation are rejected. The saved graph includes the source
+hashes and full construction settings, so it can be reused in later workflows.
+
+## Execution, memory and outputs
+
+CPU, GPU and Auto are explicit policies. GPU-only work never silently runs on
+CPU. `GRAPHMINE_ANALYTICS_GPU_UUIDS` is a comma-separated physical UUID pool;
+`GRAPHMINE_GRAPH_GPU_UUID` is also eligible. The scheduler probes actual free
+memory, subtracts active reservations and headroom, and admits isolated native
+worker processes. The default is two concurrent CPU workers and 512 MiB GPU
+headroom. Estimates include input representations and bounded output; they are
+admission estimates, not guarantees about a vendor allocator.
+
+The LLM GPU is excluded unless `GRAPHMINE_ALLOW_SHARED_GPU` is enabled. With
+sharing enabled, `GRAPHMINE_ANALYTICS_LLM_RESERVE_BYTES=0` reserves 80% of that
+device's total memory; an explicit positive value overrides that reservation.
+Cancellation kills the worker process group and releases its lease. Workflow
+records save device UUID, admission estimates, hashes, parameters and results.
+
+Native graph and normalized weighted representations use a bounded,
+process-local cache keyed by input content, semantics, implementation and
+representation version. Warm access does not bypass resource accounting.
+Dependent-step reuse additionally checks the plan, inputs and admitted backend
+set. Independent worker processes do not share mutable graph objects.
+
+The browser uses Cytoscape and fixed JavaScript renderers with no Node runtime
+and no generated chart code. Graph previews disclose their bounds; execution
+uses the full uploaded input. Results retain original typed IDs and exact
+rational values. Pagination and export access saved full results. Incomplete
+collections are labeled and cannot feed steps requiring a complete collection;
+complete counts may coexist with an incomplete or unrequested enumeration.
+
+## Reviewed examples
+
+After a complete successful workflow, **Review as a reusable example** opens an
+explicit review form. A successful run alone never approves an example. The
+server checks the current workflow revision, plan hash and result hash before
+storing the review. Examples are scoped to the workspace, native implementation,
+input kinds and selected operations; their provenance is included in planning.
+They supply hints, not executable instructions or correctness evidence.
+
+Evaluation workflows carry an immutable `evaluation_id`. They cannot be saved
+as reviewed examples, and evaluation planning retrieves no reviewed examples.
+The API supports listing and revoking approvals. Development probes, held-out
+model scores and independent native oracle reports have separate labels.
+
+## MCP
+
+Run the stdio bridge in the agent environment:
+
+```sh
+export GRAPHMINE_API_URL=http://127.0.0.1:8000
+export GRAPHMINE_API_TOKEN=your-configured-token
+python -m graphmine_agent.mcp
+```
+
+The bridge uses [MCP 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25)
+JSON-RPC initialization, tool discovery and newline-delimited stdio messages.
+Its 14 tools inspect capabilities, create workspaces, list files, inspect tables,
+construct graphs, plan questions, create/list/get/revise/approve/cancel workflows,
+and retrieve full results or result pages. Upload files through the HTTP API or
+browser first. The bridge calls the same authenticated HTTP endpoints and
+approval checks; it contains no alternative algorithm or arbitrary-code path.
+Messages are bounded at 16 MiB; larger outputs use `result_page`.
+
+## Reproduce the scale checks
+
+```sh
+python tools/fetch_native_scale_datasets.py --output /tmp/graphmine-scale-datasets
+python tools/validate_native_scale.py --datasets /tmp/graphmine-scale-datasets \
+  --cpu-build /absolute/cpu-build --gpu-build /absolute/gpu-build \
+  --output /tmp/graphmine-native-scale-results
+python tools/validate_analytics_scale.py \
+  --native-results /tmp/graphmine-native-scale-results \
+  --library /absolute/gpu-build/libgraphmine_runtime.so \
+  --gpus GPU-uuid-0,GPU-uuid-1 --output /tmp/api-scale.json
+```
+
+The research environment needs SciPy/NetworkX for independent oracles, pytest
+for regression checks, and `zstd` for the pinned public archives. Those Python
+packages are not runtime algorithm dependencies. The datasets include official
+[Graphalytics references](https://ldbcouncil.org/benchmarks/graphalytics/datasets/),
+[SNAP ca-CondMat](https://snap.stanford.edu/data/ca-CondMat.html), and a seeded
+100,000-vertex, 500,000-edge graph. BFS, SSSP and WCC match published references;
+PageRank uses a convergence oracle rather than Graphalytics' fixed iterations.
+The test-WCC archive's `.v` edge-file property is inconsistent with its actual
+`.e` file; the loader explicitly reads the edge file. These are correctness and
+latency measurements, not a certified LDBC benchmark submission. RSS is a Linux
+high-water measurement; sampled GPU usage is not an exact allocator peak.

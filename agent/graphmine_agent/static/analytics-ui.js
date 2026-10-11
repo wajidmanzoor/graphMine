@@ -46,6 +46,7 @@
     return value;
   }
   function card(id) { return state.caps?.operations.find(c => c.id === id); }
+  const isTable = file => file.role === "attachment" && file.original_name.toLowerCase().endsWith(".csv");
   function methodName(id) { return card(id)?.title || id; }
   function capable(c) { return c.execution[$("device").value === "gpu" ? "gpu" : "cpu"]; }
   function setMode(mode) {
@@ -92,14 +93,14 @@
       state.files = state.files.filter(f => ["graph", "query_graph", "motif", "attachment"].includes(f.role));
       try { state.kinds = W.parse(read(`graphmine.inputKinds.${id}`) || "{}"); } catch { state.kinds = {}; }
       for (const f of state.files) if (f.role !== "attachment") state.kinds[f.id] = "graph";
-      state.active = state.files[0]?.id || "";
+      state.active = state.files.find(file => !isTable(file))?.id || "";
       history.replaceState(null, "", `#workspace/${encodeURIComponent(id)}`);
     } else { $("session-name").value = ""; history.replaceState(null, "", location.pathname); }
     renderFiles(); await loadSaved(); if (state.active) await previewActive();
   }
   function renderFiles() {
     $("active-input").replaceChildren(node("option", {value: ""}, "Choose an input"));
-    state.files.forEach(f => $("active-input").append(node("option", {value: f.id}, f.original_name)));
+    state.files.filter(f => !isTable(f)).forEach(f => $("active-input").append(node("option", {value: f.id}, f.original_name)));
     $("active-input").value = state.active;
     $("input-aliases").replaceChildren();
     for (const [alias, value] of Object.entries(refs())) $("input-aliases").append(node("span", {}, `${alias}: ${value.kind}`));
@@ -194,7 +195,7 @@
     const selected = card(state.operation);
     $("operation-parameters").replaceChildren();
     $("operation-description").textContent = selected?.description || "";
-    $("operation-quality").textContent = selected ? `Input: ${title(selected.input_kind)} · Method profile: ${title(selected.quality)} · ${selected.library}` : "";
+    $("operation-quality").textContent = selected ? `Input: ${title(selected.input_kind)} · Method profile: ${title(selected.quality)}` : "";
     if (!selected) return;
     const optional = node("details"), content = node("div");
     optional.append(node("summary", {}, "Method settings and optional outputs"), content);
@@ -259,7 +260,7 @@
       const response = await api(`/api/sessions/${state.session.id}/analytics/plan`, {method: "POST", body: W.stringify({message: $("question").value, inputs: refs(), device: $("device").value, previous_workflow_id: state.record?.id || null})});
       $("routing-trace").replaceChildren();
       for (const decision of response.trace || []) {
-        const values = decision.families || decision.operations || [decision.status];
+        const values = decision.families || decision.operations || (decision.stage === "retrieval" ? [decision.evaluation_excluded ? "Examples excluded for evaluation" : `${decision.examples.length} reviewed examples`] : [decision.status]);
         $("routing-trace").append(node("span", {}, `${title(decision.stage)}: ${values.map(id => state.caps.task_families.find(f => f.id === id)?.title || card(id)?.title || id).join(", ")}`));
       }
       if (response.status !== "ready" || !response.plan) { notice(response.message); return; }
@@ -313,6 +314,7 @@
     $("approve-plan").hidden = running || record.status === "completed";
     $("approve-plan").textContent = ["failed", "cancelled", "interrupted"].includes(record.status) ? "Retry reviewed plan" : "Approve and run";
     $("edit-plan").disabled = running;
+    $("review-example").hidden = record.status !== "completed" || !record.complete || Boolean(record.evaluation_id);
     $("workflow-heading").textContent = running ? "Your analysis is running" : record.status === "completed" ? "Analysis complete" : "Review the steps";
   }
   async function openWorkflow(id) {
@@ -370,7 +372,10 @@
     if (!step) return;
     Object.entries(step.ports).forEach(([name, port]) => $("result-port").append(node("option", {value: name}, `${title(name)} · ${title(port.type)}`)));
     if (!Object.keys(step.ports).length) $("result-port").append(node("option", {value: "__result"}, "Recorded result"));
-    $("result-port").value = Object.entries(step.ports).find(([,p]) => p.type === "vertex_scores")?.[0] || Object.keys(step.ports)[0] || "__result";
+    const preference = ["vertex_scores", "pattern_collection", "vertex_positions", "rational_scalar", "vertex_groups", "table", "graph"];
+    const materialized = Object.entries(step.ports).filter(([,p]) => p.complete || !Array.isArray(p.value) || p.value.length);
+    const choices = materialized.length ? materialized : Object.entries(step.ports);
+    $("result-port").value = preference.map(type => choices.find(([,p]) => p.type === type)?.[0]).find(Boolean) || choices[0]?.[0] || "__result";
     await selectPort();
   }
   async function selectPort() {
@@ -380,7 +385,7 @@
     state.port = name === "__result" ? {type: "result", complete: result.complete, value: result.result} : result.ports[name];
     const port = state.port; state.rows = Array.isArray(port.value) ? port.value : [port.value]; state.page = 0; state.selected.clear(); $("table-search").value = "";
     $("result-completeness").classList.toggle("incomplete", !port.complete || !result.complete);
-    $("result-completeness").textContent = `${port.complete ? "This output collection is complete." : "This output is incomplete or count-only; it cannot supply a full downstream collection."} Method quality: ${title(result.quality)}. Computed by ${result.backend.library} on ${result.backend.device.toUpperCase()}.`;
+    $("result-completeness").textContent = `${port.complete ? "This output collection is complete." : "This output is incomplete or count-only; it cannot supply a full downstream collection."} Method quality: ${title(result.quality)}. Computed on ${result.backend.device.toUpperCase()}.`;
     if (!port.complete && result.diagnostics?.narrowing_hint) $("result-completeness").textContent += ` ${result.diagnostics.narrowing_hint}`;
     state.patternId = port.type === "pattern_collection" ? port.value[0]?.pattern_id || null : null;
     const graph = port.type === "graph" ? port.value : port.type === "pattern_collection" ? port.value[0]?.pattern || null : await graphForStep(stepId);
@@ -501,8 +506,15 @@
     filterRows();
   }
   function filterRows() {
-    const query = $("table-search").value.trim().toLocaleLowerCase();
-    state.filtered = state.rows.map((_, index) => index).filter(i => !query || W.stringify(state.rows[i]).toLocaleLowerCase().includes(query));
+    const text = $("table-search").value.trim(), query = text.toLocaleLowerCase(), scoped = /^([A-Za-z_][A-Za-z0-9_]*):(.*)$/s.exec(text);
+    let expected;
+    if (scoped) { try { expected = W.parse(scoped[2].trim()); } catch { expected = scoped[2].trim(); } }
+    state.filtered = state.rows.map((_, index) => index).filter(i => {
+      if (!query) return true;
+      const row = state.rows[i];
+      if (scoped) return row && typeof row === "object" && Object.hasOwn(row, scoped[1]) && W.stringify(row[scoped[1]]) === W.stringify(expected);
+      return W.stringify(row).toLocaleLowerCase().includes(query);
+    });
     state.page = 0; renderTable();
   }
   function renderTable() {
@@ -548,6 +560,61 @@
   $("connection-form").addEventListener("submit", event => { event.preventDefault(); state.base = $("api-base").value.trim().replace(/\/$/, ""); state.token = $("api-token").value.trim(); save("graphmine.apiBase", state.base); save("graphmine.apiToken", state.token); $("connection-dialog").close(); runAction(connect); });
   $("new-session").addEventListener("click", () => runAction(() => openSession("")));
   $("session-select").addEventListener("change", () => runAction(() => openSession($("session-select").value)));
+  function projectionSettings() {
+    const table = $("projection-table").value, source = $("projection-source").value, target = $("projection-target").value;
+    if (!table || !source || !target || source === target) throw new Error("Choose a table and two different endpoint columns.");
+    const task = $("projection-task").value, weight = $("projection-weight").value;
+    const spec = {version: 1, id: "projected-network", task, edge_table: table, joins: [], source: {field: `${table}.${source}`, type: "string"}, target: {field: `${table}.${target}`, type: "string"}, directed: $("projection-directed").checked, duplicates: $("projection-duplicates").value};
+    if (weight) spec.weight = {field: `${table}.${weight}`, type: "number", meaning: {shortest_paths: "cost", spanning_tree: "cost", max_flow: "capacity", ranking: "strength", topology: "strength"}[task]};
+    return spec;
+  }
+  function weightNote() {
+    $("projection-weight-note").textContent = {topology: "IDs remain text, including leading zeros. If supplied, weights represent connection strength.", shortest_paths: "Weights represent travel cost or length: smaller values mean shorter paths.", spanning_tree: "Weights represent the cost of keeping a connection.", max_flow: "Weights represent nonnegative flow capacity.", ranking: "Weights represent nonnegative connection strength. Counting repeated records can provide this weight."}[$("projection-task").value];
+  }
+  async function loadTableSchema() {
+    const id = state.tableSources?.[$("projection-table").value];
+    for (const key of ["projection-source", "projection-target", "projection-weight"]) $(key).replaceChildren(node("option", {value: ""}, key === "projection-weight" ? "No weight" : "Choose a column"));
+    if (!id) return;
+    const schema = await api(`/api/sessions/${state.session.id}/tables/${id}/schema`);
+    for (const column of schema.columns) for (const key of ["projection-source", "projection-target", "projection-weight"]) $(key).append(node("option", {value: column.name}, column.name));
+    $("projection-feedback").textContent = `${schema.row_count} records. Empty join keys do not match. Numeric conversions and duplicate handling are explicit.`;
+    weightNote();
+  }
+  async function refreshTables() {
+    state.tableSources = {};
+    $("projection-table").replaceChildren();
+    state.files.filter(isTable).forEach((file, i) => { const alias = `table_${i + 1}`; state.tableSources[alias] = file.id; $("projection-table").append(node("option", {value: alias}, `${alias} · ${file.original_name}`)); });
+    $("table-aliases").textContent = state.files.filter(isTable).map((file, i) => `table_${i + 1}: ${file.original_name}`).join(" · ") || "Add one or more CSV tables to begin.";
+    await loadTableSchema();
+  }
+  function projectionAction(action) { return runAction(async () => { try { await action(); } catch (error) { $("projection-feedback").textContent = error.message; } }); }
+  document.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", () => $(button.dataset.close).close()));
+  $("open-projection").addEventListener("click", () => projectionAction(async () => { await ensureSession(); $("projection-dialog").showModal(); await refreshTables(); }));
+  $("table-upload").addEventListener("change", () => projectionAction(async () => {
+    for (const file of $("table-upload").files) { const body = new FormData(); body.append("file", file); body.append("role", "attachment"); state.files.push(await api(`/api/sessions/${state.session.id}/files`, {method: "POST", body})); }
+    $("table-upload").value = ""; renderFiles(); await refreshTables();
+  }));
+  $("projection-table").addEventListener("change", () => projectionAction(loadTableSchema));
+  $("projection-task").addEventListener("change", weightNote);
+  $("projection-template").addEventListener("click", () => projectionAction(async () => { $("projection-editor").value = W.stringify(projectionSettings(), true); $("projection-advanced").checked = true; }));
+  $("projection-form").addEventListener("submit", event => { event.preventDefault(); projectionAction(async () => {
+    const projection = $("projection-advanced").checked ? W.parse($("projection-editor").value) : projectionSettings();
+    $("projection-feedback").textContent = "Building your graph…";
+    const result = await api(`/api/sessions/${state.session.id}/projections`, {method: "POST", body: W.stringify({tables: state.tableSources, projection})});
+    state.files.push(result.file); state.kinds[result.file.id] = "graph"; state.active = result.file.id; clearResults(); renderFiles(); await previewActive();
+    $("projection-dialog").close(); notice(`Graph ready: ${result.provenance.retained_rows} source records produced ${result.provenance.edge_count} connections. Construction settings are saved with the graph.`);
+  }); });
+  $("review-example").addEventListener("click", () => runAction(async () => {
+    state.exampleReview = await api(`/api/workflows/${state.record.id}/example-review`);
+    $("example-question").value = $("question").value; $("example-approved").checked = false; $("example-feedback").textContent = ""; $("example-dialog").showModal();
+  }));
+  $("example-form").addEventListener("submit", event => { event.preventDefault(); runAction(async () => {
+    try {
+      const review = state.exampleReview;
+      await api(`/api/workflows/${review.workflow_id}/example-review`, {method: "POST", body: W.stringify({question: $("example-question").value, approved: $("example-approved").checked, expected_revision: review.expected_revision, workflow_hash: review.workflow_hash, result_sha256: review.result_sha256})});
+      $("example-dialog").close(); notice("Approved example saved for this workspace. Evaluation cases never use reviewed examples.");
+    } catch (error) { $("example-feedback").textContent = error.message; }
+  }); });
   $("data-upload").addEventListener("change", () => { const file = $("data-upload").files[0]; if (file) runAction(async () => { await upload(file); $("data-upload").value = ""; }); });
   $("sample-data").addEventListener("click", () => runAction(async () => {
     const ids = ["Alice", "Bob", "Carol", "Dara", "Eli", "Fatima", "Gus"];

@@ -35,7 +35,10 @@ def analytics_application_evidence(request):
             Path(__file__).with_name("conftest.py"),
         ]
         paths += [Path(path) for path in {item.path for item in request.session.items}]
-        paths += [repository / "catalog/python_analytics_coverage.json"]
+        paths += [repository / "catalog/native_execution_evidence.json"]
+        native = os.environ.get("GRAPHMINE_NATIVE_LIBRARY")
+        if native:
+            paths.append(Path(native))
         return {
             str(path): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in sorted(paths)
@@ -79,6 +82,7 @@ def plan():
             {
                 "id": "sub",
                 "operation": "induced-subgraph",
+                "parameters": {"mode": "induced"},
                 "input": {"input": "main"},
                 "bindings": {"vertices_or_seeds": {"step": "core", "port": "vertices"}},
             },
@@ -264,9 +268,10 @@ def test_live_graph_collection_patterns_and_derived_graph(settings, triangle_gra
             f"/api/workflows/{record['id']}/result", headers=AUTH
         ).json()
         mining = result["steps"]["mine"]["result"]
+        assert mining["input_kind"] == "graph_collection"
         assert (
-            mining["input_kind"] == "graph_collection"
-            and "graph_fingerprint" not in mining
+            mining["ports"]["patterns"]["input_fingerprint"]
+            == mining["input_fingerprint"]
         )
         patterns = mining["result"]["patterns"]
         assert len(patterns) == 1
@@ -361,8 +366,8 @@ def test_live_graph_pair_fraction_witness_and_common_graph(settings, triangle_gr
         assert distance["value"] == {
             "display": 1,
             "display_is_exact": False,
-            "numerator": 10**200 + 1,
-            "denominator": 10**200,
+            "numerator": str(10**200 + 1),
+            "denominator": str(10**200),
         }
         path = results["edits"]["result"]["result"]["edit_path"]
         assert any(row["operation"] == "vertex_insertion" for row in path)
@@ -545,7 +550,7 @@ def test_query_input_rejected_before_any_worker_is_queued(settings, triangle_gra
             f"/api/sessions/{session}/workflows", headers=AUTH, json=request
         )
         assert response.status_code == 422, response.text
-        assert "Unknown edges field" in response.text
+        assert "Unknown attribute field: attributes.invented" in response.text
 
 
 def _service(settings, database, graph_store):
@@ -665,9 +670,7 @@ def test_live_configured_gpu_workflow(settings, triangle_graph, gpu_index):
         ).json()
         for step in result["steps"].values():
             backend = step["result"]["backend"]
-            assert (
-                backend["device"] == "gpu" and backend["cuda_visible_devices"] == device
-            )
+            assert backend["device"] == "gpu" and backend["hardware"]["uuid"] == device
         assert [
             r["score"] for r in result["steps"]["rank"]["result"]["result"]["vertices"]
         ] == pytest.approx([1 / 3] * 3, abs=1e-8)

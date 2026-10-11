@@ -41,7 +41,9 @@ from .analytics import (
     WorkflowRequest,
     WorkflowRevision,
 )
+from .analytics_examples import register_example_routes
 from .analytics_planning import AnalyticsPlanner, PlanningRequest
+from .analytics_projection import register_projection_routes
 from .catalog import Catalog, CatalogError
 from .config import Settings
 from .database import Database, RecordNotFound
@@ -698,6 +700,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             workflow_id, step, port, offset, limit
         )
 
+    register_example_routes(router)
+    register_projection_routes(router)
     app.include_router(router)
 
     @app.websocket("/api/sessions/{session_id}/events/ws")

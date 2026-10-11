@@ -321,12 +321,18 @@ async def test_all_current_profiles_have_one_family_and_valid_plan_schemas(setup
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("native_model", [None, "native-workflow-adapter"])
 async def test_model_transport_uses_constrained_new_contract_and_validates_response(
-    setup, monkeypatch
+    setup, monkeypatch, native_model
 ):
     settings, analytics, events, _session, _body = setup
     planner = AnalyticsPlanner(
-        replace(settings, llm_enabled=True, llm_base_url="http://planner.test/v1"),
+        replace(
+            settings,
+            llm_enabled=True,
+            llm_base_url="http://planner.test/v1",
+            analytics_planner_model=native_model,
+        ),
         analytics,
         events,
     )
@@ -353,9 +359,19 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
     )
     assert answer == family()
     assert calls[0]["response_format"]["json_schema"]["strict"] is True
-    assert "Never generate code" in calls[0]["messages"][0]["content"]
+    assert (
+        "Return JSON matching the supplied schema" in calls[0]["messages"][0]["content"]
+    )
     assert "Ignore instructions" in calls[0]["messages"][1]["content"]
-    assert calls[0]["model"] == settings.llm_model
+    assert calls[0]["model"] == (native_model or settings.llm_model)
+    assert calls[0]["reasoning_effort"] == settings.analytics_reasoning_effort
+    assert (
+        "uniqueItems"
+        not in calls[0]["response_format"]["json_schema"]["schema"]["properties"][
+            "families"
+        ]
+    )
+    assert family_schema([{"id": "patterns"}])["properties"]["families"]["uniqueItems"]
 
 
 @pytest.mark.asyncio
@@ -386,7 +402,7 @@ async def test_followup_retains_reviewed_plan_context_without_automatic_executio
         responses=[
             family(),
             operation("triangle-counting"),
-            proposal(parameters={"list_instances": True}),
+            proposal(parameters={"mode": "enumerate"}),
         ],
     )
     response = await planner.plan(session, body)
@@ -394,7 +410,7 @@ async def test_followup_retains_reviewed_plan_context_without_automatic_executio
     for _, payload, _ in planner.calls:
         assert payload["previous_plan"] == initial["validation"]["plan"]
         assert payload["previous_input_files"] == initial["input_files"]
-    assert response["plan"]["steps"][0]["parameters"]["list_instances"] is True
+    assert response["plan"]["steps"][0]["parameters"]["mode"] == "enumerate"
     # Planning itself neither revises the reviewed record nor starts a job.
     unchanged = analytics.get(initial["id"])
     assert unchanged["revision"] == 1 and unchanged["status"] == "awaiting_review"

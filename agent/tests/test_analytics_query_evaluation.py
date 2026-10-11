@@ -81,6 +81,16 @@ def test_grader_accepts_step_renaming_but_preserves_wiring():
     assert not graded["passed"]
 
 
+def test_grader_accepts_declared_defaults_but_not_changed_semantics():
+    expected, result, checks = grading_fixture()
+    actual = deepcopy(expected)
+    actual["steps"][0]["parameters"]["limit"] = 10000
+    defaults = {"node-lookup": {"limit": 10000}}
+    assert grade(expected, actual, result, checks, defaults)["passed"]
+    actual["steps"][0]["parameters"]["limit"] = 1
+    assert not grade(expected, actual, result, checks, defaults)["passed"]
+
+
 @pytest.mark.parametrize(
     "mutation",
     ["wrong_type", "truncated", "failed", "wrong_parameters", "extra_operation"],

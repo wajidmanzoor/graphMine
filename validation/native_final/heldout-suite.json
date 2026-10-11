@@ -1,0 +1,2730 @@
+{
+  "version": "native-workflow-heldout-20261011-v1",
+  "created_at": "2026-10-11T11:07:17.049414+00:00",
+  "seed": 11072026,
+  "scope": "20 assistant-authored held-out questions over new fictional graphs, frozen after development prompt changes and before model evaluation; no human labels, public NLP benchmark, or training use. Independent subset, cut, path-relaxation and record oracles.",
+  "cases": [
+    {
+      "id": "triangles",
+      "question": "How many undirected triangles are in the whole network? Return the count only.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "triangle-counting"
+      ],
+      "checks": [
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 4
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "maximum_clique",
+      "question": "Return one maximum clique: I need the globally largest complete group, not merely a maximal one.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "maximum-clique"
+      ],
+      "checks": [
+        {
+          "operation": "maximum-clique",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641"
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "independent_optimum",
+      "question": "Find an exact maximum independent set of the full undirected graph.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "maximum-independent-set"
+      ],
+      "checks": [
+        {
+          "operation": "maximum-independent-set",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "station-6992",
+              "station-7267",
+              "station-7497"
+            ],
+            [
+              "station-3720",
+              "station-6992",
+              "station-7267"
+            ],
+            [
+              "station-6992",
+              "station-7497",
+              "station-9446"
+            ],
+            [
+              "station-3720",
+              "station-6992",
+              "station-9446"
+            ],
+            [
+              "station-6992",
+              "station-7497",
+              "station-8405"
+            ],
+            [
+              "station-3720",
+              "station-6992",
+              "station-8405"
+            ],
+            [
+              "station-3720",
+              "station-6992",
+              "station-8641"
+            ]
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "cover_optimum",
+      "question": "Find an exact minimum vertex cover, with no bound k.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "minimum-vertex-cover"
+      ],
+      "checks": [
+        {
+          "operation": "minimum-vertex-cover",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "station-7267",
+              "station-7497",
+              "station-8405",
+              "station-9446"
+            ],
+            [
+              "station-7267",
+              "station-7497",
+              "station-8641",
+              "station-9446"
+            ],
+            [
+              "station-3720",
+              "station-7267",
+              "station-8641",
+              "station-9446"
+            ],
+            [
+              "station-7267",
+              "station-7497",
+              "station-8405",
+              "station-8641"
+            ],
+            [
+              "station-3720",
+              "station-7267",
+              "station-8405",
+              "station-8641"
+            ],
+            [
+              "station-7497",
+              "station-8405",
+              "station-8641",
+              "station-9446"
+            ],
+            [
+              "station-3720",
+              "station-8405",
+              "station-8641",
+              "station-9446"
+            ]
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "components",
+      "question": "Give the weakly connected components of this graph, including isolated vertices.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "connected-components"
+      ],
+      "checks": [
+        {
+          "operation": "connected-components",
+          "port": "groups",
+          "kind": "partition",
+          "value": [
+            [
+              "station-7267",
+              "station-9446",
+              "station-8405",
+              "station-8641",
+              "station-7497",
+              "station-3720"
+            ],
+            [
+              "station-6992"
+            ]
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "bfs",
+      "question": "Run breadth-first search from string ID station-7267 on the whole graph without a depth limit.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "breadth-first-search"
+      ],
+      "checks": [
+        {
+          "operation": "breadth-first-search",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641",
+            "station-7497",
+            "station-3720"
+          ]
+        }
+      ],
+      "expected_status": "ready",
+      "required_parameters": {
+        "breadth-first-search": {
+          "sources": [
+            "station-7267"
+          ]
+        }
+      }
+    },
+    {
+      "id": "weighted_distance",
+      "question": "Compute single-source shortest paths from string ID station-7267. Edge weights are travel costs; use them, with no cutoff.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "single-source-shortest-paths"
+      ],
+      "checks": [
+        {
+          "operation": "single-source-shortest-paths",
+          "port": "distances",
+          "kind": "scores",
+          "value": {
+            "station-7267": 0,
+            "station-9446": 7,
+            "station-8405": 7,
+            "station-8641": 4,
+            "station-7497": 10,
+            "station-3720": 18,
+            "station-6992": null
+          }
+        }
+      ],
+      "expected_status": "ready",
+      "required_parameters": {
+        "single-source-shortest-paths": {
+          "source": "station-7267"
+        }
+      }
+    },
+    {
+      "id": "filtered_records",
+      "question": "Show all edge records with attributes.amount greater than or equal to 50.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "edge-filter"
+      ],
+      "checks": [
+        {
+          "operation": "edge-filter",
+          "port": "edges",
+          "kind": "set",
+          "value": [
+            "route-2",
+            "route-6"
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "incoming_records",
+      "question": "Return every neighbor of station-3720 at one hop, excluding that vertex itself. Respect the graph's undirected edges.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "neighbors"
+      ],
+      "checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7497"
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "vertex_filter",
+      "question": "Return all vertices with attributes.zone equal to blue.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "node-lookup"
+      ],
+      "checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-9446",
+            "station-8641",
+            "station-3720"
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "aggregate",
+      "question": "Sum attributes.amount over all edge records as one overall total; do not group the rows.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "graph-aggregate"
+      ],
+      "checks": [
+        {
+          "operation": "graph-aggregate",
+          "port": "rows",
+          "kind": "aggregate_total",
+          "value": 327
+        }
+      ],
+      "expected_status": "ready",
+      "required_parameters": {
+        "graph-aggregate": {
+          "scope": "edges",
+          "metric": "sum",
+          "field": "attributes.amount"
+        }
+      }
+    },
+    {
+      "id": "numeric_identity",
+      "question": "Look up just the vertex whose ID is the integer 0. Return its full record.",
+      "input": {
+        "graph": {
+          "id": "heldout-typed",
+          "directed": true,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": 0
+          },
+          {
+            "id": "0"
+          },
+          {
+            "id": 9007199254740993
+          }
+        ],
+        "edges": []
+      },
+      "operations": [
+        "node-lookup"
+      ],
+      "checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "kind": "equal",
+          "value": [
+            0
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "string_identity",
+      "question": "Look up just the vertex whose ID is the string \"0\". Return its full record.",
+      "input": {
+        "graph": {
+          "id": "heldout-typed",
+          "directed": true,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": 0
+          },
+          {
+            "id": "0"
+          },
+          {
+            "id": 9007199254740993
+          }
+        ],
+        "edges": []
+      },
+      "operations": [
+        "node-lookup"
+      ],
+      "checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "kind": "equal",
+          "value": [
+            "0"
+          ]
+        }
+      ],
+      "expected_status": "ready"
+    },
+    {
+      "id": "flow_capacity",
+      "question": "Compute exact maximum flow from supply to demand using directed edge weights as capacities, and return the cut side.",
+      "input": {
+        "graph": {
+          "id": "heldout-flow",
+          "directed": true,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "supply"
+          },
+          {
+            "id": "left"
+          },
+          {
+            "id": "right"
+          },
+          {
+            "id": "demand"
+          }
+        ],
+        "edges": [
+          {
+            "id": 0,
+            "source": "supply",
+            "target": "left",
+            "weight": 7
+          },
+          {
+            "id": 1,
+            "source": "supply",
+            "target": "right",
+            "weight": 3
+          },
+          {
+            "id": 2,
+            "source": "left",
+            "target": "right",
+            "weight": 2
+          },
+          {
+            "id": 3,
+            "source": "left",
+            "target": "demand",
+            "weight": 4
+          },
+          {
+            "id": 4,
+            "source": "right",
+            "target": "demand",
+            "weight": 6
+          }
+        ]
+      },
+      "operations": [
+        "max-flow-min-cut"
+      ],
+      "checks": [
+        {
+          "operation": "max-flow-min-cut",
+          "port": "value",
+          "kind": "equal",
+          "value": 9
+        }
+      ],
+      "expected_status": "ready",
+      "required_parameters": {
+        "max-flow-min-cut": {
+          "source": "supply",
+          "sink": "demand",
+          "capacity_mode": "edge_weight"
+        }
+      }
+    },
+    {
+      "id": "derived_network",
+      "question": "Use query-subgraph in vertex mode to induce the graph on station-7267, station-9446, station-8405, station-8641, then count triangles in that derived graph only.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "query-subgraph",
+        "triangle-counting"
+      ],
+      "checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 4
+        }
+      ],
+      "expected_status": "ready",
+      "required_graph_dependency": {
+        "triangle-counting": "query-subgraph"
+      }
+    },
+    {
+      "id": "followup_scope",
+      "question": "Keep that BFS source and the same input, but limit the search to two hops.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "breadth-first-search"
+      ],
+      "checks": [
+        {
+          "operation": "breadth-first-search",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7267",
+            "station-9446",
+            "station-8405",
+            "station-8641",
+            "station-7497"
+          ]
+        }
+      ],
+      "expected_status": "ready",
+      "previous_plan": {
+        "version": 1,
+        "device": "cpu",
+        "steps": [
+          {
+            "id": "reach",
+            "operation": "breadth-first-search",
+            "input": {
+              "input": "main"
+            },
+            "parameters": {
+              "sources": [
+                "station-7267"
+              ]
+            }
+          }
+        ]
+      },
+      "required_parameters": {
+        "breadth-first-search": {
+          "sources": [
+            "station-7267"
+          ],
+          "depth_limit": 2
+        }
+      }
+    },
+    {
+      "id": "wrong_family_recovery",
+      "question": "Count all triangles in this undirected graph. Only the exact count is needed.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "operations": [
+        "triangle-counting"
+      ],
+      "checks": [
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 4
+        }
+      ],
+      "expected_status": "ready",
+      "family_id": "importance",
+      "require_reroute": true
+    },
+    {
+      "id": "ambiguous_importance",
+      "question": "Who is most important in this network?",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "expected_status": "needs_information"
+    },
+    {
+      "id": "ambiguous_group",
+      "question": "Find the best group of connected stations.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "expected_status": "needs_information"
+    },
+    {
+      "id": "missing_training",
+      "question": "Train a supervised node classifier for my private labels, which I have not uploaded yet.",
+      "input": {
+        "graph": {
+          "id": "heldout-stations",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "station-7267",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-9446",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-8405",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-8641",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-7497",
+            "attributes": {
+              "zone": "green"
+            }
+          },
+          {
+            "id": "station-3720",
+            "attributes": {
+              "zone": "blue"
+            }
+          },
+          {
+            "id": "station-6992",
+            "attributes": {
+              "zone": "green"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "route-0",
+            "source": "station-7267",
+            "target": "station-9446",
+            "weight": 7,
+            "attributes": {
+              "amount": 29
+            }
+          },
+          {
+            "id": "route-1",
+            "source": "station-7267",
+            "target": "station-8405",
+            "weight": 7,
+            "attributes": {
+              "amount": 39
+            }
+          },
+          {
+            "id": "route-2",
+            "source": "station-7267",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 52
+            }
+          },
+          {
+            "id": "route-3",
+            "source": "station-9446",
+            "target": "station-8405",
+            "weight": 4,
+            "attributes": {
+              "amount": 48
+            }
+          },
+          {
+            "id": "route-4",
+            "source": "station-9446",
+            "target": "station-8641",
+            "weight": 4,
+            "attributes": {
+              "amount": 12
+            }
+          },
+          {
+            "id": "route-5",
+            "source": "station-8405",
+            "target": "station-8641",
+            "weight": 7,
+            "attributes": {
+              "amount": 26
+            }
+          },
+          {
+            "id": "route-6",
+            "source": "station-8641",
+            "target": "station-7497",
+            "weight": 6,
+            "attributes": {
+              "amount": 72
+            }
+          },
+          {
+            "id": "route-7",
+            "source": "station-7497",
+            "target": "station-3720",
+            "weight": 8,
+            "attributes": {
+              "amount": 49
+            }
+          }
+        ]
+      },
+      "expected_status": "needs_information"
+    }
+  ]
+}

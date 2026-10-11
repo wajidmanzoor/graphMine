@@ -39,7 +39,7 @@ def browser_evidence(request):
         files += [
             package / "static/vendor/cytoscape.min.js",
             Path(__file__),
-            ROOT / "catalog/python_analytics_coverage.json",
+            ROOT / "catalog/native_execution_evidence.json",
         ]
         return {
             str(path): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -136,6 +136,10 @@ def server(tmp_path_factory, authored_model_transport):
     executables = root / "without-node"
     executables.mkdir()
     (executables / "python3").symlink_to(sys.executable)
+    # Native evidence inspects ELF dependencies; table construction queries
+    # physical GPU memory. Neither utility introduces a Node runtime.
+    for utility in ("ldd", "nvidia-smi"):
+        (executables / utility).symlink_to(shutil.which(utility))
     assert shutil.which("node", path=str(executables)) is None
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
@@ -222,11 +226,11 @@ def browser(server, tmp_path):
         "localStorage.setItem('graphmine.apiToken','analytics-browser-secret')"
     )
     driver.refresh()
-    WebDriverWait(driver, 40).until(
-        lambda d: "Library ready" in d.find_element(By.ID, "connection-state").text
-    )
-    capture(driver, "workspace-overview.png")
     try:
+        WebDriverWait(driver, 40).until(
+            lambda d: "Library ready" in d.find_element(By.ID, "connection-state").text
+        )
+        capture(driver, "workspace-overview.png")
         yield driver
     finally:
         driver.quit()
@@ -383,9 +387,7 @@ def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
         )
     )
     done(browser)
-    assert (
-        "Add field filters" in browser.find_element(By.ID, "result-completeness").text
-    )
+    assert "Add filters" in browser.find_element(By.ID, "result-completeness").text
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.port.complete")
         is False
@@ -503,6 +505,7 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
                 "id": "sub",
                 "operation": "induced-subgraph",
                 "input": {"input": "main"},
+                "parameters": {"mode": "induced"},
                 "bindings": {"vertices_or_seeds": {"step": "core", "port": "vertices"}},
             },
             {
@@ -585,7 +588,7 @@ def test_normal_mode_paging_outside_preview_and_fixed_renderers(browser, tmp_pat
     )
     browser.find_element(By.ID, "table-next").click()
     assert browser.find_element(By.ID, "table-page").text == "2 / 17"
-    browser.find_element(By.ID, "table-search").send_keys("501")
+    browser.find_element(By.ID, "table-search").send_keys("vertex:501")
     assert browser.find_element(By.ID, "table-page").text == "1 / 1"
     assert browser.execute_script("return typeof window.vega") == "undefined"
     assert browser.execute_script(
@@ -832,7 +835,7 @@ def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
     assert "Display rounded" in browser.find_element(By.ID, "metrics").text
     assert browser.execute_script(
         "const v=window.GraphMineWorkspace.state.port.value;return [typeof v.numerator,String(v.numerator),String(v.denominator)]"
-    ) == ["bigint", str(10**200 + 1), str(10**200)]
+    ) == ["string", str(10**200 + 1), str(10**200)]
     browser.execute_script(
         "document.getElementById('result-controls').scrollIntoView()"
     )
@@ -971,3 +974,97 @@ def test_question_uses_family_then_operation_then_real_calculation(
         )
         == "cpu"
     )
+
+
+def test_explicit_example_review_does_not_approve_a_successful_run_automatically(
+    browser, tmp_path
+):
+    upload(browser, tmp_path)
+    browser.find_element(By.ID, "question").send_keys("Count triangles in this graph")
+    browser.find_element(By.ID, "plan-question").click()
+    done(browser)
+    button = browser.find_element(By.ID, "review-example")
+    browser.execute_script("arguments[0].scrollIntoView({block:'center'})", button)
+    button.click()
+    WebDriverWait(browser, 10).until(
+        lambda d: d.find_element(By.ID, "example-dialog").is_displayed()
+    )
+    assert not browser.find_element(By.ID, "example-approved").is_selected()
+    browser.find_element(By.ID, "example-approved").click()
+    browser.find_element(By.CSS_SELECTOR, "#example-form button[type=submit]").click()
+    WebDriverWait(browser, 10).until(
+        lambda d: "Approved example saved" in d.find_element(By.ID, "notice").text
+    )
+    capture(browser, "reviewed-example.png")
+
+
+def test_native_csv_projection_preserves_ids_and_computes_in_browser(browser, tmp_path):
+    table = tmp_path / "transfers.csv"
+    table.write_text("sender,recipient,capacity\n001,002,4\n001,002,5\n002,003,2\n")
+    browser.find_element(By.ID, "open-projection").click()
+    browser.find_element(By.ID, "table-upload").send_keys(str(table))
+    WebDriverWait(browser, 30).until(
+        lambda d: len(Select(d.find_element(By.ID, "projection-source")).options) == 4
+    )
+    Select(browser.find_element(By.ID, "projection-source")).select_by_visible_text(
+        "sender"
+    )
+    Select(browser.find_element(By.ID, "projection-target")).select_by_visible_text(
+        "recipient"
+    )
+    Select(browser.find_element(By.ID, "projection-task")).select_by_value("max_flow")
+    Select(browser.find_element(By.ID, "projection-weight")).select_by_visible_text(
+        "capacity"
+    )
+    Select(browser.find_element(By.ID, "projection-duplicates")).select_by_value("sum")
+    capture(browser, "table-construction.png")
+    browser.find_element(
+        By.CSS_SELECTOR, "#projection-form button[type=submit]"
+    ).click()
+    WebDriverWait(browser, 30).until(
+        lambda d: not d.find_element(By.ID, "projection-dialog").is_displayed()
+    )
+    WebDriverWait(browser, 15).until(
+        lambda d: d.execute_script(
+            "return window.GraphMineWorkspace.state.cy?.nodes().length === 3"
+        )
+    )
+    assert sorted(
+        browser.execute_script(
+            "return window.GraphMineWorkspace.state.cy.nodes().map(n=>n.data('entity'))"
+        )
+    ) == ["001", "002", "003"]
+    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
+    plan = {
+        "version": 1,
+        "device": "cpu",
+        "steps": [
+            {
+                "id": "flow",
+                "operation": "max-flow-min-cut",
+                "input": {"input": "main"},
+                "parameters": {
+                    "source": "001",
+                    "sink": "003",
+                    "capacity_mode": "edge_weight",
+                },
+            }
+        ],
+    }
+    editor = browser.find_element(By.ID, "plan-editor")
+    browser.execute_script(
+        "arguments[0].value=arguments[1];arguments[0].dispatchEvent(new Event('input',{bubbles:true}));",
+        editor,
+        json.dumps(plan),
+    )
+    browser.find_element(By.ID, "save-editor").click()
+    status(browser, "ready")
+    browser.find_element(By.ID, "approve-plan").click()
+    done(browser)
+    assert (
+        browser.execute_script(
+            "return window.GraphMineWorkspace.state.result.steps.flow.result.result.flow_value"
+        )
+        == 2
+    )
+    capture(browser, "table-flow-result.png")

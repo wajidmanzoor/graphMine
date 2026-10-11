@@ -1,15 +1,19 @@
 # GraphMine
 
-GraphMine 1.0.0 is a C++17/CUDA library interface for graph-mining implementations
-that passed the project’s GPU correctness validation. It provides one canonical
-graph model, typed problem APIs, runtime backend selection, and a build-once
-JSON command-line runner.
+GraphMine provides a standalone C++/CUDA graph library, a thin Python binding,
+and an analysis workspace with Normal, Interactive and Expert modes. The native
+catalog defines the algorithms, parameters, results and available backends.
 
-- **37** complete graph-problem contracts for problem identification
-- **22** problems with validated library support
-- **24** runnable library operations
-- **38** registered backend choices
+- **70** formal graph-problem contracts with native CPU profiles
+- **80** native operations, including seven record-query utilities
+- **23** operations with evidence-admitted GPU profiles
 - Canonical JSON graph input and structured JSON results
+
+Start with the [native library guide](docs/NATIVE_CORE_MIGRATION.md),
+[profile definitions](docs/NATIVE_COMPLETION_PROFILES.md), and
+[analysis workspace guide](docs/ANALYTICS_WORKSPACE.md). Exact source, binary,
+dependency and profile evidence controls what the application can execute.
+GPU coverage applies to declared parameter profiles, not every CPU operation.
 
 The [repaired algorithm guide](library/docs/repaired_algorithms.md) documents the nine repaired integrations, their exact profiles, installation, and agent JSON contracts.
 
@@ -22,12 +26,15 @@ retraining. The original V1 release scope and scores remain in
 
 - [`library/`](library/) contains the public headers, adapters, CLI, examples,
   tests, CMake package, and install rules.
-- [`problems/`](problems/) contains all 37 authoritative `problem.json` files,
+- [`problems/`](problems/) contains all 70 authoritative `problem.json` files,
   the canonical graph schema, and the pinned source files required by the
   validated adapters.
-- [`graphmine_catalog.json`](graphmine_catalog.json) is the problem-first global
-  context used to interpret a user request and choose a supported operation,
-  backend, parameters, and optional outputs.
+- [`library/runtime/`](library/runtime/) is the shared native core;
+  [`python/graphmine/`](python/graphmine/) transports its requests and results.
+- [`catalog/native_runtime_coverage.json`](catalog/native_runtime_coverage.json)
+  maps every formal contract to verified native profiles.
+- [`graphmine_catalog.json`](graphmine_catalog.json) retains the original V1
+  problem-first catalog for the legacy API.
 - [`graphmine_manifest.json`](graphmine_manifest.json) is the compact runtime
   operation/CLI contract.
 - [`validation/gpu_correctness/results/results.json`](validation/gpu_correctness/results/results.json)
@@ -39,7 +46,21 @@ retraining. The original V1 release scope and scores remain in
 - [`agent/`](agent/) contains the domain-aware planner/analyst service,
   private-LAN API, durable GPU job queue, and interactive web application.
 
-## Build once, run many queries
+## Build the shared native runtime
+
+```bash
+cmake -S library/runtime -B build/native-cpu -DCMAKE_BUILD_TYPE=Release
+cmake --build build/native-cpu -j4
+ctest --test-dir build/native-cpu --output-on-failure
+build/native-cpu/graphmine-native catalog
+```
+
+The CPU build requires Boost.JSON, OpenSSL, LAPACK and ICU. It runs without
+Python or CUDA. Optional native cuGraph/cuDF and research CUDA workers are
+documented in the native guide. The application additionally requires matching
+validation evidence; compiling a binary alone does not admit it for execution.
+
+## Original V1 runner
 
 ```bash
 python3 library/tools/prepare_repaired_workers.py --fetch --gpu 1

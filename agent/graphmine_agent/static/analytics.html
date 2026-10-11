@@ -31,6 +31,7 @@
           <label>CSV to column<input id="csv-target" placeholder="target (automatic)"></label>
         </details>
         <button id="sample-data" class="secondary full-width">Try example team data</button>
+        <button id="open-projection" class="quiet full-width">Build a graph from tables</button>
         <label>Active input<select id="active-input"><option value="">Upload data to begin</option></select></label>
         <label id="active-kind-label" hidden>Declared input kind<select id="active-kind"><option value="graph">Graph</option><option value="graph_collection">Collection of graphs</option><option value="feature_vectors">Feature vectors</option><option value="hypergraph">Hypergraph</option></select></label>
         <p id="data-summary" class="muted">Your analysis uses the full uploaded input.</p>
@@ -70,6 +71,7 @@
         <p id="workflow-summary" class="muted"></p><ol id="workflow-steps" class="workflow-steps"></ol>
         <div id="review-actions" class="form-actions"><button id="approve-plan" class="primary">Approve and run</button><button id="edit-plan" class="secondary">Edit plan</button><button id="cancel-workflow" class="secondary danger" hidden>Cancel execution</button></div>
         <details><summary>Plan and execution details</summary><pre id="plan-details"></pre></details>
+        <button id="review-example" class="quiet" hidden>Review as a reusable example</button>
       </section>
       <section id="evidence-panel" class="panel" aria-labelledby="evidence-heading">
         <div class="section-heading"><div><p class="eyebrow">Explore the evidence</p><h2 id="evidence-heading">Connections & results</h2></div><button id="download-result" class="secondary" disabled>Download full result</button></div>
@@ -77,12 +79,37 @@
         <div id="result-controls" class="result-controls" hidden><label>Step<select id="result-step"></select></label><label>Output<select id="result-port"></select></label></div>
         <div class="evidence-grid">
           <div class="graph-card"><div class="graph-tools"><label>View layout<select id="graph-layout"><option value="cose">Spread connections</option><option value="circle">Circle</option><option value="grid">Grid</option><option value="computed" disabled>Computed coordinates</option></select></label><button id="fit-graph" class="quiet">Fit graph</button><button id="clear-selection" class="quiet">Clear selection</button></div><div id="network" role="img" aria-label="Network preview; choose a result row to highlight its entities"></div><p id="preview-scope" class="muted"></p><div id="selection-detail" role="status" class="selection-detail">Select a node or a result row to inspect it.</div></div>
-          <div class="result-card"><div id="metrics" class="metrics"></div><div id="chart" class="fixed-chart"></div><div class="table-toolbar"><label>Find in this output<input id="table-search" type="search" placeholder="Filter displayed result values"></label><span id="table-count" class="muted"></span></div><div class="table-scroll" tabindex="0" role="region" aria-label="Result rows"><table id="result-table"><caption class="visually-hidden">Computed output values</caption><thead></thead><tbody></tbody></table></div><div class="pagination"><button id="table-prev" class="secondary">Previous</button><span id="table-page"></span><button id="table-next" class="secondary">Next</button></div><p id="table-scope" class="muted">Computed values will appear after an analysis.</p></div>
+          <div class="result-card"><div id="metrics" class="metrics"></div><div id="chart" class="fixed-chart"></div><div class="table-toolbar"><label>Find in this output<input id="table-search" type="search" placeholder="Value or vertex:501"></label><span id="table-count" class="muted"></span></div><div class="table-scroll" tabindex="0" role="region" aria-label="Result rows"><table id="result-table"><caption class="visually-hidden">Computed output values</caption><thead></thead><tbody></tbody></table></div><div class="pagination"><button id="table-prev" class="secondary">Previous</button><span id="table-page"></span><button id="table-next" class="secondary">Next</button></div><p id="table-scope" class="muted">Computed values will appear after an analysis.</p></div>
         </div>
         <details id="raw-details" hidden><summary>Recorded result and provenance</summary><pre id="raw-result"></pre></details>
       </section>
     </main>
   </div>
   <dialog id="connection-dialog"><form id="connection-form" method="dialog"><div class="section-heading"><h2>Connect to GraphMine</h2><button value="cancel" type="button" id="close-connection" class="quiet" aria-label="Close connection settings">Close</button></div><label>API base URL<input id="api-base" placeholder="Same server"></label><label>API token<input id="api-token" type="password" autocomplete="off"></label><p class="muted">Connection settings stay in this browser.</p><button type="submit" class="primary">Save and connect</button></form></dialog>
+  <dialog id="example-dialog" aria-labelledby="example-heading"><form id="example-form">
+    <div class="section-heading"><h2 id="example-heading">Review this example</h2><button type="button" class="quiet" data-close="example-dialog">Close</button></div>
+    <p class="muted">Check the computed result and describe the question it answers. Approved examples can help plan later questions in this workspace.</p>
+    <label>Question this result answers<textarea id="example-question" required minlength="3" maxlength="2000" rows="3"></textarea></label>
+    <label class="check"><input id="example-approved" type="checkbox" required> I reviewed the plan and result and approve this example.</label>
+    <p id="example-feedback" role="status" aria-live="polite"></p>
+    <button type="submit" class="primary">Save approved example</button>
+  </form></dialog>
+  <dialog id="projection-dialog" class="wide-dialog" aria-labelledby="projection-heading"><form id="projection-form">
+    <div class="section-heading"><div><p class="eyebrow">Prepare your network</p><h2 id="projection-heading">Build a graph from tables</h2></div><button type="button" class="quiet" data-close="projection-dialog">Close</button></div>
+    <p class="muted">Choose which records form connections and what their values mean. Your source tables remain available.</p>
+    <label>Add CSV tables<input id="table-upload" type="file" accept=".csv" multiple></label>
+    <p id="table-aliases" class="muted"></p>
+    <label>Connection table<select id="projection-table"></select></label>
+    <div class="parameter-grid"><label>From column<select id="projection-source"></select></label><label>To column<select id="projection-target"></select></label>
+      <label>Intended calculation<select id="projection-task"><option value="topology">Connections and groups</option><option value="shortest_paths">Shortest paths</option><option value="spanning_tree">Connection costs</option><option value="max_flow">Flow capacity</option><option value="ranking">Importance ranking</option></select></label>
+      <label>Weight column<select id="projection-weight"><option value="">No weight</option></select></label>
+      <label>Repeated connections<select id="projection-duplicates"><option value="preserve">Keep every record</option><option value="reject">Reject duplicates</option><option value="sum">Add weights</option><option value="min">Minimum weight</option><option value="max">Maximum weight</option><option value="count">Count records as weight</option></select></label>
+      <label class="check"><input id="projection-directed" type="checkbox" checked> Connections have a direction</label>
+    </div>
+    <p id="projection-weight-note" class="muted">Choose a task to declare what connection weights mean.</p>
+    <details><summary>Joins, attributes and time windows</summary><p class="muted">Load the current settings, then add explicit many-to-one joins, typed attributes or an inclusive-start, exclusive-end time window. Table aliases are shown above.</p><button id="projection-template" type="button" class="secondary">Load current settings</button><label class="check"><input id="projection-advanced" type="checkbox"> Use the settings below</label><label>Projection settings<textarea id="projection-editor" class="code-editor" rows="12" spellcheck="false"></textarea></label></details>
+    <p id="projection-feedback" role="status" aria-live="polite"></p>
+    <button type="submit" class="primary">Build graph and use it</button>
+  </form></dialog>
 </body>
 </html>

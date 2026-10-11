@@ -200,7 +200,7 @@ def build_suite():
                 {
                     "group": None,
                     "value": value,
-                    "exact_value": {"numerator": value, "denominator": 1},
+                    "exact_value": {"numerator": str(value), "denominator": "1"},
                     "rounded": False,
                     "record_count": value,
                 }
@@ -383,7 +383,7 @@ def build_suite():
     }
 
 
-def grade(expected, actual, result, checks):
+def grade(expected, actual, result, checks, defaults=None):
     want, got = expected["steps"], actual["steps"]
     operation_match = Counter(s["operation"] for s in want) == Counter(
         s["operation"] for s in got
@@ -405,12 +405,17 @@ def grade(expected, actual, result, checks):
         return value
 
     parameters, wiring = bool(mapping), bool(mapping)
+    defaults = defaults or {}
+
+    def effective_parameters(step):
+        return {**defaults.get(step["operation"], {}), **step["parameters"]}
+
     for target in want:
         source = next((s for s in got if s["id"] == mapping.get(target["id"])), None)
         if source is None:
             continue
         parameters &= (
-            digest(target["parameters"]) == digest(source["parameters"])
+            digest(effective_parameters(target)) == digest(effective_parameters(source))
             and target["device"] == source["device"]
         )
         wiring &= digest(target["input"]) == digest(
@@ -483,7 +488,10 @@ async def evaluate(
                 content=json.dumps(case["input"]).encode(),
             )
             request = WorkflowRequest(
-                mode="normal", plan=case["plan"], inputs={"main": {"file_id": file.id}}
+                mode="normal",
+                plan=case["plan"],
+                inputs={"main": {"file_id": file.id}},
+                evaluation_id=f"{suite['version']}/{case['id']}",
             )
             row = {"id": case["id"], "slice": case["slice"], "planning": None}
             try:
@@ -501,6 +509,7 @@ async def evaluate(
                             message=case["question"],
                             inputs=request.inputs,
                             device="cpu",
+                            evaluation_id=request.evaluation_id,
                         ),
                     )
                     row["planning"] = planned
@@ -517,7 +526,20 @@ async def evaluate(
                 await asyncio.gather(*analytics.tasks.values())
                 result = analytics.result(saved["id"])
                 row.update(
-                    grade(checked["plan"], result["plan"], result, case["expected"])
+                    grade(
+                        checked["plan"],
+                        result["plan"],
+                        result,
+                        case["expected"],
+                        {
+                            card["id"]: {
+                                key: value["default"]
+                                for key, value in card["parameters"].items()
+                                if "default" in value
+                            }
+                            for card in caps["operations"]
+                        },
+                    )
                 )
                 row["workflow_id"] = saved["id"]
                 row["workflow_hash"] = result["workflow_hash"]

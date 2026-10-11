@@ -59,6 +59,14 @@ class Settings:
     analytics_python: Path | None = None
     analytics_max_input_bytes: int = 64 * 1024 * 1024
     native_runtime_binary: Path | None = None
+    native_runtime_library: Path | None = None
+    analytics_cpu_workers: int = 2
+    analytics_gpu_uuids: tuple[str, ...] = ()
+    analytics_gpu_headroom_bytes: int = 512 * 1024 * 1024
+    analytics_llm_reserve_bytes: int = 0
+    allow_shared_gpu: bool = False
+    analytics_planner_model: str | None = None
+    analytics_reasoning_effort: str = "medium"
 
     @property
     def routing_contract_version(self) -> str:
@@ -86,6 +94,10 @@ class Settings:
             raise ValueError("GRAPHMINE_MAX_RESULT_BYTES must be positive")
         if self.analytics_max_input_bytes < 1:
             raise ValueError("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES must be positive")
+        if self.analytics_cpu_workers < 1:
+            raise ValueError("GRAPHMINE_ANALYTICS_CPU_WORKERS must be positive")
+        if min(self.analytics_gpu_headroom_bytes, self.analytics_llm_reserve_bytes) < 0:
+            raise ValueError("Analytics memory reservations must be nonnegative")
         if self.job_timeout_seconds < 1:
             raise ValueError("GRAPHMINE_JOB_TIMEOUT_SECONDS must be positive")
         if self.result_summary_items < 1:
@@ -94,6 +106,7 @@ class Settings:
             self.llm_route_reasoning_effort,
             self.llm_plan_reasoning_effort,
             self.llm_analyst_reasoning_effort,
+            self.analytics_reasoning_effort,
         }
         if not efforts <= {"none", "low", "medium", "xhigh"}:
             raise ValueError(
@@ -112,8 +125,12 @@ class Settings:
             self.graph_gpu_uuid
             and self.llm_gpu_uuid
             and self.graph_gpu_uuid == self.llm_gpu_uuid
+            and not self.allow_shared_gpu
         ):
-            raise ValueError("the LLM and GraphMine processes must use different GPUs")
+            raise ValueError(
+                "the LLM and GraphMine processes must use different GPUs unless "
+                "GRAPHMINE_ALLOW_SHARED_GPU is enabled with memory reserved for native jobs"
+            )
 
     @classmethod
     def from_env(cls, repository_root: Path | None = None) -> Settings:
@@ -146,6 +163,11 @@ class Settings:
             )
             .expanduser()
             .resolve(),
+            native_runtime_library=Path(os.environ["GRAPHMINE_NATIVE_LIBRARY"])
+            .expanduser()
+            .resolve()
+            if os.getenv("GRAPHMINE_NATIVE_LIBRARY")
+            else None,
             catalog_path=(root / "graphmine_catalog.json").resolve(),
             manifest_path=(root / "graphmine_manifest.json").resolve(),
             program_instructions_path=(
@@ -164,6 +186,26 @@ class Settings:
             allowed_origins=origins,
             graph_gpu_uuid=os.getenv("GRAPHMINE_GRAPH_GPU_UUID", "").strip() or None,
             llm_gpu_uuid=os.getenv("GRAPHMINE_LLM_GPU_UUID", "").strip() or None,
+            allow_shared_gpu=_boolean("GRAPHMINE_ALLOW_SHARED_GPU", False),
+            analytics_cpu_workers=_integer("GRAPHMINE_ANALYTICS_CPU_WORKERS", 2),
+            analytics_gpu_uuids=tuple(
+                value.strip()
+                for value in os.getenv("GRAPHMINE_ANALYTICS_GPU_UUIDS", "").split(",")
+                if value.strip()
+            ),
+            analytics_gpu_headroom_bytes=_integer(
+                "GRAPHMINE_ANALYTICS_GPU_HEADROOM_BYTES", 512 * 1024 * 1024
+            ),
+            analytics_llm_reserve_bytes=_integer(
+                "GRAPHMINE_ANALYTICS_LLM_RESERVE_BYTES", 0
+            ),
+            analytics_planner_model=os.getenv(
+                "GRAPHMINE_ANALYTICS_PLANNER_MODEL", ""
+            ).strip()
+            or None,
+            analytics_reasoning_effort=os.getenv(
+                "GRAPHMINE_ANALYTICS_REASONING_EFFORT", "medium"
+            ),
             llm_base_url=os.getenv(
                 "GRAPHMINE_LLM_BASE_URL", "http://127.0.0.1:8001/v1"
             ).rstrip("/"),
