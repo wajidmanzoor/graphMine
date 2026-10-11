@@ -1,0 +1,4 @@
+Validated 500 selection requests
+Validated 1000 selection requests
+Validated 1500 selection requests
+{"suite":"walks","backend":"cpp","gpu_device":0,"passed_requests":1788,"failed":0,"implementation_sha256":"5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb"}

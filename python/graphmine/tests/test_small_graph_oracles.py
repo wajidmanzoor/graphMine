@@ -12,7 +12,7 @@ from itertools import combinations
 import networkx as nx
 import numpy as np
 import pytest
-from graphmine import Graph, run
+from graphmine.reference import Graph, run
 
 DEVICE = os.environ.get("GRAPHMINE_TEST_DEVICE", "cpu")
 ALL_CASES = [

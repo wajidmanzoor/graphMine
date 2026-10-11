@@ -2,8 +2,7 @@
 
 The native library owns operation contracts, family membership, validation,
 backend selection and result computation. This module only transports JSON
-through its versioned C ABI. ``graphmine.run`` remains the migration reference
-API until the remaining native profiles have been ported and verified.
+through its versioned C ABI. The public ``graphmine`` API uses this same core.
 """
 
 from __future__ import annotations
@@ -13,6 +12,25 @@ import ctypes.util
 import json
 import os
 from copy import deepcopy
+from pathlib import Path
+
+
+def library_path():
+    """An explicit installation wins; never fall back to Python algorithms."""
+    if os.environ.get("GRAPHMINE_NATIVE_LIBRARY"):
+        return os.environ["GRAPHMINE_NATIVE_LIBRARY"]
+    root = os.environ.get("GRAPHMINE_REPOSITORY_ROOT")
+    if root:
+        candidate = Path(root) / "library/build/runtime/libgraphmine_runtime.so"
+        if candidate.is_file():
+            return str(candidate)
+    path = ctypes.util.find_library("graphmine_runtime")
+    if path:
+        return path
+    raise NativeError(
+        "backend_unavailable",
+        "Install libgraphmine_runtime or set GRAPHMINE_NATIVE_LIBRARY",
+    )
 
 
 class NativeError(ValueError):
@@ -21,20 +39,41 @@ class NativeError(ValueError):
         self.code = code
 
 
+_discover_library_path = library_path
+
+
 class NativeLibrary:
     def __init__(self, library_path=None):
         path = (
-            str(library_path)
-            if library_path is not None
-            else os.environ.get("GRAPHMINE_NATIVE_LIBRARY")
-            or ctypes.util.find_library("graphmine_runtime")
+            str(library_path) if library_path is not None else _discover_library_path()
         )
         if not path:
             raise NativeError(
                 "backend_unavailable",
                 "Install libgraphmine_runtime or set GRAPHMINE_NATIVE_LIBRARY",
             )
+        self.path = path
         self._library = ctypes.CDLL(path)
+        if not Path(path).is_file():
+            # Resolve the object that the dynamic loader actually selected,
+            # rather than hashing a guessed installation with the same soname.
+            class DlInfo(ctypes.Structure):
+                _fields_ = [
+                    ("filename", ctypes.c_char_p),
+                    ("base", ctypes.c_void_p),
+                    ("symbol", ctypes.c_char_p),
+                    ("address", ctypes.c_void_p),
+                ]
+
+            information = DlInfo()
+            loader = ctypes.CDLL(None)
+            loader.dladdr.argtypes = [ctypes.c_void_p, ctypes.POINTER(DlInfo)]
+            loader.dladdr.restype = ctypes.c_int
+            if loader.dladdr(
+                ctypes.cast(self._library.graphmine_runtime_request, ctypes.c_void_p),
+                ctypes.byref(information),
+            ):
+                self.path = str(Path(os.fsdecode(information.filename)).resolve())
         self._library.graphmine_runtime_abi_version.restype = ctypes.c_int
         self._library.graphmine_runtime_abi_version.argtypes = []
         if self._library.graphmine_runtime_abi_version() != 1:
@@ -69,6 +108,44 @@ class NativeLibrary:
 
     def catalog(self):
         return deepcopy(self._catalog)
+
+    def validate(
+        self,
+        operation,
+        graph=None,
+        *,
+        parameters=None,
+        device="auto",
+        partial_parameters=False,
+    ):
+        request = {
+            "command": "validate",
+            "operation": operation,
+            "parameters": {} if parameters is None else parameters,
+            "device": device,
+            "partial_parameters": partial_parameters,
+        }
+        if graph is not None:
+            request["graph"] = (
+                graph.to_canonical() if hasattr(graph, "to_canonical") else graph
+            )
+        return self.request(request)
+
+    def project_graph(self, tables, projection, *, gpu_device=0, max_rows=100000):
+        """Call the shared native table-join/projection command.
+
+        File sources use libcudf. Inline sources are typed text tables; all joins,
+        conversions and graph construction still execute in the native core.
+        """
+        return self.request(
+            {
+                "command": "project_graph",
+                "tables": tables,
+                "projection": projection,
+                "gpu_device": gpu_device,
+                "max_rows": max_rows,
+            }
+        )
 
     def read_csv(self, path, *, columns=None, gpu_device=0, max_rows=100000):
         """Use libcudf; retain text until the caller supplies explicit mapping."""
@@ -133,6 +210,7 @@ class NativeLibrary:
         backend="auto",
         gpu_device=0,
         budget=None,
+        allowed_backends=None,
     ):
         if hasattr(graph, "to_canonical"):
             graph = graph.to_canonical()
@@ -147,6 +225,8 @@ class NativeLibrary:
         }
         if budget is not None:
             request["budget"] = budget
+        if allowed_backends is not None:
+            request["allowed_backends"] = allowed_backends
         return self.request(request)
 
 

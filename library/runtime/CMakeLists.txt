@@ -43,6 +43,8 @@ if(GRAPHMINE_RAPIDS_ROOT)
 endif()
 find_path(GRAPHMINE_RUNTIME_BOOST_INCLUDE boost/json.hpp REQUIRED)
 find_package(OpenSSL REQUIRED COMPONENTS Crypto)
+find_library(GRAPHMINE_NATIVE_LAPACK NAMES lapack liblapack.so.3 REQUIRED)
+find_package(ICU REQUIRED COMPONENTS uc)
 
 # Reuse the pinned research kernels as isolated native executables. Python is
 # only a build-time source patch generator; it is absent from execution.
@@ -78,12 +80,16 @@ if(GRAPHMINE_NATIVE_OPTIMIZATION)
 endif()
 
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/problem_families.json" GRAPHMINE_NATIVE_TAXONOMY)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/graphlet_atlas.json" GRAPHMINE_NATIVE_ATLAS)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/native_parameter_schemas.json" GRAPHMINE_NATIVE_PARAMETER_SCHEMAS)
 file(GLOB_RECURSE GRAPHMINE_RUNTIME_HASH_INPUTS CONFIGURE_DEPENDS
      "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
      "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
 list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS
      "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
      "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/problem_families.json"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/graphlet_atlas.json"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/native_parameter_schemas.json"
      "${CMAKE_CURRENT_SOURCE_DIR}/../src/core/graph.cpp"
      "${CMAKE_CURRENT_SOURCE_DIR}/../src/core/json.cpp")
 foreach(header IN ITEMS graph.hpp runtime.hpp runtime_c.h backend.hpp execution.hpp status.hpp)
@@ -163,10 +169,22 @@ string(SHA256 GRAPHMINE_NATIVE_SOURCE_SHA256 "${GRAPHMINE_NATIVE_SOURCE_DIGEST}"
 configure_file(catalog_data.hpp.in generated/catalog_data.hpp @ONLY)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/native-source-hashes.txt" "${GRAPHMINE_NATIVE_SOURCE_DIGEST}")
 
-add_library(graphmine_runtime SHARED runtime.cpp registry.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp original_optimization.cpp
+add_library(graphmine_runtime SHARED runtime.cpp registry.cpp validation.cpp representation_cache.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp original_optimization.cpp
             families/traversal.cpp families/patterns.cpp families/common.cpp
             families/weighted_paths.cpp families/connectivity.cpp families/centrality.cpp
-            families/similarity.cpp families/cliques.cpp families/structure.cpp families/centrality_measures.cpp families/matching.cpp families/flow.cpp families/coloring.cpp families/subgraphs.cpp families/sampling.cpp graph_output.cpp io/graph_projection.cpp ../src/core/json.cpp)
+            families/similarity.cpp families/cliques.cpp families/structure.cpp families/centrality_measures.cpp families/matching.cpp families/flow.cpp families/coloring.cpp families/subgraphs.cpp families/sampling.cpp
+            families/density.cpp families/bipartite.cpp families/reachability.cpp families/partitioning.cpp
+            families/path_profiles.cpp families/enumeration.cpp
+            families/spectral.cpp families/simrank.cpp numeric.cpp
+            families/topology.cpp families/local_community.cpp families/layout.cpp
+            families/influence.cpp families/null_models.cpp
+            families/steiner.cpp families/alignment.cpp
+            pattern_match.cpp families/pattern_matching.cpp families/graphlets.cpp
+            families/temporal_motifs.cpp families/frequent_patterns.cpp families/construction.cpp
+            families/comparison.cpp families/sparsification.cpp families/entity_resolution.cpp families/anomalies.cpp
+            learning.cpp families/supervised_learning.cpp families/embeddings.cpp families/geolocation.cpp families/condensation.cpp
+            record_query.cpp families/queries.cpp
+            graph_output.cpp io/graph_projection.cpp io/table_projection.cpp ../src/core/json.cpp)
 add_library(GraphMine::runtime ALIAS graphmine_runtime)
 target_compile_features(graphmine_runtime PUBLIC cxx_std_17)
 target_include_directories(graphmine_runtime PUBLIC
@@ -174,7 +192,7 @@ target_include_directories(graphmine_runtime PUBLIC
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/generated"
           "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
-target_link_libraries(graphmine_runtime PRIVATE ${GRAPHMINE_RUNTIME_CORE} OpenSSL::Crypto)
+target_link_libraries(graphmine_runtime PRIVATE ${GRAPHMINE_RUNTIME_CORE} OpenSSL::Crypto "${GRAPHMINE_NATIVE_LAPACK}" ICU::uc)
 set_target_properties(graphmine_runtime PROPERTIES VERSION 2.0.0 SOVERSION 1 EXPORT_NAME runtime)
 if(GRAPHMINE_NATIVE_CUGRAPH OR GRAPHMINE_NATIVE_CUDF OR GRAPHMINE_HAS_TOT OR GRAPHMINE_HAS_WETRIC OR GRAPHMINE_RUNTIME_MINING_GPU OR GRAPHMINE_NATIVE_OPTIMIZATION)
   find_package(CUDAToolkit REQUIRED)

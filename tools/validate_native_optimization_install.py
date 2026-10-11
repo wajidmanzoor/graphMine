@@ -130,8 +130,10 @@ def main():
                 backend=backend,
                 gpu_device=device,
             )
-            assert {k: v for k, v in response.items() if k != "elapsed_seconds"} == {
-                k: v for k, v in direct.items() if k != "elapsed_seconds"
+            # Separate processes have different cache hit counters and timings.
+            telemetry = {"elapsed_seconds", "representations"}
+            assert {k: v for k, v in response.items() if k not in telemetry} == {
+                k: v for k, v in direct.items() if k not in telemetry
             }
             assert response["backend"]["hardware"]["device_ordinal"] == device
             assert (

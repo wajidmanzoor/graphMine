@@ -70,6 +70,14 @@ def record_evidence(request):
     assert unchanged, "Native/binding inputs changed during verification"
 
 
+def test_default_native_constructor_uses_explicit_installation(monkeypatch):
+    monkeypatch.setenv("GRAPHMINE_NATIVE_LIBRARY", str(CPU / "libgraphmine_runtime.so"))
+    implicit = binding.NativeLibrary()
+    explicit = binding.NativeLibrary(CPU / "libgraphmine_runtime.so")
+    assert implicit.catalog() == explicit.catalog()
+    assert Path(implicit.path).samefile(explicit.path)
+
+
 def graph():
     return {
         "graph": {
@@ -91,7 +99,11 @@ def library(path=CPU):
 
 
 def without_timing(value):
-    return {k: v for k, v in value.items() if k != "elapsed_seconds"}
+    return {
+        k: v
+        for k, v in value.items()
+        if k not in {"elapsed_seconds", "representations"}
+    }
 
 
 def test_native_catalog_and_python_families_are_identical():

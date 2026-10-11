@@ -2,8 +2,7 @@
 
 from .contracts import Budget
 from .dispatch import run
-from .graph import Graph
-from .inputs import FeatureVectors, GraphCollection, Hypergraph
+from .native_inputs import FeatureVectors, Graph, GraphCollection, Hypergraph
 from .registry import algorithms as list_algorithms
 from .registry import families as list_families
 

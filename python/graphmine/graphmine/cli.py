@@ -25,6 +25,8 @@ def main():
         help="JSON object containing the exact operation parameters",
     )
     execute.add_argument("--device", choices=("auto", "cpu", "gpu"), default="auto")
+    execute.add_argument("--backend", default="auto")
+    execute.add_argument("--gpu-device", type=int, default=0)
     args = parser.parse_args()
     try:
         if args.command == "list":
@@ -39,6 +41,8 @@ def main():
                 if args.parameters
                 else {},
                 device=args.device,
+                backend=args.backend,
+                gpu_device=args.gpu_device,
             )
         print(json.dumps(result, ensure_ascii=False, allow_nan=False))
     except (GraphMineError, OSError, json.JSONDecodeError) as exc:

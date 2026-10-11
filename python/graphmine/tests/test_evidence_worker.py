@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 from graphmine import Graph, list_algorithms
-from graphmine.evidence import verify_report
 from graphmine.exceptions import GraphMineError
+from graphmine.reference_evidence import verify_report
 from graphmine.worker import handle
 from graphmine.workflows import validate_workflow
 
@@ -142,6 +142,7 @@ def test_worker_enforces_evidence_and_review_hash(monkeypatch):
         handle(request, lambda event: None)
     for card in cards:
         card["execution"]["cpu"] = True  # synthetic protocol test only
+        card["verified_backends"] = ["cpp"]
     with pytest.raises(GraphMineError, match="reviewed workflow"):
         handle(request, lambda event: None)
     request["expected_hash"] = validate_workflow(plan, inputs)["workflow_hash"]

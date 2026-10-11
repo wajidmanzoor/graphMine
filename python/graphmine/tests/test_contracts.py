@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 import pytest
-from graphmine import Budget, Graph, list_algorithms, run
+from graphmine.reference import Budget, Graph, list_algorithms, run
 from graphmine.exceptions import GraphMineError, ResourceLimit, UnsupportedOperation
 
 
@@ -104,7 +104,7 @@ def reject_cuda(name):
         raise AssertionError('CPU-only request attempted CUDA dispatch')
     return original(name)
 nx.utils.backends._load_backend = reject_cuda
-from graphmine import Graph,run
+from graphmine.reference import Graph,run
 r=run('triangle-counting',Graph.from_edges([(0,1),(1,2),(2,0)]),device='cpu')
 print(json.dumps({'device':r['backend']['device'],'count':r['result']['count']}))
 """

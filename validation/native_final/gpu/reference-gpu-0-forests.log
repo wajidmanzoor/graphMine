@@ -1,0 +1,3 @@
+Validated 500 native requests on gpu 0
+Validated 1000 native requests on gpu 0
+{"suite":"forests","backend":"gpu","gpu_device":0,"passed_requests":1458,"failed":0,"implementation_sha256":"5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb"}

@@ -1,0 +1,13 @@
+4059672 execve("/tmp/graphmine-final-install-gpu/bin/graphmine-native", ["/tmp/graphmine-final-install-gpu"..., "request"], 0x7ffd5617df60 /* 52 vars */) = 0
+4059681 execve("/tmp/graphmine-final-install-gpu/bin/../lib/../libexec/graphmine/graphmine-worker-ecl-maxflow", ["/tmp/graphmine-final-install-gpu"..., "/tmp/graphmine-worker-bzJaDP/net"..., "0", "2", "1"], 0x55f1a1cadae0 /* 53 vars */) = 0
+4059685 +++ exited with 0 +++
+4059684 +++ exited with 0 +++
+4059682 +++ exited with 0 +++
+4059681 +++ exited with 0 +++
+4059672 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=4059681, si_uid=1002, si_status=0, si_utime=0, si_stime=27 /* 0.27 s */} ---
+4059690 +++ exited with 0 +++
+4059691 +++ exited with 0 +++
+4059677 +++ exited with 0 +++
+4059676 +++ exited with 0 +++
+4059673 +++ exited with 0 +++
+4059672 +++ exited with 0 +++

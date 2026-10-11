@@ -8,7 +8,6 @@ import numpy as np
 import pytest
 from graphmine import Graph, list_algorithms, run
 from graphmine.exceptions import GraphMineError
-from graphmine.ports import OUTPUT_PORTS
 from graphmine.workflows import execute_workflow, validate_workflow
 
 
@@ -31,6 +30,7 @@ def workflow():
             {
                 "id": "sub",
                 "operation": "induced-subgraph",
+                "parameters": {"mode": "induced"},
                 "input": {"input": "main"},
                 "bindings": {"vertices_or_seeds": {"step": "core", "port": "vertices"}},
             },
@@ -65,7 +65,7 @@ def test_requested_listing_completeness_separate_from_exact_count(
         **(
             {"k": 3, "mode": "enumerate"}
             if operation == "k-cliques"
-            else {"list_instances": True}
+            else {"mode": "enumerate"}
         ),
     }
     result = run(operation, graph, parameters=parameters, device="cpu")
@@ -115,7 +115,7 @@ def test_derived_core_pagerank(case, n, edges):
         result["steps"]["rank"]["result"]["input_fingerprint"]
         == derived["graph_fingerprint"]
     )
-    rows = result["steps"]["rank"]["result"]["result"]["vertices"]
+    rows = result["steps"]["rank"]["result"]["ports"]["scores"]["value"]
     if not selected:
         assert rows == []
     else:
@@ -136,7 +136,8 @@ def test_derived_core_pagerank(case, n, edges):
 
 
 def test_cards_and_forward_references():
-    assert {c["id"] for c in list_algorithms()} == set(OUTPUT_PORTS)
+    assert len(list_algorithms()) == 80
+    assert all(c["output_ports"] for c in list_algorithms())
     plan = workflow()
     plan["steps"].reverse()
     assert validate_workflow(plan, inputs())["order"] == ["core", "sub", "rank"]
@@ -253,6 +254,7 @@ def test_score_selector_and_vertex_id_binding():
             {
                 "id": "sub",
                 "operation": "induced-subgraph",
+                "parameters": {"mode": "induced"},
                 "input": {"input": "main"},
                 "bindings": {
                     "vertices_or_seeds": {
@@ -296,7 +298,7 @@ def test_resume_corruption_parameters_inputs_and_source_invalidation(monkeypatch
 def test_gpu_variant_and_edge_id_bindings_are_checked():
     plan = workflow()
     plan["device"] = "gpu"
-    with pytest.raises(GraphMineError, match="CPU adapter"):
+    with pytest.raises(GraphMineError, match="No compiled GPU profile"):
         validate_workflow(plan, inputs())
     plan = workflow()
     plan["steps"][1] = {

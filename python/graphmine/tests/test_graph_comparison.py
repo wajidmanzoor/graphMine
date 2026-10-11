@@ -9,9 +9,9 @@ from itertools import combinations, permutations, product
 
 import networkx as nx
 import pytest
-from graphmine import Budget, Graph, run
+from graphmine.reference import Budget, Graph, run
 from graphmine.exceptions import GraphMineError, ResourceLimit
-from graphmine.workflows import execute_workflow, validate_workflow
+from graphmine.reference_workflows import execute_workflow, validate_workflow
 
 ATLAS = [
     (i, len(g), tuple(g.edges)) for i, g in enumerate(nx.graph_atlas_g()) if len(g) <= 4

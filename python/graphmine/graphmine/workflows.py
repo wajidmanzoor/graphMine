@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.metadata
 import json
 import re
 from copy import deepcopy
@@ -12,11 +11,10 @@ from fractions import Fraction
 from graphlib import CycleError, TopologicalSorter
 
 from .contracts import Budget
-from .dispatch import implementation_hash, run
+from .dispatch import execution_environment, implementation_hash, native_request, run
 from .exceptions import GraphMineError
-from .graph import Graph, external_id
-from .inputs import load_input
-from .ports import OUTPUT_PORTS
+from .graph import external_id
+from .native_inputs import Graph, load_input
 from .registry import algorithm
 
 _NAME = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,63}\Z")
@@ -89,10 +87,10 @@ def _reference(reference, inputs, steps):
         or reference["step"] not in steps
     ):
         raise GraphMineError("Unknown workflow step reference")
-    ports = OUTPUT_PORTS.get(steps[reference["step"]]["operation"], {})
+    ports = algorithm(steps[reference["step"]]["operation"]).card()["output_ports"]
     if not isinstance(reference["port"], str) or reference["port"] not in ports:
         raise GraphMineError("Unknown output port in workflow reference")
-    kind = ports[reference["port"]]
+    kind = ports[reference["port"]]["type"]
     selection = reference.get("select")
     if selection is None:
         return kind
@@ -194,7 +192,8 @@ def validate_workflow(plan, inputs):
                 continue
             if key not in parameters and spec.required:
                 raise GraphMineError(f"Missing {key} in {name}")
-            normalized[key] = spec.validate(key, parameters.get(key, spec.default))
+            if key in parameters:
+                normalized[key] = spec.validate(key, parameters[key])
         policy = source.get("device", device)
         if policy not in ("cpu", "gpu", "auto") or (
             device != "auto" and policy != device
@@ -216,28 +215,27 @@ def validate_workflow(plan, inputs):
         definition = algorithm(step["operation"])
         if _reference(step["input"], loaded, steps) != definition.input_kind:
             raise GraphMineError(f"Input kind mismatch for {name}")
-        if definition.input_validator is not None and "input" in step["input"]:
-            definition.input_validator(
-                loaded[step["input"]["input"]], step["parameters"]
-            )
+        request = {
+            "command": "validate",
+            "operation": definition.id,
+            "parameters": step["parameters"],
+            "device": step["device"],
+            "partial_parameters": bool(step["bindings"]),
+        }
+        if "input" in step["input"]:
+            request["graph"] = loaded[step["input"]["input"]].to_canonical()
+        native_request(request)
         refs = [step["input"], *step["bindings"].values()]
         for key, reference in step["bindings"].items():
             kind = _reference(reference, loaded, steps)
             if not _compatible(key, definition.parameters[key], kind):
                 raise GraphMineError(f"Incompatible binding for {name}.{key}")
         dependencies[name] = {r["step"] for r in refs if "step" in r}
-        if step["device"] == "gpu":
-            from .backends.cugraph import supports
-
-            # Capability predicates inspect literal variant settings only.
-            if any(
-                definition.parameters[k].kind in {"string", "boolean"}
-                for k in step["bindings"]
-            ):
-                raise GraphMineError("GPU variant settings must be literal")
-            supported, reason = supports(definition.id, step["parameters"])
-            if not supported:
-                raise GraphMineError(reason)
+        if step["device"] == "gpu" and any(
+            definition.parameters[k].kind in {"string", "boolean"}
+            for k in step["bindings"]
+        ):
+            raise GraphMineError("GPU variant settings must be literal")
     try:
         order = list(TopologicalSorter(dependencies).static_order())
     except CycleError as exc:
@@ -247,24 +245,7 @@ def validate_workflow(plan, inputs):
         key: {"kind": value.kind, "fingerprint": value.fingerprint}
         for key, value in loaded.items()
     }
-    environment = {}
-    for package in (
-        "networkx",
-        "numpy",
-        "scipy",
-        "cvxpy",
-        "clarabel",
-        "gudhi",
-        "rapidfuzz",
-        "igraph",
-        "cugraph-cu12",
-        "nx-cugraph-cu12",
-        "cupy-cuda12x",
-    ):
-        try:
-            environment[package] = importlib.metadata.version(package)
-        except importlib.metadata.PackageNotFoundError:
-            environment[package] = None
+    environment = execution_environment()
     implementation = implementation_hash()
     signature = fingerprint(
         {
@@ -317,7 +298,7 @@ def _resolve(reference, inputs, results):
             def exact_score(row):
                 if port.get("exact_score_field"):
                     exact = row[port["exact_score_field"]]
-                    return Fraction(exact["numerator"], exact["denominator"])
+                    return Fraction(int(exact["numerator"]), int(exact["denominator"]))
                 return row[field]
 
             rows.sort(
@@ -356,7 +337,13 @@ def _resolve(reference, inputs, results):
 
 
 def execute_workflow(
-    plan, inputs, *, emit=None, resume=None, verified_gpu_operations=None
+    plan,
+    inputs,
+    *,
+    emit=None,
+    resume=None,
+    verified_gpu_operations=None,
+    verified_backends=None,
 ):
     """Execute a checked DAG; resume records must come from trusted local storage.
 
@@ -431,6 +418,9 @@ def execute_workflow(
                     "implementation": checked["implementation_sha256"],
                     "environment": checked["environment"],
                     "execution_device": execution_device,
+                    "allowed_backends": None
+                    if verified_backends is None
+                    else verified_backends.get(step["operation"], []),
                 }
             )
             cached = resumed.get(name, {})
@@ -450,6 +440,9 @@ def execute_workflow(
                     parameters=parameters,
                     device=execution_device,
                     budget=Budget(**step["budget"]),
+                    allowed_backends=None
+                    if verified_backends is None
+                    else verified_backends.get(step["operation"], []),
                 )
                 reused = False
             results[name] = {

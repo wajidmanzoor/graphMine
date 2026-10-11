@@ -1,8 +1,8 @@
-#include "internal.hpp"
-
 #include <algorithm>
 #include <deque>
 #include <set>
+
+#include "internal.hpp"
 
 namespace graphmine::runtime {
 Search cpu_bfs(const std::vector<std::vector<VertexIndex>>& graph, VertexIndex source,
@@ -28,10 +28,11 @@ Search cpu_bfs(const std::vector<std::vector<VertexIndex>>& graph, VertexIndex s
   return result;
 }
 
-json::object bfs(const Graph& graph, const json::object& args,
-                 const std::string& backend, int device, Work& work) {
+json::object bfs(const Graph& graph, const json::object& args, const std::string& backend,
+                 int device, Work& work) {
   fields(args, {"sources", "source_mode", "depth_limit", "return_predecessors"}, {"sources"});
-  require(args.at("sources").is_array() && !args.at("sources").as_array().empty(), "sources must be a nonempty array");
+  require(args.at("sources").is_array() && !args.at("sources").as_array().empty(),
+          "sources must be a nonempty array");
   std::vector<VertexIndex> sources;
   std::set<VertexIndex> unique;
   for (const auto& value : args.at("sources").as_array()) {
@@ -39,13 +40,20 @@ json::object bfs(const Graph& graph, const json::object& args,
     require(unique.insert(source).second, "sources must be distinct");
     sources.push_back(source);
   }
-  const auto mode = args.contains("source_mode") ? string(args.at("source_mode"), "source_mode") : "independent";
+  const auto mode =
+      args.contains("source_mode") ? string(args.at("source_mode"), "source_mode") : "independent";
   require(mode == "independent" || mode == "nearest_source", "Unknown source_mode");
   std::optional<std::uint64_t> depth;
-  if (args.contains("depth_limit") && !args.at("depth_limit").is_null()) depth = uint(args.at("depth_limit"), "depth_limit");
+  if (args.contains("depth_limit") && !args.at("depth_limit").is_null())
+    depth = uint(args.at("depth_limit"), "depth_limit");
   if (depth) require(*depth <= UINT32_MAX, "depth_limit must fit an unsigned 32-bit integer");
-  const bool predecessors = args.contains("return_predecessors") ? (require(args.at("return_predecessors").is_bool(), "return_predecessors must be boolean"), args.at("return_predecessors").as_bool()) : true;
-  const auto row_count = static_cast<std::uint64_t>(graph.vertex_count()) * (mode == "independent" ? sources.size() : 1);
+  const bool predecessors = args.contains("return_predecessors")
+                                ? (require(args.at("return_predecessors").is_bool(),
+                                           "return_predecessors must be boolean"),
+                                   args.at("return_predecessors").as_bool())
+                                : true;
+  const auto row_count = static_cast<std::uint64_t>(graph.vertex_count()) *
+                         (mode == "independent" ? sources.size() : 1);
   work.output(row_count);
   // Both backends retain per-source distances until nearest-source merging.
   // Admit that memory before allocating even when the final table is small.
@@ -63,10 +71,16 @@ json::object bfs(const Graph& graph, const json::object& args,
     work.tick();
     const auto& values = found[search];
     const auto distance = values.distances[vertex];
-    json::object row{{"vertex", id_json(graph.external_id(vertex))},
-                     {"distance", distance < 0 ? json::value(nullptr) : json::value(distance)},
-                     {"source", distance < 0 && !independent ? json::value(nullptr) : id_json(graph.external_id(sources[search]))}};
-    if (predecessors) row["predecessor"] = values.predecessors[vertex] < 0 || distance <= 0 ? json::value(nullptr) : id_json(graph.external_id(static_cast<VertexIndex>(values.predecessors[vertex])));
+    json::object row{
+        {"vertex", id_json(graph.external_id(vertex))},
+        {"distance", distance < 0 ? json::value(nullptr) : json::value(distance)},
+        {"source", distance < 0 && !independent ? json::value(nullptr)
+                                                : id_json(graph.external_id(sources[search]))}};
+    if (predecessors)
+      row["predecessor"] =
+          values.predecessors[vertex] < 0 || distance <= 0
+              ? json::value(nullptr)
+              : id_json(graph.external_id(static_cast<VertexIndex>(values.predecessors[vertex])));
     if (distance >= 0) reached_ids.insert(vertex);
     rows.push_back(row);
   };
@@ -78,18 +92,24 @@ json::object bfs(const Graph& graph, const json::object& args,
       std::size_t best = 0;
       for (std::size_t s = 1; s < sources.size(); ++s) {
         work.tick();
-        if (found[s].distances[v] >= 0 && (found[best].distances[v] < 0 || found[s].distances[v] < found[best].distances[v])) best = s;
+        if (found[s].distances[v] >= 0 &&
+            (found[best].distances[v] < 0 || found[s].distances[v] < found[best].distances[v]))
+          best = s;
       }
       append(v, best, false);
     }
   }
   for (auto v : reached_ids) reached.push_back(id_json(graph.external_id(v)));
-  return {{"parameters", {{"sources", args.at("sources")}, {"source_mode", mode},
-                            {"depth_limit", depth ? json::value(*depth) : json::value(nullptr)},
-                            {"return_predecessors", predecessors}}},
+  return {{"parameters",
+           {{"sources", args.at("sources")},
+            {"source_mode", mode},
+            {"depth_limit", depth ? json::value(*depth) : json::value(nullptr)},
+            {"return_predecessors", predecessors}}},
           {"result", {{"distances", rows}}},
-          {"ports", {{"vertices", {{"type", "vertex_set"}, {"value", reached}, {"complete", true}}},
-                     {"distances", {{"type", "table"}, {"value", rows}, {"complete", true}}}}},
-          {"complete", true}, {"quality", "exact"}};
+          {"ports",
+           {{"vertices", {{"type", "vertex_set"}, {"value", reached}, {"complete", true}}},
+            {"distances", {{"type", "table"}, {"value", rows}, {"complete", true}}}}},
+          {"complete", true},
+          {"quality", "exact"}};
 }
 }  // namespace graphmine::runtime

@@ -10,13 +10,17 @@ The shared taxonomy is `library/manifests/problem_families.json`. It assigns
 all 70 formal problems and the record-query utilities to families. The native
 catalog embeds this file; the Python wrapper obtains its catalog from that
 binary. Family membership does not establish implementation or verification.
-The catalog marks profiles still awaiting migration as `pending`.
+All formal contracts now have an executable native profile. Compilation and
+evidence admission remain separate states.
 
 ## Current migration boundary
 
-The shared runtime has 28 operations covering profiles for 26 formal
-problems. All 28 have C++ CPU implementations. GPU dispatch calls native
-libraries or isolated native CUDA workers:
+The shared runtime has **80 operations covering all 70 formal problems**,
+including seven record-query utilities. Every operation has a C++ CPU profile;
+23 operations have a GPU profile admitted by current evidence. The
+[completion profiles](NATIVE_COMPLETION_PROFILES.md) describe the 52 operations
+added after the 26-problem checkpoint. GPU dispatch calls native libraries or
+isolated native CUDA workers:
 
 | Operation | Family | GPU implementation |
 | --- | --- | --- |
@@ -50,16 +54,16 @@ libraries or isolated native CUDA workers:
 | Induced/ego subgraphs | subgraphs | Native libcugraph BFS for ego discovery; C++ preserves original records |
 
 The original `Graph` and typed external IDs are reused. Existing native APIs
-remain available while their remaining profiles are brought into the shared
-runtime. Original triangle, mining and centrality backends are included when building from the
+remain available for compatibility. Original triangle, mining and centrality backends are included when building from the
 `library` project with their corresponding options enabled.
 
 `graphmine.native.NativeLibrary` is the thin Python binding. Its family methods
 are obtained from the native catalog. It does not import NetworkX, cuGraph,
-cuDF, NumPy or a Python algorithm module. The existing `graphmine.run` API and
-application worker still use the earlier reference implementation and are
-awaiting migration; this checkpoint does not claim native coverage of all
-73 previously executable Python profiles or all 70 formal contracts.
+cuDF, NumPy or a Python algorithm module. `graphmine.run`, typed workflows and
+the application worker now dispatch through this native binding. The public
+package has no mandatory Python algorithm dependencies. Historical Python
+implementations are explicit `graphmine.reference` oracles, never automatic
+fallbacks.
 
 YiGraph's reviewed CPU integrations wrap NetworkX/PyG. Their capabilities need
 native implementations; importing those Python routines inside a C++ facade
@@ -68,7 +72,8 @@ implementations remain useful as migration references and test oracles.
 
 ## Building and calling the core
 
-A CPU-only build needs a C++17 compiler, Boost.JSON headers, OpenSSL and CMake.
+A CPU-only build needs a C++17 compiler, Boost.JSON headers, OpenSSL, LAPACK,
+ICU and CMake 3.24 or newer.
 It has no Python or CUDA runtime dependency:
 
 ```sh

@@ -9,7 +9,7 @@ from itertools import combinations, pairwise, product
 import networkx as nx
 import numpy as np
 import pytest
-from graphmine import Budget, Graph, list_algorithms, run
+from graphmine.reference import Budget, Graph, list_algorithms, run
 from graphmine.exceptions import GraphMineError, ResourceLimit
 
 ATLAS = [

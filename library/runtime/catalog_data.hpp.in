@@ -1,5 +1,7 @@
 #pragma once
 namespace graphmine::runtime {
 static constexpr char taxonomy_json[] = R"gm_catalog(@GRAPHMINE_NATIVE_TAXONOMY@)gm_catalog";
+static constexpr char native_atlas_json[] = R"gm_atlas(@GRAPHMINE_NATIVE_ATLAS@)gm_atlas";
+static constexpr char native_parameter_schemas_json[] = R"gm_schema(@GRAPHMINE_NATIVE_PARAMETER_SCHEMAS@)gm_schema";
 static constexpr char implementation_sha256[] = "@GRAPHMINE_NATIVE_SOURCE_SHA256@";
 }

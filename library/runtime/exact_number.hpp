@@ -1,9 +1,10 @@
 #pragma once
 
-#include "internal.hpp"
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cmath>
 #include <limits>
+
+#include "internal.hpp"
 
 namespace graphmine::runtime {
 using Exact = boost::multiprecision::cpp_rational;

@@ -8,7 +8,7 @@ from itertools import combinations, permutations, product
 
 import networkx as nx
 import pytest
-from graphmine import Graph, run
+from graphmine.reference import Graph, run
 from graphmine.exceptions import GraphMineError
 
 ATLAS = [

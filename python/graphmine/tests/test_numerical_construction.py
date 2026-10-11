@@ -7,7 +7,7 @@ from itertools import combinations, product
 import networkx as nx
 import numpy as np
 import pytest
-from graphmine import FeatureVectors, Graph, Hypergraph, run
+from graphmine.reference import FeatureVectors, Graph, Hypergraph, run
 from graphmine.exceptions import GraphMineError
 
 ATLAS = [

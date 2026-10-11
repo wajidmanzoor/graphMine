@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -60,10 +61,9 @@ def main():
     assert cpp["implementation_sha256"] == c["implementation_sha256"]
     library = args.prefix / "lib/libgraphmine_runtime.so"
     linkage = subprocess.check_output(["ldd", library], text=True)
-    assert not any(
-        name in linkage.lower()
-        for name in ("not found", "python", "cuda", "cugraph", "cudf")
-    )
+    assert "not found" not in linkage
+    # ICU's libicudata is a Unicode data library, not a CUDA dependency.
+    assert not re.search(r"\blib(?:python|cuda(?:rt)?|cugraph|cudf)[^\s]*\.so", linkage)
     record = {
         "cpp_consumer": True,
         "c_consumer": True,

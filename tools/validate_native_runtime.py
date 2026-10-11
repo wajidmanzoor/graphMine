@@ -11,6 +11,17 @@ import os
 import subprocess
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def source_snapshot(build):
+    inventory = (build / "native-source-hashes.txt").read_text()
+    files = [
+        ROOT / "library" / line.rsplit(":", 1)[0] for line in inventory.splitlines()
+    ]
+    files.append(Path(__file__))
+    return {str(path.resolve().relative_to(ROOT)): sha(path) for path in files}
+
 
 def sha(path):
     with path.open("rb") as handle:
@@ -41,6 +52,7 @@ def snapshot(build):
 
 def validate(build, label, ordinal, output):
     before = snapshot(build)
+    sources = source_snapshot(build)
     catalog = json.loads(
         subprocess.check_output([build / "graphmine-native", "catalog"])
     )
@@ -49,6 +61,35 @@ def validate(build, label, ordinal, output):
     if cpu:
         environment["CUDA_VISIBLE_DEVICES"] = ""
     device = "cpu" if cpu else "gpu"
+    hardware = None
+    if not cpu:
+        request = {
+            "command": "run",
+            "operation": "breadth-first-search",
+            "graph": {
+                "graph": {
+                    "id": "evidence-device",
+                    "directed": False,
+                    "allows_self_loops": False,
+                    "allows_parallel_edges": False,
+                },
+                "vertices": [{"id": 0}],
+                "edges": [],
+            },
+            "parameters": {"sources": [0]},
+            "device": "gpu",
+            "backend": "libcugraph",
+            "gpu_device": ordinal,
+        }
+        result = json.loads(
+            subprocess.check_output(
+                [build / "graphmine-native", "request"],
+                input=json.dumps(request),
+                text=True,
+                env=environment,
+            )
+        )
+        hardware = result["backend"]["hardware"]
     suites = (
         [
             ("contracts", "cpu"),
@@ -229,6 +270,9 @@ def validate(build, label, ordinal, output):
                 flush=True,
             )
         assert before == snapshot(build), f"Native build changed during {report_name}"
+        assert sources == source_snapshot(build), (
+            f"Native sources changed during {report_name}"
+        )
         path = output / f"{report_name}.json"
         path.write_text(json.dumps(rows, indent=2) + "\n")
         path.with_suffix(".json.metadata.json").write_text(
@@ -237,6 +281,13 @@ def validate(build, label, ordinal, output):
                     "binary_files": before,
                     "build_unchanged_during_run": True,
                     "implementation_sha256": catalog["implementation_sha256"],
+                    "native_library_sha256": before[
+                        str((build / "libgraphmine_runtime.so").resolve())
+                    ],
+                    "sources_unchanged_during_run": True,
+                    "source_files": sources,
+                    "device": device,
+                    "gpu_hardware": hardware,
                     "cuda_visible_devices": environment.get("CUDA_VISIBLE_DEVICES"),
                 },
                 indent=2,

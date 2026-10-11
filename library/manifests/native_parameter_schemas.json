@@ -1,0 +1,2269 @@
+{
+  "common-neighbors": {
+    "edge_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "edge_ids": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "source_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "target_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertex_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertices": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "edge-filter": {
+    "edge_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "edge_ids": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "source_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "target_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertex_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertices": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "graph-aggregate": {
+    "edge_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "edge_ids": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "source_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "target_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertex_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertices": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "graph-condensation": {
+    "method": {
+      "enum": [
+        "gradient_matching_linear_sgc_v1"
+      ]
+    },
+    "method_parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "downstream_epochs": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "downstream_l2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "downstream_learning_rate": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "epochs": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "evaluation_seeds": {
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "l2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "layers": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "learning_rate": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "optimizer": {
+          "enum": [
+            "gradient_descent"
+          ]
+        },
+        "parallel_edges": {
+          "enum": [
+            "sum"
+          ]
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "synthetic_vertex_budget": {
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "graph-geolocation": {
+    "method_definition": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluation_locations": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "latitude": {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              "longitude": {
+                "maximum": 180,
+                "minimum": -180,
+                "type": "number"
+              },
+              "vertex": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              }
+            },
+            "required": [
+              "vertex",
+              "latitude",
+              "longitude"
+            ],
+            "type": "object"
+          },
+          "minItems": 0,
+          "type": "array"
+        },
+        "max_iterations": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "metric": {
+          "enum": [
+            "haversine_km"
+          ]
+        },
+        "objective": {
+          "enum": [
+            "seed_location_medoid_energy"
+          ]
+        },
+        "parallel_edges": {
+          "enum": [
+            "sum"
+          ]
+        },
+        "self_loops": {
+          "enum": [
+            "reject"
+          ]
+        },
+        "tolerance_km": {
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "objective"
+      ],
+      "type": "object"
+    },
+    "method_family": {
+      "enum": [
+        "spatial_propagation"
+      ]
+    },
+    "seed_locations": {
+      "additionalProperties": false,
+      "properties": {
+        "rows": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "latitude": {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              "longitude": {
+                "maximum": 180,
+                "minimum": -180,
+                "type": "number"
+              },
+              "vertex": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              }
+            },
+            "required": [
+              "vertex",
+              "latitude",
+              "longitude"
+            ],
+            "type": "object"
+          },
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "rows"
+      ],
+      "type": "object"
+    }
+  },
+  "graph-learning": {
+    "graph_labels": {
+      "additionalProperties": false,
+      "properties": {
+        "rows": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "graph": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "integer",
+                  "string",
+                  "number"
+                ]
+              }
+            },
+            "required": [
+              "graph",
+              "value"
+            ],
+            "type": "object"
+          },
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "rows"
+      ],
+      "type": "object"
+    },
+    "model_definition": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "enum": [
+            "mean_graph_convolution"
+          ]
+        },
+        "direction": {
+          "enum": [
+            "incoming",
+            "outgoing",
+            "undirected_projection"
+          ]
+        },
+        "epochs": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "feature_key": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "feature_source": {
+          "enum": [
+            "structural",
+            "attributes"
+          ]
+        },
+        "l2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "layers": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "learning_rate": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "optimizer": {
+          "enum": [
+            "gradient_descent"
+          ]
+        },
+        "parallel_edges": {
+          "enum": [
+            "collapse"
+          ]
+        },
+        "prediction_split": {
+          "enum": [
+            "all",
+            "train",
+            "validation",
+            "test",
+            "inference"
+          ]
+        },
+        "random_seed": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "readout": {
+          "enum": [
+            "sum",
+            "mean"
+          ]
+        },
+        "self_loops": {
+          "enum": [
+            "replace_with_single_self_message"
+          ]
+        },
+        "standardize": {
+          "type": "boolean"
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "architecture"
+      ],
+      "type": "object"
+    },
+    "split": {
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "enum": [
+            "transductive"
+          ]
+        },
+        "test": {
+          "items": {
+            "minLength": 1,
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "minItems": 0,
+          "type": "array"
+        },
+        "test_labels": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "graph": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "integer",
+                  "string",
+                  "number"
+                ]
+              }
+            },
+            "required": [
+              "graph",
+              "value"
+            ],
+            "type": "object"
+          },
+          "minItems": 0,
+          "type": "array"
+        },
+        "train": {
+          "items": {
+            "minLength": 1,
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "validation": {
+          "items": {
+            "minLength": 1,
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "minItems": 0,
+          "type": "array"
+        },
+        "validation_labels": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "graph": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              },
+              "value": {
+                "type": [
+                  "integer",
+                  "string",
+                  "number"
+                ]
+              }
+            },
+            "required": [
+              "graph",
+              "value"
+            ],
+            "type": "object"
+          },
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "train"
+      ],
+      "type": "object"
+    },
+    "task": {
+      "enum": [
+        "classification",
+        "regression"
+      ]
+    }
+  },
+  "hypergraph-node-learning": {
+    "model": {
+      "enum": [
+        "hgnn-linear-v1"
+      ]
+    },
+    "model_parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "epochs": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "l2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "layers": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "learning_rate": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "optimizer": {
+          "enum": [
+            "gradient_descent"
+          ]
+        },
+        "prediction_split": {
+          "enum": [
+            "all",
+            "train",
+            "validation",
+            "test",
+            "inference"
+          ]
+        },
+        "standardize": {
+          "type": "boolean"
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [],
+      "type": "object"
+    }
+  },
+  "knowledge-graph-embedding": {
+    "dimensions": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "model": {
+      "enum": [
+        "distmult"
+      ]
+    },
+    "training_parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "epochs": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "l2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "learning_rate": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "loss": {
+          "enum": [
+            "logistic_negative_sampling"
+          ]
+        },
+        "negative_samples": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "optimizer": {
+          "enum": [
+            "gradient_descent"
+          ]
+        },
+        "random_seed": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "training_triples": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "validation_triples": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "minLength": 1,
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "target": {
+            "minLength": 1,
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "type": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "type",
+          "target"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "neighbors": {
+    "edge_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "edge_ids": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "source_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "target_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertex_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertices": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "node-embedding": {
+    "dimensions": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "model": {
+      "enum": [
+        "line",
+        "deepwalk",
+        "node2vec"
+      ]
+    },
+    "training_parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "enum": [
+            "preserve",
+            "undirected_projection"
+          ]
+        },
+        "epochs": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "l2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "learning_rate": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "loss": {
+          "enum": [
+            "full_softmax"
+          ]
+        },
+        "optimizer": {
+          "enum": [
+            "gradient_descent"
+          ]
+        },
+        "p": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "parallel_edges": {
+          "enum": [
+            "sum"
+          ]
+        },
+        "q": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "self_loops": {
+          "enum": [
+            "reject",
+            "drop",
+            "keep"
+          ]
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "walk_length": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "walks_per_vertex": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "window": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "type": "object"
+    }
+  },
+  "node-learning": {
+    "model_definition": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "enum": [
+            "sgc"
+          ]
+        },
+        "direction": {
+          "enum": [
+            "incoming",
+            "outgoing",
+            "undirected_projection"
+          ]
+        },
+        "epochs": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "l2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "layers": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "learning_rate": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "optimizer": {
+          "enum": [
+            "gradient_descent"
+          ]
+        },
+        "parallel_edges": {
+          "enum": [
+            "collapse"
+          ]
+        },
+        "prediction_split": {
+          "enum": [
+            "all",
+            "train",
+            "validation",
+            "test",
+            "inference"
+          ]
+        },
+        "random_seed": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "self_loops": {
+          "enum": [
+            "replace_with_single_self_message"
+          ]
+        },
+        "standardize": {
+          "type": "boolean"
+        },
+        "tolerance": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "architecture"
+      ],
+      "type": "object"
+    },
+    "split": {
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "enum": [
+            "transductive"
+          ]
+        },
+        "test": {
+          "items": {
+            "minLength": 1,
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "minItems": 0,
+          "type": "array"
+        },
+        "test_labels": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "integer",
+                  "string",
+                  "number"
+                ]
+              },
+              "vertex": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              }
+            },
+            "required": [
+              "vertex",
+              "value"
+            ],
+            "type": "object"
+          },
+          "minItems": 0,
+          "type": "array"
+        },
+        "train": {
+          "items": {
+            "minLength": 1,
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "validation": {
+          "items": {
+            "minLength": 1,
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "minItems": 0,
+          "type": "array"
+        },
+        "validation_labels": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "integer",
+                  "string",
+                  "number"
+                ]
+              },
+              "vertex": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              }
+            },
+            "required": [
+              "vertex",
+              "value"
+            ],
+            "type": "object"
+          },
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "train"
+      ],
+      "type": "object"
+    },
+    "task": {
+      "enum": [
+        "classification",
+        "regression"
+      ]
+    },
+    "training_labels": {
+      "additionalProperties": false,
+      "properties": {
+        "rows": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "integer",
+                  "string",
+                  "number"
+                ]
+              },
+              "vertex": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              }
+            },
+            "required": [
+              "vertex",
+              "value"
+            ],
+            "type": "object"
+          },
+          "minItems": 0,
+          "type": "array"
+        }
+      },
+      "required": [
+        "rows"
+      ],
+      "type": "object"
+    },
+    "vertex_features": {
+      "additionalProperties": false,
+      "properties": {
+        "rows": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "vertex": {
+                "minLength": 1,
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              }
+            },
+            "required": [
+              "vertex",
+              "value"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "rows"
+      ],
+      "type": "object"
+    }
+  },
+  "node-lookup": {
+    "edge_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "edge_ids": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "source_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "target_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertex_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertices": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "query-paths": {
+    "edge_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "edge_ids": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "source_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "target_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertex_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertices": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "query-subgraph": {
+    "edge_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "edge_ids": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "source_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "target_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertex_filters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "eq",
+              "ne",
+              "lt",
+              "lte",
+              "gt",
+              "gte",
+              "in",
+              "not_in",
+              "contains",
+              "exists"
+            ]
+          },
+          "value": {}
+        },
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array"
+    },
+    "vertices": {
+      "items": {
+        "minLength": 1,
+        "type": [
+          "integer",
+          "string"
+        ]
+      },
+      "minItems": 0,
+      "type": "array"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "betweenness",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 2658,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 9,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  }
+]

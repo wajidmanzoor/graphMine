@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "ff869cc48ba75176c19aced96ae6b29cac9ef5d5619732a0fb57bdf04c7dbd1f"
+  }
+]

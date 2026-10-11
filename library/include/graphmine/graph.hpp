@@ -37,9 +37,7 @@ class ExternalId {
   }
 
   /// Compares external IDs for inequality.
-  friend bool operator!=(const ExternalId& lhs, const ExternalId& rhs) {
-    return !(lhs == rhs);
-  }
+  friend bool operator!=(const ExternalId& lhs, const ExternalId& rhs) { return !(lhs == rhs); }
 
   /// Orders numeric IDs before string IDs and then orders by stored value.
   friend bool operator<(const ExternalId& lhs, const ExternalId& rhs) {
@@ -47,11 +45,9 @@ class ExternalId {
       return lhs.value_.index() < rhs.value_.index();
     }
     if (std::holds_alternative<std::int64_t>(lhs.value_)) {
-      return std::get<std::int64_t>(lhs.value_) <
-             std::get<std::int64_t>(rhs.value_);
+      return std::get<std::int64_t>(lhs.value_) < std::get<std::int64_t>(rhs.value_);
     }
-    return std::get<std::string>(lhs.value_) <
-           std::get<std::string>(rhs.value_);
+    return std::get<std::string>(lhs.value_) < std::get<std::string>(rhs.value_);
   }
 
  private:
@@ -67,8 +63,8 @@ class PropertyValue {
  public:
   using Array = std::vector<PropertyValue>;
   using Object = std::map<std::string, PropertyValue>;
-  using Value = std::variant<std::nullptr_t, bool, std::int64_t, double,
-                             std::string, Array, Object>;
+  using Value =
+      std::variant<std::nullptr_t, bool, std::int64_t, double, std::string, Array, Object>;
 
   /// Constructs a null property value.
   PropertyValue() : value_(nullptr) {}
@@ -109,6 +105,7 @@ struct GraphDescriptor {
   bool allows_self_loops = false;
   bool allows_parallel_edges = false;
   Attributes attributes;
+  bool attributes_present = false;
 };
 
 struct VertexRecord {
@@ -116,6 +113,7 @@ struct VertexRecord {
   std::optional<std::string> label;
   std::optional<std::string> type;
   Attributes attributes;
+  bool attributes_present = false;
 };
 
 struct EdgeRecord {
@@ -126,6 +124,10 @@ struct EdgeRecord {
   std::optional<Timestamp> timestamp;
   std::optional<std::string> type;
   Attributes attributes;
+  bool attributes_present = false;
+  // Preserve JSON number type for record predicates. Algorithms continue to
+  // use the checked binary64 value until wider numeric storage is admitted.
+  std::optional<std::variant<std::int64_t, std::uint64_t, double>> original_weight;
 };
 
 struct CanonicalGraphInput {
@@ -170,25 +172,18 @@ class Graph {
   explicit Graph(CanonicalGraphInput input);
 
   /// Builds a minimal canonical graph from vertex IDs and endpoint pairs.
-  static Graph from_edges(
-      std::string graph_id, std::vector<ExternalId> vertices,
-      const std::vector<std::pair<ExternalId, ExternalId>>& edges,
-      bool directed = false);
+  static Graph from_edges(std::string graph_id, std::vector<ExternalId> vertices,
+                          const std::vector<std::pair<ExternalId, ExternalId>>& edges,
+                          bool directed = false);
 
   /// Returns the exact canonical records supplied by the caller.
-  [[nodiscard]] const CanonicalGraphInput& canonical() const noexcept {
-    return input_;
-  }
+  [[nodiscard]] const CanonicalGraphInput& canonical() const noexcept { return input_; }
 
   /// Returns the number of canonical vertex records.
-  [[nodiscard]] std::size_t vertex_count() const noexcept {
-    return input_.vertices.size();
-  }
+  [[nodiscard]] std::size_t vertex_count() const noexcept { return input_.vertices.size(); }
 
   /// Returns the number of canonical edge records.
-  [[nodiscard]] std::size_t edge_count() const noexcept {
-    return input_.edges.size();
-  }
+  [[nodiscard]] std::size_t edge_count() const noexcept { return input_.edges.size(); }
 
   /// Returns whether the canonical graph is directed.
   [[nodiscard]] bool directed() const noexcept { return input_.graph.directed; }

@@ -1,7 +1,7 @@
-#include "internal.hpp"
-
 #include <algorithm>
 #include <limits>
+
+#include "internal.hpp"
 
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_TRIANGLES
 #include "graphmine/problems/triangle_counting.hpp"
@@ -16,8 +16,8 @@ bool original_triangles_compiled(const std::string& backend) {
   return false;
 }
 
-json::object triangles(const Graph& graph, const json::object& args,
-                       const std::string& backend, int device, Work& work) {
+json::object triangles(const Graph& graph, const json::object& args, const std::string& backend,
+                       int device, Work& work) {
   fields(args, {"mode", "result_limit"});
   require(!graph.directed(), "triangle-counting requires an explicitly undirected graph");
   const auto mode = args.contains("mode") ? string(args.at("mode"), "mode") : "count";
@@ -25,7 +25,8 @@ json::object triangles(const Graph& graph, const json::object& args,
   std::optional<std::uint64_t> limit;
   if (args.contains("result_limit") && !args.at("result_limit").is_null()) {
     limit = uint(args.at("result_limit"), "result_limit");
-    require(*limit > 0 && mode == "enumerate", "result_limit requires enumerate mode and a positive integer");
+    require(*limit > 0 && mode == "enumerate",
+            "result_limit requires enumerate mode and a positive integer");
   }
   std::optional<std::uint64_t> gpu_count;
   if (backend != "cpp") {
@@ -37,7 +38,8 @@ json::object triangles(const Graph& graph, const json::object& args,
     if (!output.ok()) throw Failure("backend_failure", output.status().message());
     gpu_count = output.value().global_triangle_count;
 #else
-    throw Failure("backend_unavailable", "Original triangle CUDA backends are not linked into this build");
+    throw Failure("backend_unavailable",
+                  "Original triangle CUDA backends are not linked into this build");
 #endif
   }
   std::uint64_t count = 0;
@@ -52,27 +54,40 @@ json::object triangles(const Graph& graph, const json::object& args,
         auto b = std::upper_bound(adj[v].begin(), adj[v].end(), v);
         while (a != adj[u].end() && b != adj[v].end()) {
           work.tick();
-          if (*a < *b) ++a;
-          else if (*b < *a) ++b;
+          if (*a < *b)
+            ++a;
+          else if (*b < *a)
+            ++b;
           else {
-            if (count == std::numeric_limits<std::uint64_t>::max()) throw Failure("resource_limit", "Triangle count exceeds uint64");
+            if (count == std::numeric_limits<std::uint64_t>::max())
+              throw Failure("resource_limit", "Triangle count exceeds uint64");
             ++count;
             if (mode == "enumerate" && (!limit || groups.size() < *limit)) {
               work.output(groups.size() + 1);
-              groups.push_back(json::object{{"vertices", json::array{id_json(graph.external_id(u)), id_json(graph.external_id(v)), id_json(graph.external_id(*a))}}});
+              groups.push_back(
+                  json::object{{"vertices", json::array{id_json(graph.external_id(u)),
+                                                        id_json(graph.external_id(v)),
+                                                        id_json(graph.external_id(*a))}}});
             }
-            ++a; ++b;
+            ++a;
+            ++b;
           }
         }
       }
     }
-    if (gpu_count && *gpu_count != count) throw Failure("correctness_mismatch", "Native CPU materialization disagrees with original GPU count");
-  } else count = *gpu_count;
+    if (gpu_count && *gpu_count != count)
+      throw Failure("correctness_mismatch",
+                    "Native CPU materialization disagrees with original GPU count");
+  } else
+    count = *gpu_count;
   const bool complete = mode == "enumerate" && groups.size() == count;
-  return {{"parameters", {{"mode", mode}, {"result_limit", limit ? json::value(*limit) : json::value(nullptr)}}},
+  return {{"parameters",
+           {{"mode", mode}, {"result_limit", limit ? json::value(*limit) : json::value(nullptr)}}},
           {"result", {{"count", count}, {"groups", groups}}},
-          {"ports", {{"count", {{"type", "scalar"}, {"value", count}, {"complete", true}}},
-                     {"groups", {{"type", "vertex_groups"}, {"value", groups}, {"complete", complete}}}}},
-          {"complete", mode == "count" || complete}, {"quality", "exact"}};
+          {"ports",
+           {{"count", {{"type", "scalar"}, {"value", count}, {"complete", true}}},
+            {"groups", {{"type", "vertex_groups"}, {"value", groups}, {"complete", complete}}}}},
+          {"complete", mode == "count" || complete},
+          {"quality", "exact"}};
 }
 }  // namespace graphmine::runtime

@@ -1,0 +1,11 @@
+Validated 500 structure requests
+Validated 1000 structure requests
+Validated 1500 structure requests
+Validated 2000 structure requests
+Validated 2500 structure requests
+Validated 3000 structure requests
+Validated 3500 structure requests
+Validated 4000 structure requests
+Validated 4500 structure requests
+Validated 5000 structure requests
+{"suite":"truss","backend":"libcugraph","gpu_device":1,"passed_requests":5135,"failed":0,"implementation_sha256":"ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"}

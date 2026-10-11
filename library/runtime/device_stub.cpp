@@ -4,4 +4,4 @@ DeviceScope::DeviceScope(int) { throw Failure("backend_unavailable", "CUDA is no
 DeviceScope::~DeviceScope() = default;
 bool gpu_available(int) noexcept { return false; }
 json::object gpu_description(int) { return {}; }
-}
+}  // namespace graphmine::runtime

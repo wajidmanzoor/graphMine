@@ -81,14 +81,14 @@ def _load():
         _loaded = True
 
 
-def algorithm(operation: str) -> Algorithm:
+def reference_algorithm(operation: str) -> Algorithm:
     _load()
     if operation not in _algorithms:
         raise UnsupportedOperation(f"No executable integration for {operation!r}")
     return _algorithms[operation]
 
 
-def algorithms(*, family: str | None = None) -> list[dict]:
+def reference_algorithms(*, family: str | None = None) -> list[dict]:
     _load()
     return [
         a.card()
@@ -97,9 +97,71 @@ def algorithms(*, family: str | None = None) -> list[dict]:
     ]
 
 
-def families() -> list[dict]:
-    values = algorithms()
+def reference_families() -> list[dict]:
+    values = reference_algorithms()
     return [
         {"id": name, "operation_count": sum(a["family"] == name for a in values)}
         for name in sorted({a["family"] for a in values})
     ]
+
+
+class NativeAlgorithm:
+    """Workflow view of the native card; the core owns argument validation."""
+
+    def __init__(self, card):
+        from .contracts import Parameter
+
+        self._card = card
+        for name in (
+            "id",
+            "problem_id",
+            "family",
+            "title",
+            "description",
+            "input_kind",
+            "quality",
+        ):
+            setattr(self, name, card[name])
+        self.library = "cpp"
+        self.input_validator = None
+        self.parameters = {
+            name: Parameter(
+                **{
+                    key: value
+                    for key, value in spec.items()
+                    if key in Parameter.__dataclass_fields__
+                }
+            )
+            for name, spec in card["parameters"].items()
+        }
+
+    def card(self):
+        from copy import deepcopy
+
+        return deepcopy(self._card)
+
+    def arguments(self, supplied):
+        from .dispatch import native_request
+
+        return native_request(
+            {"command": "validate", "operation": self.id, "parameters": supplied}
+        )["parameters"]
+
+
+def algorithms(*, family=None):
+    from .dispatch import native_library
+
+    return native_library().list_algorithms(family=family)
+
+
+def algorithm(operation):
+    for card in algorithms():
+        if card["id"] == operation:
+            return NativeAlgorithm(card)
+    raise UnsupportedOperation(f"No native runtime integration for {operation!r}")
+
+
+def families():
+    from .dispatch import native_library
+
+    return native_library().list_families()

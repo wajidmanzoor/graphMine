@@ -14,7 +14,7 @@ from itertools import combinations, permutations, product
 
 import networkx as nx
 import pytest
-from graphmine import Budget, Graph, run
+from graphmine.reference import Budget, Graph, run
 from graphmine.exceptions import GraphMineError, ResourceLimit
 
 ATLAS = [

@@ -4,9 +4,9 @@ from fractions import Fraction
 from itertools import pairwise, permutations, product
 
 import pytest
-from graphmine import Budget, Graph, list_algorithms, run
+from graphmine.reference import Budget, Graph, list_algorithms, run
 from graphmine.exceptions import GraphMineError, ResourceLimit, UnsupportedOperation
-from graphmine.workflows import execute_workflow, validate_workflow
+from graphmine.reference_workflows import execute_workflow, validate_workflow
 
 
 def query(operation, graph, **parameters):

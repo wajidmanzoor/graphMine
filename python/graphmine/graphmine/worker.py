@@ -26,6 +26,22 @@ def handle(request, emit):
     if not root:
         raise GraphMineError("The worker requires a configured repository root")
     caps = capabilities(root)
+    if command == "run":
+        visible = os.environ.get("CUDA_VISIBLE_DEVICES", "")
+        for card in caps["operations"]:
+            allowed_gpu = {
+                backend["id"]
+                for backend in card["backends"]
+                if backend.get("verified")
+                and backend["device"] == "gpu"
+                and visible in backend.get("verified_devices", [])
+            }
+            card["verified_backends"] = [
+                backend
+                for backend in card.get("verified_backends", [])
+                if backend == "cpp" or backend in allowed_gpu
+            ]
+            card["execution"]["gpu"] = bool(allowed_gpu)
     if command == "capabilities":
         return caps
     if command not in ("validate", "run"):
@@ -48,6 +64,9 @@ def handle(request, emit):
         emit=emit,
         resume=request.get("resume"),
         verified_gpu_operations=gpu_verified,
+        verified_backends={
+            card["id"]: card["verified_backends"] for card in caps["operations"]
+        },
     )
 
 

@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "ea918c4915811787bc766b36bb0b9379ab901d396f926f6cef7ca47cee5e12ab"
+  }
+]

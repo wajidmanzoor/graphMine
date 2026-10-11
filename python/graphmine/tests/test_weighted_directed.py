@@ -5,7 +5,7 @@ from itertools import combinations
 
 import numpy as np
 import pytest
-from graphmine import Graph, run
+from graphmine.reference import Graph, run
 from graphmine.exceptions import GraphMineError, UnsupportedOperation
 
 DEVICE = os.environ.get("GRAPHMINE_TEST_DEVICE", "cpu")

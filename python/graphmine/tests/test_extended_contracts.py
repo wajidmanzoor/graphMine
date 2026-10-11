@@ -1,7 +1,7 @@
 from itertools import combinations, permutations, product
 
 import pytest
-from graphmine import Graph, list_algorithms, run
+from graphmine.reference import Graph, list_algorithms, run
 from graphmine.exceptions import GraphMineError, UnsupportedOperation
 
 

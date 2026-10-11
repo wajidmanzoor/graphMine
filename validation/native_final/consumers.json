@@ -1,0 +1,205 @@
+{
+  "cpp_consumer": true,
+  "c_consumer": true,
+  "python_on_path": false,
+  "cuda_visible_devices": "",
+  "cpu_ldd": "\tlinux-vdso.so.1 (0x000078da74f74000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x000078da74400000)\n\tliblapack.so.3 => /lib/x86_64-linux-gnu/liblapack.so.3 (0x000078da73c00000)\n\tlibicuuc.so.74 => /lib/x86_64-linux-gnu/libicuuc.so.74 (0x000078da73800000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000078da73400000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000078da74e6e000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000078da74e3e000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000078da73000000)\n\tlibblas.so.3 => /lib/x86_64-linux-gnu/libblas.so.3 (0x000078da74959000)\n\tlibgfortran.so.5 => /lib/x86_64-linux-gnu/libgfortran.so.5 (0x000078da72c00000)\n\tlibicudata.so.74 => /lib/x86_64-linux-gnu/libicudata.so.74 (0x000078da70e00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000078da74f76000)\n",
+  "scope": "Installed standalone C/C++ algorithm calls on a triangle plus isolated vertex",
+  "results": {
+    "cpp_consumer": {
+      "parameters": {
+        "return_all_ties": true
+      },
+      "result": {
+        "groups": [
+          {
+            "group": 0,
+            "vertices": [
+              0,
+              1,
+              2
+            ],
+            "size": 3
+          }
+        ],
+        "count": 1,
+        "maximum_size": 3
+      },
+      "ports": {
+        "groups": {
+          "type": "vertex_groups",
+          "value": [
+            {
+              "group": 0,
+              "vertices": [
+                0,
+                1,
+                2
+              ],
+              "size": 3
+            }
+          ],
+          "complete": true,
+          "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+          "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "complete": true,
+          "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+          "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff"
+        }
+      },
+      "complete": true,
+      "quality": "exact",
+      "schema_version": "2.0.0",
+      "operation": "maximum-clique",
+      "problem_id": "maximum_clique",
+      "family": "cliques",
+      "input_kind": "graph",
+      "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+      "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+      "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+      "requested_device": "cpu",
+      "backend": {
+        "id": "cpp",
+        "device": "cpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false
+      },
+      "representations": [
+        {
+          "kind": "canonical_graph",
+          "key": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff:canonical-records-v1:e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "hit": false,
+          "retained": true
+        }
+      ],
+      "budget": {
+        "max_candidates": 2000000,
+        "max_output_items": 100000,
+        "timeout_seconds": 60.0
+      },
+      "elapsed_seconds": 0.000789261
+    },
+    "c_consumer": {
+      "parameters": {
+        "requested_k": 2
+      },
+      "result": {
+        "vertices": [
+          {
+            "vertex": 0,
+            "core_number": 2
+          },
+          {
+            "vertex": 1,
+            "core_number": 2
+          },
+          {
+            "vertex": 2,
+            "core_number": 2
+          },
+          {
+            "vertex": 3,
+            "core_number": 0
+          }
+        ],
+        "selected_vertices": [
+          0,
+          1,
+          2
+        ]
+      },
+      "ports": {
+        "scores": {
+          "type": "vertex_scores",
+          "value": [
+            {
+              "vertex": 0,
+              "core_number": 2
+            },
+            {
+              "vertex": 1,
+              "core_number": 2
+            },
+            {
+              "vertex": 2,
+              "core_number": 2
+            },
+            {
+              "vertex": 3,
+              "core_number": 0
+            }
+          ],
+          "complete": true,
+          "score_field": "core_number",
+          "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+          "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff"
+        },
+        "vertices": {
+          "type": "vertex_set",
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "complete": true,
+          "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+          "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff"
+        }
+      },
+      "complete": true,
+      "quality": "exact",
+      "schema_version": "2.0.0",
+      "operation": "k-core",
+      "problem_id": "k_core_decomposition",
+      "family": "cores",
+      "input_kind": "graph",
+      "input_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+      "graph_fingerprint": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff",
+      "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+      "requested_device": "cpu",
+      "backend": {
+        "id": "cpp",
+        "device": "cpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false
+      },
+      "representations": [
+        {
+          "kind": "canonical_graph",
+          "key": "857a1aba819000d85c4ffb880e3aa62989b2714c4bdc847eaa6bd14104a085ff:canonical-records-v1:e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c",
+          "hit": false,
+          "retained": true
+        }
+      ],
+      "budget": {
+        "max_candidates": 2000000,
+        "max_output_items": 100000,
+        "timeout_seconds": 60.0
+      },
+      "elapsed_seconds": 0.000950244
+    }
+  },
+  "source_files": {
+    "library/examples/native_runtime/CMakeLists.txt": "7933636325f48f7f2ae28a32cced0956815b64d2f813d67a5b2abe841f714939",
+    "library/examples/native_runtime/main.c": "2842cf9609d1bf85a5db7939ecd4a94ac04c3d7ba8740d93d2da90926eef54ff",
+    "library/examples/native_runtime/main.cpp": "a1afa7b94bcf91408ec5b9b5503b03198814effd40bc420419da53b5277e88d8",
+    "tools/validate_native_consumers.py": "a83a2b9d4253389dd28bf619c38c3dc7f4c5cb96146071100433af2e15aa736e"
+  },
+  "binary_files": {
+    "/tmp/graphmine-final-consumers/cpp_consumer": "c981289ab695d27f6ef9fd4f063faf4a1ff843766f6ffec06985e33ca30ff220",
+    "/tmp/graphmine-final-consumers/c_consumer": "b5efb9a041f3a23fffcbec84a3ddf920dad909009f4b3290c73acf95f1d48399"
+  },
+  "installed_library": {
+    "path": "/tmp/graphmine-final-install-cpu/lib/libgraphmine_runtime.so",
+    "sha256": "b156e2b95fae05ebb248f15bd5b44fbb3e3db62dbca97e30987441d688ba6c78"
+  },
+  "implementation_sha256": "e1bb92805873b254f2b2d8687b9c6298bb1fcad0747aed127d087cdfe8283f3c"
+}

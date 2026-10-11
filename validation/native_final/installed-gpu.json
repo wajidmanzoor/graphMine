@@ -1,0 +1,916 @@
+{
+  "passed": 4,
+  "failed": 0,
+  "standalone_cli_python_on_path": false,
+  "installed_workers_observed_in_execve": true,
+  "wrapper_cli_parity": true,
+  "binary_files": {
+    "/tmp/graphmine-final-install-gpu/bin/graphmine-native": "48e0e9c3372a5ffec4ddd8546a24d0ac12ccd78ea93eda855d1462beaa35358b",
+    "/tmp/graphmine-final-install-gpu/lib/libgraphmine_runtime.so": "28399db44ad73ff89eac5f7da3c13d38b470202828289593db0b867d9c3b6976",
+    "/tmp/graphmine-final-install-gpu/libexec/graphmine/graphmine-worker-ecl-maxflow": "e4f4e39821f69774f9b2ed8343d7da4f476f86634211e4d8ce5ee371eb081077",
+    "/tmp/graphmine-final-install-gpu/libexec/graphmine/graphmine-worker-hungarian-cuda": "242852d76e72459a107a5b8057a025466ca7f27205fd05a7137c4f649e47e1ce"
+  },
+  "results": [
+    {
+      "operation": "max-flow-min-cut",
+      "backend": "ecl-maxflow",
+      "device": 0,
+      "result": {
+        "parameters": {
+          "source": 0,
+          "sink": 9007199254740993,
+          "capacity_mode": "edge_weight",
+          "return_cut_side": true,
+          "vertex_capacities": null,
+          "solution_quality": "exact"
+        },
+        "result": {
+          "optimal": true,
+          "min_cut_edges": [
+            1,
+            2
+          ],
+          "min_cut_vertices": [],
+          "flow_assignment": [
+            {
+              "edge": 0,
+              "source": 0,
+              "target": "0",
+              "capacity": 3,
+              "capacity_exact": {
+                "numerator": "3",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "edge": 2,
+              "source": 0,
+              "target": 9007199254740993,
+              "capacity": 1,
+              "capacity_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 1,
+              "flow_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "edge": 1,
+              "source": "0",
+              "target": 9007199254740993,
+              "capacity": 2,
+              "capacity_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            }
+          ],
+          "flows": [
+            {
+              "edge": 0,
+              "source": 0,
+              "target": "0",
+              "capacity": 3,
+              "capacity_exact": {
+                "numerator": "3",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "edge": 2,
+              "source": 0,
+              "target": 9007199254740993,
+              "capacity": 1,
+              "capacity_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 1,
+              "flow_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "edge": 1,
+              "source": "0",
+              "target": 9007199254740993,
+              "capacity": 2,
+              "capacity_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            }
+          ],
+          "normalized_arcs": [
+            {
+              "source": 0,
+              "target": "0",
+              "source_edge_ids": [
+                0
+              ],
+              "capacity": 3,
+              "capacity_exact": {
+                "numerator": "3",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "source": 0,
+              "target": 9007199254740993,
+              "source_edge_ids": [
+                2
+              ],
+              "capacity": 1,
+              "capacity_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 1,
+              "flow_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "source": "0",
+              "target": 9007199254740993,
+              "source_edge_ids": [
+                1
+              ],
+              "capacity": 2,
+              "capacity_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            }
+          ],
+          "vertex_flows": [],
+          "max_flow_value": 3,
+          "max_flow_value_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "max_flow_value_rounded": false,
+          "flow_value": 3,
+          "flow_value_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "flow_value_rounded": false,
+          "min_cut_value": 3,
+          "min_cut_value_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "min_cut_value_rounded": false,
+          "cut_capacity": 3,
+          "cut_capacity_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "cut_capacity_rounded": false,
+          "source_side_vertices": [
+            0,
+            "0"
+          ],
+          "source_side": [
+            0,
+            "0"
+          ],
+          "sink_side": [
+            9007199254740993,
+            "r"
+          ],
+          "split_source_side": [
+            {
+              "vertex": 0,
+              "input_reachable": true,
+              "output_reachable": true
+            },
+            {
+              "vertex": "0",
+              "input_reachable": true,
+              "output_reachable": true
+            },
+            {
+              "vertex": 9007199254740993,
+              "input_reachable": false,
+              "output_reachable": false
+            },
+            {
+              "vertex": "r",
+              "input_reachable": false,
+              "output_reachable": false
+            }
+          ]
+        },
+        "ports": {
+          "value": {
+            "type": "scalar",
+            "value": 3,
+            "complete": true,
+            "input_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5",
+            "graph_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5"
+          },
+          "vertices": {
+            "type": "vertex_set",
+            "value": [
+              0,
+              "0"
+            ],
+            "complete": true,
+            "input_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5",
+            "graph_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5"
+          }
+        },
+        "complete": true,
+        "quality": "exact",
+        "diagnostics": {
+          "arithmetic": "exact rational capacities; sums do not overflow binary64",
+          "cut_convention": "edge capacities plus explicitly limited split vertices; terminal limits are respected",
+          "undirected_flow_convention": "two directed assignments per non-loop input edge"
+        },
+        "schema_version": "2.0.0",
+        "operation": "max-flow-min-cut",
+        "problem_id": "max_flow_min_cut",
+        "family": "flow",
+        "input_kind": "graph",
+        "input_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5",
+        "graph_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5",
+        "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+        "requested_device": "gpu",
+        "backend": {
+          "id": "ecl-maxflow",
+          "device": "gpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false,
+          "hardware": {
+            "device_ordinal": 0,
+            "name": "NVIDIA RTX 6000 Ada Generation",
+            "uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+            "cuda_runtime": 12090,
+            "cuda_driver": 12080
+          }
+        },
+        "representations": [
+          {
+            "kind": "canonical_graph",
+            "key": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5:canonical-records-v1:5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+            "hit": false,
+            "retained": true
+          }
+        ],
+        "budget": {
+          "max_candidates": 2000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 60.0
+        },
+        "elapsed_seconds": 0.933774738
+      },
+      "execve_log": "validation/native_final/installed-ecl-maxflow-gpu-0.execve.log",
+      "execve_sha256": "d58c936f94cf5b3052d7960cc83649e1eb05e56587392507ccc8ec3fdf1de1b8"
+    },
+    {
+      "operation": "bipartite-matching",
+      "backend": "hungarian-cuda",
+      "device": 0,
+      "result": {
+        "parameters": {
+          "objective": "minimum_cost",
+          "weight_mode": "edge_weight",
+          "perfect_matching_required": true,
+          "solution_quality": "exact"
+        },
+        "result": {
+          "matching_edges": [
+            1,
+            2
+          ],
+          "edges": [
+            {
+              "id": 1,
+              "source": 0,
+              "target": "r",
+              "weight": 1,
+              "weight_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "weight_rounded": false
+            },
+            {
+              "id": 2,
+              "source": "0",
+              "target": 9007199254740993,
+              "weight": 2,
+              "weight_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "weight_rounded": false
+            }
+          ],
+          "matching_size": 2,
+          "optimal": true,
+          "feasible": true,
+          "objective_value": 3,
+          "objective_value_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "objective_value_rounded": false,
+          "total_weight": 3,
+          "total_weight_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "total_weight_rounded": false,
+          "unmatched_left_vertices": [],
+          "unmatched_right_vertices": []
+        },
+        "ports": {
+          "edges": {
+            "type": "edge_set",
+            "value": [
+              {
+                "id": 1,
+                "source": 0,
+                "target": "r",
+                "weight": 1,
+                "weight_exact": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "weight_rounded": false
+              },
+              {
+                "id": 2,
+                "source": "0",
+                "target": 9007199254740993,
+                "weight": 2,
+                "weight_exact": {
+                  "numerator": "2",
+                  "denominator": "1"
+                },
+                "weight_rounded": false
+              }
+            ],
+            "complete": true,
+            "input_fingerprint": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670",
+            "graph_fingerprint": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670"
+          }
+        },
+        "complete": true,
+        "quality": "exact",
+        "diagnostics": {
+          "arithmetic": "exact over admitted binary64 weights",
+          "approximation_used": false,
+          "optimality_verification": "exact native minimum-cost matching"
+        },
+        "schema_version": "2.0.0",
+        "operation": "bipartite-matching",
+        "problem_id": "bipartite_matching_assignment",
+        "family": "matching",
+        "input_kind": "graph",
+        "input_fingerprint": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670",
+        "graph_fingerprint": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670",
+        "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+        "requested_device": "gpu",
+        "backend": {
+          "id": "hungarian-cuda",
+          "device": "gpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false,
+          "hardware": {
+            "device_ordinal": 0,
+            "name": "NVIDIA RTX 6000 Ada Generation",
+            "uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+            "cuda_runtime": 12090,
+            "cuda_driver": 12080
+          }
+        },
+        "representations": [
+          {
+            "kind": "canonical_graph",
+            "key": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670:canonical-records-v1:5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+            "hit": false,
+            "retained": true
+          }
+        ],
+        "budget": {
+          "max_candidates": 2000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 60.0
+        },
+        "elapsed_seconds": 1.300667876
+      },
+      "execve_log": "validation/native_final/installed-hungarian-cuda-gpu-0.execve.log",
+      "execve_sha256": "ff9d0183809c104dc0e5495394b6006fccdda68b912bba87540390e82bcb9c77"
+    },
+    {
+      "operation": "max-flow-min-cut",
+      "backend": "ecl-maxflow",
+      "device": 1,
+      "result": {
+        "parameters": {
+          "source": 0,
+          "sink": 9007199254740993,
+          "capacity_mode": "edge_weight",
+          "return_cut_side": true,
+          "vertex_capacities": null,
+          "solution_quality": "exact"
+        },
+        "result": {
+          "optimal": true,
+          "min_cut_edges": [
+            1,
+            2
+          ],
+          "min_cut_vertices": [],
+          "flow_assignment": [
+            {
+              "edge": 0,
+              "source": 0,
+              "target": "0",
+              "capacity": 3,
+              "capacity_exact": {
+                "numerator": "3",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "edge": 2,
+              "source": 0,
+              "target": 9007199254740993,
+              "capacity": 1,
+              "capacity_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 1,
+              "flow_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "edge": 1,
+              "source": "0",
+              "target": 9007199254740993,
+              "capacity": 2,
+              "capacity_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            }
+          ],
+          "flows": [
+            {
+              "edge": 0,
+              "source": 0,
+              "target": "0",
+              "capacity": 3,
+              "capacity_exact": {
+                "numerator": "3",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "edge": 2,
+              "source": 0,
+              "target": 9007199254740993,
+              "capacity": 1,
+              "capacity_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 1,
+              "flow_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "edge": 1,
+              "source": "0",
+              "target": 9007199254740993,
+              "capacity": 2,
+              "capacity_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            }
+          ],
+          "normalized_arcs": [
+            {
+              "source": 0,
+              "target": "0",
+              "source_edge_ids": [
+                0
+              ],
+              "capacity": 3,
+              "capacity_exact": {
+                "numerator": "3",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "source": 0,
+              "target": 9007199254740993,
+              "source_edge_ids": [
+                2
+              ],
+              "capacity": 1,
+              "capacity_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 1,
+              "flow_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            },
+            {
+              "source": "0",
+              "target": 9007199254740993,
+              "source_edge_ids": [
+                1
+              ],
+              "capacity": 2,
+              "capacity_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "capacity_rounded": false,
+              "flow": 2,
+              "flow_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "flow_rounded": false
+            }
+          ],
+          "vertex_flows": [],
+          "max_flow_value": 3,
+          "max_flow_value_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "max_flow_value_rounded": false,
+          "flow_value": 3,
+          "flow_value_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "flow_value_rounded": false,
+          "min_cut_value": 3,
+          "min_cut_value_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "min_cut_value_rounded": false,
+          "cut_capacity": 3,
+          "cut_capacity_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "cut_capacity_rounded": false,
+          "source_side_vertices": [
+            0,
+            "0"
+          ],
+          "source_side": [
+            0,
+            "0"
+          ],
+          "sink_side": [
+            9007199254740993,
+            "r"
+          ],
+          "split_source_side": [
+            {
+              "vertex": 0,
+              "input_reachable": true,
+              "output_reachable": true
+            },
+            {
+              "vertex": "0",
+              "input_reachable": true,
+              "output_reachable": true
+            },
+            {
+              "vertex": 9007199254740993,
+              "input_reachable": false,
+              "output_reachable": false
+            },
+            {
+              "vertex": "r",
+              "input_reachable": false,
+              "output_reachable": false
+            }
+          ]
+        },
+        "ports": {
+          "value": {
+            "type": "scalar",
+            "value": 3,
+            "complete": true,
+            "input_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5",
+            "graph_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5"
+          },
+          "vertices": {
+            "type": "vertex_set",
+            "value": [
+              0,
+              "0"
+            ],
+            "complete": true,
+            "input_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5",
+            "graph_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5"
+          }
+        },
+        "complete": true,
+        "quality": "exact",
+        "diagnostics": {
+          "arithmetic": "exact rational capacities; sums do not overflow binary64",
+          "cut_convention": "edge capacities plus explicitly limited split vertices; terminal limits are respected",
+          "undirected_flow_convention": "two directed assignments per non-loop input edge"
+        },
+        "schema_version": "2.0.0",
+        "operation": "max-flow-min-cut",
+        "problem_id": "max_flow_min_cut",
+        "family": "flow",
+        "input_kind": "graph",
+        "input_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5",
+        "graph_fingerprint": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5",
+        "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+        "requested_device": "gpu",
+        "backend": {
+          "id": "ecl-maxflow",
+          "device": "gpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false,
+          "hardware": {
+            "device_ordinal": 1,
+            "name": "NVIDIA RTX 6000 Ada Generation",
+            "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+            "cuda_runtime": 12090,
+            "cuda_driver": 12080
+          }
+        },
+        "representations": [
+          {
+            "kind": "canonical_graph",
+            "key": "3c19cc2762068cc60aafa63262a8d18728cd97eae65abeb6b268a5cce5b5fbe5:canonical-records-v1:5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+            "hit": false,
+            "retained": true
+          }
+        ],
+        "budget": {
+          "max_candidates": 2000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 60.0
+        },
+        "elapsed_seconds": 0.810037068
+      },
+      "execve_log": "validation/native_final/installed-ecl-maxflow-gpu-1.execve.log",
+      "execve_sha256": "e007cd85725aa72ef3843f0bd10d21e4a5275f741d3afb7f7a21461bfde4d84c"
+    },
+    {
+      "operation": "bipartite-matching",
+      "backend": "hungarian-cuda",
+      "device": 1,
+      "result": {
+        "parameters": {
+          "objective": "minimum_cost",
+          "weight_mode": "edge_weight",
+          "perfect_matching_required": true,
+          "solution_quality": "exact"
+        },
+        "result": {
+          "matching_edges": [
+            1,
+            2
+          ],
+          "edges": [
+            {
+              "id": 1,
+              "source": 0,
+              "target": "r",
+              "weight": 1,
+              "weight_exact": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "weight_rounded": false
+            },
+            {
+              "id": 2,
+              "source": "0",
+              "target": 9007199254740993,
+              "weight": 2,
+              "weight_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "weight_rounded": false
+            }
+          ],
+          "matching_size": 2,
+          "optimal": true,
+          "feasible": true,
+          "objective_value": 3,
+          "objective_value_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "objective_value_rounded": false,
+          "total_weight": 3,
+          "total_weight_exact": {
+            "numerator": "3",
+            "denominator": "1"
+          },
+          "total_weight_rounded": false,
+          "unmatched_left_vertices": [],
+          "unmatched_right_vertices": []
+        },
+        "ports": {
+          "edges": {
+            "type": "edge_set",
+            "value": [
+              {
+                "id": 1,
+                "source": 0,
+                "target": "r",
+                "weight": 1,
+                "weight_exact": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "weight_rounded": false
+              },
+              {
+                "id": 2,
+                "source": "0",
+                "target": 9007199254740993,
+                "weight": 2,
+                "weight_exact": {
+                  "numerator": "2",
+                  "denominator": "1"
+                },
+                "weight_rounded": false
+              }
+            ],
+            "complete": true,
+            "input_fingerprint": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670",
+            "graph_fingerprint": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670"
+          }
+        },
+        "complete": true,
+        "quality": "exact",
+        "diagnostics": {
+          "arithmetic": "exact over admitted binary64 weights",
+          "approximation_used": false,
+          "optimality_verification": "exact native minimum-cost matching"
+        },
+        "schema_version": "2.0.0",
+        "operation": "bipartite-matching",
+        "problem_id": "bipartite_matching_assignment",
+        "family": "matching",
+        "input_kind": "graph",
+        "input_fingerprint": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670",
+        "graph_fingerprint": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670",
+        "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+        "requested_device": "gpu",
+        "backend": {
+          "id": "hungarian-cuda",
+          "device": "gpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false,
+          "hardware": {
+            "device_ordinal": 1,
+            "name": "NVIDIA RTX 6000 Ada Generation",
+            "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+            "cuda_runtime": 12090,
+            "cuda_driver": 12080
+          }
+        },
+        "representations": [
+          {
+            "kind": "canonical_graph",
+            "key": "6aa6cc89752b9fda1e094bba5ba67bca8b674129f2cb2cd2f6a98bf0f3908670:canonical-records-v1:5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+            "hit": false,
+            "retained": true
+          }
+        ],
+        "budget": {
+          "max_candidates": 2000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 60.0
+        },
+        "elapsed_seconds": 0.582999016
+      },
+      "execve_log": "validation/native_final/installed-hungarian-cuda-gpu-1.execve.log",
+      "execve_sha256": "0099d821907cac8f1827d09aef9563ac1266861499ea8f6049a9a59bae70b4bf"
+    }
+  ],
+  "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+  "source_files": {
+    "tools/validate_native_optimization_install.py": "26afc7d0b2be34d7bbcd06f2fd20a96e788113eb4227ab3a7360423cae6a00e5",
+    "python/graphmine/graphmine/native/__init__.py": "7d8defc9511a58fbe1ddf291696bbc20df7170ffe4330369745af4f55329d5d6"
+  }
+}

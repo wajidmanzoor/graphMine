@@ -1,110 +1,116 @@
-"""Check local correctness evidence before advertising application capabilities."""
+"""Fail-closed native capability gate, tied to exact builds and oracle reports.
+
+This is a local reproducibility check, not a signature against malicious edits.
+Python reference reports cannot authorize execution through this gate.
+"""
 
 from __future__ import annotations
 
 import hashlib
-import importlib.metadata
 import json
-import sys
+import re
+import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from .backends.cugraph import OPERATIONS
-from .dispatch import implementation_hash
+from .dispatch import execution_environment, native_library
 from .exceptions import GraphMineError
-from .registry import algorithms, families
 
 
-def _sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def sha(path):
+    with Path(path).open("rb") as handle:
+        return hashlib.file_digest(handle, "sha256").hexdigest()
+
+
+def profile_hash(card):
+    return hashlib.sha256(
+        json.dumps(card, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
 
 
 def _path(root, name):
     path = (root / name).resolve()
     if not path.is_relative_to(root) or not path.is_file():
-        raise ValueError("Evidence file is missing or outside the repository")
+        raise ValueError("Evidence source is missing or outside the repository")
     return path
 
 
-def verify_report(root, report):
-    """Re-read source, dependency, metadata and JUnit evidence; never trust status."""
+def _check_hashes(root, files):
+    if not files:
+        raise ValueError("Empty evidence file inventory")
+    for name, digest in files.items():
+        if sha(_path(root, name)) != digest:
+            raise ValueError(f"Evidence file changed: {name}")
+
+
+def verify_report(root, report, implementation, binary):
     try:
-        xml = _path(root, report["report"])
-        metadata_path = _path(root, report["metadata"])
-        if (
-            _sha(xml) != report["report_sha256"]
-            or _sha(metadata_path) != report["metadata_sha256"]
-        ):
-            raise ValueError("Evidence artifact hash mismatch")
-        metadata = json.loads(metadata_path.read_text())
+        if not {report["report"], report["metadata"]} <= set(report["artifacts"]):
+            raise ValueError("Report and metadata both need artifact hashes")
+        _check_hashes(root, report["artifacts"])
+        metadata = json.loads(_path(root, report["metadata"]).read_text())
+        if metadata["implementation_sha256"] != implementation:
+            raise ValueError("Report was produced by a different native implementation")
+        if metadata["native_library_sha256"] != binary:
+            raise ValueError("Report was produced by a different native binary")
         if (
             not metadata["sources_unchanged_during_run"]
-            or not metadata["contracts_unchanged_during_run"]
+            or not metadata["build_unchanged_during_run"]
         ):
-            raise ValueError("Sources or contracts changed during verification")
-        library = root / "python/graphmine"
-        sources = metadata["source_files"]
-        if set(sources) != {str(p.relative_to(library)) for p in library.rglob("*.py")}:
-            raise ValueError("Source file inventory changed")
-        for name, expected in sources.items():
-            if _sha(_path(library.resolve(), name)) != expected:
-                raise ValueError(f"Source changed: {name}")
-        contracts = metadata["contracts"]
-        current_contracts = {
-            str(p.relative_to(root))
-            for p in (root / "problems").glob("[0-9][0-9]_*/problem.json")
-        }
-        current_contracts.update(
-            str(p.relative_to(root))
-            for p in (root / "problems").glob("*_input.schema.json")
-        )
-        current_contracts.add("python/graphmine/pyproject.toml")
-        if set(contracts) != current_contracts:
-            raise ValueError("Contract file inventory changed")
-        for name, expected in contracts.items():
-            if _sha(_path(root, name)) != expected:
-                raise ValueError(f"Contract changed: {name}")
-        if metadata["python"] != sys.version:
-            raise ValueError("Python runtime changed")
-        for package, expected in metadata["packages"].items():
-            try:
-                version = importlib.metadata.version(package)
-            except importlib.metadata.PackageNotFoundError:
-                version = None
-            if version != expected:
-                raise ValueError(f"Dependency changed: {package}")
-        suites = ET.parse(xml).getroot().findall("testsuite")
-        counts = {
-            key: sum(int(s.attrib[key]) for s in suites)
-            for key in ("tests", "failures", "errors", "skipped")
-        }
-        if not counts["tests"] or any(
-            counts[k] for k in ("failures", "errors", "skipped")
-        ):
-            raise ValueError("Report is empty or contains failures, errors or skips")
-        if counts["tests"] != metadata["collected_test_count"]:
-            raise ValueError("Report and collected test count disagree")
-        if metadata["device"] == "cpu":
-            expected_modules = {
-                str(p.relative_to(library))
-                for p in (library / "tests").glob("test_*.py")
+            raise ValueError("Sources or build changed during verification")
+        _check_hashes(root, metadata["source_files"])
+        path = _path(root, report["report"])
+        if report["format"] == "junit":
+            document = ET.parse(path).getroot()
+            suites = (
+                [document]
+                if document.tag == "testsuite"
+                else document.findall("testsuite")
+            )
+            counts = {
+                key: sum(int(s.attrib[key]) for s in suites)
+                for key in ("tests", "failures", "errors", "skipped")
             }
-            if (
-                set(metadata["test_modules"]) != expected_modules
-                or metadata["cuda_visible_devices"] != ""
+            if counts["tests"] < 1 or any(
+                counts[k] for k in ("failures", "errors", "skipped")
             ):
                 raise ValueError(
-                    "CPU evidence must cover the full suite with GPUs hidden"
+                    "Report is empty or contains failures, errors or skips"
                 )
-        elif metadata["device"] != "gpu":
-            raise ValueError("Unknown test device")
+            passed = counts["tests"]
+            if passed != metadata["collected_test_count"]:
+                raise ValueError("Report and collected test count disagree")
+        elif report["format"] == "native_suites":
+            rows = json.loads(path.read_text())
+            if not rows or any(
+                row["failed"]
+                or row["passed_requests"] < 1
+                or row["implementation_sha256"] != implementation
+                for row in rows
+            ):
+                raise ValueError(
+                    "Native suite is empty, failed, or belongs to another build"
+                )
+            passed = sum(row["passed_requests"] for row in rows)
+        else:
+            raise ValueError("Unknown native evidence format")
+        if passed != report["passed"]:
+            raise ValueError("Evidence execution count changed")
+        if metadata["device"] != report["device"]:
+            raise ValueError("Evidence device policy differs")
+        if report["device"] not in {"cpu", "gpu"}:
+            raise ValueError("Unknown evidence device")
+        if report["device"] == "cpu" and metadata["cuda_visible_devices"] != "":
+            raise ValueError("CPU verification must hide CUDA devices")
+        if report["device"] == "gpu" and not metadata.get("gpu_hardware"):
+            raise ValueError("GPU verification needs actual device evidence")
         return {
             "id": report["id"],
             "status": "passed",
-            "device": metadata["device"],
-            "case_shard": metadata.get("case_shard"),
-            "tests": counts["tests"],
+            "device": report["device"],
+            "tests": passed,
             "report": report["report"],
+            "gpu_hardware": metadata.get("gpu_hardware"),
         }
     except (OSError, ValueError, KeyError, TypeError, ET.ParseError) as exc:
         return {
@@ -114,42 +120,129 @@ def verify_report(root, report):
         }
 
 
+def _verify_build(root, build, library, catalog):
+    if build["implementation_sha256"] != catalog["implementation_sha256"]:
+        raise ValueError("Native implementation differs from verified build")
+    if sha(library.path) != build["binary_sha256"]:
+        raise ValueError("Native binary differs from verified build")
+    _check_hashes(root, build["sources"])
+    runtime_files = {
+        str(path.relative_to(root))
+        for path in (root / "library/runtime").rglob("*")
+        if path.suffix in {".cpp", ".hpp", ".in"} and path.is_file()
+    }
+    if not runtime_files <= set(build["sources"]):
+        raise ValueError("Native source inventory changed")
+    linkage = subprocess.check_output(["ldd", library.path], text=True)
+    if "not found" in linkage:
+        raise ValueError("Native dependency is unavailable")
+    dependencies = {
+        str(Path(match).resolve()) for match in re.findall(r"=> (/\S+)", linkage)
+    }
+    if dependencies != set(build["dependencies"]):
+        raise ValueError("Native dependency inventory changed")
+    for name, digest in build["dependencies"].items():
+        if sha(name) != digest:
+            raise ValueError(f"Native dependency changed: {name}")
+    # Isolated research workers are part of a backend, not optional evidence.
+    for name, digest in build.get("workers", {}).items():
+        if sha(name) != digest:
+            raise ValueError(f"Native worker changed: {name}")
+
+
 def capabilities(repository_root):
     root = Path(repository_root).resolve()
+    library = native_library()
+    catalog = library.catalog()
     try:
         inventory = json.loads(
-            (root / "catalog/python_analytics_coverage.json").read_text()
+            (root / "catalog/native_execution_evidence.json").read_text()
         )
     except (OSError, ValueError):
         inventory = {}
-    reports = [verify_report(root, report) for report in inventory.get("reports", [])]
-    cpu = any(r["status"] == "passed" and r["device"] == "cpu" for r in reports)
-    gpu_shards = {
-        r.get("case_shard")
-        for r in reports
-        if r["status"] == "passed" and r["device"] == "gpu"
+    reports, profiles, reasons = [], {}, []
+    for build in inventory.get("builds", []):
+        if build.get("implementation_sha256") != catalog["implementation_sha256"]:
+            continue
+        try:
+            _verify_build(root, build, library, catalog)
+            profiles = build["profiles"]
+            reports = [
+                verify_report(
+                    root,
+                    report,
+                    catalog["implementation_sha256"],
+                    build["binary_sha256"],
+                )
+                for report in build["reports"]
+            ]
+            break
+        except (
+            OSError,
+            ValueError,
+            KeyError,
+            TypeError,
+            subprocess.SubprocessError,
+        ) as exc:
+            reasons.append(str(exc))
+    verified = {
+        report["id"]: report for report in reports if report["status"] == "passed"
     }
-    gpu = {"0/2", "1/2"} <= gpu_shards
-    recorded = {card["id"]: card for card in inventory.get("operations", [])}
-    cards = algorithms()
+    failures = {
+        (entry["operation"], entry["backend"])
+        for entry in inventory.get("known_failures", [])
+        if entry.get("implementation_sha256")
+        in (None, catalog["implementation_sha256"])
+    }
+    cards = catalog["operations"]
     for card in cards:
-        profile = hashlib.sha256(json.dumps(card, sort_keys=True).encode()).hexdigest()
-        matches = recorded.get(card["id"], {}).get("profile_sha256") == profile
-        card["profile_sha256"] = profile
+        profile = profiles.get(card["id"], {})
+        digest = profile_hash(card)
+        matched = profile.get("profile_sha256") == digest
+        available = []
+        for backend in card["backends"]:
+            evidence = profile.get("backends", {}).get(backend["id"], [])
+            valid = bool(
+                matched
+                and backend["compiled"]
+                and evidence
+                and all(
+                    name in verified and verified[name]["device"] == backend["device"]
+                    for name in evidence
+                )
+                and (card["id"], backend["id"]) not in failures
+            )
+            backend["verified"] = valid
+            backend["evidence"] = evidence
+            backend["verified_devices"] = sorted(
+                {
+                    verified[name]["gpu_hardware"]["uuid"]
+                    for name in evidence
+                    if name in verified and verified[name].get("gpu_hardware")
+                }
+            )
+            if valid:
+                available.append(backend["id"])
+        card["profile_sha256"] = digest
+        card["verified_backends"] = available
         card["execution"] = {
-            "cpu": bool(cpu and matches),
-            "gpu": bool(gpu and matches and card["id"] in OPERATIONS),
+            device: any(
+                b["verified"] and b["device"] == device for b in card["backends"]
+            )
+            for device in ("cpu", "gpu")
         }
         card["evidence_state"] = (
-            "verified_profile" if card["execution"]["cpu"] else "verification_required"
+            "verified_profile" if available else "verification_required"
         )
     return {
         "schema_version": "2.0.0",
-        "implementation_sha256": implementation_hash(),
-        "families": families(),
+        "implementation_sha256": catalog["implementation_sha256"],
+        "environment": execution_environment(),
+        "families": catalog["families"],
         "operations": cards,
         "reports": reports,
-        "scope": inventory.get("scope", "Local tested profiles only"),
+        "verification_issues": reasons,
+        "scope": "Native profiles whose source, binary, dependencies and independent reports match this process",
     }
 
 
@@ -160,5 +253,5 @@ def require_workflow_evidence(checked, caps):
         device = "gpu" if step["device"] == "gpu" else "cpu"
         if not card["execution"][device]:
             raise GraphMineError(
-                f"Current {device} correctness evidence is missing or stale for {step['operation']}"
+                f"Current native {device} correctness evidence is missing or stale for {step['operation']}"
             )

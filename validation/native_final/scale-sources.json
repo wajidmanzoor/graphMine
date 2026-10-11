@@ -1,0 +1,56 @@
+[
+  {
+    "url": "https://datasets.ldbcouncil.org/graphalytics/example-directed.tar.zst",
+    "bytes": 1104,
+    "sha256": "30e0dc9984fcd4334f88eef0f419c8f9d2ff3333403c0d49e2ea062f5c4891b4",
+    "filename": "example-directed.tar.zst"
+  },
+  {
+    "url": "https://datasets.ldbcouncil.org/graphalytics/example-undirected.tar.zst",
+    "bytes": 1066,
+    "sha256": "69eb344d0d8438b6ee971378da3a2b3c623e0930393e2d5777e194091c3999ec",
+    "filename": "example-undirected.tar.zst"
+  },
+  {
+    "url": "https://datasets.ldbcouncil.org/graphalytics/test-bfs-directed.tar.zst",
+    "bytes": 504,
+    "sha256": "70353ffe8aa953edf85d81e238089cfec808d1a2822a69293c7a7493f4c46916",
+    "filename": "test-bfs-directed.tar.zst"
+  },
+  {
+    "url": "https://datasets.ldbcouncil.org/graphalytics/test-bfs-undirected.tar.zst",
+    "bytes": 504,
+    "sha256": "27c9748ab5c624c64aed3bf48fd937aaf67d480f676c6a4ff41b3822b0ed84f8",
+    "filename": "test-bfs-undirected.tar.zst"
+  },
+  {
+    "url": "https://datasets.ldbcouncil.org/graphalytics/test-wcc-directed.tar.zst",
+    "bytes": 433,
+    "sha256": "14d5f462fa9e77823756fc87f4fc85c3d906a4ebaa0ebecac0758ac07819541b",
+    "filename": "test-wcc-directed.tar.zst"
+  },
+  {
+    "url": "https://datasets.ldbcouncil.org/graphalytics/test-wcc-undirected.tar.zst",
+    "bytes": 428,
+    "sha256": "c3d5f73b02a4a71db55ef0bedea9618dbb01f2429cf7068b1b7e741b00890d26",
+    "filename": "test-wcc-undirected.tar.zst"
+  },
+  {
+    "url": "https://datasets.ldbcouncil.org/graphalytics/test-sssp-directed.tar.zst",
+    "bytes": 603,
+    "sha256": "97b6b72184e6137af271dd2f3088aa68452510e08b3cea98da860a378bfa9bb6",
+    "filename": "test-sssp-directed.tar.zst"
+  },
+  {
+    "url": "https://datasets.ldbcouncil.org/graphalytics/test-sssp-undirected.tar.zst",
+    "bytes": 625,
+    "sha256": "908f7b9c12c4a7b3fb0836547b3cd49543448999ed450c575ede88f1149d7306",
+    "filename": "test-sssp-undirected.tar.zst"
+  },
+  {
+    "url": "https://snap.stanford.edu/data/ca-CondMat.txt.gz",
+    "bytes": 727502,
+    "sha256": "11b47db52441ce0140f2ec54999345459fecbc52ff6f9fe3956dc3cad9835872",
+    "filename": "ca-CondMat.txt.gz"
+  }
+]
