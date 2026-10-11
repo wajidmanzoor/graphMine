@@ -101,8 +101,7 @@ def authored_model_transport():
                                 "id": "triangles",
                                 "operation": "triangle-counting",
                                 "input": {"input": "main"},
-                                "parameters": {},
-                                "bindings": {},
+                                "arguments": [],
                             }
                         ],
                     },

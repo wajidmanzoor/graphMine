@@ -14,8 +14,10 @@ from graphmine_agent.analytics import AnalyticsError, AnalyticsService, Workflow
 from graphmine_agent.analytics_planning import (
     AnalyticsPlanner,
     PlanningRequest,
+    decoded_plan,
     family_catalog,
     family_schema,
+    generation_plan_schema,
     plan_schema,
 )
 from graphmine_agent.jobs import EventBus
@@ -313,9 +315,9 @@ async def test_all_current_profiles_have_one_family_and_valid_plan_schemas(setup
     families = family_catalog(caps["operations"])
     assert sum(len(f["operations"]) for f in families) == len(caps["operations"])
     for card in caps["operations"]:
-        jsonschema.Draft202012Validator.check_schema(
-            plan_schema([card], ["main"], "cpu")
-        )
+        schema = plan_schema([card], ["main"], "cpu")
+        jsonschema.Draft202012Validator.check_schema(schema)
+        jsonschema.Draft202012Validator.check_schema(generation_plan_schema(schema))
     with pytest.raises(AnalyticsError, match="missing its task family"):
         family_catalog([{**caps["operations"][0], "family": "unregistered_family"}])
 
@@ -372,6 +374,153 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
         ]
     )
     assert family_schema([{"id": "patterns"}])["properties"]["families"]["uniqueItems"]
+
+
+@pytest.mark.asyncio
+async def test_generation_transport_executes_dependent_native_plan(setup, monkeypatch):
+    settings, analytics, events, session, body = setup
+    planner = AnalyticsPlanner(replace(settings, llm_enabled=True), analytics, events)
+    wire = {
+        "status": "ready",
+        "message": "Count triangles among the selected vertices.",
+        "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+                {
+                    "id": "selected",
+                    "operation": "node-lookup",
+                    "input": {"input": "main"},
+                    "arguments": [{"name": "vertices", "value": {"literal": [0, 1]}}],
+                },
+                {
+                    "id": "subset",
+                    "operation": "query-subgraph",
+                    "input": {"input": "main"},
+                    "arguments": [
+                        {
+                            "name": "vertices",
+                            "value": {
+                                "binding": {"step": "selected", "port": "vertices"}
+                            },
+                        }
+                    ],
+                },
+                {
+                    "id": "answer",
+                    "operation": "triangle-counting",
+                    "input": {"step": "subset", "port": "graph"},
+                    "arguments": [],
+                },
+            ],
+        },
+    }
+    calls = []
+
+    def reply(request):
+        content = json.loads(request.content)
+        payload = json.loads(content["messages"][1]["content"])
+        stage = payload["stage"]
+        calls.append(stage)
+        if stage == "family":
+            response = {**family(), "families": ["query", "patterns"]}
+        elif stage == "operation":
+            for card in payload["operations"]:
+                assert "execution" not in card
+                assert "output_ports" not in card
+                assert all("json_schema" not in p for p in card["parameters"].values())
+            response = operation("node-lookup", "query-subgraph", "triangle-counting")
+        else:
+            schema = content["response_format"]["json_schema"]["schema"]
+            jsonschema.validate(wire, schema)
+            response = wire
+        return httpx.Response(
+            200, json={"choices": [{"message": {"content": json.dumps(response)}}]}
+        )
+
+    original = httpx.AsyncClient
+    monkeypatch.setattr(
+        "graphmine_agent.analytics_planning.httpx.AsyncClient",
+        lambda **kwargs: original(transport=httpx.MockTransport(reply), **kwargs),
+    )
+    decoded = decoded_plan(wire)
+    assert "arguments" in wire["plan"]["steps"][0]  # No mutation of model evidence.
+    assert decoded["plan"]["steps"][1]["parameters"] == {}
+    assert decoded["plan"]["steps"][1]["bindings"] == {
+        "vertices": {"step": "selected", "port": "vertices"}
+    }
+    planned = await planner.plan(session, body)
+    assert planned["status"] == "ready"
+    assert calls == ["family", "operation", "plan"]
+    analytics.open()
+    try:
+        saved = await analytics.create(
+            session,
+            WorkflowRequest(mode="normal", plan=planned["plan"], inputs=body.inputs),
+        )
+        await asyncio.gather(*analytics.tasks.values())
+        result = analytics.result(saved["id"])
+        assert result["status"] == "completed" and result["complete"]
+        ports = result["steps"]["answer"]["result"]["ports"]
+        assert ports["count"]["value"] == 0
+        assert result["steps"]["subset"]["result"]["ports"]["vertices"]["value"] == [
+            0,
+            1,
+        ]
+    finally:
+        await analytics.close()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "attack", ["two_sources", "duplicate_name", "unknown_name", "boolean_binding"]
+)
+async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
+    setup, monkeypatch, attack
+):
+    settings, analytics, events, _session, _body = setup
+    planner = AnalyticsPlanner(replace(settings, llm_enabled=True), analytics, events)
+    caps = await analytics.capabilities()
+    cards = [c for c in caps["operations"] if c["id"] == "breadth-first-search"]
+    schema = plan_schema(cards, ["main"], "cpu")
+    wire = proposal("breadth-first-search")
+    step = wire["plan"]["steps"][0]
+    del step["parameters"], step["bindings"]
+    step["arguments"] = [{"name": "sources", "value": {"literal": [0]}}]
+    if attack == "two_sources":
+        step["arguments"][0]["value"]["binding"] = {
+            "step": "earlier",
+            "port": "vertices",
+        }
+    elif attack == "duplicate_name":
+        step["arguments"].append(
+            {
+                "name": "sources",
+                "value": {"binding": {"step": "earlier", "port": "vertices"}},
+            }
+        )
+    elif attack == "unknown_name":
+        step["arguments"][0]["name"] = "execute_python"
+    else:
+        step["arguments"].append(
+            {
+                "name": "return_predecessors",
+                "value": {"binding": {"step": "earlier", "port": "count"}},
+            }
+        )
+
+    def reply(request):
+        return httpx.Response(
+            200, json={"choices": [{"message": {"content": json.dumps(wire)}}]}
+        )
+
+    original = httpx.AsyncClient
+    monkeypatch.setattr(
+        "graphmine_agent.analytics_planning.httpx.AsyncClient",
+        lambda **kwargs: original(transport=httpx.MockTransport(reply), **kwargs),
+    )
+    with pytest.raises(AnalyticsError, match="could not return a valid decision"):
+        await planner._generate("plan", {"operations": cards}, schema)
 
 
 @pytest.mark.asyncio

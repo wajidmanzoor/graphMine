@@ -1,0 +1,129 @@
+{
+  "scope": "Two concurrent actual native GPU workers, real physical memory probes, LLM exclusion/reservation and cancelled admission waiter; declared estimates are not actual device allocations",
+  "inventory_before": [
+    {
+      "uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+      "total": 51527024640,
+      "free": 12167675904
+    },
+    {
+      "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "total": 51527024640,
+      "free": 50856984576
+    }
+  ],
+  "runs": [
+    {
+      "allocation": {
+        "id": "2c2bd037-5f43-4e4a-9c1b-adede5406b27",
+        "device": "gpu",
+        "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "reserved_bytes": 47412412416,
+        "available_bytes_at_admission": 50320113664,
+        "llm_reserved_bytes": 0,
+        "estimate_version": "native-workspace-v1"
+      },
+      "backend": {
+        "id": "libcugraph",
+        "device": "gpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false,
+        "version": "26.10.0",
+        "hardware": {
+          "device_ordinal": 0,
+          "name": "NVIDIA RTX 6000 Ada Generation",
+          "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+          "cuda_runtime": 12090,
+          "cuda_driver": 12080
+        }
+      },
+      "started": 12511677.637446584,
+      "finished": 12511685.130227556
+    },
+    {
+      "allocation": {
+        "id": "9ade3732-6033-45b7-b08e-78857fa97df4",
+        "device": "gpu",
+        "gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+        "reserved_bytes": 6978482995,
+        "available_bytes_at_admission": 11630804992,
+        "llm_reserved_bytes": 0,
+        "estimate_version": "native-workspace-v1"
+      },
+      "backend": {
+        "id": "libcugraph",
+        "device": "gpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false,
+        "version": "26.10.0",
+        "hardware": {
+          "device_ordinal": 0,
+          "name": "NVIDIA RTX 6000 Ada Generation",
+          "uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+          "cuda_runtime": 12090,
+          "cuda_driver": 12080
+        }
+      },
+      "started": 12511677.638286652,
+      "finished": 12511685.545443542
+    },
+    {
+      "allocation": {
+        "id": "25a3e5a4-9b74-46ec-8403-687d3e1f1cfc",
+        "device": "gpu",
+        "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "reserved_bytes": 134217728,
+        "available_bytes_at_admission": 50320113664,
+        "llm_reserved_bytes": 0,
+        "estimate_version": "native-workspace-v1"
+      },
+      "backend": {
+        "id": "libcugraph",
+        "device": "gpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false,
+        "version": "26.10.0",
+        "hardware": {
+          "device_ordinal": 0,
+          "name": "NVIDIA RTX 6000 Ada Generation",
+          "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+          "cuda_runtime": 12090,
+          "cuda_driver": 12080
+        }
+      },
+      "started": 12511685.67955934,
+      "finished": 12511692.873501316
+    },
+    {
+      "allocation": {
+        "id": "6d54c93b-a566-4137-85b3-2a4654c26619",
+        "device": "gpu",
+        "gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+        "reserved_bytes": 134217728,
+        "available_bytes_at_admission": 9768534016,
+        "llm_reserved_bytes": 41221619712,
+        "estimate_version": "native-workspace-v1"
+      },
+      "backend": {
+        "id": "libcugraph",
+        "device": "gpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false,
+        "version": "26.10.0",
+        "hardware": {
+          "device_ordinal": 0,
+          "name": "NVIDIA RTX 6000 Ada Generation",
+          "uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+          "cuda_runtime": 12090,
+          "cuda_driver": 12080
+        }
+      },
+      "started": 12511692.937655853,
+      "finished": 12511700.644069688
+    }
+  ],
+  "passed": true,
+  "llm_reserved_bytes": 41221619712,
+  "remaining_allocations": [],
+  "test_sha256": "571a7edd72aaa1d497df85a7457d5315d39236f199879b29112a7612307c1d99"
+}

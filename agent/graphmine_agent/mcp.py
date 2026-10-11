@@ -304,7 +304,7 @@ async def serve():
     async with httpx.AsyncClient(
         base_url=os.getenv("GRAPHMINE_API_URL", "http://127.0.0.1:8000"),
         headers=headers,
-        timeout=200,
+        timeout=400,
         follow_redirects=False,
         trust_env=False,
     ) as client:
