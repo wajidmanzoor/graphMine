@@ -1,0 +1,33 @@
+{
+  "problem_id": "induced_subgraph_ego_extraction",
+  "paper_id": "2019_pyg_khop_subgraph",
+  "title": "Fast Graph Representation Learning with PyTorch Geometric",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1903.02428",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:57Z",
+    "sha256": "8cfd9824d44c5aba66393ef05e70c1275ca7886e0a0502f7b09e86e6c3a38953",
+    "bytes": 379324,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pyg-team/pytorch_geometric",
+    "local_path": "code",
+    "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pyg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "torch_geometric/utils/_subgraph.py": "19c3863547157bdeed89fb90ca2e6a059f3c03f5a8dfea35ee5f7109222c6aee"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

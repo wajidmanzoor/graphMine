@@ -86,5 +86,24 @@ int main() {
               limited.value().embeddings->size() == 5 &&
               !limited.value().embeddings_complete,
           "limited embedding materialization mismatch");
+  // A low BFS threshold forces the exact DFS path, independently of the pool
+  // reservation. It must retain the same count and materialization semantics.
+  options.initial_match_capacity = 1;
+  const auto depth_first =
+      graphmine::SubgraphIsomorphism(options).run(data, triangle);
+  require(depth_first.ok(), depth_first.status().message().c_str());
+  require(depth_first.value().count == 78 &&
+              depth_first.value().embeddings->size() == 5 &&
+              !depth_first.value().embeddings_complete,
+          "DFS count or limited embedding materialization mismatch");
+  std::vector<std::pair<graphmine::ExternalId, graphmine::ExternalId>> path_edges;
+  for (int i = 0; i < 15; ++i) path_edges.emplace_back(i, i + 1);
+  const auto path16 = make_query("path16", 16, path_edges);
+  options.optional_outputs = graphmine::SubgraphIsomorphismOptionalOutput::none;
+  options.result_limit.reset();
+  const auto largest_query = graphmine::SubgraphIsomorphism(options).run(path16, path16);
+  require(largest_query.ok(), largest_query.status().message().c_str());
+  require(largest_query.value().count == 2,
+          "16-vertex DFS query requires dynamic shared-memory opt-in");
   return 0;
 }

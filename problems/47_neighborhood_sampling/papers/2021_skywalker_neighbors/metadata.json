@@ -1,0 +1,27 @@
+{
+  "title": "Skywalker: Efficient Alias-Method-Based Graph Sampling and Random Walk on GPUs",
+  "year": 2021,
+  "venue": "PACT 2021",
+  "doi": null,
+  "publication_url": "https://ieeexplore.ieee.org/document/9563020",
+  "pdf_url": "https://www.cs.sjtu.edu.cn/~lichao/publications/Skywalker_Efficient_PACT-2021-Wang.pdf",
+  "paper_id": "2021_skywalker_neighbors",
+  "problem_id": "neighborhood_sampling",
+  "problem_dir": "47_neighborhood_sampling",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Skywalker alias-method neighbor sampling",
+  "code_url": "https://github.com/sjtu-SAIL-lab/Skywalker",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA weighted alias tables and parallel neighbor selection.",
+  "notes": "Select the neighbor-sampling mode. Check the upstream newsampler flag and result-layout notes in README.md.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "src/main.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

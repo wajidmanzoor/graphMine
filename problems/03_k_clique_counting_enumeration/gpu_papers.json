@@ -1,0 +1,30 @@
+{
+  "problem_id": "k_clique_counting_enumeration",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2022_parallel_k_clique_counting",
+      "algorithm_name": "Parallel K-Clique Counting on GPUs",
+      "metadata": "03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_graphset",
+      "algorithm_name": "GraphSet: High Performance Graph Mining through Equivalent Set Transformations",
+      "metadata": "03_k_clique_counting_enumeration/papers/2023_graphset/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2024_gamma",
+      "algorithm_name": "A Graph Pattern Mining Framework for Large Graphs on GPU",
+      "metadata": "03_k_clique_counting_enumeration/papers/2024_gamma/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

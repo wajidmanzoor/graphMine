@@ -1,0 +1,32 @@
+{
+  "problem_id": "signed_network_structural_balance",
+  "paper_id": "2021_graphbplus",
+  "title": "Discovering and Balancing Fundamental Cycles in Large Signed Graphs",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://userweb.cs.txstate.edu/~burtscher/papers/sc21.pdf",
+    "resolved_url": "https://userweb.cs.txstate.edu/~burtscher/papers/sc21.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "a56e0f9ea88184b58e8c28c18a6cf3d90316d9d6a643ef5477c829aadd275a85",
+    "bytes": 2160819,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/burtscher/graphBplus",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "entrypoint_sha256": {
+      "graphBplus_02.cu": "144b4da7908fc23f7188db9a06e5b1c431d6e79498f36b8e349b4fd984bc009a"
+    },
+    "commit": "85dc76604835484d9cbc0f12b243c9c290737e75",
+    "source_manifest": "../../../_sources/graphbplus.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/LICENSE"
+  }
+}

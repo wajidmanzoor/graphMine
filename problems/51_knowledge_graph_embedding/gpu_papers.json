@@ -1,0 +1,30 @@
+{
+  "problem_id": "knowledge_graph_embedding",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2014_dgl_ke_distmult",
+      "algorithm_name": "DGL-KE DistMult",
+      "metadata": "51_knowledge_graph_embedding/papers/2014_dgl_ke_distmult/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2016_dgl_ke_complex",
+      "algorithm_name": "DGL-KE ComplEx",
+      "metadata": "51_knowledge_graph_embedding/papers/2016_dgl_ke_complex/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_dgl_ke_rotate",
+      "algorithm_name": "DGL-KE RotatE",
+      "metadata": "51_knowledge_graph_embedding/papers/2019_dgl_ke_rotate/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

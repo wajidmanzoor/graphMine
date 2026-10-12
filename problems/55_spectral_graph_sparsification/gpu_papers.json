@@ -1,0 +1,30 @@
+{
+  "problem_id": "spectral_graph_sparsification",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2024_ingrass_candidate",
+      "algorithm_name": "inGRASS low-resistance-diameter incremental sparsification",
+      "metadata": "55_spectral_graph_sparsification/papers/2024_ingrass_candidate/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_dygrass_decremental",
+      "algorithm_name": "dyGRASS decremental spectral sparsifier updates",
+      "metadata": "55_spectral_graph_sparsification/papers/2025_dygrass_decremental/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_dygrass_incremental",
+      "algorithm_name": "dyGRASS incremental spectral sparsifier updates",
+      "metadata": "55_spectral_graph_sparsification/papers/2025_dygrass_incremental/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

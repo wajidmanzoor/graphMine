@@ -1,0 +1,27 @@
+{
+  "problem_id": "topological_sort",
+  "paper_id": "2017_nvidia_parallel_dag_dfs",
+  "title": "Parallel Depth-First Search for Directed Acyclic Graphs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://research.nvidia.com/sites/default/files/publications/nvr-2017-001.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:34:47Z",
+    "sha256": "9beca7d2705923dd775931a6234a0ba4db646219a2d45287c7f0d7a99ba2454a",
+    "bytes": 566860,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

@@ -60,10 +60,44 @@ void check_backend(graphmine::TemporalMotifBackend backend,
   }
 }
 
+void check_timestamp_ties(graphmine::TemporalMotifBackend backend) {
+  graphmine::CanonicalGraphInput input;
+  input.graph.id = "timestamp-ties";
+  input.graph.directed = true;
+  input.graph.allows_parallel_edges = true;
+  for (int vertex = 0; vertex < 3; ++vertex)
+    input.vertices.push_back({vertex, std::nullopt, std::nullopt, {}});
+  const std::vector<std::array<int, 3>> events{
+      {0, 1, 1}, {1, 2, 1}, {0, 1, 2},
+      {1, 2, 2}, {0, 2, 2}, {0, 2, 3}};
+  for (std::size_t i = 0; i < events.size(); ++i)
+    input.edges.push_back({static_cast<std::int64_t>(i), events[i][0],
+        events[i][1], std::nullopt,
+        graphmine::Timestamp{static_cast<std::int64_t>(events[i][2])},
+        std::nullopt, {}});
+  const graphmine::Graph graph(std::move(input));
+  graphmine::TemporalMotifOptions options;
+  options.backend = backend;
+  options.max_time_span = 2;
+  const auto counted = graphmine::TemporalMotifMining(options).run(graph);
+  assert(counted.ok() && counted.value().count == 1);
+  options.optional_outputs = graphmine::TemporalMotifOptionalOutput::instances;
+  const auto listed = graphmine::TemporalMotifMining(options).run(graph);
+  assert(listed.ok() && listed.value().count == 1);
+  assert(listed.value().instances_complete && listed.value().instances->size() == 1);
+  const auto& ids = listed.value().instances->front().edges_in_temporal_order;
+  assert((ids == std::array<graphmine::ExternalId, 3>{0, 3, 5}));
+  options.max_time_span = 0;
+  const auto zero_window = graphmine::TemporalMotifMining(options).run(graph);
+  assert(zero_window.ok() && zero_window.value().count == 0);
+}
+
 }  // namespace
 
 int main() {
   check_backend(graphmine::TemporalMotifBackend::everest, true);
   check_backend(graphmine::TemporalMotifBackend::mayura, false);
+  check_timestamp_ties(graphmine::TemporalMotifBackend::everest);
+  check_timestamp_ties(graphmine::TemporalMotifBackend::mayura);
   return 0;
 }

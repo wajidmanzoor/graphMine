@@ -1,0 +1,14 @@
+{
+  "status": "runtime_checks_passed",
+  "canonical_adapter_available": true,
+  "scope_note": "Subsequent runtime checks of the public CLI profile, including local repairs; not a paper-version reproduction.",
+  "checks": [
+    {
+      "backend": "max-flow-min-cut/ecl-maxflow",
+      "passed": 184,
+      "failed": 0,
+      "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+      "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+    }
+  ]
+}

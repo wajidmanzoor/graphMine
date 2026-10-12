@@ -1,0 +1,38 @@
+{
+  "problem_id": "many_source_shortest_paths",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2010_blocked_cuda_floyd_warshall",
+      "algorithm_name": "Blocked CUDA Floyd-Warshall (Bojanowski implementation)",
+      "metadata": "40_many_source_shortest_paths/papers/2010_blocked_cuda_floyd_warshall/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_tensor_floyd_warshall",
+      "algorithm_name": "Tensorized Floyd-Warshall",
+      "metadata": "40_many_source_shortest_paths/papers/2023_tensor_floyd_warshall/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_tensor_r_kleene",
+      "algorithm_name": "Recursive R-Kleene APSP",
+      "metadata": "40_many_source_shortest_paths/papers/2023_tensor_r_kleene/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_od_distances",
+      "algorithm_name": "cuGraph origin-destination shortest distances",
+      "metadata": "40_many_source_shortest_paths/papers/2026_cugraph_od_distances/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

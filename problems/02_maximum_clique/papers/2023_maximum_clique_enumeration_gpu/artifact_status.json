@@ -2,20 +2,31 @@
   "problem_id": "maximum_clique",
   "paper_id": "2023_maximum_clique_enumeration_gpu",
   "title": "Maximum Clique Enumeration on the GPU",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://escholarship.org/content/qt7j96s061/qt7j96s061_noSplash_fd383d070ad1a52b15991afdfe1419a1.pdf",
     "status": "downloaded",
+    "source_url": "https://escholarship.org/content/qt7j96s061/qt7j96s061_noSplash_fd383d070ad1a52b15991afdfe1419a1.pdf",
+    "resolved_url": "https://escholarship.org/content/qt7j96s061/qt7j96s061_noSplash_fd383d070ad1a52b15991afdfe1419a1.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "812a4a26d5585603c5b23e1311716f1362602c3915a9f521a6d0b3e2640a6f7c",
+    "bytes": 475455,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/owensgroup/GPUMaximumClique",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "2365400c7b4a172afdbf60c6c559a49e0567caac",
     "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "cliqueMerging.cu": "8ac398bad1bacad9065defb53f38b2a9b934db53f488e918c800cdd34c1ba832",
+      "GPUTestMaxClique.cu": "32a3a92264dc7a0656c848a407965bcd1db69b740c5d02af1ce9fae184e07317"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

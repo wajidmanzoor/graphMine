@@ -1,0 +1,29 @@
+{
+  "problem_id": "personalized_pagerank_rwr",
+  "paper_id": "2020_kpar",
+  "title": "Realtime Top-k Personalized PageRank over Large Graphs on GPUs",
+  "checked_at": "2026-10-10T02:15:29Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://vldb.org/pvldb/vol13/p15-shi.pdf",
+    "resolved_url": "https://vldb.org/pvldb/vol13/p15-shi.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "573cefe30477be22e9888b37e1d9ba3618c7b2955b911aca068f6837c45fb27b",
+    "bytes": 575765,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "present",
+    "source_url": "https://github.com/jmshi123/kPAR",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "src/main.cu": "554d1fa92642557e48f07afe5636cd501a259c06a6d198d432d9494d758012a2"
+    },
+    "license_file": "code/LICENSE"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

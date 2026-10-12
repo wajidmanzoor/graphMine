@@ -1,0 +1,34 @@
+{
+  "problem_id": "persistent_homology",
+  "paper_id": "2020_ripserplusplus",
+  "title": "GPU-Accelerated Computation of Vietoris-Rips Persistence Barcodes",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2003.07989",
+    "resolved_url": "https://arxiv.org/pdf/2003.07989",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "b05d05a169649883bcf455e2002e8417367d42e809cc733f6426ebbd311e921e",
+    "bytes": 1660827,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/simonzhang00/ripser-plusplus",
+    "local_path": "code",
+    "commit": "30243c0c752de26d7fdf6e41f08bf7b840ca4744",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/ripserplusplus.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "ripserplusplus/ripser++.cu": "41f3affa3e2fe7675f0d097496519932bac564e607f9a5545e28d7c30733ccb1"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

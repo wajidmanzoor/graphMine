@@ -14,15 +14,13 @@ from pathlib import Path
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from jsonschema import Draft202012Validator
-
 from graphmine_agent.answers import build_answer
 from graphmine_agent.api import create_app
 from graphmine_agent.catalog import Catalog, CatalogError
 from graphmine_agent.execution import GraphMineRunner
 from graphmine_agent.llm import (
-    OpenAICompatibleModel,
     ROUTING_SYSTEM_PROMPT,
+    OpenAICompatibleModel,
     constrain_plan_schema,
 )
 from graphmine_agent.models import (
@@ -44,6 +42,7 @@ from graphmine_agent.profiles import (
     ProfileInputError,
     prepare_operation_graph,
 )
+from jsonschema import Draft202012Validator
 
 ORIGINAL_EXPANSION_OPERATIONS = frozenset(
     {
@@ -140,7 +139,7 @@ def plan(catalog, operation, **updates):
 
 
 def test_expansion_catalog_preserves_all_problem_specs_and_screening(catalog, settings):
-    assert len(catalog.problems) == 37
+    assert len(catalog.problems) == 70
     assert (
         sum(p["library_support"]["available"] for p in catalog.problems.values()) == 22
     )
@@ -149,7 +148,7 @@ def test_expansion_catalog_preserves_all_problem_specs_and_screening(catalog, se
         assert record["spec"] == json.loads(
             (settings.repository_root / record["source"]).read_text()
         )
-        if record["source"].split("/")[1][:2] > "20":
+        if "20" < record["source"].split("/")[1][:2] <= "37":
             assert record["intent_signals"] and isinstance(
                 record["expansion_screening"], list
             )
@@ -180,7 +179,7 @@ def test_catalog_rejects_duplicate_ids(settings, tmp_path):
         Catalog(replace(settings, catalog_path=path))
 
 
-def test_expansion_holdout_covers_every_new_problem_and_domain(catalog, settings):
+def test_original_expansion_holdout_covers_its_problem_range_and_domains(catalog, settings):
     document = json.loads(
         (
             settings.repository_root / "agent/evaluation/expansion_query_cases.json"
@@ -192,7 +191,7 @@ def test_expansion_holdout_covers_every_new_problem_and_domain(catalog, settings
     new_problems = {
         p["spec"]["problem_id"]
         for p in catalog.problems.values()
-        if p["source"].split("/")[1][:2] > "20"
+        if "20" < p["source"].split("/")[1][:2] <= "37"
     }
     assert {c["expected"]["problem_id"] for c in cases} == new_problems
     assert {

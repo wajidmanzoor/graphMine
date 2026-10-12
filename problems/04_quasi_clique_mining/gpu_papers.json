@@ -1,0 +1,14 @@
+{
+  "problem_id": "quasi_clique_mining",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2025_cuqc",
+      "algorithm_name": "GPU-Accelerated Maximal Quasi-Clique Mining",
+      "metadata": "04_quasi_clique_mining/papers/2025_cuqc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

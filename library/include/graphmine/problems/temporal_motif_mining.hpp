@@ -45,7 +45,7 @@ struct TemporalMotifOptions {
   TemporalMotifBackend backend = TemporalMotifBackend::automatic;
   TemporalMotifPattern pattern =
       TemporalMotifPattern::feed_forward_triangle;
-  // Inclusive window: last_timestamp <= first_timestamp + max_time_span.
+  // Strict event times t1 < t2 < t3, with the inclusive window t3 <= t1 + span.
   std::int64_t max_time_span = 0;
   TemporalMotifOptionalOutput optional_outputs =
       TemporalMotifOptionalOutput::none;

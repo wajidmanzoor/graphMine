@@ -6,6 +6,10 @@ if [[ -f "${repo_dir}/agent/.env" ]]; then
   source "${repo_dir}/agent/.env"
   set +a
 fi
+if [[ -n "${GRAPHMINE_LLM_PLANNER_MODEL:-}${GRAPHMINE_LLM_ANALYST_MODEL:-}" ]]; then
+  echo "The planner adapter is served by the shared vLLM process; the legacy router is disabled." >&2
+  exit 0
+fi
 export GRAPHMINE_ROUTER_SUITE="${GRAPHMINE_ROUTER_SUITE:-${repo_dir}/.graphmine-learning/adapter-business-suite-new-v1}"
 export GRAPHMINE_ROUTER_MODEL="${GRAPHMINE_ROUTER_MODEL:-graphmine-business-v1}"
 export GRAPHMINE_ROUTER_ADAPTER_SHA256="${GRAPHMINE_ROUTER_ADAPTER_SHA256:-dd7017735094300c4a89f217cb094c0d8b9981d1c7d86182596a7a6f7ef5f4d6}"

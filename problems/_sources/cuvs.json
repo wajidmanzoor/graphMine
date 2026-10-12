@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/rapidsai/cuvs",
+  "checked_at": "2026-10-10T01:37:11Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "24b0b17069ee1547354d15847d9c614dd4fb4a43",
+  "archive_url": "https://codeload.github.com/rapidsai/cuvs/tar.gz/24b0b17069ee1547354d15847d9c614dd4fb4a43",
+  "archive_sha256": "876ba8d40036fc7ab576b5888a73d2926fd7911d8842020e956eb09bbcf7a1bc",
+  "local_path": "cuvs-24b0b17069ee",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "Apache-2.0",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

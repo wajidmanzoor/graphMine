@@ -40,16 +40,20 @@ POLICY = {
 }
 
 
-def execution_policy() -> dict:
+def execution_policy(reasoning_effort: str = "low") -> dict:
+    if reasoning_effort not in {"low", "medium", "high", "xhigh", "max"}:
+        raise ValueError("Unsupported ChatGPT teacher reasoning effort")
     return {
-        "version": "codex-chatgpt-v1",
-        "config": POLICY.copy(),
+        "version": "codex-chatgpt-v1"
+        if reasoning_effort == "low"
+        else "codex-chatgpt-v2",
+        "config": {**POLICY, "model_reasoning_effort": reasoning_effort},
         "sandbox": "read-only",
         "ephemeral": True,
         "ignore_user_config": True,
         "working_directory": "new_empty_temporary_directory",
         "environment": "allowlisted_no_api_keys_or_endpoint_overrides",
-        "timeout_seconds": TIMEOUT_SECONDS,
+        "timeout_seconds": TIMEOUT_SECONDS if reasoning_effort == "low" else 600,
         "stream_byte_limit": OUTPUT_BYTES,
         "retries": "No application retries; built-in CLI retries may occur within the per-call timeout",
         "output_token_limit_enforcement": "post-call acceptance check, not a generation or billing cap",
@@ -217,6 +221,10 @@ class CodexRunner:
     async def generate(self, body: dict) -> dict:
         if self.preflight_record is None:
             raise ValueError("Codex authentication preflight was not completed")
+        effort = body.get("reasoning_effort", "low")
+        policy = execution_policy(effort)
+        if body.get("execution_policy", policy) != policy:
+            raise ValueError("Teacher request policy does not match its effort")
         with tempfile.TemporaryDirectory(prefix="graphmine-codex-call-") as temporary:
             cwd = Path(temporary)
             schema_path = cwd / "output.schema.json"
@@ -238,7 +246,7 @@ class CodexRunner:
                 "--output-schema",
                 str(schema_path),
             ]
-            for name, value in POLICY.items():
+            for name, value in policy["config"].items():
                 argv.extend(["-c", f"{name}={json.dumps(value)}"])
             argv.append("-")
             prompt = (
@@ -249,7 +257,7 @@ class CodexRunner:
                 + json.dumps(body["input"], ensure_ascii=False)
             )
             code, stdout, stderr = await run_process(
-                argv, cwd=cwd, stdin=prompt, timeout=TIMEOUT_SECONDS
+                argv, cwd=cwd, stdin=prompt, timeout=policy["timeout_seconds"]
             )
             return {
                 "raw_response": redact(stdout),
@@ -257,6 +265,8 @@ class CodexRunner:
                     **self.preflight_record,
                     "exit_code": code,
                     "argv": argv,
+                    "reasoning_effort": effort,
+                    "reasoning_effort_source": "explicit_cli_configuration",
                     "stderr": redact(stderr),
                 },
             }

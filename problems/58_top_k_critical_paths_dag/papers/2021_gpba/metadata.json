@@ -1,0 +1,27 @@
+{
+  "title": "GPU-accelerated Path-based Timing Analysis",
+  "year": 2021,
+  "venue": "DAC 2021",
+  "doi": "10.1109/DAC18074.2021.9586316",
+  "publication_url": "https://doi.org/10.1109/DAC18074.2021.9586316",
+  "pdf_url": "https://tsung-wei-huang.github.io/papers/dac21_pba.pdf",
+  "paper_id": "2021_gpba",
+  "problem_id": "top_k_critical_paths_dag",
+  "problem_dir": "58_top_k_critical_paths_dag",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "G-PBA GPU path-based timing analysis",
+  "code_url": null,
+  "semantic_fit": "related_variant",
+  "gpu_scope": "GPU path expansion with CPU/GPU decomposition.",
+  "notes": "Author PDF downloaded. A public GPU implementation was not located. Bounded deviation-level search can omit true top-k paths, so it is not an exact solver for this contract.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [],
+  "documentation_urls": [
+    "https://tsung-wei-huang.github.io/publications/"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

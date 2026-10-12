@@ -7,10 +7,20 @@
   "publication_url": "https://arxiv.org/abs/2605.00830",
   "pdf_url": "https://arxiv.org/pdf/2605.00830",
   "code_url": "https://gitlab.jsc.fz-juelich.de/dabah2/fast-ged.git",
-  "semantic_fit": "exact",
+  "semantic_fit": "variant",
   "gpu_scope": "FAST-GED: GPU branch-and-bound GED search exploring the edit-path tree breadth-first with GPU ranking/pruning kernels.",
   "notes": "Official repository is hosted on the Juelich Supercomputing Centre GitLab, not GitHub.",
   "problem_id": "graph_edit_distance_mcs",
   "problem_dir": "24_graph_edit_distance_mcs",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "collection_variant_note": "The public FAS-GED artifact is approximate and bounded; no exact GED or optimality guarantee is inferred.",
+  "redistribution_status": "upstream_license_present",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "gpu/gpu_evaluation.cu"
+  ],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "algorithm"
 }

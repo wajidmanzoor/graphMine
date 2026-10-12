@@ -1,0 +1,100 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: Copyright (c) 2023-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+package_name=$1
+package_dir=$2
+shift 2
+
+# Parse optional flags
+stable_abi=false
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --stable)
+      stable_abi=true
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+source rapids-configure-sccache
+source rapids-datetime-string
+source rapids-init-pip
+
+export SCCACHE_S3_PREPROCESSOR_CACHE_KEY_PREFIX="${package_name}/${RAPIDS_CONDA_ARCH}/cuda${RAPIDS_CUDA_VERSION%%.*}/wheel/preprocessor-cache"
+export SCCACHE_S3_USE_PREPROCESSOR_CACHE_MODE=true
+
+RAPIDS_VERSION_SUFFIX=".post${RAPIDS_DATETIME_STRING}" \
+  rapids-generate-version > ./VERSION
+
+cd "${package_dir}"
+
+EXCLUDE_ARGS=(
+  --exclude "libcublas.so.*"
+  --exclude "libcublasLt.so.*"
+  --exclude "libcurand.so.*"
+  --exclude "libcusolver.so.*"
+  --exclude "libcusparse.so.*"
+  --exclude "libkvikio.so*"
+  --exclude "libnccl.so.*"
+  --exclude "libnvJitLink.so.*"
+  --exclude "libnvrtc.so.*"
+  --exclude "libraft.so"
+  --exclude "librapids_logger.so"
+  --exclude "librmm.so"
+)
+
+if [[ "${package_dir}" != "python/libcuvs" ]]; then
+    EXCLUDE_ARGS+=(
+      --exclude "libcuvs_c.so"
+      --exclude "libcuvs.so"
+    )
+fi
+
+SKBUILD_CMAKE_ARGS="-DUSE_NCCL_RUNTIME_WHEEL=ON"
+export SKBUILD_CMAKE_ARGS
+
+rapids-print-env
+
+rapids-logger "Building '${package_name}' wheel"
+
+sccache --stop-server 2>/dev/null || true
+
+build_env_dir="/tmp/${package_name}-wheel-build-env"
+# `build` preserves this environment after a failed build for debugging. CI
+# retries must start with an empty directory, as required by `--env-dir`.
+rm -rf "${build_env_dir}"
+
+RAPIDS_PIP_WHEEL_ARGS=(
+  --wheel
+  --outdir dist
+  --verbose
+  # A fixed location keeps isolated-build include paths stable for sccache.
+  --env-dir "${build_env_dir}"
+  --dependency-constraints-txt "${PIP_CONSTRAINT}"
+)
+
+# Add py-api setting for stable ABI builds
+if [[ "${stable_abi}" == "true" ]] && [[ -n "${RAPIDS_PY_API:-}" ]]; then
+  RAPIDS_PIP_WHEEL_ARGS+=(--config-setting="skbuild.wheel.py-api=${RAPIDS_PY_API}")
+fi
+
+# `build` receives the same generated constraints explicitly. Unset the
+# environment variable so it does not constrain the frontend installation.
+unset PIP_CONSTRAINT
+
+rapids-python-build-retry \
+    "${RAPIDS_PIP_WHEEL_ARGS[@]}" \
+    .
+
+sccache --show-adv-stats
+sccache --stop-server >/dev/null 2>&1 || true
+
+# repair wheels and write to the location that artifact-uploading code expects to find them
+python -m auditwheel repair -w "${RAPIDS_WHEEL_BLD_OUTPUT_DIR}" "${EXCLUDE_ARGS[@]}" dist/*

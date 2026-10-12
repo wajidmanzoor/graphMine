@@ -1,0 +1,32 @@
+{
+  "problem_id": "single_source_shortest_paths",
+  "paper_id": "2017_gardenia_delta_stepping",
+  "title": "GARDENIA: A Domain-specific Benchmark Suite for Next-generation Accelerators",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1708.04567",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:56Z",
+    "sha256": "dd4d5a6771cd46156156f155cce9bd0fce8cec501d5d24f0857c35f696beb6ec",
+    "bytes": 692093,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/chenxuhao/gardenia",
+    "local_path": "code",
+    "commit": "5894df11cf47f8839945edadff43dc79e260216d",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/gardenia.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/sssp/dstep.cu": "e55f563164b7dbdc3abbbc3998a294523579c4565eb132e063e0c525ad9ed4a7"
+    }
+  }
+}

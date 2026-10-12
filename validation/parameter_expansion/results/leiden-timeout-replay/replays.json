@@ -1,0 +1,322 @@
+[
+  {
+    "repeat": 0,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.0615489482879639,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":9.48524355E2,\"backend_ms\":5.5199962E1,\"output_materialization_ms\":3.155E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":0},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,4]},{\"id\":1,\"vertices\":[1,3,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 1,
+    "gpu": 1,
+    "timeout": true,
+    "seconds": 10.10603666305542,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 2,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.159069299697876,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.007329156E3,\"backend_ms\":7.6139211E1,\"output_materialization_ms\":1.482E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":0}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,5]},{\"id\":1,\"vertices\":[1,3,4]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 3,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.0893492698669434,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":9.78589385E2,\"backend_ms\":5.0011412E1,\"output_materialization_ms\":1.312E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":0},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,4]},{\"id\":1,\"vertices\":[1,3,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 4,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.2213513851165771,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.095380062E3,\"backend_ms\":5.0734262E1,\"output_materialization_ms\":1.813E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 5,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.2286646366119385,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.113827E3,\"backend_ms\":4.4041092E1,\"output_materialization_ms\":1.713E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 6,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.3664674758911133,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.242609444E3,\"backend_ms\":3.9749305E1,\"output_materialization_ms\":1.562E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 7,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.062089204788208,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":9.23343755E2,\"backend_ms\":8.6840991E1,\"output_materialization_ms\":1.663E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 8,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.0793230533599854,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":9.38004419E2,\"backend_ms\":4.6454274E1,\"output_materialization_ms\":1.312E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":0},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,4]},{\"id\":1,\"vertices\":[1,3,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 9,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.1961088180541992,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.023740842E3,\"backend_ms\":4.2430952E1,\"output_materialization_ms\":1.853E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 10,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.2693090438842773,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.140399089E3,\"backend_ms\":5.5969723E1,\"output_materialization_ms\":1.282E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":0}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,5]},{\"id\":1,\"vertices\":[1,3,4]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 11,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.139317512512207,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.000859533E3,\"backend_ms\":3.2887891E1,\"output_materialization_ms\":1.823E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 12,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.3532395362854004,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.121782946E3,\"backend_ms\":4.5940238E1,\"output_materialization_ms\":1.422E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":0},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,4]},{\"id\":1,\"vertices\":[1,3,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 13,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.1043217182159424,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":9.38312854E2,\"backend_ms\":3.8941716E1,\"output_materialization_ms\":1.883E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":0}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,5]},{\"id\":1,\"vertices\":[1,3,4]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 14,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.0731635093688965,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":9.02333719E2,\"backend_ms\":5.7337607E1,\"output_materialization_ms\":1.703E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 15,
+    "gpu": 1,
+    "timeout": true,
+    "seconds": 10.145241975784302,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 16,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.3583259582519531,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.120080626E3,\"backend_ms\":2.5264747E1,\"output_materialization_ms\":1.792E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 17,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.2060868740081787,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.037792477E3,\"backend_ms\":2.8482973E1,\"output_materialization_ms\":1.452E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":0}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,5]},{\"id\":1,\"vertices\":[1,3,4]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 18,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.1425049304962158,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.035096728E3,\"backend_ms\":4.2792828E1,\"output_materialization_ms\":1.753E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 19,
+    "gpu": 1,
+    "timeout": true,
+    "seconds": 10.178410530090332,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 20,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.333531379699707,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.20912464E3,\"backend_ms\":1.01021299E2,\"output_materialization_ms\":1.512E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 21,
+    "gpu": 1,
+    "timeout": true,
+    "seconds": 10.188901662826538,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 22,
+    "gpu": 0,
+    "timeout": true,
+    "seconds": 10.104646921157837,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 23,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.253288984298706,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.037990383E3,\"backend_ms\":2.8743026E1,\"output_materialization_ms\":1.642E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 24,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.2611212730407715,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.128140568E3,\"backend_ms\":3.3175725E1,\"output_materialization_ms\":1.482E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":0}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,5]},{\"id\":1,\"vertices\":[1,3,4]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 25,
+    "gpu": 1,
+    "timeout": true,
+    "seconds": 10.159586191177368,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 26,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.3187570571899414,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.147993587E3,\"backend_ms\":3.0687039E1,\"output_materialization_ms\":1.122E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":0},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,4]},{\"id\":1,\"vertices\":[1,3,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 27,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.3299870491027832,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.042796856E3,\"backend_ms\":6.0801494E1,\"output_materialization_ms\":1.702E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 28,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.2755396366119385,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.151976858E3,\"backend_ms\":4.0411405E1,\"output_materialization_ms\":1.973E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 29,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.3067848682403564,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.106913093E3,\"backend_ms\":4.6539642E1,\"output_materialization_ms\":1.192E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":0}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,5]},{\"id\":1,\"vertices\":[1,3,4]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 30,
+    "gpu": 0,
+    "timeout": true,
+    "seconds": 10.145583152770996,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 31,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.1749725341796875,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.049451839E3,\"backend_ms\":5.2942024E1,\"output_materialization_ms\":1.322E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":0},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,4]},{\"id\":1,\"vertices\":[1,3,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 32,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.2584140300750732,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.049945584E3,\"backend_ms\":5.3241846E1,\"output_materialization_ms\":1.973E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 33,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.3342268466949463,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.143231129E3,\"backend_ms\":6.9537057E1,\"output_materialization_ms\":1.442E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":0}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,5]},{\"id\":1,\"vertices\":[1,3,4]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 34,
+    "gpu": 0,
+    "timeout": true,
+    "seconds": 10.128638505935669,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 35,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.2932302951812744,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.094773612E3,\"backend_ms\":5.0900613E1,\"output_materialization_ms\":1.462E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":0}],\"community_count\":2,\"modularity\":4.938271604938271E-2,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2,5]},{\"id\":1,\"vertices\":[1,3,4]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 36,
+    "gpu": 0,
+    "exit_code": 0,
+    "seconds": 1.191197395324707,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.072886302E3,\"backend_ms\":4.2573987E1,\"output_materialization_ms\":1.602E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 37,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.3642454147338867,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.249579017E3,\"backend_ms\":7.0603737E1,\"output_materialization_ms\":1.583E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  },
+  {
+    "repeat": 38,
+    "gpu": 0,
+    "timeout": true,
+    "seconds": 10.080965280532837,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "repeat": 39,
+    "gpu": 1,
+    "exit_code": 0,
+    "seconds": 1.3680627346038818,
+    "stdout": "{\"ok\":true,\"provenance\":{\"problem\":\"community_detection\",\"backend\":\"parallel-leiden\",\"backend_version\":\"Parallel Multilevel Graph Clustering artifact\",\"source_commit\":\"29c69d27ba38\",\"execution_path\":\"original Kokkos parallel-leiden clustering path + in-memory CSR adapter\"},\"warnings\":[],\"statistics\":{\"end_to_end_ms\":1.172681571E3,\"backend_ms\":2.4248614E1,\"output_materialization_ms\":1.742E-3},\"output\":{\"assignment_by_vertex\":[{\"vertex\":0,\"community\":0},{\"vertex\":1,\"community\":1},{\"vertex\":2,\"community\":0},{\"vertex\":3,\"community\":1},{\"vertex\":4,\"community\":1},{\"vertex\":5,\"community\":1}],\"community_count\":2,\"modularity\":-2.710505431213761E-20,\"resolution\":1E0,\"communities\":[{\"id\":0,\"vertices\":[0,2]},{\"id\":1,\"vertices\":[1,3,4,5]}],\"edge_cut\":4}}\n",
+    "stderr": ""
+  }
+]

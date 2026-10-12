@@ -1,0 +1,45 @@
+{
+  "problem_id": "densest_subgraph",
+  "problem_dir": "05_densest_subgraph",
+  "name": "Densest Subgraph",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 1,
+  "local_gpu_code_entries": 0,
+  "local_paper_entries": 1,
+  "local_gpu_code_and_paper_including_related": 0,
+  "eligible_code_and_paper_references": 0,
+  "eligible_local_code_and_paper_pairs": 0,
+  "target_met": false,
+  "shortfall": 3,
+  "shortfall_explanation": "The existing CDS source reference lacks a detected redistribution license. Densest-subgraph optimization is not interchangeable with k-core peeling.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "see_existing_validation",
+  "runtime_status": "see_existing_validation",
+  "canonical_adapters": null,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 1,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [],
+    "shortfall": "The existing CDS source reference lacks a detected redistribution license. Densest-subgraph optimization is not interchangeable with k-core peeling.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2026_bound_tightened_dsd",
+      "algorithm_name": "Bound-Tightened Densest Subgraph Discovery on GPU",
+      "paper_role": "algorithm",
+      "semantic_fit": "exact",
+      "local_gpu_code": false,
+      "local_paper": true,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "see_existing_validation",
+      "notes": "The author repository contains the paper's CUDA implementation. For k=2 its k-clique-density objective is ordinary unweighted densest-subgraph density; k=3 and k=4 are higher-order variants.",
+      "metadata_path": "05_densest_subgraph/papers/2026_bound_tightened_dsd/metadata.json"
+    }
+  ]
+}

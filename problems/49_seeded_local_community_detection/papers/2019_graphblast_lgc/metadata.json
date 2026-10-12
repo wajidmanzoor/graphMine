@@ -1,0 +1,27 @@
+{
+  "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+  "year": 2019,
+  "venue": "arXiv; later published in ACM TOPC",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1908.01407",
+  "pdf_url": "https://arxiv.org/pdf/1908.01407",
+  "paper_id": "2019_graphblast_lgc",
+  "problem_id": "seeded_local_community_detection",
+  "problem_dir": "49_seeded_local_community_detection",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GraphBLAST residual-push local diffusion",
+  "code_url": "https://github.com/gunrock/graphblast",
+  "semantic_fit": "building_block",
+  "gpu_scope": "CUDA GraphBLAS residual-push personalized PageRank.",
+  "notes": "lgc outputs PageRank scores, not a selected community. No conductance sweep exists in this routine; excluded from the complete-solver count.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "graphblas/algorithm/lgc.hpp"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

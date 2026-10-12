@@ -1,0 +1,42 @@
+{
+  "title": "CuPy: A NumPy-Compatible Library for NVIDIA GPU Calculations",
+  "authors": [
+    "Ryosuke Okuta",
+    "Yuya Unno",
+    "Daisuke Nishino",
+    "Shohei Hido",
+    "Crissman Loomis"
+  ],
+  "year": 2017,
+  "venue": "LearningSys workshop at NIPS 2017",
+  "doi": null,
+  "publication_url": "https://learningsys.github.io/nips17/schedule.html",
+  "pdf_url": "https://learningsys.github.io/nips17/assets/papers/paper_16.pdf",
+  "paper_id": "2017_cupy_dense_eigh",
+  "problem_id": "graph_laplacian_eigenpairs",
+  "problem_dir": "63_graph_laplacian_eigenpairs",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "CuPy Dense Hermitian eigensolver",
+  "code_url": "https://github.com/cupy/cupy",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA/CuPy matrix operations and device eigensolver routines; iterative control is host-driven.",
+  "notes": "Apply the upstream eigensolver to the explicitly constructed symmetric graph Laplacian. These are three numerical algorithms sharing the CuPy framework paper, not three graph-specific publications. Laplacian assembly and canonical output conversion are adapter requirements; verify residuals and nullspace multiplicity.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "cupy/linalg/_eigenvalue.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "cupy",
+  "variant_constraints": [
+    "real symmetric Laplacian",
+    "algorithm-specific k and convergence limits"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

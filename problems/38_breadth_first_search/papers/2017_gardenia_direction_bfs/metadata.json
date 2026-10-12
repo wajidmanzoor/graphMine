@@ -1,0 +1,28 @@
+{
+  "title": "GARDENIA: A Domain-specific Benchmark Suite for Next-generation Accelerators",
+  "year": 2017,
+  "venue": "arXiv; ACM JETC 2018",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1708.04567",
+  "pdf_url": "https://arxiv.org/pdf/1708.04567",
+  "paper_id": "2017_gardenia_direction_bfs",
+  "problem_id": "breadth_first_search",
+  "problem_dir": "38_breadth_first_search",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GARDENIA direction-optimizing BFS",
+  "code_url": "https://github.com/chenxuhao/gardenia",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA push/pull traversal and degree-aware work distribution.",
+  "notes": "Benchmark-suite paper; select CUDA targets because this repository also includes CPU implementations.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "src/bfs/hybrid_lb.cu",
+    "src/bfs/bottom_up.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

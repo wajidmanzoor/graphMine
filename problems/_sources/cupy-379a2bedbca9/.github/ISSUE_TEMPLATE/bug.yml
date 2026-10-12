@@ -1,0 +1,55 @@
+name: 🐞 Bug Report
+description: File a bug report to help us improve CuPy.
+labels: ["cat:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Include what happened, what you expected to happen, and a stack trace (if applicable).
+    validations:
+      required: true
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: To Reproduce
+      description: Write code or steps to reproduce the issue.
+      value: |
+        ```py
+        # Write the code here
+        ```
+  - type: dropdown
+    id: install
+    attributes:
+      label: Installation
+      description: |
+        How did you install CuPy?
+      options:
+        - Wheel (`pip install cupy-***`)
+        - Conda-Forge (`conda install ...`)
+        - Built from PyPI source (`pip install cupy`)
+        - Built from GitHub source
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: |
+        Please copy and paste the output of `python -c "import cupy; cupy.show_config(_full=True)"`:
+      value: |
+        ```
+        # Paste the output here
+        ```
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: |
+        Add other information related to this case, if any.

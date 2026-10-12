@@ -17,7 +17,7 @@
     "densest-subgraph": {
       "problem_id": "densest_subgraph",
       "backend_id": "cds",
-      "profile": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+      "profile": "Exact unweighted k-clique density C_k(S)/|S| on a nonempty undirected graph; clique_order defaults to 2 (edge density). Returns clique_count and checks the witness for the requested order. No fixed cardinality, minimum-size constraint or weighted objective. Order above vertex count gives zero density.",
       "cpp": {
         "header": "graphmine/problems/repaired_algorithms.hpp",
         "class": "graphmine::DensestSubgraph",
@@ -94,7 +94,7 @@
         "workload_id": "repaired_cds",
         "implementation": "cds",
         "status": "validated_profile",
-        "note": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+        "note": "Exact unweighted k-clique density C_k(S)/|S| on a nonempty undirected graph; clique_order defaults to 2 (edge density). Returns clique_count and checks the witness for the requested order. No fixed cardinality, minimum-size constraint or weighted objective. Order above vertex count gives zero density.",
         "checks": {
           "standalone_report": "validation/algorithm_repairs/cds/README.md",
           "public_api_suite": "validation/repaired_library/results/native-summary.json"

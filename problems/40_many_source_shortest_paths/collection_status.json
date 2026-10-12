@@ -1,0 +1,92 @@
+{
+  "problem_id": "many_source_shortest_paths",
+  "problem_dir": "40_many_source_shortest_paths",
+  "name": "Many-Source and All-Pairs Shortest Distances",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 4,
+  "local_gpu_code_entries": 4,
+  "local_paper_entries": 3,
+  "local_gpu_code_and_paper_including_related": 3,
+  "eligible_code_and_paper_references": 3,
+  "eligible_local_code_and_paper_pairs": 3,
+  "target_met": true,
+  "shortfall": 0,
+  "shortfall_explanation": null,
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "apsp_blocked_lic"
+    ],
+    "shortfall": "Fewer than three eligible local GPU implementation/research-paper pairs; individual records state missing artifacts or variant restrictions.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2010_blocked_cuda_floyd_warshall",
+      "algorithm_name": "Blocked CUDA Floyd-Warshall (Bojanowski implementation)",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Public MIT-licensed third-party implementation explicitly based on Lund and Smith. It is not represented as the paper authors original artifact. Dense integer-distance APSP; check infinity sentinel, overflow and block-size assumptions; selected source/destination pairs are extracted from the full matrix.",
+      "metadata_path": "40_many_source_shortest_paths/papers/2010_blocked_cuda_floyd_warshall/metadata.json"
+    },
+    {
+      "paper_id": "2023_tensor_floyd_warshall",
+      "algorithm_name": "Tensorized Floyd-Warshall",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Entry function FW_GPU. Dense O(n^2) storage; inspect infinity and zero-weight conventions when importing arbitrary graphs.",
+      "metadata_path": "40_many_source_shortest_paths/papers/2023_tensor_floyd_warshall/metadata.json"
+    },
+    {
+      "paper_id": "2023_tensor_r_kleene",
+      "algorithm_name": "Recursive R-Kleene APSP",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Entry function R_Kleene. Shares a paper and repository with Floyd-Warshall but is a different APSP algorithm. Dense storage and recursive partition constraints apply.",
+      "metadata_path": "40_many_source_shortest_paths/papers/2023_tensor_r_kleene/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_od_distances",
+      "algorithm_name": "cuGraph origin-destination shortest distances",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Real upstream GPU source is present; no implementation-specific paper was verified. Not counted as a code-and-paper pair.",
+      "metadata_path": "40_many_source_shortest_paths/papers/2026_cugraph_od_distances/metadata.json"
+    }
+  ]
+}

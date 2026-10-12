@@ -1,0 +1,29 @@
+{
+  "title": "cuGraph frontier-based topological levels (software entry; no paper collected)",
+  "year": null,
+  "venue": null,
+  "doi": null,
+  "publication_url": null,
+  "pdf_url": null,
+  "paper_id": "2026_cugraph_topological_levels",
+  "problem_id": "topological_sort",
+  "problem_dir": "45_topological_sort",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "cuGraph frontier-based topological levels",
+  "code_url": "https://github.com/rapidsai/cugraph",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA indegree/frontier processing, including single- and multiple-GPU instantiations.",
+  "notes": "The C++ API returns a level per vertex. A valid ordered vertex list must be constructed from those levels. No associated research paper was verified.",
+  "paper_role": "none",
+  "code_entrypoints": [
+    "cpp/src/dag/topological_sort_impl.cuh"
+  ],
+  "documentation_urls": [
+    "https://docs.nvidia.com/cugraph/latest/"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

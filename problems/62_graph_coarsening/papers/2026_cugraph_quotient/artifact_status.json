@@ -1,0 +1,28 @@
+{
+  "problem_id": "graph_coarsening",
+  "paper_id": "2026_cugraph_quotient",
+  "title": "cuGraph Weighted graph coarsening — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cugraph",
+    "local_path": "code",
+    "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cugraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/structure/coarsen_graph_impl.cuh": "2ef671bb5b996d3e0afbb1030f14844b0b3e036356bc893b862fa819d41a318b"
+    }
+  }
+}

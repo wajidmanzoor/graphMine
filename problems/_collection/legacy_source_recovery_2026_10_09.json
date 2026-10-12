@@ -1,0 +1,113 @@
+{
+  "checked_at": "2026-10-10T01:46:32Z",
+  "results": [
+    {
+      "source_key": "cds",
+      "repository": "wajidmanzoor/CDS",
+      "status": "not_collected",
+      "error": "No top-level license: retain a source reference only"
+    },
+    {
+      "source_key": "acc_truss",
+      "repository": "RapidsAtHKUST/AccTrussDecomposition",
+      "status": "downloaded",
+      "manifest": "problems/_sources/acc_truss.json"
+    },
+    {
+      "source_key": "mbe_gpu",
+      "repository": "fhxu00/MBE-GPU",
+      "status": "not_collected",
+      "error": "No top-level license: retain a source reference only"
+    },
+    {
+      "source_key": "ecl_maxflow",
+      "repository": "burtscher/ECL-MaxFlow",
+      "status": "downloaded",
+      "manifest": "problems/_sources/ecl_maxflow.json"
+    },
+    {
+      "source_key": "wbpr",
+      "repository": "NTUDDSNLab/WBPR",
+      "status": "not_collected",
+      "error": "No top-level license: retain a source reference only"
+    },
+    {
+      "source_key": "gpu_steiner",
+      "repository": "mrprajesh/gpuSteiner",
+      "status": "downloaded",
+      "manifest": "problems/_sources/gpu_steiner.json"
+    },
+    {
+      "source_key": "gst_vlsi",
+      "repository": "yosephbasileal/group-steiner-vlsi-routing-gpu",
+      "status": "not_collected",
+      "error": "No top-level license: retain a source reference only"
+    },
+    {
+      "source_key": "curipples",
+      "repository": "pnnl/ripples",
+      "status": "downloaded",
+      "manifest": "problems/_sources/curipples.json"
+    },
+    {
+      "source_key": "gim",
+      "repository": "LIS-Laboratory/gim",
+      "status": "downloaded",
+      "manifest": "problems/_sources/gim.json"
+    },
+    {
+      "source_key": "hungarian_gpu",
+      "repository": "paclopes/HungarianGPU",
+      "status": "downloaded",
+      "manifest": "problems/_sources/hungarian_gpu.json"
+    },
+    {
+      "source_key": "graphbplus",
+      "repository": "burtscher/graphBplus",
+      "status": "downloaded",
+      "manifest": "problems/_sources/graphbplus.json"
+    },
+    {
+      "source_key": "ecl_sgb",
+      "repository": "burtscher/ECL-SGB",
+      "status": "downloaded",
+      "manifest": "problems/_sources/ecl_sgb.json"
+    },
+    {
+      "source_key": "gdlog",
+      "repository": "harp-lab/gdlog",
+      "status": "downloaded",
+      "manifest": "problems/_sources/gdlog.json"
+    },
+    {
+      "source_key": "hyperblocker",
+      "repository": "hsiaoko/HyperBlocker",
+      "status": "not_collected",
+      "error": "No top-level license: retain a source reference only"
+    },
+    {
+      "source_key": "ecl_cc",
+      "repository": "burtscher/ECL-CC",
+      "status": "not_collected",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "source_key": "ecl_scc",
+      "repository": "burtscher/ECL-SCC",
+      "status": "downloaded",
+      "manifest": "problems/_sources/ecl_scc.json"
+    },
+    {
+      "source_key": "gpu_layout",
+      "repository": "govertb/GPUGraphLayout",
+      "status": "downloaded",
+      "manifest": "problems/_sources/gpu_layout.json"
+    },
+    {
+      "source_key": "pcqo",
+      "repository": "ledenmat/pCQO-mis-benchmark",
+      "status": "not_collected",
+      "error": "No top-level license: retain a source reference only"
+    }
+  ]
+}

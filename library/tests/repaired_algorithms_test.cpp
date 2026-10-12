@@ -26,6 +26,19 @@ int main() {
     auto density = gm::DensestSubgraph().run(triangle);
     check(density.ok() && density.value().optimal && density.value().density == 1 &&
           density.value().vertices.size() == 3, "densest triangle excludes isolate");
+    gm::DensestSubgraphOptions higher_order;
+    higher_order.clique_order = 3;
+    auto triangle_density = gm::DensestSubgraph(higher_order).run(triangle);
+    check(triangle_density.ok() && triangle_density.value().clique_order == 3 &&
+          triangle_density.value().clique_count == 1 &&
+          triangle_density.value().induced_edge_value == 3 &&
+          std::abs(triangle_density.value().density - 1.0/3.0) < 1e-12,
+          "triangle density must count cliques rather than edges");
+    higher_order.clique_order = 100;
+    auto zero_density = gm::DensestSubgraph(higher_order).run(triangle);
+    check(zero_density.ok() && zero_density.value().density == 0 &&
+          zero_density.value().clique_count == 0 && !zero_density.value().vertices.empty(),
+          "order above vertex count has a nonempty zero-density witness");
 
     gm::CanonicalGraphInput bipartite;
     bipartite.graph.id = "bipartite";

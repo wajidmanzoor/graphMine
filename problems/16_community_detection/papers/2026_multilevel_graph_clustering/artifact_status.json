@@ -2,20 +2,32 @@
   "problem_id": "community_detection",
   "paper_id": "2026_multilevel_graph_clustering",
   "title": "GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://arxiv.org/pdf/2608.01503",
     "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2608.01503",
+    "resolved_url": "https://arxiv.org/pdf/2608.01503",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "5dfeaccc6cb78f50e6db2e83f54f4fbe24e764c583da57d239cab72a219b4bed",
+    "bytes": 312575,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/euphoricpoptarts/PennsylvaniaGPUGraphClustering",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "29c69d27ba38f16476dcd8a6cb4ee70c68d96c49",
     "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "src/clustering_methods.cpp": "c04aaa9903e7843157c9b7fd2f44ffd81652660425852421fff28c38f2465bd7",
+      "src/leidenR.cpp": "f4bcbd323973e71c1dce0528df22679e99bbd161b8f1d8b4e0c1db483a2c4ee8",
+      "README.md": "3dea40c7c8463c169310be74a9db1a9807db3c550d59aa3a4a07fe0aae8bc886"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

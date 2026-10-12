@@ -1,7 +1,12 @@
-# Artifact status
+Advanced Maximal Biclique Enumeration on GPUs Using Bitmaps
+===========================================================
 
-- Paper: `downloaded`
-- Code: `cloned`
-- Resolved code commit: `4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942`
-- License: no explicit license file detected; review before redistribution.
-- Checked: `2026-10-03T22:04:41Z`
+Paper: downloaded. Source: not_collected.
+
+Reviewed local GPU source/research-paper pair: false.
+
+Semantic fit: exact.
+
+Redistribution: not_reviewed_or_no_local_source.
+
+This sweep checks collection evidence only. Existing runtime validation remains in the validation/ tree; no new GPU build or correctness claim is made here.

@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/Thinklab-SJTU/pygmtools",
+  "checked_at": "2026-10-10T01:39:43Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "5b7b3f84a34528e455a6df6404822c306aa45dc1",
+  "archive_url": "https://codeload.github.com/Thinklab-SJTU/pygmtools/tar.gz/5b7b3f84a34528e455a6df6404822c306aa45dc1",
+  "archive_sha256": "7bc995e3b9e92644199bce7c2a9dc3958bdc2c2167cfcb1282fec5a4510b7af3",
+  "local_path": "pygmtools-5b7b3f84a345",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "NOASSERTION",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

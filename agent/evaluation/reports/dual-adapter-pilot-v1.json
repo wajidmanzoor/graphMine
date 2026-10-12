@@ -1,0 +1,2836 @@
+{
+  "version": "dual-adapter-pilot-v1",
+  "created_at": "2026-10-08T07:27:53.275529+00:00",
+  "teacher": {
+    "authentication": "ChatGPT account via tool-disabled Codex CLI",
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "max",
+    "human_review": false
+  },
+  "measurements": {
+    "development": {
+      "stage": {
+        "version": "dual-stage-paired-comparison-v1",
+        "split": "validation",
+        "manifest_sha256": "3d99b50c8ced6a54dd3151c45e94fc769d730580b779e2b02164365df19582d4",
+        "rules_sha256": "ce0e0b6be87ef54166f7f479a808fe3a3f453b2646c6eb5374cd2c745fdb43fb",
+        "evaluation_code_sha256": "be116d0fc960328021797967612b45d29a507fff37607236f7c964bf5c65c277",
+        "total": 192,
+        "base_passed": 145,
+        "adapters_passed": 167,
+        "by_stage": {
+          "GroundedNarrative": {
+            "total": 56,
+            "base_passed": 19,
+            "adapters_passed": 37,
+            "corrected": 20,
+            "regressed": 2,
+            "median_seconds": {
+              "base": 52.679716129787266,
+              "adapters": 12.772195272147655
+            }
+          },
+          "PlanDraft": {
+            "total": 56,
+            "base_passed": 52,
+            "adapters_passed": 55,
+            "corrected": 3,
+            "regressed": 0,
+            "median_seconds": {
+              "base": 6.39762921910733,
+              "adapters": 10.561395223252475
+            }
+          },
+          "RouteDecision": {
+            "total": 60,
+            "base_passed": 54,
+            "adapters_passed": 55,
+            "corrected": 2,
+            "regressed": 1,
+            "median_seconds": {
+              "base": 14.690388040617108,
+              "adapters": 15.980358770117164
+            }
+          },
+          "TurnDecision": {
+            "total": 20,
+            "base_passed": 20,
+            "adapters_passed": 20,
+            "corrected": 0,
+            "regressed": 0,
+            "median_seconds": {
+              "base": 6.476279057562351,
+              "adapters": 4.945930453948677
+            }
+          }
+        },
+        "scope": "Same frozen held-out prompts and service, regraded with identical rules. Includes bounded JSON repair but no semantic correction loop at stage level. Latency includes network, generation and validation and is not an isolated kernel benchmark. Related prompts share source graphs; these rows are not independent statistical samples. Model-weight identity must be established by the serving receipt. Human usefulness and complete workflow success are measured separately."
+      },
+      "workflow": {
+        "version": "dual-workflow-paired-comparison-v1",
+        "split": "validation",
+        "total": 13,
+        "passed": {
+          "base": 2,
+          "adapters": 7
+        },
+        "corrected": 5,
+        "regressed": 0,
+        "by_dimension": {
+          "bounded_recovery": {
+            "total": 1,
+            "base": 1,
+            "adapters": 1
+          },
+          "clarification": {
+            "total": 1,
+            "base": 1,
+            "adapters": 1
+          },
+          "custom_followup": {
+            "total": 1,
+            "base": 0,
+            "adapters": 1
+          },
+          "execution": {
+            "total": 11,
+            "base": 11,
+            "adapters": 11
+          },
+          "followup_reuses_result": {
+            "total": 1,
+            "base": 1,
+            "adapters": 1
+          },
+          "grounding": {
+            "total": 11,
+            "base": 10,
+            "adapters": 10
+          },
+          "input_binding": {
+            "total": 13,
+            "base": 13,
+            "adapters": 13
+          },
+          "model_interpretation": {
+            "total": 11,
+            "base": 2,
+            "adapters": 6
+          },
+          "multiple_custom_panels": {
+            "total": 1,
+            "base": 0,
+            "adapters": 1
+          },
+          "no_unapproved_execution": {
+            "total": 2,
+            "base": 2,
+            "adapters": 2
+          },
+          "numerical": {
+            "total": 11,
+            "base": 9,
+            "adapters": 10
+          },
+          "planning": {
+            "total": 11,
+            "base": 9,
+            "adapters": 10
+          },
+          "presentation": {
+            "total": 11,
+            "base": 11,
+            "adapters": 11
+          },
+          "result_binding": {
+            "total": 11,
+            "base": 11,
+            "adapters": 11
+          },
+          "routing": {
+            "total": 11,
+            "base": 11,
+            "adapters": 11
+          },
+          "status": {
+            "total": 13,
+            "base": 13,
+            "adapters": 13
+          }
+        },
+        "median_seconds": {
+          "base": 111.72160128504038,
+          "adapters": 84.7087677475065
+        },
+        "scope": "Actual complete workflows on the same held-out scenarios and service. Grades are recomputed from captures; injected recovery is explicitly synthetic. Automatic numerical, evidence and rendering checks are not human usefulness ratings or proof of broad production accuracy. Weight identity is established separately by the serving receipt."
+      },
+      "failed_adapted_checks": [
+        {
+          "id": "dual-0072-maximum-clique-GroundedNarrative-custom-comparison",
+          "schema": "GroundedNarrative",
+          "error": "Invalid Vega-Lite schema at []: {'$schema': 'https://vega.github.io/schema/vega-lite/v6.json', 'data': {'name': 'attribute_counts'}, 'width': 360, 'height': 180, 'title': 'Group 1 attribute composition', 'params': [{'name': 'selected_entity', 'select': {'type': 'point', 'fields': ['entity_key']}, 'bind': {'label': 'Select a member', 'type': 'radio', 'options': ['All', '\"geometric_neighborhoods-92003-2\"', '\"geometric_neighborhood"
+        },
+        {
+          "id": "dual-0073-k-cliques-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 3"
+        },
+        {
+          "id": "dual-0075-betweenness-centrality-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 8"
+        },
+        {
+          "id": "dual-0075-betweenness-centrality-business-ambiguous-RouteDecision-0",
+          "schema": "RouteDecision",
+          "error": "An ambiguous objective must ask a concrete clarification before execution"
+        },
+        {
+          "id": "dual-0075-betweenness-centrality-business-clear-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 8"
+        },
+        {
+          "id": "dual-0080-k-truss-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 2"
+        },
+        {
+          "id": "dual-0081-personalized-pagerank-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 2"
+        },
+        {
+          "id": "dual-0081-personalized-pagerank-RouteDecision-0",
+          "schema": "RouteDecision",
+          "error": "Intent annotation requires_direction differs from the proposed contract"
+        },
+        {
+          "id": "dual-0082-k-cliques-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 2025"
+        },
+        {
+          "id": "dual-0083-k-cliques-RouteDecision-0",
+          "schema": "RouteDecision",
+          "error": "The selected record filters changed"
+        },
+        {
+          "id": "dual-0090-triangle-counting-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 11"
+        },
+        {
+          "id": "dual-0094-maximal-cliques-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 369"
+        },
+        {
+          "id": "dual-0098-betweenness-centrality-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 8"
+        },
+        {
+          "id": "dual-0104-betweenness-centrality-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 8"
+        },
+        {
+          "id": "dual-0106-connected-components-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 8"
+        },
+        {
+          "id": "dual-0109-max-flow-min-cut-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 92003"
+        },
+        {
+          "id": "dual-0109-max-flow-min-cut-business-clear-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 92003"
+        },
+        {
+          "id": "dual-0111-influence-maximization-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 1"
+        },
+        {
+          "id": "dual-0111-influence-maximization-business-ambiguous-RouteDecision-0",
+          "schema": "RouteDecision",
+          "error": "An ambiguous objective must ask a concrete clarification before execution"
+        },
+        {
+          "id": "dual-0111-influence-maximization-business-clear-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 1"
+        },
+        {
+          "id": "dual-0116-butterfly-counting-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 2"
+        },
+        {
+          "id": "dual-0117-temporal-motif-mining-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 11"
+        },
+        {
+          "id": "dual-0118-graph-motifs-RouteDecision-0",
+          "schema": "RouteDecision",
+          "error": "Formal operation differs from the reference contract (possible equivalent operation requires separate review)"
+        },
+        {
+          "id": "dual-0119-subgraph-isomorphism-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 6"
+        },
+        {
+          "id": "dual-0119-subgraph-isomorphism-PlanDraft-1",
+          "schema": "PlanDraft",
+          "error": "Unrequested semantic parameter: result_limit"
+        }
+      ],
+      "workflow_regressions": [],
+      "failed_workflows": {
+        "base": [
+          {
+            "id": "dual-0094-maximal-cliques",
+            "errors": {
+              "custom_followup": "Displayed limitations changed",
+              "multiple_custom_panels": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0096-k-cliques",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0098-betweenness-centrality",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0099-community-detection",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0078-quasi-cliques",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0109-max-flow-min-cut",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0113-linear-assignment",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0117-temporal-motif-mining",
+            "errors": {
+              "planning": "Unrequested semantic parameter: result_limit",
+              "numerical": "Numerical success cannot qualify without a verified matching objective",
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0119-subgraph-isomorphism",
+            "errors": {
+              "planning": "Unrequested semantic parameter: result_limit",
+              "numerical": "Numerical success cannot qualify without a verified matching objective",
+              "grounding": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0098-betweenness-centrality-clarification",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0096-k-cliques-injected-recovery",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          }
+        ],
+        "adapters": [
+          {
+            "id": "dual-0099-community-detection",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0109-max-flow-min-cut",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0117-temporal-motif-mining",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0119-subgraph-isomorphism",
+            "errors": {
+              "planning": "Unrequested semantic parameter: result_limit",
+              "numerical": "Numerical success cannot qualify without a verified matching objective",
+              "grounding": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0098-betweenness-centrality-clarification",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0096-k-cliques-injected-recovery",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          }
+        ]
+      },
+      "explicit_custom_chart_probe": {
+        "total": 4,
+        "scope": "Explicit custom-chart prompts: presence plus the existing narrative, schema, data-binding and render checks. This does not prove every requested comparison is useful or semantically correct.",
+        "base": {
+          "produced_custom_chart": 4,
+          "passed_with_custom_chart": 3
+        },
+        "adapters": {
+          "produced_custom_chart": 4,
+          "passed_with_custom_chart": 3
+        }
+      },
+      "trained_chart_browser_review": {
+        "scope": "All custom chart reports in these actual model workflow captures. Browser rendering and page bounds do not prove prose meaning or visual usefulness. Previews do not alter evaluation scores.",
+        "records": [
+          {
+            "case_id": "dual-0094-maximal-cliques",
+            "variant": "followup",
+            "operation": "maximal-cliques",
+            "capture_sha256": "842d58275b037bb4649fab6de0d9d777c62b82ed7573b449281f7ac011abc4ca",
+            "interpretation_source": "llm",
+            "report": ".graphmine-learning/dual-adapter-v2/development-v5-trained-previews/dual-0094-maximal-cliques-followup.html",
+            "expected_charts": 1,
+            "checks": [
+              {
+                "viewport": "desktop",
+                "actual_viewport": {
+                  "width": 1440,
+                  "height": 914
+                },
+                "svg_count": 1,
+                "errors": [],
+                "page_overflow": false,
+                "explanation_present": true,
+                "screenshots": [
+                  ".graphmine-learning/dual-adapter-v2/development-v5-trained-previews/dual-0094-maximal-cliques-followup-desktop-chart-0.png"
+                ],
+                "passed": true
+              },
+              {
+                "viewport": "mobile",
+                "actual_viewport": {
+                  "width": 390,
+                  "height": 844
+                },
+                "svg_count": 1,
+                "errors": [],
+                "page_overflow": false,
+                "explanation_present": true,
+                "screenshots": [
+                  ".graphmine-learning/dual-adapter-v2/development-v5-trained-previews/dual-0094-maximal-cliques-followup-mobile-chart-0.png"
+                ],
+                "passed": true
+              }
+            ],
+            "passed": true
+          },
+          {
+            "case_id": "dual-0098-betweenness-centrality",
+            "variant": "initial",
+            "operation": "betweenness-centrality",
+            "capture_sha256": "6afd65243d0eb23f4b213aba6f322a299da4f1e89f63b11651c588880cef4116",
+            "interpretation_source": "llm",
+            "report": ".graphmine-learning/dual-adapter-v2/development-v5-trained-previews/dual-0098-betweenness-centrality-initial.html",
+            "expected_charts": 1,
+            "checks": [
+              {
+                "viewport": "desktop",
+                "actual_viewport": {
+                  "width": 1440,
+                  "height": 914
+                },
+                "svg_count": 1,
+                "errors": [],
+                "page_overflow": false,
+                "explanation_present": true,
+                "screenshots": [
+                  ".graphmine-learning/dual-adapter-v2/development-v5-trained-previews/dual-0098-betweenness-centrality-initial-desktop-chart-0.png"
+                ],
+                "passed": true
+              },
+              {
+                "viewport": "mobile",
+                "actual_viewport": {
+                  "width": 390,
+                  "height": 844
+                },
+                "svg_count": 1,
+                "errors": [],
+                "page_overflow": false,
+                "explanation_present": true,
+                "screenshots": [
+                  ".graphmine-learning/dual-adapter-v2/development-v5-trained-previews/dual-0098-betweenness-centrality-initial-mobile-chart-0.png"
+                ],
+                "passed": true
+              }
+            ],
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "secondary_column_order_audit": {
+        "scope": "Secondary audit defined after a development finding and before reserved full workflows. Only presentation table-column order is normalized; facts, values, references, rows and all other dimensions remain exact. Primary evaluation artifacts and grades are unchanged.",
+        "protocol_sha256": "44a19a1142cacbb6b08f26754b29f2356dd9e17037182b11216fe0dd969af902",
+        "script_sha256": "472fd101fb3a605e3a3838b81d10ec5e044abc8974aa6f65e5160a82039a20fd",
+        "split": "development",
+        "arms": {
+          "base": {
+            "total": 13,
+            "primary_passed": 2,
+            "secondary_passed": 2,
+            "column_order_differences": 1,
+            "records": [
+              {
+                "id": "dual-0094-maximal-cliques",
+                "capture_sha256": "5fd3553e6fed3fc695bf86dd602bee9bc44aa367df143bab4135bc2b37f50a8d",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0096-k-cliques",
+                "capture_sha256": "d0874f5e5fa2371f85d1bded78b2f713e796db64baf3c89c7b42f91b0200b301",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0098-betweenness-centrality",
+                "capture_sha256": "8fda66f931e2fa7e9a0d788ebbae62bf0a686f59cbd9c02ad0443fa66b564c1c",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0099-community-detection",
+                "capture_sha256": "d4be13194168483fb4ef8c553876c7c18366e351ee3a2b9864e5b73b99479f9a",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0078-quasi-cliques",
+                "capture_sha256": "5b05ee576541abb577cb7903d27931048673ffb7165706436743fa5ee5288971",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0109-max-flow-min-cut",
+                "capture_sha256": "d00e1d93c15006f33f822400164605660b53a92214cf9f4b63fbf17b9d988ca1",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0113-linear-assignment",
+                "capture_sha256": "b39668fb6136291271d2fb63aea3032801e2ec4a9b5ce18a047bb4611fef8901",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0117-temporal-motif-mining",
+                "capture_sha256": "500432fd5db66898cbaac098f4c935143f2e068f54f8f6a1d845dff21b5f7b9a",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0119-subgraph-isomorphism",
+                "capture_sha256": "e07ab5a9e00277180bc4d38cb04d34378aebd0fc546f64248d19bcdfd3039a8f",
+                "primary_passed": false,
+                "column_order_only_difference": true,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0110-max-flow-min-cut",
+                "capture_sha256": "c0b585898713b9c7e8185591b32714e2ac2994503a7eda5762da9a4e2f74db9b",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0121-betweenness-centrality",
+                "capture_sha256": "9fea64d26ffabee8e14abd690325802e74d79148efb67c8fa654c019b0451b22",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0098-betweenness-centrality-clarification",
+                "capture_sha256": "6e87d4707ce9b1e063351ccb805a63d4a69ca00eee805995a8ebee7e5c3b63cd",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0096-k-cliques-injected-recovery",
+                "capture_sha256": "20913f2b62eabeb42159b462b15f3df21269808135e045ce5a9363355e9fef62",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              }
+            ]
+          },
+          "adapters": {
+            "total": 13,
+            "primary_passed": 7,
+            "secondary_passed": 7,
+            "column_order_differences": 1,
+            "records": [
+              {
+                "id": "dual-0094-maximal-cliques",
+                "capture_sha256": "842d58275b037bb4649fab6de0d9d777c62b82ed7573b449281f7ac011abc4ca",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0096-k-cliques",
+                "capture_sha256": "6447ec32a2edc86c207b5229860d5eb9afe8b2a3ce18f91dba75e27f8669666e",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0098-betweenness-centrality",
+                "capture_sha256": "6afd65243d0eb23f4b213aba6f322a299da4f1e89f63b11651c588880cef4116",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0099-community-detection",
+                "capture_sha256": "a0c1981e88c304bab10bfd9e33fb2e58699e606636cbf74392ff27bda38d0364",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0078-quasi-cliques",
+                "capture_sha256": "3bc7c25b1dc362b4ab62468e9edb7ac000d75c2748c53f3ff6023709a289ce59",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0109-max-flow-min-cut",
+                "capture_sha256": "96ab630f51e9c7b7b5f9c35007be73e9cc9010e1087a4e0702b10c3a042f8941",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0113-linear-assignment",
+                "capture_sha256": "c00a50dc0ef90ea5abcd800048abbf0b840e7a062419deebdcb965105da07a4b",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0117-temporal-motif-mining",
+                "capture_sha256": "03e4aefba408a3e1cb594f188d5c983d2e39d4443b8eb903475349c7e7348c55",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0119-subgraph-isomorphism",
+                "capture_sha256": "f4916a9971971cf56c11977b935b597703e2a93b61ad9938557a48c690a09a1d",
+                "primary_passed": false,
+                "column_order_only_difference": true,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0110-max-flow-min-cut",
+                "capture_sha256": "16cc945992ef5ab09478ec7a2e77c801b2e722f8605b3c10f1dc04efd543bb94",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0121-betweenness-centrality",
+                "capture_sha256": "ad147ee088cb63a93254e47eb0830ff67b820e0add02648f683766dc635a37c6",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0098-betweenness-centrality-clarification",
+                "capture_sha256": "79dae54cbf5f497794372b83d08ed987b06af8d73ff3aa62a4b1d17389aabfd1",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0096-k-cliques-injected-recovery",
+                "capture_sha256": "a6e56d1859ae1731916f6a025f6b5e013637b468c0205f5de6f13b2a2fb45b9d",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "final-test": {
+      "stage": {
+        "version": "dual-stage-paired-comparison-v1",
+        "split": "test",
+        "manifest_sha256": "90d237f66803c75ef54ad13a918e59f70a684423d2be601d4cf7aa25ecf21649",
+        "rules_sha256": "ce0e0b6be87ef54166f7f479a808fe3a3f453b2646c6eb5374cd2c745fdb43fb",
+        "evaluation_code_sha256": "be116d0fc960328021797967612b45d29a507fff37607236f7c964bf5c65c277",
+        "total": 183,
+        "base_passed": 140,
+        "adapters_passed": 159,
+        "by_stage": {
+          "GroundedNarrative": {
+            "total": 54,
+            "base_passed": 18,
+            "adapters_passed": 33,
+            "corrected": 18,
+            "regressed": 3,
+            "median_seconds": {
+              "base": 61.90523610636592,
+              "adapters": 16.35820226930082
+            }
+          },
+          "PlanDraft": {
+            "total": 51,
+            "base_passed": 49,
+            "adapters_passed": 51,
+            "corrected": 2,
+            "regressed": 0,
+            "median_seconds": {
+              "base": 12.200973890721798,
+              "adapters": 8.640747113153338
+            }
+          },
+          "RouteDecision": {
+            "total": 53,
+            "base_passed": 48,
+            "adapters_passed": 50,
+            "corrected": 3,
+            "regressed": 1,
+            "median_seconds": {
+              "base": 20.023557828739285,
+              "adapters": 15.703539855778217
+            }
+          },
+          "TurnDecision": {
+            "total": 25,
+            "base_passed": 25,
+            "adapters_passed": 25,
+            "corrected": 0,
+            "regressed": 0,
+            "median_seconds": {
+              "base": 10.997193543240428,
+              "adapters": 5.34237495996058
+            }
+          }
+        },
+        "scope": "Same frozen held-out prompts and service, regraded with identical rules. Includes bounded JSON repair but no semantic correction loop at stage level. Latency includes network, generation and validation and is not an isolated kernel benchmark. Related prompts share source graphs; these rows are not independent statistical samples. Model-weight identity must be established by the serving receipt. Human usefulness and complete workflow success are measured separately."
+      },
+      "workflow": {
+        "version": "dual-workflow-paired-comparison-v1",
+        "split": "test",
+        "total": 13,
+        "passed": {
+          "base": 5,
+          "adapters": 5
+        },
+        "corrected": 1,
+        "regressed": 1,
+        "by_dimension": {
+          "bounded_recovery": {
+            "total": 1,
+            "base": 1,
+            "adapters": 1
+          },
+          "clarification": {
+            "total": 1,
+            "base": 1,
+            "adapters": 1
+          },
+          "custom_followup": {
+            "total": 1,
+            "base": 0,
+            "adapters": 0
+          },
+          "execution": {
+            "total": 11,
+            "base": 10,
+            "adapters": 11
+          },
+          "followup_reuses_result": {
+            "total": 1,
+            "base": 1,
+            "adapters": 1
+          },
+          "grounding": {
+            "total": 11,
+            "base": 9,
+            "adapters": 9
+          },
+          "input_binding": {
+            "total": 13,
+            "base": 13,
+            "adapters": 13
+          },
+          "model_interpretation": {
+            "total": 11,
+            "base": 4,
+            "adapters": 4
+          },
+          "multiple_custom_panels": {
+            "total": 1,
+            "base": 0,
+            "adapters": 0
+          },
+          "no_unapproved_execution": {
+            "total": 2,
+            "base": 2,
+            "adapters": 2
+          },
+          "numerical": {
+            "total": 11,
+            "base": 9,
+            "adapters": 11
+          },
+          "planning": {
+            "total": 11,
+            "base": 9,
+            "adapters": 11
+          },
+          "presentation": {
+            "total": 11,
+            "base": 10,
+            "adapters": 11
+          },
+          "result_binding": {
+            "total": 11,
+            "base": 10,
+            "adapters": 11
+          },
+          "routing": {
+            "total": 11,
+            "base": 10,
+            "adapters": 11
+          },
+          "status": {
+            "total": 13,
+            "base": 12,
+            "adapters": 13
+          }
+        },
+        "median_seconds": {
+          "base": 67.34964882209897,
+          "adapters": 37.276215540245175
+        },
+        "scope": "Actual complete workflows on the same held-out scenarios and service. Grades are recomputed from captures; injected recovery is explicitly synthetic. Automatic numerical, evidence and rendering checks are not human usefulness ratings or proof of broad production accuracy. Weight identity is established separately by the serving receipt."
+      },
+      "failed_adapted_checks": [
+        {
+          "id": "dual-0122-maximal-cliques-GroundedNarrative-custom-comparison",
+          "schema": "GroundedNarrative",
+          "error": "charts[0].spec_json must contain valid JSON: Expecting property name enclosed in double quotes at line 1, column 500. Check commas and balanced braces/brackets."
+        },
+        {
+          "id": "dual-0123-maximum-clique-GroundedNarrative-custom-comparison",
+          "schema": "GroundedNarrative",
+          "error": "Invalid Vega-Lite schema at $.vconcat[0]: does not match a supported Vega-Lite specification; check composition, mark, encoding and transforms"
+        },
+        {
+          "id": "dual-0124-k-cliques-GroundedNarrative-custom-comparison",
+          "schema": "GroundedNarrative",
+          "error": "charts[0].spec_json must contain valid JSON: Expecting property name enclosed in double quotes at line 1, column 537. Check commas and balanced braces/brackets."
+        },
+        {
+          "id": "dual-0124-k-cliques-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 18"
+        },
+        {
+          "id": "dual-0125-k-core-GroundedNarrative-custom-comparison",
+          "schema": "GroundedNarrative",
+          "error": "Invalid Vega-Lite schema at $: does not match a supported Vega-Lite specification; check composition, mark, encoding and transforms"
+        },
+        {
+          "id": "dual-0126-betweenness-centrality-GroundedNarrative-custom-comparison",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 8"
+        },
+        {
+          "id": "dual-0126-betweenness-centrality-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 8"
+        },
+        {
+          "id": "dual-0129-quasi-cliques-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 60"
+        },
+        {
+          "id": "dual-0132-personalized-pagerank-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 0.113208"
+        },
+        {
+          "id": "dual-0132-personalized-pagerank-RouteDecision-0",
+          "schema": "RouteDecision",
+          "error": "Intent annotation requires_direction differs from the proposed contract"
+        },
+        {
+          "id": "dual-0133-k-cliques-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 2025"
+        },
+        {
+          "id": "dual-0134-k-cliques-RouteDecision-0",
+          "schema": "RouteDecision",
+          "error": "The selected record filters changed"
+        },
+        {
+          "id": "dual-0137-k-cliques-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 15"
+        },
+        {
+          "id": "dual-0139-betweenness-centrality-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 6"
+        },
+        {
+          "id": "dual-0142-quasi-cliques-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 60"
+        },
+        {
+          "id": "dual-0144-k-truss-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 2"
+        },
+        {
+          "id": "dual-0149-betweenness-centrality-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 8"
+        },
+        {
+          "id": "dual-0160-max-flow-min-cut-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 97001"
+        },
+        {
+          "id": "dual-0162-influence-maximization-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 3"
+        },
+        {
+          "id": "dual-0164-linear-assignment-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 0"
+        },
+        {
+          "id": "dual-0168-temporal-motif-mining-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 30"
+        },
+        {
+          "id": "dual-0169-graph-motifs-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 120"
+        },
+        {
+          "id": "dual-0169-graph-motifs-RouteDecision-0",
+          "schema": "RouteDecision",
+          "error": "Formal operation differs from the reference contract (possible equivalent operation requires separate review)"
+        },
+        {
+          "id": "dual-0170-subgraph-isomorphism-GroundedNarrative",
+          "schema": "GroundedNarrative",
+          "error": "Explanation contains an unsupported number: 240"
+        }
+      ],
+      "workflow_regressions": [
+        "dual-0164-linear-assignment"
+      ],
+      "failed_workflows": {
+        "base": [
+          {
+            "id": "dual-0145-maximal-cliques",
+            "errors": {
+              "custom_followup": "Displayed limitations changed",
+              "multiple_custom_panels": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0149-betweenness-centrality",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0150-community-detection",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0129-quasi-cliques",
+            "errors": {
+              "grounding": "Check failed",
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0160-max-flow-min-cut",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0168-temporal-motif-mining",
+            "errors": {
+              "planning": "Unrequested semantic parameter: result_limit",
+              "numerical": "Numerical success cannot qualify without a verified matching objective",
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0170-subgraph-isomorphism",
+            "errors": {
+              "status": "Check failed",
+              "execution": "Check failed",
+              "presentation": "Required stage was not reached",
+              "model_interpretation": "Required stage was not reached",
+              "planning": "Required stage was not reached",
+              "routing": "Required stage was not reached",
+              "numerical": "Required stage was not reached",
+              "result_binding": "Required stage was not reached",
+              "grounding": "Required stage was not reached"
+            }
+          },
+          {
+            "id": "dual-0149-betweenness-centrality-clarification",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          }
+        ],
+        "adapters": [
+          {
+            "id": "dual-0145-maximal-cliques",
+            "errors": {
+              "custom_followup": "Check failed",
+              "multiple_custom_panels": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0149-betweenness-centrality",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0129-quasi-cliques",
+            "errors": {
+              "grounding": "Check failed",
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0160-max-flow-min-cut",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0164-linear-assignment",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0168-temporal-motif-mining",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0170-subgraph-isomorphism",
+            "errors": {
+              "grounding": "Check failed",
+              "model_interpretation": "Check failed"
+            }
+          },
+          {
+            "id": "dual-0149-betweenness-centrality-clarification",
+            "errors": {
+              "model_interpretation": "Check failed"
+            }
+          }
+        ]
+      },
+      "explicit_custom_chart_probe": {
+        "total": 5,
+        "scope": "Explicit custom-chart prompts: presence plus the existing narrative, schema, data-binding and render checks. This does not prove every requested comparison is useful or semantically correct.",
+        "base": {
+          "produced_custom_chart": 5,
+          "passed_with_custom_chart": 1
+        },
+        "adapters": {
+          "produced_custom_chart": 5,
+          "passed_with_custom_chart": 0
+        }
+      },
+      "trained_chart_browser_review": {
+        "scope": "All supplied actual workflow captures were inspected for custom chart outputs. There are none, so custom-chart browser rendering could not be evaluated. This is not a browser pass.",
+        "status": "no_custom_charts_produced",
+        "capture_inventory": [
+          {
+            "id": "dual-0129-quasi-cliques",
+            "capture_sha256": "dd973d7c2697668c0cee17f170e6a0be94b12a201042c00186bd24bf8bffc6f6",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0145-maximal-cliques",
+            "capture_sha256": "e8411b36f346ea07ba923d1a0c2d2a60a8321c0dbebad3d3d581817795343f13",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0147-k-cliques-injected-recovery",
+            "capture_sha256": "ac84e8ddd4c9f187ddac7052b38fad1f9c8c5e69b660b7ce049e55f343b192f9",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0147-k-cliques",
+            "capture_sha256": "fe611121cdf8e5d0ef1caec9e455441fddb8d41b289f5057247d1e91e390e782",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0149-betweenness-centrality-clarification",
+            "capture_sha256": "c927e84689978ce8152d0f1859d3cd78dce18509d6c3c784499d72fa525d36e5",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0149-betweenness-centrality",
+            "capture_sha256": "98aa490818b0609d102e0c38e0d02cc6beb77c892a6b4b2848f2f72c6465a2aa",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0150-community-detection",
+            "capture_sha256": "ef3594708057927dc15082c7c7dbe5a9e4a1529100be8363e3226f20dc646fd6",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0160-max-flow-min-cut",
+            "capture_sha256": "d6a6c6a469dd1ab79b966c53a5279f69ff1ceb326c2f6a5f9e8539c5562df49c",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0161-max-flow-min-cut",
+            "capture_sha256": "68072b910b06e03ece0ea0dd9b45dc7d630dc51e825e4b039966cd4091af9683",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0164-linear-assignment",
+            "capture_sha256": "b3bc50284f994b9b2bceb875add2c15e653afa599e4f8ecff0a7f4d935a28420",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0168-temporal-motif-mining",
+            "capture_sha256": "dd0bcceea8357d3a4385ed317b1d069f3bfd9fa4b8a308687ee28aa5666d43bd",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0170-subgraph-isomorphism",
+            "capture_sha256": "a8613459c512f85e7e4221966a864ea7012a8e5cb85b5699142808d0bc5b3212",
+            "custom_charts": 0
+          },
+          {
+            "id": "dual-0172-betweenness-centrality",
+            "capture_sha256": "4875a181aa681a6fd1cad7ec0f910ad3b149004894ae2e3a7a09431d9104f732",
+            "custom_charts": 0
+          }
+        ],
+        "records": [],
+        "passed": null
+      },
+      "secondary_column_order_audit": {
+        "scope": "Secondary audit defined after a development finding and before reserved full workflows. Only presentation table-column order is normalized; facts, values, references, rows and all other dimensions remain exact. Primary evaluation artifacts and grades are unchanged.",
+        "protocol_sha256": "44a19a1142cacbb6b08f26754b29f2356dd9e17037182b11216fe0dd969af902",
+        "script_sha256": "472fd101fb3a605e3a3838b81d10ec5e044abc8974aa6f65e5160a82039a20fd",
+        "split": "final-test",
+        "arms": {
+          "base": {
+            "total": 13,
+            "primary_passed": 5,
+            "secondary_passed": 5,
+            "column_order_differences": 1,
+            "records": [
+              {
+                "id": "dual-0145-maximal-cliques",
+                "capture_sha256": "163778ba6c9704bb79364f00a7ccd721ed3f9bf703a1a991cf14a597dad2ea32",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0147-k-cliques",
+                "capture_sha256": "e26b438342e99a78633f10f75e0494f878f5b386eef447e09e90b88c27ae7f3c",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0149-betweenness-centrality",
+                "capture_sha256": "ba9d05588ada598741907c535fd2a4b04f84e9a921c79dceb19991aaf88c54e2",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0150-community-detection",
+                "capture_sha256": "077ff1c23f7a13188406d05403680dec92bc75d3527283d6569cca5b88522706",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0129-quasi-cliques",
+                "capture_sha256": "370b6e6a5f3e751cbabaf21f9447460c74b0610b089063bfe910639e8537da63",
+                "primary_passed": false,
+                "column_order_only_difference": true,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0160-max-flow-min-cut",
+                "capture_sha256": "8e37185e3f20d10133b96afb5744ec269dc1a76cff0363429d38bc022c004f89",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0164-linear-assignment",
+                "capture_sha256": "56d9f21fd5b1dd643e51d802176532f0600604eceef2ce9bccfb5e59e56ab2b7",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0168-temporal-motif-mining",
+                "capture_sha256": "0250bf2f6450ee35de0abeb468980e47a5f24553c6b7673a0ac9bcba2ed1648d",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0170-subgraph-isomorphism",
+                "capture_sha256": "ece6b01a07122f8cda5835be2fffa16b0c5273ee1fd8906495a90e2b820a95f7",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0161-max-flow-min-cut",
+                "capture_sha256": "5a752ee40e2f2274f186a9478ac515b5614581240b45b9aaaafc69db67999282",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0172-betweenness-centrality",
+                "capture_sha256": "f762bb18dd146c0fde89526f0887cd3de4ba33d0599bf7c561e0c48bd2a67efa",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0149-betweenness-centrality-clarification",
+                "capture_sha256": "6b8fbaf7304c8793331c857dc75528cb19b938f6d33939815c17ca24feac390f",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0147-k-cliques-injected-recovery",
+                "capture_sha256": "638f09908555afabc57654935002f8339dcea656a6eabfc034e1df3c31fa1ee4",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              }
+            ]
+          },
+          "adapters": {
+            "total": 13,
+            "primary_passed": 5,
+            "secondary_passed": 5,
+            "column_order_differences": 2,
+            "records": [
+              {
+                "id": "dual-0145-maximal-cliques",
+                "capture_sha256": "e8411b36f346ea07ba923d1a0c2d2a60a8321c0dbebad3d3d581817795343f13",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0147-k-cliques",
+                "capture_sha256": "fe611121cdf8e5d0ef1caec9e455441fddb8d41b289f5057247d1e91e390e782",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0149-betweenness-centrality",
+                "capture_sha256": "98aa490818b0609d102e0c38e0d02cc6beb77c892a6b4b2848f2f72c6465a2aa",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0150-community-detection",
+                "capture_sha256": "ef3594708057927dc15082c7c7dbe5a9e4a1529100be8363e3226f20dc646fd6",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0129-quasi-cliques",
+                "capture_sha256": "dd973d7c2697668c0cee17f170e6a0be94b12a201042c00186bd24bf8bffc6f6",
+                "primary_passed": false,
+                "column_order_only_difference": true,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0160-max-flow-min-cut",
+                "capture_sha256": "d6a6c6a469dd1ab79b966c53a5279f69ff1ceb326c2f6a5f9e8539c5562df49c",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0164-linear-assignment",
+                "capture_sha256": "b3bc50284f994b9b2bceb875add2c15e653afa599e4f8ecff0a7f4d935a28420",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0168-temporal-motif-mining",
+                "capture_sha256": "dd0bcceea8357d3a4385ed317b1d069f3bfd9fa4b8a308687ee28aa5666d43bd",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0170-subgraph-isomorphism",
+                "capture_sha256": "a8613459c512f85e7e4221966a864ea7012a8e5cb85b5699142808d0bc5b3212",
+                "primary_passed": false,
+                "column_order_only_difference": true,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0161-max-flow-min-cut",
+                "capture_sha256": "68072b910b06e03ece0ea0dd9b45dc7d630dc51e825e4b039966cd4091af9683",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0172-betweenness-centrality",
+                "capture_sha256": "4875a181aa681a6fd1cad7ec0f910ad3b149004894ae2e3a7a09431d9104f732",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              },
+              {
+                "id": "dual-0149-betweenness-centrality-clarification",
+                "capture_sha256": "c927e84689978ce8152d0f1859d3cd78dce18509d6c3c784499d72fa525d36e5",
+                "primary_passed": false,
+                "column_order_only_difference": false,
+                "secondary_passed": false
+              },
+              {
+                "id": "dual-0147-k-cliques-injected-recovery",
+                "capture_sha256": "ac84e8ddd4c9f187ddac7052b38fad1f9c8c5e69b660b7ce049e55f343b192f9",
+                "primary_passed": true,
+                "column_order_only_difference": false,
+                "secondary_passed": true
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "teacher_review": {
+    "reviewed": 531,
+    "counts": {
+      "quarantined": 80,
+      "accepted": 451
+    },
+    "recovered_from_initial_quarantine": 42,
+    "repair_inputs": 0,
+    "human_review": "unreviewed",
+    "scope": "Recomputed automatic checks, including raw teacher response binding. No claims of human preference or semantic perfection."
+  },
+  "data_split_audit": {
+    "version": "dual-data-split-audit-v1",
+    "corpus_sha256": "bdab1808e679119e74ee712e77478db4c917bf64e646390d2ccf800f28590a96",
+    "splits": {
+      "train": {
+        "cases": 71,
+        "families": [
+          "source:email-eu-core",
+          "synthetic:assignment_3_per_side",
+          "synthetic:directed_cycle_chords",
+          "synthetic:planted_blocks",
+          "synthetic:temporal_train"
+        ],
+        "distinct_graph_contents": 13,
+        "distinct_question_strings": 29,
+        "vertices_min_max": [
+          6,
+          8
+        ],
+        "edges_min_max": [
+          7,
+          11
+        ]
+      },
+      "validation": {
+        "cases": 51,
+        "families": [
+          "source:ca-grqc",
+          "synthetic:assignment_4_per_side",
+          "synthetic:directed_acyclic",
+          "synthetic:geometric_neighborhoods",
+          "synthetic:temporal_validation"
+        ],
+        "distinct_graph_contents": 11,
+        "distinct_question_strings": 29,
+        "vertices_min_max": [
+          8,
+          8
+        ],
+        "edges_min_max": [
+          7,
+          16
+        ]
+      },
+      "test": {
+        "cases": 51,
+        "families": [
+          "source:gnutella08",
+          "synthetic:assignment_2_per_side",
+          "synthetic:linked_sccs",
+          "synthetic:preferential_attachment",
+          "synthetic:temporal_test"
+        ],
+        "distinct_graph_contents": 11,
+        "distinct_question_strings": 29,
+        "vertices_min_max": [
+          4,
+          8
+        ],
+        "edges_min_max": [
+          4,
+          13
+        ]
+      }
+    },
+    "pairs": {
+      "train__validation": {
+        "shared_lineages": [],
+        "shared_exact_graph_contents": 0,
+        "shared_question_strings": 26
+      },
+      "train__test": {
+        "shared_lineages": [],
+        "shared_exact_graph_contents": 0,
+        "shared_question_strings": 26
+      },
+      "validation__test": {
+        "shared_lineages": [],
+        "shared_exact_graph_contents": 0,
+        "shared_question_strings": 26
+      }
+    },
+    "exports": {
+      "planner": {
+        "rows_by_split": {
+          "train": 206,
+          "validation": 131
+        },
+        "stage_counts": {
+          "PlanDraft": 135,
+          "RouteDecision": 142,
+          "TurnDecision": 60
+        },
+        "quarantined_excluded": 20,
+        "teacher_efforts": [
+          "max"
+        ],
+        "provenance_sha256": "e5c521cabbeb2ad0f002c1f7411fc16641ccbf335c0b55e440537ea96103c731",
+        "unique_training_case_ids_including_derived_conversations": 86
+      },
+      "analyst": {
+        "rows_by_split": {
+          "train": 70,
+          "validation": 44
+        },
+        "stage_counts": {
+          "GroundedNarrative": 114
+        },
+        "quarantined_excluded": 60,
+        "teacher_efforts": [
+          "max"
+        ],
+        "provenance_sha256": "48e6a5319781fdfbb5678ad2c9699206efc5a8f43eb018279053bd7a747e8892",
+        "unique_training_case_ids_including_derived_conversations": 65
+      }
+    },
+    "scope": "Exact-content hashes ignore graph IDs and edge IDs, retain record identifiers and attributes; this does not establish non-isomorphism. Repeated task wording intentionally tests transfer to held-out source/family graphs, not independently sampled human language. Historical public samples and bounded synthetic graphs are a pilot, not representative production data."
+  },
+  "training": {
+    "planner": {
+      "weights_sha256": "71bb9cea2ccf1ead7f95f7d488d9b2359ee407cbdb80ee95de9a9a48f8e64824",
+      "rank": 16,
+      "steps": 52,
+      "trainable_parameters": 116727808,
+      "training_metrics": {
+        "train_runtime": 4766.7396,
+        "train_samples_per_second": 0.043,
+        "train_steps_per_second": 0.011,
+        "total_flos": 2.519759895162532e+17,
+        "train_loss": 0.5254961862587012,
+        "epoch": 1.0
+      },
+      "validation_metrics": {
+        "step": 52,
+        "eval_loss": 0.37292447686195374,
+        "eval_runtime": 777.9285,
+        "eval_samples_per_second": 0.168,
+        "eval_steps_per_second": 0.168,
+        "epoch": 1.0
+      },
+      "peak_gpu_bytes": 34784765440,
+      "data": {
+        "train": {
+          "path": "train.tokens.json",
+          "sha256": "7820bee7b45e29ca338681dc15a57b8e3241b8e1471eb89462e4527faac6f2bc",
+          "rows": 206,
+          "min_tokens": 3376,
+          "max_tokens": 12456,
+          "supervised_tokens": 26852
+        },
+        "validation": {
+          "path": "validation.tokens.json",
+          "sha256": "4353b171188497b891eaeefdc8e73ccc12857a427caff5e4a817c00308135bc9",
+          "rows": 131,
+          "min_tokens": 3582,
+          "max_tokens": 12495,
+          "supervised_tokens": 17905
+        }
+      }
+    },
+    "analyst": {
+      "weights_sha256": "a611ac05b6304d815d1b3052a342c58086a60cbb125e6c56adf1fa7f40c7f907",
+      "rank": 16,
+      "steps": 18,
+      "trainable_parameters": 116727808,
+      "training_metrics": {
+        "train_runtime": 1209.7359,
+        "train_samples_per_second": 0.058,
+        "train_steps_per_second": 0.015,
+        "total_flos": 6.672476525153587e+16,
+        "train_loss": 0.5355587270524766,
+        "epoch": 1.0
+      },
+      "validation_metrics": {
+        "step": 18,
+        "eval_loss": 0.45886799693107605,
+        "eval_runtime": 171.0619,
+        "eval_samples_per_second": 0.257,
+        "eval_steps_per_second": 0.257,
+        "epoch": 1.0
+      },
+      "peak_gpu_bytes": 34357866496,
+      "data": {
+        "train": {
+          "path": "train.tokens.json",
+          "sha256": "7704f54d5a59dc0957791709cbe9cfa1e9c2797f189d7f93c5c8c6db7ba60d07",
+          "rows": 70,
+          "min_tokens": 3068,
+          "max_tokens": 12107,
+          "supervised_tokens": 30905
+        },
+        "validation": {
+          "path": "validation.tokens.json",
+          "sha256": "342e1c90a72b182956fe9922039f2026616b9d31da8c8a7def239b441f0453e8",
+          "rows": 44,
+          "min_tokens": 3054,
+          "max_tokens": 11489,
+          "supervised_tokens": 18534
+        }
+      }
+    }
+  },
+  "serving": {
+    "endpoint": "http://127.0.0.1:8001/v1",
+    "server_pid": 868448,
+    "serving_gpu_processes": [
+      {
+        "gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+        "pid": 868933,
+        "name": "VLLM::EngineCore",
+        "used_mib": 36496
+      }
+    ],
+    "server_arguments": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-vllm/bin/python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-vllm/bin/vllm",
+      "serve",
+      "Qwen/Qwen3.8-27B-FP8",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "8001",
+      "--api-key",
+      "<redacted>",
+      "--tensor-parallel-size",
+      "1",
+      "--max-model-len",
+      "32768",
+      "--max-num-seqs",
+      "2",
+      "--gpu-memory-utilization",
+      "0.75",
+      "--reasoning-parser",
+      "qwen3",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser",
+      "qwen3_xml",
+      "--language-model-only",
+      "--enable-prefix-caching",
+      "--revision",
+      "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+      "--tokenizer-revision",
+      "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+      "--enable-lora",
+      "--lora-modules",
+      "graphmine-planner-v2=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/planner-serving-v1",
+      "graphmine-analyst-v2=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/analyst-serving-v1",
+      "--max-loras",
+      "2",
+      "--max-cpu-loras",
+      "2",
+      "--max-lora-rank",
+      "16",
+      "--lora-dtype",
+      "bfloat16"
+    ],
+    "activation_verified": {
+      "planner": {
+        "lora_id": 1,
+        "expected_modules": 304,
+        "applied_modules": 304
+      },
+      "analyst": {
+        "lora_id": 2,
+        "expected_modules": 304,
+        "applied_modules": 304
+      }
+    },
+    "public_api": "stopped; evaluation uses isolated embedded API sessions"
+  },
+  "software": {
+    "version": "graphmine-cpu-verification-v1",
+    "started_at": "2026-10-08T05:40:59.327958+00:00",
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-23-generic-x86_64-with-glibc2.39",
+    "checks": [
+      {
+        "name": "public_schemas",
+        "count": 9,
+        "mismatches": [],
+        "exit_code": 0
+      },
+      {
+        "name": "lint",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv/bin/python",
+          "-m",
+          "ruff",
+          "check",
+          "agent/graphmine_agent",
+          "agent/tests",
+          "agent/scripts"
+        ],
+        "exit_code": 0,
+        "seconds": 0.026375245302915573
+      },
+      {
+        "name": "frontend_syntax",
+        "command": [
+          "node",
+          "--check",
+          "agent/graphmine_agent/static/app.js"
+        ],
+        "exit_code": 0,
+        "seconds": 0.018018584698438644
+      },
+      {
+        "name": "shell_syntax:chat.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/chat.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0015208367258310318
+      },
+      {
+        "name": "shell_syntax:configure-v1.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/configure-v1.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.001768970862030983
+      },
+      {
+        "name": "shell_syntax:setup-cuda-compat.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/setup-cuda-compat.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0011644288897514343
+      },
+      {
+        "name": "shell_syntax:setup-vllm.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/setup-vllm.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0012820661067962646
+      },
+      {
+        "name": "shell_syntax:smoke-v1.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/smoke-v1.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0016596931964159012
+      },
+      {
+        "name": "shell_syntax:start-agent.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/start-agent.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0016453638672828674
+      },
+      {
+        "name": "shell_syntax:start-router.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/start-router.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0011498257517814636
+      },
+      {
+        "name": "shell_syntax:start-vllm.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/start-vllm.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0012105852365493774
+      },
+      {
+        "name": "shell_syntax:validate-v1.sh",
+        "command": [
+          "bash",
+          "-n",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/deploy/validate-v1.sh"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0011628661304712296
+      },
+      {
+        "name": "whitespace",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "seconds": 0.01751880906522274
+      },
+      {
+        "name": "cpu",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv/bin/python",
+          "-m",
+          "pytest",
+          "agent/tests",
+          "-q",
+          "--junitxml=/tmp/graphmine-verify-mzw3kuxj/cpu.xml"
+        ],
+        "exit_code": 0,
+        "seconds": 59.53376837447286,
+        "tests": {
+          "tests": 678,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 15
+        }
+      },
+      {
+        "name": "browser",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv/bin/python",
+          "-m",
+          "pytest",
+          "agent/browser_tests",
+          "-q",
+          "--junitxml=/tmp/graphmine-verify-mzw3kuxj/browser.xml"
+        ],
+        "exit_code": 0,
+        "seconds": 49.595573514699936,
+        "tests": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      {
+        "name": "sources_unchanged_during_checks",
+        "exit_code": 0
+      }
+    ],
+    "browser_requested": true,
+    "passed": true,
+    "native_execution": "not_run",
+    "model_inference": "not_run",
+    "finished_at": "2026-10-08T05:42:48.586608+00:00"
+  },
+  "decoder_conformance": {
+    "xgrammar_version": "0.2.8",
+    "probe_input_sha256": "89632c61ffea70f53ebd9a8a9f6253f4682a9136024b25ad903d4e880269e1c3",
+    "results": [
+      {
+        "schema": "logical_schema",
+        "accepted_valid_escaped_chart_target": false
+      },
+      {
+        "schema": "decoder_schema",
+        "accepted_valid_escaped_chart_target": true
+      }
+    ],
+    "charts": 1,
+    "pydantic_accepted": true,
+    "scope": "CPU grammar conformance, full GroundedNarrative schema and serialized Vega-Lite chart target; no model inference."
+  },
+  "integer_decoder_conformance": {
+    "xgrammar_version": "0.2.8",
+    "scope": "Compile every frozen development wire schema on the installed decoder, CPU only; no inference or final-test calls.",
+    "total": 192,
+    "unique_schemas": 22,
+    "passed": true
+  },
+  "baseline_request_reuse": {
+    "version": "identical-request-reuse-v1",
+    "before": {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/development-v3-request-fingerprints.json",
+      "sha256": "6a87ec0b2500382dc0baef672e7d7d31bc509543c3dfb54a6cef7c09cc4cef0c"
+    },
+    "after": {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/development-v4-request-fingerprints.json",
+      "sha256": "03e04f8edac0d33505c9565ded2c2b1e7dbe5a2e470e54ee4b876001a0acd82b"
+    },
+    "source_profile": {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v3/profile.json",
+      "sha256": "790592c22a16030ae056ca7782688723c7dd889a45c41dc0362463c7becdc693"
+    },
+    "capture_implementation_sha256": "04cfdec42a4233ec2a6b262111bd7d30f2a59c0e18c54a3be4683c0cda34df25",
+    "rerun_ids": [
+      "dual-0081-personalized-pagerank-PlanDraft-1",
+      "dual-0109-max-flow-min-cut-PlanDraft-1",
+      "dual-0109-max-flow-min-cut-business-clear-PlanDraft-1",
+      "dual-0109-max-flow-min-cut-business-resolved-PlanDraft-1",
+      "dual-0110-max-flow-min-cut-PlanDraft-1",
+      "dual-0111-influence-maximization-PlanDraft-1",
+      "dual-0111-influence-maximization-business-clear-PlanDraft-1",
+      "dual-0111-influence-maximization-business-resolved-PlanDraft-1",
+      "dual-0112-group-steiner-tree-PlanDraft-1"
+    ],
+    "scope": "Retain ALL and ONLY calls with identical full initial and repair JSON request fingerprints, including failures. Original execution profiles and raw outputs stay intact. Changed schemas are rerun irrespective of earlier score.",
+    "retained_identical_requests": 183
+  },
+  "native_memory_verification": {
+    "returncode": 0,
+    "elapsed_seconds": 0.1833320166915655,
+    "gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+      "run",
+      "subgraph-isomorphism",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_7109506ffa4548abaf2f00fa496d94cd/files/file_2a3b23eae7694a4b81b06280553d72c5/graph.json",
+      "--backend",
+      "gmatch",
+      "--device",
+      "0",
+      "--ignore-vertex-labels",
+      "--initial-match-capacity",
+      "1000000",
+      "--result-limit",
+      "100",
+      "--query-graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_7109506ffa4548abaf2f00fa496d94cd/files/file_0e421eb384fe46dcbf0ad7b320991e85/graph.json",
+      "--include-embeddings",
+      "--output",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-memory-v5/replayed-result.json",
+      "--pretty"
+    ],
+    "passed": true,
+    "scope": "Same previously failing native command, bounded pools and shared GPU0. This is not a model workflow score.",
+    "sources": {
+      "library/build/graphmine": "4b1b369d90adf1bd4d812e5fda21d83438c755cede5cea1f05c10f30a4ba9af3",
+      "library/CMakeLists.txt": "0d95b7f616eb062ee9c847fc082db9511f097452ebb416a4f893cf501a69bd0a",
+      "library/src/backends/gmatch.cu": "c2cde0a39bd445deb84bd8a70f978500da11d670b16e2f5f842bef5c16d0478a",
+      "problems/13_subgraph_isomorphism/papers/2026_gmatch/code/bitmap/params.h": "6c4c5ee0a4376bc7b7161c4d106957266061045d43c46e559e76bf358db5b80a",
+      "problems/13_subgraph_isomorphism/papers/2026_gmatch/code/bitmap/mem_manager.h": "87c275f170bd69029d038c42bd557ab4e6f37aa94e5d814e81f9f8a66a5d5dee",
+      "library/tests/gmatch_pool_test.cu": "ec41253a0e42c03b8d7259afc829ae3fa82ffcd161d246ebc327647e85da29c9",
+      "library/tests/subgraph_isomorphism_test.cpp": "7be0ff40ca17bd7c5d499073e92e8aa907c66ce9be62534ba2e16f9eb3a5707f"
+    },
+    "result_sha256": "c29312ff9ceadaaef41c5b54bfee3d46cb01c6509daa6661163939aa25b5e22c",
+    "tests_log_sha256": "767326032a50246f9b35d0828e98d8102d8d931aaa48a67d6428128e98697516"
+  },
+  "resource_change": {
+    "before": {
+      "GRAPHMINE_LLM_GPU_MEMORY_UTILIZATION": "0.88",
+      "GRAPHMINE_GRAPH_GPU_UUID": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7"
+    },
+    "after": {
+      "GRAPHMINE_LLM_GPU_MEMORY_UTILIZATION": "0.75",
+      "GRAPHMINE_GRAPH_GPU_UUID": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+      "GRAPHMINE_ALLOW_SHARED_GPU": "true"
+    },
+    "reason": "The second GPU is occupied by another user. Keep one base model and both adapters on GPU0 while reserving memory for native graph jobs. This pilot still uses a 32K context and concurrency two.",
+    "native_memory": "gMatch built with GRAPHMINE_GMATCH_POOL_MIB=512, two pools; native exact-count, DFS and allocation-boundary tests passed."
+  },
+  "trained_chart_linking": {
+    "scope": "Development-only behavior check of the actual trained coordinated group-size/membership chart. Verifies selected marks against computed memberships, not general chart usefulness.",
+    "capture_sha256": "842d58275b037bb4649fab6de0d9d777c62b82ed7573b449281f7ac011abc4ca",
+    "html_sha256": "b05b91eecbe7d036f907290716a3638a483c563d2c5e5f34073375e4ca3ebd25",
+    "checks": [
+      {
+        "selected_group": "Group 1",
+        "expected_labels": [
+          "Author 16433",
+          "Author 16570",
+          "Author 2073",
+          "Author 369"
+        ],
+        "displayed_labels": [
+          "Author 16433",
+          "Author 16570",
+          "Author 2073",
+          "Author 369"
+        ],
+        "passed": true
+      },
+      {
+        "selected_group": "Group 2",
+        "expected_labels": [
+          "Author 16433",
+          "Author 369",
+          "Author 6183",
+          "Author 7727"
+        ],
+        "displayed_labels": [
+          "Author 16433",
+          "Author 369",
+          "Author 6183",
+          "Author 7727"
+        ],
+        "passed": true
+      },
+      {
+        "selected_group": "Group 3",
+        "expected_labels": [
+          "Author 16433",
+          "Author 16570",
+          "Author 369",
+          "Author 6183"
+        ],
+        "displayed_labels": [
+          "Author 16433",
+          "Author 16570",
+          "Author 369",
+          "Author 6183"
+        ],
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "visual_inspection": {
+    "reviewed_at": "2026-10-08T06:18:54.086123+00:00",
+    "reviewer": "Codex visual inspection; no human preference feedback",
+    "images": {
+      ".graphmine-learning/dual-adapter-v2/development-v5-focused-trained-preview/dual-0094-maximal-cliques-followup-desktop-chart-0.png": "7492285f3288c74eee351d0ee08e0b42936870b9d29ff1a3312f1b7f67cfdda8",
+      ".graphmine-learning/dual-adapter-v2/development-v5-focused-trained-preview/dual-0094-maximal-cliques-followup-mobile-chart-0.png": "63d576d579696ac955e7e55551ff070ea1a6d7ffdc88301891e42a5501566ba2",
+      ".graphmine-learning/dual-adapter-v2/development-v5-focused-trained-preview/dual-0098-betweenness-centrality-initial-desktop-chart-0.png": "15955a91f44376b7b3f7b4ffa900a957a006e729bca916b9c37f22739edbb3fe"
+    },
+    "observations": [
+      "The desktop composition displays three size-four groups beside membership labels. The overlap of authors across groups is visible and the description explains repeated membership.",
+      "At390px the first panel remains readable; the second panel is reachable through horizontal scrolling and the hint is visible. There is no page overflow in the browser checks.",
+      "The centrality view ranks returned authors on a zero-based horizontal score axis. Its four decimal places are more precision than this small result needs.",
+      "The membership plot repeats author labels inside marks as well as on the axis; a dot or matrix encoding could reduce repetition. These are styling limitations, not additional pass/fail grades."
+    ],
+    "scope": "Inspection of actual trained development workflow outputs only. It does not establish general correctness, aesthetics, accessibility or human usefulness.",
+    "explanation_spot_checks": [
+      {
+        "case_id": "dual-0094-maximal-cliques",
+        "observation": "The explanation states three groups of four authors, six distinct authors, and four authors appearing in multiple groups. These match the computed memberships displayed in this case.",
+        "scope": "AI spot-check of this displayed case, not a general prose-quality score."
+      },
+      {
+        "case_id": "dual-0098-betweenness-centrality",
+        "observation": "The explanation qualifies its ranking as unweighted shortest-route mediation among returned records. The top-two values and the stated tie agree with the displayed zero-based bar chart. Repeated numeric listing is verbose, and the prose does not establish business impact.",
+        "scope": "AI spot-check of this displayed case, not human preference feedback."
+      }
+    ]
+  },
+  "exact_answer_comparison_audit": {
+    "scope": "Read-only development audit. The frozen grounding check compares complete answers, including table-column order. No model, runtime, grading rules or primary scores changed.",
+    "finding": "Both subgraph-isomorphism captures differ from reconstructed answers only in presentation-column order. They also fail the independently scored unrequested result_limit planning contract; the strict full-workflow outcome is unchanged.",
+    "records": [
+      {
+        "arm": "base",
+        "capture_sha256": "e07ab5a9e00277180bc4d38cb04d34378aebd0fc546f64248d19bcdfd3039a8f",
+        "equal_after_column_order_normalization": true,
+        "columns": {
+          "expected": [
+            {
+              "label": "Name",
+              "path": [
+                "label"
+              ]
+            },
+            {
+              "label": "Original ID",
+              "path": [
+                "id"
+              ]
+            },
+            {
+              "label": "Region",
+              "path": [
+                "attributes",
+                "region"
+              ]
+            },
+            {
+              "label": "Team",
+              "path": [
+                "attributes",
+                "team"
+              ]
+            },
+            {
+              "label": "Year",
+              "path": [
+                "attributes",
+                "year"
+              ]
+            }
+          ],
+          "actual": [
+            {
+              "label": "Name",
+              "path": [
+                "label"
+              ]
+            },
+            {
+              "label": "Original ID",
+              "path": [
+                "id"
+              ]
+            },
+            {
+              "label": "Region",
+              "path": [
+                "attributes",
+                "region"
+              ]
+            },
+            {
+              "label": "Team",
+              "path": [
+                "attributes",
+                "team"
+              ]
+            },
+            {
+              "label": "Year",
+              "path": [
+                "attributes",
+                "year"
+              ]
+            }
+          ]
+        },
+        "other_failure": "Unrequested semantic parameter: result_limit"
+      },
+      {
+        "arm": "adapters",
+        "capture_sha256": "f4916a9971971cf56c11977b935b597703e2a93b61ad9938557a48c690a09a1d",
+        "equal_after_column_order_normalization": true,
+        "columns": {
+          "expected": [
+            {
+              "label": "Name",
+              "path": [
+                "label"
+              ]
+            },
+            {
+              "label": "Original ID",
+              "path": [
+                "id"
+              ]
+            },
+            {
+              "label": "Region",
+              "path": [
+                "attributes",
+                "region"
+              ]
+            },
+            {
+              "label": "Team",
+              "path": [
+                "attributes",
+                "team"
+              ]
+            },
+            {
+              "label": "Year",
+              "path": [
+                "attributes",
+                "year"
+              ]
+            }
+          ],
+          "actual": [
+            {
+              "label": "Name",
+              "path": [
+                "label"
+              ]
+            },
+            {
+              "label": "Original ID",
+              "path": [
+                "id"
+              ]
+            },
+            {
+              "label": "Region",
+              "path": [
+                "attributes",
+                "region"
+              ]
+            },
+            {
+              "label": "Team",
+              "path": [
+                "attributes",
+                "team"
+              ]
+            },
+            {
+              "label": "Year",
+              "path": [
+                "attributes",
+                "year"
+              ]
+            }
+          ]
+        },
+        "other_failure": "Unrequested semantic parameter: result_limit"
+      }
+    ]
+  },
+  "native_resource_preflight": {
+    "time": "2026-10-08T05:47:10.569034+00:00",
+    "scope": "All11saved development native commands replayed on sharedGPU0; resource/execution smoke checks only, not model-quality or numerical grades. Original captures remain unchanged.",
+    "gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+    "binary_sha256": "4b1b369d90adf1bd4d812e5fda21d83438c755cede5cea1f05c10f30a4ba9af3",
+    "rows": [
+      {
+        "case_id": "dual-0078-quasi-cliques",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "quasi-cliques",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_fbebbf79b2114bda9118e1585df398b8/files/file_9f2f3823f43a4c80b8af6e14fe61e884/graph.json",
+          "--backend",
+          "cuqc",
+          "--device",
+          "0",
+          "--minimum-degree-ratio",
+          "0.6",
+          "--minimum-size",
+          "4",
+          "--scheduling",
+          "dynamic",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0078-quasi-cliques-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.33944527991116047,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "07495c86ff12ec8a2faa0b2f562343e9eda4ccf4cb0c576244ce2c4d9489f94c"
+      },
+      {
+        "case_id": "dual-0094-maximal-cliques",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "maximal-cliques",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_bfb5b49e08e84f8c9ee799ef1abda69c/files/file_b3c2c6af25bd4be9941485f061f5a99f/graph.json",
+          "--backend",
+          "mce-gpu",
+          "--device",
+          "0",
+          "--minimum-clique-size",
+          "3",
+          "--include-total-count",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0094-maximal-cliques-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.4523501582443714,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "13d8866a36586461bb6aa622588827e2d7c627232df572c4de0919c8d2534dcf"
+      },
+      {
+        "case_id": "dual-0096-k-cliques",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "k-cliques",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_2d45847128d74472934834b584cfbd01/files/file_868a46ab926749f8b98348f89d7b7454/graph.json",
+          "--backend",
+          "kcgpu",
+          "--device",
+          "0",
+          "--k",
+          "3",
+          "--result-limit",
+          "100",
+          "--enumerate",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0096-k-cliques-injected-recovery-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.37606498040258884,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "cdc196a511f7b649f900b90d85aef9af00fa688524c70b69f4692b2a3fab69db"
+      },
+      {
+        "case_id": "dual-0096-k-cliques",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "k-cliques",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_8499316d469f4a48b6dd4210e7949d6a/files/file_d5649e8087d84f64a510c9cb32a9ed84/graph.json",
+          "--backend",
+          "kcgpu",
+          "--device",
+          "0",
+          "--k",
+          "3",
+          "--result-limit",
+          "100",
+          "--enumerate",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0096-k-cliques-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.37080037221312523,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "141b9e7142e16170a9e0a3251e279ade6d1e6cdfbc325027a448dcc47fae7b78"
+      },
+      {
+        "case_id": "dual-0098-betweenness-centrality",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "betweenness-centrality",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_761b95e72e404c219f0b9a28b790244f/files/file_06aad168eaf64789a9169ce80fb57e68/graph.json",
+          "--backend",
+          "turbo-bc",
+          "--device",
+          "0",
+          "--include-ranking",
+          "--include-normalized-scores",
+          "--include-maximum",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0098-betweenness-centrality-clarification-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.7714843284338713,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "0d89d6a3d78e73c81dc52dbdb8d9c99ebe1220eebac34e104a150c60cc1094a8"
+      },
+      {
+        "case_id": "dual-0098-betweenness-centrality",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "betweenness-centrality",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_7adb7efc86e14d9e98a8dbf0e4aff163/files/file_1c612069201542da9b9c91231cfce223/graph.json",
+          "--backend",
+          "turbo-bc",
+          "--device",
+          "0",
+          "--include-normalized-scores",
+          "--include-ranking",
+          "--include-maximum",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0098-betweenness-centrality-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 1.0237209405750036,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "14159b577d7f0df3a3ced77a8326d49d4ff80110f6f7cef88edf9cf280abcd66"
+      },
+      {
+        "case_id": "dual-0099-community-detection",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "community-detection",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_0315a5a64fbc4d94ae0c8907eec132f8/files/file_f79670441d754c6cb14af1a7e06298b2/graph.json",
+          "--backend",
+          "gleiden",
+          "--device",
+          "0",
+          "--include-communities",
+          "--include-edge-cut",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0099-community-detection-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.8600248582661152,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "777a3b2634c007a3481c3330551ae9d661e7293e1c64cf9f2028f2c15e90d3ca"
+      },
+      {
+        "case_id": "dual-0109-max-flow-min-cut",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "max-flow-min-cut",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/jobs/job_372e3f439ffc43a9989b914e81a87403/projected-graph.json",
+          "--backend",
+          "ecl-maxflow",
+          "--device",
+          "0",
+          "--source",
+          "\"geometric_neighborhoods-92003-0\"",
+          "--sink",
+          "\"geometric_neighborhoods-92003-7\"",
+          "--timeout-seconds",
+          "60",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0109-max-flow-min-cut-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.7347077038139105,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "58055fa4402742a42df50766fee572d9d60b1aee3cf5ac26952183d12c8dc107"
+      },
+      {
+        "case_id": "dual-0113-linear-assignment",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "linear-assignment",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/jobs/job_911ea89bcbf14108bec065430a2950c3/projected-graph.json",
+          "--backend",
+          "hungarian-cuda",
+          "--device",
+          "0",
+          "--timeout-seconds",
+          "60",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0113-linear-assignment-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.7382116932421923,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "929c070a324d2464c7d4bcafb72d5edb3e1ee3e60ea841190461ab8eb8d63a8c"
+      },
+      {
+        "case_id": "dual-0117-temporal-motif-mining",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "temporal-motif-mining",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_ac6774d97cb942878fe801b5b8e46131/files/file_5d008eefe6c84b798ae4b5db1cf043fa/graph.json",
+          "--backend",
+          "mayura",
+          "--device",
+          "0",
+          "--max-time-span",
+          "30",
+          "--result-limit",
+          "1000",
+          "--include-instances",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0117-temporal-motif-mining-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.7083354629576206,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "4dcfa3bfafc560d43a36b3651fc4ed6fa99d521b3fea7c3393a47042d7e6d1d7"
+      },
+      {
+        "case_id": "dual-0119-subgraph-isomorphism",
+        "command": [
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine",
+          "run",
+          "subgraph-isomorphism",
+          "--graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_7109506ffa4548abaf2f00fa496d94cd/files/file_2a3b23eae7694a4b81b06280553d72c5/graph.json",
+          "--backend",
+          "gmatch",
+          "--device",
+          "0",
+          "--ignore-vertex-labels",
+          "--initial-match-capacity",
+          "1000000",
+          "--result-limit",
+          "100",
+          "--query-graph",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/base-32k-development-v4-workflows/runtime/sessions/session_7109506ffa4548abaf2f00fa496d94cd/files/file_0e421eb384fe46dcbf0ad7b320991e85/graph.json",
+          "--include-embeddings",
+          "--output",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/dual-0119-subgraph-isomorphism-result.json",
+          "--pretty"
+        ],
+        "returncode": 0,
+        "seconds": 0.5472446605563164,
+        "ok": true,
+        "error": null,
+        "source_capture_sha256": "bf4efee1c85f16dd54e95f9b3bf505304771ab3f4b1204d65a98196c51c9cdaf",
+        "source_command_receipt": ".graphmine-learning/dual-adapter-v2/native-shared-gpu-smoke/receipt.json",
+        "source_command_receipt_sha256": "a182fbd4c54955834b7dbbbc76fe56dcec231e2db109719368782d9a7c6ff440"
+      }
+    ],
+    "passed": true,
+    "receipt_note": "The failed original subgraph job had no command in its saved outcome; its exact history-derived command was recovered from the earlier diagnostic receipt, replayed and appended after the first10successful checks."
+  },
+  "final_test_freeze": {
+    "frozen_at": "2026-10-08T05:49:44.322366+00:00",
+    "commitment": "Weights, prompts, schemas, validators and native binary are frozen before final-test model calls. No final-test-based tuning. Development v5 workflows finish concurrently; latency is not an isolated benchmark.",
+    "sources": {
+      "api.py": "0249f90ebaf908e4ca952e1e13d73fad096008c46ab095580a9aebf805fa3924",
+      "config.py": "425691ed2e1ee759bb4db045d6a1aeea0e941ef275cb4ab3ead8298804f6a6ba",
+      "history.py": "fb689749f6dfbe6ac338ba77ac83ef9e7a1bd692b512012fa90b251aa46e8585",
+      "database.py": "75fae2208af7d93c5f9da86edc2b5d37080290c7878420155837e29a5c500acf",
+      "ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+      "agent_service.py": "32fbe6afa3a873cb976350e516d3390f839fd0097909f6f1905a7500190efe7c",
+      "llm.py": "3034de5326b66dacf784f7bbdab0395b182e57d6ba5c3002ad42fb056a2982cc",
+      "models.py": "50251702ba3e4c61ca4a4f74bcc2b7982141d97e19fa9d8003b66d3cd10a44f8",
+      "planning.py": "b8da57219703e2fe93735120674da81d92904879c322f47963851ff4654fa71c",
+      "profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+      "graph_store.py": "2286f91eeefff8c3776c4640a2a9fa745473772a166e1f6263b7613443c6c937",
+      "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+      "execution.py": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+      "jobs.py": "0f8a3f6c2dbc676accb745f96e1c2393eeda81a0834fdaf6944dece777cf6089",
+      "answers.py": "2fe329fc8b64560de66d045111cf9a623830bb92926a1e6eb91b57b7a96302be",
+      "analysis.py": "9bf1da63fbea61f9006b6297eeb4997dd446efef34b118c7d99e692cba20473c",
+      "presentation.py": "181b8bb3f880ee7049ed1099c6f53af5e6c16a1b73f993a93be1cad167eddff8",
+      "visualization.py": "ad2f3f96812b5d0db128e0ecdb3313342d1b7adb0ede75437d1a0963edaad71c",
+      "terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+      "learning/catalog_replay.py": "ef402b3622b4637d54489c79d0fa6c3423bfc8ab479a8924bef9cb034352d71d",
+      "learning/catalog_compare.py": "a40d8614263fdbf7256b45c4589a24c4f6b692ebd68a408d9caceec7a7b98a4c",
+      "learning/catalog_grade.py": "29b049e5bb5bf4b2881671ad0da55a94d39922c366ecbb2a20fdf30468426cea",
+      "learning/catalog_reference.py": "c4a2382dca514207088f0dacdc9b97359bfecde29ebe112265935da5d55170c7",
+      "learning/oracles.py": "3b319153ad0474834df689489b31e20516ec90b75e3718e82c3ea029272ff592"
+    },
+    "profile": {
+      "base_model": "Qwen/Qwen3.8-27B-FP8",
+      "planner_model": "graphmine-planner-v2",
+      "analyst_model": "graphmine-analyst-v2",
+      "dual_adapters_active": true,
+      "routing_model": "graphmine-planner-v2",
+      "routing_adapter_active": false,
+      "routing_adapter_sha256": "dd7017735094300c4a89f217cb094c0d8b9981d1c7d86182596a7a6f7ef5f4d6",
+      "routing_contract": "repaired-37-v2",
+      "deployment_version": "dual-adapter-v2-candidate",
+      "model_weights_verified_by_harness": false,
+      "gpu_assignment": {
+        "llm_gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+        "graph_gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+        "allow_shared_gpu": true
+      },
+      "resource_limits": {
+        "max_upload_bytes": 2147483648,
+        "max_concurrent_uploads": 2,
+        "max_pending_jobs": 64,
+        "max_result_bytes": 67108864,
+        "job_timeout_seconds": 86400
+      },
+      "decoding": {
+        "llm_route_reasoning_effort": "none",
+        "llm_plan_reasoning_effort": "none",
+        "llm_analyst_reasoning_effort": "none",
+        "llm_route_max_tokens": 768,
+        "llm_plan_max_tokens": 3072,
+        "llm_analyst_max_tokens": 3072
+      },
+      "native_binary_sha256": "4b1b369d90adf1bd4d812e5fda21d83438c755cede5cea1f05c10f30a4ba9af3"
+    },
+    "artifacts": {
+      "final-test-inputs.json": "90d237f66803c75ef54ad13a918e59f70a684423d2be601d4cf7aa25ecf21649",
+      "final-test-workflows-v2.json": "f52c1d6c7622fe495d2367c4896759966fa21ae618887a8ca7807e9c8758f53e",
+      "trained-adapters.json": "536809c98dc81439dfb1ac04b719f0dc47c9d78cedfdfdbd4a1572c5968a0184",
+      "serving-adapters.json": "c974c984f67773e64a90ff2cea3a9434d7c076448de8da4e5feadb73ecbc4335",
+      "serving-receipt-shared-gpu.json": "531375915977e1366faf35feb76483d4294b07d7da457d2a5e930ed776b4f59c",
+      "native-resource-preflight-v5/verification.json": "94a706f9fe0d36da1605411beb8d880d4d303e425dfe8c14df09cc78799ccb27"
+    },
+    "software_gate_sha256": "93d2da5b15e0b2d083163abd86036cb3665c8d38cf0798a2eb4b7fdb5a504ce3",
+    "counts": {
+      "stage": 183,
+      "workflows": 13
+    }
+  },
+  "excluded_workflow_run": {
+    "artifact": "development-v4-workflow-comparison.json",
+    "reason": "GPU1 filled with another user workload, causing one baseline and eight adapted native failures. Not a model-quality comparison.",
+    "diagnostic": {
+      "recorded_at": "2026-10-08T05:20:32.746443+00:00",
+      "scope": "v4 complete workflow runs are resource-contaminated and excluded from primary model comparison. One baseline native job and eight adapted native jobs failed as another user filled GPU1. Stage inference comparison remains valid.",
+      "source_comparison": "development-v4-workflow-comparison.json",
+      "base_native_resource_failures": 1,
+      "adapted_native_resource_failures": 8,
+      "action": "Reserve graph-worker memory on GPU0 and rerun both complete workflow arms. Do not terminate or modify the other user process."
+    }
+  },
+  "chart_repair_policy_diagnostic": {
+    "protocol_sha256": "405617342b5d95366fb8dbd3108ca2252ca4c0a802dc14c412ce052504685b4a",
+    "arms": {
+      "base": {
+        "total": 5,
+        "initial_passed": 1,
+        "after_policy_passed": 2,
+        "repairs": 4,
+        "records": [
+          {
+            "id": "dual-0122-maximal-cliques-GroundedNarrative-custom-comparison",
+            "passed": false,
+            "repaired": true,
+            "error": "ValueError: Invalid Vega-Lite schema at $: does not match a supported Vega-Lite specification; check composition, mark, encoding and transforms",
+            "artifact_sha256": "111ceeb76d14a077297587cc3a96200375d03d20b0be5764b23699e3de8929b2"
+          },
+          {
+            "id": "dual-0123-maximum-clique-GroundedNarrative-custom-comparison",
+            "passed": true,
+            "repaired": false,
+            "error": null,
+            "artifact_sha256": "7b0250f48aaabbb3f381618711685d9d9ba2a914af8a5c6f89891ddb539b6067"
+          },
+          {
+            "id": "dual-0124-k-cliques-GroundedNarrative-custom-comparison",
+            "passed": true,
+            "repaired": true,
+            "error": null,
+            "artifact_sha256": "54730d9ac6434e4709704fb454d504afa82e9bc4fbf5193f91d1fb73041a6a7c"
+          },
+          {
+            "id": "dual-0125-k-core-GroundedNarrative-custom-comparison",
+            "passed": false,
+            "repaired": true,
+            "error": "ValueError: Invalid Vega-Lite schema at $.facet: does not match a supported Vega-Lite specification; check composition, mark, encoding and transforms",
+            "artifact_sha256": "3679365d6725942661025bb8e38684e041be5aca1b411fe7ea6d4200a643d11d"
+          },
+          {
+            "id": "dual-0126-betweenness-centrality-GroundedNarrative-custom-comparison",
+            "passed": false,
+            "repaired": true,
+            "error": "ValueError: Explanation contains an unsupported number: 8",
+            "artifact_sha256": "793e85548dee8c868a20484f8d21adbc64df958b3367a4f04f11c708c9fd0c8e"
+          }
+        ]
+      },
+      "adapters": {
+        "total": 5,
+        "initial_passed": 0,
+        "after_policy_passed": 2,
+        "repairs": 5,
+        "records": [
+          {
+            "id": "dual-0122-maximal-cliques-GroundedNarrative-custom-comparison",
+            "passed": true,
+            "repaired": true,
+            "error": null,
+            "artifact_sha256": "f63609165be758af3c4580e6993a37d51a463c0ffd48fbdfa542c4b0dd690a11"
+          },
+          {
+            "id": "dual-0123-maximum-clique-GroundedNarrative-custom-comparison",
+            "passed": false,
+            "repaired": true,
+            "error": "ValueError: Invalid Vega-Lite schema at $.vconcat[0]: does not match a supported Vega-Lite specification; check composition, mark, encoding and transforms",
+            "artifact_sha256": "54a878ae573380dfecf52e2ec14ab6fe2c0ecf8d5676bbed213522655108fdc5"
+          },
+          {
+            "id": "dual-0124-k-cliques-GroundedNarrative-custom-comparison",
+            "passed": true,
+            "repaired": true,
+            "error": null,
+            "artifact_sha256": "93c851ce477060ebe90d3983bc540cde0c2f9e5129d3fe01ef36970c5d201c1e"
+          },
+          {
+            "id": "dual-0125-k-core-GroundedNarrative-custom-comparison",
+            "passed": false,
+            "repaired": true,
+            "error": "ValueError: Invalid Vega-Lite schema at $: does not match a supported Vega-Lite specification; check composition, mark, encoding and transforms",
+            "artifact_sha256": "dcf1b74df04d321e35309354388f9e310651a95ed5ef3dc8ccf27f5bb65a9f09"
+          },
+          {
+            "id": "dual-0126-betweenness-centrality-GroundedNarrative-custom-comparison",
+            "passed": false,
+            "repaired": true,
+            "error": "ValueError: Explanation contains an unsupported number: 8",
+            "artifact_sha256": "30607f4e6b1667fa5a3c81b04a73453cdeb5ac3f84bac4c4ba56398aef899984"
+          }
+        ]
+      }
+    },
+    "protocol": {
+      "created_at": "2026-10-08T07:06:28.898945+00:00",
+      "scope": "Post-stage diagnostic of the already-frozen production one-repair policy on all five reserved custom-chart prompts, both arms. Retains every initial response, including failures. No model, prompt, runtime or validation tuning; no primary score changes. Not an independent test sample or a complete native workflow.",
+      "script_sha256": "bf4a59a4e4799b7b9e1f6e153c6cf39093e8f2d338fc92bb590281936cd324b0",
+      "runtime_sources": {
+        "api.py": "0249f90ebaf908e4ca952e1e13d73fad096008c46ab095580a9aebf805fa3924",
+        "config.py": "425691ed2e1ee759bb4db045d6a1aeea0e941ef275cb4ab3ead8298804f6a6ba",
+        "history.py": "fb689749f6dfbe6ac338ba77ac83ef9e7a1bd692b512012fa90b251aa46e8585",
+        "database.py": "75fae2208af7d93c5f9da86edc2b5d37080290c7878420155837e29a5c500acf",
+        "ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+        "agent_service.py": "32fbe6afa3a873cb976350e516d3390f839fd0097909f6f1905a7500190efe7c",
+        "llm.py": "3034de5326b66dacf784f7bbdab0395b182e57d6ba5c3002ad42fb056a2982cc",
+        "models.py": "50251702ba3e4c61ca4a4f74bcc2b7982141d97e19fa9d8003b66d3cd10a44f8",
+        "planning.py": "b8da57219703e2fe93735120674da81d92904879c322f47963851ff4654fa71c",
+        "profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+        "graph_store.py": "2286f91eeefff8c3776c4640a2a9fa745473772a166e1f6263b7613443c6c937",
+        "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+        "execution.py": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+        "jobs.py": "0f8a3f6c2dbc676accb745f96e1c2393eeda81a0834fdaf6944dece777cf6089",
+        "answers.py": "2fe329fc8b64560de66d045111cf9a623830bb92926a1e6eb91b57b7a96302be",
+        "analysis.py": "9bf1da63fbea61f9006b6297eeb4997dd446efef34b118c7d99e692cba20473c",
+        "presentation.py": "181b8bb3f880ee7049ed1099c6f53af5e6c16a1b73f993a93be1cad167eddff8",
+        "visualization.py": "ad2f3f96812b5d0db128e0ecdb3313342d1b7adb0ede75437d1a0963edaad71c",
+        "terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+        "learning/catalog_replay.py": "ef402b3622b4637d54489c79d0fa6c3423bfc8ab479a8924bef9cb034352d71d",
+        "learning/catalog_compare.py": "a40d8614263fdbf7256b45c4589a24c4f6b692ebd68a408d9caceec7a7b98a4c",
+        "learning/catalog_grade.py": "29b049e5bb5bf4b2881671ad0da55a94d39922c366ecbb2a20fdf30468426cea",
+        "learning/catalog_reference.py": "c4a2382dca514207088f0dacdc9b97359bfecde29ebe112265935da5d55170c7",
+        "learning/oracles.py": "3b319153ad0474834df689489b31e20516ec90b75e3718e82c3ea029272ff592"
+      },
+      "ids": [
+        "dual-0122-maximal-cliques-GroundedNarrative-custom-comparison",
+        "dual-0123-maximum-clique-GroundedNarrative-custom-comparison",
+        "dual-0124-k-cliques-GroundedNarrative-custom-comparison",
+        "dual-0125-k-core-GroundedNarrative-custom-comparison",
+        "dual-0126-betweenness-centrality-GroundedNarrative-custom-comparison"
+      ],
+      "budget": "At most one semantic repair after each saved initial target, using the production feedback string, generic guidance and previous draft. The existing model JSON transport repair remains unchanged."
+    }
+  },
+  "focused_repair_probe": {
+    "scope": "Development-only diagnostic: one repair after the original first failure; the production two-attempt budget is unchanged. Excluded from primary v4/v5 scores.",
+    "passed": false,
+    "error": "ValueError: charts[0].spec_json must contain valid JSON: Expecting ',' delimiter at line 1, column 1202. Check commas and balanced braces/brackets."
+  },
+  "development_stage_runtime": "v4 before chart repair guidance and shared-GPU native changes; weights unchanged. v5 workflow and final-test runs use the new runtime. Primary stage v4 and workflow v5 scores are kept separate.",
+  "resource_observations": {
+    "development": {
+      "samples": 519,
+      "minimum_observed_free_mib": 10590,
+      "gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+      "scope": "Periodic snapshots can miss brief allocation peaks; native failures remain visible in workflow grades."
+    },
+    "final-test": {
+      "samples": 1088,
+      "minimum_observed_free_mib": 10775,
+      "gpu_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+      "scope": "Periodic snapshots can miss brief allocation peaks; native failures remain visible in workflow grades."
+    }
+  },
+  "limitations": [
+    "Small correlated pilot: source graph samples contain only 4\u20138 vertices; cases and conversational variants are not independent production requests.",
+    "Source lineages and exact graph contents are separated across splits, while some question wording is shared. This measures source/graph transfer, not broad language generalization.",
+    "Stage evaluation uses fixed preceding context. Complete workflow success is reported separately.",
+    "Automatic numeric/citation, schema, field, data-binding and rendering checks do not prove every interpretation or chart conveys the right meaning. No human preference labels were collected.",
+    "The error-recovery workflow deliberately injects an invalid first draft; it is not a naturally occurring student failure.",
+    "Comparison is base versus two specialized adapters. A jointly trained single adapter was not evaluated.",
+    "An unrelated GPU workload was observed during evaluation. Reported elapsed times include generation, validation and resource contention; they are not isolated speed benchmarks.",
+    "Only one completed run per input and configuration is reported; repeated-run stability has not been measured.",
+    "One supervised epoch and the selected rank/learning rate were not established as optimal. Training uses NF4; actual measured serving uses the FP8 checkpoint.",
+    "Earlier runs with insufficient context, unmatched adapter names, decoder defects, or native GPU resource exhaustion remain diagnostic and are excluded from these primary comparisons.",
+    "Shared GPU0 leaves about11GiB idle headroom with this model profile. The bounded gMatch pools do not cap every backend allocation; larger graphs need separate capacity testing.",
+    "Clearer chart validation feedback did not make the focused development repair pass. Chart reliability is reported from the frozen probes rather than assumed from the new feedback."
+  ],
+  "artifact_sha256": {
+    ".graphmine-learning/dual-adapter-v2/teacher-review-summary.json": "b951b213966a0735bfe496210ed7562b4770ed29d6ab9c5f1a9b9d2f12480b27",
+    ".graphmine-learning/dual-adapter-v2/data-split-audit.json": "a157c424d0c341eec3ce9855b96d3e52ec78f203dfeb79e66e5783f1c39fd25e",
+    ".graphmine-learning/dual-adapter-v2/trained-adapters.json": "536809c98dc81439dfb1ac04b719f0dc47c9d78cedfdfdbd4a1572c5968a0184",
+    ".graphmine-learning/dual-adapter-v2/serving-receipt-shared-gpu.json": "531375915977e1366faf35feb76483d4294b07d7da457d2a5e930ed776b4f59c",
+    "agent/evaluation/reports/dual-adapter-runtime-cpu-v9.json": "93d2da5b15e0b2d083163abd86036cb3665c8d38cf0798a2eb4b7fdb5a504ce3",
+    ".graphmine-learning/dual-adapter-v2/decoder-full-schema-conformance.json": "3ebef04a4efe2b2b2c7351338296e8af3333a568abf5e07fe494029db9de5724",
+    ".graphmine-learning/dual-adapter-v2/development-v4-decoder-conformance.json": "e84eab265f1f42da7a95fa8171cdc2b2333f74861d68e0ac800ceefb1aca39bc",
+    ".graphmine-learning/dual-adapter-v2/base-32k-development-v4/request-reuse.json": "cc28d181da74caacb5a1b5ef928a5993db100f4f4998a8cd2b4fb1dc6789698c",
+    ".graphmine-learning/dual-adapter-v2/native-memory-v5/verification.json": "396b86d33ad80ac6f0fafbf6f3d6bb24e4ab2c01971b333d9afe048e7bda09cd",
+    ".graphmine-learning/dual-adapter-v2/shared-gpu-config-change.json": "6849fb06417c37177209eb1a44c4504217e16ab1d41ee67f17257946b19748f8",
+    ".graphmine-learning/dual-adapter-v2/trained-chart-linking-v5.json": "cd4d7397dfcc2a2d4f73b8bd93ec7e137b28fee9a5f188e6fe15f5d59b7030ed",
+    ".graphmine-learning/dual-adapter-v2/development-v5-visual-review.json": "6c074ae1a4d4593bc1ab27402431fd9541e5a07e9ef64923737b8bbdcefe279d",
+    ".graphmine-learning/dual-adapter-v2/development-v5-subgraph-grounding-diagnostic.json": "47a76ed40a389e67614aa80a2a0a1df530794709d0fb7783174d5c9c7550cdf5",
+    ".graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/verification.json": "94a706f9fe0d36da1605411beb8d880d4d303e425dfe8c14df09cc78799ccb27",
+    ".graphmine-learning/dual-adapter-v2/final-test-v5-freeze.json": "99d912c1525898c5c684367fce57b07b3907180807cefa366e66d517c387d3f9",
+    ".graphmine-learning/dual-adapter-v2/workflow-resource-diagnostic.json": "334202e832e6315cec98e82de32cec9ba04bb4d9cfe8bf8524c0305f68d62c54",
+    ".graphmine-learning/dual-adapter-v2/final-test-v5-chart-repair-policy/summary.json": "c670afe5e5c162ad236546a260bf23be049dc2bf9e2c178076c7683fca17c053",
+    ".graphmine-learning/dual-adapter-v2/final-test-v5-chart-repair-policy/protocol.json": "405617342b5d95366fb8dbd3108ca2252ca4c0a802dc14c412ce052504685b4a",
+    ".graphmine-learning/dual-adapter-v2/focused-chart-repair-v5.json": "7f18586d92b2f8eccaeef5c92198549206f31f626df52b4d397faa656fdc31b3",
+    ".graphmine-learning/dual-adapter-v2/development-v4-stage-comparison.json": "d23750f64c5ecbaed76304a35fa5f7b04668bc058ae8aac6257f333c0e8ad231",
+    ".graphmine-learning/dual-adapter-v2/development-v5-workflow-comparison.json": "c1ee48a5559b7128c3c7cd0131d94d870a0e032dc4f8caf5f0b65cf4e26f1a6e",
+    ".graphmine-learning/dual-adapter-v2/development-inputs.json": "3d99b50c8ced6a54dd3151c45e94fc769d730580b779e2b02164365df19582d4",
+    ".graphmine-learning/dual-adapter-v2/development-workflows-v2.json": "591457c81274889c7bdab478382f89e200bcd869c1be85ca9286cb15b942cf32",
+    ".graphmine-learning/dual-adapter-v2/base-32k-development-v4/calls/dual-0071-maximal-cliques-GroundedNarrative-custom-comparison.json": "2df7f27f1c206376fe01b525c7066f90d465d540754b7e9b46e036d8d7516f6e",
+    ".graphmine-learning/dual-adapter-v2/base-32k-development-v4/calls/dual-0072-maximum-clique-GroundedNarrative-custom-comparison.json": "565a9e686885f481fb361187fbc9bb42900c044d91e0813e6a63a0938f76879f",
+    ".graphmine-learning/dual-adapter-v2/base-32k-development-v4/calls/dual-0073-k-cliques-GroundedNarrative-custom-comparison.json": "2b2305d422214cff0ffc22d576ac027f69eea267ab751e85f2ea33e317fcb923",
+    ".graphmine-learning/dual-adapter-v2/base-32k-development-v4/calls/dual-0074-k-core-GroundedNarrative-custom-comparison.json": "b0291c5978100c5784c5fb2c5c616b7af93d066703297558713e53fb5a72b7b1",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-development-v4/calls/dual-0071-maximal-cliques-GroundedNarrative-custom-comparison.json": "386c75195bb42f8fd430a5e239c7234125999ad73eb9da7ed4dfac96bc00b090",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-development-v4/calls/dual-0072-maximum-clique-GroundedNarrative-custom-comparison.json": "9e0cb37dfd09ccde43f0cdea9d819c5ef49eb55200157467f956c6bc68763cee",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-development-v4/calls/dual-0073-k-cliques-GroundedNarrative-custom-comparison.json": "0274b451a3de65dffe133aebe4efd6c926721eb26da838ab9d071d524bd280d4",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-development-v4/calls/dual-0074-k-core-GroundedNarrative-custom-comparison.json": "e87555fbec7c6a5eb0f4299db0cbf78ff615fa06a27a6344d7b90cd32c291d30",
+    ".graphmine-learning/dual-adapter-v2/development-v5-trained-previews/browser-review.json": "738cfc5865cee4eb89217b7f5146edbb68bffc04f1e7c593834e1e081295a432",
+    ".graphmine-learning/dual-adapter-v2/development-v5-column-order-audit.json": "4c9d426f73431d32367748a5c1d31142a305569384f4c412445e0f970d1f25ab",
+    ".graphmine-learning/dual-adapter-v2/column-order-audit-protocol.json": "44a19a1142cacbb6b08f26754b29f2356dd9e17037182b11216fe0dd969af902",
+    ".graphmine-learning/dual-adapter-v2/final-test-v5-stage-comparison.json": "fff5eb03fafa9193bedbba83ee3703718f5000e121465ef913e3a8e049248853",
+    ".graphmine-learning/dual-adapter-v2/final-test-v5-workflow-comparison.json": "b0236d8715d0dd704b76b838c0f649814dfe17b4683a0c7e7208f1bce0fd4384",
+    ".graphmine-learning/dual-adapter-v2/final-test-inputs.json": "90d237f66803c75ef54ad13a918e59f70a684423d2be601d4cf7aa25ecf21649",
+    ".graphmine-learning/dual-adapter-v2/final-test-workflows-v2.json": "f52c1d6c7622fe495d2367c4896759966fa21ae618887a8ca7807e9c8758f53e",
+    ".graphmine-learning/dual-adapter-v2/base-32k-final-test-v5/calls/dual-0122-maximal-cliques-GroundedNarrative-custom-comparison.json": "3b0cd8586af0c442ae4956a25a69c0df43a1b7ab92044a7ab2ec133f8f7ea28b",
+    ".graphmine-learning/dual-adapter-v2/base-32k-final-test-v5/calls/dual-0123-maximum-clique-GroundedNarrative-custom-comparison.json": "5720accc0a21d1627a64682b1f6aa251b10e154a186133d413d229234b9197fc",
+    ".graphmine-learning/dual-adapter-v2/base-32k-final-test-v5/calls/dual-0124-k-cliques-GroundedNarrative-custom-comparison.json": "e024c64b7352baf0c2a56a855fa9e471af6f399cf47c82b5a892da0468a826f8",
+    ".graphmine-learning/dual-adapter-v2/base-32k-final-test-v5/calls/dual-0125-k-core-GroundedNarrative-custom-comparison.json": "b418dd4035b3576cac03d2fd27514db2d7af97d2fc2f46cb632f74cd8195e5ff",
+    ".graphmine-learning/dual-adapter-v2/base-32k-final-test-v5/calls/dual-0126-betweenness-centrality-GroundedNarrative-custom-comparison.json": "84491c2eb3ba933e7c4ab5f97e68380d39f2fd7d0e2cc1e0a76b07cad4c3d51c",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-final-test-v5/calls/dual-0122-maximal-cliques-GroundedNarrative-custom-comparison.json": "1435427532b1f48aa9ac1792dd1e97326f1f09ee1cab75371583087ba9d37fcd",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-final-test-v5/calls/dual-0123-maximum-clique-GroundedNarrative-custom-comparison.json": "301e3cbc61028d3fcc80b906b6fad90c1742cba7c6fc530595067125dcd8267c",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-final-test-v5/calls/dual-0124-k-cliques-GroundedNarrative-custom-comparison.json": "e4ad28930714d6013d76c6e2730bf2a6f7b29a444f6374d6a8742988ba04fc5c",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-final-test-v5/calls/dual-0125-k-core-GroundedNarrative-custom-comparison.json": "a6b9088b94641bc0bf752648248579a93b30c6bfa1a00ed339847e7e9308bb54",
+    ".graphmine-learning/dual-adapter-v2/adapters-32k-final-test-v5/calls/dual-0126-betweenness-centrality-GroundedNarrative-custom-comparison.json": "928f493656a24b30c0f5e6c266ec0bb087e670764536a02dd30451e47e6bde4e",
+    ".graphmine-learning/dual-adapter-v2/final-test-v5-trained-previews/browser-review.json": "10a4004868b0333d8d6dbbe67afe86aa2ac3562e8156f816324f08410ea89742",
+    ".graphmine-learning/dual-adapter-v2/final-test-v5-column-order-audit.json": "5e7794bc99fcd6fb8356ed9842410cf612349d5818c5081260242b254d3f5705",
+    ".graphmine-learning/dual-adapter-v2/development-v5-gpu-samples.jsonl": "d8c70dba1d7fee29928356ea9aecd3526aa0943e99aed4629cb5f6b25054cb99",
+    ".graphmine-learning/dual-adapter-v2/final-test-v5-gpu-samples.jsonl": "7512669eab9b43f13a34695ae6a9e0a80842be5c91d7a4c0d06737feb49f3623"
+  }
+}

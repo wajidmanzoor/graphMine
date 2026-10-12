@@ -1,0 +1,28 @@
+{
+  "title": "Gunrock: GPU Graph Analytics",
+  "year": 2017,
+  "venue": "ACM Transactions on Parallel Computing",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1701.01170",
+  "pdf_url": "https://arxiv.org/pdf/1701.01170",
+  "paper_id": "2017_gunrock_regularized_ppr",
+  "problem_id": "seeded_local_community_detection",
+  "problem_dir": "49_seeded_local_community_detection",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Gunrock accelerated regularized PageRank diffusion",
+  "code_url": "https://github.com/gunrock/gunrock",
+  "semantic_fit": "building_block",
+  "gpu_scope": "CUDA gradient/proximal diffusion kernels.",
+  "notes": "Returns diffusion scores. A verified conductance sweep and seed-community result are missing; not a complete local-community implementation.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "gunrock/app/pr_nibble/pr_nibble_enactor.cuh",
+    "gunrock/app/pr_nibble/pr_nibble_app.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

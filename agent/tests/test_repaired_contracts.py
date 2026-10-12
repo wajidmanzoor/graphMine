@@ -156,6 +156,7 @@ def test_group_schema_and_server_reject_invalid_ids(catalog, groups):
         ("superfuser", "sample_count", 33),
         ("superfuser", "sample_count", 0),
         ("superfuser", "random_seed", -1),
+        ("superfuser", "random_seed", 2**64),
     ],
 )
 def test_unsupported_profile_parameters_fail_before_execution(
@@ -165,6 +166,12 @@ def test_unsupported_profile_parameters_fail_before_execution(
     plan.parameters[field] = value
     with pytest.raises(PlanValidationError):
         PlanValidator(catalog).validate(plan, for_execution=True)
+
+
+def test_full_uint64_seed_limit_remains_validated_after_decoder_relaxation(catalog):
+    plan = make_plan(catalog, "superfuser")
+    plan.parameters["random_seed"] = 2**64 - 1
+    PlanValidator(catalog).validate(plan, for_execution=True)
 
 
 @pytest.mark.parametrize("backend", ["kpar", "gpu4gst"])

@@ -1,0 +1,18 @@
+{
+  "family": "faiss",
+  "gpu": "0",
+  "cases": 200,
+  "passed": 200,
+  "failed": 0,
+  "startup_error": null,
+  "by_backend": {
+    "faiss-flat-knn": {
+      "passed": 200,
+      "failed": 0,
+      "scope": "Collected GPU FlatL2 search plus explicit self-ID removal, exact distances and tied-neighbor optimum vs NumPy"
+    }
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "numpy": "1.26.4",
+  "script_sha256": "4f0a341bc987d85c59a45f786fd10eb2ed3fdd71be4239155d249f157d2f2e47"
+}

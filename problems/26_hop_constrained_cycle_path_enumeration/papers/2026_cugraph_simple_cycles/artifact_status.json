@@ -1,0 +1,28 @@
+{
+  "problem_id": "hop_constrained_cycle_path_enumeration",
+  "paper_id": "2026_cugraph_simple_cycles",
+  "title": "cuGraph Elementary cycle enumeration — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cugraph",
+    "local_path": "code",
+    "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cugraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/components/simple_cycles_impl.cuh": "f5a08f187f72e2a700f6694e3afc7e84cacdee4372f0b22ade61a668c1ed7eff"
+    }
+  }
+}

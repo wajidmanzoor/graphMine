@@ -1,0 +1,28 @@
+{
+  "family": "eigen",
+  "gpu": "1",
+  "cases": 901,
+  "passed": 899,
+  "failed": 2,
+  "startup_error": null,
+  "by_backend": {
+    "cupy-dense-eigh": {
+      "passed": 301,
+      "failed": 0,
+      "scope": "Pinned upstream algorithm; independent NumPy eigenvalues, residuals, orthonormality, repeated zero eigenvalues"
+    },
+    "cupy-lanczos": {
+      "passed": 300,
+      "failed": 0,
+      "scope": "Pinned upstream algorithm; independent NumPy eigenvalues, residuals, orthonormality, repeated zero eigenvalues"
+    },
+    "cupy-lobpcg": {
+      "passed": 298,
+      "failed": 2,
+      "scope": "Pinned upstream algorithm; independent NumPy eigenvalues, residuals, orthonormality, repeated zero eigenvalues"
+    }
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "numpy": "2.5.3",
+  "script_sha256": "4f0a341bc987d85c59a45f786fd10eb2ed3fdd71be4239155d249f157d2f2e47"
+}

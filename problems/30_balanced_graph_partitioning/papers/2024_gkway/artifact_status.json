@@ -1,0 +1,24 @@
+{
+  "problem_id": "balanced_graph_partitioning",
+  "paper_id": "2024_gkway",
+  "title": "G-kway: Multilevel GPU-Accelerated k-way Graph Partitioner using Task Graph Parallelism",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://tsung-wei-huang.github.io/papers/2024-DAC-gkway.pdf",
+    "resolved_url": "https://tsung-wei-huang.github.io/papers/2024-DAC-gkway.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "6e98d64a1dab4854c882ffa2f415ed280805da6a3134782d9f93896cb39569a5",
+    "bytes": 694600,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

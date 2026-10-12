@@ -1,0 +1,28 @@
+{
+  "title": "Deep Graph Library: A Graph-Centric, Highly-Performant Package for Graph Neural Networks",
+  "year": 2019,
+  "venue": null,
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1909.01315",
+  "pdf_url": "https://arxiv.org/pdf/1909.01315",
+  "paper_id": "2019_dgl_node_subgraph",
+  "problem_id": "induced_subgraph_ego_extraction",
+  "problem_dir": "48_induced_subgraph_ego_extraction",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "DGL sparse graph slicing for induced subgraphs",
+  "code_url": "https://github.com/dmlc/dgl",
+  "semantic_fit": "variant",
+  "gpu_scope": "DGL CUDA sparse-matrix slicing on a graph stored on a CUDA device.",
+  "notes": "Entry function node_subgraph. Preserve relabeling maps and copied feature identities. Framework paper.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "python/dgl/subgraph.py",
+    "src/array/cuda/spmat_op_impl_csr.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

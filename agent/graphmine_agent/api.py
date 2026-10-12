@@ -5,6 +5,7 @@ import base64
 import binascii
 import hmac
 import json
+import sqlite3
 import tempfile
 import zipfile
 from collections.abc import AsyncIterator
@@ -31,6 +32,7 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.concurrency import run_in_threadpool
 
 from . import __version__
 from .agent_service import AgentService
@@ -41,12 +43,12 @@ from .analytics import (
     WorkflowRequest,
     WorkflowRevision,
 )
-from .analytics_examples import register_example_routes
 from .analytics_planning import AnalyticsPlanner, PlanningRequest
+from .analytics_examples import register_example_routes
 from .analytics_projection import register_projection_routes
 from .catalog import Catalog, CatalogError
 from .config import Settings
-from .database import Database, RecordNotFound
+from .database import Database, QueueCapacityError, RecordNotFound
 from .execution import ExecutionError, GraphMineRunner
 from .graph_store import GraphStore, UploadError
 from .history import HistoryStore
@@ -87,6 +89,7 @@ class Runtime:
     events: EventBus
     jobs: JobManager
     agent: AgentService
+    upload_slots: asyncio.Semaphore
     analytics: AnalyticsService
 
 
@@ -104,6 +107,7 @@ def build_runtime(settings: Settings) -> Runtime:
         runner,
         events,
         summary_items=settings.result_summary_items,
+        max_pending_jobs=settings.max_pending_jobs,
     )
     agent = AgentService(settings, catalog, database, graph_store, validator, jobs)
     jobs.result_handler = agent.handle_completed_result
@@ -117,6 +121,7 @@ def build_runtime(settings: Settings) -> Runtime:
         events=events,
         jobs=jobs,
         agent=agent,
+        upload_slots=asyncio.Semaphore(settings.max_concurrent_uploads),
         analytics=AnalyticsService(settings, database, graph_store, events),
     )
 
@@ -171,23 +176,28 @@ def _websocket_credentials(
     return supplied, accepted_protocol
 
 
-async def _read_upload(upload: UploadFile, limit: int) -> bytes:
-    chunks: list[bytes] = []
-    size = 0
-    while True:
-        chunk = await upload.read(1024 * 1024)
-        if not chunk:
-            break
-        size += len(chunk)
-        if size > limit:
-            raise UploadError(f"upload exceeds {limit} byte limit")
-        chunks.append(chunk)
-    return b"".join(chunks)
-
-
 def _compiled_backends(runtime: Runtime, operation_id: str) -> set[str] | None:
     runtime.runner.require_ready()
     return runtime.runner.compiled_backends_for(operation_id)
+
+
+async def _ingest_upload(store: GraphStore, **kwargs):
+    # Python cannot interrupt an in-progress parser thread. Keep its upload
+    # handle and capacity slot alive until it finishes, even if the request is
+    # cancelled; then propagate cancellation instead of claiming a response.
+    worker = asyncio.create_task(run_in_threadpool(store.ingest_stream, **kwargs))
+    cancelled = False
+    try:
+        while True:
+            try:
+                return await asyncio.shield(worker)
+            except asyncio.CancelledError:
+                cancelled = True
+                if worker.done():
+                    return worker.result()
+    finally:
+        if cancelled:
+            raise asyncio.CancelledError
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -265,6 +275,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             },
         )
 
+    @app.exception_handler(QueueCapacityError)
+    async def queue_capacity_handler(
+        _request: Request, error: QueueCapacityError
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=429,
+            headers={"Retry-After": "5"},
+            content={
+                "turn_id": getattr(error, "history_turn_id", None),
+                "error": {
+                    "code": "job_queue_full",
+                    "message": str(error),
+                    "details": {
+                        "limit": error.limit,
+                        "pending": error.pending,
+                        "requested": error.requested,
+                    },
+                },
+            },
+        )
+
     @app.exception_handler(ValueError)
     async def value_error_handler(_request: Request, error: Exception) -> JSONResponse:
         return JSONResponse(
@@ -311,16 +342,35 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     router = APIRouter(prefix="/api", dependencies=[Depends(_authorization)])
 
+    @app.exception_handler(sqlite3.Error)
+    async def storage_error_handler(
+        _request: Request, _error: sqlite3.Error
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": {
+                    "code": "storage_unavailable",
+                    "message": "The metadata store is unavailable. Check storage and job status before retrying.",
+                }
+            },
+        )
+
     @router.get("/health")
     async def health(request: Request) -> dict[str, Any]:
         runtime = _runtime(request)
         capability = runtime.runner.capabilities
         llm_available = await runtime.agent.model.available()
+        worker = runtime.jobs.statistics()
+        history = runtime.database.history.statistics()
         ready = (
             capability.binary_available
             and not capability.error
             and capability.library_version == __version__
             and llm_available
+            and worker["worker_running"]
+            and not worker["error"]
+            and history["status"] == "ok"
         )
         return {
             "version": __version__,
@@ -334,6 +384,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "gpu_uuid": runtime.settings.llm_gpu_uuid,
             },
             "graphmine": capability.model_dump(mode="json"),
+            "worker": worker,
+            "history": history,
         }
 
     @router.get("/metrics")
@@ -343,6 +395,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "version": __version__,
             "database": runtime.database.statistics(),
             "worker": runtime.jobs.statistics(),
+            "history": runtime.database.history.statistics(),
         }
 
     @router.get("/domains", response_model=list[DomainProfile])
@@ -512,20 +565,30 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     ) -> FileInfo:
         runtime = _runtime(request)
         runtime.database.get_session(session_id)
-        content = await _read_upload(file, runtime.settings.max_upload_bytes)
-        return FileInfo.from_stored(
-            runtime.graph_store.ingest(
+        if file.size is not None and file.size > runtime.settings.max_upload_bytes:
+            raise UploadError(
+                f"upload exceeds {runtime.settings.max_upload_bytes} byte limit"
+            )
+        if runtime.upload_slots.locked():
+            raise HTTPException(
+                status_code=429,
+                detail="Uploads are busy. Please retry shortly.",
+                headers={"Retry-After": "2"},
+            )
+        async with runtime.upload_slots:
+            record = await _ingest_upload(
+                runtime.graph_store,
                 session_id=session_id,
                 role=role,
                 filename=file.filename or "upload",
-                content=content,
+                stream=file.file,
                 media_type=file.content_type,
                 directed=directed,
                 source_column=source_column,
                 target_column=target_column,
                 timestamp_unit=timestamp_unit,
             )
-        )
+        return FileInfo.from_stored(record)
 
     @router.get("/sessions/{session_id}/files", response_model=list[FileInfo])
     async def list_files(session_id: str, request: Request) -> list[FileInfo]:

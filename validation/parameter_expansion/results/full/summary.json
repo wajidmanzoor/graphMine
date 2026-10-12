@@ -1,0 +1,172 @@
+{
+  "mode": "full",
+  "binary_sha256": "0b4ee96d2f90e92a2de48ecc348623ec47c4fbb2b804d9d2e4010b5578c1df8b",
+  "generator_sha256": "f885f5c6167748d25eda3e6222e17697c5875d27f115802a1842fb43e9159ecd",
+  "gpus": [
+    "0",
+    "1"
+  ],
+  "seconds": 2469.7684144973755,
+  "cases": 15204,
+  "passed": 15168,
+  "failed": 36,
+  "coverage": {
+    "maximal-cliques/mce-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximal-cliques/rdmce": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximum-clique/gpu-maximum-clique": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-cliques/kcgpu": {
+      "passed": 1252,
+      "failed": 0
+    },
+    "k-cliques/gamma": {
+      "passed": 980,
+      "failed": 20
+    },
+    "k-cliques/graphset": {
+      "passed": 916,
+      "failed": 0
+    },
+    "quasi-cliques/cuqc": {
+      "passed": 624,
+      "failed": 0
+    },
+    "triangle-counting/tot": {
+      "passed": 208,
+      "failed": 0
+    },
+    "dynamic-triangle-counting/edtc": {
+      "passed": 208,
+      "failed": 0
+    },
+    "graph-motifs/graphset": {
+      "passed": 208,
+      "failed": 0
+    },
+    "subgraph-isomorphism/gmatch": {
+      "passed": 624,
+      "failed": 0
+    },
+    "community-detection/parallel-louvain": {
+      "passed": 624,
+      "failed": 0
+    },
+    "community-detection/parallel-leiden": {
+      "passed": 624,
+      "failed": 0
+    },
+    "community-detection/parallel-leiden-plus": {
+      "passed": 624,
+      "failed": 0
+    },
+    "k-truss/acctd": {
+      "passed": 208,
+      "failed": 0
+    },
+    "densest-subgraph/cds": {
+      "passed": 1336,
+      "failed": 0
+    },
+    "maximal-cliques/g2-aimd": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximum-clique/cuda-ms": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximum-clique/maximum-clique-on-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-core/kcore-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "triangle-counting/wetric": {
+      "passed": 208,
+      "failed": 0
+    },
+    "graph-motifs/graphminer": {
+      "passed": 208,
+      "failed": 0
+    },
+    "graph-motifs/dumato": {
+      "passed": 208,
+      "failed": 0
+    },
+    "community-detection/gleiden": {
+      "passed": 208,
+      "failed": 0
+    },
+    "betweenness-centrality/turbo-bc": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximal-bicliques/cumbe": {
+      "passed": 512,
+      "failed": 0
+    },
+    "butterfly-counting/graphminer": {
+      "passed": 512,
+      "failed": 0
+    },
+    "connected-components/ecl-scc": {
+      "passed": 368,
+      "failed": 0
+    },
+    "transitive-closure/gdlog": {
+      "passed": 184,
+      "failed": 0
+    },
+    "max-flow-min-cut/ecl-maxflow": {
+      "passed": 184,
+      "failed": 0
+    },
+    "temporal-motif-mining/everest": {
+      "passed": 155,
+      "failed": 5
+    },
+    "linear-assignment/hungarian-cuda": {
+      "passed": 200,
+      "failed": 0
+    },
+    "group-steiner-tree/gpu4gst": {
+      "passed": 160,
+      "failed": 0
+    },
+    "k-cliques/auto": {
+      "passed": 414,
+      "failed": 6
+    },
+    "maximal-biclique-counting/mbe-gpu": {
+      "passed": 512,
+      "failed": 0
+    },
+    "butterfly-counting/gamma-butterfly": {
+      "passed": 512,
+      "failed": 0
+    },
+    "personalized-pagerank/kpar": {
+      "passed": 184,
+      "failed": 0
+    },
+    "influence-maximization/superfuser": {
+      "passed": 184,
+      "failed": 0
+    },
+    "temporal-motif-mining/mayura": {
+      "passed": 155,
+      "failed": 5
+    }
+  },
+  "limitations": "Exact bounded oracles; heuristic partitions checked for score/feasibility, PPR errors measured, influence deterministic probabilities checked. No global optimality claim for heuristic operations."
+}

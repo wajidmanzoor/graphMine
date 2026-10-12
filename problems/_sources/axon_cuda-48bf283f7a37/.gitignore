@@ -1,0 +1,13 @@
+*.o
+*.exe
+*.sqlite
+*.nsys-rep
+*.tmp
+*.bz2
+*.plac
+*.part
+
+.vscode/
+trashcan/
+hgraphs/
+build/

@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/pygod-team/pygod",
+  "checked_at": "2026-10-10T01:37:08Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8",
+  "archive_url": "https://codeload.github.com/pygod-team/pygod/tar.gz/c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8",
+  "archive_sha256": "a06e5a019d25f27b697addde8e8807f2e74708de3d3cde837cbadd55399e8313",
+  "local_path": "pygod-c84dccafa9bf",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "BSD-2-Clause",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

@@ -1,0 +1,29 @@
+{
+  "title": "gHyPart: GPU-friendly End-to-End Hypergraph Partitioner",
+  "year": 2025,
+  "venue": "ACM TACO",
+  "doi": "10.1145/3711925",
+  "publication_url": "https://doi.org/10.1145/3711925",
+  "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3711925",
+  "paper_id": "2025_ghypart",
+  "problem_id": "hypergraph_partitioning",
+  "problem_dir": "54_hypergraph_partitioning",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "gHyPart multilevel hypergraph partitioning",
+  "code_url": "https://github.com/zlwu92/gHyPart_TACO",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA multilevel coarsening, partitioning, and refinement.",
+  "notes": "Source downloaded; public publisher PDF retrieval failed. Verified DOI retained. CPU baselines bundled in this repository are not additional GPU algorithms.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "main.cu",
+    "no_uvm_impl/kway_partition_no_uvm.cu",
+    "kernels/coarsening_kernels.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

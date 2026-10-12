@@ -1,0 +1,27 @@
+{
+  "problem_id": "top_k_critical_paths_dag",
+  "paper_id": "2026_gpathgen",
+  "title": "G-PathGen: An Efficient GPU-Parallel k-Critical Path Generation Algorithm",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://tsung-wei-huang.github.io/papers/2026-ICS-G-PathGen.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:59Z",
+    "sha256": "69f926403bed0dea07747e46aacb80e7d0427397ba0ce1439a0c445a352c9a4d",
+    "bytes": 1387220,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

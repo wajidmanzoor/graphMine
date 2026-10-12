@@ -1,0 +1,6 @@
+# Configuration File for CodeCov
+comment: false
+coverage:
+  status:
+    project: off  # yamllint disable-line rule:truthy
+    patch: off  # yamllint disable-line rule:truthy

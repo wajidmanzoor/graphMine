@@ -46,9 +46,9 @@ def main():
             "densest_subgraph",
             "cds",
             "DensestSubgraph",
-            ["vertices", "density", "induced_edge_value", "optimal"],
-            {},
-            "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+            ["vertices", "density", "induced_edge_value", "clique_order", "clique_count", "optimal"],
+            {"clique_order": parameter("--clique-order", "integer", default=2, minimum=2, maximum=2147483647)},
+            "Exact unweighted k-clique density C_k(S)/|S| on a nonempty undirected graph; clique_order defaults to 2 (edge density). Returns clique_count and checks the witness for the requested order. No fixed cardinality, minimum-size constraint or weighted objective. Order above vertex count gives zero density.",
         ),
         (
             "maximal-biclique-counting",
@@ -173,7 +173,37 @@ def main():
     registry = read("catalog/backend_registry.json")
     operations = {o["id"]: o for o in manifest["operations"]}
     programs = {o["id"]: o for o in instructions["operations"]}
+    # Keep planner ranges synchronized with CLI representations and kernels.
+    for program in programs.values():
+        for name, spec in program["parameters"].items():
+            if spec["type"] == "integer":
+                spec.setdefault("maximum", 2**64 - 1)
+    for op, name, maximum in [
+        ("maximum-clique", "known_lower_bound", 2**32-1),
+        ("k-cliques", "k", 2**32-1),
+        ("k-core", "requested_k", 2**32-1),
+        # The portable launch budget is 48 KiB: (256*spread+1)*4 bytes.
+        ("triangle-counting", "wetric_spread", 47),
+        ("triangle-counting", "wetric_adjacency_matrix_length", 2**32-1),
+        ("subgraph-isomorphism", "initial_match_capacity", 2**31-1),
+        ("temporal-motif-mining", "max_time_span", 2**31-1),
+    ]:
+        programs[op]["parameters"][name]["maximum"] = maximum
+    programs["triangle-counting"]["parameters"]["wetric_adjacency_matrix_length"].update(minimum=64, multiple_of=64)
+    for backend, maximum in {"kcgpu": 10, "graphset": 6, "gamma": 7}.items():
+        programs["k-cliques"]["backend_constraints"][backend]["parameter_maximum"]["k"] = maximum
+    programs["community-detection"]["parameters"]["resolution"] = parameter("--resolution", "number", minimum=0, default=1.0)
+    programs["community-detection"]["backend_constraints"] = {"gleiden": {"parameter_equals": {"resolution": 1.0}}}
+    programs["community-detection"]["validated_profile"] = "Unweighted undirected modularity clustering. Parallel Louvain/Leiden backends accept finite nonnegative resolution; gLeiden requires resolution=1. Heuristic partition with independently recomputed objective, not a global optimum certificate."
+    if "--resolution R" not in operations["community-detection"]["parameters"]:
+        operations["community-detection"]["parameters"].append("--resolution R")
     registered = {o["id"]: o for o in registry["operations"]}
+    for backend in registered["k-cliques"]["backends"]:
+        maximum = {"kcgpu": 10, "graphset": 6, "gamma": 7}[backend["id"]]
+        backend["capabilities"] = [
+            f"k_3_to_{maximum}" if capability.startswith("k_3_to_") else capability
+            for capability in backend["capabilities"]
+        ]
     profiles = {
         "schema_version": "1.0.0",
         "routing_contract_version": "repaired-37-v2",

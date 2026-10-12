@@ -16,6 +16,33 @@ from graphmine_agent.learning.teacher import ParaphraseBatch
 PROFILE = ModelProfile("codex", "gpt-6-astra")
 
 
+@pytest.mark.asyncio
+async def test_max_effort_is_used_and_recorded(settings, monkeypatch, tmp_path):
+    calls = fake_cli(monkeypatch)
+    profile = ModelProfile(
+        "codex", "gpt-6.1-sol", max_output_tokens=32768, reasoning_effort="max"
+    )
+    artifact = tmp_path / "max-teacher.json"
+    async with LearningModel(
+        settings, profile, RequestBudget(max_calls=1), allow_codex=True
+    ) as model:
+        await model.generate(
+            system="Produce example questions.",
+            payload={"task": "Find all trios."},
+            schema=ParaphraseBatch,
+            artifact=artifact,
+        )
+    assert 'model_reasoning_effort="max"' in calls[-1]["argv"]
+    saved = json.loads(artifact.read_text())
+    assert saved["profile"]["reasoning_effort"] == "max"
+    assert (
+        saved["request"]["execution_policy"]["config"]["model_reasoning_effort"]
+        == "max"
+    )
+    assert saved["codex_cli"]["reasoning_effort"] == "max"
+    assert saved["request"]["execution_policy"]["timeout_seconds"] == 600
+
+
 def stream(text, **usage):
     return "\n".join(
         json.dumps(row)

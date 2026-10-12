@@ -1,0 +1,28 @@
+{
+  "title": "The Floyd-Warshall Algorithm Re-implemented Using 3D-Tensors and Hardware Acceleration",
+  "year": 2023,
+  "venue": null,
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2310.03983",
+  "pdf_url": "https://arxiv.org/pdf/2310.03983",
+  "paper_id": "2023_tensor_r_kleene",
+  "problem_id": "many_source_shortest_paths",
+  "problem_dir": "40_many_source_shortest_paths",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Recursive R-Kleene APSP",
+  "code_url": "https://github.com/tanjary21/APSP_GPU",
+  "semantic_fit": "variant",
+  "gpu_scope": "Recursive GPU min-plus block operations.",
+  "notes": "Entry function R_Kleene. Shares a paper and repository with Floyd-Warshall but is a different APSP algorithm. Dense storage and recursive partition constraints apply.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "apsp.py",
+    "main.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

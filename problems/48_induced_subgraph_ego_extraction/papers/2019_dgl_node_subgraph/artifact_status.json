@@ -1,0 +1,33 @@
+{
+  "problem_id": "induced_subgraph_ego_extraction",
+  "paper_id": "2019_dgl_node_subgraph",
+  "title": "Deep Graph Library: A Graph-Centric, Highly-Performant Package for Graph Neural Networks",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1909.01315",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:57Z",
+    "sha256": "6c70d6a46c443d67c98df81204bc51a6a42b593604798cea9ff280f94a8ad7e2",
+    "bytes": 675411,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/dmlc/dgl",
+    "local_path": "code",
+    "commit": "3d16000b4170fa741ed9e9667f22ba84d3493026",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/dgl.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "python/dgl/subgraph.py": "411e5c400731211c7558b129352e19bf8441aef4c469fc14cd6e7eee9b98db04",
+      "src/array/cuda/spmat_op_impl_csr.cu": "a8e99e5fbb43192c05095a3cd6e1256e5c794c1cface994681e7fa5fd2fadc85"
+    }
+  }
+}

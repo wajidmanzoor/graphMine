@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/Feng-Research/dyGRASS",
+  "checked_at": "2026-10-09T19:25:35Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "3a69c8b45bf044fbf3b60b47cb5efa8c40576691",
+  "archive_url": "https://codeload.github.com/Feng-Research/dyGRASS/tar.gz/3a69c8b45bf044fbf3b60b47cb5efa8c40576691",
+  "archive_sha256": "62d5cefdbf3b25c1221671a35c72bbf5aeec4f43f373c4f790ad4acafc0cc73a",
+  "local_path": "dygrass-3a69c8b45bf0",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

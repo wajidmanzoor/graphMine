@@ -1,0 +1,30 @@
+{
+  "problem_id": "temporal_fastest_paths",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2019_temporal_eat",
+      "algorithm_name": "Cluster/arithmetic-progression GPU earliest-arrival algorithm",
+      "metadata": "57_temporal_fastest_paths/papers/2019_temporal_eat/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_temporal_fastest",
+      "algorithm_name": "GPU temporal fastest paths",
+      "metadata": "57_temporal_fastest_paths/papers/2024_temporal_fastest/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2025_tempgraph",
+      "algorithm_name": "TempGraph chain-driven temporal paths",
+      "metadata": "57_temporal_fastest_paths/papers/2025_tempgraph/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    }
+  ]
+}

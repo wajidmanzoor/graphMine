@@ -1,0 +1,34 @@
+{
+  "problem_id": "graph_signal_denoising",
+  "paper_id": "2014_gunrock_sparse_fused_lasso",
+  "title": "Trend Filtering on Graphs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1410.7690",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "sha256": "0a65da7c5341a962f8aa8ec06f2bc502b093b1890459367706995cf508064e4f",
+    "bytes": 5467153,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/gunrock/gunrock",
+    "local_path": "code",
+    "commit": "386d04450b9ae11097e9789a648042d4d310f199",
+    "license_file": "code/LICENSE.TXT",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/gunrock_legacy.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "gunrock/app/gtf/gtf_enactor.cuh": "c9ec49d68f4a1e6bbfadf61c9112040284fad9076a41ff715fba65df6ab59b15",
+      "gunrock/app/gtf/gtf_problem.cuh": "4f149c21810fb1f573715445e7cfe341e60a3c8b739957ca88fb6efa06aa6059",
+      "gunrock/app/gtf/gtf_app.cu": "1073a850e603609363bc7b01a2700f3038181ec3ddeddef1182aea1470b70e6f"
+    }
+  }
+}

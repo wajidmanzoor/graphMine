@@ -6,6 +6,7 @@ import asyncio
 import json
 from copy import deepcopy
 from dataclasses import replace
+from uuid import uuid4
 
 import httpx
 import jsonschema
@@ -18,6 +19,7 @@ from graphmine_agent.analytics_planning import (
     family_catalog,
     family_schema,
     generation_plan_schema,
+    operation_schema,
     plan_schema,
 )
 from graphmine_agent.jobs import EventBus
@@ -119,6 +121,77 @@ def proposal(op="triangle-counting", parameters=None):
             ],
         },
     }
+
+
+@pytest.mark.parametrize(
+    "decision",
+    [
+        operation(),
+        operation("minimum-vertex-cover", status="unsupported"),
+        operation("minimum-vertex-cover", status="needs_information"),
+        operation("minimum-vertex-cover", reroute=["selection"]),
+        operation(status="reroute"),
+        operation("minimum-vertex-cover", status="reroute", reroute=["selection"]),
+    ],
+)
+def test_contradictory_operation_decisions_cannot_satisfy_schema(decision):
+    schema = operation_schema([{"id": "minimum-vertex-cover"}], [{"id": "selection"}])
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(decision, schema)
+
+
+@pytest.mark.parametrize(
+    "status", ["selected", "reroute", "needs_information", "unsupported"]
+)
+def test_routing_states_keep_clarification_and_reroute_available(status):
+    schema = operation_schema([{"id": "neighbors"}], [{"id": "query"}])
+    decision = operation(
+        *(["neighbors"] if status == "selected" else []),
+        status=status,
+        reroute=["query"] if status == "reroute" else [],
+    )
+    jsonschema.validate(decision, schema)
+
+
+@pytest.mark.parametrize(
+    "decision",
+    [
+        {**family(), "families": []},
+        {**family(), "status": "unsupported"},
+        {**family(), "status": "needs_information"},
+    ],
+)
+def test_family_decisions_require_consistent_status_and_selection(decision):
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(decision, family_schema([{"id": "patterns"}]))
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("reference", ["missing", "answer", "future"])
+@pytest.mark.parametrize("repair", [False, True])
+async def test_invalid_step_references_receive_one_bounded_repair(
+    setup, reference, repair
+):
+    settings, analytics, events, session, body = setup
+    valid = proposal("query-subgraph", {"mode": "vertices", "vertices": [0, 1]})
+    invalid = deepcopy(valid)
+    invalid["plan"]["steps"][0]["input"] = {"step": reference, "port": "graph"}
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[
+            family("query"),
+            operation("query-subgraph"),
+            invalid,
+            valid if repair else invalid,
+        ],
+    )
+    result = await planner.plan(session, body)
+    assert result["status"] == ("ready" if repair else "needs_information")
+    assert "not an earlier step" in planner.calls[-1][1]["validation_error"]["message"]
+    assert len(planner.calls) == 4
+    assert analytics.list(session) == []
 
 
 @pytest.mark.asyncio
@@ -375,11 +448,13 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
         assert calls[0]["thinking_token_budget"] == thinking_budget
     assert (
         "uniqueItems"
-        not in calls[0]["response_format"]["json_schema"]["schema"]["properties"][
-            "families"
-        ]
+        not in calls[0]["response_format"]["json_schema"]["schema"]["oneOf"][0][
+            "properties"
+        ]["families"]
     )
-    assert family_schema([{"id": "patterns"}])["properties"]["families"]["uniqueItems"]
+    assert family_schema([{"id": "patterns"}])["oneOf"][0]["properties"]["families"][
+        "uniqueItems"
+    ]
 
 
 @pytest.mark.asyncio
@@ -394,28 +469,29 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
             "device": "cpu",
             "steps": [
                 {
-                    "id": "selected",
                     "operation": "node-lookup",
-                    "input": {"input": "main"},
+                    "input": {"source": "input", "input": "main"},
                     "arguments": [{"name": "vertices", "value": {"literal": [0, 1]}}],
                 },
                 {
-                    "id": "subset",
                     "operation": "query-subgraph",
-                    "input": {"input": "main"},
+                    "input": {"source": "input", "input": "main"},
                     "arguments": [
                         {
                             "name": "vertices",
                             "value": {
-                                "binding": {"step": "selected", "port": "vertices"}
+                                "binding": {
+                                    "source": "step",
+                                    "step_index": 0,
+                                    "port": "vertices",
+                                }
                             },
                         }
                     ],
                 },
                 {
-                    "id": "answer",
                     "operation": "triangle-counting",
-                    "input": {"step": "subset", "port": "graph"},
+                    "input": {"source": "step", "step_index": 1, "port": "graph"},
                     "arguments": [],
                 },
             ],
@@ -441,7 +517,17 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
             jsonschema.validate(wire, schema)
             response = wire
         return httpx.Response(
-            200, json={"choices": [{"message": {"content": json.dumps(response)}}]}
+            200,
+            json={
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(response),
+                            "reasoning": "Recorded test reasoning for " + stage,
+                        }
+                    }
+                ]
+            },
         )
 
     original = httpx.AsyncClient
@@ -453,11 +539,19 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
     assert "arguments" in wire["plan"]["steps"][0]  # No mutation of model evidence.
     assert decoded["plan"]["steps"][1]["parameters"] == {}
     assert decoded["plan"]["steps"][1]["bindings"] == {
-        "vertices": {"step": "selected", "port": "vertices"}
+        "vertices": {"step": "step_1", "port": "vertices"}
     }
     planned = await planner.plan(session, body)
     assert planned["status"] == "ready"
     assert calls == ["family", "operation", "plan"]
+    reasoning = [
+        event.payload
+        for event in analytics.database.events(session)
+        if event.type == "workflow.reasoning"
+    ]
+    assert [row["stage"] for row in reasoning] == calls
+    assert all(row["turn_id"] == planned["turn_id"] for row in reasoning)
+    assert reasoning[-1]["text"] == "Recorded test reasoning for plan"
     analytics.open()
     try:
         saved = await analytics.create(
@@ -467,14 +561,182 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
         await asyncio.gather(*analytics.tasks.values())
         result = analytics.result(saved["id"])
         assert result["status"] == "completed" and result["complete"]
-        ports = result["steps"]["answer"]["result"]["ports"]
+        ports = result["steps"]["step_3"]["result"]["ports"]
         assert ports["count"]["value"] == 0
-        assert result["steps"]["subset"]["result"]["ports"]["vertices"]["value"] == [
+        assert result["steps"]["step_2"]["result"]["ports"]["vertices"]["value"] == [
             0,
             1,
         ]
     finally:
         await analytics.close()
+
+
+@pytest.mark.asyncio
+async def test_domain_clarification_history_and_workflow_link_are_saved(
+    setup, triangle_graph
+):
+    settings, analytics, events, _, body = setup
+    session = analytics.database.create_session(
+        SessionRecord(domain_id="fraud_detection")
+    )
+    file = analytics.graph_store.ingest(
+        session_id=session.id,
+        role=FileRole.graph,
+        filename="accounts.json",
+        content=triangle_graph,
+    )
+    body = body.model_copy(
+        update={
+            "inputs": {
+                "main": body.inputs["main"].model_copy(update={"file_id": file.id})
+            }
+        }
+    )
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[
+            {
+                "status": "needs_information",
+                "families": [],
+                "message": "Which measure of importance should I use?",
+            },
+            family("importance"),
+            operation("degree-centrality"),
+            proposal("degree-centrality"),
+        ],
+    )
+    body.message = "Which accounts are most important?"
+    body.request_id = uuid4()
+    first = await planner.plan(session.id, body)
+    assert first["turn_id"] == str(body.request_id)
+    with pytest.raises(AnalyticsError, match="already saved"):
+        await planner.plan(session.id, body)
+    body.request_id = uuid4()
+    body.message = "Use degree centrality."
+    second = await planner.plan(session.id, body)
+    assert second["status"] == "ready" and first["turn_id"] != second["turn_id"]
+    payload = planner.calls[1][1]
+    assert payload["domain"]["id"] == "fraud_detection"
+    assert payload["conversation"] == [
+        {"role": "user", "message": "Which accounts are most important?"},
+        {"role": "assistant", "message": "Which measure of importance should I use?"},
+    ]
+    chats = [
+        event.payload
+        for event in analytics.database.events(session.id)
+        if event.type == "workflow.chat"
+    ]
+    assert [row["role"] for row in chats] == ["user", "assistant", "user", "assistant"]
+    assert chats[-1]["plan"] == second["plan"]
+    assert chats[-1]["inputs"] == {
+        key: ref.model_dump() for key, ref in body.inputs.items()
+    }
+    assert chats[-1]["mode"] == body.mode
+    saved = await analytics.create(
+        session.id,
+        WorkflowRequest(
+            mode="interactive",
+            plan=second["plan"],
+            inputs=body.inputs,
+            planning_turn_id=second["turn_id"],
+        ),
+    )
+    assert saved["planning_turn_id"] == second["turn_id"]
+    assert saved["status"] == "awaiting_review" and saved["steps"] == {}
+    with pytest.raises(AnalyticsError, match="not ready"):
+        await analytics.create(
+            session.id,
+            WorkflowRequest(
+                mode="interactive",
+                plan=second["plan"],
+                inputs=body.inputs,
+                planning_turn_id=first["turn_id"],
+            ),
+        )
+    other = analytics.database.create_session(SessionRecord())
+    with pytest.raises(AnalyticsError, match="not ready"):
+        await analytics.create(
+            other.id,
+            WorkflowRequest(
+                mode="interactive",
+                plan=second["plan"],
+                inputs=body.inputs,
+                planning_turn_id=second["turn_id"],
+            ),
+        )
+    isolated = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[family(), operation("triangle-counting"), proposal()],
+    )
+    await isolated.plan(
+        session.id,
+        body.model_copy(
+            update={
+                "evaluation_id": "isolated",
+                "previous_workflow_id": None,
+                "request_id": None,
+            }
+        ),
+    )
+    assert "conversation" not in isolated.calls[0][1]
+
+
+@pytest.mark.asyncio
+async def test_generation_schema_prevents_self_forward_and_missing_references(setup):
+    _settings, analytics, _events, _session, _body = setup
+    caps = await analytics.capabilities()
+    cards = [c for c in caps["operations"] if c["id"] == "query-subgraph"]
+    schema = generation_plan_schema(plan_schema(cards, ["main"], "cpu"))
+    first = {
+        "operation": "query-subgraph",
+        "input": {"source": "input", "input": "main"},
+        "arguments": [],
+    }
+    wire = {
+        "status": "ready",
+        "message": "Extract, then further restrict the derived graph.",
+        "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+                first,
+                {
+                    **first,
+                    "input": {"source": "step", "step_index": 0, "port": "graph"},
+                },
+            ],
+        },
+    }
+    jsonschema.validate(wire, schema)
+    for position, source in [(0, 0), (0, 1), (1, 1), (1, 2), (1, 15)]:
+        invalid = deepcopy(wire)
+        invalid["plan"]["steps"][position]["input"] = {
+            "source": "step",
+            "step_index": source,
+            "port": "graph",
+        }
+        with pytest.raises(jsonschema.ValidationError):
+            jsonschema.validate(invalid, schema)
+    for source in (0, 1, 15):
+        invalid = deepcopy(wire)
+        invalid["plan"]["steps"][0]["arguments"] = [
+            {
+                "name": "vertices",
+                "value": {
+                    "binding": {
+                        "source": "step",
+                        "step_index": source,
+                        "port": "vertices",
+                    }
+                },
+            }
+        ]
+        with pytest.raises(jsonschema.ValidationError):
+            jsonschema.validate(invalid, schema)
 
 
 @pytest.mark.asyncio
@@ -498,29 +760,34 @@ async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
     schema = plan_schema(cards, ["main"], "cpu")
     wire = proposal("breadth-first-search")
     step = wire["plan"]["steps"][0]
-    del step["parameters"], step["bindings"]
+    del step["id"], step["parameters"], step["bindings"]
+    step["input"] = {"source": "input", "input": "main"}
     step["arguments"] = [{"name": "sources", "value": {"literal": [0]}}]
     if attack == "two_sources":
         step["arguments"][0]["value"]["binding"] = {
-            "step": "earlier",
-            "port": "vertices",
+            "source": "input",
+            "input": "main",
         }
     elif attack == "duplicate_name":
         step["arguments"].append(
             {
                 "name": "sources",
-                "value": {"binding": {"step": "earlier", "port": "vertices"}},
+                "value": {"literal": [1]},
             }
         )
     elif attack == "unknown_name":
         step["arguments"][0]["name"] = "execute_python"
     elif attack == "unknown_port":
-        step["input"] = {"step": "earlier", "port": "invented_output"}
+        second = deepcopy(step)
+        second["arguments"][0]["value"] = {
+            "binding": {"source": "step", "step_index": 0, "port": "invented_output"}
+        }
+        wire["plan"]["steps"].append(second)
     else:
         step["arguments"].append(
             {
                 "name": "return_predecessors",
-                "value": {"binding": {"step": "earlier", "port": "count"}},
+                "value": {"binding": {"source": "input", "input": "main"}},
             }
         )
 
@@ -534,8 +801,12 @@ async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
         "graphmine_agent.analytics_planning.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(reply), **kwargs),
     )
-    with pytest.raises(AnalyticsError, match="could not return a valid decision"):
+    with pytest.raises(
+        AnalyticsError, match="could not return a valid decision"
+    ) as caught:
         await planner._generate("plan", {"operations": cards}, schema)
+    if attack == "duplicate_name":
+        assert "supplied more than once" in str(caught.value.__cause__)
 
 
 @pytest.mark.parametrize("budget", [-1, 3072, True])

@@ -1,0 +1,38 @@
+{
+  "problem_id": "neighborhood_sampling",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2020_csaw_neighbors",
+      "algorithm_name": "C-SAW neighborhood sampling",
+      "metadata": "47_neighborhood_sampling/papers/2020_csaw_neighbors/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2020_nextdoor_neighbors",
+      "algorithm_name": "NextDoor transit-parallel neighborhood sampling",
+      "metadata": "47_neighborhood_sampling/papers/2020_nextdoor_neighbors/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2021_skywalker_neighbors",
+      "algorithm_name": "Skywalker alias-method neighbor sampling",
+      "metadata": "47_neighborhood_sampling/papers/2021_skywalker_neighbors/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_neighbor_sampling",
+      "algorithm_name": "cuGraph Neighbor sampling",
+      "metadata": "47_neighborhood_sampling/papers/2026_cugraph_neighbor_sampling/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

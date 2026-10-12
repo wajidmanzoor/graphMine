@@ -1,0 +1,35 @@
+{
+  "problem_id": "hypergraph_node_learning",
+  "paper_id": "2020_dhg_hypergcn",
+  "title": "HyperGCN: A New Method of Training Graph Convolutional Networks on Hypergraphs",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://papers.nips.cc/paper/2019/file/1efa39bcaec6f3900149160693694536-Paper.pdf",
+    "resolved_url": "https://papers.nips.cc/paper/2019/file/1efa39bcaec6f3900149160693694536-Paper.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "1aa43c364a73b9b3e533369b1ea43da221dda8b314ded9b31fbe4092637944af",
+    "bytes": 889357,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/iMoonLab/DeepHypergraph",
+    "local_path": "code",
+    "commit": "b4f80211c2173b890d2779539683a3a65c4648ac",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/dhg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "dhg/models/hypergraphs/hypergcn.py": "80beeb71fed6333a9075d5a17155e33ee118f905bf54151b58a19939b23a696e",
+      "dhg/structure/hypergraphs/hypergraph.py": "4987bd48cf3ed13cd1ba0eced55cd227b14e2044cf35923dfe4c2ef42a1c051b"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

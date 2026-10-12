@@ -1,0 +1,248 @@
+{
+  "version": "dual-adapter-v1",
+  "objective": "Improve GraphMine interpretation and custom visualization, train two specialized adapters, and serve both from one loaded Qwen base model.",
+  "teacher": {
+    "authentication": "ChatGPT subscription; no OpenAI API key",
+    "reasoning_effort": "max",
+    "minimum_fallback_effort": "high",
+    "record_actual_effort": true,
+    "human_review_claim": false
+  },
+  "constraints": {
+    "base_model_copies_during_serving": 1,
+    "adapters": {
+      "planner": "understanding, clarification, routing, planning and recovery",
+      "analyst": "grounded interpretation, custom visualization and repair"
+    },
+    "preserve_existing_worktree": true,
+    "preserve_existing_evaluation_sources": true,
+    "training_and_final_test_source_families_disjoint": true,
+    "no_implicit_data_or_model_uploads": true
+  },
+  "milestones": [
+    {
+      "id": "contracts",
+      "status": "completed",
+      "requires": [
+        "evidence-linked explanatory prose",
+        "custom composed Vega-Lite specifications",
+        "bounded additional-analysis requests",
+        "shared production/training prompts and schemas"
+      ]
+    },
+    {
+      "id": "visualization",
+      "status": "completed_development_browser_verified",
+      "requires": [
+        "local pinned Vega renderer",
+        "data and specification validation",
+        "linked interactions and export",
+        "rendered browser verification and repair"
+      ]
+    },
+    {
+      "id": "data",
+      "status": "completed_automatic_checks_no_human_review",
+      "requires": [
+        "new public graph sources and synthetic graphs",
+        "source and scenario separated train/development/test",
+        "both question-first and plan-first cases",
+        "clarification conversations, unsupported requests, failures and recovery",
+        "executed and independently checked reference plans",
+        "teacher provenance including effort",
+        "verified analyst targets and visualization artifacts"
+      ]
+    },
+    {
+      "id": "training",
+      "status": "completed",
+      "requires": [
+        "planner adapter actually trained",
+        "analyst adapter actually trained",
+        "checkpoint and training provenance",
+        "training and validation measurements"
+      ]
+    },
+    {
+      "id": "serving",
+      "status": "completed_activation_verified_then_stopped",
+      "requires": [
+        "one shared base model process",
+        "per-stage adapter selection",
+        "actual adapter identity and GPU memory verification",
+        "existing router process retired from active configuration"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "status": "completed_with_measured_limitations",
+      "requires": [
+        "base and adapted stage comparisons",
+        "live end-to-end graph execution",
+        "clarification and follow-up scenarios",
+        "numerical and evidence checks",
+        "chart semantics, compilation and browser checks",
+        "held-out source/scenario evaluation",
+        "recorded remaining accuracy limitations"
+      ]
+    }
+  ],
+  "working_artifacts": {
+    "corpus": ".graphmine-learning/dual-adapter-v2/corpus.json",
+    "reference_checks": ".graphmine-learning/dual-adapter-v2/references/verification.json",
+    "teacher_inputs": ".graphmine-learning/dual-adapter-v2/teacher-input-manifest.json",
+    "conversations": ".graphmine-learning/dual-adapter-v2/conversation-input-manifest.json",
+    "teacher_targets": ".graphmine-learning/dual-adapter-v2/teacher-targets",
+    "preflight": ".graphmine-learning/dual-adapter-v1/serving-preflight.json",
+    "planner_dataset": ".graphmine-learning/dual-adapter-v2/planner-dataset-v1/provenance.json",
+    "planner_training": ".graphmine-learning/dual-adapter-v2/planner-training-v1/run.json",
+    "final_test": ".graphmine-learning/dual-adapter-v2/final-test-inputs.json",
+    "final_test_workflows": ".graphmine-learning/dual-adapter-v2/final-test-workflows-v2.json",
+    "development_workflows": ".graphmine-learning/dual-adapter-v2/development-workflows-v2.json",
+    "wheel_verification": ".graphmine-learning/dual-adapter-v2/wheel-verification.json",
+    "analyst_dataset": ".graphmine-learning/dual-adapter-v2/analyst-dataset-v1/provenance.json",
+    "analyst_training": ".graphmine-learning/dual-adapter-v2/analyst-training-v1/run.json",
+    "teacher_review": ".graphmine-learning/dual-adapter-v2/teacher-review-summary.json",
+    "software_gate": "agent/evaluation/reports/dual-adapter-runtime-cpu-v9.json",
+    "data_split_audit": ".graphmine-learning/dual-adapter-v2/data-split-audit.json",
+    "analyst_target_coverage": ".graphmine-learning/dual-adapter-v2/analyst-target-coverage.json",
+    "serving_base_files": ".graphmine-learning/dual-adapter-v2/serving-base-files.json",
+    "post_gate_checks": ".graphmine-learning/dual-adapter-v2/post-gate-workflow-checks.json",
+    "trained_adapters": ".graphmine-learning/dual-adapter-v2/trained-adapters.json",
+    "configured_serving": ".graphmine-learning/dual-adapter-v2/configured-serving-v5.json",
+    "serving_receipt": ".graphmine-learning/dual-adapter-v2/serving-receipt-shared-gpu.json",
+    "shared_api_health": ".graphmine-learning/dual-adapter-v2/shared-api-health-v5.json",
+    "serving_export_receipt": ".graphmine-learning/dual-adapter-v2/serving-adapters.json",
+    "namespace_diagnostic": ".graphmine-learning/dual-adapter-v2/unmatched-adapter-diagnostic.json",
+    "decoder_diagnostic": ".graphmine-learning/dual-adapter-v2/bounded-string-decoder-diagnostic.json",
+    "decoder_conformance": ".graphmine-learning/dual-adapter-v2/decoder-full-schema-conformance.json",
+    "training_plot": ".graphmine-learning/dual-adapter-v2/training-loss.svg",
+    "integer_decoder_conformance": ".graphmine-learning/dual-adapter-v2/development-v4-decoder-conformance.json",
+    "baseline_request_reuse": ".graphmine-learning/dual-adapter-v2/base-32k-development-v4/request-reuse.json",
+    "trained_stage_preview": ".graphmine-learning/dual-adapter-v2/development-v4-stage-previews/trained-maximal-cliques.html",
+    "development_stage_comparison": ".graphmine-learning/dual-adapter-v2/development-v4-stage-comparison.json",
+    "native_memory_verification": ".graphmine-learning/dual-adapter-v2/native-memory-v5/verification.json",
+    "workflow_resource_diagnostic": ".graphmine-learning/dual-adapter-v2/workflow-resource-diagnostic.json",
+    "focused_chart_repair": ".graphmine-learning/dual-adapter-v2/focused-chart-repair-v5.json",
+    "native_resource_preflight": ".graphmine-learning/dual-adapter-v2/native-resource-preflight-v5/verification.json",
+    "final_test_freeze": ".graphmine-learning/dual-adapter-v2/final-test-v5-freeze.json",
+    "trained_workflow_focused_preview": ".graphmine-learning/dual-adapter-v2/development-v5-focused-trained-preview/browser-review.json",
+    "trained_chart_linking": ".graphmine-learning/dual-adapter-v2/trained-chart-linking-v5.json",
+    "visual_inspection": ".graphmine-learning/dual-adapter-v2/development-v5-visual-review.json",
+    "development_workflow_comparison": ".graphmine-learning/dual-adapter-v2/development-v5-workflow-comparison.json",
+    "development_trained_browser_review": ".graphmine-learning/dual-adapter-v2/development-v5-trained-previews/browser-review.json",
+    "column_order_audit_protocol": ".graphmine-learning/dual-adapter-v2/column-order-audit-protocol.json",
+    "development_column_order_audit": ".graphmine-learning/dual-adapter-v2/development-v5-column-order-audit.json",
+    "final_test_stage_comparison": ".graphmine-learning/dual-adapter-v2/final-test-v5-stage-comparison.json",
+    "chart_repair_policy_diagnostic": ".graphmine-learning/dual-adapter-v2/final-test-v5-chart-repair-policy/summary.json",
+    "pilot_report": "agent/evaluation/reports/dual-adapter-pilot-v1.json",
+    "comparison_figure": ".graphmine-learning/dual-adapter-v2/pilot-comparison.svg",
+    "comparison_preview": ".graphmine-learning/dual-adapter-v2/pilot-comparison.png",
+    "comparison_provenance": ".graphmine-learning/dual-adapter-v2/pilot-comparison.provenance.json",
+    "final_test_workflow_comparison": ".graphmine-learning/dual-adapter-v2/final-test-v5-workflow-comparison.json",
+    "final_test_column_order_audit": ".graphmine-learning/dual-adapter-v2/final-test-v5-column-order-audit.json",
+    "final_test_custom_browser_review": ".graphmine-learning/dual-adapter-v2/final-test-v5-trained-previews/browser-review.json",
+    "final_test_default_browser_review": ".graphmine-learning/dual-adapter-v2/final-test-v5-trained-previews/default-view-browser-review.json",
+    "final_visual_inspection": ".graphmine-learning/dual-adapter-v2/final-visual-inspection.json",
+    "final_integrity_verification": ".graphmine-learning/dual-adapter-v2/final-integrity-verification.json",
+    "previous_checkpoint": ".graphmine-learning/dual-adapter-v2/checkpoint-before-completion.json",
+    "serving_shutdown": ".graphmine-learning/dual-adapter-v2/serving-shutdown-receipt.json"
+  },
+  "verified_progress": [
+    "Completed 173 bounded reference cases from public graph samples and synthetic graphs; lineage and exact graph contents separated across training, development and reserved test.",
+    "Teacher work used ChatGPT-account Codex CLI with max effort and no API-key teacher calls. Reviewed 531 responses automatically: 451 accepted and 80 quarantined. No human preference labels.",
+    "Trained both rank16 adapters for one epoch: planner 206 training / 131 validation rows and 52 optimizer steps; analyst 70 / 44 rows and 18 steps. All saved tensors passed finite/nonzero inventory checks.",
+    "Verified both adapter activations, all 304 expected packed text modules per adapter, in a single shared vLLM base-model engine. Exported tensor payload bytes match the trained payloads.",
+    "Corrected serving namespace, decoder compatibility and native GPU resource issues; diagnostic and contaminated runs excluded from quality comparison.",
+    "Development stage checks: base145/192 and adapters167/192. Development full workflows: base2/13 and adapters7/13; both arms executed all11 applicable native cases successfully.",
+    "Reserved stage checks: base140/183 and adapters159/183. Interpretation18/54 versus33/54; planning49/51 versus51/51. 23 corrected and4 regressed stage checks.",
+    "Reserved full workflows: 5/13 both. Numerical checks9/11 versus11/11; native execution10/11 versus11/11. The baseline missing execution was an unnecessary clarification, not a native GPU failure.",
+    "Reserved explicit custom-chart stage checks: initial1/5 base versus0/5 adapters; after the existing single repair2/5 both. This separate diagnostic reuses all five initial responses and does not change primary scores.",
+    "Reserved trained workflows produced no custom charts. Their custom browser review is explicitly unavailable, not passed. Representative default views rendered on desktop and exact390px mobile.",
+    "Actual development custom charts passed desktop/mobile browser checks; all three tested group selections returned exactly their computed members. Assistant visual review records styling limitations.",
+    "Frozen runtime, native binary, model weights and input artifacts unchanged at completion. All75 final integrity checks passed.",
+    "Latest software gate passed663 CPU and7 browser tests, with15 native integrations explicitly skipped. Two separate native GPU tests and11 native resource replays passed.",
+    "Temporary evaluation API and engine stopped; model port8001 and public API18000 closed; their GPU allocations released. Trained adapters and configured stage selection preserved."
+  ],
+  "active_processes": {
+    "planner_training": {
+      "exec_session": 17718,
+      "log": ".graphmine-learning/dual-adapter-v2/planner-training.log",
+      "status": "completed"
+    },
+    "analyst_preparation_and_sequential_training": {
+      "exec_session": 38254,
+      "log": ".graphmine-learning/dual-adapter-v2/analyst-sequence.log",
+      "script": ".graphmine-learning/dual-adapter-v2/finish-analyst-and-train.py",
+      "status": "completed",
+      "pid": 812130
+    },
+    "shared_serving": {
+      "exec_session": 28456,
+      "pid": 868448,
+      "engine_pid": 868933,
+      "pid_file": ".graphmine-learning/dual-adapter-v2/serving-shared-gpu.pid",
+      "log": ".graphmine-learning/dual-adapter-v2/vllm-shared-gpu.log",
+      "status": "stopped_after_completed_evaluation",
+      "shutdown_receipt": ".graphmine-learning/dual-adapter-v2/serving-shutdown-receipt.json"
+    },
+    "development_evaluation": {
+      "exec_session": 86230,
+      "pid": 875239,
+      "status": "completed",
+      "status_file": ".graphmine-learning/dual-adapter-v2/development-v5-sequence-status.json"
+    },
+    "final_test_evaluation": {
+      "exec_session": 7388,
+      "pid": 880016,
+      "status": "completed",
+      "status_file": ".graphmine-learning/dual-adapter-v2/final-test-v5-sequence-status.json"
+    },
+    "development_gpu_monitor": {
+      "exec_session": 46745,
+      "status": "completed",
+      "output": ".graphmine-learning/dual-adapter-v2/development-v5-gpu-samples.jsonl"
+    },
+    "final_test_gpu_monitor": {
+      "exec_session": 42854,
+      "status": "completed",
+      "output": ".graphmine-learning/dual-adapter-v2/final-test-v5-gpu-samples.jsonl"
+    },
+    "chart_repair_policy_diagnostic": {
+      "exec_session": 48976,
+      "status": "completed",
+      "log": ".graphmine-learning/dual-adapter-v2/final-test-v5-chart-repair-policy.log"
+    }
+  },
+  "remaining_priority": [],
+  "measured_training_lengths": {
+    "RouteDecision_max_tokens": 11076,
+    "PlanDraft_max_tokens": 12451,
+    "GroundedNarrative_max_tokens": 9026,
+    "scope": "Accepted initial examples only; no truncation; proposed training context limit 16384"
+  },
+  "current_state": {
+    "updated_at": "2026-10-08T07:49:23.723646+00:00",
+    "training": "Both planner and analyst adapters trained and verified; trained and serving exports preserved.",
+    "serving": "Stopped after verified evaluation. Local configuration selects two adapters on one base model; separate router disabled. Public API and temporary model endpoint are closed.",
+    "development": "Stage145/192 base versus167/192 adapters; full workflows2/13 versus7/13.",
+    "final_test": "Stage140/183 base versus159/183 adapters; full workflows5/13 both. No test-based model or runtime tuning.",
+    "interpretation": "Reserved fixed-context interpretation18/54 base versus33/54 adapters; full-workflow interpretation4/11 both.",
+    "visualization": "Custom composition, linked selection, validation, export and readable mobile layout implemented. Actual development chart/browser interaction passed. Reserved chart generation remains weak: initial1/5 base versus0/5 adapters; one-repair2/5 both. Reserved trained workflows produced no custom charts.",
+    "software": "663 CPU and7 browser tests passed;15 native integrations skipped in CPU gate. Two native GPU tests plus11 development native command replays passed separately.",
+    "native_memory": "Configurable gMatch pools default to2x512MiB; explicit initial-capacity failure and exact DFS fallback tested. Larger production graphs remain unmeasured.",
+    "column_order_audit": "Presentation-column-order normalization does not change either split full-workflow totals. Primary grades remain untouched.",
+    "integrity": "75 final checks passed. Final figure and representative reserved default views visually inspected.",
+    "next": "No required pilot work remaining. Future experiments need a fresh reserved test and larger real conversation datasets."
+  },
+  "status": "completed_pilot_with_measured_limitations",
+  "completed_at": "2026-10-08T07:49:23.723646+00:00",
+  "limitations": [
+    "Small correlated graph samples with4\u20138 vertices and shared question wording; no production-scale generalization claim.",
+    "No human preference labels or business-value evaluation.",
+    "No comparison to a jointly trained single adapter, so two-adapter superiority over that alternative is unproven.",
+    "Planning and fixed-context interpretation improved; reserved full workflows did not improve.",
+    "Complex chart generation and semantic repair remain unreliable.",
+    "Shared-resource evaluation timings do not establish an isolated latency benchmark."
+  ]
+}

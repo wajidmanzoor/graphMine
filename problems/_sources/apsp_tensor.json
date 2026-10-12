@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/tanjary21/APSP_GPU",
+  "checked_at": "2026-10-09T19:25:35Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "92935ab3a16c59dccb948da8f198381881793e19",
+  "archive_url": "https://codeload.github.com/tanjary21/APSP_GPU/tar.gz/92935ab3a16c59dccb948da8f198381881793e19",
+  "archive_sha256": "0f0aec5424e78f1fdc799a193b9f0034b4343c4fcb9c769da67bc09764aa53d9",
+  "local_path": "apsp_tensor-92935ab3a16c",
+  "license_files": [],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

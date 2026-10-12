@@ -1,0 +1,35 @@
+{
+  "problem_id": "biconnected_components",
+  "paper_id": "2026_fast_bcc_filter",
+  "title": "GPU Algorithms for Biconnected Components on Large Graphs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://raw.githubusercontent.com/Abhijeetkumar96/FAST-BCC-on-GPUs/147db5965350/Fast-BCC-Filter-IPDPS-2026.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "copied_from": "_sources/fast_bcc-147db5965350/Fast-BCC-Filter-IPDPS-2026.pdf",
+    "sha256": "81162487451184e963b7f42be500c39b41a0ac0b4d3232c3ce00b96947f146e1",
+    "bytes": 889200,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/Abhijeetkumar96/FAST-BCC-on-GPUs",
+    "local_path": "code",
+    "commit": "147db596535064ee6ea43efbcab315d5b224a1a6",
+    "license_file": null,
+    "license_note": "No root license file found; public source availability is not a blanket redistribution license.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/fast_bcc.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "gpu/with_filter/main.cu": "aa16db9b67cef3e8b783bf4062963835702bf806e8d2af8d0cc0d6854010a4d7",
+      "gpu/with_filter/euler.cu": "cdb734b94b197e25f9bfe39811d2a3b27c9cde71f97b8d23135dc61c6a5ce3a1",
+      "gpu/with_filter/tags.cu": "7f93550489130f28b6b9e2cd84bb54441d43c13cfcdb08a0dc8343a3cf4d3dbe"
+    }
+  }
+}

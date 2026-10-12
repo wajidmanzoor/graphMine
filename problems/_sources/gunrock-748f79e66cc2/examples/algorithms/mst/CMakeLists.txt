@@ -1,0 +1,1 @@
+add_essentials_example(mst)

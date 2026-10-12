@@ -1,0 +1,13 @@
+CMake Warning (dev) at CMakeLists.txt:20 (find_package):
+  Policy CMP0146 is not set: The FindCUDA module is removed.  Run "cmake
+  --help-policy CMP0146" for policy details.  Use the cmake_policy command to
+  set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- nvGraph: Enabling the GLIBCXX11 ABI
+CMake Error at CMakeLists.txt:113 (include_directories):
+  include_directories given empty-string as include directory.
+
+
+-- Configuring incomplete, errors occurred!

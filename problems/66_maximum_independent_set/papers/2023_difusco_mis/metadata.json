@@ -1,0 +1,40 @@
+{
+  "title": "DIFUSCO: Graph-based Diffusion Solvers for Combinatorial Optimization",
+  "authors": [
+    "Zhiqing Sun",
+    "Yiming Yang"
+  ],
+  "year": 2023,
+  "venue": "NeurIPS 2023",
+  "doi": null,
+  "publication_url": "https://papers.nips.cc/paper_files/paper/2023/hash/0ba520d93c3df592c83a611961314c98-Abstract-Conference.html",
+  "pdf_url": "https://papers.nips.cc/paper_files/paper/2023/file/0ba520d93c3df592c83a611961314c98-Paper-Conference.pdf",
+  "paper_id": "2023_difusco_mis",
+  "problem_id": "maximum_independent_set",
+  "problem_dir": "66_maximum_independent_set",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "DIFUSCO independent set",
+  "code_url": "https://github.com/Edward-Sun/DIFUSCO",
+  "semantic_fit": "variant",
+  "gpu_scope": "GPU neural diffusion; CPU final decoding.",
+  "notes": "CUDA diffusion model followed by CPU/NumPy feasibility decoding. Report heuristic quality and checkpoint identity; feasibility does not certify optimality.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "difusco/pl_mis_model.py",
+    "difusco/utils/mis_utils.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "difusco",
+  "variant_constraints": [
+    "heuristic mode",
+    "checkpoint required"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

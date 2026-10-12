@@ -1,0 +1,38 @@
+{
+  "problem_id": "personalized_pagerank_rwr",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gunrock_ppr",
+      "algorithm_name": "Gunrock ppr",
+      "metadata": "21_personalized_pagerank_rwr/papers/2017_gunrock_ppr/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_seeded_diffusion",
+      "algorithm_name": "GraphBLAST seeded residual-push PageRank",
+      "metadata": "21_personalized_pagerank_rwr/papers/2019_graphblast_seeded_diffusion/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2020_kpar",
+      "algorithm_name": "Realtime Top-k Personalized PageRank over Large Graphs on GPUs",
+      "metadata": "21_personalized_pagerank_rwr/papers/2020_kpar/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_personalized_pagerank",
+      "algorithm_name": "cuGraph Personalized PageRank",
+      "metadata": "21_personalized_pagerank_rwr/papers/2026_cugraph_personalized_pagerank/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "problem_id": "widest_paths",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2026_nvgraph_widest_path",
+      "algorithm_name": "nvGRAPH max-min widest path",
+      "metadata": "61_widest_paths/papers/2026_nvgraph_widest_path/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

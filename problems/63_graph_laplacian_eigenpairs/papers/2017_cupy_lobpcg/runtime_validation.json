@@ -1,0 +1,14 @@
+{
+  "status": "runtime_failures",
+  "canonical_adapter_available": false,
+  "scope_note": "Subsequent runtime checks; not a paper-version reproduction or an integrated solver.",
+  "checks": [
+    {
+      "backend": "cupy-lobpcg",
+      "passed": 298,
+      "failed": 2,
+      "scope": "Pinned upstream algorithm; independent NumPy eigenvalues, residuals, orthonormality, repeated zero eigenvalues",
+      "evidence": "validation/research_runtime/results/eigen/summary.json"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "problem_id": "subgraph_isomorphism",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2026_gmatch",
+      "algorithm_name": "gMatch: A Fast GPU-Based Subgraph Matching System",
+      "metadata": "13_subgraph_isomorphism/papers/2026_gmatch/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

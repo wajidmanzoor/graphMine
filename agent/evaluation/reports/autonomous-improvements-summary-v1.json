@@ -1,0 +1,40 @@
+{
+  "version": "graphmine-autonomous-improvements-v1",
+  "completed_at": "2026-10-07T22:16:02.898670+00:00",
+  "milestones_completed": [
+    "visualization_and_interpretation",
+    "agent_recovery_and_context",
+    "evaluation_and_data",
+    "cpu_resource_limits",
+    "engineering_and_recovery",
+    "training_preparation"
+  ],
+  "verification": {
+    "cpu_passed": 596,
+    "native_gpu_skipped": 15,
+    "browser_passed": 6,
+    "public_schemas": 9,
+    "lint": "passed",
+    "syntax": "passed"
+  },
+  "artifacts": {
+    "agent/evaluation/reports/autonomous-improvements-verification-v1.json": "8cec55bca65d024e697bc2639c387e07beeaba51e85b287d3f0a8f0a149e7e81",
+    "agent/evaluation/reports/agent-resource-audit-v1.json": "4d11372e593cfa84610fcd070c46e8517c5780af05cd4bb4e5f3befad023e63e",
+    "agent/evaluation/reports/current-catalog-contract-audit-v1.json": "cbd1ebc5553b9a270010d96887785b9e0297fdfb99615561a78e0768c5299695",
+    "agent/evaluation/reports/current-catalog-reference-audit-v1.json": "05201491f929d64ab7b922ac6a04ceff067bfa6705ea88d6ba515f5a55c6937c",
+    "agent/evaluation/reports/current-catalog-workflow-cpu-v2.json": "39bef8a0fad9a5234b749a0b67348bb7ffdb3c2f0d51dc0413eb49e072747bf1",
+    "agent/evaluation/reports/training-preparation-v1.json": "7b78407182758752b6d21ba5e208f1fb4799f2e83c1719fed3369db10ffe9a1c",
+    ".graphmine-learning/failure-review-queue-v1.json": "d45bb6ec8f68d107cb52bb2be54a63c067dc35918ebe3aacc2cf15730546b879"
+  },
+  "services": "stopped; confirmed inactive/dead/MainPID=0 for pilot API, pilot router and walkthrough vLLM",
+  "training_and_old_evaluation_queues": "stopped; no matching active processes observed",
+  "model_inference": "not_run",
+  "native_execution": "not_run",
+  "training_started": false,
+  "remaining_human_or_live_validation": [
+    "Domain usefulness and intended meaning of ambiguous requests",
+    "Review proposed labels before creating new training data",
+    "Live adapter/base and native GPU validation after an explicitly authorized restart"
+  ],
+  "scope": "Completed authorized autonomous code, offline evidence and CPU/browser verification pass. No deployment, model retraining or new model/GPU accuracy claim."
+}

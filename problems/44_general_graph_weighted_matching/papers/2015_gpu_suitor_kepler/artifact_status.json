@@ -1,0 +1,24 @@
+{
+  "problem_id": "general_graph_weighted_matching",
+  "paper_id": "2015_gpu_suitor_kepler",
+  "title": "Optimizing Approximate Weighted Matching on Nvidia Kepler K40",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "not_downloaded",
+    "source_url": null,
+    "local_path": null,
+    "error": "No public PDF located",
+    "checked_at": "2026-10-09T19:43:08Z"
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": "https://hpc.pnl.gov/people/hala/suitor.html",
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

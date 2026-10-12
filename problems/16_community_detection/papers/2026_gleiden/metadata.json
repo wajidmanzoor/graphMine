@@ -12,5 +12,14 @@
   "notes": "The full article is openly readable at the publication URL, but both PMC and publisher PDF endpoints returned anti-automation pages during materialization.",
   "problem_id": "community_detection",
   "problem_dir": "16_community_detection",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "blocked_no_detected_license",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "leiden.cu"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "algorithm"
 }

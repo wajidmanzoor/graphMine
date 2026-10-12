@@ -1,0 +1,77 @@
+{
+  "problem_id": "graphlet_counting",
+  "problem_dir": "12_graphlet_counting",
+  "name": "Graphlet Counting",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 3,
+  "local_gpu_code_entries": 3,
+  "local_paper_entries": 3,
+  "local_gpu_code_and_paper_including_related": 3,
+  "eligible_code_and_paper_references": 3,
+  "eligible_local_code_and_paper_pairs": 3,
+  "target_met": true,
+  "shortfall": 0,
+  "shortfall_explanation": null,
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "graphminer"
+    ],
+    "shortfall": "Fewer than three eligible local GPU implementation/research-paper pairs; individual records state missing artifacts or variant restrictions.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2022_g2miner_enumeration",
+      "algorithm_name": "g2miner_enumeration induced graphlets",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Connected vertex-induced graphlet class counts for supported sizes (3 and 4). No per-vertex orbit counts are supplied; request include_orbit_counts=false.",
+      "metadata_path": "12_graphlet_counting/papers/2022_g2miner_enumeration/metadata.json"
+    },
+    {
+      "paper_id": "2022_g2miner_formula",
+      "algorithm_name": "g2miner_formula induced graphlets",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Connected vertex-induced graphlet class counts for supported sizes (3 and 4). No per-vertex orbit counts are supplied; request include_orbit_counts=false.",
+      "metadata_path": "12_graphlet_counting/papers/2022_g2miner_formula/metadata.json"
+    },
+    {
+      "paper_id": "2022_pangolin",
+      "algorithm_name": "pangolin induced graphlets",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Connected vertex-induced graphlet class counts for supported sizes (3 and 4). No per-vertex orbit counts are supplied; request include_orbit_counts=false.",
+      "metadata_path": "12_graphlet_counting/papers/2022_pangolin/metadata.json"
+    }
+  ]
+}

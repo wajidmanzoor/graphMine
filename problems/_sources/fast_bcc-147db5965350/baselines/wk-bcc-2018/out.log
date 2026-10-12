@@ -1,0 +1,2262 @@
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/as-Skitter.egr
+Trying k=4
+
+Reading as-Skitter.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 61.957 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 28.00 ms
+Time of Step 4: Last BCC Computation : 24.00 ms
+Time of Step 3: Vertex Merging : 5.00 ms
+Time of step 1: k_out_sampling : 4.96 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/com-Orkut.egr
+Trying k=4
+
+Reading com-Orkut.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 105.901 ms.
+
+Function execution times:
+Time of Step 3: Vertex Merging : 62.00 ms
+Time of Step 2: BCC Computation : 20.00 ms
+Time of step 1: k_out_sampling : 17.90 ms
+Time of Step 4: Last BCC Computation : 6.00 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/coPapersCiteseer.egr
+Trying k=4
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 201 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 68 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 33 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 21 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 10 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=30
+Trying k=32
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=32
+Trying k=34
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=34
+Trying k=36
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=36
+Trying k=38
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=38
+Trying k=40
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=40
+Trying k=42
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=42
+Trying k=44
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=44
+Trying k=46
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=46
+Trying k=48
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=48
+Trying k=50
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=50
+Trying k=52
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=52
+Trying k=54
+
+Reading coPapersCiteseer.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 25.9706 ms.
+
+Function execution times:
+Time of step 1: k_out_sampling : 11.97 ms
+Time of Step 3: Vertex Merging : 8.00 ms
+Time of Step 2: BCC Computation : 4.00 ms
+Time of Step 4: Last BCC Computation : 2.00 ms
+ Connected graph achieved with k=54
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/coPapersDBLP.egr
+Trying k=4
+
+Reading coPapersDBLP.egr file.
+
+The sampled graph is disconnected with 98 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading coPapersDBLP.egr file.
+
+The sampled graph is disconnected with 23 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading coPapersDBLP.egr file.
+
+The sampled graph is disconnected with 8 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading coPapersDBLP.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading coPapersDBLP.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading coPapersDBLP.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading coPapersDBLP.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading coPapersDBLP.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 23.0255 ms.
+
+Function execution times:
+Time of step 1: k_out_sampling : 8.03 ms
+Time of Step 3: Vertex Merging : 8.00 ms
+Time of Step 2: BCC Computation : 5.00 ms
+Time of Step 4: Last BCC Computation : 2.00 ms
+ Connected graph achieved with k=18
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/delaunay_n24.egr
+Trying k=4
+
+Reading delaunay_n24.egr file.
+
+The sampled graph is connected.
+CUDA Error at src/sampling/gpu-csr.cu:158 - cal_offset kernel launch failed
+CUDA Error description: invalid configuration argument
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/eu-2005.egr
+Trying k=4
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 233 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 99 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 59 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 28 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 16 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 10 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 6 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading eu-2005.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=30
+Trying k=32
+
+Reading eu-2005.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 71.2974 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 45.00 ms
+Time of step 1: k_out_sampling : 13.30 ms
+Time of Step 3: Vertex Merging : 8.00 ms
+Time of Step 4: Last BCC Computation : 5.00 ms
+ Connected graph achieved with k=32
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/europe_osm.egr
+Trying k=4
+
+Reading europe_osm.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 5444.52 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 4977.00 ms
+Time of Step 4: Last BCC Computation : 357.00 ms
+Time of step 1: k_out_sampling : 78.52 ms
+Time of Step 3: Vertex Merging : 32.00 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/GAP-road.egr
+Trying k=4
+
+Reading GAP-road.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 1014.96 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 526.00 ms
+Time of Step 4: Last BCC Computation : 429.00 ms
+Time of step 1: k_out_sampling : 42.96 ms
+Time of Step 3: Vertex Merging : 17.00 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/germany_osm.egr
+Trying k=4
+
+Reading germany_osm.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 330.47 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 220.00 ms
+Time of Step 4: Last BCC Computation : 86.00 ms
+Time of step 1: k_out_sampling : 17.47 ms
+Time of Step 3: Vertex Merging : 7.00 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/higgs-twitter.egr
+Trying k=4
+
+Reading higgs-twitter.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 41.2864 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 28.00 ms
+Time of Step 3: Vertex Merging : 7.00 ms
+Time of Step 4: Last BCC Computation : 4.00 ms
+Time of step 1: k_out_sampling : 2.29 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/hollywood-2009.egr
+Trying k=4
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 1648 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 537 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 213 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 91 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 45 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 17 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 6 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading hollywood-2009.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 1476.31 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 904.00 ms
+Time of Step 4: Last BCC Computation : 521.00 ms
+Time of Step 3: Vertex Merging : 30.00 ms
+Time of step 1: k_out_sampling : 21.31 ms
+ Connected graph achieved with k=30
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/hugebubbles-00020.egr
+Trying k=4
+
+Reading hugebubbles-00020.egr file.
+
+The sampled graph is connected.
+CUDA Error at src/sampling/gpu-csr.cu:158 - cal_offset kernel launch failed
+CUDA Error description: invalid configuration argument
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/in-2004.egr
+Trying k=4
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 4070 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 2360 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 1424 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 1004 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 786 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 669 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 557 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 472 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 368 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 259 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 176 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 120 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 98 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 82 connected components.
+Disconnected for k=30
+Trying k=32
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 67 connected components.
+Disconnected for k=32
+Trying k=34
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 54 connected components.
+Disconnected for k=34
+Trying k=36
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 44 connected components.
+Disconnected for k=36
+Trying k=38
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 37 connected components.
+Disconnected for k=38
+Trying k=40
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 33 connected components.
+Disconnected for k=40
+Trying k=42
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 26 connected components.
+Disconnected for k=42
+Trying k=44
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 21 connected components.
+Disconnected for k=44
+Trying k=46
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 17 connected components.
+Disconnected for k=46
+Trying k=48
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 17 connected components.
+Disconnected for k=48
+Trying k=50
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 15 connected components.
+Disconnected for k=50
+Trying k=52
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 12 connected components.
+Disconnected for k=52
+Trying k=54
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 11 connected components.
+Disconnected for k=54
+Trying k=56
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 10 connected components.
+Disconnected for k=56
+Trying k=58
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 9 connected components.
+Disconnected for k=58
+Trying k=60
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=60
+Trying k=62
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=62
+Trying k=64
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=64
+Trying k=66
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=66
+Trying k=68
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=68
+Trying k=70
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=70
+Trying k=72
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=72
+Trying k=74
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=74
+Trying k=76
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=76
+Trying k=78
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=78
+Trying k=80
+
+Reading in-2004.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=80
+Trying k=82
+
+Reading in-2004.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 60.1225 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 30.00 ms
+Time of step 1: k_out_sampling : 14.12 ms
+Time of Step 4: Last BCC Computation : 8.00 ms
+Time of Step 3: Vertex Merging : 8.00 ms
+ Connected graph achieved with k=82
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/indochina-2004.egr
+Trying k=4
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 13713 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 7362 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 4272 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 2830 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 1991 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 1502 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 1065 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 757 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 577 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 405 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 335 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 264 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 210 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 157 connected components.
+Disconnected for k=30
+Trying k=32
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 110 connected components.
+Disconnected for k=32
+Trying k=34
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 93 connected components.
+Disconnected for k=34
+Trying k=36
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 77 connected components.
+Disconnected for k=36
+Trying k=38
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 65 connected components.
+Disconnected for k=38
+Trying k=40
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 53 connected components.
+Disconnected for k=40
+Trying k=42
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 48 connected components.
+Disconnected for k=42
+Trying k=44
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 42 connected components.
+Disconnected for k=44
+Trying k=46
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 32 connected components.
+Disconnected for k=46
+Trying k=48
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 25 connected components.
+Disconnected for k=48
+Trying k=50
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 22 connected components.
+Disconnected for k=50
+Trying k=52
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 20 connected components.
+Disconnected for k=52
+Trying k=54
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 16 connected components.
+Disconnected for k=54
+Trying k=56
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 13 connected components.
+Disconnected for k=56
+Trying k=58
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 13 connected components.
+Disconnected for k=58
+Trying k=60
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 13 connected components.
+Disconnected for k=60
+Trying k=62
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 12 connected components.
+Disconnected for k=62
+Trying k=64
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 11 connected components.
+Disconnected for k=64
+Trying k=66
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 10 connected components.
+Disconnected for k=66
+Trying k=68
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 10 connected components.
+Disconnected for k=68
+Trying k=70
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 10 connected components.
+Disconnected for k=70
+Trying k=72
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 9 connected components.
+Disconnected for k=72
+Trying k=74
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 9 connected components.
+Disconnected for k=74
+Trying k=76
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 9 connected components.
+Disconnected for k=76
+Trying k=78
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 8 connected components.
+Disconnected for k=78
+Trying k=80
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 8 connected components.
+Disconnected for k=80
+Trying k=82
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=82
+Trying k=84
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=84
+Trying k=86
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=86
+Trying k=88
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=88
+Trying k=90
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=90
+Trying k=92
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=92
+Trying k=94
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=94
+Trying k=96
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=96
+Trying k=98
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=98
+Trying k=100
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=100
+Trying k=102
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=102
+Trying k=104
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=104
+Trying k=106
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=106
+Trying k=108
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=108
+Trying k=110
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=110
+Trying k=112
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=112
+Trying k=114
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=114
+Trying k=116
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=116
+Trying k=118
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=118
+Trying k=120
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=120
+Trying k=122
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=122
+Trying k=124
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=124
+Trying k=126
+
+Reading indochina-2004.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=126
+Trying k=128
+
+Reading indochina-2004.egr file.
+
+CUDA Error at include/cuda_utility.cuh:251 - Allocation failed
+CUDA Error description: out of memory
+ Connected graph achieved with k=128
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/kmer_U1a.egr
+Trying k=4
+
+Reading kmer_U1a.egr file.
+
+The sampled graph is disconnected with 11 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading kmer_U1a.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading kmer_U1a.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 19300.6 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 16182.00 ms
+Time of Step 4: Last BCC Computation : 2975.00 ms
+Time of step 1: k_out_sampling : 99.55 ms
+Time of Step 3: Vertex Merging : 44.00 ms
+ Connected graph achieved with k=8
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/kmer_V2a.egr
+Trying k=4
+
+Reading kmer_V2a.egr file.
+
+The sampled graph is disconnected with 18 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading kmer_V2a.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 5574.7 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 4819.00 ms
+Time of Step 4: Last BCC Computation : 639.00 ms
+Time of step 1: k_out_sampling : 82.70 ms
+Time of Step 3: Vertex Merging : 34.00 ms
+ Connected graph achieved with k=6
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/kron_g500-logn18.egr
+Trying k=4
+
+Reading kron_g500-logn18.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 1211.78 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 664.00 ms
+Time of Step 4: Last BCC Computation : 541.00 ms
+Time of Step 3: Vertex Merging : 5.00 ms
+Time of step 1: k_out_sampling : 1.78 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/kron_g500-logn19.egr
+Trying k=4
+
+Reading kron_g500-logn19.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 3363.59 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 2014.00 ms
+Time of Step 4: Last BCC Computation : 1335.00 ms
+Time of Step 3: Vertex Merging : 12.00 ms
+Time of step 1: k_out_sampling : 2.59 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/kron_g500-logn20.egr
+Trying k=4
+
+Reading kron_g500-logn20.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 9077.47 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 4693.00 ms
+Time of Step 4: Last BCC Computation : 4354.00 ms
+Time of Step 3: Vertex Merging : 26.00 ms
+Time of step 1: k_out_sampling : 4.47 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/kron_g500-logn21.egr
+Trying k=4
+
+Reading kron_g500-logn21.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 20646.6 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 10307.00 ms
+Time of Step 4: Last BCC Computation : 10271.00 ms
+Time of Step 3: Vertex Merging : 58.00 ms
+Time of step 1: k_out_sampling : 10.60 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/ljournal-2008.egr
+Trying k=4
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 544 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 175 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 84 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 42 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 26 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 17 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 9 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 6 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=30
+Trying k=32
+
+Reading ljournal-2008.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 211.944 ms.
+
+Function execution times:
+Time of Step 4: Last BCC Computation : 102.00 ms
+Time of step 1: k_out_sampling : 43.94 ms
+Time of Step 2: BCC Computation : 36.00 ms
+Time of Step 3: Vertex Merging : 30.00 ms
+ Connected graph achieved with k=32
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/rgg_n_2_23_s0.egr
+Trying k=4
+
+Reading rgg_n_2_23_s0.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 216.444 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 151.00 ms
+Time of Step 3: Vertex Merging : 33.00 ms
+Time of step 1: k_out_sampling : 31.44 ms
+Time of Step 4: Last BCC Computation : 1.00 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/rgg_n_2_24_s0.egr
+Trying k=4
+
+Reading rgg_n_2_24_s0.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 466.891 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 332.00 ms
+Time of Step 3: Vertex Merging : 72.00 ms
+Time of step 1: k_out_sampling : 61.89 ms
+Time of Step 4: Last BCC Computation : 1.00 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/road_usa.egr
+Trying k=4
+
+Reading road_usa.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 1004.83 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 522.00 ms
+Time of Step 4: Last BCC Computation : 423.00 ms
+Time of step 1: k_out_sampling : 42.83 ms
+Time of Step 3: Vertex Merging : 17.00 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/soc-LiveJournal1.egr
+Trying k=4
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=30
+Trying k=32
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=32
+Trying k=34
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=34
+Trying k=36
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=36
+Trying k=38
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=38
+Trying k=40
+
+Reading soc-LiveJournal1.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 287.877 ms.
+
+Function execution times:
+Time of Step 4: Last BCC Computation : 130.00 ms
+Time of Step 2: BCC Computation : 88.00 ms
+Time of step 1: k_out_sampling : 42.88 ms
+Time of Step 3: Vertex Merging : 27.00 ms
+ Connected graph achieved with k=40
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/sx-stackoverflow.egr
+Trying k=4
+
+Reading sx-stackoverflow.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 958.908 ms.
+
+Function execution times:
+Time of Step 4: Last BCC Computation : 475.00 ms
+Time of Step 2: BCC Computation : 460.00 ms
+Time of Step 3: Vertex Merging : 16.00 ms
+Time of step 1: k_out_sampling : 7.91 ms
+ Connected graph achieved with k=4
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/uk-2002.egr
+Trying k=4
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 22128 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 9652 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 5304 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 3154 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 1948 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 1271 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 924 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 682 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 513 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 395 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 306 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 231 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 182 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 154 connected components.
+Disconnected for k=30
+Trying k=32
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 102 connected components.
+Disconnected for k=32
+Trying k=34
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 70 connected components.
+Disconnected for k=34
+Trying k=36
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 54 connected components.
+Disconnected for k=36
+Trying k=38
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 53 connected components.
+Disconnected for k=38
+Trying k=40
+
+Reading uk-2002.egr file.
+
+The sampled graph is disconnected with 45 connected components.
+Disconnected for k=40
+Trying k=42
+
+Reading uk-2002.egr file.
+
+CUDA Error at include/cuda_utility.cuh:251 - Allocation failed
+CUDA Error description: out of memory
+ Connected graph achieved with k=42
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/web-BerkStan.egr
+Trying k=4
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 1505 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 766 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 481 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 307 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 222 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 171 connected components.
+Disconnected for k=14
+Trying k=16
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 120 connected components.
+Disconnected for k=16
+Trying k=18
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 94 connected components.
+Disconnected for k=18
+Trying k=20
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 74 connected components.
+Disconnected for k=20
+Trying k=22
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 58 connected components.
+Disconnected for k=22
+Trying k=24
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 40 connected components.
+Disconnected for k=24
+Trying k=26
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 30 connected components.
+Disconnected for k=26
+Trying k=28
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 27 connected components.
+Disconnected for k=28
+Trying k=30
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 25 connected components.
+Disconnected for k=30
+Trying k=32
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 22 connected components.
+Disconnected for k=32
+Trying k=34
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 19 connected components.
+Disconnected for k=34
+Trying k=36
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 16 connected components.
+Disconnected for k=36
+Trying k=38
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 16 connected components.
+Disconnected for k=38
+Trying k=40
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 15 connected components.
+Disconnected for k=40
+Trying k=42
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 11 connected components.
+Disconnected for k=42
+Trying k=44
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 9 connected components.
+Disconnected for k=44
+Trying k=46
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 9 connected components.
+Disconnected for k=46
+Trying k=48
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=48
+Trying k=50
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=50
+Trying k=52
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 5 connected components.
+Disconnected for k=52
+Trying k=54
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=54
+Trying k=56
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=56
+Trying k=58
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=58
+Trying k=60
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=60
+Trying k=62
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=62
+Trying k=64
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=64
+Trying k=66
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=66
+Trying k=68
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=68
+Trying k=70
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=70
+Trying k=72
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=72
+Trying k=74
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=74
+Trying k=76
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=76
+Trying k=78
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=78
+Trying k=80
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=80
+Trying k=82
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=82
+Trying k=84
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=84
+Trying k=86
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=86
+Trying k=88
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=88
+Trying k=90
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=90
+Trying k=92
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=92
+Trying k=94
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=94
+Trying k=96
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=96
+Trying k=98
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=98
+Trying k=100
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=100
+Trying k=102
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=102
+Trying k=104
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=104
+Trying k=106
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=106
+Trying k=108
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=108
+Trying k=110
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=110
+Trying k=112
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=112
+Trying k=114
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=114
+Trying k=116
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=116
+Trying k=118
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=118
+Trying k=120
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=120
+Trying k=122
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=122
+Trying k=124
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=124
+Trying k=126
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=126
+Trying k=128
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=128
+Trying k=130
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=130
+Trying k=132
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=132
+Trying k=134
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=134
+Trying k=136
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=136
+Trying k=138
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=138
+Trying k=140
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=140
+Trying k=142
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=142
+Trying k=144
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=144
+Trying k=146
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 3 connected components.
+Disconnected for k=146
+Trying k=148
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=148
+Trying k=150
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=150
+Trying k=152
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=152
+Trying k=154
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=154
+Trying k=156
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=156
+Trying k=158
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=158
+Trying k=160
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=160
+Trying k=162
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=162
+Trying k=164
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=164
+Trying k=166
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=166
+Trying k=168
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=168
+Trying k=170
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=170
+Trying k=172
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is disconnected with 2 connected components.
+Disconnected for k=172
+Trying k=174
+
+Reading web-BerkStan.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 82.2159 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 57.00 ms
+Time of Step 4: Last BCC Computation : 13.00 ms
+Time of step 1: k_out_sampling : 8.22 ms
+Time of Step 3: Vertex Merging : 4.00 ms
+ Connected graph achieved with k=174
+======================================
+Running on: /home/abhijeet/datasets/medium_datasets/ecl_graphs/wiki-topcats.egr
+Trying k=4
+
+Reading wiki-topcats.egr file.
+
+The sampled graph is disconnected with 7 connected components.
+Disconnected for k=4
+Trying k=6
+
+Reading wiki-topcats.egr file.
+
+The sampled graph is disconnected with 6 connected components.
+Disconnected for k=6
+Trying k=8
+
+Reading wiki-topcats.egr file.
+
+The sampled graph is disconnected with 6 connected components.
+Disconnected for k=8
+Trying k=10
+
+Reading wiki-topcats.egr file.
+
+The sampled graph is disconnected with 6 connected components.
+Disconnected for k=10
+Trying k=12
+
+Reading wiki-topcats.egr file.
+
+The sampled graph is disconnected with 4 connected components.
+Disconnected for k=12
+Trying k=14
+
+Reading wiki-topcats.egr file.
+
+The sampled graph is connected.
+
+Total execution time for Sampling WK-BCC (2018): 87.2142 ms.
+
+Function execution times:
+Time of Step 2: BCC Computation : 58.00 ms
+Time of step 1: k_out_sampling : 15.21 ms
+Time of Step 3: Vertex Merging : 13.00 ms
+Time of Step 4: Last BCC Computation : 1.00 ms
+ Connected graph achieved with k=14

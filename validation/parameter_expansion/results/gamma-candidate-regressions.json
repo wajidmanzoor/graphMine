@@ -1,0 +1,104 @@
+[
+  {
+    "case": "008048-atlas-171-n6-k4-gamma",
+    "output": {
+      "ok": true,
+      "provenance": {
+        "problem": "k_clique_counting_enumeration",
+        "backend": "gamma",
+        "backend_version": "GAMMA artifact",
+        "source_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+        "execution_path": "original GAMMA GPU count + optional common exact materializer"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 2058.939322,
+        "backend_ms": 1598.32436,
+        "output_materialization_ms": 0.003426
+      },
+      "output": {
+        "count": 0,
+        "complete": true,
+        "cliques": [],
+        "per_vertex_count": [
+          {
+            "vertex": -7,
+            "count": 0
+          },
+          {
+            "vertex": "0",
+            "count": 0
+          },
+          {
+            "vertex": 0,
+            "count": 0
+          },
+          {
+            "vertex": "v 3",
+            "count": 0
+          },
+          {
+            "vertex": "v 4",
+            "count": 0
+          },
+          {
+            "vertex": "v 5",
+            "count": 0
+          }
+        ]
+      }
+    },
+    "exit_code": 0
+  },
+  {
+    "case": "009552-atlas-203-n6-k4-gamma",
+    "output": {
+      "ok": true,
+      "provenance": {
+        "problem": "k_clique_counting_enumeration",
+        "backend": "gamma",
+        "backend_version": "GAMMA artifact",
+        "source_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+        "execution_path": "original GAMMA GPU count + optional common exact materializer"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 757.541938,
+        "backend_ms": 381.826735,
+        "output_materialization_ms": 0.003555
+      },
+      "output": {
+        "count": 0,
+        "complete": true,
+        "cliques": [],
+        "per_vertex_count": [
+          {
+            "vertex": 0,
+            "count": 0
+          },
+          {
+            "vertex": 1,
+            "count": 0
+          },
+          {
+            "vertex": 2,
+            "count": 0
+          },
+          {
+            "vertex": 3,
+            "count": 0
+          },
+          {
+            "vertex": 4,
+            "count": 0
+          },
+          {
+            "vertex": 5,
+            "count": 0
+          }
+        ]
+      }
+    },
+    "exit_code": 0
+  }
+]

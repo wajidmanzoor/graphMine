@@ -1,0 +1,33 @@
+{
+  "problem_id": "maximal_independent_set",
+  "paper_id": "2025_mg_mis",
+  "title": "A Multi-GPU Algorithm for Computing Maximal Independent Sets in Large Graphs",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://userweb.cs.txstate.edu/~mb92/papers/ics25.pdf",
+    "resolved_url": "https://userweb.cs.txstate.edu/~mb92/papers/ics25.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "4a4f190d8394bf256356c724863892e2953b949ee2873f8aca0732f6274dd3d8",
+    "bytes": 754264,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/burtscher/MG-MIS",
+    "local_path": "code",
+    "commit": "db7fb2355ac68c3cf96dd2b672ead516c33bf50f",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/mg_mis.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "MG-MIS_10.cu": "c7fcdd3cd1b549e7d8aad5fac213b2be186798076480627714dc00a24750075f"
+    }
+  }
+}

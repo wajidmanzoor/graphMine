@@ -1,0 +1,27 @@
+{
+  "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+  "year": 2019,
+  "venue": "arXiv; later published in ACM TOPC",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1908.01407",
+  "pdf_url": "https://arxiv.org/pdf/1908.01407",
+  "paper_id": "2019_graphblast_bfs",
+  "problem_id": "breadth_first_search",
+  "problem_dir": "38_breadth_first_search",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GraphBLAST sparse linear-algebra BFS",
+  "code_url": "https://github.com/gunrock/graphblast",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA GraphBLAS Boolean-semiring traversal.",
+  "notes": "Produces single-source reachability levels; predecessor and cutoff support must be checked by an adapter.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "graphblas/algorithm/bfs.hpp"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

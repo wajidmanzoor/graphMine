@@ -2,20 +2,28 @@
   "problem_id": "densest_subgraph",
   "paper_id": "2026_bound_tightened_dsd",
   "title": "Bound-Tightened Densest Subgraph Discovery on GPU",
-  "checked_at": "2026-10-03T22:04:41Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://upenn.ferric.systems/dbscholar/sigmod_papers/2026/10.1145_3802023.pdf",
     "status": "downloaded",
+    "source_url": "https://upenn.ferric.systems/dbscholar/sigmod_papers/2026/10.1145_3802023.pdf",
+    "resolved_url": "https://upenn.ferric.systems/dbscholar/sigmod_papers/2026/10.1145_3802023.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "b4fe23dd7ae01e0252f248148fe58daba2410de8aee7e82fa0f1043366ba1f5b",
+    "bytes": 2915301,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/wajidmanzoor/CDS",
-    "status": "cloned",
-    "local_path": "code",
+    "status": "not_collected",
+    "local_path": null,
     "commit": "3e704f98cf873336e2cf789570774039c8d6f092",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made.",
+    "checked_at": "2026-10-10T02:15:29Z",
+    "existing_workspace_source_reference": "/home/wajid/projects/graphDatabaseAgent/problems/05_densest_subgraph/papers/2026_bound_tightened_dsd/code"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

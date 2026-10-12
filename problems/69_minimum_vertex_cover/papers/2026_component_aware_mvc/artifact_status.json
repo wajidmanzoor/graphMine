@@ -1,0 +1,34 @@
+{
+  "problem_id": "minimum_vertex_cover",
+  "paper_id": "2026_component_aware_mvc",
+  "title": "Faster Vertex Cover Algorithms on GPUs with Component-Aware Parallel Branching",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2512.18334",
+    "resolved_url": "https://arxiv.org/pdf/2512.18334",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "5090c6dd7737dd6aedf58489ec22511feacebff3dfa46353932c316222e3af3e",
+    "bytes": 846833,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/HusseinAmro/component-aware-vertex-cover-gpu",
+    "local_path": "code",
+    "commit": "9adba41659d320ca2fd0e01c6907916db1f4fdf5",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/mvc_components.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/main.cu": "7e8ee51f6438b737011d1e00d82705e31c98345408a83fe64fbbaf8574759097"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

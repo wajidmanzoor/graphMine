@@ -1,0 +1,30 @@
+{
+  "problem_id": "minimum_vertex_cover",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2022_parallel_mvc_reference",
+      "algorithm_name": "Parallel GPU vertex cover",
+      "metadata": "69_minimum_vertex_cover/papers/2022_parallel_mvc_reference/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_dynamic_mvc",
+      "algorithm_name": "Self-trained neural vertex-cover heuristic",
+      "metadata": "69_minimum_vertex_cover/papers/2023_dynamic_mvc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_component_aware_mvc",
+      "algorithm_name": "Component-aware GPU vertex cover",
+      "metadata": "69_minimum_vertex_cover/papers/2026_component_aware_mvc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

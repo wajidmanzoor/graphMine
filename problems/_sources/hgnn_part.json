@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/THU-numbda/HGNN-Part",
+  "checked_at": "2026-10-09T19:25:31Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "0a70e44f3bccbb06c386edaf84927433c9441cb7",
+  "archive_url": "https://codeload.github.com/THU-numbda/HGNN-Part/tar.gz/0a70e44f3bccbb06c386edaf84927433c9441cb7",
+  "archive_sha256": "77720bba3eb9372a3434489c094535380ca871f486a5d61081ff4d20f28d046f",
+  "local_path": "hgnn_part-0a70e44f3bcc",
+  "license_files": [],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

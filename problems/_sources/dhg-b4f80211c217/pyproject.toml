@@ -1,0 +1,59 @@
+[project]
+name = "dhg"
+version = "0.9.7"
+description = "DHG is a Deep Learning Framework for Graph Neural Network and Hypergraph Neural Networks."
+authors = [
+    {name = "yifanfeng97", email = "evanfeng97@qq.com"}
+]
+license = {text = "Apache-2.0"}
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["pytorch", "deep learning", "graph neural networks", "hypergraph neural networks"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Operating System :: OS Independent",
+    "Environment :: GPU :: NVIDIA CUDA",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: Apache Software License",
+]
+dependencies = [
+    "torch>=1.12.1",
+    "scipy>=1.8",
+    "optuna",
+    "numpy",
+    "scikit-learn",
+    "requests",
+    "matplotlib>=3.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "isort",
+]
+
+[tool.black]
+include = '\.pyi?$'
+line-length = 119
+
+[tool.isort]
+profile = "black"
+line_length = 119
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,41 @@
+{
+  "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+  "authors": [
+    "Xuhao Chen",
+    "Arvind"
+  ],
+  "year": 2022,
+  "venue": "USENIX OSDI 2022",
+  "doi": null,
+  "publication_url": "https://www.usenix.org/conference/osdi22/presentation/chen",
+  "pdf_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
+  "paper_id": "2022_graphminer_mni",
+  "problem_id": "single_graph_frequent_subgraph_mining",
+  "problem_dir": "68_single_graph_frequent_subgraph_mining",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "graphminer single-graph MNI mining",
+  "code_url": "https://github.com/chenxuhao/GraphMiner",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Labeled single-host-graph domain/MNI support. The upstream driver reports the number of frequent patterns; pattern listing and unsupported size bounds must not be claimed. This does not implement graph-database transaction support in problem 14.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "src/fsm/gpu_base.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "graphminer",
+  "variant_constraints": [
+    "single labeled host graph",
+    "count output",
+    "non-induced edge embeddings",
+    "inspect compiled pattern-size bound"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

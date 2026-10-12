@@ -98,7 +98,7 @@
           "capabilities": [
             "exact_count",
             "single_gpu",
-            "k_3_to_5_validated"
+            "k_3_to_10"
           ]
         },
         {
@@ -110,7 +110,7 @@
           "capabilities": [
             "exact_count",
             "single_gpu",
-            "k_3_to_5_validated"
+            "k_3_to_6"
           ]
         },
         {
@@ -122,7 +122,7 @@
           "capabilities": [
             "exact_count",
             "single_gpu",
-            "k_3_to_5_validated"
+            "k_3_to_7"
           ]
         }
       ]
@@ -535,7 +535,7 @@
     {
       "id": "densest-subgraph",
       "research_problem": "densest_subgraph",
-      "usage": "graphmine run densest-subgraph --graph GRAPH.json [--backend cds]",
+      "usage": "graphmine run densest-subgraph --graph GRAPH.json [--backend cds] [--clique-order K]",
       "backends": [
         {
           "id": "cds",
@@ -544,7 +544,7 @@
           "source_commit": "3e704f98cf873336e2cf789570774039c8d6f092",
           "validated": true,
           "capabilities": [
-            "exact unweighted edge density |E(S)|/|S| with vertex witness",
+            "exact unweighted k-clique density C_k(S)/|S| with checked vertex witness; clique_order >= 2",
             "single GPU; nonempty undirected graph; no cardinality or weighted objective"
           ]
         }

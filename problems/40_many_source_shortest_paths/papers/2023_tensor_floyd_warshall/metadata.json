@@ -1,0 +1,28 @@
+{
+  "title": "The Floyd-Warshall Algorithm Re-implemented Using 3D-Tensors and Hardware Acceleration",
+  "year": 2023,
+  "venue": null,
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2310.03983",
+  "pdf_url": "https://arxiv.org/pdf/2310.03983",
+  "paper_id": "2023_tensor_floyd_warshall",
+  "problem_id": "many_source_shortest_paths",
+  "problem_dir": "40_many_source_shortest_paths",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Tensorized Floyd-Warshall",
+  "code_url": "https://github.com/tanjary21/APSP_GPU",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch CUDA dense min-plus tensor operations.",
+  "notes": "Entry function FW_GPU. Dense O(n^2) storage; inspect infinity and zero-weight conventions when importing arbitrary graphs.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "apsp.py",
+    "main.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

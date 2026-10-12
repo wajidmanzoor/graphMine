@@ -1,0 +1,28 @@
+{
+  "source_url": "https://userweb.cs.txstate.edu/~mb92/research/ECL-MIS/",
+  "status": "downloaded",
+  "local_path": "ecl_mis-1.3",
+  "commit": null,
+  "version": "1.3",
+  "checked_at": "2026-10-09T19:31:20Z",
+  "files": [
+    {
+      "path": "ECL-MIS_13.cu",
+      "source_url": "https://userweb.cs.txstate.edu/~mb92/research/ECL-MIS/ECL-MIS_13.cu",
+      "sha256": "e7fd16b707ea709843673bd008042b4ade92359fb866e436d3c082ed85cd443c"
+    },
+    {
+      "path": "ECLgraph.h",
+      "source_url": "https://userweb.cs.txstate.edu/~mb92/research/ECL-MIS/ECLgraph.h",
+      "sha256": "035ccdb233070f607c477265da86ef360485b6053f2b73572f099d8950ae871c"
+    }
+  ],
+  "license_files": [
+    "ECL-MIS_13.cu"
+  ],
+  "license_note": "License is embedded in the CUDA source header.",
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

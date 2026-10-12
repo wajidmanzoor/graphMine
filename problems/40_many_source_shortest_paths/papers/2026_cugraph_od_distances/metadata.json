@@ -1,0 +1,29 @@
+{
+  "title": "cuGraph origin-destination shortest distances (software entry; no paper collected)",
+  "year": null,
+  "venue": null,
+  "doi": null,
+  "publication_url": null,
+  "pdf_url": null,
+  "paper_id": "2026_cugraph_od_distances",
+  "problem_id": "many_source_shortest_paths",
+  "problem_dir": "40_many_source_shortest_paths",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "cuGraph origin-destination shortest distances",
+  "code_url": "https://github.com/rapidsai/cugraph",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA many-source distance implementation.",
+  "notes": "Real upstream GPU source is present; no implementation-specific paper was verified. Not counted as a code-and-paper pair.",
+  "paper_role": "none",
+  "code_entrypoints": [
+    "cpp/src/traversal/od_shortest_distances_impl.cuh"
+  ],
+  "documentation_urls": [
+    "https://docs.nvidia.com/cugraph/latest/"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

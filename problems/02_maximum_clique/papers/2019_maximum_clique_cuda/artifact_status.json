@@ -2,20 +2,30 @@
   "problem_id": "maximum_clique",
   "paper_id": "2019_maximum_clique_cuda",
   "title": "Implementation of a Maximum Clique Search Procedure on CUDA",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
+    "status": "downloaded",
     "source_url": "https://link.springer.com/content/pdf/10.1007%2Fs10732-018-9393-x.pdf",
-    "status": "download_failed",
-    "local_path": null,
-    "error": "The URL returned content that is not a PDF."
+    "resolved_url": "https://link.springer.com/content/pdf/10.1007%2Fs10732-018-9393-x.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "fdd1a94262d6cd3507eba3fec6b74ef55bedd5c5fab4488e65a9890d1449162c",
+    "bytes": 2157930,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/pawelld/CUDA-MS",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "a0b6b00a1f67b6fe65380b2efcb242cf40889d83",
     "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "motzkin_cuda.cu": "5944f1f2098b36066e9c481c94fdb9b24aeca41a0a58314bc399d2a1c892c648"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

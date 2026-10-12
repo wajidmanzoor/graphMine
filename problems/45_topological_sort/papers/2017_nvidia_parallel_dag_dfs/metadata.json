@@ -1,0 +1,28 @@
+{
+  "title": "Parallel Depth-First Search for Directed Acyclic Graphs",
+  "year": 2017,
+  "venue": "NVIDIA technical report; IA3 2017",
+  "doi": null,
+  "publication_url": "https://mgarland.org/papers/2017/dfs/",
+  "pdf_url": "https://research.nvidia.com/sites/default/files/publications/nvr-2017-001.pdf",
+  "paper_id": "2017_nvidia_parallel_dag_dfs",
+  "problem_id": "topological_sort",
+  "problem_dir": "45_topological_sort",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "NVIDIA parallel DAG DFS and reverse postorder",
+  "code_url": null,
+  "semantic_fit": "variant",
+  "gpu_scope": "Research paper evaluates CUDA DAG DFS; reversing postorder gives a topological ordering.",
+  "notes": "Author CUDA artifact was not located. The public morpheusthewhite/parallel-dfs-dag repository is a C++/OpenMP reimplementation and is not counted as GPU code.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [],
+  "documentation_urls": [
+    "https://mgarland.org/papers/2017/dfs/",
+    "https://github.com/morpheusthewhite/parallel-dfs-dag"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

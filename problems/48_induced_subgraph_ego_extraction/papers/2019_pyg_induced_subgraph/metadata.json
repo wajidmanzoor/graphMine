@@ -1,0 +1,27 @@
+{
+  "title": "Fast Graph Representation Learning with PyTorch Geometric",
+  "year": 2019,
+  "venue": "ICLR 2019 workshop",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1903.02428",
+  "pdf_url": "https://arxiv.org/pdf/1903.02428",
+  "paper_id": "2019_pyg_induced_subgraph",
+  "problem_id": "induced_subgraph_ego_extraction",
+  "problem_dir": "48_induced_subgraph_ego_extraction",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "PyG mask-based induced subgraph",
+  "code_url": "https://github.com/pyg-team/pytorch_geometric",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch indexing/masking runs on CUDA when edge_index and subset tensors are on CUDA.",
+  "notes": "Entry function subgraph. This is a framework implementation and its framework paper, not a separate extraction research paper.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "torch_geometric/utils/_subgraph.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

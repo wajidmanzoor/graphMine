@@ -1,0 +1,22 @@
+{
+  "problem_id": "graph_layout_force_directed",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gpugraphlayout",
+      "algorithm_name": "Exploiting GPUs for Fast Force-Directed Visualization of Large-Scale Networks",
+      "metadata": "36_graph_layout_force_directed/papers/2017_gpugraphlayout/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_force_atlas2",
+      "algorithm_name": "cuGraph ForceAtlas2 layout",
+      "metadata": "36_graph_layout_force_directed/papers/2026_cugraph_force_atlas2/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

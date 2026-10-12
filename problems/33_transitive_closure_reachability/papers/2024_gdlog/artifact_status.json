@@ -1,0 +1,34 @@
+{
+  "problem_id": "transitive_closure_reachability",
+  "paper_id": "2024_gdlog",
+  "title": "Optimizing Datalog for the GPU",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://thomas.gilray.org/pdf/datalog-gpu.pdf",
+    "resolved_url": "https://thomas.gilray.org/pdf/datalog-gpu.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "390f2d560221894fbeb9c115447e31969473c99cc280a6b692ce2359a220d72d",
+    "bytes": 1005384,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/harp-lab/gdlog",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "entrypoint_sha256": {
+      "test/tc.cu": "12a756a918971b26249954695165b024bb731df8750a46544d2da03c5e2e3c63",
+      "src/join.cu": "f042edbf6873d5aa28976a8fb52d7de5c14ec824d766d2db5358dd65bcc58962"
+    },
+    "commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+    "source_manifest": "../../../_sources/gdlog.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/LICENSE"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

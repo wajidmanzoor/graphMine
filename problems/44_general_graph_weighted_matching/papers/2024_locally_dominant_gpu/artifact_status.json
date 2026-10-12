@@ -1,0 +1,35 @@
+{
+  "problem_id": "general_graph_weighted_matching",
+  "paper_id": "2024_locally_dominant_gpu",
+  "title": "Efficient Weighted Graph Matching on GPUs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "not_downloaded",
+    "source_url": "https://www.cs.rpi.edu/~slotag/pub/Matching-SC24.pdf",
+    "local_path": null,
+    "error": [
+      {
+        "url": "https://www.cs.rpi.edu/~slotag/pub/Matching-SC24.pdf",
+        "error": "HTTP Error 404: Not Found"
+      }
+    ],
+    "checked_at": "2026-10-09T19:30:59Z",
+    "download_attempts": [
+      {
+        "url": "https://www.cs.rpi.edu/~slotag/pub/Matching-SC24.pdf",
+        "error": "HTTP Error 404: Not Found"
+      }
+    ]
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

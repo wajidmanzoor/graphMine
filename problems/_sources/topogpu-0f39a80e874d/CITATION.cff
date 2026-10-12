@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use TopoGPU, please cite the paper below."
+title: "TopoGPU: GPU-Accelerated Computation of Persistent Homology for Image Data"
+authors:
+  - family-names: Wang
+    given-names: Fan
+    orcid: https://orcid.org/0000-0002-5402-5065
+  - family-names: Wagner
+    given-names: Hubert
+    orcid: https://orcid.org/0009-0009-9111-8429
+  - family-names: Chowdhury
+    given-names: Rezaul
+    orcid: https://orcid.org/0000-0002-7022-5278
+  - family-names: Chen
+    given-names: Chao
+    orcid: https://orcid.org/0000-0003-1703-6483
+version: 2.0.0
+date-released: 2026-10-06
+repository-code: https://github.com/seravee08/GPU-Computation-of-Persistent-Homology-for-Image-Data
+license: MIT
+preferred-citation:
+  type: article
+  title: "GPU-Accelerated Computation of Persistent Homology for Topological Analysis of Image Data"
+  authors:
+    - family-names: Wang
+      given-names: Fan
+    - family-names: Wagner
+      given-names: Hubert
+    - family-names: Chowdhury
+      given-names: Rezaul
+    - family-names: Chen
+      given-names: Chao
+  journal: "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  year: 2026
+  doi: 10.1109/TPAMI.2026.3741473

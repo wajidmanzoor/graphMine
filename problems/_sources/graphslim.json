@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/Emory-Melody/GraphSlim",
+  "checked_at": "2026-10-10T01:43:09Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235",
+  "archive_url": "https://codeload.github.com/Emory-Melody/GraphSlim/tar.gz/2a120ed49e501a39a7c94bdabfc4c33c8c032235",
+  "archive_sha256": "fe9423ad3544889a8c5899a24c68687e8786e4b0d48c0c3667ce5581b0b964d6",
+  "local_path": "graphslim-2a120ed49e50",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

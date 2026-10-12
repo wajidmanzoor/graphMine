@@ -1,0 +1,7 @@
+dataset
+exec
+__pycache__
+models/
+results
+data/*.hgr.part*
+hyperopt_results

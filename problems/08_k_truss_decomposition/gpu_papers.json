@@ -1,0 +1,30 @@
+{
+  "problem_id": "k_truss_decomposition",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2018_hornet_ktruss",
+      "algorithm_name": "Hornet K-truss peeling",
+      "metadata": "08_k_truss_decomposition/papers/2018_hornet_ktruss/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2020_accelerating_truss_heterogeneous",
+      "algorithm_name": "Accelerating Truss Decomposition on Heterogeneous Processors",
+      "metadata": "08_k_truss_decomposition/papers/2020_accelerating_truss_heterogeneous/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_k_truss",
+      "algorithm_name": "cuGraph Fixed-k truss extraction",
+      "metadata": "08_k_truss_decomposition/papers/2026_cugraph_k_truss/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

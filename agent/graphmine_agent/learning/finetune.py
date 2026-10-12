@@ -246,6 +246,17 @@ def _train(directory: Path, *, execute=False, resume: Path | None = None):
         if HistoryStore.digest(base / name) != expected:
             raise ValueError(f"Base checkpoint changed: {name}")
 
+    return fit_adapter(directory, config, tokenized, resume=resume)
+
+
+def fit_adapter(directory: Path, config: dict, tokenized: dict, *, resume=None):
+    """Shared GPU implementation after version-specific provenance validation."""
+    if os.environ.get("CUDA_VISIBLE_DEVICES") != config["gpu"]:
+        raise ValueError(
+            "CUDA_VISIBLE_DEVICES must match the prepared GPU UUID exactly"
+        )
+    output = directory / "checkpoints"
+    base = Path(config["base_checkpoint"])
     import torch
     from datasets import Dataset
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
@@ -438,6 +449,7 @@ def _train(directory: Path, *, execute=False, resume: Path | None = None):
             logging_steps=1,
             save_strategy="steps",
             save_steps=12,
+            save_total_limit=h.get("save_total_limit", 3),
             eval_strategy="epoch",
             prediction_loss_only=True,
             report_to=[],

@@ -1,0 +1,25 @@
+{
+  "problem_id": "entity_resolution_blocking",
+  "paper_id": "2025_hyperblocker",
+  "title": "HyperBlocker: Accelerating Rule-based Blocking in Entity Resolution using GPUs",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2410.04349",
+    "resolved_url": "https://arxiv.org/pdf/2410.04349",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "92a7f08f22cb3496b1c00f6c375fea4392def12b5407a342af01b15e6fe0e0e4",
+    "bytes": 1753188,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": "https://github.com/hsiaoko/HyperBlocker",
+    "local_path": null,
+    "error": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made.",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "existing_workspace_source_reference": "/home/wajid/projects/graphDatabaseAgent/problems/34_entity_resolution_blocking/papers/2025_hyperblocker/code"
+  }
+}

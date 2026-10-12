@@ -1,0 +1,28 @@
+{
+  "title": "Gunrock: GPU Graph Analytics",
+  "year": 2017,
+  "venue": "ACM Transactions on Parallel Computing",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1701.01170",
+  "pdf_url": "https://arxiv.org/pdf/1701.01170",
+  "paper_id": "2017_gunrock_coloring",
+  "problem_id": "vertex_coloring",
+  "problem_dir": "43_vertex_coloring",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Gunrock parallel priority coloring",
+  "code_url": "https://github.com/gunrock/gunrock",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA parallel coloring on graph neighborhoods.",
+  "notes": "The paper describes the Gunrock framework. This pinned implementation is a later revision, not the exact artifact evaluated in the 2017 paper. Distance-1 heuristic.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "include/gunrock/algorithms/color.hxx",
+    "examples/algorithms/color/color.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

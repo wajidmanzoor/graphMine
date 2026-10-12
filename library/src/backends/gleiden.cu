@@ -1,6 +1,7 @@
 #include "backends/community_detection_backend.hpp"
 
 #include <chrono>
+#include <algorithm>
 #include <limits>
 #include <mutex>
 #include <numeric>
@@ -44,6 +45,23 @@ CommunityDetectionBackendResult run_gleiden(const CsrGraph& input,
             {}, std::nullopt, 0.0};
   }
 
+  // The upstream refinement kernel assumes every vertex has a neighbor.
+  // Isolates contribute zero to modularity; retain them as distinct singleton
+  // communities while passing only incident vertices to that kernel.
+  std::vector<VertexIndex> active_vertices;
+  std::vector<int> active_index(input.vertex_count(), -1);
+  for (VertexIndex vertex = 0; vertex < input.vertex_count(); ++vertex) {
+    if (input.offsets[vertex] != input.offsets[vertex + 1U]) {
+      active_index[vertex] = static_cast<int>(active_vertices.size());
+      active_vertices.push_back(vertex);
+    }
+  }
+  if (active_vertices.empty()) {
+    std::vector<std::uint32_t> labels(input.vertex_count());
+    std::iota(labels.begin(), labels.end(), 0U);
+    return {Status::success(), std::move(labels), 0.0, 0.0};
+  }
+
   int device_count = 0;
   if (cudaGetDeviceCount(&device_count) != cudaSuccess || device_id < 0 ||
       device_id >= device_count) {
@@ -60,7 +78,7 @@ CommunityDetectionBackendResult run_gleiden(const CsrGraph& input,
   graph upstream{};
   Leiden_Partition partition{};
   try {
-    const auto vertices = static_cast<int>(input.vertex_count());
+    const auto vertices = static_cast<int>(active_vertices.size());
     const auto arcs = static_cast<int>(input.neighbors.size());
     upstream.nodes = vertices;
     upstream.ed = arcs;
@@ -71,19 +89,22 @@ CommunityDetectionBackendResult run_gleiden(const CsrGraph& input,
     upstream.wts_out = new double[static_cast<std::size_t>(arcs)];
     upstream.wts_in = new double[static_cast<std::size_t>(arcs)];
 
-    for (int vertex = 0; vertex <= vertices; ++vertex) {
-      upstream.out_col[vertex] = static_cast<int>(input.offsets[vertex]);
-      upstream.in_col[vertex] = static_cast<int>(input.offsets[vertex]);
+    for (int vertex = 0; vertex < vertices; ++vertex) {
+      const auto original = active_vertices[vertex];
+      upstream.out_col[vertex] = static_cast<int>(input.offsets[original]);
+      upstream.in_col[vertex] = static_cast<int>(input.offsets[original]);
     }
+    upstream.out_col[vertices] = arcs;
+    upstream.in_col[vertices] = arcs;
     for (int edge = 0; edge < arcs; ++edge) {
-      upstream.child_out[edge] = static_cast<int>(input.neighbors[edge]);
-      upstream.child_in[edge] = static_cast<int>(input.neighbors[edge]);
+      upstream.child_out[edge] = active_index[input.neighbors[edge]];
+      upstream.child_in[edge] = active_index[input.neighbors[edge]];
       upstream.wts_out[edge] = 1.0;
       upstream.wts_in[edge] = 1.0;
     }
 
     create_c_partition(upstream, partition);
-    graphmine_gleiden_original_to_current.resize(input.vertex_count());
+    graphmine_gleiden_original_to_current.resize(active_vertices.size());
     std::iota(graphmine_gleiden_original_to_current.begin(),
               graphmine_gleiden_original_to_current.end(), 0);
 
@@ -97,9 +118,10 @@ CommunityDetectionBackendResult run_gleiden(const CsrGraph& input,
       return {status, {}, std::nullopt, 0.0};
     }
 
-    std::vector<std::uint32_t> labels;
-    labels.reserve(graphmine_gleiden_original_to_current.size());
-    for (const auto label : graphmine_gleiden_original_to_current) {
+    std::vector<std::uint32_t> labels(input.vertex_count());
+    std::uint32_t next_label = 0;
+    for (std::size_t vertex = 0; vertex < active_vertices.size(); ++vertex) {
+      const auto label = graphmine_gleiden_original_to_current[vertex];
       if (label < 0) {
         ::free(upstream);
         free_part(partition);
@@ -107,7 +129,11 @@ CommunityDetectionBackendResult run_gleiden(const CsrGraph& input,
                  "gLeiden produced a negative community label"},
                 {}, std::nullopt, 0.0};
       }
-      labels.push_back(static_cast<std::uint32_t>(label));
+      labels[active_vertices[vertex]] = static_cast<std::uint32_t>(label);
+      next_label = std::max(next_label, static_cast<std::uint32_t>(label) + 1U);
+    }
+    for (VertexIndex vertex = 0; vertex < input.vertex_count(); ++vertex) {
+      if (active_index[vertex] < 0) labels[vertex] = next_label++;
     }
 
     ::free(upstream);

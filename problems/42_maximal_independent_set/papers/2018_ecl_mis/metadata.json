@@ -1,0 +1,28 @@
+{
+  "title": "A High-Quality and Fast Maximal Independent Set Implementation for GPUs",
+  "year": 2018,
+  "venue": "ACM TOPC",
+  "doi": null,
+  "publication_url": "https://userweb.cs.txstate.edu/~mb92/research/ECL-MIS/",
+  "pdf_url": "https://cs.txstate.edu/~mb92/papers/topc18.pdf",
+  "paper_id": "2018_ecl_mis",
+  "problem_id": "maximal_independent_set",
+  "problem_dir": "42_maximal_independent_set",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "ECL-MIS degree-prioritized asynchronous MIS",
+  "code_url": "https://userweb.cs.txstate.edu/~mb92/research/ECL-MIS/",
+  "semantic_fit": "variant",
+  "gpu_scope": "Direct CUDA implementation with degree-biased priorities.",
+  "notes": "Author release v1.3, downloaded as individual files with hashes. License is in the source header. Maximal, not maximum, independent set.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "ECL-MIS_13.cu",
+    "ECLgraph.h"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

@@ -1,0 +1,34 @@
+{
+  "problem_id": "hypergraph_partitioning",
+  "paper_id": "2026_axon_cuda",
+  "title": "Hypergraph Partitioning on GPU with Distinct Incident Hyperedges and Size Constraints",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2605.20497",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "sha256": "d1c857cf2b282c5cfeecdae0ec33a4e9ff2fb4c7def1ca6a01f763dd565860d7",
+    "bytes": 6193368,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/EMJzero/AxonCUDA",
+    "local_path": "code",
+    "commit": "48bf283f7a370f57bacd7e88677fb4e099bb7f8a",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/axon_cuda.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "sources/main.cu": "48847bab01c15964a69d6399c9719aafc45a3f51bd4249cd0d12592b38de6484",
+      "sources/coarsening.cu": "b4c0d8a56c26568495eb1ccc9e07f627fdffde006da1cf194824fee295e895bb",
+      "sources/refinement.cu": "1bd082f093c6025f6336e3a8cdbd744ecdbbd3e6be826baa99da44aad3612096"
+    }
+  }
+}

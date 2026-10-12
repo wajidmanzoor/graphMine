@@ -259,6 +259,20 @@ def test_complete_browser_upload_chat_result_and_followup(
             )
         )
         expected_nodes = 7 if rich_graph else 3
+        findings = driver.find_element(By.ID, "interpretation")
+        assert "Key findings" in findings.text
+        assert "How to read this result" in findings.text
+        assert "Data and filters used" in findings.text
+        assert "Complete result" in findings.text
+        assert "What this means" not in findings.text
+        assert driver.find_element(By.CLASS_NAME, "answer-method").is_displayed()
+        assert driver.find_element(By.CLASS_NAME, "answer-scope").is_displayed()
+        assert not driver.find_element(By.CLASS_NAME, "answer-evidence").get_attribute(
+            "open"
+        )
+        if rich_graph:
+            assert "7 distinct" in findings.text
+            assert "0 belong to more than one group" in findings.text
         assert (
             len(driver.find_elements(By.CSS_SELECTOR, ".network-accessible li"))
             == expected_nodes
@@ -424,6 +438,8 @@ def test_complete_browser_upload_chat_result_and_followup(
             == expected_nodes
         )
         assert "Offline report" in driver.find_element(By.ID, "server-status").text
+        assert "Key findings" in driver.find_element(By.ID, "interpretation").text
+        assert driver.find_element(By.CLASS_NAME, "answer-method").is_displayed()
         assert not driver.execute_script(
             "return performance.getEntriesByType('resource').some(item => item.name.startsWith('http'))"
         )
@@ -434,6 +450,20 @@ def test_complete_browser_upload_chat_result_and_followup(
                 str(
                     artifacts
                     / ("rich-answer.png" if rich_graph else "simple-answer.png")
+                )
+            )
+            driver.set_window_size(390, 844)
+            assert driver.execute_script(
+                "return document.documentElement.scrollWidth <= window.innerWidth + 1"
+            )
+            driver.save_screenshot(
+                str(
+                    artifacts
+                    / (
+                        "rich-mobile-answer.png"
+                        if rich_graph
+                        else "simple-mobile-answer.png"
+                    )
                 )
             )
     finally:

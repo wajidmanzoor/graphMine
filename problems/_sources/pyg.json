@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/pyg-team/pytorch_geometric",
+  "checked_at": "2026-10-09T19:25:16Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+  "archive_url": "https://codeload.github.com/pyg-team/pytorch_geometric/tar.gz/79d33965a40b7fa83616a9f598a0f8619f25d939",
+  "archive_sha256": "32ad62f43bf94ba3283c06fc594dd6f0044dd05702ebe9d0d6238a1b98386fd0",
+  "local_path": "pyg-79d33965a40b",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

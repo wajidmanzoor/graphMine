@@ -13,7 +13,6 @@ from graphmine_agent.planning import (
     normalize_route,
 )
 
-
 LEGACY_SCOPE = json.loads(
     (
         Path(__file__).resolve().parents[1] / "evaluation" / "legacy_catalog_scope.json"
@@ -40,7 +39,7 @@ def value_for(specification: dict) -> object:
 def test_catalog_has_full_problem_operation_and_domain_context(
     catalog: Catalog,
 ) -> None:
-    assert len(catalog.problems) == 37
+    assert len(catalog.problems) == 70
     assert len(catalog.instructions) == 24
     assert len(catalog.domains) == 9
     assert catalog.domain("fraud_detection").name == "Fraud and financial crime"
@@ -55,6 +54,22 @@ def test_catalog_has_full_problem_operation_and_domain_context(
         "max_time_span",
         "result_limit",
     }
+
+
+def test_research_collection_does_not_register_unvalidated_algorithms(catalog: Catalog) -> None:
+    inventory = json.loads(
+        (catalog.settings.repository_root / "problems/_collection/research_inventory_2026_10_09.json").read_text()
+    )
+    assert set(catalog.problems) == {item["problem_id"] for item in inventory["problems"]}
+    for item in inventory["problems"]:
+        record = catalog.problem(item["problem_id"])
+        assert record["research_collection"]["algorithm_records"] == item["entries"]
+        if int(item["problem_dir"][:2]) >= 38:
+            assert record["library_support"]["status"] == "no_validated_backend"
+            assert record["library_support"]["operation_ids"] == []
+            assert record["intent_signals"]
+    assert catalog.problem("knn_graph_construction")["spec"]["graph_input"]["format"] == "feature_vectors_v1"
+    assert catalog.problem("hypergraph_node_learning")["spec"]["graph_input"]["format"] == "canonical_hypergraph_v1"
 
 
 def test_query_corpus_separates_training_seeds_and_held_out_domain_cases(

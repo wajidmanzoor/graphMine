@@ -1,0 +1,29 @@
+{
+  "title": "Hypergraph Partitioning on GPU with Distinct Incident Hyperedges and Size Constraints",
+  "year": 2026,
+  "venue": null,
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2605.20497",
+  "pdf_url": "https://arxiv.org/pdf/2605.20497",
+  "paper_id": "2026_axon_cuda",
+  "problem_id": "hypergraph_partitioning",
+  "problem_dir": "54_hypergraph_partitioning",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "AxonCUDA constrained hypergraph partitioning",
+  "code_url": "https://github.com/EMJzero/AxonCUDA",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA coarsening/refinement under incidence and size constraints.",
+  "notes": "Use the k-way mode for the balanced-partition contract. Upstream k-way mode uses Mt-KaHyPar on CPU for initial partitioning; the default incidence-constrained objective is a different variant.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "sources/main.cu",
+    "sources/coarsening.cu",
+    "sources/refinement.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

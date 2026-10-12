@@ -1,0 +1,24 @@
+{
+  "problem_id": "transitive_closure_reachability",
+  "paper_id": "2026_curpq",
+  "title": "cuRPQ: A High-Performance GPU-Based Framework for Processing Regular and Conjunctive Regular Path Queries",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2602.20748",
+    "resolved_url": "https://arxiv.org/pdf/2602.20748",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "4ed2f740cb6584a130bd70dbd779dc307a7d39db392f4373445edc066279081d",
+    "bytes": 1730617,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

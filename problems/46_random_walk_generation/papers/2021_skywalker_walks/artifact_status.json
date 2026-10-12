@@ -1,0 +1,32 @@
+{
+  "problem_id": "random_walk_generation",
+  "paper_id": "2021_skywalker_walks",
+  "title": "Skywalker: Efficient Alias-Method-Based Graph Sampling and Random Walk on GPUs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://www.cs.sjtu.edu.cn/~lichao/publications/Skywalker_Efficient_PACT-2021-Wang.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:57Z",
+    "sha256": "f5ac76ddaf5dcff98b5c7874030a9c2674c529070f30393888f2b86543bb0510",
+    "bytes": 1087768,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/sjtu-SAIL-lab/Skywalker",
+    "local_path": "code",
+    "commit": "b12bb95d01c5feabb69699985b85a6ea3cbdc944",
+    "license_file": null,
+    "license_note": "No root license file found; public source availability is not a blanket redistribution license.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/skywalker.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/main.cu": "8ab2e5627e165a72561599f5d54643b77cd107885569746aae8e3dfeaa497db2"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "problem_id": "triangle_counting_listing",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gunrock_tc",
+      "algorithm_name": "Gunrock tc",
+      "metadata": "10_triangle_counting_listing/papers/2017_gunrock_tc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_hornet_triangles",
+      "algorithm_name": "Hornet Triangle counting",
+      "metadata": "10_triangle_counting_listing/papers/2018_hornet_triangles/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_tc",
+      "algorithm_name": "GraphBLAST tc",
+      "metadata": "10_triangle_counting_listing/papers/2019_graphblast_tc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_tot_tensor_cores",
+      "algorithm_name": "Triangle Counting on Tensor Cores",
+      "metadata": "10_triangle_counting_listing/papers/2025_tot_tensor_cores/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2025_wetric",
+      "algorithm_name": "Wedge-Parallel Triangle Counting for GPUs",
+      "metadata": "10_triangle_counting_listing/papers/2025_wetric/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_triangle_count",
+      "algorithm_name": "cuGraph Vertex triangle counting",
+      "metadata": "10_triangle_counting_listing/papers/2026_cugraph_triangle_count/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_edtc",
+      "algorithm_name": "Exact Triangle Counting for Dynamic Graphs on GPU",
+      "metadata": "10_triangle_counting_listing/papers/2026_edtc/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

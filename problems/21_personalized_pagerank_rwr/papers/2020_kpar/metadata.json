@@ -12,5 +12,14 @@
   "notes": "Official author repository; code is released as kPAR.zip under GitHub Releases rather than tracked in the default branch, so a shallow git clone may only capture build scripts.",
   "problem_id": "personalized_pagerank_rwr",
   "problem_dir": "21_personalized_pagerank_rwr",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "upstream_license_present",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "src/main.cu"
+  ],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "algorithm"
 }

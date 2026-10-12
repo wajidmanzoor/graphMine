@@ -1,0 +1,21 @@
+{
+  "status": "runtime_checks_passed",
+  "canonical_adapter_available": false,
+  "scope_note": "Subsequent runtime checks; not a paper-version reproduction or an integrated solver.",
+  "checks": [
+    {
+      "backend": "dhg-hgnn",
+      "passed": 100,
+      "failed": 0,
+      "scope": "Upstream model forward/backward, finite logits and gradients; HGNN/HNHN CPU parity; no training/generalization claim",
+      "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+    },
+    {
+      "backend": "dhg-hgnn-formula",
+      "passed": 100,
+      "failed": 0,
+      "scope": "Independent dense NumPy incidence-matrix formula for HGNN convolution",
+      "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+    }
+  ]
+}

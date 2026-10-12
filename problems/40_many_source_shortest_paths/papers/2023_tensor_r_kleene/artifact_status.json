@@ -1,0 +1,33 @@
+{
+  "problem_id": "many_source_shortest_paths",
+  "paper_id": "2023_tensor_r_kleene",
+  "title": "The Floyd-Warshall Algorithm Re-implemented Using 3D-Tensors and Hardware Acceleration",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2310.03983",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:57Z",
+    "sha256": "d770245bf0f7ab0e7e1c01f5ff45ccea0825489aa2b5aba614aba0804660756b",
+    "bytes": 731903,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/tanjary21/APSP_GPU",
+    "local_path": "code",
+    "commit": "92935ab3a16c59dccb948da8f198381881793e19",
+    "license_file": null,
+    "license_note": "No root license file found; public source availability is not a blanket redistribution license.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/apsp_tensor.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "apsp.py": "7d39ed076f845fe794e7dee526eee94f1b3981490babcb6e62b464f193dd3eda",
+      "main.py": "652b60c8e8443f762e352820932b978ee548ad116d2ed20c351868d02649cc9f"
+    }
+  }
+}

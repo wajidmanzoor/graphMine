@@ -1,0 +1,14 @@
+PHAT - Persistent Homology Algorithms Toolbox, version 1.7
+https://bitbucket.org/phat-code/phat
+
+Copyright 2013-2017 IST Austria
+Project founders: Ulrich Bauer, Michael Kerber, Jan Reininghaus
+Contributors: Hubert Wagner, Bryn Keller
+
+PHAT is free software: you can redistribute it and/or modify it under the
+terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option)
+any later version. See COPYING.LESSER (LGPL-3.0) and COPYING (GPL-3.0) in
+this directory.
+
+TopoGPU uses PHAT unmodified as a header-only library.

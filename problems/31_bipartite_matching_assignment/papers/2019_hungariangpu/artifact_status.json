@@ -1,0 +1,29 @@
+{
+  "problem_id": "bipartite_matching_assignment",
+  "paper_id": "2019_hungariangpu",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "title": "Fast block distributed CUDA implementation of the Hungarian algorithm",
+  "code": {
+    "source_url": "https://github.com/paclopes/HungarianGPU",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "status": "downloaded_archive",
+    "local_path": "code",
+    "error": null,
+    "entrypoint_sha256": {
+      "HungarianCUDA.cu": "189e4ae9b3b43bc8ac4498a66a06c3a53eeb23c2bf99b199b309d03d65654264"
+    },
+    "commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+    "source_manifest": "../../../_sources/hungarian_gpu.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/LICENSE.txt"
+  },
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified PDF; an open downloadable paper URL was not established during this sweep.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

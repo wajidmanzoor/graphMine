@@ -1,0 +1,29 @@
+{
+  "problem_id": "null_model_significance_testing",
+  "problem_dir": "37_null_model_significance_testing",
+  "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 0,
+  "local_gpu_code_entries": 0,
+  "local_paper_entries": 0,
+  "local_gpu_code_and_paper_including_related": 0,
+  "eligible_code_and_paper_references": 0,
+  "eligible_local_code_and_paper_pairs": 0,
+  "target_met": false,
+  "shortfall": 3,
+  "shortfall_explanation": "No matching GPU end-to-end degree-preserving null-ensemble significance artifact was verified. R-MAT generators, random walks and independent edge sampling do not preserve the required degree sequence.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [],
+    "shortfall": "No matching GPU end-to-end degree-preserving null-ensemble significance artifact was verified. R-MAT generators, random walks and independent edge sampling do not preserve the required degree sequence.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": []
+}

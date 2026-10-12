@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/burtscher/ECL-MaxFlow",
+  "checked_at": "2026-10-10T01:45:35Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+  "archive_url": "https://codeload.github.com/burtscher/ECL-MaxFlow/tar.gz/2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+  "archive_sha256": "5a57fb427f02f514d03717292c270ca904ee4b7a2a73b33e3120136cf30a24d7",
+  "local_path": "ecl_maxflow-2aa2b9f1054b",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "BSD-3-Clause",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-10-10T02:19:24Z",
+  "before": {
+    "problems": 60,
+    "algorithm_records": 134,
+    "expansion": {
+      "problems": 23,
+      "algorithm_records": 69,
+      "problems_meeting_three_local_pairs": 13,
+      "eligible_local_pairs": 48,
+      "local_gpu_source_entries": 57,
+      "local_main_papers": 61,
+      "upstream_source_snapshots": 24
+    }
+  },
+  "after": {
+    "problems": 70,
+    "algorithm_records": 219,
+    "local_gpu_source_entries": 181,
+    "local_main_papers": 161,
+    "eligible_local_pairs": 126,
+    "problems_meeting_three_local_pairs": 29,
+    "upstream_source_snapshots": 56
+  },
+  "added_problems": 10,
+  "added_algorithm_records": 85,
+  "additions_config": "sweep_additions_2026_10_09.json",
+  "runtime_validation_performed": false
+}

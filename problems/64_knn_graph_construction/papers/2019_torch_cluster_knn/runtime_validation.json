@@ -1,0 +1,14 @@
+{
+  "status": "runtime_failures",
+  "canonical_adapter_available": false,
+  "scope_note": "Subsequent runtime checks; not a paper-version reproduction or an integrated solver.",
+  "checks": [
+    {
+      "backend": "torch-cluster-knn",
+      "passed": 203,
+      "failed": 51,
+      "scope": "Exact squared-Euclidean directed kNN, distinct IDs including tied/duplicate vectors",
+      "evidence": "validation/research_runtime/results/knn/summary.json"
+    }
+  ]
+}

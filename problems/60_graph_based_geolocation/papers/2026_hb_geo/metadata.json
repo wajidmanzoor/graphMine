@@ -1,0 +1,28 @@
+{
+  "title": "HB-Geo: a street-level IP geolocation method based on hop-constrained subgraphs and binary gates",
+  "year": 2026,
+  "venue": "Cybersecurity",
+  "doi": "10.1186/s42400-026-00644-w",
+  "publication_url": "https://doi.org/10.1186/s42400-026-00644-w",
+  "pdf_url": "https://link.springer.com/content/pdf/10.1186/s42400-026-00644-w.pdf",
+  "paper_id": "2026_hb_geo",
+  "problem_id": "graph_based_geolocation",
+  "problem_dir": "60_graph_based_geolocation",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "HB-Geo graph-learning geolocation",
+  "code_url": "https://github.com/LuckyBoy0517/HB-Geo",
+  "semantic_fit": "variant",
+  "gpu_scope": "DGL/PyTorch CUDA graph model with hop-constrained subgraphs and binary gates.",
+  "notes": "Specialized to IP-network graphs and traceroute-derived features. Requires supervised splits and preprocessing. The three city configurations are one algorithm, not three.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "HB-Geo_Shanghai/main.py",
+    "HB-Geo_Shanghai/lib/model.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

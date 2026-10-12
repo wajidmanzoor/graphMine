@@ -1,0 +1,92 @@
+{
+  "problem_id": "link_prediction",
+  "problem_dir": "19_link_prediction",
+  "name": "Link Prediction",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 4,
+  "local_gpu_code_entries": 4,
+  "local_paper_entries": 0,
+  "local_gpu_code_and_paper_including_related": 0,
+  "eligible_code_and_paper_references": 0,
+  "eligible_local_code_and_paper_pairs": 0,
+  "target_met": false,
+  "shortfall": 3,
+  "shortfall_explanation": "cuGraph provides verified GPU similarity/link-score code, but no associated research PDF was verified for these library implementations. Documentation does not count as a research paper.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cugraph"
+    ],
+    "shortfall": "cuGraph provides verified GPU similarity/link-score code, but no associated research PDF was verified for these library implementations. Documentation does not count as a research paper.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2026_cugraph_cosine",
+      "algorithm_name": "cuGraph Cosine neighborhood link scores",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Dot product of adjacency vectors divided by their norms; define zero-norm behavior. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "19_link_prediction/papers/2026_cugraph_cosine/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_jaccard",
+      "algorithm_name": "cuGraph Jaccard link scores",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Score requested nonedges from neighborhood intersection/union; handle empty unions explicitly. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "19_link_prediction/papers/2026_cugraph_jaccard/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_overlap",
+      "algorithm_name": "cuGraph Overlap-coefficient link scores",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Normalize intersection by the smaller degree; zero-degree convention must be declared. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "19_link_prediction/papers/2026_cugraph_overlap/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_sorensen",
+      "algorithm_name": "cuGraph Sorensen-Dice link scores",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Score 2|N(u) intersect N(v)|/(deg(u)+deg(v)); this is a link-scoring variant, not SimRank. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "19_link_prediction/papers/2026_cugraph_sorensen/metadata.json"
+    }
+  ]
+}

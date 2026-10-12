@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/HusseinAmro/component-aware-vertex-cover-gpu",
+  "checked_at": "2026-10-10T01:50:39Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "9adba41659d320ca2fd0e01c6907916db1f4fdf5",
+  "archive_url": "https://codeload.github.com/HusseinAmro/component-aware-vertex-cover-gpu/tar.gz/9adba41659d320ca2fd0e01c6907916db1f4fdf5",
+  "archive_sha256": "a787a4ef5f929fc7e208d5ac6c96acce93d23c600833c66ed5f5c5b35e5538f2",
+  "local_path": "mvc_components-9adba41659d3",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

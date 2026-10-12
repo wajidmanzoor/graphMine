@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/simonzhang00/ripser-plusplus",
+  "checked_at": "2026-10-10T01:37:14Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "30243c0c752de26d7fdf6e41f08bf7b840ca4744",
+  "archive_url": "https://codeload.github.com/simonzhang00/ripser-plusplus/tar.gz/30243c0c752de26d7fdf6e41f08bf7b840ca4744",
+  "archive_sha256": "5361085ee28175453851b3375e706a21a1360f7f87054894d537a20b93d40355",
+  "local_path": "ripserplusplus-30243c0c752d",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

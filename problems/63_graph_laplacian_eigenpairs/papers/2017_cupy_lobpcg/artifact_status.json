@@ -1,0 +1,34 @@
+{
+  "problem_id": "graph_laplacian_eigenpairs",
+  "paper_id": "2017_cupy_lobpcg",
+  "title": "CuPy: A NumPy-Compatible Library for NVIDIA GPU Calculations",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://learningsys.github.io/nips17/assets/papers/paper_16.pdf",
+    "resolved_url": "https://learningsys.github.io/nips17/assets/papers/paper_16.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "78a285a131ef1d08be4ee126091814004d6501d5fd6da277c40c1d154423c776",
+    "bytes": 165640,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/cupy/cupy",
+    "local_path": "code",
+    "commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cupy.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cupyx/scipy/sparse/linalg/_lobpcg.py": "820e931a55a82a1b135dc5bcc67f7755a5c1a887b81bdaac164c5befc84e43fd"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

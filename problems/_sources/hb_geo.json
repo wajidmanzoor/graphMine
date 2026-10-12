@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/LuckyBoy0517/HB-Geo",
+  "checked_at": "2026-10-09T19:28:38Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "3c2d65ce19199ed963e16d0617003a478b05fa23",
+  "archive_url": "https://codeload.github.com/LuckyBoy0517/HB-Geo/tar.gz/3c2d65ce19199ed963e16d0617003a478b05fa23",
+  "archive_sha256": "af99d87f3173b0457437a67c8ec65710523f3e7b79c7b8cdfb92b1633657e660",
+  "local_path": "hb_geo-3c2d65ce1919",
+  "license_files": [],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

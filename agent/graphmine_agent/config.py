@@ -53,9 +53,17 @@ class Settings:
     llm_route_base_url: str | None = None
     llm_route_model: str = "graphmine-business-v1"
     llm_route_adapter_sha256: str | None = None
+    llm_route_allow_expanded_catalog: bool = False
     deployment_version: str = "base"
+    max_concurrent_uploads: int = 2
     max_pending_jobs: int = 64
     max_result_bytes: int = 64 * 1024 * 1024
+    llm_planner_model: str | None = None
+    llm_analyst_model: str | None = None
+    analytics_planner_model: str | None = None
+    analytics_reasoning_effort: str = "medium"
+    analytics_thinking_token_budget: int | None = None
+    allow_shared_gpu: bool = False
     analytics_python: Path | None = None
     analytics_max_input_bytes: int = 64 * 1024 * 1024
     native_runtime_binary: Path | None = None
@@ -64,10 +72,10 @@ class Settings:
     analytics_gpu_uuids: tuple[str, ...] = ()
     analytics_gpu_headroom_bytes: int = 512 * 1024 * 1024
     analytics_llm_reserve_bytes: int = 0
-    allow_shared_gpu: bool = False
-    analytics_planner_model: str | None = None
-    analytics_reasoning_effort: str = "medium"
-    analytics_thinking_token_budget: int | None = None
+
+    @property
+    def dual_adapters_active(self) -> bool:
+        return bool(self.llm_planner_model and self.llm_analyst_model)
 
     @property
     def routing_contract_version(self) -> str:
@@ -77,18 +85,52 @@ class Settings:
     @property
     def routing_adapter_active(self) -> bool:
         return bool(
-            self.llm_route_base_url and self.routing_contract_version == "legacy-20"
+            self.llm_route_base_url
+            and not self.dual_adapters_active
+            and (
+                self.routing_contract_version == "legacy-20"
+                or self.llm_route_allow_expanded_catalog
+            )
+        )
+
+    @property
+    def routing_adapter_experimental(self) -> bool:
+        return (
+            self.routing_adapter_active and self.routing_contract_version != "legacy-20"
         )
 
     @property
     def active_routing_model(self) -> str:
+        if self.llm_planner_model:
+            return self.llm_planner_model
         return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
+        if bool(self.llm_planner_model) != bool(self.llm_analyst_model):
+            raise ValueError(
+                "Configure both GRAPHMINE_LLM_PLANNER_MODEL and GRAPHMINE_LLM_ANALYST_MODEL"
+            )
+        if (
+            self.dual_adapters_active
+            and self.llm_planner_model == self.llm_analyst_model
+        ):
+            raise ValueError(
+                "Planner and analyst adapters must have distinct model aliases"
+            )
+        if (
+            not self.dual_adapters_active
+            and self.llm_route_allow_expanded_catalog
+            and not self.llm_route_base_url
+        ):
+            raise ValueError(
+                "Expanded adapter routing requires GRAPHMINE_ROUTER_BASE_URL"
+            )
         if not 1 <= self.api_port <= 65_535:
             raise ValueError("GRAPHMINE_API_PORT must be between 1 and 65535")
         if self.max_upload_bytes < 1:
             raise ValueError("GRAPHMINE_MAX_UPLOAD_BYTES must be positive")
+        if self.max_concurrent_uploads < 1:
+            raise ValueError("GRAPHMINE_MAX_CONCURRENT_UPLOADS must be positive")
         if self.max_pending_jobs < 1:
             raise ValueError("GRAPHMINE_MAX_PENDING_JOBS must be positive")
         if self.max_result_bytes < 1:
@@ -196,6 +238,14 @@ class Settings:
             graph_gpu_uuid=os.getenv("GRAPHMINE_GRAPH_GPU_UUID", "").strip() or None,
             llm_gpu_uuid=os.getenv("GRAPHMINE_LLM_GPU_UUID", "").strip() or None,
             allow_shared_gpu=_boolean("GRAPHMINE_ALLOW_SHARED_GPU", False),
+            analytics_python=Path(os.environ["GRAPHMINE_ANALYTICS_PYTHON"])
+            .expanduser()
+            .resolve()
+            if os.getenv("GRAPHMINE_ANALYTICS_PYTHON")
+            else None,
+            analytics_max_input_bytes=_integer(
+                "GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES", 64 * 1024 * 1024
+            ),
             analytics_cpu_workers=_integer("GRAPHMINE_ANALYTICS_CPU_WORKERS", 2),
             analytics_gpu_uuids=tuple(
                 value.strip()
@@ -208,6 +258,16 @@ class Settings:
             analytics_llm_reserve_bytes=_integer(
                 "GRAPHMINE_ANALYTICS_LLM_RESERVE_BYTES", 0
             ),
+            llm_base_url=os.getenv(
+                "GRAPHMINE_LLM_BASE_URL", "http://127.0.0.1:8001/v1"
+            ).rstrip("/"),
+            llm_api_key=os.getenv("GRAPHMINE_LLM_API_KEY", "local-graphmine"),
+            llm_model=os.getenv("GRAPHMINE_LLM_MODEL", "Qwen/Qwen3.8-27B-FP8"),
+            llm_enabled=_boolean("GRAPHMINE_LLM_ENABLED", True),
+            llm_planner_model=os.getenv("GRAPHMINE_LLM_PLANNER_MODEL", "").strip()
+            or None,
+            llm_analyst_model=os.getenv("GRAPHMINE_LLM_ANALYST_MODEL", "").strip()
+            or None,
             analytics_planner_model=os.getenv(
                 "GRAPHMINE_ANALYTICS_PLANNER_MODEL", ""
             ).strip()
@@ -220,23 +280,10 @@ class Settings:
             )
             if os.getenv("GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET", "").strip()
             else None,
-            llm_base_url=os.getenv(
-                "GRAPHMINE_LLM_BASE_URL", "http://127.0.0.1:8001/v1"
-            ).rstrip("/"),
-            llm_api_key=os.getenv("GRAPHMINE_LLM_API_KEY", "local-graphmine"),
-            llm_model=os.getenv("GRAPHMINE_LLM_MODEL", "Qwen/Qwen3.8-27B-FP8"),
-            llm_enabled=_boolean("GRAPHMINE_LLM_ENABLED", True),
             max_upload_bytes=_integer("GRAPHMINE_MAX_UPLOAD_BYTES", 2_147_483_648),
+            max_concurrent_uploads=_integer("GRAPHMINE_MAX_CONCURRENT_UPLOADS", 2),
             max_pending_jobs=_integer("GRAPHMINE_MAX_PENDING_JOBS", 64),
             max_result_bytes=_integer("GRAPHMINE_MAX_RESULT_BYTES", 64 * 1024 * 1024),
-            analytics_python=(
-                Path(os.environ["GRAPHMINE_ANALYTICS_PYTHON"]).expanduser().resolve()
-                if os.getenv("GRAPHMINE_ANALYTICS_PYTHON")
-                else None
-            ),
-            analytics_max_input_bytes=_integer(
-                "GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES", 64 * 1024 * 1024
-            ),
             job_timeout_seconds=_integer("GRAPHMINE_JOB_TIMEOUT_SECONDS", 86_400),
             result_summary_items=_integer("GRAPHMINE_RESULT_SUMMARY_ITEMS", 50),
             llm_route_reasoning_effort=os.getenv(
@@ -263,6 +310,9 @@ class Settings:
             ),
             llm_route_adapter_sha256=os.getenv("GRAPHMINE_ROUTER_ADAPTER_SHA256")
             or None,
+            llm_route_allow_expanded_catalog=_boolean(
+                "GRAPHMINE_ROUTER_ALLOW_EXPANDED_CATALOG", False
+            ),
             deployment_version=os.getenv("GRAPHMINE_DEPLOYMENT_VERSION", "base"),
         )
 

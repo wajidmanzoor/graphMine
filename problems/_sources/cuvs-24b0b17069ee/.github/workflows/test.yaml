@@ -1,0 +1,151 @@
+name: test
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: |
+          branch: git branch the workflow run targets.
+          Required even when 'sha' is provided because it is also used for organizing artifacts.
+        required: true
+        type: string
+      date:
+        description: "date: Date (YYYY-MM-DD) this run is for. Used to organize artifacts produced by nightly builds"
+        required: true
+        type: string
+      sha:
+        description: "sha: full git commit SHA to check out"
+        required: true
+        type: string
+      build_type:
+        description: "build_type: one of [branch, nightly, pull-request]"
+        type: string
+        default: nightly
+
+permissions: {}
+
+jobs:
+  conda-cpp-checks:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: rapidsai/shared-workflows/.github/workflows/conda-cpp-post-build-checks.yaml@main
+    with:
+      build_type: ${{ inputs.build_type }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      symbol_exclusions: (void (thrust::|cub::))
+      package_name: libcuvs
+  conda-cpp-tests:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/conda-cpp-tests.yaml@main
+    # Split the C++ tests across several jobs for each CUDA/GPU configuration
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+        num_shards: [4]
+    with:
+      build_type: ${{ inputs.build_type }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      script: "ci/test_cpp.sh ${{ matrix.shard }} ${{ matrix.num_shards }}"
+      sha: ${{ inputs.sha }}
+      cache-paths: .cache/cuda-jit
+      cache-key-prefix: libcuvs-cudajit-v1
+      # Caches are immutable. Re-key when the JIT-relevant sources change so a completed run can
+      # save newly compiled entries; restore a compatible earlier archive first.
+      cache-key-files: |
+        cpp/CMakeLists.txt
+        cpp/cmake/**
+        cpp/include/cuvs/detail/jit_lto/**
+        cpp/src/detail/jit_lto/**
+        cpp/src/distance/detail/pairwise_matrix/jit_lto_kernels/**
+        cpp/src/neighbors/detail/cagra/jit_lto_kernels/**
+        cpp/src/neighbors/detail/jit_lto_kernels/**
+        cpp/src/neighbors/ivf_flat/detail/jit_lto_kernels/**
+        cpp/src/neighbors/ivf_pq/detail/jit_lto_kernels/**
+        cpp/src/neighbors/ivf_rabitq/jit_lto_kernels/**
+        cpp/src/neighbors/ivf_sq/detail/jit_lto_kernels/**
+        cpp/tests/**
+        dependencies.yaml
+      # The CUDA driver's JIT cache is independent of the Python interpreter used to run C++ tests.
+      cache-key-matrix-fields: |
+        CUDA_VER
+        ARCH
+        LINUX_VER
+        GPU
+        DRIVER
+        DEPENDENCIES
+      # Only main builds populate the cache shared by PRs.
+      cache-read-only: ${{ inputs.branch != 'main' }}
+      cache-environment: |
+        CUDA_CACHE_PATH=.cache/cuda-jit
+  conda-python-tests:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/conda-python-tests.yaml@main
+    with:
+      build_type: ${{ inputs.build_type }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      script: ci/test_python.sh
+      sha: ${{ inputs.sha }}
+  conda-java-tests:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: ./.github/workflows/matrix-job.yaml
+    with:
+      build_type: ${{ inputs.build_type }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      script: "ci/test_java.sh"
+  conda-lucene-tests:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: ./.github/workflows/matrix-job.yaml
+    with:
+      build_type: ${{ inputs.build_type }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      script: "ci/test_lucene.sh"
+  wheel-tests-cuvs:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/wheels-test.yaml@main
+    with:
+      build_type: ${{ inputs.build_type }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      script: ci/test_wheel_cuvs.sh

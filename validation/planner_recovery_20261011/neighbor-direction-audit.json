@@ -1,0 +1,156 @@
+{
+  "case": "fresh_neighbors_2",
+  "scope": "Separate semantic audit; does not rewrite the frozen strict score or generate new model predictions.",
+  "graph_directed": false,
+  "actual_parameters": {
+    "entity": "member-2-X"
+  },
+  "strict_required_parameters": {
+    "entity": "member-2-X",
+    "hops": 1,
+    "direction": "both",
+    "include_seed": false
+  },
+  "parameter_contract": {
+    "entity": {
+      "kind": "vertex_id",
+      "required": true,
+      "nullable": false
+    },
+    "hops": {
+      "kind": "integer",
+      "required": false,
+      "nullable": false,
+      "default": 1
+    },
+    "direction": {
+      "kind": "string",
+      "required": false,
+      "nullable": false,
+      "default": "out",
+      "choices": [
+        "out",
+        "in",
+        "both"
+      ]
+    },
+    "edge_filters": {
+      "kind": "array",
+      "required": false,
+      "nullable": false,
+      "default": [],
+      "json_schema": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "field": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "op": {
+              "enum": [
+                "eq",
+                "ne",
+                "lt",
+                "lte",
+                "gt",
+                "gte",
+                "in",
+                "not_in",
+                "contains",
+                "exists"
+              ]
+            },
+            "value": {}
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "type": "object"
+        },
+        "minItems": 0,
+        "type": "array"
+      }
+    },
+    "include_seed": {
+      "kind": "boolean",
+      "required": false,
+      "nullable": false,
+      "default": false
+    },
+    "result_limit": {
+      "kind": "integer",
+      "required": false,
+      "nullable": true,
+      "default": null,
+      "minimum": 1
+    }
+  },
+  "native_checks": [
+    {
+      "parameters": {
+        "entity": "member-2-X"
+      },
+      "complete": true,
+      "vertices": [
+        "member-2-W",
+        "member-2-Y",
+        "member-2-Z"
+      ],
+      "matches_independent_adjacency": true
+    },
+    {
+      "parameters": {
+        "entity": "member-2-X",
+        "direction": "out"
+      },
+      "complete": true,
+      "vertices": [
+        "member-2-W",
+        "member-2-Y",
+        "member-2-Z"
+      ],
+      "matches_independent_adjacency": true
+    },
+    {
+      "parameters": {
+        "entity": "member-2-X",
+        "direction": "in"
+      },
+      "complete": true,
+      "vertices": [
+        "member-2-W",
+        "member-2-Y",
+        "member-2-Z"
+      ],
+      "matches_independent_adjacency": true
+    },
+    {
+      "parameters": {
+        "entity": "member-2-X",
+        "direction": "both"
+      },
+      "complete": true,
+      "vertices": [
+        "member-2-W",
+        "member-2-Y",
+        "member-2-Z"
+      ],
+      "matches_independent_adjacency": true
+    }
+  ],
+  "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+  "suite_file_sha256": "435d5393f6dbed81ce47af85d4c80091ade218fd51b9fa656d58fe905f4c3567",
+  "strict_mismatches": {
+    "direction": {
+      "expected": "both",
+      "actual": "out"
+    }
+  },
+  "material_parameters_match": true,
+  "audited_semantic_pass": true,
+  "original_strict_pass": false,
+  "model_report_sha256": "b7afea8d98ff6f71b8070f5d34878a25cf8ef6e599003a3028a0a86556227bc1"
+}

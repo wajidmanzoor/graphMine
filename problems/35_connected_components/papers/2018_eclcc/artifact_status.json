@@ -1,0 +1,24 @@
+{
+  "problem_id": "connected_components",
+  "paper_id": "2018_eclcc",
+  "title": "A High-Performance Connected Components Implementation for GPUs",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://userweb.cs.txstate.edu/~mb92/papers/hpdc18.pdf",
+    "resolved_url": "https://userweb.cs.txstate.edu/~mb92/papers/hpdc18.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "3af2e21261bf60e2057262ae3ee06030b7d44f32ed304fb60724b2b8abd476fe",
+    "bytes": 2473290,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": "https://cs.txstate.edu/~burtscher/research/ECL-CC/",
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

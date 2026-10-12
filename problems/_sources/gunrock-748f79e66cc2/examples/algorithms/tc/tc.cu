@@ -1,0 +1,139 @@
+#include <vector>
+
+#include <gunrock/algorithms/tc.hxx>
+#include "tc_cpu.hxx"
+
+#include <cxxopts.hpp>
+
+using namespace gunrock;
+using namespace memory;
+
+struct parameters_t {
+  std::string filename;
+  cxxopts::Options options;
+  bool validate;
+  bool reduce_all_triangles;
+
+  /**
+   * @brief Construct a new parameters object and parse command line arguments.
+   *
+   * @param argc Number of command line arguments.
+   * @param argv Command line arguments.
+   */
+  parameters_t(int argc, char** argv)
+      : options(argv[0], "Traingle Counting example") {
+    // Add command line options
+    options.add_options()("help", "Print help")(
+        "validate", "CPU validation",
+        cxxopts::value<bool>()->default_value("false"))(
+        "m,market", "Matrix file", cxxopts::value<std::string>())(
+        "r,reduce",
+        "Compute a single triangle count for the entire graph (default = "
+        "false)",
+        cxxopts::value<bool>()->default_value("false"));
+
+    // Parse command line arguments
+    auto result = options.parse(argc, argv);
+
+    if (result.count("help") || (result.count("market") == 0)) {
+      std::cout << options.help({""}) << std::endl;
+      std::exit(0);
+    }
+    filename = result["market"].as<std::string>();
+    validate = result["validate"].as<bool>();
+    reduce_all_triangles = result["reduce"].as<bool>();
+  }
+};
+
+void test_tc(int num_arguments, char** argument_array) {
+  // --
+  // Define types
+
+  using vertex_t = uint32_t;
+  using edge_t = uint32_t;
+  using weight_t = float;
+  using count_t = vertex_t;
+
+  using csr_t =
+      format::csr_t<memory_space_t::device, vertex_t, edge_t, weight_t>;
+  csr_t csr;
+
+  // --
+  // IO
+  parameters_t arguments(num_arguments, argument_array);
+  gunrock::graph::graph_properties_t properties =
+      gunrock::graph::graph_properties_t();
+
+  if (util::is_market(arguments.filename)) {
+    io::matrix_market_t<vertex_t, edge_t, weight_t> mm;
+    auto [properties, coo] = mm.load(arguments.filename);
+    if (!properties.symmetric) {
+      std::cerr << "Error: input matrix must be symmetric" << std::endl;
+      exit(1);
+    }
+    csr.from_coo(coo);
+  } else if (util::is_binary_csr(arguments.filename)) {
+    csr.read_binary(arguments.filename);
+  } else {
+    std::cerr << "Unknown file format: " << arguments.filename << std::endl;
+    exit(1);
+  }
+
+  // --
+  // Build graph
+
+  auto G = graph::build<memory_space_t::device>(properties, csr);
+
+  // --
+  // Params and memory allocation
+
+  vertex_t n_vertices = G.get_number_of_vertices();
+  thrust::device_vector<count_t> triangles_count(n_vertices, 0);
+
+  // --
+  // GPU Run
+
+  // Create context
+  auto context = std::make_shared<gcuda::multi_context_t>(0);
+
+  // Create param and result structs
+  tc::param_t<vertex_t> param(arguments.reduce_all_triangles);
+  std::size_t total_triangles = 0;
+  tc::result_t<vertex_t> result(triangles_count.data().get(), &total_triangles);
+
+  float gpu_elapsed = tc::run(G, param, result, context);
+
+  // --
+  // Log
+
+  print::head(triangles_count, 40, "Per-vertex triangle count");
+  if (arguments.reduce_all_triangles) {
+    std::cout << "Total Graph Traingles : " << total_triangles << std::endl;
+  }
+  std::cout << "GPU Elapsed Time : " << gpu_elapsed << " (ms)" << std::endl;
+
+  // --
+  // CPU validation
+  if (arguments.validate) {
+    std::vector<count_t> reference_triangles_count(n_vertices, 0);
+    std::size_t reference_total_triangles = 0;
+
+    float cpu_elapsed =
+        tc_cpu::run(csr, reference_triangles_count, reference_total_triangles);
+    uint32_t n_errors = 0;
+    if (total_triangles != reference_total_triangles) {
+      std::cout << "Error: Total TC mismatch: " << total_triangles
+                << "! = " << reference_total_triangles << std::endl;
+      n_errors++;
+    }
+    n_errors += util::compare(
+        triangles_count.data().get(), reference_triangles_count.data(),
+        n_vertices, [](const auto x, const auto y) { return x != y; }, true);
+    std::cout << "CPU Elapsed Time : " << cpu_elapsed << " (ms)" << std::endl;
+    std::cout << "Number of errors : " << n_errors << std::endl;
+  }
+}
+
+int main(int argc, char** argv) {
+  test_tc(argc, argv);
+}

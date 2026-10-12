@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/gunrock/graphblast",
+  "checked_at": "2026-10-09T19:25:10Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+  "archive_url": "https://codeload.github.com/gunrock/graphblast/tar.gz/f56f9677276c574c6fe4f1cc104d51f13717e165",
+  "archive_sha256": "d29d71e8d72f5c0468b9042daef4ba6ebe95ac36a517b4f09dc1bfb85827aaa9",
+  "local_path": "graphblast-f56f9677276c",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

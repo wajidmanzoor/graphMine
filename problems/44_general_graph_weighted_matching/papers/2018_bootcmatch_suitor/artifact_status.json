@@ -1,0 +1,33 @@
+{
+  "problem_id": "general_graph_weighted_matching",
+  "paper_id": "2018_bootcmatch_suitor",
+  "title": "AMG based on compatible weighted matching for GPUs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1810.04221",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:59Z",
+    "sha256": "ab351ae4920535ec14c1295a5bc56db3d645eacb8233cf38c518b644ec101e64",
+    "bytes": 721378,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/bootcmatch/BootCMatchG",
+    "local_path": "code",
+    "commit": "e4636be918902feeb8dde63f3c5ee207ae3a5d94",
+    "license_file": "code/LICENSE.txt",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/bootcmatch.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/AMG/suitor.cu": "99b7b9e58224282b1691696d473321508f55806ed18378c3942acf5917ed317c",
+      "src/AMG/matchingAggregation.cu": "6f1435d4bdafec798664baa80cf6f8fa653baf7b1030152a79361891b0b87c4e"
+    }
+  }
+}

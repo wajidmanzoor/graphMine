@@ -1,0 +1,30 @@
+{
+  "problem_id": "knn_graph_construction",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_faiss_flat_knn",
+      "algorithm_name": "Faiss GPU exhaustive nearest neighbors",
+      "metadata": "64_knn_graph_construction/papers/2017_faiss_flat_knn/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_torch_cluster_knn",
+      "algorithm_name": "PyTorch Cluster kNN graph",
+      "metadata": "64_knn_graph_construction/papers/2019_torch_cluster_knn/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2021_cuvs_nn_descent",
+      "algorithm_name": "cuVS GPU NN-Descent",
+      "metadata": "64_knn_graph_construction/papers/2021_cuvs_nn_descent/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

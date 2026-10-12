@@ -1,0 +1,43 @@
+{
+  "title": "Maximum Independent Set: Self-Training through Dynamic Programming",
+  "authors": [
+    "Lorenzo Brusca",
+    "Lars C. P. M. Quaedvlieg",
+    "Stratis Skoulakis",
+    "Grigorios G. Chrysos",
+    "Volkan Cevher"
+  ],
+  "year": 2023,
+  "venue": "NeurIPS 2023",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2310.18672",
+  "pdf_url": "https://arxiv.org/pdf/2310.18672",
+  "paper_id": "2023_dynamic_mis",
+  "problem_id": "maximum_independent_set",
+  "problem_dir": "66_maximum_independent_set",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Dynamic programming self-trained MIS",
+  "code_url": "https://github.com/LIONS-EPFL/dynamic-MIS",
+  "semantic_fit": "variant",
+  "gpu_scope": "Hybrid NetworkX/NumPy recursion with PyTorch CUDA neural inference.",
+  "notes": "Learned heuristic for maximum-cardinality independent sets. CPU graph recursion calls a CUDA neural comparator. No optimality certificate is supplied.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "MIS/model.py",
+    "MIS/recursive_tree.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "dynamic_mis",
+  "variant_constraints": [
+    "heuristic mode",
+    "model checkpoint/training required"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

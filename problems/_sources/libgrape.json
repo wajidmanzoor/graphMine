@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/alibaba/libgrape-lite",
+  "checked_at": "2026-10-10T01:37:16Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "beaa6e8a0a6dd909967042f5a4ab98c950a35a26",
+  "archive_url": "https://codeload.github.com/alibaba/libgrape-lite/tar.gz/beaa6e8a0a6dd909967042f5a4ab98c950a35a26",
+  "archive_sha256": "f5b606ed4a1dfa1c87996286e8fc13fecdca1f1eb602d7bbf2fbabe2348d8741",
+  "local_path": "libgrape-beaa6e8a0a6d",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "Apache-2.0",
+  "archived": false,
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

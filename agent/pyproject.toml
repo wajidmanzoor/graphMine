@@ -30,6 +30,11 @@ graphmine-agent = "graphmine_agent.cli:main"
 [tool.hatch.build.targets.wheel]
 packages = ["graphmine_agent"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"visualization/validate.mjs" = "visualization/validate.mjs"
+"visualization/package.json" = "visualization/package.json"
+"visualization/package-lock.json" = "visualization/package-lock.json"
+
 [tool.pytest.ini_options]
 addopts = "-ra"
 asyncio_mode = "auto"

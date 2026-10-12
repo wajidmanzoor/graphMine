@@ -13,6 +13,15 @@
 namespace graphmine {
 namespace {
 
+KCliqueBackend selected_backend(const KCliqueOptions& options) {
+  if (options.backend != KCliqueBackend::automatic) return options.backend;
+  if (options.k <= 6 && detail::graphset_kclique_backend_compiled())
+    return KCliqueBackend::graphset;
+  if (options.k <= 7 && detail::gamma_kclique_backend_compiled())
+    return KCliqueBackend::gamma;
+  return KCliqueBackend::kcgpu;
+}
+
 struct KCliqueMaterialization {
   std::uint64_t count = 0;
   std::vector<std::vector<VertexIndex>> instances;
@@ -79,7 +88,7 @@ KCliqueMaterialization materialize_k_cliques(const CsrGraph& graph,
     candidates[vertex] = vertex;
   }
   std::vector<VertexIndex> current;
-  current.reserve(options.k);
+  current.reserve(std::min<std::size_t>(options.k, graph.vertex_count()));
   enumerate_k_cliques(graph, options.k, options, current, candidates, output);
   return output;
 }
@@ -94,7 +103,8 @@ Provenance kclique_provenance(KCliqueBackend backend) {
       provenance.source_commit =
           "314ac6d41fbe6582c2a258c2094c67ec1aa47116";
       provenance.execution_path =
-          "original KCGPU GPU count + optional common exact materializer";
+          "KCGPU GPU count with diagnostic-write, Pascal-table and depth-storage"
+          " repairs + optional common exact materializer";
       break;
     case KCliqueBackend::graphset:
       provenance.backend_version = "GraphSet artifact";
@@ -104,11 +114,11 @@ Provenance kclique_provenance(KCliqueBackend backend) {
           "original GraphSet GPU count + optional common exact materializer";
       break;
     case KCliqueBackend::gamma:
-      provenance.backend_version = "GAMMA artifact";
+      provenance.backend_version = "GAMMA with checked prefix-intersection repair";
       provenance.source_commit =
           "3e01be68ededb8dcc4fa44bdb069a945a822232c";
       provenance.execution_path =
-          "original GAMMA GPU count + optional common exact materializer";
+          "repaired GAMMA GPU count + optional common exact materializer";
       break;
     case KCliqueBackend::automatic:
       break;
@@ -151,16 +161,14 @@ SupportReport KCliques::supports(const Graph& graph) const {
   if (options_.result_limit && !options_.enumerate) {
     return {false, "result_limit is meaningful only when enumerate=true"};
   }
-  const auto selected = options_.backend == KCliqueBackend::automatic
-                            ? KCliqueBackend::graphset
-                            : options_.backend;
-  if (selected == KCliqueBackend::gamma && options_.k > 5 &&
+  const auto selected = selected_backend(options_);
+  if (selected == KCliqueBackend::gamma && options_.k > 7 &&
       graph.vertex_count() >= options_.k) {
-    return {false, "the validated GAMMA path supports k up to five"};
+    return {false, "the GAMMA path supports k up to seven"};
   }
-  if (selected == KCliqueBackend::kcgpu && options_.k > 5 &&
+  if (selected == KCliqueBackend::kcgpu && options_.k > 10 &&
       graph.vertex_count() >= options_.k) {
-    return {false, "the validated KCGPU path supports k up to five"};
+    return {false, "the KCGPU path supports k up to ten"};
   }
   if (selected == KCliqueBackend::graphset && options_.k > 6 &&
       graph.vertex_count() >= options_.k) {
@@ -186,9 +194,7 @@ SupportReport KCliques::supports(const Graph& graph) const {
 
 ExecutionResult<KCliqueOutput> KCliques::run(const Graph& graph) const {
   const auto started = std::chrono::steady_clock::now();
-  const auto selected = options_.backend == KCliqueBackend::automatic
-                            ? KCliqueBackend::graphset
-                            : options_.backend;
+  const auto selected = selected_backend(options_);
   auto provenance = kclique_provenance(selected);
   const auto support = supports(graph);
   if (!support.supported) {
@@ -321,15 +327,15 @@ std::vector<BackendInfo> KCliques::backends() {
       {"kcgpu", "KCGPU", "k_clique_counting_enumeration",
        "314ac6d41fbe6582c2a258c2094c67ec1aa47116",
        detail::kcgpu_backend_compiled(), true,
-       {"exact_count", "single_gpu", "k_3_to_5_validated"}},
+       {"exact_count", "single_gpu", "k_3_to_10"}},
       {"graphset", "GraphSet", "k_clique_counting_enumeration",
        "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
        detail::graphset_kclique_backend_compiled(), true,
-       {"exact_count", "single_gpu", "k_3_to_5_validated"}},
+       {"exact_count", "single_gpu", "k_3_to_6"}},
       {"gamma", "GAMMA", "k_clique_counting_enumeration",
        "3e01be68ededb8dcc4fa44bdb069a945a822232c",
        detail::gamma_kclique_backend_compiled(), true,
-       {"exact_count", "single_gpu", "k_3_to_5_validated"}},
+       {"exact_count", "single_gpu", "k_3_to_7"}},
   };
 }
 

@@ -1,0 +1,34 @@
+{
+  "problem_id": "random_walk_generation",
+  "paper_id": "2020_nextdoor_walks",
+  "title": "Accelerating Graph Sampling for Graph Machine Learning using GPUs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2009.06693",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:57Z",
+    "sha256": "11321e6e39d3db244592e4925311c7070b1ee0b99dffd3cceb4df1e5dfe528da",
+    "bytes": 865367,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/plasma-umass/NextDoor",
+    "local_path": "code",
+    "commit": "dcbc46d60bb9623616a10f5e7518fe5214575226",
+    "license_file": null,
+    "license_note": "No root license file found; public source availability is not a blanket redistribution license.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/nextdoor.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/apps/randomwalks/deepwalk.cu": "22239781016ba7f423ed4e94e4d182cec4143b0a0cac4688a35bda01cb1e0899",
+      "src/apps/randomwalks/node2vec.cu": "f26fb1b210602b3b2add93d36bc089a65303c1e5d69cc5a036c362ad40d286c0",
+      "src/apps/randomwalks/randomWalks.cu": "2ed38219645a6aea76db839f3c9f772e9458d54237b61c9aba6c2f0e30759338"
+    }
+  }
+}

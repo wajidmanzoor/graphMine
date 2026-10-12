@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/HPCGraphAnalysis/CMGraph",
+  "checked_at": "2026-10-10T01:43:08Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "6682f6e45f666f8872e10b37ccba33c2289d2908",
+  "archive_url": "https://codeload.github.com/HPCGraphAnalysis/CMGraph/tar.gz/6682f6e45f666f8872e10b37ccba33c2289d2908",
+  "archive_sha256": "8031768a0abdac8dc7f852d2a7dacc98b62e05dac40b7723a82c7bd55866d318",
+  "local_path": "cmgraph-6682f6e45f66",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "BSD-3-Clause",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

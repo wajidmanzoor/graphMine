@@ -1,0 +1,54 @@
+{
+  "problem_id": "general_graph_weighted_matching",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2012_dgl_greedy_matching",
+      "algorithm_name": "DGL weighted neighbor matching",
+      "metadata": "44_general_graph_weighted_matching/papers/2012_dgl_greedy_matching/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2012_torch_cluster_greedy_matching",
+      "algorithm_name": "PyTorch Cluster weighted greedy matching",
+      "metadata": "44_general_graph_weighted_matching/papers/2012_torch_cluster_greedy_matching/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2015_gpu_suitor_kepler",
+      "algorithm_name": "GPU-Suitor for NVIDIA Kepler",
+      "metadata": "44_general_graph_weighted_matching/papers/2015_gpu_suitor_kepler/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2018_bootcmatch_suitor",
+      "algorithm_name": "BootCMatchG GPU Suitor weighted matching",
+      "metadata": "44_general_graph_weighted_matching/papers/2018_bootcmatch_suitor/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_locally_dominant_gpu",
+      "algorithm_name": "LD-GPU locally dominant weighted matching",
+      "metadata": "44_general_graph_weighted_matching/papers/2024_locally_dominant_gpu/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_weighted_matching",
+      "algorithm_name": "cuGraph Approximate weighted matching",
+      "metadata": "44_general_graph_weighted_matching/papers/2026_cugraph_weighted_matching/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

@@ -2,20 +2,30 @@
   "problem_id": "maximal_biclique_enumeration",
   "paper_id": "2024_cumbe",
   "title": "cuMBE: GPU-Accelerated Maximal Biclique Enumeration",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://arxiv.org/pdf/2401.05039",
     "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2401.05039",
+    "resolved_url": "https://arxiv.org/pdf/2401.05039",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "43fb53f3413f967975834cd5d8bbecaa34de924f07a67a458f92dea62f376b02",
+    "bytes": 1138826,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/NTUDDSNLab/cuMBE",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "2fff8005b2f74e5683d915f9cd817409f6499bcf",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "src/main.cu": "853d01f11981d634a0da9e98d80ef037d92ea6395eca108d7ba78d9996382784"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

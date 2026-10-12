@@ -1,0 +1,33 @@
+{
+  "problem_id": "graph_based_geolocation",
+  "paper_id": "2026_hb_geo",
+  "title": "HB-Geo: a street-level IP geolocation method based on hop-constrained subgraphs and binary gates",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://link.springer.com/content/pdf/10.1186/s42400-026-00644-w.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "sha256": "24a950819b15ed2f004ab12d281da6f7345dacc0ade08e805e8a4391352b89dd",
+    "bytes": 3501145,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/LuckyBoy0517/HB-Geo",
+    "local_path": "code",
+    "commit": "3c2d65ce19199ed963e16d0617003a478b05fa23",
+    "license_file": null,
+    "license_note": "No root license file found; public source availability is not a blanket redistribution license.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/hb_geo.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "HB-Geo_Shanghai/main.py": "a068b1941f5e84a7845e2351d7d3c07572322b827ab1bb236f25812f24788a68",
+      "HB-Geo_Shanghai/lib/model.py": "8725a7c5791691c69bc084bb21828b0c0091e2d05a46550a059ff0ebfe84aaca"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "key": "mvc_components",
+    "repository": "HusseinAmro/component-aware-vertex-cover-gpu",
+    "status": "downloaded"
+  },
+  {
+    "key": "mvc_parallel",
+    "repository": "pky00/Parallel-Vertex-Cover-Algorithms-on-GPUs",
+    "status": "reference_only",
+    "reason": "No top-level license: retain a source reference only"
+  },
+  {
+    "key": "apsp_blocked_lic",
+    "repository": "MTB90/cuda-floyd_warshall",
+    "status": "downloaded"
+  }
+]

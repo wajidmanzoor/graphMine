@@ -21,7 +21,7 @@ CommunityDetectionBackend selected_backend(
   if (options.backend != CommunityDetectionBackend::automatic) {
     return options.backend;
   }
-  if (detail::gleiden_backend_compiled()) {
+  if (options.resolution == 1.0 && detail::gleiden_backend_compiled()) {
     return CommunityDetectionBackend::gleiden;
   }
   return CommunityDetectionBackend::parallel_leiden_plus;
@@ -54,8 +54,11 @@ Provenance provenance_for(CommunityDetectionBackend backend) {
           to_string(backend),
           "Parallel Multilevel Graph Clustering artifact",
           "29c69d27ba38",
-          std::string("original Kokkos ") + to_string(backend) +
-              " clustering path + in-memory CSR adapter"};
+          std::string("Kokkos ") + to_string(backend) +
+              " clustering with objective refresh" +
+              (backend == CommunityDetectionBackend::parallel_louvain
+                   ? "" : " and no-contraction termination") +
+              " + in-memory CSR adapter"};
 }
 
 detail::PggcAlgorithm pggc_algorithm(CommunityDetectionBackend backend) {
@@ -80,7 +83,8 @@ struct PartitionMetrics {
 
 PartitionMetrics partition_metrics(const CsrGraph& graph,
                                    const std::vector<std::uint32_t>& labels,
-                                   std::uint32_t community_count) {
+                                   std::uint32_t community_count,
+                                   double resolution) {
   PartitionMetrics result;
   if (graph.neighbors.empty()) return result;
   std::vector<std::uint64_t> degree_sum(community_count, 0);
@@ -103,7 +107,7 @@ PartitionMetrics partition_metrics(const CsrGraph& graph,
       static_cast<long double>(internal_arcs) / arc_count;
   for (const auto degree : degree_sum) {
     const auto fraction = static_cast<long double>(degree) / arc_count;
-    quality -= fraction * fraction;
+    quality -= resolution * fraction * fraction;
   }
   result.modularity = static_cast<double>(quality);
   return result;
@@ -132,6 +136,10 @@ CommunityDetection::CommunityDetection(CommunityDetectionOptions options)
 
 SupportReport CommunityDetection::supports(const Graph& graph) const {
   const auto backend = selected_backend(options_);
+  if (!std::isfinite(options_.resolution) || options_.resolution < 0.0)
+    return {false, "resolution must be finite and nonnegative"};
+  if (backend == CommunityDetectionBackend::gleiden && options_.resolution != 1.0)
+    return {false, "gLeiden supports resolution=1 only; select a parallel community backend"};
   if (graph.directed() && !options_.allow_directed_projection) {
     return {false,
             "directed input requires allow_directed_projection=true"};
@@ -203,7 +211,7 @@ ExecutionResult<CommunityDetectionOutput> CommunityDetection::run(
   } else {
     backend_result = detail::run_pggc(
         normalized.csr, options_.execution.device_ids.front(),
-        pggc_algorithm(backend));
+        pggc_algorithm(backend), options_.resolution);
   }
   if (!backend_result.status.ok()) {
     return ExecutionResult<CommunityDetectionOutput>::failure(
@@ -237,10 +245,14 @@ ExecutionResult<CommunityDetectionOutput> CommunityDetection::run(
   const auto community_count =
       static_cast<std::uint32_t>(dense_labels.size());
   const auto metrics =
-      partition_metrics(normalized.csr, labels, community_count);
+      partition_metrics(normalized.csr, labels, community_count, options_.resolution);
+  if (!std::isfinite(metrics.modularity)) {
+    return ExecutionResult<CommunityDetectionOutput>::failure(
+        {StatusCode::unsupported, "resolution exceeds finite modularity arithmetic"}, provenance);
+  }
   if (backend_result.native_modularity &&
       std::abs(*backend_result.native_modularity - metrics.modularity) >
-          1e-7) {
+          1e-7 * std::max(1.0, std::abs(metrics.modularity))) {
     return ExecutionResult<CommunityDetectionOutput>::failure(
         {StatusCode::correctness_mismatch,
          std::string(to_string(backend)) + " reported modularity " +
@@ -254,6 +266,7 @@ ExecutionResult<CommunityDetectionOutput> CommunityDetection::run(
   CommunityDetectionOutput output;
   output.community_count = community_count;
   output.modularity = metrics.modularity;
+  output.resolution = options_.resolution;
   output.assignment_by_vertex.reserve(graph.vertex_count());
   for (VertexIndex vertex = 0; vertex < graph.vertex_count(); ++vertex) {
     output.assignment_by_vertex.push_back(

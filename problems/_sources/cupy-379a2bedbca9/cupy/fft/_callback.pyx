@@ -1,0 +1,903 @@
+from libc.stdint cimport intptr_t
+
+from cupy_backends.cuda.api cimport runtime
+from cupy._core.core cimport _ndarray_base
+from cupy.cuda.device cimport get_compute_capability
+from cupy.cuda.memory cimport MemoryPointer
+
+import hashlib
+import importlib
+import os
+import re
+import shutil
+import string
+import subprocess
+import sys
+import sysconfig
+import tempfile
+import threading
+import warnings
+
+from cuda.pathfinder import find_nvidia_binary_utility
+from cuda.pathfinder import find_nvidia_header_directory
+
+from cupy import __version__ as _cupy_ver
+from cupy._environment import (get_nvcc_path, get_cuda_path)
+from cupy.cuda.compiler import (_get_bool_env_variable, CompileException)
+from cupy.cuda.compiler import _compile_with_cache_cuda
+
+
+# information needed for building an external module
+cdef list _cc = []
+cdef str _python_include = None
+cdef list _nvcc = []
+cdef str _cuda_path = None
+cdef str _cuda_include = None
+cdef str _nvprune = None
+cdef str _build_ver = None
+cdef int _cufft_ver = 0
+cdef str _cupy_root = None
+cdef str _cupy_include = None
+cdef str _source_dir = None
+cdef str _ext_suffix = None
+
+
+# callback related stuff
+cdef bint _is_init = False
+cdef str _callback_dev_code = None
+cdef str _callback_cache_dir = None
+cdef dict _callback_mgr = {}  # keep the Python modules alive
+cdef object _callback_thread_local = threading.local()
+
+
+cdef class _ThreadLocal:
+    cdef _CallbackManager _current_cufft_callback
+
+    def __init__(self):
+        self._current_cufft_callback = None
+
+    @staticmethod
+    cdef _ThreadLocal get():
+        cdef _ThreadLocal tls
+        try:
+            tls = _callback_thread_local.tls
+        except AttributeError:
+            tls = _callback_thread_local.tls = _ThreadLocal()
+        return tls
+
+
+cdef inline void _set_vars() except*:
+    from cupy.cuda.cufft import getVersion as get_cufft_version
+
+    global _cc, _python_include, _cuda_path, _cuda_include, _nvprune
+    global _build_ver, _cufft_ver, _ext_suffix, _is_init
+    global _cc_major_map
+
+    cdef str cxx = sysconfig.get_config_var('CXX')
+    if cxx is not None:
+        _cc = cxx.split(' ')
+    elif 'CXX' in os.environ:
+        _cc = os.environ.get('CXX').split(' ')
+    else:
+        _cc = None
+
+    _python_include = sysconfig.get_path('include')
+
+    _cuda_path = get_cuda_path()
+    if _cuda_path is not None:
+        _nvprune = find_nvidia_binary_utility('nvprune')
+        if _nvprune is None:
+            _nvprune = os.path.join(_cuda_path, 'bin/nvprune')
+            if not os.path.isfile(_nvprune):
+                _nvprune = None
+    else:
+        # _prune() needs both nvprune and _cuda_path (for
+        # libcufft_static.a), so skip nvprune if there is no root.
+        _nvprune = None
+
+    _cuda_include = find_nvidia_header_directory('cudart')
+
+    _build_ver = str(runtime.runtimeGetVersion())
+    _cufft_ver = get_cufft_version()
+    # Many archs are removed since CUDA 13.0.0 (cuFFT 12.0.0).
+    if _cufft_ver < 12000:
+        _cc_major_map = {**_cc_major_map, **{
+            '7': ('70', '72', '75'),
+            '6': ('60', '61', '62'),
+            '5': ('50', '52', '53'),
+        }}
+    _ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
+
+    _set_cupy_paths()
+    _set_nvcc_path()
+    _is_init = True
+
+
+cdef inline void _set_cupy_paths() except*:
+    # Workaround: older Cython cannot use __file__ in global scope
+    global _cupy_root, _cupy_include, _source_dir
+    if _cupy_root is None:
+        _cupy_root = os.path.join(os.path.dirname(__file__), '..')
+        _cupy_include = os.path.join(_cupy_root, '_core/include')
+        _source_dir = os.path.join(_cupy_root, 'cuda')
+
+
+cdef inline void _set_nvcc_path() except*:
+    # get_nvcc_path() could be a long string like "ccache nvcc ..." from NVCC
+    cdef str nvcc = None
+    cdef str f
+    cdef int i
+
+    global _nvcc
+    if _nvcc == []:
+        nvcc = get_nvcc_path()
+        if nvcc is not None:
+            _nvcc = nvcc.split(' ')
+            # if the host compiler is set in NVCC, we force it to align with
+            # the one reported by sysconfig
+            for i, f in enumerate(_nvcc):
+                if f in ('-ccbin', '--compiler-bindir'):
+                    _nvcc[i+1] = _cc[0]
+                    break
+            else:
+                _nvcc += ['-ccbin', _cc[0]]
+        else:
+            _nvcc = None
+
+
+cdef inline void _sanity_checks(
+        str cb_load, str cb_store,
+        MemoryPointer cb_load_data, MemoryPointer cb_store_data) except*:
+    if runtime._is_hip_environment:
+        raise RuntimeError('hipFFT does not support callbacks')
+    if not sys.platform.startswith('linux'):
+        raise RuntimeError('cuFFT callbacks are only available on Linux')
+    if not (sys.maxsize > 2**32):
+        raise RuntimeError('cuFFT callbacks require 64 bit OS')
+    if not cb_load and not cb_store:
+        raise ValueError('need to specify either cb_load or cb_store, '
+                         'or both')
+    if cb_load and 'd_loadCallbackPtr' not in cb_load:
+        raise ValueError('need to specify d_loadCallbackPtr in cb_load')
+    if cb_store and 'd_storeCallbackPtr' not in cb_store:
+        raise ValueError('need to specify d_storeCallbackPtr in cb_store')
+    if _cc is None:
+        raise RuntimeError('a C++ compiler is required but not found, '
+                           'please set the environment variable CXX')
+    if _nvcc is None:
+        raise RuntimeError('nvcc is required but not found')
+    if _nvprune is None:
+        warnings.warn('nvprune is not found', RuntimeWarning)
+    if cb_load_data is not None:
+        if not cb_load:
+            raise ValueError('load callback is not given')
+    if cb_store_data is not None:
+        if not cb_store:
+            raise ValueError('store callback is not given')
+
+
+cdef inline void _cythonize(str tempdir, str mod_name) except*:
+    shutil.copyfile(os.path.join(_source_dir, 'cupy_cufft.h'),
+                    os.path.join(tempdir, 'cupy_cufft.h'))
+    shutil.copyfile(os.path.join(_source_dir, 'cufft.pxd'),
+                    os.path.join(tempdir, mod_name + '.pxd'))
+    shutil.copyfile(os.path.join(_source_dir, 'cufft.pyx'),
+                    os.path.join(tempdir, mod_name + '.pyx'))
+    p = subprocess.run(['cython', '-3', '--cplus',
+                        '-E', 'CUPY_HIP_VERSION=0',
+                        '-E', 'CUPY_CUDA_VERSION=' + _build_ver,
+                        '-E', 'CUPY_CUFFT_STATIC=True',
+                        os.path.join(tempdir, mod_name + '.pyx'),
+                        '-o', os.path.join(tempdir, mod_name + '.cpp')],
+                       env=os.environ, cwd=tempdir)
+    p.check_returncode()
+
+
+cdef inline void _mod_compile(str tempdir, str mod_name, str obj_host) except*:
+    shutil.copyfile(os.path.join(_source_dir, 'cupy_cufftXt.h'),
+                    os.path.join(tempdir, 'cupy_cufftXt.h'))
+    p = subprocess.run(_cc + [
+                       '-I' + _python_include,
+                       '-I' + _cuda_include,
+                       '-I' + _cupy_include,
+                       '-fPIC', '-O2',
+                       '-c', os.path.join(tempdir, mod_name + '.cpp'),
+                       '-o', obj_host],
+                       env=os.environ, cwd=tempdir)
+    p.check_returncode()
+
+
+# Archs with the same major CC version could share the implementations, so for
+# the purpose of pruning we should dump all SMs with the same major ver.
+#
+# In practice, this only happens with sm_86 (cupy/cupy#5508) as of CUDA 11.4;
+# other SMs always use sm_X0's symbols only and do not have their own
+# specializations.
+cdef dict _cc_major_map = {
+    '12': ('120', '121'),
+    '11': ('110',),
+    '10': ('100', '103'),
+    '9': ('90',),
+    '8': ('80', '86', '87'),
+}
+
+
+cdef inline str _prune(str temp_dir, str cache_dir, str _cufft_ver, str arch):
+    cdef str cufft_lib_full, cufft_lib_pruned, cufft_lib_temp, cufft_lib_cached
+    cdef str libdir, candidate
+
+    if _nvprune:
+        # _cuda_path may point to either the CUDA Toolkit root (which has
+        # lib64/ on Linux) or a targets/<arch> directory (which has lib/
+        # only; e.g. conda, or a system CTK located via cuda.pathfinder),
+        # so probe both layouts.
+        cufft_lib_full = None
+        for libdir in ('lib64', 'lib'):
+            candidate = os.path.join(_cuda_path, libdir, 'libcufft_static.a')
+            if os.path.isfile(candidate):
+                cufft_lib_full = candidate
+                break
+        if cufft_lib_full is None:
+            # cannot locate the static library; fall back to linking the
+            # full one via nvcc's default library search paths
+            warnings.warn(
+                'libcufft_static.a not found under ' + _cuda_path,
+                RuntimeWarning)
+            return None
+        cufft_lib_pruned = f'cufft_static_{_cufft_ver}_sm{arch[:-1]}'
+        cufft_lib_temp = os.path.join(temp_dir,
+                                      'lib' + cufft_lib_pruned + '.a')
+        cufft_lib_cached = os.path.join(cache_dir,
+                                        'lib' + cufft_lib_pruned + '.a')
+        if not os.path.isfile(cufft_lib_cached):
+            comm = [_nvprune]
+            for cc in _cc_major_map[arch[:-1]]:
+                comm.append(f'--generate-code=arch=compute_{cc},code=sm_{cc}')
+            comm += [cufft_lib_full, '-o', cufft_lib_temp]
+            p = subprocess.run(comm,
+                               env=os.environ, cwd=temp_dir,
+                               stderr=subprocess.PIPE)
+            p.check_returncode()
+            if p.stderr:
+                # maybe this is a new arch that we haven't seen or unsupported
+                # by the current CUDA ver?
+                err = f'nvprune failed with sm_{arch}:\n{p.stderr}'
+                raise RuntimeError(err)
+            else:
+                # atomic move with the destination guaranteed to be overwritten
+                # (using os.replace() is also ok here)
+                os.rename(cufft_lib_temp, cufft_lib_cached)
+    else:
+        # nvprune is not found, just link against the full static lib
+        cufft_lib_pruned = None
+
+    return cufft_lib_pruned
+
+
+cdef inline void _nvcc_compile(
+        str tempdir, str mod_name, str cb_load, str cb_store,
+        str obj_dev, str arch) except*:
+    cdef str support
+    cdef list cmd
+    global _callback_dev_code
+
+    if _callback_dev_code is None:
+        with open(os.path.join(_source_dir, 'cupy_cufftXt.cu')) as f:
+            support = _callback_dev_code = f.read()
+    else:
+        support = _callback_dev_code
+    with open(os.path.join(tempdir, 'cupy_cufftXt.cu'), 'w') as f:
+        support = string.Template(support).substitute(
+            dev_load_callback_ker=cb_load,
+            dev_store_callback_ker=cb_store)
+        f.write(support)
+    cmd = _nvcc + ['-arch=sm_'+arch, '-dc',
+                   '-I' + _cupy_include,
+                   '-c', os.path.join(tempdir, 'cupy_cufftXt.cu'),
+                   '-Xcompiler', '-fPIC', '-O2', '-std=c++17']
+    if cb_load:
+        cmd.append('-DHAS_LOAD_CALLBACK')
+    if cb_store:
+        cmd.append('-DHAS_STORE_CALLBACK')
+    p = subprocess.run(cmd + ['-o', obj_dev],
+                       env=os.environ, cwd=tempdir,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
+    try:
+        p.check_returncode()
+    except subprocess.CalledProcessError as e:
+        cex = CompileException(
+            str(e) + '\nStderr: ' + e.stderr.decode(), support,
+            os.path.join(tempdir, 'cupy_cufftXt.cu'),
+            cmd[1:], 'nvcc')
+        dump = _get_bool_env_variable(
+            'CUPY_DUMP_CUDA_SOURCE_ON_ERROR', False)
+        if dump:
+            cex.dump(sys.stderr)
+        raise cex from e
+
+
+cdef inline void _nvcc_link(
+        str tempdir, str obj_host, str obj_dev, str arch, str mod_filename,
+        str cache_dir, str cufft_lib_pruned) except*:
+    # WARNING: CANNOT use host compiler to link!
+    cdef list cmd
+    cdef str mod_temp, mod_cached
+
+    mod_temp = os.path.join(tempdir, mod_filename)
+    mod_cached = os.path.join(cache_dir, mod_filename)
+    cmd = _nvcc + ['-shared', '-arch=sm_'+arch, obj_dev, obj_host,
+                   '-Xlinker', '-Bsymbolic']
+    if cufft_lib_pruned:
+        cmd += ['-L'+cache_dir, '-l'+cufft_lib_pruned]
+    else:
+        cmd.append('-lcufft_static')
+    cmd += ['-lculibos', '-lpthread', '-o', mod_temp]
+
+    p = subprocess.run(cmd, env=os.environ, cwd=tempdir)
+    p.check_returncode()
+    # atomic move with the destination guaranteed to be overwritten;
+    # using os.replace() is also ok here
+    os.rename(mod_temp, mod_cached)
+
+
+# make it a plain Python function so that we can mock-test it
+def get_cache_dir():
+    global _callback_cache_dir
+    if _callback_cache_dir is None:
+        _callback_cache_dir = os.environ.get(
+            'CUPY_CACHE_DIR', os.path.expanduser('~/.cupy/callback_cache'))
+    return _callback_cache_dir
+
+
+cpdef get_current_callback_manager():
+    cdef _ThreadLocal tls = _ThreadLocal.get()
+    cdef _CallbackManager mgr = tls._current_cufft_callback
+    return mgr
+
+
+cdef class _CallbackManager:
+
+    cdef:
+        readonly MemoryPointer cb_load_data
+        readonly MemoryPointer cb_store_data
+        readonly str identity
+
+    cdef set_caller_infos(self,
+                          MemoryPointer cb_load_data=None,
+                          MemoryPointer cb_store_data=None):
+        '''Set the auxiliary arrays to be used by the load/store callbacks.
+        Corresponding to the ``callerInfo`` field in cuFFT's callback API.
+
+        Args:
+            cb_load_data (:class:`MemoryPointer`, optional): A memory chunk
+                containing data to be used in the load callback.
+            cb_store_data (:class:`MemoryPointer`, optional): A memory chunk
+                containing data to be used in the store callback.
+
+        .. note::
+            After this method is called, a call to :meth:`set_callbacks` must
+            follow. This is for internal use.
+
+        '''
+        self.cb_load_data = cb_load_data
+        self.cb_store_data = cb_store_data
+
+
+cdef class _LegacyCallbackManager(_CallbackManager):
+
+    cdef:
+        readonly str cb_load
+        readonly str cb_store
+        object mod
+
+    def __init__(self,
+                 str cb_load='',
+                 str cb_store='',
+                 MemoryPointer cb_load_data=None,
+                 MemoryPointer cb_store_data=None):
+        if not _is_init:
+            _set_vars()
+        _sanity_checks(cb_load, cb_store, cb_load_data, cb_store_data)
+
+        self.identity = "legacy"
+        self.cb_load = cb_load
+        self.cb_store = cb_store
+        self.cb_load_data = cb_load_data
+        self.cb_store_data = cb_store_data
+
+        # Set up some variables...
+        cdef str arch = get_compute_capability()
+        cdef str tempdir
+        cdef str obj_host
+        cdef str obj_dev
+        cdef str mod_name
+        cdef str mod_filename
+        cdef str cache_dir
+        cdef str path
+        cdef str cufft_lib_pruned
+
+        # For hash; note this is independent of the plan to be created, and
+        # only depends on the given load/store callbacks and the runtime
+        # environment
+        keys = (_cc, _nvcc, arch, _build_ver, _cufft_ver, _cupy_ver,
+                _python_include, cb_load, cb_store)
+        keys = '%s %s %s %s %s %s %s %s %s' % keys
+
+        # Generate module filename: all modules with the identical callbacks
+        # are considered identical regardless of which plan is actually
+        # executed at the time of generation
+        mod_name = 'cupy_callback_'
+        mod_name += hashlib.md5(
+            keys.encode(), usedforsecurity=False).hexdigest()
+        mod_name = mod_name.replace('.', '')
+        mod_filename = mod_name + _ext_suffix
+
+        # Check if the module is already cached on disk. If not, we compile.
+        cache_dir = get_cache_dir()
+        if not os.path.isdir(cache_dir):
+            os.makedirs(cache_dir, exist_ok=True)
+        path = os.path.join(cache_dir, mod_filename)
+        if not os.path.isfile(path):
+            # Set up temp directory; it must be under the cache directory so
+            # that atomic moves within the same filesystem can be guaranteed
+            tempdir_obj = tempfile.TemporaryDirectory(dir=cache_dir)
+            tempdir = tempdir_obj.name
+
+            # Cythonize the Cython code to produce a c++ source file
+            _cythonize(tempdir, mod_name)
+
+            # Compile the Python module
+            obj_host = os.path.join(tempdir, mod_name + '.o')
+            _mod_compile(tempdir, mod_name, obj_host)
+
+            # Prune libcufft_static.a for the target arch and cache it
+            cufft_lib_pruned = _prune(
+                tempdir, cache_dir, str(_cufft_ver), arch)
+
+            # Dump and compile device code using nvcc
+            obj_dev = os.path.join(tempdir, mod_name + '_dev.o')
+            _nvcc_compile(tempdir, mod_name, cb_load, cb_store, obj_dev, arch)
+
+            # Use nvcc to link and generate a shared library, and place it in
+            # the disk cache
+            _nvcc_link(tempdir, obj_host, obj_dev, arch, mod_filename,
+                       cache_dir, cufft_lib_pruned)
+
+            # Clean up build directory
+            tempdir_obj.cleanup()
+
+        # Load the Python module
+        spec = importlib.util.spec_from_file_location(mod_name, path)
+        self.mod = module = importlib.util.module_from_spec(spec)
+        sys.modules[mod_name] = module
+        spec.loader.exec_module(module)
+
+    cpdef create_plan(self, tuple plan_info):
+        cdef str plan_type
+        cdef tuple plan_args
+
+        plan_type, plan_args = plan_info
+        plan = getattr(self.mod, plan_type)(*plan_args)
+        return plan
+
+    cpdef set_callbacks(self, plan):
+        '''Set the load/store callbacks by making calls to
+        ``cufftXtSetCallback``.
+
+        Args:
+            plan (:class:`~cupy.cuda.cufft.Plan1d` or
+                :class:`~cupy.cuda.cufft.PlanNd`, optional): A cuFFT plan
+                against which the load/store callbacks are set.
+
+        .. note::
+            If :meth:`set_caller_infos` is called, a call to this method must
+            follow.
+
+        '''
+        # Note: Do NOT use any object/function from the global cupy.cuda.cufft
+        # module!
+        cufft = self.mod
+        CUFFT_C2C = cufft.CUFFT_C2C
+        CUFFT_C2R = cufft.CUFFT_C2R
+        CUFFT_R2C = cufft.CUFFT_R2C
+        CUFFT_Z2Z = cufft.CUFFT_Z2Z
+        CUFFT_Z2D = cufft.CUFFT_Z2D
+        CUFFT_D2Z = cufft.CUFFT_D2Z
+        CUFFT_CB_LD_COMPLEX = cufft.CUFFT_CB_LD_COMPLEX
+        CUFFT_CB_LD_COMPLEX_DOUBLE = cufft.CUFFT_CB_LD_COMPLEX_DOUBLE
+        CUFFT_CB_LD_REAL = cufft.CUFFT_CB_LD_REAL
+        CUFFT_CB_LD_REAL_DOUBLE = cufft.CUFFT_CB_LD_REAL_DOUBLE
+        CUFFT_CB_ST_COMPLEX = cufft.CUFFT_CB_ST_COMPLEX
+        CUFFT_CB_ST_COMPLEX_DOUBLE = cufft.CUFFT_CB_ST_COMPLEX_DOUBLE
+        CUFFT_CB_ST_REAL = cufft.CUFFT_CB_ST_REAL
+        CUFFT_CB_ST_REAL_DOUBLE = cufft.CUFFT_CB_ST_REAL_DOUBLE
+
+        cdef MemoryPointer cb_load_data = self.cb_load_data
+        cdef MemoryPointer cb_store_data = self.cb_store_data
+        cdef intptr_t cb_load_ptr=0, cb_store_ptr=0
+
+        fft_type = plan.fft_type
+        if fft_type == CUFFT_C2C:
+            cb_load_type = CUFFT_CB_LD_COMPLEX if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_COMPLEX if self.cb_store else -1
+        elif fft_type == CUFFT_R2C:
+            cb_load_type = CUFFT_CB_LD_REAL if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_COMPLEX if self.cb_store else -1
+        elif fft_type == CUFFT_C2R:
+            cb_load_type = CUFFT_CB_LD_COMPLEX if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_REAL if self.cb_store else -1
+        elif fft_type == CUFFT_Z2Z:
+            cb_load_type = CUFFT_CB_LD_COMPLEX_DOUBLE if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_COMPLEX_DOUBLE if self.cb_store else -1
+        elif fft_type == CUFFT_D2Z:
+            cb_load_type = CUFFT_CB_LD_REAL_DOUBLE if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_COMPLEX_DOUBLE if self.cb_store else -1
+        elif fft_type == CUFFT_Z2D:
+            cb_load_type = CUFFT_CB_LD_COMPLEX_DOUBLE if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_REAL_DOUBLE if self.cb_store else -1
+        else:
+            raise ValueError
+
+        if self.cb_load:
+            if cb_load_data is not None:
+                cb_load_ptr = cb_load_data.ptr
+            cufft.setCallback(
+                plan.handle, cb_load_type, True, cb_load_ptr)
+        if self.cb_store:
+            if cb_store_data is not None:
+                cb_store_ptr = cb_store_data.ptr
+            cufft.setCallback(
+                plan.handle, cb_store_type, False, cb_store_ptr)
+
+
+cdef class _JITCallbackManager(_CallbackManager):
+
+    cdef:
+        readonly object cb_load
+        readonly object cb_store
+        readonly str cb_load_name
+        readonly str cb_store_name
+        readonly bytes cb_load_lto
+        readonly bytes cb_store_lto
+
+    def __init__(self,
+                 cb_load=None,
+                 cb_store=None,
+                 str cb_load_name=None,
+                 str cb_store_name=None,
+                 MemoryPointer cb_load_data=None,
+                 MemoryPointer cb_store_data=None,
+                 tuple nvrtc_options=(),
+                 ):
+        self._sanity_checks(cb_load, cb_store, cb_load_data, cb_store_data)
+
+        self.identity = "jit"
+        self.cb_load = cb_load
+        self.cb_store = cb_store
+        self.cb_load_name = cb_load_name
+        self.cb_store_name = cb_store_name
+        self.cb_load_data = cb_load_data
+        self.cb_store_data = cb_store_data
+
+        if cb_load:
+            if isinstance(cb_load, str):
+                self.cb_load_lto = self.compile_lto(cb_load, nvrtc_options)
+            elif isinstance(cb_load, bytes):
+                self.cb_load_lto = cb_load
+            # TODO(leofang): support rawkernel
+            else:
+                raise NotImplementedError
+        if cb_store:
+            if isinstance(cb_store, str):
+                self.cb_store_lto = self.compile_lto(cb_store, nvrtc_options)
+            elif isinstance(cb_load, bytes):
+                self.cb_store_lto = cb_store
+            # TODO(leofang): support rawkernel
+            else:
+                raise NotImplementedError
+
+    cdef str _get_cuda_include(self):
+        global _cuda_include
+        if _cuda_include is None:
+            _cuda_include = find_nvidia_header_directory('cudart')
+            if _cuda_include is None:
+                raise RuntimeError('Failed to find CUDA headers.')
+        return _cuda_include
+
+    cdef _sanity_checks(self, cb_load, cb_store, cb_load_data, cb_store_data):
+        from cupy.cuda.cufft import getVersion as get_cufft_version
+        if runtime._is_hip_environment:
+            raise RuntimeError('hipFFT does not support callbacks')
+        if get_cufft_version() < 11303:
+            raise RuntimeError(
+                'JIT callback support requires cuFFT from CUDA 12.8+')
+        if cb_load is None and cb_store is None:
+            raise ValueError('need to specify either cb_load or cb_store, '
+                             'or both')
+        if cb_load is not None and cb_store is not None:
+            if type(cb_load) is not type(cb_store):
+                raise TypeError("when both cb_load and cb_store are given, "
+                                "they must be of the same type")
+        if cb_load_data is not None:
+            if cb_load is None:
+                raise ValueError('load callback is not given')
+        if cb_store_data is not None:
+            if cb_store is None:
+                raise ValueError('store callback is not given')
+
+    cdef bytes compile_lto(self, str source, tuple options):
+        options += ('--std=c++17', '-I' + self._get_cuda_include())
+        # TODO(leofang): support log_stream & jitify
+        return _compile_with_cache_cuda(
+            source, options, None, get_cache_dir(), to_ltoir=True)
+
+    cpdef create_plan(self, intptr_t prealloc_plan, tuple plan_info):
+        cdef str plan_type
+        cdef tuple plan_args
+
+        from cupy.cuda import cufft
+        plan_type, plan_args = plan_info
+        plan = getattr(cufft, plan_type)(
+            *plan_args, prealloc_plan=prealloc_plan)
+        return plan
+
+    cpdef intptr_t set_callbacks(self, fft_type) except*:
+        '''Set the load/store callbacks by making calls to
+        ``cufftXtJITSetCallback``.
+
+        .. note::
+            If :meth:`set_caller_infos` is called, a call to this method must
+            follow.
+
+        '''
+        from cupy.cuda.cufft import (
+            CUFFT_C2C, CUFFT_C2R, CUFFT_R2C,
+            CUFFT_Z2Z, CUFFT_Z2D, CUFFT_D2Z,
+            CUFFT_CB_LD_COMPLEX, CUFFT_CB_LD_COMPLEX_DOUBLE,
+            CUFFT_CB_LD_REAL, CUFFT_CB_LD_REAL_DOUBLE,
+            CUFFT_CB_ST_COMPLEX, CUFFT_CB_ST_COMPLEX_DOUBLE,
+            CUFFT_CB_ST_REAL, CUFFT_CB_ST_REAL_DOUBLE,)
+
+        cdef MemoryPointer cb_load_data = self.cb_load_data
+        cdef MemoryPointer cb_store_data = self.cb_store_data
+        cdef intptr_t cb_load_ptr=0, cb_store_ptr=0
+
+        if fft_type == CUFFT_C2C:
+            cb_load_type = CUFFT_CB_LD_COMPLEX if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_COMPLEX if self.cb_store else -1
+        elif fft_type == CUFFT_R2C:
+            cb_load_type = CUFFT_CB_LD_REAL if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_COMPLEX if self.cb_store else -1
+        elif fft_type == CUFFT_C2R:
+            cb_load_type = CUFFT_CB_LD_COMPLEX if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_REAL if self.cb_store else -1
+        elif fft_type == CUFFT_Z2Z:
+            cb_load_type = CUFFT_CB_LD_COMPLEX_DOUBLE if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_COMPLEX_DOUBLE if self.cb_store else -1
+        elif fft_type == CUFFT_D2Z:
+            cb_load_type = CUFFT_CB_LD_REAL_DOUBLE if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_COMPLEX_DOUBLE if self.cb_store else -1
+        elif fft_type == CUFFT_Z2D:
+            cb_load_type = CUFFT_CB_LD_COMPLEX_DOUBLE if self.cb_load else -1
+            cb_store_type = CUFFT_CB_ST_REAL_DOUBLE if self.cb_store else -1
+        else:
+            raise ValueError
+
+        from cupy.cuda import cufft
+        cdef intptr_t plan = cufft.create()
+        cufft.setAutoAllocation(plan, 0)
+
+        if self.cb_load:
+            if cb_load_data is not None:
+                cb_load_ptr = cb_load_data.ptr
+            cufft.setJITCallback(
+                <intptr_t>plan, self.cb_load_name, self.cb_load_lto,
+                cb_load_type, cb_load_ptr)
+        if self.cb_store:
+            if cb_store_data is not None:
+                cb_store_ptr = cb_store_data.ptr
+            cufft.setJITCallback(
+                <intptr_t>plan, self.cb_store_name, self.cb_store_lto,
+                cb_store_type, cb_store_ptr)
+
+        return <intptr_t>plan
+
+
+# LHS is our legacy convention
+# RHS is a valid C identifier pattern
+cdef object cupy_load_callback_pattern = re.compile(
+    r'd_loadCallbackPtr\s*=\s*([A-Za-z_]\w*)\s*;')
+
+cdef object cupy_store_callback_pattern = re.compile(
+    r'd_storeCallbackPtr\s*=\s*([A-Za-z_]\w*)\s*;')
+
+
+cdef class set_cufft_callbacks:
+    """A context manager for setting up load and/or store callbacks.
+    Any FFT calls living in this context will have callbacks set up.
+
+    Args:
+        cb_load (str): A string contains the device kernel for the load
+            callback. It must define ``d_loadCallbackPtr``.
+        cb_store (str): A string contains the device kernel for the store
+            callback. It must define ``d_storeCallbackPtr``.
+        cb_load_aux_arr (cupy.ndarray, optional): A CuPy array containing
+            data to be used in the load callback. **DEPRECATED.**
+        cb_store_aux_arr (cupy.ndarray, optional): A CuPy array containing
+            data to be used in the store callback. **DEPRECATED.**
+        cb_load_name (str): A string contains device kernel for the load
+            callback. If not defined, we attempt to infer from the provided
+            ``cb_load`` but it may fail. Only needed when using
+            ``cb_ver="jit"``.
+        cb_store_name (str): A string contains device kernel for the store
+            callback. If not defined, we attempt to infer from the provided
+            ``cb_store`` but it may fail. Only needed when using
+            ``cb_ver="jit"``.
+        cb_load_data (MemoryPointer, optional): A memory chunk containing
+            data to be used in the load callback.
+        cb_store_data (MemoryPointer, optional): A memory chunk containing
+            data to be used in the store callback.
+        cb_ver (str): Which cuFFT callback support to use. The default is
+            ``"legacy"``. Starting CUDA 12.2, ``"jit"`` is supported.
+
+    .. note::
+        Callbacks only work for transforms over contiguous axes; the behavior
+        for non-contiguous transforms is in general undefined.
+
+    Below is the documentation only applicable to the *jit* option.
+
+    TODO
+
+    Below is the documentation only applicable to the *legacy* option.
+
+    .. note::
+        An example for a load callback is shown below:
+
+        .. code-block:: python
+
+            code = r'''
+            __device__ cufftComplex CB_ConvertInputC(
+                void *dataIn,
+                size_t offset,
+                void *callerInfo,
+                void *sharedPtr) {
+              // implementation
+            }
+
+            __device__ cufftCallbackLoadC d_loadCallbackPtr = CB_ConvertInputC;
+            '''
+
+            with cp.fft.config.set_cufft_callbacks(cb_load=code):
+                out_arr = cp.fft.fft(in_arr, ...)
+
+    .. note::
+        Below are the *runtime* requirements for using this feature:
+
+            * cython >= 0.29.0
+            * A host compiler that supports C++11 and above; might need to set
+              up the ``CXX`` environment variable.
+            * ``nvcc`` and the full CUDA Toolkit. Note that the ``cudatoolkit``
+              package from Conda-Forge is not enough, as it does not contain
+              static libraries.
+
+    .. warning::
+        Using cuFFT callbacks requires compiling and loading a Python module at
+        runtime as well as static linking for each distinct transform and
+        callback, so the first invocation for each combination will be very
+        slow. This is a limitation of cuFFT, so use this feature only when the
+        callback-enabled transform is known more performant and can be reused
+        to amortize the cost.
+
+    .. warning::
+        The generated Python modules are by default cached in
+        ``~/.cupy/callback_cache`` for possible reuse (with the same set of
+        load/store callbacks). Due to static linking, however, the file sizes
+        can be excessive! The cache position can be changed via setting
+        ``CUPY_CACHE_DIR``.
+
+    .. seealso:: `cuFFT Callback Routines`_
+
+    .. _cuFFT Callback Routines:
+        https://docs.nvidia.com/cuda/cufft/index.html#cufft-callback-routines
+
+    """
+    # this class should have been a simple function decorated by @contextlib.
+    # contextmanager that yields...
+
+    cdef:
+        _CallbackManager mgr
+        _CallbackManager mgr_prev
+
+    def __init__(self,
+                 cb_load=None,
+                 cb_store=None,
+                 *,
+                 _ndarray_base cb_load_aux_arr=None,
+                 _ndarray_base cb_store_aux_arr=None,
+                 str cb_load_name=None,
+                 str cb_store_name=None,
+                 MemoryPointer cb_load_data=None,
+                 MemoryPointer cb_store_data=None,
+                 str cb_ver='legacy',
+                 tuple nvrtc_options=()):
+        if cb_ver not in ('legacy', 'jit'):
+            raise ValueError('cb_ver must be "legacy" or "jit"')
+        if cb_load_aux_arr is not None or cb_store_aux_arr is not None:
+            warnings.warn(
+                'passing an ndarray to cb_load_aux_arr or cb_store_aux_arr '
+                'is deprecated, please switch to pass arr.data to cb_load_data'
+                ' or cb_store_data instead, the *_aux_arr arguments will be '
+                'removed in a future release', DeprecationWarning)
+        if cb_load_aux_arr is not None and cb_load_data is not None:
+            raise ValueError("only use cb_load_data and not cb_load_aux_arr")
+        if cb_store_aux_arr is not None and cb_store_data is not None:
+            raise ValueError("only use cb_store_data and not cb_store_aux_arr")
+        if cb_load_data is None and cb_load_aux_arr is not None:
+            cb_load_data = cb_load_aux_arr.data
+        if cb_store_data is None and cb_store_aux_arr is not None:
+            cb_store_data = cb_store_aux_arr.data
+
+        # For every distinct pair of load & store callbacks, we compile an
+        # external Python module (legacy) or LTO IR (jit) and cache it.
+        cdef tuple key = (cb_load, cb_store, cb_ver)
+        cdef _CallbackManager mgr = _callback_mgr.get(key)
+        if mgr is None:
+            if cb_ver == 'legacy':
+                warnings.warn(
+                    'Using the legacy callback is considered deprecated, '
+                    'please switch to use cb_ver="jit" instead',
+                    DeprecationWarning)
+                mgr = _LegacyCallbackManager(
+                    cb_load='' if cb_load is None else cb_load,
+                    cb_store='' if cb_store is None else cb_store,
+                    cb_load_data=cb_load_data,
+                    cb_store_data=cb_store_data,
+                )
+                _callback_mgr[key] = mgr  # keep the Python module alive
+            else:  # cb_ver = 'jit'
+                # We help users reuse their legacy callbacks with minimal
+                # code changes
+                if isinstance(cb_load, str) and cb_load_name is None:
+                    try:
+                        cb_load_name = cupy_load_callback_pattern.search(
+                            cb_load).group(1)
+                    except AttributeError:
+                        raise ValueError(
+                            'cb_load_name cannot be inferred, please specify '
+                            'it explicitly') from None
+                if isinstance(cb_store, str) and cb_store_name is None:
+                    try:
+                        cb_store_name = cupy_store_callback_pattern.search(
+                            cb_store).group(1)
+                    except AttributeError:
+                        raise ValueError(
+                            'cb_store_name cannot be inferred, please specify '
+                            'it explicitly') from None
+                mgr = _JITCallbackManager(
+                    cb_load=cb_load,
+                    cb_store=cb_store,
+                    cb_load_name=cb_load_name,
+                    cb_store_name=cb_store_name,
+                    cb_load_data=cb_load_data,
+                    cb_store_data=cb_store_data,
+                    nvrtc_options=nvrtc_options,
+                )
+        else:
+            assert mgr.identity == cb_ver
+            mgr.set_caller_infos(
+                cb_load_data=cb_load_data,
+                cb_store_data=cb_store_data)
+        self.mgr = mgr
+
+    def __enter__(self):
+        cdef _ThreadLocal tls = _ThreadLocal.get()
+        self.mgr_prev = tls._current_cufft_callback
+        tls._current_cufft_callback = self.mgr
+        return self.mgr
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        cdef _ThreadLocal tls = _ThreadLocal.get()
+        tls._current_cufft_callback = self.mgr_prev
+        # do not remove mgr from _callback_mgr, as one might still wanna use
+        # plans generated by it in the same Python session

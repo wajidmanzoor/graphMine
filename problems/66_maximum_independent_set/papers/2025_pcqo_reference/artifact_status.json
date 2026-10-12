@@ -1,0 +1,31 @@
+{
+  "problem_id": "maximum_independent_set",
+  "paper_id": "2025_pcqo_reference",
+  "title": "Differentiable Quadratic Optimization For the Maximum Independent Set Problem",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://raw.githubusercontent.com/mlresearch/v267/main/assets/alkhouri25a/alkhouri25a.pdf",
+    "resolved_url": "https://raw.githubusercontent.com/mlresearch/v267/main/assets/alkhouri25a/alkhouri25a.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "4dd3a6125570645df1a9e84a0188889a2b253b306cf83489f5fcafd8760733f9",
+    "bytes": 1032964,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": "https://github.com/ledenmat/pCQO-mis-benchmark",
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": "Published refactor branch unavailable; default-branch snapshot has no detected top-level license.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": null,
+    "submodules_materialized": false,
+    "entrypoint_sha256": {}
+  }
+}

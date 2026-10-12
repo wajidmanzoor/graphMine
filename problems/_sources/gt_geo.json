@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/LuckyBoy0517/GT-Geo",
+  "checked_at": "2026-10-09T19:31:17Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "11afee62e645d74fb1dc5b9c2b23fd66175de8f7",
+  "archive_url": "https://codeload.github.com/LuckyBoy0517/GT-Geo/tar.gz/11afee62e645d74fb1dc5b9c2b23fd66175de8f7",
+  "archive_sha256": "72cb1d017efe0e7a4302a8d55796249c73dc4fe3b8234666d7e2d232d806a682",
+  "local_path": "gt_geo-11afee62e645",
+  "license_files": [],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

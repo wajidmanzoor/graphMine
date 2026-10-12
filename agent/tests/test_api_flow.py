@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from starlette.websockets import WebSocketDisconnect
 from graphmine_agent.api import create_app
 from graphmine_agent.config import Settings
+from starlette.websockets import WebSocketDisconnect
 
 AUTH = {"Authorization": "Bearer test-secret"}
 
@@ -203,12 +203,14 @@ def test_websocket_rejects_invalid_token(settings: Settings) -> None:
             "/api/sessions", headers=AUTH, json={"domain_id": "general"}
         ).json()
         encoded = base64.urlsafe_b64encode(b"wrong-secret").decode().rstrip("=")
-        with pytest.raises(WebSocketDisconnect) as rejected:
-            with client.websocket_connect(
+        with (
+            pytest.raises(WebSocketDisconnect) as rejected,
+            client.websocket_connect(
                 f"/api/sessions/{session['id']}/events/ws",
                 subprotocols=["graphmine", f"graphmine.token.{encoded}"],
-            ):
-                pass
+            ),
+        ):
+            pass
         assert rejected.value.code == 4401
 
 

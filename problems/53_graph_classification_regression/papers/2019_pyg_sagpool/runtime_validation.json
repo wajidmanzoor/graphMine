@@ -1,0 +1,14 @@
+{
+  "status": "runtime_checks_passed",
+  "canonical_adapter_available": false,
+  "scope_note": "Subsequent runtime checks; not a paper-version reproduction or an integrated solver.",
+  "checks": [
+    {
+      "backend": "pyg-sagpool",
+      "passed": 58,
+      "failed": 0,
+      "scope": "CUDA/CPU pooling parity only; no trained graph classifier",
+      "evidence": "validation/research_runtime/results/models/summary.json"
+    }
+  ]
+}

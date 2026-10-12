@@ -1,0 +1,34 @@
+{
+  "problem_id": "node_embedding",
+  "paper_id": "2014_graphvite_deepwalk",
+  "title": "DeepWalk: Online Learning of Social Representations",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1403.6652",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:57Z",
+    "sha256": "e6eb3ab840009222976c228c9da0a96964ef8d87237db582871647f37735b2eb",
+    "bytes": 820979,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/DeepGraphLearning/graphvite",
+    "local_path": "code",
+    "commit": "5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/graphvite.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "include/instance/graph.cuh": "bb3cb8e98ad0289d90df59630bf636d1cc961ff260e15b54a723c94d4b6dee6c",
+      "include/instance/gpu/graph.cuh": "7fa86ec41d59b7f69686fc60dcac0a21131e2240b55f3e159f6948439b9d74e3",
+      "python/graphvite/solver.py": "a74da85fbbac8f2b149c00157482ef7e46b6b89bd058aaa571ce6ffa288b26e0"
+    }
+  }
+}

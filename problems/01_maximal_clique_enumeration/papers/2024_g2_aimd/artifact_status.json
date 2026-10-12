@@ -1,21 +1,27 @@
 {
   "problem_id": "maximal_clique_enumeration",
   "paper_id": "2024_g2_aimd",
-  "title": "G²-AIMD: Efficient GPU Acceleration for Maximal Clique Enumeration",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "title": "G2-AIMD: A Memory-Efficient Subgraph-Centric Framework for Efficient Subgraph Finding on GPUs",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
+    "status": "not_collected",
     "source_url": null,
-    "status": "not_available",
     "local_path": null,
-    "error": null
+    "error": "No local verified PDF; an open downloadable paper URL was not established during this sweep.",
+    "checked_at": "2026-10-10T02:15:29Z"
   },
   "code": {
     "source_url": "https://github.com/Pz1996/g2-aimd",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "751595c0511acadd662d4f999ebf04ff6cc3483a",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "app_BK/main.cu": "790891719f0077c6299dabce0701a3dea8a96ee670b5fe0261840c9826dcaa4b"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

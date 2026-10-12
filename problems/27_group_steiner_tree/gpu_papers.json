@@ -1,0 +1,30 @@
+{
+  "problem_id": "group_steiner_tree",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2021_gpusteiner_kmb",
+      "algorithm_name": "Accelerating Computation of Steiner Trees on GPUs",
+      "metadata": "27_group_steiner_tree/papers/2021_gpusteiner_kmb/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2022_gpu_vlsi_gst",
+      "algorithm_name": "GPU-Accelerated VLSI Routing using Group Steiner Trees",
+      "metadata": "27_group_steiner_tree/papers/2022_gpu_vlsi_gst/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_gpu4gst",
+      "algorithm_name": "Fast Optimal Group Steiner Tree Search using GPUs",
+      "metadata": "27_group_steiner_tree/papers/2025_gpu4gst/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

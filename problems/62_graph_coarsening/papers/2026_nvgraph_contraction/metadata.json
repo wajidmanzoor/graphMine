@@ -1,0 +1,36 @@
+{
+  "title": "nvGRAPH graph contraction — upstream implementation documentation",
+  "authors": [],
+  "year": 2026,
+  "venue": "Official upstream implementation and API documentation",
+  "doi": null,
+  "publication_url": null,
+  "pdf_url": null,
+  "paper_id": "2026_nvgraph_contraction",
+  "problem_id": "graph_coarsening",
+  "problem_dir": "62_graph_coarsening",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "nvGRAPH graph contraction",
+  "code_url": "https://github.com/rapidsai/nvgraph",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "GPU CSR quotient and vertex-value aggregation for a supplied assignment. Sum-reduction mode matches the contract; other semirings are different variants.",
+  "paper_role": "none",
+  "code_entrypoints": [
+    "cpp/src/graph_contraction/contraction_csr_sum.cu",
+    "cpp/src/graph_contraction/contraction_mv_float_sum.cu"
+  ],
+  "documentation_urls": [
+    "https://docs.nvidia.com/cuda/archive/9.1/pdf/nvGRAPH_Library.pdf"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "nvgraph",
+  "variant_constraints": [],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

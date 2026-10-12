@@ -1,0 +1,83 @@
+{
+  "suite_sha256": "5633101127a8ea1ff1fae6ac229cb4f8909fe71233776d520841d42d05614928",
+  "generator_sha256": "03658936c892796babbdb26a01eae8da4d2f519467f90c151f1c3319926f61ac",
+  "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+  "passed": 12,
+  "cases": [
+    {
+      "id": "fresh_cover_0",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_cover_1",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_cover_2",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_costs_0",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_costs_1",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_costs_2",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_neighbors_0",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_neighbors_1",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_neighbors_2",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_derived_0",
+      "checks": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "fresh_derived_1",
+      "checks": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "fresh_derived_2",
+      "checks": [
+        true,
+        true
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "problem_id": "seeded_local_community_detection",
+  "paper_id": "2017_gunrock_regularized_ppr",
+  "title": "Gunrock: GPU Graph Analytics",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1701.01170",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:56Z",
+    "sha256": "c95340c9f7276a7bb572e2201d95c9bc9ae4e69faa5cfabbf6ec05b33037a79d",
+    "bytes": 4580298,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/gunrock/gunrock",
+    "local_path": "code",
+    "commit": "386d04450b9ae11097e9789a648042d4d310f199",
+    "license_file": "code/LICENSE.TXT",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/gunrock_legacy.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "gunrock/app/pr_nibble/pr_nibble_enactor.cuh": "a90465cf18ee082537d2f8c65d51bec7ff0d486200d9bd3f6b144828e873234c",
+      "gunrock/app/pr_nibble/pr_nibble_app.cu": "4c644742118ffeaf628cf7eac520b90e1d57014eadc2d78d788157d8655e2d2d"
+    }
+  }
+}

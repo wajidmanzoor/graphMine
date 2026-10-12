@@ -1,0 +1,34 @@
+{
+  "problem_id": "graph_anomaly_detection",
+  "paper_id": "2024_pygod_cola",
+  "title": "PyGOD: A Python Library for Graph Outlier Detection",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://jmlr.org/papers/volume25/23-0963/23-0963.pdf",
+    "resolved_url": "https://jmlr.org/papers/volume25/23-0963/23-0963.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:54Z",
+    "sha256": "b45238e624e6e2a23610eba91d2bc62b4930cd69850bd6a0bd963e048cee5494",
+    "bytes": 263005,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pygod-team/pygod",
+    "local_path": "code",
+    "commit": "c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pygod.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "pygod/detector/cola.py": "e000d619e27b0b816a8b8aacebd11d81d97f5c91eccd1dd9cd215b19eed0f9eb",
+      "pygod/nn/cola.py": "30a0bf0af9f450433d637992a55898a7461da9976f2c89363d5ea7c97b4ea4aa"
+    }
+  }
+}

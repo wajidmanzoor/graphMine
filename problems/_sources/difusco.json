@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/Edward-Sun/DIFUSCO",
+  "checked_at": "2026-10-10T01:43:07Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "65eb3b7bde76097c0d3438ce743fa6769baf9ce5",
+  "archive_url": "https://codeload.github.com/Edward-Sun/DIFUSCO/tar.gz/65eb3b7bde76097c0d3438ce743fa6769baf9ce5",
+  "archive_sha256": "d800f8841ef2e6a219a7a9304aac72b3da4fb3ac8e706f3f49707bdc9a0591fd",
+  "local_path": "difusco-65eb3b7bde76",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

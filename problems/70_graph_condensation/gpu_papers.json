@@ -1,0 +1,30 @@
+{
+  "problem_id": "graph_condensation",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2022_graphslim_doscond",
+      "algorithm_name": "GraphSlim DOSCOND",
+      "metadata": "70_graph_condensation/papers/2022_graphslim_doscond/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2022_graphslim_gcdm",
+      "algorithm_name": "GraphSlim GCDM",
+      "metadata": "70_graph_condensation/papers/2022_graphslim_gcdm/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2022_graphslim_gcond",
+      "algorithm_name": "GraphSlim GCOND",
+      "metadata": "70_graph_condensation/papers/2022_graphslim_gcond/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

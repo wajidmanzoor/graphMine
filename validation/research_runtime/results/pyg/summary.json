@@ -1,0 +1,28 @@
+{
+  "family": "pyg",
+  "gpu": "0",
+  "cases": 864,
+  "passed": 864,
+  "failed": 0,
+  "startup_error": null,
+  "by_backend": {
+    "pyg-average-pool": {
+      "passed": 288,
+      "failed": 0,
+      "scope": "Exact quotient for supplied assignment, drop self-loops, mean features, sum weights; no clustering generation"
+    },
+    "pyg-induced-subgraph": {
+      "passed": 288,
+      "failed": 0,
+      "scope": "Exact selected-vertex edge extraction; caller preserves isolated vertices"
+    },
+    "pyg-khop-subgraph": {
+      "passed": 288,
+      "failed": 0,
+      "scope": "Exact undirected k-hop induced extraction"
+    }
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "numpy": "1.26.4",
+  "script_sha256": "3f7b12d8ab8f95f3efbae3707b1c82d4a124cccc1bd7779beb6e909d4a4f1a26"
+}

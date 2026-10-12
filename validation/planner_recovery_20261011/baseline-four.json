@@ -1,0 +1,613 @@
+{
+  "scope": "Four known failures replayed against baseline commit 0141939a. Diagnostic regression run; not unseen evaluation.",
+  "suite_sha256": "032ce348c6564044f0ba7f5009a7c5201c5505140ccf9492fb76f5764ee62b07",
+  "model_accuracy_measured": true,
+  "reviewed_examples_excluded": true,
+  "cases": [
+    {
+      "id": "cover_optimum",
+      "passed": false,
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: Unknown workflow step reference",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "selection"
+            ],
+            "message": "Minimum vertex cover is a combinatorial selection problem that covers all edges by choosing the smallest set of vertices, matching the 'cover connections' capability in the selection family.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "minimum-vertex-cover"
+            ],
+            "reroute_families": [],
+            "message": "Exact minimum vertex cover on an undirected simple graph with no size bound. The 'minimum-vertex-cover' operation in mode 'exact' (default) with k left null directly satisfies the request.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Exact minimum vertex cover on the main graph (CPU)."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Exact minimum vertex cover on the full undirected graph, no k bound."
+          }
+        ]
+      },
+      "elapsed_seconds": 102.6754255630076
+    },
+    {
+      "id": "weighted_distance",
+      "passed": false,
+      "planning": {
+        "status": "needs_information",
+        "message": "The request is unambiguous: compute single-source shortest paths from station-7267 using edge weights as travel costs with no cutoff. The operation single-source-shortest-paths in the routes family matches exactly. Parameters: source = station-7267, cutoff = null (no cutoff), return_predecessors = true (default). CPU device yields exact rational costs.",
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "routes"
+            ],
+            "message": "The task is a single-source shortest-path computation using edge weights as travel costs, which is a core routing/pathfinding operation.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [],
+            "reroute_families": [],
+            "message": "The request is unambiguous: compute single-source shortest paths from station-7267 using edge weights as travel costs with no cutoff. The operation single-source-shortest-paths in the routes family matches exactly. Parameters: source = station-7267, cutoff = null (no cutoff), return_predecessors = true (default). CPU device yields exact rational costs.",
+            "status": "selected"
+          }
+        ],
+        "plan": null
+      },
+      "elapsed_seconds": 35.44091740809381
+    },
+    {
+      "id": "incoming_records",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step-1",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "station-3720",
+                "direction": "both"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step-1",
+                "operation": "neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "entity": "station-3720",
+                  "direction": "both"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step-1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "959e56baac9a37a841f184f84c3ca978e8b1b14bccfe0cd4be9c2652fa7cf0be"
+            }
+          },
+          "workflow_hash": "3efc1b538697f9036a490df2af30098bf47718f92663a0c8504aa1803a185b7d",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query"
+            ],
+            "message": "The task is a direct one-hop neighbor lookup for a specific vertex on an undirected graph, which is explicitly covered by the query family's 'find neighbors' capability.",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "neighbors"
+            ],
+            "reroute_families": [],
+            "message": "Find all 1-hop neighbors of station-3720 on the undirected graph, excluding the seed vertex. Use direction='both' to respect undirected edges and include_seed=false to exclude the vertex itself.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "station-7497"
+          ],
+          "passed": true,
+          "observed": [
+            "station-7497"
+          ]
+        }
+      ],
+      "workflow_hash": "3efc1b538697f9036a490df2af30098bf47718f92663a0c8504aa1803a185b7d",
+      "result_sha256": "d36304239ab86d25de25e412ccbad26fc2fb7b630e3058ccee883cd9d8388c40",
+      "elapsed_seconds": 80.47709337435663
+    },
+    {
+      "id": "derived_network",
+      "passed": false,
+      "planning": {
+        "status": "needs_information",
+        "message": "The plan could not be validated: Unknown workflow step reference",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "family",
+            "families": [
+              "query",
+              "patterns"
+            ],
+            "message": "The task requires extracting a vertex-induced subgraph (query) and then counting triangles, i.e., small 3-cycle shapes, within that derived subgraph (patterns).",
+            "status": "selected"
+          },
+          {
+            "stage": "operation",
+            "operations": [
+              "query-subgraph",
+              "triangle-counting"
+            ],
+            "reroute_families": [],
+            "message": "Two operations are needed: (1) query-subgraph in vertex mode to induce the subgraph on the four named stations, then (2) triangle-counting on the resulting derived graph. Both are unambiguous; no clarification required.",
+            "status": "selected"
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Induced subgraph on the four named stations, then exact triangle count on that derived graph."
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: induce subgraph on the four named stations, then count triangles in the derived graph."
+          }
+        ]
+      },
+      "elapsed_seconds": 147.4929569810629
+    }
+  ],
+  "passed": 1,
+  "total": 4,
+  "capabilities_sha256": "aeff605c644c770faf826acc43d6654c84ad6842bcec18b271b079a771beeca8",
+  "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+  "original_suite_sha256": "fc50960d12e4f23cdf696281a6f3f3451d57346c7fb706ad0cedb26b2010c74b",
+  "selected_cases": [
+    "cover_optimum",
+    "weighted_distance",
+    "incoming_records",
+    "derived_network"
+  ],
+  "baseline_commit": "0141939a",
+  "generation_responses": [
+    {
+      "question": "Find an exact minimum vertex cover, with no bound k.",
+      "stage": "family",
+      "response": {
+        "families": [
+          "selection"
+        ],
+        "message": "Minimum vertex cover is a combinatorial selection problem that covers all edges by choosing the smallest set of vertices, matching the 'cover connections' capability in the selection family.",
+        "status": "selected"
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Find an exact minimum vertex cover, with no bound k.",
+      "stage": "operation",
+      "response": {
+        "operations": [
+          "minimum-vertex-cover"
+        ],
+        "reroute_families": [],
+        "message": "Exact minimum vertex cover on an undirected simple graph with no size bound. The 'minimum-vertex-cover' operation in mode 'exact' (default) with k left null directly satisfies the request.",
+        "status": "selected"
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Find an exact minimum vertex cover, with no bound k.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Exact minimum vertex cover on the main graph (CPU).",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "mvc",
+              "operation": "minimum-vertex-cover",
+              "input": {
+                "step": "main",
+                "port": "vertices"
+              },
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Find an exact minimum vertex cover, with no bound k.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Exact minimum vertex cover on the full undirected graph, no k bound.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "mvc",
+              "operation": "minimum-vertex-cover",
+              "input": {
+                "step": "main",
+                "port": "vertices"
+              },
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": {
+        "code": "invalid_input",
+        "message": "Unknown workflow step reference"
+      }
+    },
+    {
+      "question": "Compute single-source shortest paths from string ID station-7267. Edge weights are travel costs; use them, with no cutoff.",
+      "stage": "family",
+      "response": {
+        "families": [
+          "routes"
+        ],
+        "message": "The task is a single-source shortest-path computation using edge weights as travel costs, which is a core routing/pathfinding operation.",
+        "status": "selected"
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Compute single-source shortest paths from string ID station-7267. Edge weights are travel costs; use them, with no cutoff.",
+      "stage": "operation",
+      "response": {
+        "operations": [],
+        "reroute_families": [],
+        "message": "The request is unambiguous: compute single-source shortest paths from station-7267 using edge weights as travel costs with no cutoff. The operation single-source-shortest-paths in the routes family matches exactly. Parameters: source = station-7267, cutoff = null (no cutoff), return_predecessors = true (default). CPU device yields exact rational costs.",
+        "status": "selected"
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Return every neighbor of station-3720 at one hop, excluding that vertex itself. Respect the graph's undirected edges.",
+      "stage": "family",
+      "response": {
+        "families": [
+          "query"
+        ],
+        "message": "The task is a direct one-hop neighbor lookup for a specific vertex on an undirected graph, which is explicitly covered by the query family's 'find neighbors' capability.",
+        "status": "selected"
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Return every neighbor of station-3720 at one hop, excluding that vertex itself. Respect the graph's undirected edges.",
+      "stage": "operation",
+      "response": {
+        "operations": [
+          "neighbors"
+        ],
+        "reroute_families": [],
+        "message": "Find all 1-hop neighbors of station-3720 on the undirected graph, excluding the seed vertex. Use direction='both' to respect undirected edges and include_seed=false to exclude the vertex itself.",
+        "status": "selected"
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Return every neighbor of station-3720 at one hop, excluding that vertex itself. Respect the graph's undirected edges.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step-1",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "station-3720",
+                "direction": "both"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Use query-subgraph in vertex mode to induce the graph on station-7267, station-9446, station-8405, station-8641, then count triangles in that derived graph only.",
+      "stage": "family",
+      "response": {
+        "families": [
+          "query",
+          "patterns"
+        ],
+        "message": "The task requires extracting a vertex-induced subgraph (query) and then counting triangles, i.e., small 3-cycle shapes, within that derived subgraph (patterns).",
+        "status": "selected"
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Use query-subgraph in vertex mode to induce the graph on station-7267, station-9446, station-8405, station-8641, then count triangles in that derived graph only.",
+      "stage": "operation",
+      "response": {
+        "operations": [
+          "query-subgraph",
+          "triangle-counting"
+        ],
+        "reroute_families": [],
+        "message": "Two operations are needed: (1) query-subgraph in vertex mode to induce the subgraph on the four named stations, then (2) triangle-counting on the resulting derived graph. Both are unambiguous; no clarification required.",
+        "status": "selected"
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Use query-subgraph in vertex mode to induce the graph on station-7267, station-9446, station-8405, station-8641, then count triangles in that derived graph only.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Induced subgraph on the four named stations, then exact triangle count on that derived graph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "induce",
+              "operation": "query-subgraph",
+              "input": {
+                "step": "main",
+                "port": "graph"
+              },
+              "parameters": {
+                "vertices": [
+                  "station-7267",
+                  "station-9446",
+                  "station-8405",
+                  "station-8641"
+                ]
+              },
+              "bindings": {}
+            },
+            {
+              "id": "triangles",
+              "operation": "triangle-counting",
+              "input": {
+                "step": "induce",
+                "port": "graph"
+              },
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Use query-subgraph in vertex mode to induce the graph on station-7267, station-9446, station-8405, station-8641, then count triangles in that derived graph only.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Plan constructed: induce subgraph on the four named stations, then count triangles in the derived graph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "induce",
+              "operation": "query-subgraph",
+              "input": {
+                "step": "main",
+                "port": "graph"
+              },
+              "parameters": {
+                "vertices": [
+                  "station-7267",
+                  "station-9446",
+                  "station-8405",
+                  "station-8641"
+                ]
+              },
+              "bindings": {}
+            },
+            {
+              "id": "triangles",
+              "operation": "triangle-counting",
+              "input": {
+                "step": "induce",
+                "port": "graph"
+              },
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": {
+        "code": "invalid_input",
+        "message": "Unknown workflow step reference"
+      }
+    }
+  ],
+  "source_files": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/evaluate_planner_recovery.py": "2ba641888b6d09a667400a519d69c92cbda62fb823f9751e119a02a977835a50",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/evaluate_analytics_holdout.py": "606e62d5916756239bdb3becc94f75a04bba55e3198b5a123e48577921c64d7d",
+    "validation/native_final/heldout-suite.json": "e72cf9ef78f395ac9af5e13dc6977f929315377cee81b32ca90c6a0175de28d2",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/adapter_server.py": "c6c99b33ab122febd2cc60de839949c34f11a2071dd80177fa5c1ae30093a9c0",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/agent_service.py": "ac2d43861a2a0eae25128607152f80099e6c7997eee219a70a0ef538b7597c20",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/analytics.py": "39444541a7350ec6ca45a8a0e4f80b2c8093522a50739fd1444f9e019a19c857",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/analytics_examples.py": "d8a83de876dc3efc2229516d5c294773a1c77c9e9032944099a0651988d77889",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/analytics_planning.py": "f983407c19a76389d4eeb86fcfca1ea1c12b403ca2779e864c20947f191e74e9",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/analytics_projection.py": "d82d212966f2f272e5953266fb7b8f9f8fc529d3dee3ddabc5e76ff8746cb422",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/analytics_scheduler.py": "c268085c92f600d255d953886440ffe5119a379f0110a9362387a95d3e4d034d",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/answers.py": "bc1c9a5541bd17204b59461d989353383a01cc2371ebbc4a772be2fce3fbd73f",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/api.py": "875c347b969f39ae90b465db75900388bb916e1b86cfa8b81dc966b092da188b",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/benchmarking.py": "ba5c66d9b97554d6153d5aaf0b6b297a9302f1e888253fcf3851aa4ac4b6abe0",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/catalog.py": "1946a9134f7457dde6a16e6d234037302bac44e4273a2ce53d7c3300be938fb7",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/cli.py": "2930fd1c264ced34a594e70d85abdcdae5864cf2afc26be2ccc129f077cd9e38",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/commands.py": "213ab9d2148c78196752a53baa0e7518aa28cf8629140558a6eb46b425fc9f7e",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/config.py": "c41d032bc2256d9924b8942923f1844a2e2f9cc7dd9050a73c24a9cd4713a123",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/database.py": "8b1ca325e718867bdb17405c2486e2bec54ea7e029d5259520fa341b3d113e69",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/evaluation.py": "76aa2a3693626f38df228c8268d3fb61d1380b873eac3b4d599eccdbfcd6017b",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/execution.py": "c1404dbf5274116ed2a797bfe1e4db222f58e79eb8c8e59b54dd96b9df63a0f0",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/graph_store.py": "007fd2f71aaffdd2020b18565d9379275eb5ed312bcc85be2a08e1f60be8b6f9",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/history.py": "b17c8f3253cddca2496269955341a7520e1caa17a9d32d97fb2dbbd1139a0c06",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/jobs.py": "049a7eb9f18ca63ee229c58e0f79a3915f6947bc9cb438162c2726e9c1642193",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/__init__.py": "18ddf5f2ec79711640cab59ce8da25a7ac4f51be8b239a1c0236714f094eca22",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/adapter_eval.py": "7746a5a21eff011159112d2446795d6d01f150ff01d6e77ef9172d03b63713f4",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/adapter_holdout.py": "e7312abd87246a461cd199fe793672de0e9314bf6df4947c2a040756630644d9",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/adapter_review.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/adapter_workflows.py": "197330075101f3a8d6c9946b04dfa85fba70525f683f451be262d5ce9ea18f40",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/analytics_queries.py": "19a460a4cc7bbe50ad5a79c22f762fd222e2c261baddc3a043b783de9dfee1b1",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/business_curriculum.py": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/business_eval.py": "79690c067c8970134844756eb940a985b0bad8801876fc2d0c1effb214ea9e35",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/business_questions.py": "be434b7d19de01af6fb1efa6d0a7d440a8cb2145b064695b11870f57b0e18c91",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/business_workflows.py": "4a6a7cad745154b7cb0adc3f17df360099312a3ee3c3c00a888a7c0eae03296b",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/cli.py": "d8f0dcdefc809ac07161429b5b00f3ad3e89f112093ef7fc2b1d5fcb1476ebf8",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/codex.py": "03f22ef40f24ed5fb71df8529c24b981e4fcc52bbf91f061cad8eabbd3e9c17a",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/corpus.py": "28426df22611b633b670b352bdbd8b463246c086c6a24ca33bb1603f06f8dbb5",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/finetune.py": "94321639fc9ce6328f1057427cfea3716d231dc87f0a0b038b1412a279291a53",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/inference.py": "21dc642486f8cc8a91092c6eea0eafbde52541c72f1ebc515600ece3bfa933fe",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/meaning.py": "3c311efeda051b8bebdc0469e4e6cc95baa5afbcb296b7ef38bd115597823a62",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/pipeline.py": "48530cd37e6c7bd55ecb326650074eaf76b0a7c3aa4732ab06bb69ba579c4545",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/presentation_checks.py": "af7ba952b04b0eb3867c24308351159227a622220d136b475ea2fc51f2dfb6d3",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/realworld.py": "abab014d564a29f0cadea7cf3d4258f7b18f2f88531cb2a911b6ff0510d1a821",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/realworld_cases.py": "b5102f1f7e0f69a1c62ab786282d8fc46bec187c5a785d3e773935be1b46d1a0",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/realworld_eval.py": "0a67a79a71b82cc556df2dc65974870da8307c21910c0275acf176e1f4c3d8b0",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/review.py": "6d80d189514e402b0313076c08c52b4332d5955e7da420f4f5fdb0522f738ee0",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/review_export.py": "3f6ea7880fad4113a1df506f7566960fd160a2fbd9ebec333117f3feb6bde9ed",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/teacher.py": "ff1ff2960631abfc02d410af5ea7fefd6a6a28f22ebd48d7d9ceaa9e1255d819",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/llm.py": "45bde2d59c1f912c485e8eb9e26f89c62f1e3c1fb92395522fcab6c6ba2f2498",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/mcp.py": "4ae616802c3e18dc5e96758ab924da9f465a62a15b2a91e75fce9e7f181db1db",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/models.py": "3fc6bb8f6c3ef81b6b4e0dddafe1cd9503d0ecebaf00ff1ca37cbf19cd07b78b",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/native_ingestion.py": "1f3d9c8fcf958aebf2f70e823d9247620ac2cbd513c169e8c55bb7362b3a642c",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/planning.py": "2f564b9fd0dbb4b687be19320488d961e0a4cc1699ebfe123ef12a06d6751d8b",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/presentation.py": "ac88977abe3b657243c2567dc47be160a55a150152edd2ab8bd1d700f2347778",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/reporting.py": "6a67ba6bb320443ab837039624052be594082421750308eef7f098a9819106a6",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/results.py": "28f0acb4135b5c541647a1a2984eb54e16e18094f48b1d12099d4361c52e5a50",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/selector.py": "9df8959a0c33f9c645360285cb19ef60df0a0fa2edf5e37a3e6e83876244e68d",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/smoke.py": "f00c6794494ccd502b3475bc7013e35689178a17d9ac18b85b86844f53ac7f14",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/usability.py": "23f31bb2e0d39ce626ec30e44c47f8b19f47614a44c9db4d8f4a512838db80a5",
+    "/tmp/graphmine-planner-check-b6alouaq/source/agent/graphmine_agent/visualization.py": "0ae31394caf9518d8004d513a3b2e2c4317ab08f937add922554db8542f7939d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/catalog/native_execution_evidence.json": "9ce25294f3e20e68314c46c7945a8d34fef3a098b7196c2c46a39b9ddc34f64c"
+  },
+  "sources_unchanged_during_run": true,
+  "model": {
+    "name": "Qwen/Qwen3.8-27B-FP8",
+    "base_revision": "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+    "reasoning_effort": "medium",
+    "thinking_token_budget": 1536,
+    "max_completion_tokens": 3072,
+    "temperature": 0,
+    "seed": 0
+  }
+}

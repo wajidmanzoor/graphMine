@@ -2,20 +2,33 @@
   "problem_id": "k_truss_decomposition",
   "paper_id": "2020_accelerating_truss_heterogeneous",
   "title": "Accelerating Truss Decomposition on Heterogeneous Processors",
-  "checked_at": "2026-10-03T22:04:41Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://www.vldb.org/pvldb/vol13/p1751-che.pdf",
     "status": "downloaded",
+    "source_url": "https://www.vldb.org/pvldb/vol13/p1751-che.pdf",
+    "resolved_url": "https://www.vldb.org/pvldb/vol13/p1751-che.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "4e4ceb77bab4f43936a3fea2f9e653c26d49ccf99608a57e7ee307f85f4062e1",
+    "bytes": 1190042,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/RapidsAtHKUST/AccTrussDecomposition",
-    "status": "cloned",
+    "status": "downloaded_archive",
     "local_path": "code",
     "commit": "a8faa445ccb45c18383087db488eff9d1836d8d1",
-    "license_file": "code/msp/LICENSE.txt",
+    "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "opt-truss-decomp-offload/pkt_cuda_experimental.cu": "07b3820eee3d07461ea8c3d3382518996f6b1df935a3366cfaf0e54c797d540e"
+    },
+    "source_manifest": "../../../_sources/acc_truss.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

@@ -57,14 +57,14 @@ Provenance provenance_for(TemporalMotifBackend backend) {
               "everest",
               "Everest artifact",
               "ef530d",
-              "validated query-generated DYN CUDA search kernel + canonical "
+              "strict-time repaired DYN CUDA search kernel + canonical "
               "temporal graph adapter"};
     case TemporalMotifBackend::mayura:
       return {"temporal_motif_mining",
               "mayura",
               "Mayura artifact",
               "8e4276",
-              "validated query-generated DYN CUDA co-mining kernel + "
+              "strict-time repaired DYN CUDA co-mining kernel + "
               "canonical temporal graph adapter"};
     case TemporalMotifBackend::automatic:
       break;
@@ -183,6 +183,7 @@ MaterializedInstances materialize_instances(
     for (const auto second : outgoing[first_event.target]) {
       if (second <= first) continue;
       const auto& second_event = prepared.events[second];
+      if (second_event.timestamp <= first_event.timestamp) continue;
       if (static_cast<__int128>(second_event.timestamp) > deadline) break;
       const auto third_vertex = second_event.target;
       if (third_vertex == first_event.source ||
@@ -193,6 +194,7 @@ MaterializedInstances materialize_instances(
       for (const auto third : outgoing[first_event.source]) {
         if (third <= second) continue;
         const auto& third_event = prepared.events[third];
+        if (third_event.timestamp <= second_event.timestamp) continue;
         if (static_cast<__int128>(third_event.timestamp) > deadline) break;
         if (third_event.target != third_vertex) continue;
 

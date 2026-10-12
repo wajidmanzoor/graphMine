@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/harp-lab/gdlog",
+  "checked_at": "2026-10-10T01:46:25Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+  "archive_url": "https://codeload.github.com/harp-lab/gdlog/tar.gz/65a6ee960ced8d04bc725ccdfa68f004f8479226",
+  "archive_sha256": "f16fa4d9b60a18a430fb2785d7e3f72252a95ff3064769480359ba445bf06392",
+  "local_path": "gdlog-65a6ee960ced",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

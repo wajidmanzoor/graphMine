@@ -1,0 +1,80 @@
+from __future__ import annotations
+
+import pickle
+
+import pytest
+
+import cupy
+from cupy.cuda import driver
+from cupy.cuda import runtime
+
+
+class TestExceptionPicklable:
+
+    def test(self):
+        e1 = runtime.CUDARuntimeError(1)
+        e2 = pickle.loads(pickle.dumps(e1))
+        assert e1.args == e2.args
+        assert str(e1) == str(e2)
+
+
+class TestMemPool:
+
+    @pytest.mark.skipif(runtime.is_hip,
+                        reason='HIP does not support async allocator')
+    @pytest.mark.skipif(driver._is_cuda_python()
+                        and runtime.runtimeGetVersion() < 11020,
+                        reason='cudaMemPool_t is supported since CUDA 11.2')
+    @pytest.mark.skipif(not driver._is_cuda_python()
+                        and driver.get_build_version() < 11020,
+                        reason='cudaMemPool_t is supported since CUDA 11.2')
+    @pytest.mark.skipif(runtime.deviceGetAttribute(
+        runtime.cudaDevAttrMemoryPoolsSupported, 0) == 0,
+        reason='cudaMemPool_t is not supported on device 0')
+    def test_mallocFromPoolAsync(self):
+        # also test create/destroy a pool
+        props = runtime.MemPoolProps(
+            runtime.cudaMemAllocationTypePinned,
+            runtime.cudaMemHandleTypeNone,
+            runtime.cudaMemLocationTypeDevice,
+            0)  # on device 0
+        pool = runtime.memPoolCreate(props)
+        assert pool > 0
+        s = cupy.cuda.Stream()
+        ptr = runtime.mallocFromPoolAsync(128, pool, s.ptr)
+        assert ptr > 0
+        runtime.freeAsync(ptr, s.ptr)
+        runtime.memPoolDestroy(pool)
+
+
+def test_major_version():
+    major = runtime._getCUDAMajorVersion()
+    if runtime.is_hip:
+        assert major == 0
+    else:
+        assert 10 < major < 20
+
+
+def test_pointer_get_memory_type():
+    # Thin helper must stay in sync with pointerGetAttributes(...).type
+    device_arr = cupy.empty(4, dtype=cupy.float32)
+    assert (runtime.pointerGetMemoryType(device_arr.data.ptr)
+            == runtime.pointerGetAttributes(device_arr.data.ptr).type
+            == runtime.memoryTypeDevice)
+
+    pinned = runtime.hostAlloc(16, runtime.hostAllocDefault)
+    try:
+        assert (runtime.pointerGetMemoryType(pinned)
+                == runtime.pointerGetAttributes(pinned).type
+                == runtime.memoryTypeHost)
+    finally:
+        runtime.freeHost(pinned)
+
+    if not runtime.is_hip:
+        managed = runtime.mallocManaged(16)
+        try:
+            assert (runtime.pointerGetMemoryType(managed)
+                    == runtime.pointerGetAttributes(managed).type
+                    == runtime.memoryTypeManaged)
+        finally:
+            runtime.free(managed)

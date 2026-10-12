@@ -85,6 +85,12 @@ set(GRAPHMINE_CUQC_CUDA_ARCHITECTURES "native" CACHE STRING
     "CUDA architectures for cuQC's 1024-thread expansion kernel")
 set(GRAPHMINE_GMATCH_CUDA_ARCHITECTURES "native" CACHE STRING
     "CUDA architectures for gMatch")
+set(GRAPHMINE_GMATCH_POOL_MIB "512" CACHE STRING
+    "MiB per gMatch BFS memory pool (two pools; exhaustion switches to exact DFS)")
+if(NOT GRAPHMINE_GMATCH_POOL_MIB MATCHES "^[1-9][0-9]*$" OR
+   GRAPHMINE_GMATCH_POOL_MIB GREATER 10240)
+  message(FATAL_ERROR "GRAPHMINE_GMATCH_POOL_MIB must be an integer from 1 to 10240")
+endif()
 set(GRAPHMINE_GRAPHSET_MOTIF_CUDA_ARCHITECTURES "70" CACHE STRING
     "CUDA architectures for GraphSet motif counting")
 set(GRAPHMINE_DUMATO_MOTIF_CUDA_ARCHITECTURES "native" CACHE STRING
@@ -1332,6 +1338,29 @@ set(GRAPHMINE_GMATCH_ROOT
   "${CMAKE_CURRENT_SOURCE_DIR}/../problems/13_subgraph_isomorphism/papers/2026_gmatch/code/bitmap")
 
 if(GRAPHMINE_HAS_GMATCH)
+  # The 16-vertex DFS stack exceeds CUDA's default 48 KiB allowance. Opt in
+  # to the actual per-block limit before asking occupancy for a launch size.
+  set(GRAPHMINE_GMATCH_GENERATED "${CMAKE_CURRENT_BINARY_DIR}/gmatch-generated")
+  file(MAKE_DIRECTORY "${GRAPHMINE_GMATCH_GENERATED}")
+  file(GLOB GRAPHMINE_GMATCH_FILES CONFIGURE_DEPENDS
+    "${GRAPHMINE_GMATCH_ROOT}/*.h" "${GRAPHMINE_GMATCH_ROOT}/*.cu")
+  foreach(source IN LISTS GRAPHMINE_GMATCH_FILES)
+    get_filename_component(source_name "${source}" NAME)
+    configure_file("${source}" "${GRAPHMINE_GMATCH_GENERATED}/${source_name}" COPYONLY)
+  endforeach()
+  file(READ "${GRAPHMINE_GMATCH_GENERATED}/join_bfs_dfs.cu" gmatch_join)
+  foreach(kernel IN ITEMS dfs_kernel dfs_kernel_sym)
+    set(occupancy_call "cudaOccupancyMaxActiveBlocksPerMultiprocessor(&thread_block_num, ${kernel}, threadsPerBlock, dynamic_shared_size);")
+    string(FIND "${gmatch_join}" "${occupancy_call}" gmatch_repair_anchor)
+    if(gmatch_repair_anchor LESS 0)
+      message(FATAL_ERROR "gMatch shared-memory repair anchor is missing; review the upstream change")
+    endif()
+    string(REPLACE "${occupancy_call}"
+      "cudaCheck(cudaFuncSetAttribute(${kernel}, cudaFuncAttributeMaxDynamicSharedMemorySize, dynamic_shared_size));\n    cudaCheck(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&thread_block_num, ${kernel}, threadsPerBlock, dynamic_shared_size));\n    if (thread_block_num == 0) throw std::runtime_error(\"gMatch DFS shared-memory requirements exceed this device\");"
+      gmatch_join "${gmatch_join}")
+  endforeach()
+  file(WRITE "${GRAPHMINE_GMATCH_GENERATED}/join_bfs_dfs.cu" "${gmatch_join}")
+  set(GRAPHMINE_GMATCH_ROOT "${GRAPHMINE_GMATCH_GENERATED}")
   add_library(graphmine_backend_gmatch STATIC
     src/backends/gmatch.cu
     ${GRAPHMINE_GMATCH_ROOT}/graph.cu
@@ -1349,6 +1378,7 @@ if(GRAPHMINE_HAS_GMATCH)
   # linked beside the other independently authored research backends.
   target_compile_definitions(graphmine_backend_gmatch PRIVATE
     GRAPHMINE_LIBRARY
+    GRAPHMINE_GMATCH_POOL_MIB=${GRAPHMINE_GMATCH_POOL_MIB}
     THRUST_IGNORE_DEPRECATED_CPP_DIALECT
   )
   set(GRAPHMINE_GMATCH_SYMBOL_DEFINITIONS
@@ -1704,14 +1734,33 @@ set_target_properties(graphmine_graph_motifs PROPERTIES
 set(GRAPHMINE_EVEREST_ROOT
   "${CMAKE_CURRENT_SOURCE_DIR}/../problems/15_temporal_motif_mining/papers/2024_everest/code")
 
+# Generated search kernels order events by their array index. Equal timestamps
+# must be skipped as a group to implement the public strict-time contract.
+function(graphmine_strict_temporal_kernel source destination)
+  file(MAKE_DIRECTORY "${destination}")
+  file(READ "${source}/system/.tmp/GPUWorkerDyn.cu" kernel)
+  string(FIND "${kernel}" "int end, int i_g) {" repair_anchor)
+  if(repair_anchor LESS 0)
+    message(FATAL_ERROR "Temporal strict-order repair anchor is missing")
+  endif()
+  string(REPLACE "int end, int i_g) {" "int end, int i_g, const TemporalEdge *Eg) {" kernel "${kernel}")
+  string(REPLACE "i_S[end - 1] <= i_g" "Eg[i_S[end - 1]].t <= Eg[i_g].t" kernel "${kernel}")
+  string(REPLACE "i_S[beg] > i_g" "Eg[i_S[beg]].t > Eg[i_g].t" kernel "${kernel}")
+  string(REPLACE "i_S[p] > i_g" "Eg[i_S[p]].t > Eg[i_g].t" kernel "${kernel}")
+  string(REPLACE "reduceEarlyIdx(i_S, beg, end, i_g);"
+    "reduceEarlyIdx(i_S, beg, end, i_g, Eg);" kernel "${kernel}")
+  file(WRITE "${destination}/GPUWorkerDyn.cu" "${kernel}")
+endfunction()
+
 if(GRAPHMINE_HAS_EVEREST)
+  graphmine_strict_temporal_kernel("${GRAPHMINE_EVEREST_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/everest-generated")
   add_library(graphmine_backend_everest STATIC src/backends/everest.cu)
   target_include_directories(graphmine_backend_everest
     PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/include
       ${CMAKE_CURRENT_SOURCE_DIR}/src
       ${GRAPHMINE_EVEREST_ROOT}/include
-      ${GRAPHMINE_EVEREST_ROOT}/system/.tmp
+      ${CMAKE_CURRENT_BINARY_DIR}/everest-generated
   )
   target_link_libraries(graphmine_backend_everest
     PUBLIC graphmine_core
@@ -1741,13 +1790,14 @@ set(GRAPHMINE_MAYURA_ROOT
   "${CMAKE_CURRENT_SOURCE_DIR}/../problems/15_temporal_motif_mining/papers/2025_mayura/code/GPU-co-mining")
 
 if(GRAPHMINE_HAS_MAYURA)
+  graphmine_strict_temporal_kernel("${GRAPHMINE_MAYURA_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/mayura-generated")
   add_library(graphmine_backend_mayura STATIC src/backends/mayura.cu)
   target_include_directories(graphmine_backend_mayura
     PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/include
       ${CMAKE_CURRENT_SOURCE_DIR}/src
       ${GRAPHMINE_MAYURA_ROOT}/include
-      ${GRAPHMINE_MAYURA_ROOT}/system/.tmp
+      ${CMAKE_CURRENT_BINARY_DIR}/mayura-generated
   )
   target_link_libraries(graphmine_backend_mayura
     PUBLIC graphmine_core
@@ -1841,12 +1891,25 @@ set(GRAPHMINE_PGGC_ROOT
   "${CMAKE_CURRENT_SOURCE_DIR}/../problems/16_community_detection/papers/2026_multilevel_graph_clustering/code")
 
 if(GRAPHMINE_HAS_PGGC)
+  set(GRAPHMINE_PGGC_GENERATED "${CMAKE_CURRENT_BINARY_DIR}/pggc-generated")
+  file(MAKE_DIRECTORY "${GRAPHMINE_PGGC_GENERATED}")
+  file(READ "${GRAPHMINE_PGGC_ROOT}/src/clustering_methods.cpp" pggc_methods)
+  string(FIND "${pggc_methods}" "levels.push_back(c);" pggc_repair_anchor)
+  if(pggc_repair_anchor LESS 0)
+    message(FATAL_ERROR "PGGC no-contraction repair anchor is missing")
+  endif()
+  # Retrying an identical level can be infinite when refinement admits no
+  # merge (including a zero-gain coarse partition). Finish with its current local
+  # partition; earlier coarse maps still lift that partition to the input.
+  string(REPLACE "levels.push_back(c);" "parts.back() = part;\n                break;"
+    pggc_methods "${pggc_methods}")
+  file(WRITE "${GRAPHMINE_PGGC_GENERATED}/clustering_methods.cpp" "${pggc_methods}")
   add_library(graphmine_backend_pggc STATIC
     src/backends/pggc.cpp
     ${GRAPHMINE_PGGC_ROOT}/src/leidenR.cpp
     ${GRAPHMINE_PGGC_ROOT}/src/contract.cpp
     ${GRAPHMINE_PGGC_ROOT}/src/local_mover.cpp
-    ${GRAPHMINE_PGGC_ROOT}/src/clustering_methods.cpp
+    ${GRAPHMINE_PGGC_GENERATED}/clustering_methods.cpp
     ${GRAPHMINE_PGGC_ROOT}/src/ordering.cpp
   )
   target_include_directories(graphmine_backend_pggc
@@ -2106,6 +2169,16 @@ if(GRAPHMINE_BUILD_TESTS)
   if(NOT GRAPHMINE_HAS_GMATCH)
     set_tests_properties(graphmine_subgraph_isomorphism_test
                          PROPERTIES DISABLED TRUE)
+  else()
+    add_executable(graphmine_gmatch_pool_test tests/gmatch_pool_test.cu)
+    target_include_directories(graphmine_gmatch_pool_test PRIVATE ${GRAPHMINE_GMATCH_ROOT})
+    target_compile_definitions(graphmine_gmatch_pool_test PRIVATE
+      GRAPHMINE_LIBRARY GRAPHMINE_GMATCH_POOL_MIB=1)
+    target_link_libraries(graphmine_gmatch_pool_test PRIVATE CUDA::cudart)
+    set_target_properties(graphmine_gmatch_pool_test PROPERTIES
+      CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON
+      CUDA_ARCHITECTURES "${GRAPHMINE_GMATCH_CUDA_ARCHITECTURES}")
+    add_test(NAME graphmine_gmatch_pool_test COMMAND graphmine_gmatch_pool_test)
   endif()
 
   add_executable(graphmine_graph_motifs_test tests/graph_motifs_test.cpp)
@@ -2148,6 +2221,8 @@ if(GRAPHMINE_BUILD_TESTS)
     string(REPLACE "-" "_" backend_test_name "${backend}")
     add_test(NAME graphmine_community_detection_${backend_test_name}_test
              COMMAND graphmine_community_detection_test ${backend})
+    set_tests_properties(graphmine_community_detection_${backend_test_name}_test
+                         PROPERTIES TIMEOUT 60)
     if(NOT GRAPHMINE_HAS_PGGC)
       set_tests_properties(graphmine_community_detection_${backend_test_name}_test
                            PROPERTIES DISABLED TRUE)

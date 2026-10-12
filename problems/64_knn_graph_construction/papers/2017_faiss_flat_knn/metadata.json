@@ -1,0 +1,42 @@
+{
+  "title": "Billion-scale similarity search with GPUs",
+  "authors": [
+    "Jeff Johnson",
+    "Matthijs Douze",
+    "Herve Jegou"
+  ],
+  "year": 2017,
+  "venue": "IEEE Transactions on Big Data, published 2019",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1702.08734",
+  "pdf_url": "https://arxiv.org/pdf/1702.08734",
+  "paper_id": "2017_faiss_flat_knn",
+  "problem_id": "knn_graph_construction",
+  "problem_dir": "64_knn_graph_construction",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Faiss GPU exhaustive nearest neighbors",
+  "code_url": "https://github.com/facebookresearch/faiss",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Query every input vector against a GPU flat index and remove its own ID. Distinct vectors with identical values remain valid neighbors. k+1 retrieval and tie handling must preserve k non-self outputs.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "faiss/gpu/GpuIndexFlat.cu",
+    "faiss/gpu/impl/FlatIndex.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "faiss",
+  "variant_constraints": [
+    "exact flat index",
+    "squared Euclidean distance",
+    "query every input vector"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

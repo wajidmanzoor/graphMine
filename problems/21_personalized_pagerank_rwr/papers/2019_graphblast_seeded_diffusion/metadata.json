@@ -1,0 +1,38 @@
+{
+  "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+  "authors": null,
+  "year": 2019,
+  "venue": "arXiv; later published in ACM TOPC",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1908.01407",
+  "pdf_url": "https://arxiv.org/pdf/1908.01407",
+  "paper_id": "2019_graphblast_seeded_diffusion",
+  "problem_id": "personalized_pagerank_rwr",
+  "problem_dir": "21_personalized_pagerank_rwr",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GraphBLAST seeded residual-push PageRank",
+  "code_url": "https://github.com/gunrock/graphblast",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Single-seed approximate PageRank vector from GPU residual pushing. The source uses a lazy walk: to match ordinary-walk restart probability r, use upstream alpha=r/(2-r). Restrict to undirected graphs with positive degree, report approximation and iteration termination, and check residual/missing mass before claiming the requested tolerance. The routine alone does not return a local community.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "graphblas/algorithm/lgc.hpp"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "graphblast",
+  "variant_constraints": [
+    "single seed",
+    "undirected positive-degree graph",
+    "approximate mode",
+    "lazy-walk restart conversion required"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

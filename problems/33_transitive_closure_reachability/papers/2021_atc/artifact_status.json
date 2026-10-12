@@ -1,0 +1,24 @@
+{
+  "problem_id": "transitive_closure_reachability",
+  "paper_id": "2021_atc",
+  "title": "Anti-Section Transitive Closure",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://davidbader.net/publication/2021-gdpxlb/2021-gdpxlb.pdf",
+    "resolved_url": "https://davidbader.net/publication/2021-gdpxlb/2021-gdpxlb.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "8c4a0e3f54def9f0e41491cb6b4ba8c34a3c9e46ff8ee32c887f578509cb17a5",
+    "bytes": 500720,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

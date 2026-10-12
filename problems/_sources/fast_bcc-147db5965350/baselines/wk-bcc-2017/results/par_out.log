@@ -1,0 +1,315 @@
+
+
+Reading arabic-2005 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading as-Skitter file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading com-Orkut file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading coPapersCiteseer file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading coPapersDBLP file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading delaunay_n24 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading eu-2005 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading europe_osm file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading GAP-road file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading germany_osm file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading higgs-twitter file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading hollywood-2009 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading hugebubbles-00020 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading in-2004 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading indochina-2004 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading kmer_A2a file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading kmer_P1a file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading kmer_U1a file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading kmer_V1r file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading kmer_V2a file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading kron_g500-logn18 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading kron_g500-logn19 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading kron_g500-logn20 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading kron_g500-logn21 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading ljournal-2008 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading rgg_n_2_23_s0 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading rgg_n_2_24_s0 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading road_usa file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 2
+Random root value: 2
+
+
+Reading soc-LiveJournal1 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading sx-stackoverflow file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading uk-2002 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading uk-2005 file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading web-BerkStan file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0
+
+
+Reading wiki-topcats file.
+Reading input and csr creation finished in: 0 ms
+Allocation of all device memory took : 0 ms.
+After all Allocation done: Used GPU memory: 418.5 MB, Free GPU Memory: 80832.7 MB, Total GPU Memory: 81251.2 MB
+Initialization of device memory took : 0 ms.
+numEdges = 0
+numVert = 0

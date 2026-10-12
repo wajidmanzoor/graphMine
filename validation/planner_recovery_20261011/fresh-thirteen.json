@@ -1,0 +1,2880 @@
+{
+  "scope": "First model exposure to thirteen independently checked, pre-frozen authored variations and an independent-scope control. Targeted local generalization check; not a public benchmark or human evaluation.",
+  "suite_sha256": "b2f8b84a672d04174041ba42c132460bcab82b41f9267a96eb94d8bdbaaf987a",
+  "model_accuracy_measured": true,
+  "reviewed_examples_excluded": true,
+  "cases": [
+    {
+      "id": "fresh_cover_0",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Exact minimum vertex cover on the uploaded graph, returning the globally optimal set of vertices.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "minimum-vertex-cover",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "minimum-vertex-cover",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "a1a78613b2164ffb3b696de2ebccea1692fb172b047bc138e080b62070296a21"
+            }
+          },
+          "workflow_hash": "84fd3a53e529bc1663904667f2ca9c23059e193ac9ee375631dfaab437b98d29",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "selection"
+            ],
+            "message": "The request is a minimum vertex-cover problem (choose the fewest vertices so every edge is incident to a chosen one), which falls squarely under the selection family's 'cover connections' capability."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "minimum-vertex-cover"
+            ],
+            "reroute_families": [],
+            "message": "Exact minimum vertex cover: choose the fewest vertices so every edge has at least one endpoint selected, with no size bound (global optimum)."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Exact minimum vertex cover on the uploaded graph, returning the globally optimal set of vertices."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "minimum-vertex-cover",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "site-0-A",
+              "site-0-C"
+            ],
+            [
+              "site-0-B",
+              "site-0-C"
+            ],
+            [
+              "site-0-B",
+              "site-0-D"
+            ]
+          ],
+          "passed": true,
+          "observed": [
+            "site-0-B",
+            "site-0-D"
+          ]
+        }
+      ],
+      "workflow_hash": "84fd3a53e529bc1663904667f2ca9c23059e193ac9ee375631dfaab437b98d29",
+      "result_sha256": "b31ef1d3e336c8649fe0e4316c8a931661f124cd0c408f3799f9501350d33e8a",
+      "elapsed_seconds": 64.49298970028758
+    },
+    {
+      "id": "fresh_cover_1",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Exact minimum vertex cover on the undirected graph, no k bound.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "minimum-vertex-cover",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "minimum-vertex-cover",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "6364e3b59ccdd11eba7301a8f05f85ee3870c94ade6d721f6b232f05a5b63d15"
+            }
+          },
+          "workflow_hash": "0ba8111657eb0b74c5d793321b02ed76592ce6946c6726bab3281eedf7b76626",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "selection"
+            ],
+            "message": "The request is a minimum vertex-cover problem\u2014select the smallest set of vertices that touches every edge\u2014which maps directly to the selection family's 'cover connections' capability."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "minimum-vertex-cover"
+            ],
+            "reroute_families": [],
+            "message": "Exact minimum vertex cover on the undirected simple graph, mode=exact, no k bound."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Exact minimum vertex cover on the undirected graph, no k bound."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "minimum-vertex-cover",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "site-1-A"
+            ]
+          ],
+          "passed": true,
+          "observed": [
+            "site-1-A"
+          ]
+        }
+      ],
+      "workflow_hash": "0ba8111657eb0b74c5d793321b02ed76592ce6946c6726bab3281eedf7b76626",
+      "result_sha256": "145b34098d8ba1fad25b7e916a188aab2fd6d471abeaa0c3744153b99239db3b",
+      "elapsed_seconds": 68.93651282787323
+    },
+    {
+      "id": "fresh_cover_2",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Exact minimum vertex cover over the full undirected graph, including all disconnected components.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "minimum-vertex-cover",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "minimum-vertex-cover",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "41a510f8346899e6ed38fec48d95fdd7e3ddf25459924c3b0b8920c32ca2dcee"
+            }
+          },
+          "workflow_hash": "f6cf834a43b66f3a67f460c8cb7257b0c2c411495a6060f3a0f20a9e9084eb46",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "selection"
+            ],
+            "message": "Minimum vertex cover is a combinatorial selection problem that explicitly 'covers connections' by choosing a smallest set of vertices, matching the selection family's description."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "minimum-vertex-cover"
+            ],
+            "reroute_families": [],
+            "message": "Exact minimum vertex cover over the full undirected graph (all connected components included by default)."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Exact minimum vertex cover over the full undirected graph, including all disconnected components."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "minimum-vertex-cover",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "site-2-A",
+              "site-2-B",
+              "site-2-D"
+            ],
+            [
+              "site-2-A",
+              "site-2-B",
+              "site-2-E"
+            ],
+            [
+              "site-2-A",
+              "site-2-C",
+              "site-2-D"
+            ],
+            [
+              "site-2-A",
+              "site-2-C",
+              "site-2-E"
+            ],
+            [
+              "site-2-B",
+              "site-2-C",
+              "site-2-D"
+            ],
+            [
+              "site-2-B",
+              "site-2-C",
+              "site-2-E"
+            ]
+          ],
+          "passed": true,
+          "observed": [
+            "site-2-B",
+            "site-2-C",
+            "site-2-E"
+          ]
+        }
+      ],
+      "workflow_hash": "f6cf834a43b66f3a67f460c8cb7257b0c2c411495a6060f3a0f20a9e9084eb46",
+      "result_sha256": "4cb9411e6c059856f902b1898d9a1dd250d248cacd6ea349e6c4bfed2603536d",
+      "elapsed_seconds": 67.91721879318357
+    },
+    {
+      "id": "fresh_costs_0",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Compute shortest weighted paths from depot-0-P to all vertices (depots) on the directed graph, using edge weights as costs, no cutoff.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "single-source-shortest-paths",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "source": "depot-0-P"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "single-source-shortest-paths",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "source": "depot-0-P"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "7fe255413df9de2efe96ab1dfad98c246f83455303015018bbe293bb52718e1d"
+            }
+          },
+          "workflow_hash": "7cbed15a85a4ae0d3efe8eb38cf2b72a99a5276717b153e891acfe09f57ae910",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "routes"
+            ],
+            "message": "Single-source shortest-path computation from depot-0-P to every other vertex, using directed edge weights as travel costs with no distance cutoff."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "single-source-shortest-paths"
+            ],
+            "reroute_families": [],
+            "message": "Single-source shortest paths from depot-0-P with edge weights as costs, directed, no cutoff. All vertices are depots, so the default all-vertices output covers 'every depot'."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Compute shortest weighted paths from depot-0-P to all vertices (depots) on the directed graph, using edge weights as costs, no cutoff."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "single-source-shortest-paths",
+          "port": "distances",
+          "kind": "scores",
+          "value": {
+            "depot-0-P": 0,
+            "depot-0-Q": 2.0,
+            "depot-0-R": 1.5,
+            "depot-0-S": 4.0,
+            "depot-0-Z": null
+          },
+          "passed": true,
+          "observed": [
+            {
+              "vertex": "depot-0-P",
+              "distance": 0,
+              "distance_exact": {
+                "numerator": "0",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": null
+            },
+            {
+              "vertex": "depot-0-Q",
+              "distance": 2,
+              "distance_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-0-R"
+            },
+            {
+              "vertex": "depot-0-R",
+              "distance": 1.5,
+              "distance_exact": {
+                "numerator": "3",
+                "denominator": "2"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-0-P"
+            },
+            {
+              "vertex": "depot-0-S",
+              "distance": 4,
+              "distance_exact": {
+                "numerator": "4",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-0-Q"
+            },
+            {
+              "vertex": "depot-0-Z",
+              "distance": null,
+              "predecessor": null
+            }
+          ]
+        }
+      ],
+      "workflow_hash": "7cbed15a85a4ae0d3efe8eb38cf2b72a99a5276717b153e891acfe09f57ae910",
+      "result_sha256": "c0f0a063c5f8cc7f3b3f809ee3d92f91ebfb3a9fcbab024b17574baf62da700b",
+      "elapsed_seconds": 88.5245595369488
+    },
+    {
+      "id": "fresh_costs_1",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Single-source shortest paths from depot-1-S using edge weights as costs, no cutoff, respecting direction.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "single-source-shortest-paths",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "source": "depot-1-S"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "single-source-shortest-paths",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "source": "depot-1-S"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "4beb1e40700f9653d9696c4c594a63dc0ac23bba22d55529922191e2c2329f0f"
+            }
+          },
+          "workflow_hash": "c9ef86b2ae8ae83cf7522bf7b5bf5608e650d7f8503af54acb3440f0648efc53",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "routes"
+            ],
+            "message": "The task is a single-source shortest-path computation (lowest total weighted cost from depot-1-S to every other vertex), which falls under the routes family's 'connection costs' and 'paths' scope."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "single-source-shortest-paths"
+            ],
+            "reroute_families": [],
+            "message": "Single-source shortest paths from depot-1-S to all vertices, using edge weights as costs, respecting direction, no cutoff. This is a direct match for the single-source-shortest-paths operation."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Single-source shortest paths from depot-1-S using edge weights as costs, no cutoff, respecting direction."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "single-source-shortest-paths",
+          "port": "distances",
+          "kind": "scores",
+          "value": {
+            "depot-1-P": 4.0,
+            "depot-1-Q": 2,
+            "depot-1-R": 2.5,
+            "depot-1-S": 0,
+            "depot-1-Z": null
+          },
+          "passed": true,
+          "observed": [
+            {
+              "vertex": "depot-1-P",
+              "distance": 4,
+              "distance_exact": {
+                "numerator": "4",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-1-R"
+            },
+            {
+              "vertex": "depot-1-Q",
+              "distance": 2,
+              "distance_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-1-S"
+            },
+            {
+              "vertex": "depot-1-R",
+              "distance": 2.5,
+              "distance_exact": {
+                "numerator": "5",
+                "denominator": "2"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-1-Q"
+            },
+            {
+              "vertex": "depot-1-S",
+              "distance": 0,
+              "distance_exact": {
+                "numerator": "0",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": null
+            },
+            {
+              "vertex": "depot-1-Z",
+              "distance": null,
+              "predecessor": null
+            }
+          ]
+        }
+      ],
+      "workflow_hash": "c9ef86b2ae8ae83cf7522bf7b5bf5608e650d7f8503af54acb3440f0648efc53",
+      "result_sha256": "6220359ce322ef71faf8705c15028ddfd597498600adb2c7b005037070323ad2",
+      "elapsed_seconds": 99.18888150341809
+    },
+    {
+      "id": "fresh_costs_2",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Compute shortest weighted paths from depot-2-P to all vertices, respecting direction, no cutoff.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "single-source-shortest-paths",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "source": "depot-2-P"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "single-source-shortest-paths",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "source": "depot-2-P"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "e35742817fc1a9571c44038bb60c47ef6bd1ec9cda422d74e9fe8bd36788a9f4"
+            }
+          },
+          "workflow_hash": "dafee4ef2a62d7d2405860d39cfb5076be4da73c0ed226b3f84c382f2eaf87b0",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "routes"
+            ],
+            "message": "The task is a single-source shortest-path computation (minimum total edge-weight cost from depot-2-P to every other vertex in a directed graph), which falls squarely under the routes family's 'connection costs' and 'paths' scope."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "single-source-shortest-paths"
+            ],
+            "reroute_families": [],
+            "message": "Single-source shortest paths from depot-2-P to all vertices, using edge weights as costs, respecting direction, no cutoff."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Compute shortest weighted paths from depot-2-P to all vertices, respecting direction, no cutoff."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "single-source-shortest-paths",
+          "port": "distances",
+          "kind": "scores",
+          "value": {
+            "depot-2-P": 0,
+            "depot-2-Q": 2.0,
+            "depot-2-R": 1.5,
+            "depot-2-S": 2.0,
+            "depot-2-Z": null
+          },
+          "passed": true,
+          "observed": [
+            {
+              "vertex": "depot-2-P",
+              "distance": 0,
+              "distance_exact": {
+                "numerator": "0",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": null
+            },
+            {
+              "vertex": "depot-2-Q",
+              "distance": 2,
+              "distance_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-2-R"
+            },
+            {
+              "vertex": "depot-2-R",
+              "distance": 1.5,
+              "distance_exact": {
+                "numerator": "3",
+                "denominator": "2"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-2-P"
+            },
+            {
+              "vertex": "depot-2-S",
+              "distance": 2,
+              "distance_exact": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "distance_rounded": false,
+              "predecessor": "depot-2-Q"
+            },
+            {
+              "vertex": "depot-2-Z",
+              "distance": null,
+              "predecessor": null
+            }
+          ]
+        }
+      ],
+      "workflow_hash": "dafee4ef2a62d7d2405860d39cfb5076be4da73c0ed226b3f84c382f2eaf87b0",
+      "result_sha256": "91ddc1055fc58efdda3114dafeab24e400dc86cf5935d4266d08d46dd13e6842",
+      "elapsed_seconds": 77.46467741392553
+    },
+    {
+      "id": "fresh_neighbors_0",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Find all incoming neighbors at one hop for member-0-X, excluding the member itself.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "member-0-X",
+                "direction": "in"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "entity": "member-0-X",
+                  "direction": "in"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "5d8dd0144117083e0e2eda0b6c9c720c855e76e471d3ca60d582bb95895d29f4"
+            }
+          },
+          "workflow_hash": "49be1167660a143fa0f504c978f4f21f1df894bef830f94f85784a459fb70877",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Finding all incoming one-hop neighbors of a specific vertex is a basic directed-neighbor lookup with a direction filter and self-exclusion, which falls under the query family."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "neighbors"
+            ],
+            "reroute_families": [],
+            "message": "Find all incoming neighbors at one hop for member-0-X, excluding the member itself. This is a direct application of the neighbors operation with direction=in, hops=1, and include_seed=false (default)."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Find all incoming neighbors at one hop for member-0-X, excluding the member itself."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "member-0-W",
+            "member-0-Y"
+          ],
+          "passed": true,
+          "observed": [
+            "member-0-W",
+            "member-0-Y"
+          ]
+        }
+      ],
+      "workflow_hash": "49be1167660a143fa0f504c978f4f21f1df894bef830f94f85784a459fb70877",
+      "result_sha256": "136270ef9ed161005dd4e84532f01be3d152a5cf87b0053cb08e59fb23a0a7d1",
+      "elapsed_seconds": 65.09963621944189
+    },
+    {
+      "id": "fresh_neighbors_1",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "One-hop outgoing neighbor lookup from member-1-X, seed excluded.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "member-1-X"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "entity": "member-1-X"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "d0e88c81d60383dbe327f5c063fc45f58984898a491f3b7103d424393a4ddd5a"
+            }
+          },
+          "workflow_hash": "256ccb1fadf519e993d20ab75ee5cfad3c0209ee5995c90accf8c09d179590a0",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Finding the direct out-neighbors of a specified vertex (one outgoing edge) with a simple exclusion filter is a basic neighbor lookup covered by the query family."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "neighbors"
+            ],
+            "reroute_families": [],
+            "message": "Direct one-hop outgoing neighbor lookup from member-1-X with the seed excluded maps exactly to the neighbors operation."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "One-hop outgoing neighbor lookup from member-1-X, seed excluded."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "member-1-Z"
+          ],
+          "passed": true,
+          "observed": [
+            "member-1-Z"
+          ]
+        }
+      ],
+      "workflow_hash": "256ccb1fadf519e993d20ab75ee5cfad3c0209ee5995c90accf8c09d179590a0",
+      "result_sha256": "ef9a743e52c67d7d5c2622404872c9143c2287a90bf6b485cc9a2b44de71eae3",
+      "elapsed_seconds": 61.774930868297815
+    },
+    {
+      "id": "fresh_neighbors_2",
+      "passed": false,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "entity": "member-2-X"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "neighbors",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "entity": "member-2-X"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "08a561525f94d8c85e7dbe8229c7e993e05bd647e5606f861477607b9bc53a24"
+            }
+          },
+          "workflow_hash": "ba931889c9663cd98fb5c612b10235d5a4f24e1ff26ece218a68a8992804e446",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query"
+            ],
+            "message": "Finding the immediate neighbors of a specified vertex (with a simple exclusion filter) is a direct neighbor-lookup task covered by the query family."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "neighbors"
+            ],
+            "reroute_families": [],
+            "message": "Selected the neighbors operation to find all 1-hop neighbors of member-2-X in the undirected graph, with include_seed=false to exclude the starting vertex."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": false,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "member-2-W",
+            "member-2-Y",
+            "member-2-Z"
+          ],
+          "passed": true,
+          "observed": [
+            "member-2-W",
+            "member-2-Y",
+            "member-2-Z"
+          ]
+        }
+      ],
+      "workflow_hash": "ba931889c9663cd98fb5c612b10235d5a4f24e1ff26ece218a68a8992804e446",
+      "result_sha256": "49a1fbcbab0d5e635e5c403900eb93a9b07e847e0f17a23c3fea795c1d0a5c43",
+      "elapsed_seconds": 74.17171546071768
+    },
+    {
+      "id": "fresh_derived_0",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed: extract the induced subgraph on {lab-A, lab-B, lab-D, lab-F} via query-subgraph in vertex mode, then count triangles on that derived graph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": [
+                  "lab-A",
+                  "lab-B",
+                  "lab-D",
+                  "lab-F"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            },
+            {
+              "id": "step_2",
+              "operation": "triangle-counting",
+              "input": {
+                "port": "graph",
+                "step": "step_1"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "query-subgraph",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertices": [
+                    "lab-A",
+                    "lab-B",
+                    "lab-D",
+                    "lab-F"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              },
+              {
+                "id": "step_2",
+                "operation": "triangle-counting",
+                "input": {
+                  "port": "graph",
+                  "step": "step_1"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1",
+            "step_2"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "e767009ffcb2ba6c65f882ecbdbe4ef4431318b27f1c933bba3bb87ce8b28380"
+            }
+          },
+          "workflow_hash": "1788b718c15a91dece48cf204ef8c69ed30bec12872067ad063fc14131679409",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "patterns"
+            ],
+            "message": "The task first extracts a vertex-filtered subgraph (query) and then counts triangles in that extracted subgraph (patterns)."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "query-subgraph",
+              "triangle-counting"
+            ],
+            "reroute_families": [],
+            "message": "Two operations are needed: (1) query-subgraph in vertex mode to extract the induced subgraph on {lab-A, lab-B, lab-D, lab-F}, and (2) triangle-counting on that extracted graph. Both operations are available in the supplied catalog under the query and patterns families respectively. The objective is unambiguous: count 3-vertex cliques in the derived subgraph, not the original network."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: extract the induced subgraph on {lab-A, lab-B, lab-D, lab-F} via query-subgraph in vertex mode, then count triangles on that derived graph."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "lab-A",
+            "lab-B",
+            "lab-D",
+            "lab-F"
+          ],
+          "passed": true,
+          "observed": [
+            "lab-A",
+            "lab-B",
+            "lab-D",
+            "lab-F"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 0,
+          "passed": true,
+          "observed": 0
+        }
+      ],
+      "workflow_hash": "1788b718c15a91dece48cf204ef8c69ed30bec12872067ad063fc14131679409",
+      "result_sha256": "2edc3deed7717e88f25a7e65bae9505e285e61789d96ce12f2dc8b71b04e9e7a",
+      "elapsed_seconds": 106.39785208180547
+    },
+    {
+      "id": "fresh_derived_1",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed: extract induced subgraph on {lab-A, lab-B, lab-C, lab-F}, then count triangles on that derived graph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "mode": "vertices",
+                "vertices": [
+                  "lab-A",
+                  "lab-B",
+                  "lab-C",
+                  "lab-F"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            },
+            {
+              "id": "step_2",
+              "operation": "triangle-counting",
+              "input": {
+                "port": "graph",
+                "step": "step_1"
+              },
+              "parameters": {
+                "mode": "count"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "query-subgraph",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "mode": "vertices",
+                  "vertices": [
+                    "lab-A",
+                    "lab-B",
+                    "lab-C",
+                    "lab-F"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              },
+              {
+                "id": "step_2",
+                "operation": "triangle-counting",
+                "input": {
+                  "port": "graph",
+                  "step": "step_1"
+                },
+                "parameters": {
+                  "mode": "count"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1",
+            "step_2"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "e767009ffcb2ba6c65f882ecbdbe4ef4431318b27f1c933bba3bb87ce8b28380"
+            }
+          },
+          "workflow_hash": "a5751152a54100eaa20041f0f199ac3c7ffcdacfcf62ded9157a4862324da6ed",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "patterns"
+            ],
+            "message": "The task first extracts a vertex-induced subgraph (query) and then counts triangles, a small-shape pattern, on that extracted subgraph (patterns)."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "query-subgraph",
+              "triangle-counting"
+            ],
+            "reroute_families": [],
+            "message": "Two operations are needed: (1) query-subgraph in vertex mode to extract the induced subgraph on {lab-A, lab-B, lab-C, lab-F}, and (2) triangle-counting on the resulting extracted graph. The objective is unambiguous: count triangles in the derived subgraph, not the original network."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: extract induced subgraph on {lab-A, lab-B, lab-C, lab-F}, then count triangles on that derived graph."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "lab-A",
+            "lab-B",
+            "lab-C",
+            "lab-F"
+          ],
+          "passed": true,
+          "observed": [
+            "lab-A",
+            "lab-B",
+            "lab-C",
+            "lab-F"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 1,
+          "passed": true,
+          "observed": 1
+        }
+      ],
+      "workflow_hash": "a5751152a54100eaa20041f0f199ac3c7ffcdacfcf62ded9157a4862324da6ed",
+      "result_sha256": "3e76fbca3aa351dca42699322754ca2c5ba2b84de89b4ff3e2b2c14642c3b72c",
+      "elapsed_seconds": 93.10259997472167
+    },
+    {
+      "id": "fresh_derived_2",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Plan constructed: extract vertex-induced subgraph for lab-C, lab-D, lab-E, then count triangles on that subgraph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": [
+                  "lab-C",
+                  "lab-D",
+                  "lab-E"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            },
+            {
+              "id": "step_2",
+              "operation": "triangle-counting",
+              "input": {
+                "port": "graph",
+                "step": "step_1"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "query-subgraph",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertices": [
+                    "lab-C",
+                    "lab-D",
+                    "lab-E"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              },
+              {
+                "id": "step_2",
+                "operation": "triangle-counting",
+                "input": {
+                  "port": "graph",
+                  "step": "step_1"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1",
+            "step_2"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "e767009ffcb2ba6c65f882ecbdbe4ef4431318b27f1c933bba3bb87ce8b28380"
+            }
+          },
+          "workflow_hash": "b97ce6fea53295c7cccf08fdac0d7422d4e0d67a4b525d06ff05e65a70cb0fb8",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "patterns"
+            ],
+            "message": "The task requires extracting a vertex-induced subgraph (query) and then counting triangles, i.e., small 3-node shapes, in that subgraph (patterns)."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "query-subgraph",
+              "triangle-counting"
+            ],
+            "reroute_families": [],
+            "message": "Two operations are needed: (1) query-subgraph in vertex mode with vertices [lab-C, lab-D, lab-E] to extract the vertex-induced subgraph containing those three vertices and their connecting edges; (2) triangle-counting on the resulting extracted graph to count three-vertex cliques within that subgraph. The objective is unambiguous: a specific vertex set is named, the extraction mode is specified, and the triangle count is requested on the derived graph rather than the original."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Plan constructed: extract vertex-induced subgraph for lab-C, lab-D, lab-E, then count triangles on that subgraph."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "lab-C",
+            "lab-D",
+            "lab-E"
+          ],
+          "passed": true,
+          "observed": [
+            "lab-C",
+            "lab-D",
+            "lab-E"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 1,
+          "passed": true,
+          "observed": 1
+        }
+      ],
+      "workflow_hash": "b97ce6fea53295c7cccf08fdac0d7422d4e0d67a4b525d06ff05e65a70cb0fb8",
+      "result_sha256": "34643dd57fb33563b6c52bdfa741abbc569b2bf5ff993a8b0829a45624487bb8",
+      "elapsed_seconds": 103.30604619160295
+    },
+    {
+      "id": "fresh_independent_scope",
+      "passed": true,
+      "planning": {
+        "status": "ready",
+        "message": "Two independent operations on the original graph: (1) vertex-induced subgraph extraction for {lab-A, lab-B, lab-D, lab-F}; (2) triangle count on the full original network.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "step_1",
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "mode": "vertices",
+                "vertices": [
+                  "lab-A",
+                  "lab-B",
+                  "lab-D",
+                  "lab-F"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            },
+            {
+              "id": "step_2",
+              "operation": "triangle-counting",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "mode": "count"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "step_1",
+                "operation": "query-subgraph",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "mode": "vertices",
+                  "vertices": [
+                    "lab-A",
+                    "lab-B",
+                    "lab-D",
+                    "lab-F"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              },
+              {
+                "id": "step_2",
+                "operation": "triangle-counting",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "mode": "count"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "step_1",
+            "step_2"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "e767009ffcb2ba6c65f882ecbdbe4ef4431318b27f1c933bba3bb87ce8b28380"
+            }
+          },
+          "workflow_hash": "72b6be9f6fdde215f0de51b0e7b83f110ba97d27713218b1e6b710d8f88612f9",
+          "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "5e5409f51a7150b85d5738b187fbf14669224108ac800416d3474020a691fd61",
+            "wrapper_sha256": "b929e6281e46e171e2bc93e6e99964f05431fbccc2ebdd4d3d195f327a84931e",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "family",
+            "status": "selected",
+            "families": [
+              "query",
+              "patterns"
+            ],
+            "message": "The request needs 'query' to extract the induced subgraph on the specified vertex set, and 'patterns' to count triangles (small-shape counting) on the original full network as an independent operation."
+          },
+          {
+            "stage": "operation",
+            "status": "selected",
+            "operations": [
+              "query-subgraph",
+              "triangle-counting"
+            ],
+            "reroute_families": [],
+            "message": "Two independent operations on the original graph: (1) query-subgraph in vertex mode to extract the induced subgraph on {lab-A, lab-B, lab-D, lab-F}; (2) triangle-counting in count mode on the full original network. The triangle count is explicitly decoupled from the extracted subgraph per the user's constraint."
+          },
+          {
+            "stage": "retrieval",
+            "examples": [],
+            "evaluation_excluded": true
+          },
+          {
+            "stage": "plan",
+            "status": "ready",
+            "message": "Two independent operations on the original graph: (1) vertex-induced subgraph extraction for {lab-A, lab-B, lab-D, lab-F}; (2) triangle count on the full original network."
+          }
+        ]
+      },
+      "operations": true,
+      "required_parameters": true,
+      "wiring": true,
+      "required_reroute": true,
+      "result_checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "lab-A",
+            "lab-B",
+            "lab-D",
+            "lab-F"
+          ],
+          "passed": true,
+          "observed": [
+            "lab-A",
+            "lab-B",
+            "lab-D",
+            "lab-F"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 2,
+          "passed": true,
+          "observed": 2
+        }
+      ],
+      "workflow_hash": "72b6be9f6fdde215f0de51b0e7b83f110ba97d27713218b1e6b710d8f88612f9",
+      "result_sha256": "e2ed1147f7523b68de7d57d56e9af11ceeeb0a2cd35126a309189b2f3788bece",
+      "elapsed_seconds": 91.41793861612678
+    }
+  ],
+  "passed": 12,
+  "total": 13,
+  "capabilities_sha256": "aeff605c644c770faf826acc43d6654c84ad6842bcec18b271b079a771beeca8",
+  "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+  "original_suite_sha256": "303ea220e8ecba59184e41ac9f8e43228bb169d05d12c2b5d552975067a83d86",
+  "selected_cases": [],
+  "baseline_commit": null,
+  "generation_responses": [
+    {
+      "question": "Choose the fewest sites so that each connection has at least one chosen endpoint. I need a global optimum with no size bound.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "selection"
+        ],
+        "message": "The request is a minimum vertex-cover problem (choose the fewest vertices so every edge is incident to a chosen one), which falls squarely under the selection family's 'cover connections' capability."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Choose the fewest sites so that each connection has at least one chosen endpoint. I need a global optimum with no size bound.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "minimum-vertex-cover"
+        ],
+        "reroute_families": [],
+        "message": "Exact minimum vertex cover: choose the fewest vertices so every edge has at least one endpoint selected, with no size bound (global optimum)."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Choose the fewest sites so that each connection has at least one chosen endpoint. I need a global optimum with no size bound.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Exact minimum vertex cover on the uploaded graph, returning the globally optimal set of vertices.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "minimum-vertex-cover",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Place inspectors at the smallest possible set of sites that touches every link. Solve this exactly, with no limit k.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "selection"
+        ],
+        "message": "The request is a minimum vertex-cover problem\u2014select the smallest set of vertices that touches every edge\u2014which maps directly to the selection family's 'cover connections' capability."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Place inspectors at the smallest possible set of sites that touches every link. Solve this exactly, with no limit k.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "minimum-vertex-cover"
+        ],
+        "reroute_families": [],
+        "message": "Exact minimum vertex cover on the undirected simple graph, mode=exact, no k bound."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Place inspectors at the smallest possible set of sites that touches every link. Solve this exactly, with no limit k.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Exact minimum vertex cover on the undirected graph, no k bound.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "minimum-vertex-cover",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Return one exact minimum vertex cover, including all disconnected parts of the network in the optimization.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "selection"
+        ],
+        "message": "Minimum vertex cover is a combinatorial selection problem that explicitly 'covers connections' by choosing a smallest set of vertices, matching the selection family's description."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Return one exact minimum vertex cover, including all disconnected parts of the network in the optimization.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "minimum-vertex-cover"
+        ],
+        "reroute_families": [],
+        "message": "Exact minimum vertex cover over the full undirected graph (all connected components included by default)."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Return one exact minimum vertex cover, including all disconnected parts of the network in the optimization.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Exact minimum vertex cover over the full undirected graph, including all disconnected components.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "minimum-vertex-cover",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-0-P. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "routes"
+        ],
+        "message": "Single-source shortest-path computation from depot-0-P to every other vertex, using directed edge weights as travel costs with no distance cutoff."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-0-P. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "single-source-shortest-paths"
+        ],
+        "reroute_families": [],
+        "message": "Single-source shortest paths from depot-0-P with edge weights as costs, directed, no cutoff. All vertices are depots, so the default all-vertices output covers 'every depot'."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-0-P. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Compute shortest weighted paths from depot-0-P to all vertices (depots) on the directed graph, using edge weights as costs, no cutoff.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "single-source-shortest-paths",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "source": "depot-0-P"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-1-S. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "routes"
+        ],
+        "message": "The task is a single-source shortest-path computation (lowest total weighted cost from depot-1-S to every other vertex), which falls under the routes family's 'connection costs' and 'paths' scope."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-1-S. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "single-source-shortest-paths"
+        ],
+        "reroute_families": [],
+        "message": "Single-source shortest paths from depot-1-S to all vertices, using edge weights as costs, respecting direction, no cutoff. This is a direct match for the single-source-shortest-paths operation."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-1-S. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Single-source shortest paths from depot-1-S using edge weights as costs, no cutoff, respecting direction.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "single-source-shortest-paths",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "source": "depot-1-S"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-2-P. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "routes"
+        ],
+        "message": "The task is a single-source shortest-path computation (minimum total edge-weight cost from depot-2-P to every other vertex in a directed graph), which falls squarely under the routes family's 'connection costs' and 'paths' scope."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-2-P. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "single-source-shortest-paths"
+        ],
+        "reroute_families": [],
+        "message": "Single-source shortest paths from depot-2-P to all vertices, using edge weights as costs, respecting direction, no cutoff."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "For every depot, compute the lowest total travel cost from depot-2-P. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Compute shortest weighted paths from depot-2-P to all vertices, respecting direction, no cutoff.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "single-source-shortest-paths",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "source": "depot-2-P"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Which members have a direct edge pointing into member-0-X? Return all incoming neighbors at one hop, excluding the member itself.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "query"
+        ],
+        "message": "Finding all incoming one-hop neighbors of a specific vertex is a basic directed-neighbor lookup with a direction filter and self-exclusion, which falls under the query family."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Which members have a direct edge pointing into member-0-X? Return all incoming neighbors at one hop, excluding the member itself.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "neighbors"
+        ],
+        "reroute_families": [],
+        "message": "Find all incoming neighbors at one hop for member-0-X, excluding the member itself. This is a direct application of the neighbors operation with direction=in, hops=1, and include_seed=false (default)."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Which members have a direct edge pointing into member-0-X? Return all incoming neighbors at one hop, excluding the member itself.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Find all incoming neighbors at one hop for member-0-X, excluding the member itself.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "entity": "member-0-X",
+                "direction": "in"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "List every member directly reached by following one outgoing edge from member-1-X. Exclude the starting member.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "query"
+        ],
+        "message": "Finding the direct out-neighbors of a specified vertex (one outgoing edge) with a simple exclusion filter is a basic neighbor lookup covered by the query family."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "List every member directly reached by following one outgoing edge from member-1-X. Exclude the starting member.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "neighbors"
+        ],
+        "reroute_families": [],
+        "message": "Direct one-hop outgoing neighbor lookup from member-1-X with the seed excluded maps exactly to the neighbors operation."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "List every member directly reached by following one outgoing edge from member-1-X. Exclude the starting member.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "One-hop outgoing neighbor lookup from member-1-X, seed excluded.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "entity": "member-1-X"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Show all immediate neighbors of member-2-X in this undirected network; exclude the starting member.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "query"
+        ],
+        "message": "Finding the immediate neighbors of a specified vertex (with a simple exclusion filter) is a direct neighbor-lookup task covered by the query family."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Show all immediate neighbors of member-2-X in this undirected network; exclude the starting member.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "neighbors"
+        ],
+        "reroute_families": [],
+        "message": "Selected the neighbors operation to find all 1-hop neighbors of member-2-X in the undirected graph, with include_seed=false to exclude the starting vertex."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Show all immediate neighbors of member-2-X in this undirected network; exclude the starting member.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Plan constructed.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "neighbors",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "entity": "member-2-X"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-A, lab-B, lab-D, lab-F and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "query",
+          "patterns"
+        ],
+        "message": "The task first extracts a vertex-filtered subgraph (query) and then counts triangles in that extracted subgraph (patterns)."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-A, lab-B, lab-D, lab-F and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "query-subgraph",
+          "triangle-counting"
+        ],
+        "reroute_families": [],
+        "message": "Two operations are needed: (1) query-subgraph in vertex mode to extract the induced subgraph on {lab-A, lab-B, lab-D, lab-F}, and (2) triangle-counting on that extracted graph. Both operations are available in the supplied catalog under the query and patterns families respectively. The objective is unambiguous: count 3-vertex cliques in the derived subgraph, not the original network."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-A, lab-B, lab-D, lab-F and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Plan constructed: extract the induced subgraph on {lab-A, lab-B, lab-D, lab-F} via query-subgraph in vertex mode, then count triangles on that derived graph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "vertices": [
+                  "lab-A",
+                  "lab-B",
+                  "lab-D",
+                  "lab-F"
+                ]
+              },
+              "bindings": {}
+            },
+            {
+              "operation": "triangle-counting",
+              "input": {
+                "port": "graph",
+                "step": "step_1"
+              },
+              "id": "step_2",
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-A, lab-B, lab-C, lab-F and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "query",
+          "patterns"
+        ],
+        "message": "The task first extracts a vertex-induced subgraph (query) and then counts triangles, a small-shape pattern, on that extracted subgraph (patterns)."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-A, lab-B, lab-C, lab-F and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "query-subgraph",
+          "triangle-counting"
+        ],
+        "reroute_families": [],
+        "message": "Two operations are needed: (1) query-subgraph in vertex mode to extract the induced subgraph on {lab-A, lab-B, lab-C, lab-F}, and (2) triangle-counting on the resulting extracted graph. The objective is unambiguous: count triangles in the derived subgraph, not the original network."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-A, lab-B, lab-C, lab-F and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Plan constructed: extract induced subgraph on {lab-A, lab-B, lab-C, lab-F}, then count triangles on that derived graph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "mode": "vertices",
+                "vertices": [
+                  "lab-A",
+                  "lab-B",
+                  "lab-C",
+                  "lab-F"
+                ]
+              },
+              "bindings": {}
+            },
+            {
+              "operation": "triangle-counting",
+              "input": {
+                "port": "graph",
+                "step": "step_1"
+              },
+              "id": "step_2",
+              "parameters": {
+                "mode": "count"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-C, lab-D, lab-E and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "query",
+          "patterns"
+        ],
+        "message": "The task requires extracting a vertex-induced subgraph (query) and then counting triangles, i.e., small 3-node shapes, in that subgraph (patterns)."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-C, lab-D, lab-E and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "query-subgraph",
+          "triangle-counting"
+        ],
+        "reroute_families": [],
+        "message": "Two operations are needed: (1) query-subgraph in vertex mode with vertices [lab-C, lab-D, lab-E] to extract the vertex-induced subgraph containing those three vertices and their connecting edges; (2) triangle-counting on the resulting extracted graph to count three-vertex cliques within that subgraph. The objective is unambiguous: a specific vertex set is named, the extraction mode is specified, and the triangle count is requested on the derived graph rather than the original."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "First use query-subgraph in vertex mode to keep only lab-C, lab-D, lab-E and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Plan constructed: extract vertex-induced subgraph for lab-C, lab-D, lab-E, then count triangles on that subgraph.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "vertices": [
+                  "lab-C",
+                  "lab-D",
+                  "lab-E"
+                ]
+              },
+              "bindings": {}
+            },
+            {
+              "operation": "triangle-counting",
+              "input": {
+                "port": "graph",
+                "step": "step_1"
+              },
+              "id": "step_2",
+              "parameters": {},
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Give me two independent outputs: use query-subgraph in vertex mode to extract only lab-A, lab-B, lab-D, lab-F; separately count all triangles in the original full network. The triangle calculation must not use the extracted graph.",
+      "stage": "family",
+      "response": {
+        "status": "selected",
+        "families": [
+          "query",
+          "patterns"
+        ],
+        "message": "The request needs 'query' to extract the induced subgraph on the specified vertex set, and 'patterns' to count triangles (small-shape counting) on the original full network as an independent operation."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Give me two independent outputs: use query-subgraph in vertex mode to extract only lab-A, lab-B, lab-D, lab-F; separately count all triangles in the original full network. The triangle calculation must not use the extracted graph.",
+      "stage": "operation",
+      "response": {
+        "status": "selected",
+        "operations": [
+          "query-subgraph",
+          "triangle-counting"
+        ],
+        "reroute_families": [],
+        "message": "Two independent operations on the original graph: (1) query-subgraph in vertex mode to extract the induced subgraph on {lab-A, lab-B, lab-D, lab-F}; (2) triangle-counting in count mode on the full original network. The triangle count is explicitly decoupled from the extracted subgraph per the user's constraint."
+      },
+      "validation_error": null
+    },
+    {
+      "question": "Give me two independent outputs: use query-subgraph in vertex mode to extract only lab-A, lab-B, lab-D, lab-F; separately count all triangles in the original full network. The triangle calculation must not use the extracted graph.",
+      "stage": "plan",
+      "response": {
+        "status": "ready",
+        "message": "Two independent operations on the original graph: (1) vertex-induced subgraph extraction for {lab-A, lab-B, lab-D, lab-F}; (2) triangle count on the full original network.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "operation": "query-subgraph",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_1",
+              "parameters": {
+                "mode": "vertices",
+                "vertices": [
+                  "lab-A",
+                  "lab-B",
+                  "lab-D",
+                  "lab-F"
+                ]
+              },
+              "bindings": {}
+            },
+            {
+              "operation": "triangle-counting",
+              "input": {
+                "input": "main"
+              },
+              "id": "step_2",
+              "parameters": {
+                "mode": "count"
+              },
+              "bindings": {}
+            }
+          ]
+        }
+      },
+      "validation_error": null
+    }
+  ],
+  "source_files": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/evaluate_planner_recovery.py": "a447a347b198c0f2f7ab044f48d41617905ae30bc18fe70bdc396d3b0068a465",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/tools/evaluate_analytics_holdout.py": "606e62d5916756239bdb3becc94f75a04bba55e3198b5a123e48577921c64d7d",
+    "validation/planner_recovery_20261011/fresh-suite-v3.json": "435d5393f6dbed81ce47af85d4c80091ade218fd51b9fa656d58fe905f4c3567",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/adapter_server.py": "e28d4cba1d1b561c344ce89a64a9703f3345b0358a728b3a38c0fd4c90b2f3d5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/agent_service.py": "32fbe6afa3a873cb976350e516d3390f839fd0097909f6f1905a7500190efe7c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/analysis.py": "9bf1da63fbea61f9006b6297eeb4997dd446efef34b118c7d99e692cba20473c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/analytics.py": "39444541a7350ec6ca45a8a0e4f80b2c8093522a50739fd1444f9e019a19c857",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/analytics_examples.py": "d8a83de876dc3efc2229516d5c294773a1c77c9e9032944099a0651988d77889",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/analytics_planning.py": "3275df4e8ca9af250c774d7854ae75cc027f4421a5139f997dc350ad4a11e00b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/analytics_projection.py": "d82d212966f2f272e5953266fb7b8f9f8fc529d3dee3ddabc5e76ff8746cb422",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/analytics_scheduler.py": "c268085c92f600d255d953886440ffe5119a379f0110a9362387a95d3e4d034d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/answers.py": "ade789d9aa26f6328189b745bd3d77d2a2407b8faa6765d106339883207c8d9a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/api.py": "0ee5523ad08315ed00701fdee5d5f4529b7e855e8668860278c9023518e28a4f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/backup.py": "afb09ed39983d8f8fe8c8a41f3dd9f9024e8ecf651987781877aa311d6f529af",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/benchmarking.py": "ba5c66d9b97554d6153d5aaf0b6b297a9302f1e888253fcf3851aa4ac4b6abe0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/catalog.py": "1946a9134f7457dde6a16e6d234037302bac44e4273a2ce53d7c3300be938fb7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/cli.py": "2930fd1c264ced34a594e70d85abdcdae5864cf2afc26be2ccc129f077cd9e38",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/commands.py": "c13d73c454ae46a378559cf622d44e6ca3e040f5ab550be408d0397dee34a7d6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/config.py": "22c6fc421985e9dcd2d05b72e140f04ac1c62ad07a75efaf06a11a0da8360d81",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/database.py": "75fae2208af7d93c5f9da86edc2b5d37080290c7878420155837e29a5c500acf",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/evaluation.py": "76aa2a3693626f38df228c8268d3fb61d1380b873eac3b4d599eccdbfcd6017b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/execution.py": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/graph_store.py": "076b072662b138d2ab47506b46b4662d51af55be478d089ed76b0c624ff4fecd",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/history.py": "fb689749f6dfbe6ac338ba77ac83ef9e7a1bd692b512012fa90b251aa46e8585",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/jobs.py": "0f8a3f6c2dbc676accb745f96e1c2393eeda81a0834fdaf6944dece777cf6089",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/__init__.py": "18ddf5f2ec79711640cab59ce8da25a7ac4f51be8b239a1c0236714f094eca22",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/adapter_eval.py": "7746a5a21eff011159112d2446795d6d01f150ff01d6e77ef9172d03b63713f4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/adapter_holdout.py": "e7312abd87246a461cd199fe793672de0e9314bf6df4947c2a040756630644d9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/adapter_review.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/adapter_workflows.py": "983fe356689dd1b42457a5edeceaa84b6a05a0539c3f7766324350901f31d01a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/analytics_queries.py": "19a460a4cc7bbe50ad5a79c22f762fd222e2c261baddc3a043b783de9dfee1b1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/business_curriculum.py": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/business_eval.py": "79690c067c8970134844756eb940a985b0bad8801876fc2d0c1effb214ea9e35",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/business_questions.py": "be434b7d19de01af6fb1efa6d0a7d440a8cb2145b064695b11870f57b0e18c91",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/business_workflows.py": "4a6a7cad745154b7cb0adc3f17df360099312a3ee3c3c00a888a7c0eae03296b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/catalog_audit.py": "04a4e92c23c4f53a894ef510b80251cdf6b99db044cb268b7b5bf375f14adb1e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/catalog_compare.py": "a40d8614263fdbf7256b45c4589a24c4f6b692ebd68a408d9caceec7a7b98a4c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/catalog_grade.py": "fbba5b4aaa25b42f49fa2d7492a089973553623841a60c76e1a7ff3751ab27e1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/catalog_reference.py": "f25f1eb15140657f20890eb28a24c6ad04489d1dc3a6193120fcf241e16748d6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/catalog_replay.py": "ef402b3622b4637d54489c79d0fa6c3423bfc8ab479a8924bef9cb034352d71d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/catalog_suite.py": "d4bce53394f5179106949d20c58e937958b4ac8ec615f81a37104b34589d43ed",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/cli.py": "b40522f3a6b6ec8fff7636d0cbe46739bdb189091ad79df01a9746c880cce488",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/codex.py": "e54bec1c8b27e8d29cd993057056c8f3bfe2d2884be6fe7db4cab666e3fc2488",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/collection_only.py": "77e964f823962d10f1ebaebf63b33491dc232cd35cb18a602491e9eae9eb2b78",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/corpus.py": "28426df22611b633b670b352bdbd8b463246c086c6a24ca33bb1603f06f8dbb5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/data_selection.py": "dd46a5df60414326adf2e49d8ff1e723969e7974f0c6b518a2d6d08997ad61b4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_conversations.py": "b1306f9c23262ee3b807ab3abe72d652af447a6388a7cbbbaca39d26ea52b83c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_corpus.py": "88f51d46e8c45e87ea43581d5bc288d788dd91cb66e2c89b35cd610406dc7e77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_eval.py": "be116d0fc960328021797967612b45d29a507fff37607236f7c964bf5c65c277",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_finetune.py": "741dba75a00ad6e6cb316719c0a89c322a6b36201e72bd6d31f6c32309997cde",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_questions.py": "386bb9ecd3a6c7cd274edf5c6b1e3a06bf6125819081895cbfcaea45aee1dbce",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_recovery.py": "6acdfecf8dce283cdd5ac8587b4bb6e413cae1c907892b7d17072c653e8ea890",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_review.py": "da314beb58340cb25b782cdd0c6db370dac03c43e3f072e7e353711e48676b38",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_teacher.py": "38f2bf9cde59cdad39c2f1380c4473912f63f3a0d59e517bfdc1831e4dd9eac3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/dual_workflows.py": "4809730d157aac5b2cc558cc839b098461cda6a619347629c54f30af51d26696",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/failure_candidates.py": "0ecd4bd56d60a9ac2298497d4ee86a4093bd6a5f2ce2febd036aa93e7a6cd6cd",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/finetune.py": "eb82044cbfcffd93298b13a9b5ea8fd007b50111c8d34c89f1c0edbe0f039c77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/full_corpus.py": "b79e36f6588ae5eeb8e17956026ca28f59fb60502c8078e4de9af6c2e0ad585d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/full_cycle.py": "465fad192d370b70ae44a42bc765f628b83c728c4bd1084d04281c2ccdcac6d5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/full_train.py": "f4067dc7b8e416a4d10aeba3c5a5949add24dfc2d623e6a00ac73d4ce19803e6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/inference.py": "3023803c04ccd7f531b3c86e6053c83451686e25fd2552f09a59e7609d1e1ded",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/meaning.py": "3c311efeda051b8bebdc0469e4e6cc95baa5afbcb296b7ef38bd115597823a62",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/oracles.py": "1fc123db7341013db41fdb16a2f82057b9e1374efb8d735cbe868e6241f415a2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/pipeline.py": "48530cd37e6c7bd55ecb326650074eaf76b0a7c3aa4732ab06bb69ba579c4545",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/presentation_checks.py": "af7ba952b04b0eb3867c24308351159227a622220d136b475ea2fc51f2dfb6d3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/realworld.py": "abab014d564a29f0cadea7cf3d4258f7b18f2f88531cb2a911b6ff0510d1a821",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/realworld_cases.py": "b5102f1f7e0f69a1c62ab786282d8fc46bec187c5a785d3e773935be1b46d1a0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/realworld_eval.py": "0a67a79a71b82cc556df2dc65974870da8307c21910c0275acf176e1f4c3d8b0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/reusable_data.py": "8b0027db41f5ae8e65bd9fc4b4191afc6ae1d9f3181c3f9ff59c3384c11013a4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/review.py": "6d80d189514e402b0313076c08c52b4332d5955e7da420f4f5fdb0522f738ee0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/review_export.py": "3f6ea7880fad4113a1df506f7566960fd160a2fbd9ebec333117f3feb6bde9ed",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/serving_adapter.py": "485b15c324c194596f24f526a77944fa84858e14bd85c2f20fa5ce6764dbd507",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/teacher.py": "ff1ff2960631abfc02d410af5ea7fefd6a6a28f22ebd48d7d9ceaa9e1255d819",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/llm.py": "a75fcff150612da8c9e55e698ce7b2d27ef6d9260bbb5934b80995b527c61609",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/mcp.py": "4ae616802c3e18dc5e96758ab924da9f465a62a15b2a91e75fce9e7f181db1db",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/models.py": "50251702ba3e4c61ca4a4f74bcc2b7982141d97e19fa9d8003b66d3cd10a44f8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/native_ingestion.py": "1f3d9c8fcf958aebf2f70e823d9247620ac2cbd513c169e8c55bb7362b3a642c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/planning.py": "bcbf32fff78b72a62bad018d9e4b2b4047e74dc6598d21c148a93e537c963d43",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/presentation.py": "9e64444b889753fb2d7102477d01301b95fe5b26e93f81f29ca47b5e369153a9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/reporting.py": "4c5d195eb79ed7432e849f4ae8b9a73cb38a3511e3021444b2cc03437543262d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/results.py": "28f0acb4135b5c541647a1a2984eb54e16e18094f48b1d12099d4361c52e5a50",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/selector.py": "9df8959a0c33f9c645360285cb19ef60df0a0fa2edf5e37a3e6e83876244e68d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/smoke.py": "f00c6794494ccd502b3475bc7013e35689178a17d9ac18b85b86844f53ac7f14",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/usability.py": "23f31bb2e0d39ce626ec30e44c47f8b19f47614a44c9db4d8f4a512838db80a5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/graphmine_agent/visualization.py": "ad2f3f96812b5d0db128e0ecdb3313342d1b7adb0ede75437d1a0963edaad71c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/catalog/native_execution_evidence.json": "9ce25294f3e20e68314c46c7945a8d34fef3a098b7196c2c46a39b9ddc34f64c"
+  },
+  "sources_unchanged_during_run": true,
+  "model": {
+    "name": "Qwen/Qwen3.8-27B-FP8",
+    "base_revision": "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+    "reasoning_effort": "medium",
+    "thinking_token_budget": 1536,
+    "max_completion_tokens": 3072,
+    "temperature": 0,
+    "seed": 0
+  }
+}

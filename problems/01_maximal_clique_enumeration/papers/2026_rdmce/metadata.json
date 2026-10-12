@@ -12,5 +12,14 @@
   "notes": "Newest verified GPU MCE work in the search window; no author-hosted open PDF was located.",
   "problem_id": "maximal_clique_enumeration",
   "problem_dir": "01_maximal_clique_enumeration",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "upstream_license_present",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "RDMCE/src/mce_gpu.cu"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "algorithm"
 }

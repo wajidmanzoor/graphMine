@@ -1,0 +1,38 @@
+{
+  "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+  "authors": [
+    "Federico Busato",
+    "Oded Green",
+    "Nicola Bombieri",
+    "David A. Bader"
+  ],
+  "year": 2018,
+  "venue": "IEEE HPEC 2018",
+  "doi": null,
+  "publication_url": "https://davidbader.net/publication/2018-bgbb/",
+  "pdf_url": "https://davidbader.net/publication/2018-bgbb/2018-bgbb.pdf",
+  "paper_id": "2018_hornet_bfs",
+  "problem_id": "breadth_first_search",
+  "problem_dir": "38_breadth_first_search",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Hornet Top-down BFS",
+  "code_url": "https://github.com/hornet-gt/hornet",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Unweighted breadth-first distances; this is a distinct Hornet implementation. The associated PDF describes the Hornet GPU framework; it is not a separate paper for each routine.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "hornetsnest/src/Static/BreadthFirstSearch/TopDown.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "hornet",
+  "variant_constraints": [],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

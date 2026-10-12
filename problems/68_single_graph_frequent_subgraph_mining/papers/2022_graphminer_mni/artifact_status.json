@@ -1,0 +1,33 @@
+{
+  "problem_id": "single_graph_frequent_subgraph_mining",
+  "paper_id": "2022_graphminer_mni",
+  "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
+    "resolved_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "e1ef406ebc5f9151580966adffab2e4a9c8a9c4310bc179836e9fa4f108b00a8",
+    "bytes": 1399571,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/chenxuhao/GraphMiner",
+    "local_path": "code",
+    "commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/graphminer.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/fsm/gpu_base.cu": "0215c38b5dbc0ea075f30bf1274b354fde33232762480de1e557d013edf0a05c"
+    }
+  }
+}

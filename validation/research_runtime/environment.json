@@ -1,0 +1,158 @@
+{
+  "venv": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "torch": "2.7.0",
+    "networkx": "2.8.8",
+    "jsonschema": "4.10.3"
+  },
+  "torch-venv": {
+    "numpy": "1.26.4",
+    "scipy": "1.11.4",
+    "torch": "2.7.0",
+    "networkx": "2.8.8",
+    "jsonschema": "4.10.3"
+  },
+  "gpus": [
+    "0, NVIDIA RTX 6000 Ada Generation, 49140 MiB, 570.211.01",
+    "1, NVIDIA RTX 6000 Ada Generation, 49140 MiB, 570.211.01"
+  ],
+  "toolkit": [
+    "Cuda compilation tools, release 12.8, V12.8.93",
+    "Build cuda_12.8.r12.8/compiler.35583870_0"
+  ],
+  "cupy_compiled_runtime": "14.2.0; pinned Python algorithms loaded from cupy-379a2bedbca9; CUDA_PATH=/usr",
+  "snapshot_manifests": {
+    "torch_cluster": {
+      "source_url": "https://github.com/rusty1s/pytorch_cluster",
+      "checked_at": "2026-10-10T01:37:12Z",
+      "status": "downloaded",
+      "error": null,
+      "commit": "e9a855c284b45edcbf0282cf70ac09bee0ce4e49",
+      "archive_url": "https://codeload.github.com/rusty1s/pytorch_cluster/tar.gz/e9a855c284b45edcbf0282cf70ac09bee0ce4e49",
+      "archive_sha256": "7257ecb92c404f9e315315953957d3bc7ffb3929bf219c29b5bc113257d0b5d5",
+      "local_path": "torch_cluster-e9a855c284b4",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "archived": false,
+      "submodules_present": false,
+      "submodules_materialized": false,
+      "build_status": "not_tested",
+      "runtime_status": "not_tested"
+    },
+    "ripserplusplus": {
+      "source_url": "https://github.com/simonzhang00/ripser-plusplus",
+      "checked_at": "2026-10-10T01:37:14Z",
+      "status": "downloaded",
+      "error": null,
+      "commit": "30243c0c752de26d7fdf6e41f08bf7b840ca4744",
+      "archive_url": "https://codeload.github.com/simonzhang00/ripser-plusplus/tar.gz/30243c0c752de26d7fdf6e41f08bf7b840ca4744",
+      "archive_sha256": "5361085ee28175453851b3375e706a21a1360f7f87054894d537a20b93d40355",
+      "local_path": "ripserplusplus-30243c0c752d",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "archived": false,
+      "submodules_present": true,
+      "submodules_materialized": false,
+      "build_status": "not_tested",
+      "runtime_status": "not_tested"
+    },
+    "faiss": {
+      "source_url": "https://github.com/facebookresearch/faiss",
+      "checked_at": "2026-10-10T01:39:37Z",
+      "status": "downloaded",
+      "error": null,
+      "commit": "07979b10e64d39a611196483f103b2d7b349b5f7",
+      "archive_url": "https://codeload.github.com/facebookresearch/faiss/tar.gz/07979b10e64d39a611196483f103b2d7b349b5f7",
+      "archive_sha256": "941962468de4d4eb3f4d5d933a1dfcd82dfbd12f67ea83450fb23d0f4bee783d",
+      "local_path": "faiss-07979b10e64d",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "archived": false,
+      "submodules_present": false,
+      "submodules_materialized": false,
+      "build_status": "not_tested",
+      "runtime_status": "not_tested"
+    },
+    "mvc_components": {
+      "source_url": "https://github.com/HusseinAmro/component-aware-vertex-cover-gpu",
+      "checked_at": "2026-10-10T01:50:39Z",
+      "status": "downloaded",
+      "error": null,
+      "commit": "9adba41659d320ca2fd0e01c6907916db1f4fdf5",
+      "archive_url": "https://codeload.github.com/HusseinAmro/component-aware-vertex-cover-gpu/tar.gz/9adba41659d320ca2fd0e01c6907916db1f4fdf5",
+      "archive_sha256": "a787a4ef5f929fc7e208d5ac6c96acce93d23c600833c66ed5f5c5b35e5538f2",
+      "local_path": "mvc_components-9adba41659d3",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "archived": false,
+      "submodules_present": false,
+      "submodules_materialized": false,
+      "build_status": "not_tested",
+      "runtime_status": "not_tested"
+    },
+    "pyg": {
+      "source_url": "https://github.com/pyg-team/pytorch_geometric",
+      "checked_at": "2026-10-09T19:25:16Z",
+      "status": "downloaded",
+      "error": null,
+      "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "archive_url": "https://codeload.github.com/pyg-team/pytorch_geometric/tar.gz/79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "archive_sha256": "32ad62f43bf94ba3283c06fc594dd6f0044dd05702ebe9d0d6238a1b98386fd0",
+      "local_path": "pyg-79d33965a40b",
+      "license_files": [
+        "LICENSE"
+      ],
+      "submodules_present": false,
+      "submodules_materialized": false,
+      "build_status": "not_tested",
+      "runtime_status": "not_tested"
+    },
+    "cupy": {
+      "source_url": "https://github.com/cupy/cupy",
+      "checked_at": "2026-10-10T01:37:09Z",
+      "status": "downloaded",
+      "error": null,
+      "commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0",
+      "archive_url": "https://codeload.github.com/cupy/cupy/tar.gz/379a2bedbca90d59a947d8bc26d02e7378ee1eb0",
+      "archive_sha256": "2e2a5e7bc66309fddc02dd60c36a7e1af0dcab76c6192f6b02ba3e3cc02ddd0d",
+      "local_path": "cupy-379a2bedbca9",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "archived": false,
+      "submodules_present": true,
+      "submodules_materialized": false,
+      "build_status": "not_tested",
+      "runtime_status": "not_tested"
+    },
+    "dhg": {
+      "source_url": "https://github.com/iMoonLab/DeepHypergraph",
+      "checked_at": "2026-10-10T01:37:13Z",
+      "status": "downloaded",
+      "error": null,
+      "commit": "b4f80211c2173b890d2779539683a3a65c4648ac",
+      "archive_url": "https://codeload.github.com/iMoonLab/DeepHypergraph/tar.gz/b4f80211c2173b890d2779539683a3a65c4648ac",
+      "archive_sha256": "728ff55da5ac80efc8b023de650869fb96134fb8b548a3429acfa0a48c4541e4",
+      "local_path": "dhg-b4f80211c217",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_spdx": "Apache-2.0",
+      "archived": false,
+      "submodules_present": false,
+      "submodules_materialized": false,
+      "build_status": "not_tested",
+      "runtime_status": "not_tested"
+    }
+  }
+}

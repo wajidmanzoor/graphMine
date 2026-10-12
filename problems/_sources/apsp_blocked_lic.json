@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/MTB90/cuda-floyd_warshall",
+  "checked_at": "2026-10-10T01:50:57Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "c21f114eb4da7d4900a6017e293fdb0f43d94141",
+  "archive_url": "https://codeload.github.com/MTB90/cuda-floyd_warshall/tar.gz/c21f114eb4da7d4900a6017e293fdb0f43d94141",
+  "archive_sha256": "b63c44cad5b6812e7424c895e835b9b0a1b1ba5e3e2a476b665de9629ed40cd6",
+  "local_path": "apsp_blocked_lic-c21f114eb4da",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

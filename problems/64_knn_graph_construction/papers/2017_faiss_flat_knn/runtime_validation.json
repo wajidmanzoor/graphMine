@@ -1,0 +1,14 @@
+{
+  "status": "runtime_checks_passed",
+  "canonical_adapter_available": false,
+  "scope_note": "Subsequent runtime checks; not a paper-version reproduction or an integrated solver.",
+  "checks": [
+    {
+      "backend": "faiss-flat-knn",
+      "passed": 200,
+      "failed": 0,
+      "scope": "Collected GPU FlatL2 search plus explicit self-ID removal, exact distances and tied-neighbor optimum vs NumPy",
+      "evidence": "validation/research_runtime/results/faiss/summary.json"
+    }
+  ]
+}

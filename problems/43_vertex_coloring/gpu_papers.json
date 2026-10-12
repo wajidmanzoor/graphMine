@@ -1,0 +1,38 @@
+{
+  "problem_id": "vertex_coloring",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2016_gardenia_coloring",
+      "algorithm_name": "GARDENIA speculative greedy coloring",
+      "metadata": "43_vertex_coloring/papers/2016_gardenia_coloring/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2017_gunrock_coloring",
+      "algorithm_name": "Gunrock parallel priority coloring",
+      "metadata": "43_vertex_coloring/papers/2017_gunrock_coloring/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_coloring",
+      "algorithm_name": "GraphBLAST independent-set coloring",
+      "metadata": "43_vertex_coloring/papers/2019_graphblast_coloring/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_coloring",
+      "algorithm_name": "cuGraph Vertex coloring",
+      "metadata": "43_vertex_coloring/papers/2026_cugraph_coloring/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

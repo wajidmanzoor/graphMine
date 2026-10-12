@@ -1,0 +1,29 @@
+{
+  "title": "C-SAW: A Framework for Graph Sampling and Random Walk on GPUs",
+  "year": 2020,
+  "venue": "SC 2020",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2009.09103",
+  "pdf_url": "https://arxiv.org/pdf/2009.09103",
+  "paper_id": "2020_csaw_walks",
+  "problem_id": "random_walk_generation",
+  "problem_dir": "46_random_walk_generation",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "C-SAW GPU random walks",
+  "code_url": "https://github.com/concept-inversion/C-SAW",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA sampling with in-memory and streaming execution.",
+  "notes": "Distribution, walk-length convention, and dead-end behavior need to be mapped to the problem contract.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "non-stream/main.cu",
+    "non-stream/sampler.cuh",
+    "streaming/streaming_sampling.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/pnnl/ripples",
+  "checked_at": "2026-10-10T01:46:22Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "82b20dc261ea8d097ecd31c2d2ad07c218abc488",
+  "archive_url": "https://codeload.github.com/pnnl/ripples/tar.gz/82b20dc261ea8d097ecd31c2d2ad07c218abc488",
+  "archive_sha256": "0deb9bd5e518a0e040488797da5fa54909430dc16b911b2d8191e695771577ab",
+  "local_path": "curipples-82b20dc261ea",
+  "license_files": [
+    "LICENSE.rst"
+  ],
+  "license_spdx": "NOASSERTION",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

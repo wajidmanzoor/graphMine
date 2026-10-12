@@ -85,6 +85,13 @@ public:
         int need_blk_num = GMATCH_CEIL_DIV(partial_matching_cnt, partial_matching_num_per_blk);
 
         assert(need_blk_num >= 1);
+#ifdef GRAPHMINE_LIBRARY
+        // Release builds disable assertions. Never copy more initial property
+        // records than the configured pool can hold.
+        if (need_blk_num > props_max_num) {
+            throw std::runtime_error("gMatch initial matches exceed the configured BFS pool; increase GRAPHMINE_GMATCH_POOL_MIB");
+        }
+#endif
         assert(need_blk_num <= props_max_num);
 
         partial_props *h_first_props_array = (partial_props *)malloc(sizeof(

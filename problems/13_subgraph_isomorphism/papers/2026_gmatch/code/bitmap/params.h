@@ -27,6 +27,12 @@
 #define warpNum (maxBlocks * warpsPerBlock)
 
 #define memPoolBlockSize (32LL * QVMAX * sizeof(int))                 // # of bytes within a block
+#ifdef GRAPHMINE_GMATCH_POOL_MIB
+// GraphMine can share a GPU with model inference. Keep the artifact's original
+// standalone default, but let the library bound its two eager BFS pools.
+#define memPoolBlockNum (GRAPHMINE_GMATCH_POOL_MIB * 1024LL * 1024LL / memPoolBlockSize)
+#else
 #define memPoolBlockNum (1024LL * 1024LL * 5)                         // # of memory blocks within a mempool
+#endif
 
 #define FULL_MASK 0xffffffff

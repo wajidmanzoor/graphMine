@@ -1,0 +1,35 @@
+{
+  "problem_id": "graph_classification_regression",
+  "paper_id": "2018_pyg_diffpool",
+  "title": "Hierarchical Graph Representation Learning with Differentiable Pooling",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1806.08804",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "sha256": "5386956376d59632fdfefff1ce3a4d1b5457c07197bb30c4bfb67b5fcab9a80f",
+    "bytes": 2491999,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pyg-team/pytorch_geometric",
+    "local_path": "code",
+    "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pyg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "benchmark/kernel/diff_pool.py": "4f8b4061bab265eff05d8014fe6db8bdd9910cbb5f2a839717245853aa0407d6",
+      "examples/proteins_diff_pool.py": "0db61dc6f829cc4c1f45850a3d3af1e90d9649a5e3957b28dd2f6a272970c3c7",
+      "torch_geometric/nn/dense/diff_pool.py": "6c720a6df57c16fdfa1fad7557c6c3a53e800932b1f1dd7e84acc35e6e5d43d8"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

@@ -1,0 +1,25 @@
+{
+  "problem_id": "group_steiner_tree",
+  "paper_id": "2025_gpu4gst",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "title": "Fast Optimal Group Steiner Tree Search using GPUs",
+  "code": {
+    "source_url": "https://github.com/toziki/GPU4GST-sigmod",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "status": "present",
+    "local_path": "code",
+    "error": null,
+    "entrypoint_sha256": {
+      "code/TrimCDP-WB/src/GSTnonHop.cu": "8a519298e0a9da21eccbb6b33697012e096a47ec37d11264155964a36ac8ab06"
+    },
+    "license_file": null
+  },
+  "paper": {
+    "status": "download_failed",
+    "source_url": "https://dl.acm.org/doi/pdf/10.1145/3769792",
+    "local_path": null,
+    "error": "HTTP Error 403: Forbidden",
+    "checked_at": "2026-10-10T02:03:17Z"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

@@ -1,0 +1,46 @@
+{
+  "problem_id": "community_detection",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2026_cugraph_ecg",
+      "algorithm_name": "cuGraph Ensemble Clustering for Graphs",
+      "metadata": "16_community_detection/papers/2026_cugraph_ecg/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_leiden",
+      "algorithm_name": "cuGraph Leiden community detection",
+      "metadata": "16_community_detection/papers/2026_cugraph_leiden/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_louvain",
+      "algorithm_name": "cuGraph Louvain modularity optimization",
+      "metadata": "16_community_detection/papers/2026_cugraph_louvain/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_gleiden",
+      "algorithm_name": "gLeiden: Accelerated Community Detection Algorithms Using Directed and Undirected Graphs on GPUs",
+      "metadata": "16_community_detection/papers/2026_gleiden/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_multilevel_graph_clustering",
+      "algorithm_name": "GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden",
+      "metadata": "16_community_detection/papers/2026_multilevel_graph_clustering/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

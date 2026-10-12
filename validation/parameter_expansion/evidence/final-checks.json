@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-10-10T04:37:53.881418+00:00",
+  "binary_sha256": "9fbacd0bfc0a958ebb8326aa537a55363ff862029ec90aeab84cc90ff951f338",
+  "ctest": {
+    "passed": 24,
+    "total": 24,
+    "command": "CUDA_VISIBLE_DEVICES=0 ctest --test-dir library/build --output-on-failure",
+    "log": "graphmine-ctest-final.log"
+  },
+  "agent_pytest": {
+    "passed": 229,
+    "total": 229,
+    "command": "GRAPHMINE_REPAIRED_TEST_BINARY=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine GRAPHMINE_EXPANSION_TEST_BINARY=/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/graphmine CUDA_VISIBLE_DEVICES=1 PYTHONPATH=agent .venv/bin/pytest -q agent/tests/test_parameter_expansion.py agent/tests/test_catalog_and_planning.py agent/tests/test_learning.py agent/tests/test_catalog_grade.py agent/tests/test_repaired_contracts.py agent/tests/test_expansion_contracts.py agent/tests/test_domain_answers.py",
+    "log": "graphmine-agent-final.log",
+    "warning": "Existing Starlette/httpx deprecation warning"
+  },
+  "build_log": "graphmine-final-pggc-build.log",
+  "cwd": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo"
+}

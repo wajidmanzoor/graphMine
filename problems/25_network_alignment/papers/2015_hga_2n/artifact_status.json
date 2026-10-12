@@ -1,0 +1,20 @@
+{
+  "problem_id": "network_alignment",
+  "paper_id": "2015_hga_2n",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "title": "Graphics processing unit-based alignment of protein interaction networks",
+  "code": {
+    "source_url": "http://biocenter.shu.edu.cn/software/index.php/hga",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "status": "not_collected",
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+  },
+  "paper": {
+    "status": "not_collected",
+    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8687428/",
+    "local_path": null,
+    "error": "No local verified PDF; an open downloadable paper URL was not established during this sweep.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

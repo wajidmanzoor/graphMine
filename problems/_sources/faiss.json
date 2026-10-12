@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/facebookresearch/faiss",
+  "checked_at": "2026-10-10T01:39:37Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "07979b10e64d39a611196483f103b2d7b349b5f7",
+  "archive_url": "https://codeload.github.com/facebookresearch/faiss/tar.gz/07979b10e64d39a611196483f103b2d7b349b5f7",
+  "archive_sha256": "941962468de4d4eb3f4d5d933a1dfcd82dfbd12f67ea83450fb23d0f4bee783d",
+  "local_path": "faiss-07979b10e64d",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

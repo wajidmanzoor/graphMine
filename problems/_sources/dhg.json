@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/iMoonLab/DeepHypergraph",
+  "checked_at": "2026-10-10T01:37:13Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "b4f80211c2173b890d2779539683a3a65c4648ac",
+  "archive_url": "https://codeload.github.com/iMoonLab/DeepHypergraph/tar.gz/b4f80211c2173b890d2779539683a3a65c4648ac",
+  "archive_sha256": "728ff55da5ac80efc8b023de650869fb96134fb8b548a3429acfa0a48c4541e4",
+  "local_path": "dhg-b4f80211c217",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "Apache-2.0",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

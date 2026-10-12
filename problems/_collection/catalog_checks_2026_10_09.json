@@ -1,0 +1,24 @@
+{
+  "checked_at": "2026-10-10T02:19:24Z",
+  "catalog_generation": {
+    "command": "node tools/build_catalog.mjs",
+    "status": "passed",
+    "problems": 70,
+    "operations": 24,
+    "backend_choices": 38
+  },
+  "regression_tests": {
+    "command": ".venv/bin/python -m pytest -q agent/tests/test_catalog_and_planning.py agent/tests/test_current_catalog_suite.py agent/tests/test_expansion_contracts.py agent/tests/test_repaired_contracts.py",
+    "passed": 109,
+    "failed": 0,
+    "skipped": 15,
+    "skip_reason": "Native GPU integration fixtures require separately enabled compiled workers.",
+    "duration_seconds": 2.99
+  },
+  "diff_check": {
+    "command": "git diff --check",
+    "status": "passed"
+  },
+  "new_gpu_builds": 0,
+  "new_gpu_runtime_tests": 0
+}

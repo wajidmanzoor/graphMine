@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/paclopes/HungarianGPU",
+  "checked_at": "2026-10-10T01:46:23Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+  "archive_url": "https://codeload.github.com/paclopes/HungarianGPU/tar.gz/ef841797c7b5ad9b04527d2fafc7604229c8a941",
+  "archive_sha256": "8b0a1cfe23c11ceaaf977b3768c083ac3cff4287bd6b88a899532f310b599d15",
+  "local_path": "hungarian_gpu-ef841797c7b5",
+  "license_files": [
+    "LICENSE.txt"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

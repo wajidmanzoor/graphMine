@@ -7,10 +7,18 @@
   "publication_url": "https://doi.org/10.1145/3658617.3697551",
   "pdf_url": null,
   "code_url": null,
-  "semantic_fit": "variant",
+  "semantic_fit": "related_variant",
   "gpu_scope": "Multilevel GPU k-way partitioner for hypergraphs rather than plain graphs; same research lineage as G-kway.",
   "notes": "Hypergraph input model is a generalization beyond this problem's plain-graph scope; no public code repository was located during this pass.",
   "problem_id": "balanced_graph_partitioning",
   "problem_dir": "30_balanced_graph_partitioning",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "collection_variant_note": "Hypergraph partitioning needs an explicit reduction and objective/balance check before it can implement ordinary graph partitioning.",
+  "redistribution_status": "not_reviewed_or_no_local_source",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "paper_role": "algorithm"
 }

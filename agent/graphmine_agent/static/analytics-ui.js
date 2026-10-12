@@ -3,9 +3,9 @@
   const W = window.AnalyticsWire, $ = id => document.getElementById(id);
   const read = key => { try { return localStorage.getItem(key) || ""; } catch { return ""; } };
   const save = (key, value) => { try { localStorage.setItem(key, value); } catch { /* private browsing */ } };
-  const state = {base: read("graphmine.apiBase"), token: read("graphmine.apiToken"), caps: null, session: null, files: [], kinds: {}, active: "", mode: "normal", family: "", operation: "", record: null, result: null, cy: null, graph: null, selected: new Set(), port: null, rows: [], filtered: [], page: 0, previews: new Map(), poll: null, epoch: 0, busy: false};
+  const state = {base: read("graphmine.apiBase"), token: read("graphmine.apiToken"), caps: null, session: null, files: [], kinds: {}, active: "", mode: "normal", operation: "", record: null, result: null, cy: null, graph: null, selected: new Set(), port: null, rows: [], filtered: [], page: 0, previews: new Map(), poll: null, epoch: 0, busy: false, domains: [], workflows: [], events: [], eventCursor: 0, eventPoll: null, legacyMessages: [], view: "domains", planning: false, pendingQuestion: null, summaries: new Map()};
   const PAGE = 30;
-  const descriptions = {normal: "Describe your question or choose a task. Validated plans run automatically.", interactive: "Review the calculation, inputs and settings before you approve execution.", expert: "Build an explicit workflow from registered operations and typed outputs."};
+  const descriptions = {normal: "Ask in your own words. GraphMine checks the plan and runs it for you.", interactive: "Discuss your question, review the plan, then approve the calculation.", expert: "Inspect and edit the workflow yourself before running it."};
   const friendly = {requested_k: "Minimum connections inside the core", k: "Group size (k)", source: "Starting point", source_vertex: "Starting point", sink: "Destination", target: "Destination", target_vertex: "Comparison point", sources: "Starting points", seeds: "Required starting points", seed_vertices: "Starting points", vertices_or_seeds: "Selected vertices or starting points", connectivity_mode: "Meaning of connected", weight_mode: "How to use connection weights", result_limit: "Maximum results to list", mode: "Result to return", radius: "Maximum connection steps", depth_limit: "Maximum connection steps", quality: "Solution quality", objective: "Objective to optimize"};
   const choiceNames = {enumerate: "List each result", count: "Count only", edge_weight: "Use edge weights", unweighted: "Treat each connection equally", weakly_connected: "Connected when direction is ignored", strongly_connected: "Every member can reach every other member", induced: "Connections within the selected vertices", ego: "Neighborhood around the selected vertices", exact: "Exact", heuristic: "Heuristic"};
   const title = value => friendly[value] || String(value).replaceAll("_", " ").replace(/^./, c => c.toUpperCase());
@@ -20,7 +20,11 @@
     if (text !== undefined) element.textContent = text;
     return element;
   }
-  function notice(message, error = false) { $("notice").textContent = message; $("notice").className = `notice${error ? " error" : ""}`; $("notice").hidden = !message; }
+  function notice(message, error = false) {
+    clearTimeout(state.noticeTimer);
+    $("notice").textContent = message; $("notice").className = `notice${error ? " error" : ""}`; $("notice").hidden = !message;
+    if (message && !error) state.noticeTimer = setTimeout(() => { $("notice").hidden = true; }, 5500);
+  }
   async function api(path, options = {}) {
     const headers = state.token ? {Authorization: `Bearer ${state.token}`} : {};
     if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
@@ -32,6 +36,7 @@
   }
   function activeFile() { return state.files.find(f => f.id === state.active); }
   function clearResults(message = "Waiting for a completed calculation.") {
+    if (state.record) state.summaries.delete(state.record.id);
     state.result = null; state.port = null; state.rows = []; state.selected.clear();
     $("result-controls").hidden = true; $("download-result").disabled = true; $("raw-details").hidden = true;
     $("result-completeness").textContent = message; $("result-completeness").classList.remove("incomplete");
@@ -55,48 +60,239 @@
     $("mode-description").textContent = descriptions[mode];
     $("expert-panel").hidden = mode !== "expert";
     $("use-operation").textContent = mode === "normal" ? "Run this analysis" : "Build a plan to review";
+    if (state.session) save(`graphmine.mode.${state.session.id}`, mode);
     if (mode === "expert" && !$("plan-editor").value) loadEditor();
   }
   async function runAction(fn) {
     if (state.busy) return;
     state.busy = true;
-    const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "data-upload"];
+    const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "data-upload", "new-session", "session-select", "active-input", "active-kind", "device"];
     controls.forEach(id => $(id).disabled = true);
+    document.querySelectorAll("[data-mode]").forEach(button => button.disabled = true);
     try { await fn(); } catch (error) { notice(error.message, true); }
-    finally { state.busy = false; controls.forEach(id => $(id).disabled = false); }
+    finally { state.busy = false; controls.forEach(id => $(id).disabled = false); document.querySelectorAll("[data-mode]").forEach(button => button.disabled = false); }
+  }
+  const stageNames = {family: "Understanding your question", operation: "Choosing the calculation", plan: "Building a valid plan", retrieval: "Checking reviewed examples"};
+  function route(page = "chat", workflow = "") {
+    return state.session ? `#workspace/${encodeURIComponent(state.session.id)}/${page}${workflow ? `/${encodeURIComponent(workflow)}` : ""}` : "#";
+  }
+  function showPage(page) {
+    state.view = page;
+    $("domain-view").hidden = page !== "domains";
+    $("workspace-view").hidden = page !== "chat";
+    $("results-view").hidden = page !== "results";
+    $("workspace-nav").hidden = page === "domains";
+    $("chat-page-link").href = route("chat");
+    $("results-page-link").href = route("results", state.record?.id || "");
+    $("chat-page-link").setAttribute("aria-current", page === "chat" ? "page" : "false");
+    $("results-page-link").setAttribute("aria-current", page === "results" ? "page" : "false");
+    if (page === "results") requestAnimationFrame(() => { renderGraph(state.graph); state.cy?.resize(); state.cy?.fit(undefined, 35); });
+  }
+  function go(page, workflow = "") {
+    const next = route(page, workflow);
+    if (location.hash === next) showPage(page); else location.hash = next;
+  }
+  async function applyRoute() {
+    const match = /^#workspace\/([^/]+)(?:\/(chat|results)(?:\/([^/]+))?)?$/.exec(location.hash);
+    const id = match ? decodeURIComponent(match[1]) : "";
+    if (state.busy && id !== state.session?.id) { history.replaceState(null, "", route(state.view)); return; }
+    if (!match) { if (state.session) await openSession(""); else showPage("domains"); return; }
+    if (id !== state.session?.id) await openSession(id);
+    if (match[3] && decodeURIComponent(match[3]) !== state.record?.id) {
+      const workflow = state.workflows.find(row => row.id === decodeURIComponent(match[3]));
+      if (!workflow) throw new Error("This analysis is not part of the selected conversation.");
+      await openWorkflow(workflow.id);
+    }
+    showPage(match[2] || "chat");
+  }
+  function renderDomains() {
+    const glyphs = ["◇", "↗", "◎", "⌘", "◈", "⟷", "◉", "✧"];
+    $("domain-grid").replaceChildren();
+    state.domains.forEach((domain, index) => {
+      const button = node("button", {class: "domain-card", "data-domain": domain.id});
+      button.append(node("span", {class: "domain-icon", "aria-hidden": "true"}, glyphs[index % glyphs.length]), node("strong", {}, domain.name), node("span", {}, domain.description));
+      button.addEventListener("click", () => runAction(async () => {
+        const session = await api("/api/sessions", {method: "POST", body: W.stringify({domain_id: domain.id, title: $("session-name").value.trim() || `${domain.name} conversation`})});
+        await openSession(session.id); history.pushState(null, "", route("chat")); await loadSessions();
+      }));
+      $("domain-grid").append(button);
+    });
   }
   async function loadSessions() {
     const sessions = await api("/api/sessions?limit=100");
-    const selected = state.session?.id || "";
-    $("session-select").replaceChildren(node("option", {value: ""}, "New analysis"));
-    sessions.forEach(session => $("session-select").append(node("option", {value: session.id}, session.title || "Untitled analysis")));
-    $("session-select").value = selected;
+    $("session-select").replaceChildren(node("option", {value: ""}, "New conversation"));
+    $("recent-sessions").replaceChildren();
+    for (const session of sessions) {
+      $("session-select").append(node("option", {value: session.id}, session.title || "Untitled conversation"));
+      const link = node("a", {class: "recent-session", href: `#workspace/${encodeURIComponent(session.id)}/chat`});
+      const domain = state.domains.find(row => row.id === session.domain_id);
+      link.append(node("strong", {}, session.title || "Untitled conversation"), node("span", {}, domain?.name || session.domain_id), node("span", {"aria-hidden": "true"}, "→"));
+      $("recent-sessions").append(link);
+    }
+    $("session-select").value = state.session?.id || "";
   }
   async function ensureSession() {
-    if (!state.session) {
-      state.session = await api("/api/sessions", {method: "POST", body: W.stringify({domain_id: "general", title: $("session-name").value.trim() || "Network analysis"})});
-      await loadSessions();
-      history.replaceState(null, "", `#workspace/${encodeURIComponent(state.session.id)}`);
-    }
+    if (!state.session) throw new Error("Choose a domain to start your conversation.");
     return state.session;
   }
   async function openSession(id) {
-    clearTimeout(state.poll); state.epoch++;
+    clearTimeout(state.poll); clearTimeout(state.eventPoll); state.epoch++;
     state.session = null; state.files = []; state.kinds = {}; state.active = ""; state.record = null; state.previews.clear();
-    $("workflow-panel").hidden = true; $("result-controls").hidden = true; $("download-result").disabled = true; $("raw-details").hidden = true; $("raw-result").textContent = ""; $("routing-trace").replaceChildren();
-    $("plan-editor").value = "";
-    notice(""); clearResults("Upload a graph to preview its connections.");
-    if (id) {
-      state.session = await api(`/api/sessions/${encodeURIComponent(id)}`);
-      $("session-name").value = state.session.title || "";
-      state.files = await api(`/api/sessions/${encodeURIComponent(id)}/files`);
-      state.files = state.files.filter(f => ["graph", "query_graph", "motif", "attachment"].includes(f.role));
-      try { state.kinds = W.parse(read(`graphmine.inputKinds.${id}`) || "{}"); } catch { state.kinds = {}; }
-      for (const f of state.files) if (f.role !== "attachment") state.kinds[f.id] = "graph";
-      state.active = state.files.find(file => !isTable(file))?.id || "";
-      history.replaceState(null, "", `#workspace/${encodeURIComponent(id)}`);
-    } else { $("session-name").value = ""; history.replaceState(null, "", location.pathname); }
-    renderFiles(); await loadSaved(); if (state.active) await previewActive();
+    state.events = []; state.workflows = []; state.eventCursor = 0; state.legacyMessages = []; state.pendingQuestion = null; state.summaries.clear();
+    $("workflow-panel").hidden = true; $("plan-editor").value = "";
+    notice(""); clearResults("Upload a graph in Chat to preview its connections here.");
+    if (!id) { showPage("domains"); renderConversation(); return; }
+    const workspace = await api(`/api/sessions/${encodeURIComponent(id)}/workspace`);
+    state.session = workspace.session;
+    $("session-select").value = state.session.id;
+    state.files = workspace.files.filter(f => ["graph", "query_graph", "motif", "attachment"].includes(f.role));
+    state.legacyMessages = workspace.messages;
+    state.events = workspace.events;
+    state.eventCursor = Math.max(0, ...state.events.map(event => Number(event.sequence)));
+    const domain = state.domains.find(row => row.id === state.session.domain_id);
+    $("active-domain").textContent = domain?.name || state.session.domain_id;
+    $("active-domain-description").textContent = domain?.description || "";
+    $("chat-domain-label").textContent = domain?.name || "Your conversation";
+    $("workspace-title").textContent = state.session.title || "New conversation";
+    $("results-session-title").textContent = state.session.title || "Your conversation";
+    try { state.kinds = W.parse(read(`graphmine.inputKinds.${id}`) || "{}"); } catch { state.kinds = {}; }
+    for (const file of state.files) if (file.role !== "attachment") state.kinds[file.id] = "graph";
+    state.active = state.files.find(file => !isTable(file))?.id || "";
+    setMode(read(`graphmine.mode.${id}`) || "normal");
+    showPage("chat"); renderFiles(); await loadSaved();
+    if (state.workflows.length) await openWorkflow(state.workflows.at(-1).id);
+    else if (state.active) await previewActive();
+    renderConversation(); renderActivity(); pollConversation();
+  }
+  function messageElement(role, message, label = "") {
+    const article = node("article", {class: `chat-message ${role}`}), bubble = node("div", {class: "chat-bubble"});
+    article.append(node("div", {class: "chat-avatar", "aria-hidden": "true"}, role === "user" ? "You" : "G"));
+    if (label) bubble.append(node("span", {class: "chat-label"}, label));
+    bubble.append(node("p", {}, message)); article.append(bubble);
+    return {article, bubble};
+  }
+  function appendOutcome(bubble, record) {
+    const status = {completed: "Analysis complete", awaiting_review: "Ready for your review", ready: "Ready for your review", queued: "Your calculation is queued", running: "Your calculation is running", failed: "The calculation failed", interrupted: "The calculation was interrupted", cancelled: "The calculation was cancelled"}[record.status] || title(record.status);
+    bubble.append(node("p", {class: "workflow-outcome"}, state.summaries.get(record.id) || `${status}. ${record.error?.message || ""}`));
+    if (record.status === "completed") bubble.append(node("a", {class: "result-link", href: route("results", record.id)}, "View results & visualizations →"));
+    else {
+      const button = node("button", {class: "quiet", type: "button"}, ["ready", "awaiting_review"].includes(record.status) ? "Review this plan" : "Inspect this analysis");
+      button.addEventListener("click", () => runAction(async () => { await openWorkflow(record.id); go("chat"); $("workflow-panel").scrollIntoView({block: "nearest"}); }));
+      bubble.append(button);
+    }
+  }
+  function renderConversation() {
+    const scroll = $("conversation-scroll"), atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90;
+    const openDetails = new Set([...$("messages").querySelectorAll("details[open]")].map(el => el.dataset.turn));
+    const container = $("messages"); container.replaceChildren();
+    const domain = state.domains.find(row => row.id === state.session?.domain_id);
+    const greeting = messageElement("assistant", `Let's explore ${domain ? domain.name.toLowerCase() : "your network"}. Upload your data and ask a question in your own words. I'll explain the plan and help you work through the findings.`, "GraphMine");
+    container.append(greeting.article);
+    for (const row of state.legacyMessages) if (row.message) container.append(messageElement(row.role === "user" ? "user" : "assistant", row.message).article);
+    const chats = state.events.filter(event => event.type === "workflow.chat" && !event.payload.evaluation_id);
+    for (const event of chats) {
+      const row = event.payload, item = messageElement(row.role, row.message, row.role === "user" ? `${title(row.mode || "normal")} mode` : "GraphMine");
+      item.article.dataset.turn = row.turn_id;
+      if (row.role === "assistant") {
+        const decisions = state.events.filter(e => e.type === "workflow.planning" && e.payload.turn_id === row.turn_id && e.payload.message);
+        if (decisions.length) {
+          const details = node("details", {class: "chat-decision", "data-turn": row.turn_id}); details.open = openDetails.has(row.turn_id);
+          details.append(node("summary", {}, "How this was planned"));
+          decisions.forEach(e => details.append(node("p", {}, e.payload.message)));
+          item.bubble.append(details);
+        }
+        const reasoning = state.events.filter(e => e.type === "workflow.reasoning" && e.payload.turn_id === row.turn_id);
+        if (reasoning.length) {
+          const details = node("details", {class: "chat-decision", "data-turn": `${row.turn_id}-reasoning`}); details.open = openDetails.has(`${row.turn_id}-reasoning`);
+          details.append(node("summary", {}, "Model reasoning"));
+          for (const event of reasoning) { const stage = node("details", {class: "reasoning-record"}); stage.append(node("summary", {}, stageNames[event.payload.stage] || title(event.payload.stage)), node("pre", {}, event.payload.text)); details.append(stage); }
+          item.bubble.append(details);
+        }
+        const record = state.workflows.findLast(record => record.planning_turn_id === row.turn_id);
+        if (record) appendOutcome(item.bubble, record);
+        else if (row.plan && row.status === "ready") {
+          const button = node("button", {class: "quiet"}, "Continue with this plan");
+          button.addEventListener("click", () => runAction(() => submitPlan(row.plan, false, row.turn_id, row.inputs, row.mode)));
+          item.bubble.append(button);
+        }
+      }
+      container.append(item.article);
+    }
+    for (const record of state.workflows.filter(record => !record.planning_turn_id)) {
+      const item = messageElement("assistant", record.validation.plan.steps.map(step => methodName(step.operation)).join(" → "), "Saved analysis");
+      appendOutcome(item.bubble, record); container.append(item.article);
+    }
+    if (state.pendingQuestion) container.append(messageElement("user", state.pendingQuestion.message, `${title(state.mode)} mode`).article);
+    if (state.planning || chats.at(-1)?.payload.role === "user") container.append(messageElement("assistant", "Working through your question… Follow the reasoning and activity alongside this conversation.", "GraphMine").article);
+    if (atBottom || state.pendingQuestion) requestAnimationFrame(() => { scroll.scrollTop = scroll.scrollHeight; });
+  }
+  function renderActivity() {
+    const latest = [...state.events].reverse().find(event => event.type === "workflow.chat" && event.payload.role === "user");
+    const turn = latest?.payload.turn_id;
+    const events = state.events.filter(event => event.payload.turn_id === turn);
+    $("activity-list").replaceChildren();
+    const stages = new Map();
+    for (const event of events) if (event.type === "workflow.planning") stages.set(event.payload.stage, event.payload);
+    for (const [stage, decision] of stages) {
+      const running = decision.status === "running";
+      const item = node("li", {class: `activity-step ${running ? "running" : "completed"}`});
+      item.append(node("span", {class: "activity-marker", "aria-hidden": "true"}, running ? "·" : "✓"));
+      const content = node("div"); content.append(node("strong", {}, stageNames[stage] || title(stage)), node("p", {}, decision.message || (running ? "The model is considering your question." : "Checked.")));
+      item.append(content); $("activity-list").append(item);
+    }
+    const outcome = events.findLast(event => event.type === "workflow.chat" && event.payload.role === "assistant")?.payload;
+    const running = [...stages.values()].some(stage => stage.status === "running") && !outcome;
+    const workflow = state.workflows.findLast(record => record.planning_turn_id === turn) || state.record;
+    const status = running || state.planning ? "Thinking through your question…" : workflow ? ({completed: "Analysis complete", awaiting_review: "Waiting for your approval", ready: "Waiting for your approval", queued: "Calculation queued", running: "Running the calculation"}[workflow.status] || title(workflow.status)) : outcome?.status === "needs_information" ? "Waiting for your reply" : outcome?.status === "failed" ? "Planning failed" : "Ready for your question";
+    $("activity-status").textContent = status; $("chat-status").textContent = running || state.planning ? "Thinking…" : status;
+    const detailsOpen = new Set([...$("model-reasoning").querySelectorAll("details[open]")].map(e => e.dataset.sequence));
+    $("model-reasoning").replaceChildren();
+    const reasoning = events.filter(event => event.type === "workflow.reasoning");
+    $("reasoning-count").textContent = String(reasoning.length);
+    for (const event of reasoning) {
+      const details = node("details", {class: "reasoning-record", "data-sequence": event.sequence}); details.open = detailsOpen.has(String(event.sequence));
+      details.append(node("summary", {}, stageNames[event.payload.stage] || title(event.payload.stage)), node("small", {}, event.payload.model), node("pre", {}, event.payload.text));
+      $("model-reasoning").append(details);
+    }
+    if (!reasoning.length) $("model-reasoning").append(node("p", {class: "muted"}, running ? "Reasoning will appear after the model finishes each stage." : "No reasoning text returned for this question yet."));
+  }
+  async function syncConversation() {
+    if (!state.session) return;
+    const id = state.session.id, epoch = state.epoch;
+    const events = await api(`/api/sessions/${id}/events?after=${state.eventCursor}`);
+    if (epoch !== state.epoch) return;
+    const fresh = events.filter(event => Number(event.sequence) > state.eventCursor);
+    if (fresh.length) {
+      state.events.push(...fresh); state.eventCursor = Number(fresh.at(-1).sequence);
+      if (state.pendingQuestion && fresh.some(e => e.type === "workflow.chat" && e.payload.role === "user" && e.sequence > state.pendingQuestion.after)) state.pendingQuestion = null;
+      renderConversation(); renderActivity();
+    }
+  }
+  function pollConversation() {
+    clearTimeout(state.eventPoll); const epoch = state.epoch;
+    state.eventPoll = setTimeout(async () => {
+      try { await syncConversation(); } catch { /* Reconnect on the next poll; saved messages remain visible. */ }
+      if (epoch === state.epoch && state.session) pollConversation();
+    }, 1400);
+  }
+  function requestId() {
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 15) | 64; bytes[8] = (bytes[8] & 63) | 128;
+    const hex = [...bytes].map(value => value.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+  }
+  async function savedPlanningResponse(id, originalError) {
+    const started = Date.now(), epoch = state.epoch;
+    while (Date.now() - started < 360000 && epoch === state.epoch) {
+      try { await syncConversation(); } catch { /* A temporary disconnect can also affect the event request. */ }
+      const events = state.events.filter(event => event.type === "workflow.chat" && event.payload.turn_id === id);
+      const response = events.find(event => event.payload.role === "assistant");
+      if (response) { notice(""); return response.payload; }
+      if (!events.length && Date.now() - started > 15000) throw originalError;
+      if (events.length) $("activity-status").textContent = "Your saved request is still being processed…";
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+    throw new Error("Your planning request is saved. Reopen this conversation to check its progress.");
   }
   function renderFiles() {
     $("active-input").replaceChildren(node("option", {value: ""}, "Choose an input"));
@@ -119,7 +315,7 @@
     if ($("csv-target").value.trim()) form.append("target_column", $("csv-target").value.trim());
     const result = await api(`/api/sessions/${state.session.id}/files`, {method: "POST", body: form});
     state.files.push(result); state.kinds[result.id] = kind; state.active = result.id;
-    renderFiles(); await previewActive(); notice("Your data is ready. Choose a task or describe your question.");
+    renderFiles(); await previewActive(); notice("Your data is ready. Ask a question to begin.");
   }
   async function preview(fileId) {
     if (!state.previews.has(fileId)) state.previews.set(fileId, await api(`/api/files/${fileId}/graph-preview?vertex_limit=500&edge_limit=2000`));
@@ -131,24 +327,9 @@
     if (id === state.active && !state.result) renderGraph(value);
     renderParameters();
   }
-  function renderFamilies() {
-    $("family-cards").replaceChildren();
-    for (const family of state.caps.task_families) {
-      const choices = family.operations.filter(id => capable(card(id)));
-      if (!choices.length) continue;
-      const button = node("button", {class: "family-card", "data-family": family.id, "aria-pressed": String(state.family === family.id)});
-      button.append(node("strong", {}, family.title), node("small", {}, `${choices.length} available calculations`));
-      button.title = family.description;
-      button.addEventListener("click", () => { state.family = family.id; state.operation = ""; renderFamilies(); renderOperations(); });
-      $("family-cards").append(button);
-    }
-  }
   function renderOperations() {
-    const family = state.caps.task_families.find(f => f.id === state.family);
-    $("operation-panel").hidden = !family;
-    if (!family) return;
-    $("operation-select").replaceChildren(node("option", {value: ""}, "Choose a specific calculation"));
-    family.operations.map(card).filter(capable).forEach(c => $("operation-select").append(node("option", {value: c.id}, c.title)));
+    $("operation-select").replaceChildren(node("option", {value: ""}, "Choose a calculation"));
+    for (const selected of state.caps.operations.filter(capable)) $("operation-select").append(node("option", {value: selected.id}, selected.title));
     $("operation-select").value = state.operation;
     renderParameters();
   }
@@ -230,7 +411,7 @@
   }
   function planFromOperation() {
     const selected = card(state.operation);
-    if (!selected) throw new Error("Choose a task family and a calculation first.");
+    if (!selected) throw new Error("Choose a calculation first.");
     if (!activeFile()) throw new Error("Upload or choose an input first.");
     if (state.kinds[state.active] !== selected.input_kind) throw new Error(`This calculation needs ${title(selected.input_kind)} input. Choose the matching uploaded data.`);
     return {version: 1, device: $("device").value, steps: [{id: "analysis", operation: selected.id, input: {input: "main"}, parameters: parametersFrom($("operation-parameters"), selected), bindings: bindingsFrom($("operation-parameters"))}]};
@@ -239,49 +420,71 @@
     const plan = state.record?.validation.plan || (state.operation ? planFromOperation() : {version: 1, device: $("device").value, steps: [{id: "groups", operation: "connected-components", input: {input: "main"}, parameters: {}}]});
     $("plan-editor").value = W.stringify(plan, true);
   }
-  async function submitPlan(plan, revise = false) {
+  async function submitPlan(plan, revise = false, turnId = null, inputFiles = null, requestedMode = null) {
     await ensureSession();
     if (!state.active) throw new Error("Choose an input before saving the plan.");
-    const body = {mode: state.mode, plan, inputs: revise && state.record ? state.record.input_files : refs()};
+    const body = {mode: requestedMode || state.mode, plan, inputs: revise && state.record ? state.record.input_files : inputFiles || refs()};
+    if (turnId) body.planning_turn_id = turnId;
     let path = `/api/sessions/${state.session.id}/workflows`;
     if (revise && state.record) { path = `/api/workflows/${state.record.id}/revise`; body.expected_revision = state.record.revision; }
     const result = await api(path, {method: "POST", body: W.stringify(body)});
-    state.record = result; clearResults(result.status === "queued" ? "The calculation is queued; no new result has been produced." : "This plan is awaiting execution; no new result has been produced."); renderWorkflow(); await loadSaved();
-    $("workflow-panel").scrollIntoView({behavior: "smooth", block: "nearest"});
+    state.record = result; setMode(result.mode); if (result.input_files.main) { state.active = result.input_files.main.file_id; renderFiles(); } clearResults(result.status === "queued" ? "The calculation is queued; no new result has been produced." : "This plan is awaiting execution; no new result has been produced."); renderWorkflow(); await loadSaved();
+    if (state.view === "chat") $("workflow-panel").scrollIntoView({behavior: "smooth", block: "nearest"});
     notice(result.status === "queued" ? "The validated workflow is queued." : "Your plan is ready to review. Execution has not started.");
     if (["queued", "running"].includes(result.status)) pollWorkflow();
   }
   async function askQuestion(event) {
     event.preventDefault();
     await runAction(async () => {
-      if (!$("question").value.trim()) throw new Error("Describe what you want to learn, or choose a task family.");
-      if (!state.active) throw new Error("Upload or choose an input first.");
-      await ensureSession(); notice("Choosing a task family, then checking the specific calculation…");
-      const response = await api(`/api/sessions/${state.session.id}/analytics/plan`, {method: "POST", body: W.stringify({message: $("question").value, inputs: refs(), device: $("device").value, previous_workflow_id: state.record?.id || null})});
-      $("routing-trace").replaceChildren();
-      for (const decision of response.trace || []) {
-        const values = decision.families || decision.operations || (decision.stage === "retrieval" ? [decision.evaluation_excluded ? "Examples excluded for evaluation" : `${decision.examples.length} reviewed examples`] : [decision.status]);
-        $("routing-trace").append(node("span", {}, `${title(decision.stage)}: ${values.map(id => state.caps.task_families.find(f => f.id === id)?.title || card(id)?.title || id).join(", ")}`));
-      }
-      if (response.status !== "ready" || !response.plan) { notice(response.message); return; }
-      $("plan-editor").value = W.stringify(response.plan, true);
-      await submitPlan(response.plan);
+      const message = $("question").value.trim();
+      if (!message) throw new Error("Describe what you want to learn.");
+      if (!state.active) throw new Error("Add your data first, then send your question.");
+      await ensureSession();
+      const inputs = refs(), mode = state.mode, previous = state.record?.id || null;
+      state.pendingQuestion = {message, after: state.eventCursor}; state.planning = true;
+      $("question").value = ""; notice(""); renderConversation(); renderActivity();
+      try {
+        const id = requestId();
+        let response;
+        try {
+          response = await api(`/api/sessions/${state.session.id}/analytics/plan`, {method: "POST", body: W.stringify({message, mode, inputs, device: $("device").value, previous_workflow_id: previous, request_id: id})});
+        } catch (error) {
+          if (!["TypeError", "NetworkError"].includes(error?.name)) throw error;
+          response = await savedPlanningResponse(id, error);
+        }
+        await syncConversation();
+        if (response.status === "ready" && response.plan) {
+          $("plan-editor").value = W.stringify(response.plan, true);
+          await submitPlan(response.plan, false, response.turn_id, inputs, mode);
+        }
+      } finally { state.planning = false; state.pendingQuestion = null; await syncConversation(); renderConversation(); renderActivity(); }
     });
   }
   async function loadSaved() {
     $("saved-workflows").replaceChildren();
-    if (!state.session) { $("saved-workflows").append(node("p", {class: "muted"}, "Your workflows will appear here.")); return; }
-    const records = await api(`/api/sessions/${state.session.id}/workflows`);
-    for (const record of records.slice().reverse()) {
-      const button = node("button", {"data-workflow": record.id, "aria-current": String(record.id === state.record?.id)}, record.validation.plan.steps.map(step => methodName(step.operation)).join(" → "));
+    if (!state.session) return;
+    state.workflows = await api(`/api/sessions/${state.session.id}/workflows`);
+    $("result-select").replaceChildren(node("option", {value: ""}, "Choose a saved analysis"));
+    $("result-count").textContent = String(state.workflows.filter(record => record.status === "completed").length);
+    for (const record of state.workflows.slice().reverse()) {
+      const label = record.validation.plan.steps.map(step => methodName(step.operation)).join(" → ");
+      const button = node("button", {"data-workflow": record.id, "aria-current": String(record.id === state.record?.id)}, label);
       button.append(node("small", {}, `${title(record.status)} · revision ${record.revision}`));
-      button.addEventListener("click", () => runAction(() => openWorkflow(record.id)));
+      button.addEventListener("click", () => runAction(async () => { await openWorkflow(record.id); go(record.status === "completed" ? "results" : "chat", record.status === "completed" ? record.id : ""); }));
       $("saved-workflows").append(button);
+      $("result-select").append(node("option", {value: record.id}, `${label} · ${title(record.status)}`));
     }
+    $("result-select").value = state.record?.id || "";
+    renderConversation(); renderActivity();
   }
   function renderWorkflow() {
     const record = state.record; if (!record) return;
+    $("results-page-link").href = route("results", record.id);
     $("workflow-panel").hidden = false;
+    $("workflow-panel").dataset.review = String(record.mode !== "normal" || ["ready", "awaiting_review", "failed", "interrupted"].includes(record.status));
+    const savedIndex = state.workflows.findIndex(row => row.id === record.id);
+    if (savedIndex >= 0) state.workflows[savedIndex] = record;
+    renderActivity();
     $("workflow-status").textContent = title(record.status);
     $("workflow-summary").textContent = `Revision ${record.revision} · ${title(record.mode)} mode · ${record.validation.plan.device === "auto" ? "Automatic device choice" : record.validation.plan.device.toUpperCase() + " only"}. ${record.error?.message || ""}`;
     $("plan-details").textContent = W.stringify({plan: record.validation.plan, input_fingerprints: record.validation.inputs, workflow_hash: record.validation.workflow_hash, approved_hash: record.approved_hash}, true);
@@ -291,7 +494,7 @@
       const li = node("li", {class: "workflow-step", "data-step": id, "data-status": status});
       li.append(node("span", {class: "step-state"}, status));
       const button = node("button", {}, methodName(step.operation));
-      button.addEventListener("click", () => { if (state.result?.steps[id]?.result) { $("result-step").value = id; selectStep(); } });
+      button.addEventListener("click", () => { if (state.result?.steps[id]?.result) { $("result-step").value = id; selectStep(); go("results", record.id); } });
       li.append(button, node("small", {}, `Step: ${id}`), node("small", {}, step.input.input ? `Input: ${step.input.input}` : `Input: ${step.input.step} / ${step.input.port}`));
       for (const [parameter, reference] of Object.entries(step.bindings)) li.append(node("small", {}, `${title(parameter)} ← ${reference.input || `${reference.step} / ${reference.port}`}`));
       if (record.steps[id]?.reused) li.append(node("small", {}, "Reused a matching verified result"));
@@ -333,7 +536,7 @@
       try {
         const record = await api(`/api/workflows/${id}`);
         if (epoch !== state.epoch || state.record?.id !== id) return;
-        state.record = record; renderWorkflow();
+        state.record = record; renderWorkflow(); renderConversation();
         if (["queued", "running"].includes(record.status)) pollWorkflow();
         else { await loadSaved(); await loadResults(); notice(record.status === "completed" ? "The computed results are ready." : record.error?.message || `Execution ${record.status}. Inspect the step status for details.`, record.status === "failed"); }
       } catch (error) { notice(error.message, true); }
@@ -355,6 +558,9 @@
     for (const step of state.record.validation.order) if (state.result.steps[step]?.result) $("result-step").append(node("option", {value: step}, `${step} · ${methodName(state.result.steps[step].result.operation)}`));
     $("result-step").value = $("result-step").lastElementChild?.value || "";
     await selectStep();
+    const scalar = Object.values(state.result.steps || {}).flatMap(step => Object.entries(step.result?.ports || {})).filter(([,port]) => port.complete && ["number", "bigint"].includes(typeof port.value));
+    if (state.record.status === "completed" && state.result.complete && scalar.length) state.summaries.set(id, scalar.map(([name, port]) => `${title(name)}: ${display(port.value)}`).join(" · "));
+    renderConversation();
   }
   async function graphForStep(stepId) {
     const step = state.record.validation.plan.steps.find(s => s.id === stepId);
@@ -393,6 +599,11 @@
     renderGraph(graph); renderOutput();
   }
   function renderGraph(data) {
+    if (state.view !== "results") {
+      state.cy?.destroy(); state.cy = null; state.graph = data;
+      $("network").replaceChildren(); $("preview-scope").textContent = "";
+      return;
+    }
     state.cy?.destroy(); state.cy = null; state.graph = data;
     $("graph-layout").querySelector('[value="computed"]').disabled = state.port?.type !== "vertex_positions";
     if (state.port?.type !== "vertex_positions" && $("graph-layout").value === "computed") $("graph-layout").value = "cose";
@@ -542,24 +753,29 @@
   }
   async function connect() {
     $("connection-state").textContent = "Connecting…";
-    state.caps = await api("/api/analytics/capabilities");
+    [state.caps, state.domains] = await Promise.all([api("/api/analytics/capabilities"), api("/api/domains")]);
     const cpu = state.caps.operations.filter(c => c.execution.cpu).length;
-    $("verified-count").textContent = `${cpu} verified CPU calculations`;
+    $("verified-count").textContent = `${cpu} verified calculations`;
     $("connection-state").textContent = cpu ? "Library ready" : "Verification needed";
     $("device").querySelector('[value="gpu"]').disabled = !state.caps.device_configuration?.gpu_configured;
-    $("device-note").textContent = state.caps.device_configuration?.gpu_configured ? "GPU uses the configured compute device. Each calculation still checks its supported parameters." : "No compute GPU is configured. Automatic and CPU-only use the CPU library.";
-    if (!state.caps.question_planner_enabled) $("planner-note").textContent = "The question planner is disabled here. You can choose a task below.";
-    renderFamilies(); await loadSessions();
-    const match = /^#workspace\/([^/]+)$/.exec(location.hash);
+    $("device-note").textContent = state.caps.device_configuration?.gpu_configured ? "Automatic uses the available compute device for each calculation." : "This workspace uses the CPU library.";
+    if (!state.caps.question_planner_enabled) $("planner-note").textContent = "Question planning is disabled. You can build a plan in Expert mode.";
+    renderDomains(); renderOperations(); await loadSessions();
+    // The initial connection runs inside runAction; allow restoring a saved route.
+    const match = /^#workspace\/([^/]+)/.exec(location.hash);
     if (match) await openSession(decodeURIComponent(match[1]));
-    else renderFiles();
+    await applyRoute();
   }
   document.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => { try { setMode(button.dataset.mode); } catch (error) { notice(error.message, true); } }));
   $("connection-button").addEventListener("click", () => { $("api-base").value = state.base; $("api-token").value = state.token; $("connection-dialog").showModal(); });
   $("close-connection").addEventListener("click", () => $("connection-dialog").close());
   $("connection-form").addEventListener("submit", event => { event.preventDefault(); state.base = $("api-base").value.trim().replace(/\/$/, ""); state.token = $("api-token").value.trim(); save("graphmine.apiBase", state.base); save("graphmine.apiToken", state.token); $("connection-dialog").close(); runAction(connect); });
-  $("new-session").addEventListener("click", () => runAction(() => openSession("")));
-  $("session-select").addEventListener("change", () => runAction(() => openSession($("session-select").value)));
+  $("new-session").addEventListener("click", () => { location.hash = ""; });
+  $("refresh-sessions").addEventListener("click", () => runAction(loadSessions));
+  $("back-to-chat").addEventListener("click", () => go("chat"));
+  $("result-select").addEventListener("change", () => { if ($("result-select").value) go("results", $("result-select").value); });
+  window.addEventListener("hashchange", () => { applyRoute().catch(error => notice(error.message, true)); });
+  $("session-select").addEventListener("change", () => { location.hash = $("session-select").value ? `#workspace/${encodeURIComponent($("session-select").value)}/chat` : ""; });
   function projectionSettings() {
     const table = $("projection-table").value, source = $("projection-source").value, target = $("projection-target").value;
     if (!table || !source || !target || source === target) throw new Error("Choose a table and two different endpoint columns.");
@@ -606,7 +822,7 @@
   }); });
   $("review-example").addEventListener("click", () => runAction(async () => {
     state.exampleReview = await api(`/api/workflows/${state.record.id}/example-review`);
-    $("example-question").value = $("question").value; $("example-approved").checked = false; $("example-feedback").textContent = ""; $("example-dialog").showModal();
+    $("example-question").value = [...state.events].reverse().find(event => event.type === "workflow.chat" && event.payload.turn_id === state.record.planning_turn_id && event.payload.role === "user")?.payload.message || ""; $("example-approved").checked = false; $("example-feedback").textContent = ""; $("example-dialog").showModal();
   }));
   $("example-form").addEventListener("submit", event => { event.preventDefault(); runAction(async () => {
     try {
@@ -624,11 +840,11 @@
   }));
   $("active-input").addEventListener("change", () => runAction(async () => { state.active = $("active-input").value; renderFiles(); await previewActive(); }));
   $("active-kind").addEventListener("change", () => runAction(async () => { state.kinds[state.active] = $("active-kind").value; renderFiles(); await previewActive(); }));
-  $("device").addEventListener("change", () => { if (state.operation && !capable(card(state.operation))) state.operation = ""; renderFamilies(); renderOperations(); });
+  $("device").addEventListener("change", () => { if (state.operation && !capable(card(state.operation))) state.operation = ""; renderOperations(); });
   $("operation-select").addEventListener("change", () => { state.operation = $("operation-select").value; renderParameters(); });
-  $("toggle-tasks").addEventListener("click", () => { $("task-picker").hidden = !$("task-picker").hidden; $("toggle-tasks").setAttribute("aria-expanded", String(!$("task-picker").hidden)); });
   $("operation-form").addEventListener("submit", event => { event.preventDefault(); runAction(() => submitPlan(planFromOperation())); });
   $("question-form").addEventListener("submit", askQuestion);
+  $("question").addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); if (!state.busy) $("question-form").requestSubmit(); } });
   $("load-editor").addEventListener("click", () => { try { loadEditor(); } catch (error) { notice(error.message, true); } });
   $("edit-plan").addEventListener("click", () => { setMode("expert"); loadEditor(); $("expert-panel").scrollIntoView({block: "start", behavior: "smooth"}); $("plan-editor").focus(); });
   $("save-editor").addEventListener("click", () => runAction(() => submitPlan(W.parse($("plan-editor").value), Boolean(state.record))));
@@ -640,7 +856,7 @@
   $("table-search").addEventListener("input", filterRows);
   $("table-prev").addEventListener("click", () => { state.page--; renderTable(); }); $("table-next").addEventListener("click", () => { state.page++; renderTable(); });
   $("download-result").addEventListener("click", () => { if (!state.result) return; const url = URL.createObjectURL(new Blob([W.stringify(state.result, true)], {type: "application/json"})), a = node("a", {href: url, download: `graphmine-${state.record.id}-revision-${state.record.revision}.json`}); a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); });
-  new ResizeObserver(() => { state.cy?.resize(); state.cy?.fit(undefined, 35); }).observe($("network"));
+  new ResizeObserver(() => { if (state.view === "results") { state.cy?.resize(); state.cy?.fit(undefined, 35); } }).observe($("network"));
   window.GraphMineWorkspace = {state, wire: W};
   setMode("normal"); renderOutput(); runAction(connect);
 })();

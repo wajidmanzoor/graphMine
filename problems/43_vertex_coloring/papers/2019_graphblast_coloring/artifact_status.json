@@ -1,0 +1,32 @@
+{
+  "problem_id": "vertex_coloring",
+  "paper_id": "2019_graphblast_coloring",
+  "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1908.01407",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:56Z",
+    "sha256": "07f18814a7a40dbe71ea7fdabaea2914e79f01362983187eb1907aa836c48f4e",
+    "bytes": 3621402,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/gunrock/graphblast",
+    "local_path": "code",
+    "commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/graphblast.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "graphblas/algorithm/gc.hpp": "7a26a3a326bf0923ede5ec0f1d49277eb5cb33e869fbfd9c27e5d8dcaacd4798"
+    }
+  }
+}

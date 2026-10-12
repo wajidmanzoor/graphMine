@@ -120,7 +120,8 @@ bool pggc_backend_compiled() noexcept { return true; }
 
 CommunityDetectionBackendResult run_pggc(const CsrGraph& graph,
                                           int device_id,
-                                          PggcAlgorithm algorithm) {
+                                          PggcAlgorithm algorithm,
+                                          double resolution) {
   if (graph.vertex_count() == 0) {
     return {Status::success(), {}, 0.0, 0.0};
   }
@@ -160,7 +161,11 @@ CommunityDetectionBackendResult run_pggc(const CsrGraph& graph,
     weighted.vtx_w = make_degree_weights(graph);
     weighted.edge_uniform = true;
 
-    modularity objective(matrix, weighted.vtx_w, 1.0, true);
+    modularity objective(matrix, weighted.vtx_w, resolution, true);
+    // The base constructor evaluates with lambda=1 before the derived
+    // constructor installs resolution / total_degree. Refresh before the
+    // first no-move/convergence decision and before memory copies this state.
+    objective.update_objective();
     memory_store memory(matrix, objective);
     jet_community::ExperimentLoggerUtil<value_t> experiment;
     PggcVertexView unused_constraint;

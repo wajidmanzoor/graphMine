@@ -1,0 +1,5 @@
+/__pycache__/
+/graphmine-*-candidate
+/results/*/gpu-*/*/
+/results/boundaries*/*/
+/results/kcgpu-pascal-boundary/graph.json

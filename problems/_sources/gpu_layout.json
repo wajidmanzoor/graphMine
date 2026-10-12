@@ -1,0 +1,20 @@
+{
+  "source_url": "https://github.com/govertb/GPUGraphLayout",
+  "checked_at": "2026-10-10T01:46:31Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "9da3af0b7ae72dbfb04b2a7b6eaf28f4d9c13344",
+  "archive_url": "https://codeload.github.com/govertb/GPUGraphLayout/tar.gz/9da3af0b7ae72dbfb04b2a7b6eaf28f4d9c13344",
+  "archive_sha256": "eb5a41318ce3ac27280b4dda32b034f7de59d870bf752eae5ece96933896b76b",
+  "local_path": "gpu_layout-9da3af0b7ae7",
+  "license_files": [
+    "COPYING",
+    "LICENSE"
+  ],
+  "license_spdx": "NOASSERTION",
+  "archived": false,
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

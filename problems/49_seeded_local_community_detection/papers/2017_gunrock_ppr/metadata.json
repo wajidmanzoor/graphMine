@@ -1,0 +1,28 @@
+{
+  "title": "Gunrock: GPU Graph Analytics",
+  "year": 2017,
+  "venue": "ACM Transactions on Parallel Computing",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1701.01170",
+  "pdf_url": "https://arxiv.org/pdf/1701.01170",
+  "paper_id": "2017_gunrock_ppr",
+  "problem_id": "seeded_local_community_detection",
+  "problem_dir": "49_seeded_local_community_detection",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Gunrock personalized PageRank diffusion",
+  "code_url": "https://github.com/gunrock/gunrock",
+  "semantic_fit": "building_block",
+  "gpu_scope": "CUDA personalized PageRank primitive.",
+  "notes": "The paper describes the Gunrock framework. This pinned implementation is a later revision, not the exact artifact evaluated in the 2017 paper. Diffusion building block only; overlaps the existing PPR family. A community-selection stage is required.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "include/gunrock/algorithms/ppr.hxx",
+    "examples/algorithms/ppr/ppr.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/plasma-umass/NextDoor",
+  "checked_at": "2026-10-09T19:25:27Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "dcbc46d60bb9623616a10f5e7518fe5214575226",
+  "archive_url": "https://codeload.github.com/plasma-umass/NextDoor/tar.gz/dcbc46d60bb9623616a10f5e7518fe5214575226",
+  "archive_sha256": "3882f5f405e305348ad014113314462b0aca9c95beca037d206c3511bb4b4adf",
+  "local_path": "nextdoor-dcbc46d60bb9",
+  "license_files": [],
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

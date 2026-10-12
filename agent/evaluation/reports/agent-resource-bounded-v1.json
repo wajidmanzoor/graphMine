@@ -1,0 +1,3356 @@
+{
+  "version": "agent-resources-v1",
+  "created_at": "2026-10-07T21:40:11.005618+00:00",
+  "label": "streamed-ingestion-and-bounded-durable-queue",
+  "nodes": 5000,
+  "edges": 10000,
+  "timed_repeats": 3,
+  "python": "3.12.3",
+  "platform": "Linux-6.17.0-23-generic-x86_64-with-glibc2.39",
+  "scope": "Synthetic local ASGI uploads including multipart parsing, validation, persistence and history. Separate traced Python allocation peak; no GPU, model, network server, native probe or production-scale throughput measurement. Event-loop gap uses a 5ms heartbeat; RSS is the whole process high-water mark.",
+  "source_sha256": {
+    "api.py": "d037dc92adbcde8aa7c98f785b03ef831f5ea7dcca4e42478b6d7995cea9f3c5",
+    "graph_store.py": "2286f91eeefff8c3776c4640a2a9fa745473772a166e1f6263b7613443c6c937",
+    "database.py": "cb9cc8882f21632ec57db55b18c676523df2ceea6e55d5e967557aa872f98973",
+    "history.py": "31d39dffc4e7850b37a57401facc161a18cbf11061aa02995fac3cb34a7d9e87",
+    "jobs.py": "4faa267ba86fcaab0e66a65f82e082f3be640e73f5812f358d5a421ddc2fe210",
+    "execution.py": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+    "config.py": "b64f7ec483ea6586fc51405146dba9eca2f254927c8c301d34ea6794ae494017"
+  },
+  "profiler_sha256": "2709bc3699c58aaa6dc53290717b17e915601c8dd0712babd9cfca6de3065a52",
+  "uploads": [
+    {
+      "name": "records.json",
+      "role": "graph",
+      "source_bytes": 952361,
+      "source_sha256": "c159b9c457681f49ecdf160718e4e000277abaaf8e583e2c59da8d2eebf478e7",
+      "timed_runs": [
+        {
+          "seconds": 0.9015927109867334,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.04545534774661064,
+          "stored_bytes": 952361,
+          "metadata": {
+            "graph_id": "file_c124d4b745b3447cae55f20e5f2876e2",
+            "name": "resource-fixture",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "resource-fixture",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "label": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": "Record 0",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 1",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 2",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 3",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 4",
+                      "count": 1
+                    }
+                  ]
+                }
+              },
+              "edge_attributes": {
+                "attributes.value": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "float"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 1.5,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 1.5,
+                  "maximum": 1.5,
+                  "mean": 1.5
+                },
+                "attributes.year": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 2026,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 2026,
+                  "maximum": 2026,
+                  "mean": 2026.0
+                },
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "mean": 4999.5
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0,
+                  "label": "Record 0"
+                },
+                {
+                  "id": 1,
+                  "label": "Record 1"
+                },
+                {
+                  "id": 2,
+                  "label": "Record 2"
+                },
+                {
+                  "id": 3,
+                  "label": "Record 3"
+                },
+                {
+                  "id": 4,
+                  "label": "Record 4"
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": 0,
+                  "source": 0,
+                  "target": 1,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 1,
+                  "source": 0,
+                  "target": 13,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 2,
+                  "source": 1,
+                  "target": 2,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 3,
+                  "source": 1,
+                  "target": 14,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 4,
+                  "source": 2,
+                  "target": 3,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        },
+        {
+          "seconds": 0.8458786644041538,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.02725779078900814,
+          "stored_bytes": 952361,
+          "metadata": {
+            "graph_id": "file_95432bfd74334944ba00b6dfee19e207",
+            "name": "resource-fixture",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "resource-fixture",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "label": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": "Record 0",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 1",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 2",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 3",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 4",
+                      "count": 1
+                    }
+                  ]
+                }
+              },
+              "edge_attributes": {
+                "attributes.value": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "float"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 1.5,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 1.5,
+                  "maximum": 1.5,
+                  "mean": 1.5
+                },
+                "attributes.year": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 2026,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 2026,
+                  "maximum": 2026,
+                  "mean": 2026.0
+                },
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "mean": 4999.5
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0,
+                  "label": "Record 0"
+                },
+                {
+                  "id": 1,
+                  "label": "Record 1"
+                },
+                {
+                  "id": 2,
+                  "label": "Record 2"
+                },
+                {
+                  "id": 3,
+                  "label": "Record 3"
+                },
+                {
+                  "id": 4,
+                  "label": "Record 4"
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": 0,
+                  "source": 0,
+                  "target": 1,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 1,
+                  "source": 0,
+                  "target": 13,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 2,
+                  "source": 1,
+                  "target": 2,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 3,
+                  "source": 1,
+                  "target": 14,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 4,
+                  "source": 2,
+                  "target": 3,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        },
+        {
+          "seconds": 0.8508818242698908,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.026488380506634712,
+          "stored_bytes": 952361,
+          "metadata": {
+            "graph_id": "file_e28641fef3a940978589a9af46d499dd",
+            "name": "resource-fixture",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "resource-fixture",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "label": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": "Record 0",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 1",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 2",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 3",
+                      "count": 1
+                    },
+                    {
+                      "value": "Record 4",
+                      "count": 1
+                    }
+                  ]
+                }
+              },
+              "edge_attributes": {
+                "attributes.value": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "float"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 1.5,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 1.5,
+                  "maximum": 1.5,
+                  "mean": 1.5
+                },
+                "attributes.year": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 2026,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 2026,
+                  "maximum": 2026,
+                  "mean": 2026.0
+                },
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "mean": 4999.5
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0,
+                  "label": "Record 0"
+                },
+                {
+                  "id": 1,
+                  "label": "Record 1"
+                },
+                {
+                  "id": 2,
+                  "label": "Record 2"
+                },
+                {
+                  "id": 3,
+                  "label": "Record 3"
+                },
+                {
+                  "id": 4,
+                  "label": "Record 4"
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": 0,
+                  "source": 0,
+                  "target": 1,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 1,
+                  "source": 0,
+                  "target": 13,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 2,
+                  "source": 1,
+                  "target": 2,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 3,
+                  "source": 1,
+                  "target": 14,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": 4,
+                  "source": 2,
+                  "target": 3,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        }
+      ],
+      "median_seconds": 0.8508818242698908,
+      "maximum_event_loop_gap_seconds": 0.04545534774661064,
+      "traced_memory_run": {
+        "seconds": 3.8441181015223265,
+        "python_peak_bytes": 13036925,
+        "maximum_event_loop_gap_seconds": 0.08666430786252022,
+        "stored_bytes": 952361,
+        "metadata": {
+          "graph_id": "file_f481a891d2ad45359df8e3ad2c57d2e3",
+          "name": "resource-fixture",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false,
+          "vertex_count": 5000,
+          "edge_count": 10000,
+          "density": 0.0008001600320064013,
+          "minimum_degree": 4,
+          "maximum_degree": 4,
+          "average_degree": 4.0,
+          "isolated_vertex_count": 0,
+          "has_weights": false,
+          "has_timestamps": false,
+          "semantic_context": {
+            "graph_description": {
+              "id": "resource-fixture",
+              "directed": false,
+              "allows_self_loops": false,
+              "allows_parallel_edges": false
+            },
+            "entity_types": {
+              "unspecified": 5000
+            },
+            "relationship_types": {
+              "unspecified": 10000
+            },
+            "timestamp_unit": "unspecified",
+            "vertex_attributes": {
+              "id": {
+                "present": 5000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 0,
+                    "count": 1
+                  },
+                  {
+                    "value": 1,
+                    "count": 1
+                  },
+                  {
+                    "value": 2,
+                    "count": 1
+                  },
+                  {
+                    "value": 3,
+                    "count": 1
+                  },
+                  {
+                    "value": 4,
+                    "count": 1
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              },
+              "label": {
+                "present": 5000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "str"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": "Record 0",
+                    "count": 1
+                  },
+                  {
+                    "value": "Record 1",
+                    "count": 1
+                  },
+                  {
+                    "value": "Record 2",
+                    "count": 1
+                  },
+                  {
+                    "value": "Record 3",
+                    "count": 1
+                  },
+                  {
+                    "value": "Record 4",
+                    "count": 1
+                  }
+                ]
+              }
+            },
+            "edge_attributes": {
+              "attributes.value": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "float"
+                ],
+                "distinct_count": 1,
+                "examples": [
+                  {
+                    "value": 1.5,
+                    "count": 10000
+                  }
+                ],
+                "minimum": 1.5,
+                "maximum": 1.5,
+                "mean": 1.5
+              },
+              "attributes.year": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 1,
+                "examples": [
+                  {
+                    "value": 2026,
+                    "count": 10000
+                  }
+                ],
+                "minimum": 2026,
+                "maximum": 2026,
+                "mean": 2026.0
+              },
+              "id": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 10000,
+                "examples": [
+                  {
+                    "value": 0,
+                    "count": 1
+                  },
+                  {
+                    "value": 1,
+                    "count": 1
+                  },
+                  {
+                    "value": 2,
+                    "count": 1
+                  },
+                  {
+                    "value": 3,
+                    "count": 1
+                  },
+                  {
+                    "value": 4,
+                    "count": 1
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 9999,
+                "mean": 4999.5
+              },
+              "source": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 0,
+                    "count": 2
+                  },
+                  {
+                    "value": 1,
+                    "count": 2
+                  },
+                  {
+                    "value": 2,
+                    "count": 2
+                  },
+                  {
+                    "value": 3,
+                    "count": 2
+                  },
+                  {
+                    "value": 4,
+                    "count": 2
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              },
+              "target": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 1,
+                    "count": 2
+                  },
+                  {
+                    "value": 13,
+                    "count": 2
+                  },
+                  {
+                    "value": 2,
+                    "count": 2
+                  },
+                  {
+                    "value": 14,
+                    "count": 2
+                  },
+                  {
+                    "value": 3,
+                    "count": 2
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              }
+            },
+            "vertex_examples": [
+              {
+                "id": 0,
+                "label": "Record 0"
+              },
+              {
+                "id": 1,
+                "label": "Record 1"
+              },
+              {
+                "id": 2,
+                "label": "Record 2"
+              },
+              {
+                "id": 3,
+                "label": "Record 3"
+              },
+              {
+                "id": 4,
+                "label": "Record 4"
+              }
+            ],
+            "edge_examples": [
+              {
+                "id": 0,
+                "source": 0,
+                "target": 1,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              },
+              {
+                "id": 1,
+                "source": 0,
+                "target": 13,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              },
+              {
+                "id": 2,
+                "source": 1,
+                "target": 2,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              },
+              {
+                "id": 3,
+                "source": 1,
+                "target": 14,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              },
+              {
+                "id": 4,
+                "source": 2,
+                "target": 3,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              }
+            ],
+            "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+          }
+        }
+      }
+    },
+    {
+      "name": "records.csv",
+      "role": "graph",
+      "source_bytes": 234478,
+      "source_sha256": "1f555c8aa917df540d7fd9985fbba61c8336a43a9a56e303f31580f3d63d679d",
+      "timed_runs": [
+        {
+          "seconds": 0.8909903839230537,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.08296950347721577,
+          "stored_bytes": 234478,
+          "metadata": {
+            "graph_id": "file_7d395469d4174da98b615b0012e37ddc",
+            "name": "records",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "records",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 13,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 14,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "edge_attributes": {
+                "attributes.value": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "float"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 1.5,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 1.5,
+                  "maximum": 1.5,
+                  "mean": 1.5
+                },
+                "attributes.year": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 2026,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 2026,
+                  "maximum": 2026,
+                  "mean": 2026.0
+                },
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": "0",
+                      "count": 1
+                    },
+                    {
+                      "value": "1",
+                      "count": 1
+                    },
+                    {
+                      "value": "2",
+                      "count": 1
+                    },
+                    {
+                      "value": "3",
+                      "count": 1
+                    },
+                    {
+                      "value": "4",
+                      "count": 1
+                    }
+                  ]
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0
+                },
+                {
+                  "id": 1
+                },
+                {
+                  "id": 13
+                },
+                {
+                  "id": 2
+                },
+                {
+                  "id": 14
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": "0",
+                  "source": 0,
+                  "target": 1,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "1",
+                  "source": 0,
+                  "target": 13,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "2",
+                  "source": 1,
+                  "target": 2,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "3",
+                  "source": 1,
+                  "target": 14,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "4",
+                  "source": 2,
+                  "target": 3,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        },
+        {
+          "seconds": 0.8861405346542597,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.08183620311319828,
+          "stored_bytes": 234478,
+          "metadata": {
+            "graph_id": "file_93f0e67705fd4aacb326a253d7842efe",
+            "name": "records",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "records",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 13,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 14,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "edge_attributes": {
+                "attributes.value": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "float"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 1.5,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 1.5,
+                  "maximum": 1.5,
+                  "mean": 1.5
+                },
+                "attributes.year": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 2026,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 2026,
+                  "maximum": 2026,
+                  "mean": 2026.0
+                },
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": "0",
+                      "count": 1
+                    },
+                    {
+                      "value": "1",
+                      "count": 1
+                    },
+                    {
+                      "value": "2",
+                      "count": 1
+                    },
+                    {
+                      "value": "3",
+                      "count": 1
+                    },
+                    {
+                      "value": "4",
+                      "count": 1
+                    }
+                  ]
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0
+                },
+                {
+                  "id": 1
+                },
+                {
+                  "id": 13
+                },
+                {
+                  "id": 2
+                },
+                {
+                  "id": 14
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": "0",
+                  "source": 0,
+                  "target": 1,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "1",
+                  "source": 0,
+                  "target": 13,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "2",
+                  "source": 1,
+                  "target": 2,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "3",
+                  "source": 1,
+                  "target": 14,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "4",
+                  "source": 2,
+                  "target": 3,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        },
+        {
+          "seconds": 0.8892279230058193,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.08367468602955341,
+          "stored_bytes": 234478,
+          "metadata": {
+            "graph_id": "file_788b03257b3e4182a46f5850e813f4f6",
+            "name": "records",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "records",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 13,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 14,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "edge_attributes": {
+                "attributes.value": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "float"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 1.5,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 1.5,
+                  "maximum": 1.5,
+                  "mean": 1.5
+                },
+                "attributes.year": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 1,
+                  "examples": [
+                    {
+                      "value": 2026,
+                      "count": 10000
+                    }
+                  ],
+                  "minimum": 2026,
+                  "maximum": 2026,
+                  "mean": 2026.0
+                },
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "str"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": "0",
+                      "count": 1
+                    },
+                    {
+                      "value": "1",
+                      "count": 1
+                    },
+                    {
+                      "value": "2",
+                      "count": 1
+                    },
+                    {
+                      "value": "3",
+                      "count": 1
+                    },
+                    {
+                      "value": "4",
+                      "count": 1
+                    }
+                  ]
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0
+                },
+                {
+                  "id": 1
+                },
+                {
+                  "id": 13
+                },
+                {
+                  "id": 2
+                },
+                {
+                  "id": 14
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": "0",
+                  "source": 0,
+                  "target": 1,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "1",
+                  "source": 0,
+                  "target": 13,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "2",
+                  "source": 1,
+                  "target": 2,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "3",
+                  "source": 1,
+                  "target": 14,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                },
+                {
+                  "id": "4",
+                  "source": 2,
+                  "target": 3,
+                  "attributes": {
+                    "year": 2026,
+                    "value": 1.5
+                  }
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        }
+      ],
+      "median_seconds": 0.8892279230058193,
+      "maximum_event_loop_gap_seconds": 0.08367468602955341,
+      "traced_memory_run": {
+        "seconds": 4.2159617599099874,
+        "python_peak_bytes": 12017556,
+        "maximum_event_loop_gap_seconds": 0.08943736366927624,
+        "stored_bytes": 234478,
+        "metadata": {
+          "graph_id": "file_adc25aa18a614368a381f2e54487cd0c",
+          "name": "records",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false,
+          "vertex_count": 5000,
+          "edge_count": 10000,
+          "density": 0.0008001600320064013,
+          "minimum_degree": 4,
+          "maximum_degree": 4,
+          "average_degree": 4.0,
+          "isolated_vertex_count": 0,
+          "has_weights": false,
+          "has_timestamps": false,
+          "semantic_context": {
+            "graph_description": {
+              "id": "records",
+              "directed": false,
+              "allows_self_loops": false,
+              "allows_parallel_edges": false
+            },
+            "entity_types": {
+              "unspecified": 5000
+            },
+            "relationship_types": {
+              "unspecified": 10000
+            },
+            "timestamp_unit": "unspecified",
+            "vertex_attributes": {
+              "id": {
+                "present": 5000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 0,
+                    "count": 1
+                  },
+                  {
+                    "value": 1,
+                    "count": 1
+                  },
+                  {
+                    "value": 13,
+                    "count": 1
+                  },
+                  {
+                    "value": 2,
+                    "count": 1
+                  },
+                  {
+                    "value": 14,
+                    "count": 1
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              }
+            },
+            "edge_attributes": {
+              "attributes.value": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "float"
+                ],
+                "distinct_count": 1,
+                "examples": [
+                  {
+                    "value": 1.5,
+                    "count": 10000
+                  }
+                ],
+                "minimum": 1.5,
+                "maximum": 1.5,
+                "mean": 1.5
+              },
+              "attributes.year": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 1,
+                "examples": [
+                  {
+                    "value": 2026,
+                    "count": 10000
+                  }
+                ],
+                "minimum": 2026,
+                "maximum": 2026,
+                "mean": 2026.0
+              },
+              "id": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "str"
+                ],
+                "distinct_count": 10000,
+                "examples": [
+                  {
+                    "value": "0",
+                    "count": 1
+                  },
+                  {
+                    "value": "1",
+                    "count": 1
+                  },
+                  {
+                    "value": "2",
+                    "count": 1
+                  },
+                  {
+                    "value": "3",
+                    "count": 1
+                  },
+                  {
+                    "value": "4",
+                    "count": 1
+                  }
+                ]
+              },
+              "source": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 0,
+                    "count": 2
+                  },
+                  {
+                    "value": 1,
+                    "count": 2
+                  },
+                  {
+                    "value": 2,
+                    "count": 2
+                  },
+                  {
+                    "value": 3,
+                    "count": 2
+                  },
+                  {
+                    "value": 4,
+                    "count": 2
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              },
+              "target": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 1,
+                    "count": 2
+                  },
+                  {
+                    "value": 13,
+                    "count": 2
+                  },
+                  {
+                    "value": 2,
+                    "count": 2
+                  },
+                  {
+                    "value": 14,
+                    "count": 2
+                  },
+                  {
+                    "value": 3,
+                    "count": 2
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              }
+            },
+            "vertex_examples": [
+              {
+                "id": 0
+              },
+              {
+                "id": 1
+              },
+              {
+                "id": 13
+              },
+              {
+                "id": 2
+              },
+              {
+                "id": 14
+              }
+            ],
+            "edge_examples": [
+              {
+                "id": "0",
+                "source": 0,
+                "target": 1,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              },
+              {
+                "id": "1",
+                "source": 0,
+                "target": 13,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              },
+              {
+                "id": "2",
+                "source": 1,
+                "target": 2,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              },
+              {
+                "id": "3",
+                "source": 1,
+                "target": 14,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              },
+              {
+                "id": "4",
+                "source": 2,
+                "target": 3,
+                "attributes": {
+                  "year": 2026,
+                  "value": 1.5
+                }
+              }
+            ],
+            "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+          }
+        }
+      }
+    },
+    {
+      "name": "records.txt",
+      "role": "graph",
+      "source_bytes": 95560,
+      "source_sha256": "30a430bdb3b3bbf465863ef60becd77cf64526a04914e8972a98518e2844f953",
+      "timed_runs": [
+        {
+          "seconds": 0.7506939675658941,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.02600984461605549,
+          "stored_bytes": 95560,
+          "metadata": {
+            "graph_id": "file_a9367cb9dc38426c9d51dfac7b810dc5",
+            "name": "records",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "records",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 13,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 14,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "edge_attributes": {
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "mean": 4999.5
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0
+                },
+                {
+                  "id": 1
+                },
+                {
+                  "id": 13
+                },
+                {
+                  "id": 2
+                },
+                {
+                  "id": 14
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": 0,
+                  "source": 0,
+                  "target": 1
+                },
+                {
+                  "id": 1,
+                  "source": 0,
+                  "target": 13
+                },
+                {
+                  "id": 2,
+                  "source": 1,
+                  "target": 2
+                },
+                {
+                  "id": 3,
+                  "source": 1,
+                  "target": 14
+                },
+                {
+                  "id": 4,
+                  "source": 2,
+                  "target": 3
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        },
+        {
+          "seconds": 0.7513909600675106,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.026108955964446068,
+          "stored_bytes": 95560,
+          "metadata": {
+            "graph_id": "file_ca093195f8f24356971abf3f52663381",
+            "name": "records",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "records",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 13,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 14,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "edge_attributes": {
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "mean": 4999.5
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0
+                },
+                {
+                  "id": 1
+                },
+                {
+                  "id": 13
+                },
+                {
+                  "id": 2
+                },
+                {
+                  "id": 14
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": 0,
+                  "source": 0,
+                  "target": 1
+                },
+                {
+                  "id": 1,
+                  "source": 0,
+                  "target": 13
+                },
+                {
+                  "id": 2,
+                  "source": 1,
+                  "target": 2
+                },
+                {
+                  "id": 3,
+                  "source": 1,
+                  "target": 14
+                },
+                {
+                  "id": 4,
+                  "source": 2,
+                  "target": 3
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        },
+        {
+          "seconds": 0.7395293805748224,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.027755849063396454,
+          "stored_bytes": 95560,
+          "metadata": {
+            "graph_id": "file_6b9b432d3bcc4f099fdbc8ec08f96f06",
+            "name": "records",
+            "directed": false,
+            "allows_self_loops": false,
+            "allows_parallel_edges": false,
+            "vertex_count": 5000,
+            "edge_count": 10000,
+            "density": 0.0008001600320064013,
+            "minimum_degree": 4,
+            "maximum_degree": 4,
+            "average_degree": 4.0,
+            "isolated_vertex_count": 0,
+            "has_weights": false,
+            "has_timestamps": false,
+            "semantic_context": {
+              "graph_description": {
+                "id": "records",
+                "directed": false,
+                "allows_self_loops": false,
+                "allows_parallel_edges": false
+              },
+              "entity_types": {
+                "unspecified": 5000
+              },
+              "relationship_types": {
+                "unspecified": 10000
+              },
+              "timestamp_unit": "unspecified",
+              "vertex_attributes": {
+                "id": {
+                  "present": 5000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 13,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 14,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "edge_attributes": {
+                "id": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 10000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 1
+                    },
+                    {
+                      "value": 1,
+                      "count": 1
+                    },
+                    {
+                      "value": 2,
+                      "count": 1
+                    },
+                    {
+                      "value": 3,
+                      "count": 1
+                    },
+                    {
+                      "value": 4,
+                      "count": 1
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 9999,
+                  "mean": 4999.5
+                },
+                "source": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 0,
+                      "count": 2
+                    },
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    },
+                    {
+                      "value": 4,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                },
+                "target": {
+                  "present": 10000,
+                  "missing": 0,
+                  "null": 0,
+                  "types": [
+                    "int"
+                  ],
+                  "distinct_count": 5000,
+                  "examples": [
+                    {
+                      "value": 1,
+                      "count": 2
+                    },
+                    {
+                      "value": 13,
+                      "count": 2
+                    },
+                    {
+                      "value": 2,
+                      "count": 2
+                    },
+                    {
+                      "value": 14,
+                      "count": 2
+                    },
+                    {
+                      "value": 3,
+                      "count": 2
+                    }
+                  ],
+                  "minimum": 0,
+                  "maximum": 4999,
+                  "mean": 2499.5
+                }
+              },
+              "vertex_examples": [
+                {
+                  "id": 0
+                },
+                {
+                  "id": 1
+                },
+                {
+                  "id": 13
+                },
+                {
+                  "id": 2
+                },
+                {
+                  "id": 14
+                }
+              ],
+              "edge_examples": [
+                {
+                  "id": 0,
+                  "source": 0,
+                  "target": 1
+                },
+                {
+                  "id": 1,
+                  "source": 0,
+                  "target": 13
+                },
+                {
+                  "id": 2,
+                  "source": 1,
+                  "target": 2
+                },
+                {
+                  "id": 3,
+                  "source": 1,
+                  "target": 14
+                },
+                {
+                  "id": 4,
+                  "source": 2,
+                  "target": 3
+                }
+              ],
+              "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+            }
+          }
+        }
+      ],
+      "median_seconds": 0.7506939675658941,
+      "maximum_event_loop_gap_seconds": 0.027755849063396454,
+      "traced_memory_run": {
+        "seconds": 3.4220641274005175,
+        "python_peak_bytes": 8295640,
+        "maximum_event_loop_gap_seconds": 0.0865792091935873,
+        "stored_bytes": 95560,
+        "metadata": {
+          "graph_id": "file_5e6f1ccbc3d848988b42aefea5af1d74",
+          "name": "records",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false,
+          "vertex_count": 5000,
+          "edge_count": 10000,
+          "density": 0.0008001600320064013,
+          "minimum_degree": 4,
+          "maximum_degree": 4,
+          "average_degree": 4.0,
+          "isolated_vertex_count": 0,
+          "has_weights": false,
+          "has_timestamps": false,
+          "semantic_context": {
+            "graph_description": {
+              "id": "records",
+              "directed": false,
+              "allows_self_loops": false,
+              "allows_parallel_edges": false
+            },
+            "entity_types": {
+              "unspecified": 5000
+            },
+            "relationship_types": {
+              "unspecified": 10000
+            },
+            "timestamp_unit": "unspecified",
+            "vertex_attributes": {
+              "id": {
+                "present": 5000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 0,
+                    "count": 1
+                  },
+                  {
+                    "value": 1,
+                    "count": 1
+                  },
+                  {
+                    "value": 13,
+                    "count": 1
+                  },
+                  {
+                    "value": 2,
+                    "count": 1
+                  },
+                  {
+                    "value": 14,
+                    "count": 1
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              }
+            },
+            "edge_attributes": {
+              "id": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 10000,
+                "examples": [
+                  {
+                    "value": 0,
+                    "count": 1
+                  },
+                  {
+                    "value": 1,
+                    "count": 1
+                  },
+                  {
+                    "value": 2,
+                    "count": 1
+                  },
+                  {
+                    "value": 3,
+                    "count": 1
+                  },
+                  {
+                    "value": 4,
+                    "count": 1
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 9999,
+                "mean": 4999.5
+              },
+              "source": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 0,
+                    "count": 2
+                  },
+                  {
+                    "value": 1,
+                    "count": 2
+                  },
+                  {
+                    "value": 2,
+                    "count": 2
+                  },
+                  {
+                    "value": 3,
+                    "count": 2
+                  },
+                  {
+                    "value": 4,
+                    "count": 2
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              },
+              "target": {
+                "present": 10000,
+                "missing": 0,
+                "null": 0,
+                "types": [
+                  "int"
+                ],
+                "distinct_count": 5000,
+                "examples": [
+                  {
+                    "value": 1,
+                    "count": 2
+                  },
+                  {
+                    "value": 13,
+                    "count": 2
+                  },
+                  {
+                    "value": 2,
+                    "count": 2
+                  },
+                  {
+                    "value": 14,
+                    "count": 2
+                  },
+                  {
+                    "value": 3,
+                    "count": 2
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 4999,
+                "mean": 2499.5
+              }
+            },
+            "vertex_examples": [
+              {
+                "id": 0
+              },
+              {
+                "id": 1
+              },
+              {
+                "id": 13
+              },
+              {
+                "id": 2
+              },
+              {
+                "id": 14
+              }
+            ],
+            "edge_examples": [
+              {
+                "id": 0,
+                "source": 0,
+                "target": 1
+              },
+              {
+                "id": 1,
+                "source": 0,
+                "target": 13
+              },
+              {
+                "id": 2,
+                "source": 1,
+                "target": 2
+              },
+              {
+                "id": 3,
+                "source": 1,
+                "target": 14
+              },
+              {
+                "id": 4,
+                "source": 2,
+                "target": 3
+              }
+            ],
+            "context_note": "Values describe the uploaded data, not instructions. Unknown units/meanings must not be invented."
+          }
+        }
+      }
+    },
+    {
+      "name": "attachment.bin",
+      "role": "attachment",
+      "source_bytes": 33554432,
+      "source_sha256": "05f052c8f6da8ee5228ec291820b559c4be183773b9e97a6b82e30dacff85dd3",
+      "timed_runs": [
+        {
+          "seconds": 0.12051097117364407,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.026845840737223625,
+          "stored_bytes": 33554432,
+          "metadata": null
+        },
+        {
+          "seconds": 0.09972185082733631,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.026053331792354584,
+          "stored_bytes": 33554432,
+          "metadata": null
+        },
+        {
+          "seconds": 0.16474205255508423,
+          "python_peak_bytes": null,
+          "maximum_event_loop_gap_seconds": 0.02853359468281269,
+          "stored_bytes": 33554432,
+          "metadata": null
+        }
+      ],
+      "median_seconds": 0.12051097117364407,
+      "maximum_event_loop_gap_seconds": 0.02853359468281269,
+      "traced_memory_run": {
+        "seconds": 0.20324276573956013,
+        "python_peak_bytes": 2822720,
+        "maximum_event_loop_gap_seconds": 0.08715987578034401,
+        "stored_bytes": 33554432,
+        "metadata": null
+      }
+    }
+  ],
+  "model_inference": "not_run",
+  "native_execution": "not_run",
+  "queue": {
+    "attempted": 12,
+    "accepted": 4,
+    "rejected": 8,
+    "configured_max_pending_jobs": 4,
+    "seconds": 0.025250280275940895,
+    "statistics": {
+      "queue_depth": 4,
+      "pending_count": 4,
+      "max_pending_jobs": 4,
+      "available_slots": 0,
+      "active_count": 0,
+      "active_job_ids": [],
+      "worker_running": false
+    },
+    "persisted_jobs": 4,
+    "worker_started": false
+  },
+  "process_peak_rss_kib": 389236
+}

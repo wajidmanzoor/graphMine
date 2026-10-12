@@ -1,0 +1,34 @@
+{
+  "problem_id": "network_alignment",
+  "paper_id": "2024_pygmtools_ipfp",
+  "title": "Pygmtools: A Python Graph Matching Toolkit",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://jmlr.org/papers/volume25/23-0572/23-0572.pdf",
+    "resolved_url": "https://jmlr.org/papers/volume25/23-0572/23-0572.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "0acd7dd30511344cda4c8e7d3921d83d8916cecaf98ab04571306ebfa085506c",
+    "bytes": 1711967,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/Thinklab-SJTU/pygmtools",
+    "local_path": "code",
+    "commit": "5b7b3f84a34528e455a6df6404822c306aa45dc1",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pygmtools.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "pygmtools/classic_solvers.py": "c1bfe9c513be616ef98e7e933a762fbfcf423b9614f2c37e6058304f3a921ac3",
+      "pygmtools/pytorch_backend.py": "49ca03b040453fd1870ff463898d4e5e6c9c2e407d36b06a99d38b734a24cb7d"
+    }
+  }
+}

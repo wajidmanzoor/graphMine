@@ -1,0 +1,97 @@
+# SPDX-FileCopyrightText: Copyright (c) 2020-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+import gc
+
+import pytest
+
+import cugraph
+from cugraph.datasets import dolphins, netscience
+
+
+def cugraph_call(
+    G, min_weight, ensemble_size, max_level, threshold, resolution, random_state
+):
+    parts, mod = cugraph.ecg(
+        G,
+        min_weight=min_weight,
+        ensemble_size=ensemble_size,
+        max_level=max_level,
+        threshold=threshold,
+        resolution=resolution,
+        random_state=random_state,
+    )
+    num_parts = parts["partition"].max() + 1
+    return mod, num_parts
+
+
+#
+# if filename == "karate":
+#    return 0.38428664207458496
+def golden_call(filename):
+    if filename == "dolphins":
+        return 0.4962422251701355
+    if filename == "netscience":
+        return 0.9279554486274719
+
+
+DATASETS = [dolphins, netscience]
+
+MIN_WEIGHTS = [0.05, 0.15]
+
+ENSEMBLE_SIZES = [16, 32]
+
+MAX_LEVELS = [10, 20]
+
+RESOLUTIONS = [0.95, 1.0]
+
+THRESHOLDS = [1e-6, 1e-07]
+
+RANDOM_STATES = [0, 42]
+
+
+@pytest.mark.sg
+@pytest.mark.parametrize("dataset", DATASETS)
+@pytest.mark.parametrize("min_weight", MIN_WEIGHTS)
+@pytest.mark.parametrize("ensemble_size", ENSEMBLE_SIZES)
+@pytest.mark.parametrize("max_level", MAX_LEVELS)
+@pytest.mark.parametrize("threshold", THRESHOLDS)
+@pytest.mark.parametrize("resolution", RESOLUTIONS)
+@pytest.mark.parametrize("random_state", RANDOM_STATES)
+def test_ecg_clustering(
+    dataset, min_weight, ensemble_size, max_level, threshold, resolution, random_state
+):
+    gc.collect()
+
+    # Read in the graph and get a cugraph object
+    G = dataset.get_graph()
+    # read_weights_in_sp=False => value column dtype is float64
+    G.edgelist.edgelist_df["weights"] = G.edgelist.edgelist_df["weights"].astype(
+        "float64"
+    )
+
+    filename = dataset.metadata["name"]
+    golden_score = golden_call(filename)
+    threshold_score = 0.80 * golden_score
+
+    # Retry strategy: ECG is a randomized algorithm that may not produce
+    # results above the quality threshold on every run. Try up to 10 times
+    # with different random seeds, similar to test_modularity.py.
+    cu_score = None
+    num_parts = None
+    for trial in range(10):
+        trial_random_state = random_state + trial
+        cu_score, num_parts = cugraph_call(
+            G,
+            min_weight,
+            ensemble_size,
+            max_level,
+            threshold,
+            resolution,
+            trial_random_state,
+        )
+        if cu_score > threshold_score:
+            break
+
+    # Assert that the partitioning has better modularity than the threshold
+    assert cu_score > threshold_score

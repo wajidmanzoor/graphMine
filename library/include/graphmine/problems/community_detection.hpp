@@ -45,6 +45,7 @@ struct CommunityDetectionOptions {
       CommunityDetectionOptionalOutput::none;
   bool allow_directed_projection = false;
   ExecutionOptions execution;
+  double resolution = 1.0;
 };
 
 struct VertexCommunityAssignment {
@@ -63,6 +64,7 @@ struct CommunityDetectionOutput {
   double modularity = 0.0;
   std::optional<std::vector<Community>> communities;
   std::optional<std::uint64_t> edge_cut;
+  double resolution = 1.0;
 };
 
 /// Partitions vertices into disjoint communities with a validated backend.

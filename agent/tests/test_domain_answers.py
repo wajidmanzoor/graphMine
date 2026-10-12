@@ -309,7 +309,7 @@ def upload(client, data=None):
     return session, record["id"]
 
 
-def test_late_planner_refusal_enqueues_zero_jobs(settings):
+def test_unresolved_late_planner_refusal_enqueues_zero_jobs(settings):
     with TestClient(create_app(settings)) as client:
         session, file_id = upload(client)
         original = client.app.state.runtime.agent.model.generate
@@ -328,7 +328,8 @@ def test_late_planner_refusal_enqueues_zero_jobs(settings):
             json={"graph_id": file_id, "message": "Find communities"},
         ).json()
         assert response["job_id"] is None and response["plan"] is None
-        assert "not supported" in response["message"]
+        assert response["planning_status"] == "needs_information"
+        assert "could not verify" in response["message"]
         assert (
             client.get("/api/jobs", headers=AUTH, params={"session_id": session}).json()
             == []

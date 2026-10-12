@@ -1,0 +1,29 @@
+{
+  "title": "Accelerating Graph Sampling for Graph Machine Learning using GPUs",
+  "year": 2020,
+  "venue": "arXiv; EuroSys 2021",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2009.06693",
+  "pdf_url": "https://arxiv.org/pdf/2009.06693",
+  "paper_id": "2020_nextdoor_walks",
+  "problem_id": "random_walk_generation",
+  "problem_dir": "46_random_walk_generation",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "NextDoor transit-parallel random walks",
+  "code_url": "https://github.com/plasma-umass/NextDoor",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA transit-parallel sampling and walk generation.",
+  "notes": "Collects walk generation, not embedding training. Node2vec and uniform walks are modes within this entry.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "src/apps/randomwalks/deepwalk.cu",
+    "src/apps/randomwalks/node2vec.cu",
+    "src/apps/randomwalks/randomWalks.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

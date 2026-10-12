@@ -1,0 +1,33 @@
+{
+  "problem_id": "many_source_shortest_paths",
+  "paper_id": "2010_blocked_cuda_floyd_warshall",
+  "title": "A Multi-Stage CUDA Kernel for Floyd-Warshall",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1001.4108",
+    "resolved_url": "https://arxiv.org/pdf/1001.4108",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "2d5f29d59e00b6a5df3bc9c0132db15c9ae56758996315a996cf3e348f0aeeac",
+    "bytes": 677576,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/MTB90/cuda-floyd_warshall",
+    "local_path": "code",
+    "commit": "c21f114eb4da7d4900a6017e293fdb0f43d94141",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/apsp_blocked_lic.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "lib/cuda/cuda_apsp.cu": "b335d6145f5c5131a8fa7b632fa359df9b12b77981b35d74daa7dbf10777b4bb"
+    }
+  }
+}

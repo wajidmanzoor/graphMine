@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/burtscher/MG-MIS",
+  "checked_at": "2026-10-10T01:39:38Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "db7fb2355ac68c3cf96dd2b672ead516c33bf50f",
+  "archive_url": "https://codeload.github.com/burtscher/MG-MIS/tar.gz/db7fb2355ac68c3cf96dd2b672ead516c33bf50f",
+  "archive_sha256": "005c508e406a45d35d50a9586aa4cc44ec88df55200cab11666f5b0efdad1a04",
+  "local_path": "mg_mis-db7fb2355ac6",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "BSD-3-Clause",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

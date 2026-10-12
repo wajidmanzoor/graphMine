@@ -1,0 +1,42 @@
+{
+  "title": "Faster Vertex Cover Algorithms on GPUs with Component-Aware Parallel Branching",
+  "authors": [
+    "Hussein Amro",
+    "Basel Fakhri",
+    "Amer E. Mouawad",
+    "Izzat El Hajj"
+  ],
+  "year": 2025,
+  "venue": "IEEE TPDS 37(2), 2026",
+  "doi": "10.1109/TPDS.2025.3641049",
+  "publication_url": "https://arxiv.org/abs/2512.18334",
+  "pdf_url": "https://arxiv.org/pdf/2512.18334",
+  "paper_id": "2026_component_aware_mvc",
+  "problem_id": "minimum_vertex_cover",
+  "problem_dir": "69_minimum_vertex_cover",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Component-aware GPU vertex cover",
+  "code_url": "https://github.com/HusseinAmro/component-aware-vertex-cover-gpu",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Author implementation of exact and parameterized vertex-cover search with component-aware branching. The CLI reports optimum size/decision; a witness set is not guaranteed by its current interface.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "src/main.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "mvc_components",
+  "variant_constraints": [
+    "simple undirected graph",
+    "size/decision output",
+    "timeout must remain unknown"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

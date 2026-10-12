@@ -1,0 +1,696 @@
+{
+  "version": "agent-resource-audit-v1",
+  "created_at": "2026-10-07T21:43:49.650425+00:00",
+  "scope": "CPU-only synthetic resource checks. Three untraced upload runs and one traced memory run per format; 5,000 vertices/10,000 edges. No production-scale load, live model or GPU kernel claim. Native result loading is bounded after computation; graphs and accepted results remain materialized in memory.",
+  "sources": {
+    "agent-resource-baseline-v2.json": "d00d84dc49234774aac9a4623f4ab74012dde4ac38b4e932cee604e4b1f7606d",
+    "agent-resource-bounded-v1.json": "660305e7f6b43f92078275cb243e5f33425c7e1c1e11df3363f09e318ca1254a",
+    "agent-result-loading-baseline-v2.json": "f381ef2b43434ef2c24db5ca522fbabed3ebde69a7aedc8358593bd7f34f157c",
+    "agent-result-loading-bounded-v1.json": "0abdfc4d5fe1424c7ec095aa732e7c386eddc09d38c085a7faeeba5b803240e2"
+  },
+  "uploads": [
+    {
+      "name": "records.json",
+      "input_bytes": 952361,
+      "input_sha256": "c159b9c457681f49ecdf160718e4e000277abaaf8e583e2c59da8d2eebf478e7",
+      "before_median_seconds": 0.8422539103776217,
+      "after_median_seconds": 0.8508818242698908,
+      "before_peak_python_bytes": 23643066,
+      "after_peak_python_bytes": 13036925,
+      "before_maximum_event_loop_gap_seconds": 0.8562494479119778,
+      "after_maximum_event_loop_gap_seconds": 0.04545534774661064
+    },
+    {
+      "name": "records.csv",
+      "input_bytes": 234478,
+      "input_sha256": "1f555c8aa917df540d7fd9985fbba61c8336a43a9a56e303f31580f3d63d679d",
+      "before_median_seconds": 0.8781268689781427,
+      "after_median_seconds": 0.8892279230058193,
+      "before_peak_python_bytes": 21106481,
+      "after_peak_python_bytes": 12017556,
+      "before_maximum_event_loop_gap_seconds": 0.867782611399889,
+      "after_maximum_event_loop_gap_seconds": 0.08367468602955341
+    },
+    {
+      "name": "records.txt",
+      "input_bytes": 95560,
+      "input_sha256": "30a430bdb3b3bbf465863ef60becd77cf64526a04914e8972a98518e2844f953",
+      "before_median_seconds": 0.7466842830181122,
+      "after_median_seconds": 0.7506939675658941,
+      "before_peak_python_bytes": 12354980,
+      "after_peak_python_bytes": 8295640,
+      "before_maximum_event_loop_gap_seconds": 0.7270321119576693,
+      "after_maximum_event_loop_gap_seconds": 0.027755849063396454
+    },
+    {
+      "name": "attachment.bin",
+      "input_bytes": 33554432,
+      "input_sha256": "05f052c8f6da8ee5228ec291820b559c4be183773b9e97a6b82e30dacff85dd3",
+      "before_median_seconds": 0.15009724535048008,
+      "after_median_seconds": 0.12051097117364407,
+      "before_peak_python_bytes": 67826469,
+      "after_peak_python_bytes": 2822720,
+      "before_maximum_event_loop_gap_seconds": 0.07072432525455952,
+      "after_maximum_event_loop_gap_seconds": 0.02853359468281269
+    }
+  ],
+  "queue": {
+    "before": {
+      "attempted": 12,
+      "accepted": 12,
+      "rejected": 0,
+      "configured_max_pending_jobs": null,
+      "seconds": 0.06741290725767612,
+      "statistics": {
+        "queue_depth": 12,
+        "active_count": 0,
+        "active_job_ids": [],
+        "worker_running": false
+      },
+      "persisted_jobs": 12,
+      "worker_started": false
+    },
+    "after": {
+      "attempted": 12,
+      "accepted": 4,
+      "rejected": 8,
+      "configured_max_pending_jobs": 4,
+      "seconds": 0.025250280275940895,
+      "statistics": {
+        "queue_depth": 4,
+        "pending_count": 4,
+        "max_pending_jobs": 4,
+        "available_slots": 0,
+        "active_count": 0,
+        "active_job_ids": [],
+        "worker_running": false
+      },
+      "persisted_jobs": 4,
+      "worker_started": false
+    }
+  },
+  "result_loading": {
+    "before": {
+      "version": "result-loading-pressure-v1",
+      "created_at": "2026-10-07T21:23:06.000894+00:00",
+      "label": "before-result-loading-bound",
+      "source_bytes": 73400452,
+      "source_sha256": "4a87ca40d527bbe348c83bcfc08101941ba4615f033886dad56bc2607288bc68",
+      "configured_result_limit_bytes": null,
+      "execution_source_sha256": "c1404dbf5274116ed2a797bfe1e4db222f58e79eb8c8e59b54dd96b9df63a0f0",
+      "profiler_sha256": "5580075cded99b12cf7d8b448f4bb06f6102e910c26514959bd598c5236f6ab4",
+      "scope": "Synthetic JSON with one large diagnostic string. Legacy mode reproduces the original inline JSON-loading expression; bounded mode calls the production loader. Traced allocation/elapsed measurements include tracing overhead. No native job, model, semantic accuracy or production-scale throughput claim.",
+      "model_inference": "not_run",
+      "native_execution": "not_run",
+      "path_taken": "legacy_inline_expression",
+      "outcome": "loaded",
+      "seconds_with_tracing": 0.17487090453505516,
+      "python_peak_bytes": 146806658
+    },
+    "after": {
+      "version": "result-loading-pressure-v1",
+      "created_at": "2026-10-07T21:23:12.519779+00:00",
+      "label": "bounded-result-loading",
+      "source_bytes": 73400452,
+      "source_sha256": "4a87ca40d527bbe348c83bcfc08101941ba4615f033886dad56bc2607288bc68",
+      "configured_result_limit_bytes": 67108864,
+      "execution_source_sha256": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+      "profiler_sha256": "5580075cded99b12cf7d8b448f4bb06f6102e910c26514959bd598c5236f6ab4",
+      "scope": "Synthetic JSON with one large diagnostic string. Legacy mode reproduces the original inline JSON-loading expression; bounded mode calls the production loader. Traced allocation/elapsed measurements include tracing overhead. No native job, model, semantic accuracy or production-scale throughput claim.",
+      "model_inference": "not_run",
+      "native_execution": "not_run",
+      "path_taken": "production_result_loader",
+      "outcome": "rejected",
+      "error_code": "result_too_large",
+      "seconds_with_tracing": 6.61313533782959e-05,
+      "python_peak_bytes": 5798
+    }
+  },
+  "stage_timing_calibration": {
+    "capture_kind": "cpu_fixture",
+    "source_capture": ".graphmine-learning/resource-stage-calibration-v1/capture.json",
+    "source_capture_sha256": "d65695cc684ff7203064735f362c0022c507e519d40ea472d1f5476bd94c2582",
+    "completed_cases": [
+      {
+        "case_id": "maximal-cliques--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_c2246091ac2b4878959db34a19b7ea50",
+          "operation_id": "maximal-cliques",
+          "queued_at": "2026-10-07T21:34:09.539275+00:00",
+          "active_started_at": "2026-10-07T21:34:09.548418+00:00",
+          "queue_wait_seconds": 0.009143,
+          "stages_seconds": {
+            "execution": 0.000726897269487381,
+            "result_validation": 1.1796131730079651e-05,
+            "result_storage": 0.002099858596920967,
+            "interpretation_and_presentation": 0.02557973749935627
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04883110150694847,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "maximum-clique--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_46849bba9d144c34a90d16bf0a6792d0",
+          "operation_id": "maximum-clique",
+          "queued_at": "2026-10-07T21:34:09.653219+00:00",
+          "active_started_at": "2026-10-07T21:34:09.662601+00:00",
+          "queue_wait_seconds": 0.009382,
+          "stages_seconds": {
+            "execution": 0.0003568008542060852,
+            "result_validation": 9.59448516368866e-06,
+            "result_storage": 0.0018112212419509888,
+            "interpretation_and_presentation": 0.022560345008969307
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04223834536969662,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "k-cliques--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_03f7e370aee345e981d47ac29c8de6a5",
+          "operation_id": "k-cliques",
+          "queued_at": "2026-10-07T21:34:09.748504+00:00",
+          "active_started_at": "2026-10-07T21:34:09.754602+00:00",
+          "queue_wait_seconds": 0.006098,
+          "stages_seconds": {
+            "execution": 0.0003302302211523056,
+            "result_validation": 6.388872861862183e-06,
+            "result_storage": 0.002952825278043747,
+            "interpretation_and_presentation": 0.027260683476924896
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.05053241737186909,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "quasi-cliques--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_78a3fd861c854ca4b9de6cd99e7b78d5",
+          "operation_id": "quasi-cliques",
+          "queued_at": "2026-10-07T21:34:09.861381+00:00",
+          "active_started_at": "2026-10-07T21:34:09.869002+00:00",
+          "queue_wait_seconds": 0.007621,
+          "stages_seconds": {
+            "execution": 0.00034421123564243317,
+            "result_validation": 7.672235369682312e-06,
+            "result_storage": 0.0019902344793081284,
+            "interpretation_and_presentation": 0.02693231962621212
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.047971295192837715,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "k-core--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_f239d0bb3b6e438eb47e05ce6f538b5d",
+          "operation_id": "k-core",
+          "queued_at": "2026-10-07T21:34:09.969916+00:00",
+          "active_started_at": "2026-10-07T21:34:09.977768+00:00",
+          "queue_wait_seconds": 0.007852,
+          "stages_seconds": {
+            "execution": 0.0006373319774866104,
+            "result_validation": 1.3379380106925964e-05,
+            "result_storage": 0.0021502654999494553,
+            "interpretation_and_presentation": 0.0235280804336071
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04139610193669796,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "maximal-bicliques--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_b4fd03442d3e4f82856a9f1f52be4a28",
+          "operation_id": "maximal-bicliques",
+          "queued_at": "2026-10-07T21:34:10.067866+00:00",
+          "active_started_at": "2026-10-07T21:34:10.073086+00:00",
+          "queue_wait_seconds": 0.00522,
+          "stages_seconds": {
+            "execution": 0.00028668344020843506,
+            "result_validation": 5.749985575675964e-06,
+            "result_storage": 0.0017453543841838837,
+            "interpretation_and_presentation": 0.017057476565241814
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.03386899642646313,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "triangle-counting--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_5cea42e42c41411688fbfb4806a1c63a",
+          "operation_id": "triangle-counting",
+          "queued_at": "2026-10-07T21:34:10.149278+00:00",
+          "active_started_at": "2026-10-07T21:34:10.154316+00:00",
+          "queue_wait_seconds": 0.005038,
+          "stages_seconds": {
+            "execution": 0.00030243583023548126,
+            "result_validation": 5.3085386753082275e-06,
+            "result_storage": 0.002019386738538742,
+            "interpretation_and_presentation": 0.018086571246385574
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.034023018553853035,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "dynamic-triangle-counting--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_cf72afd8994d4f5b983c8c0d743d2e28",
+          "operation_id": "dynamic-triangle-counting",
+          "queued_at": "2026-10-07T21:34:10.236045+00:00",
+          "active_started_at": "2026-10-07T21:34:10.241168+00:00",
+          "queue_wait_seconds": 0.005123,
+          "stages_seconds": {
+            "execution": 0.0003103986382484436,
+            "result_validation": 5.539506673812866e-06,
+            "result_storage": 0.001746566966176033,
+            "interpretation_and_presentation": 0.014669965952634811
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.02993711084127426,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "graph-motifs--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_aaef69d9b178432287745cf9af61f71a",
+          "operation_id": "graph-motifs",
+          "queued_at": "2026-10-07T21:34:10.319174+00:00",
+          "active_started_at": "2026-10-07T21:34:10.324132+00:00",
+          "queue_wait_seconds": 0.004958,
+          "stages_seconds": {
+            "execution": 0.0003022458404302597,
+            "result_validation": 7.402151823043823e-06,
+            "result_storage": 0.0018633734434843063,
+            "interpretation_and_presentation": 0.018681958317756653
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.03455554135143757,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "subgraph-isomorphism--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_2af67d5e8d4d4f9f807020756c814fda",
+          "operation_id": "subgraph-isomorphism",
+          "queued_at": "2026-10-07T21:34:10.410772+00:00",
+          "active_started_at": "2026-10-07T21:34:10.415868+00:00",
+          "queue_wait_seconds": 0.005096,
+          "stages_seconds": {
+            "execution": 0.00031756795942783356,
+            "result_validation": 5.50784170627594e-06,
+            "result_storage": 0.003294270485639572,
+            "interpretation_and_presentation": 0.02758045680820942
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.044943906366825104,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "temporal-motif-mining--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_7f72981468e54142ae7ba670b0730d39",
+          "operation_id": "temporal-motif-mining",
+          "queued_at": "2026-10-07T21:34:10.540096+00:00",
+          "active_started_at": "2026-10-07T21:34:10.545364+00:00",
+          "queue_wait_seconds": 0.005268,
+          "stages_seconds": {
+            "execution": 0.0002958271652460098,
+            "result_validation": 5.237758159637451e-06,
+            "result_storage": 0.0016546547412872314,
+            "interpretation_and_presentation": 0.015804367139935493
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.03143982030451298,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "community-detection--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_75d99e62189c41998bd56196eae82b88",
+          "operation_id": "community-detection",
+          "queued_at": "2026-10-07T21:34:10.633322+00:00",
+          "active_started_at": "2026-10-07T21:34:10.641264+00:00",
+          "queue_wait_seconds": 0.007942,
+          "stages_seconds": {
+            "execution": 0.0003521628677845001,
+            "result_validation": 7.5213611125946045e-06,
+            "result_storage": 0.001924995332956314,
+            "interpretation_and_presentation": 0.026832226663827896
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04610690101981163,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "betweenness-centrality--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_db781d1dfa9643cfb9afd2300ada38a8",
+          "operation_id": "betweenness-centrality",
+          "queued_at": "2026-10-07T21:34:10.747355+00:00",
+          "active_started_at": "2026-10-07T21:34:10.753887+00:00",
+          "queue_wait_seconds": 0.006532,
+          "stages_seconds": {
+            "execution": 0.0003556888550519943,
+            "result_validation": 6.940215826034546e-06,
+            "result_storage": 0.002863040193915367,
+            "interpretation_and_presentation": 0.025113794952630997
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04974709264934063,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "connected-components--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_aa10f9a345df4d35a6959e2813ced739",
+          "operation_id": "connected-components",
+          "queued_at": "2026-10-07T21:34:10.865455+00:00",
+          "active_started_at": "2026-10-07T21:34:10.874574+00:00",
+          "queue_wait_seconds": 0.009119,
+          "stages_seconds": {
+            "execution": 0.00036704353988170624,
+            "result_validation": 7.759779691696167e-06,
+            "result_storage": 0.001841910183429718,
+            "interpretation_and_presentation": 0.02706168405711651
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04753165319561958,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "max-flow-min-cut--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_85f628e0deb248b1969403589a70b401",
+          "operation_id": "max-flow-min-cut",
+          "queued_at": "2026-10-07T21:34:10.986673+00:00",
+          "active_started_at": "2026-10-07T21:34:10.994124+00:00",
+          "queue_wait_seconds": 0.007451,
+          "stages_seconds": {
+            "execution": 0.0003779195249080658,
+            "result_validation": 8.132308721542358e-06,
+            "result_storage": 0.0019090529531240463,
+            "interpretation_and_presentation": 0.023220619186758995
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04382886365056038,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "linear-assignment--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_853c5b825e5742788ff6cd25400ef9b8",
+          "operation_id": "linear-assignment",
+          "queued_at": "2026-10-07T21:34:11.095823+00:00",
+          "active_started_at": "2026-10-07T21:34:11.102156+00:00",
+          "queue_wait_seconds": 0.006333,
+          "stages_seconds": {
+            "execution": 0.000762181356549263,
+            "result_validation": 1.2246891856193542e-05,
+            "result_storage": 0.0021727178245782852,
+            "interpretation_and_presentation": 0.018650200217962265
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.040229544043540955,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "transitive-closure--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_0c7c387745f149418f934c7baa953021",
+          "operation_id": "transitive-closure",
+          "queued_at": "2026-10-07T21:34:11.197455+00:00",
+          "active_started_at": "2026-10-07T21:34:11.203815+00:00",
+          "queue_wait_seconds": 0.00636,
+          "stages_seconds": {
+            "execution": 0.00039221160113811493,
+            "result_validation": 7.621943950653076e-06,
+            "result_storage": 0.0023116394877433777,
+            "interpretation_and_presentation": 0.017330938950181007
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.03739107958972454,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "butterfly-counting--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_6e581ce1777a4e40a8809f6ba38f96ee",
+          "operation_id": "butterfly-counting",
+          "queued_at": "2026-10-07T21:34:11.296622+00:00",
+          "active_started_at": "2026-10-07T21:34:11.303319+00:00",
+          "queue_wait_seconds": 0.006697,
+          "stages_seconds": {
+            "execution": 0.0004494953900575638,
+            "result_validation": 7.96094536781311e-06,
+            "result_storage": 0.0021520983427762985,
+            "interpretation_and_presentation": 0.01725643128156662
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.03804679028689861,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "k-truss--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_aef48bdb05da4eccbd15ce6f4db46167",
+          "operation_id": "k-truss",
+          "queued_at": "2026-10-07T21:34:11.399583+00:00",
+          "active_started_at": "2026-10-07T21:34:11.407529+00:00",
+          "queue_wait_seconds": 0.007946,
+          "stages_seconds": {
+            "execution": 0.00038891658186912537,
+            "result_validation": 9.063631296157837e-06,
+            "result_storage": 0.0023052878677845,
+            "interpretation_and_presentation": 0.023437796160578728
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04527468606829643,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "densest-subgraph--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_1a8b135f254a4f2caea9e4857af9e630",
+          "operation_id": "densest-subgraph",
+          "queued_at": "2026-10-07T21:34:11.518645+00:00",
+          "active_started_at": "2026-10-07T21:34:11.526372+00:00",
+          "queue_wait_seconds": 0.007727,
+          "stages_seconds": {
+            "execution": 0.00038646161556243896,
+            "result_validation": 9.914860129356384e-06,
+            "result_storage": 0.00222979299724102,
+            "interpretation_and_presentation": 0.02076144516468048
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04166426137089729,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "maximal-biclique-counting--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_81429ed598eb47cd975d074d1eb6c598",
+          "operation_id": "maximal-biclique-counting",
+          "queued_at": "2026-10-07T21:34:11.632803+00:00",
+          "active_started_at": "2026-10-07T21:34:11.640793+00:00",
+          "queue_wait_seconds": 0.00799,
+          "stages_seconds": {
+            "execution": 0.000353323295712471,
+            "result_validation": 7.4319541454315186e-06,
+            "result_storage": 0.0021224115043878555,
+            "interpretation_and_presentation": 0.0193601306527853
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04029563255608082,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "personalized-pagerank--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_9138c64d9753419ab50fe38bb5b7d69b",
+          "operation_id": "personalized-pagerank",
+          "queued_at": "2026-10-07T21:34:11.749242+00:00",
+          "active_started_at": "2026-10-07T21:34:11.756486+00:00",
+          "queue_wait_seconds": 0.007244,
+          "stages_seconds": {
+            "execution": 0.0003577098250389099,
+            "result_validation": 9.57585871219635e-06,
+            "result_storage": 0.002277195453643799,
+            "interpretation_and_presentation": 0.021230576559901237
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.042365023866295815,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "group-steiner-tree--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_391c510366ef4150857e8cd54bff6027",
+          "operation_id": "group-steiner-tree",
+          "queued_at": "2026-10-07T21:34:11.868882+00:00",
+          "active_started_at": "2026-10-07T21:34:11.876145+00:00",
+          "queue_wait_seconds": 0.007263,
+          "stages_seconds": {
+            "execution": 0.00035044923424720764,
+            "result_validation": 7.791444659233093e-06,
+            "result_storage": 0.0025129634886980057,
+            "interpretation_and_presentation": 0.021234480664134026
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04322420060634613,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "influence-maximization--supported",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_8a309544063d4eb4abd72904dfb5d216",
+          "operation_id": "influence-maximization",
+          "queued_at": "2026-10-07T21:34:11.986915+00:00",
+          "active_started_at": "2026-10-07T21:34:11.994107+00:00",
+          "queue_wait_seconds": 0.007192,
+          "stages_seconds": {
+            "execution": 0.0003617759793996811,
+            "result_validation": 9.695068001747131e-06,
+            "result_storage": 0.00219084694981575,
+            "interpretation_and_presentation": 0.020154964178800583
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.04188924841582775,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "k-cliques--empty_filter",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_e899eddded804a958903111383a334c5",
+          "operation_id": "k-cliques",
+          "queued_at": "2026-10-07T21:34:12.383344+00:00",
+          "active_started_at": "2026-10-07T21:34:12.389800+00:00",
+          "queue_wait_seconds": 0.006456,
+          "stages_seconds": {
+            "execution": 0.00029991380870342255,
+            "result_validation": 4.956498742103577e-06,
+            "result_storage": 0.0019999798387289047,
+            "interpretation_and_presentation": 0.01886552944779396
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.03815583512187004,
+          "status": "completed"
+        }
+      },
+      {
+        "case_id": "connected-components--weak_connectivity",
+        "timings": {
+          "version": "job-timings-v1",
+          "job_id": "job_8142d1f674f5489b82c4fe3a36d55a8d",
+          "operation_id": "connected-components",
+          "queued_at": "2026-10-07T21:34:12.489850+00:00",
+          "active_started_at": "2026-10-07T21:34:12.496239+00:00",
+          "queue_wait_seconds": 0.006389,
+          "stages_seconds": {
+            "execution": 0.0003072042018175125,
+            "result_validation": 5.887821316719055e-06,
+            "result_storage": 0.002188943326473236,
+            "interpretation_and_presentation": 0.019652443006634712
+          },
+          "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+          "total_active_seconds": 0.039309024810791016,
+          "status": "completed"
+        }
+      }
+    ],
+    "oversized_result_and_recovery": [
+      {
+        "version": "job-timings-v1",
+        "job_id": "job_b33bae44f89342279a7865d5915202d5",
+        "operation_id": "maximal-cliques",
+        "queued_at": "2026-10-07T21:34:37.432742+00:00",
+        "active_started_at": "2026-10-07T21:34:37.493004+00:00",
+        "queue_wait_seconds": 0.060262,
+        "stages_seconds": {
+          "execution": 0.02037983201444149,
+          "result_validation": 1.2088567018508911e-05,
+          "result_storage": 0.0024382304400205612
+        },
+        "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+        "total_active_seconds": 0.03528755530714989,
+        "status": "completed"
+      },
+      {
+        "version": "job-timings-v1",
+        "job_id": "job_c65cd286c5d94aef9cb55b9c9c34d588",
+        "operation_id": "maximal-cliques",
+        "queued_at": "2026-10-07T21:34:37.428065+00:00",
+        "active_started_at": "2026-10-07T21:34:37.437893+00:00",
+        "queue_wait_seconds": 0.009828,
+        "stages_seconds": {
+          "execution": 0.021353531628847122
+        },
+        "scope": "Wall times. Execution includes input preparation, subprocess wait and result loading; interpretation includes computed answers, views and optional narration. Final timing persistence and workspace archival are excluded. Queue wait is a nonnegative wall-clock timestamp difference.",
+        "total_active_seconds": 0.05347869545221329,
+        "status": "failed"
+      }
+    ]
+  },
+  "validation": {
+    "cpu_tests_passed": 563,
+    "native_gpu_tests_skipped": 15,
+    "browser_scenarios_passed": 6
+  },
+  "model_inference": "not_run",
+  "native_execution": "not_run",
+  "training_started": false
+}

@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/burtscher/ECL-SGB",
+  "checked_at": "2026-10-10T01:46:24Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "230b2e8b7e82a39e7e627424a77ae724f7f8a92c",
+  "archive_url": "https://codeload.github.com/burtscher/ECL-SGB/tar.gz/230b2e8b7e82a39e7e627424a77ae724f7f8a92c",
+  "archive_sha256": "93a21d9ea90b0efa7198d6b7dd6dc75af2a4a08c986985e591c65931f2815bfb",
+  "local_path": "ecl_sgb-230b2e8b7e82",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "BSD-3-Clause",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

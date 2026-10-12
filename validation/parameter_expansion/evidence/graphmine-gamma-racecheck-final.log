@@ -1,0 +1,3 @@
+========= COMPUTE-SANITIZER
+{"ok":true,"provenance":{"problem":"k_clique_counting_enumeration","backend":"gamma","backend_version":"GAMMA with checked prefix-intersection repair","source_commit":"3e01be68ededb8dcc4fa44bdb069a945a822232c","execution_path":"repaired GAMMA GPU count + optional common exact materializer"},"warnings":[],"statistics":{"end_to_end_ms":6.764945849E3,"backend_ms":5.930836175E3,"output_materialization_ms":1.31E-4},"output":{"count":0,"complete":true}}
+========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)

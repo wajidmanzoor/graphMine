@@ -1,0 +1,29 @@
+{
+  "problem_id": "overlapping_community_detection",
+  "problem_dir": "17_overlapping_community_detection",
+  "name": "Overlapping Community Detection by k-Clique Percolation",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 0,
+  "local_gpu_code_entries": 0,
+  "local_paper_entries": 0,
+  "local_gpu_code_and_paper_including_related": 0,
+  "eligible_code_and_paper_references": 0,
+  "eligible_local_code_and_paper_pairs": 0,
+  "target_met": false,
+  "shortfall": 3,
+  "shortfall_explanation": "The current contract is k-clique percolation. Generic overlapping community models and ordinary Louvain/Leiden are not equivalent; no matching public GPU artifact was verified.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [],
+    "shortfall": "The current contract is k-clique percolation. Generic overlapping community models and ordinary Louvain/Leiden are not equivalent; no matching public GPU artifact was verified.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": []
+}

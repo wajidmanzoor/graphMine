@@ -1,0 +1,64 @@
+{
+  "scope": "Local planner repairs and regression verification; no broad unattended-planning guarantee.",
+  "recovered_cases": {
+    "cover_optimum": true,
+    "weighted_distance": true,
+    "incoming_records": true,
+    "derived_network": true
+  },
+  "original_regression": {
+    "passed": 20,
+    "total": 20
+  },
+  "fresh_strict_score": {
+    "passed": 12,
+    "total": 13
+  },
+  "fresh_correct_native_results_and_dependencies": 13,
+  "fresh_equivalent_default_audit": "neighbor-direction-audit.json",
+  "application": {
+    "passed": 81,
+    "skipped_physical_gpu": 2,
+    "failures": 0,
+    "errors": 0
+  },
+  "sources_match_final_files": true,
+  "temporary_model_stopped": true,
+  "baseline_commit": "0141939ab24268135e0c1dc62834ecad9784e7d0",
+  "patch_state": "working_tree",
+  "model": {
+    "name": "Qwen/Qwen3.8-27B-FP8",
+    "base_revision": "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+    "reasoning_effort": "medium",
+    "thinking_token_budget": 1536,
+    "max_completion_tokens": 3072,
+    "temperature": 0,
+    "seed": 0
+  },
+  "evidence_sha256": {
+    "dependent-source-choice.json": "6d348a1e71dd1ac8260ae625fcadb5864d3747a05c04a3cda056716fe4ec3995",
+    "fresh-thirteen.json": "b7afea8d98ff6f71b8070f5d34878a25cf8ef6e599003a3028a0a86556227bc1",
+    "fresh-oracles-v2.json": "791ca7063321710cc3eb74b06e3a79360b88a252adacf990edda2e49d1c6a55f",
+    "fresh-suite-v3.json": "435d5393f6dbed81ce47af85d4c80091ade218fd51b9fa656d58fe905f4c3567",
+    "fresh-oracles-v3.json": "9f0952484b89d5fc75310cc028243bd927d64f346ebeaf0f3df8983fc96b94ca",
+    "decision-and-repair.xml": "41e41b0481db92228eac0180b05763216bd2576785929d98c5464c659d6988d6",
+    "planning-source-choice.xml": "87a1dc77d9083222cc0f03367b4e9484ba91fc76fe7ef043e32d9a86daa5ff10",
+    "REPORT.md": "26322826bbdedad526e30eecbe51c5ebc55e5a73d5a6f4f0ae5025ea0985855e",
+    "application-final.xml": "00c627d30939716168ef75425f373d84ee2917affad7547f5738ddce591d7dd8",
+    "neighbor-direction-audit.json": "6cda79a2f2591cd7469a1b7e41a135f14dbd4f68fd1a2f2ff1323cb6da809e75",
+    "planning-first.xml": "3c63f0c8c005a94fc4143928842dd93a7d6d61c26ad8fa3b3e9ef9547b023371",
+    "fresh-oracles.json": "5323766d7734dd0b8441985a85fc8691a37f8d91483e3a7829ddda7972088d86",
+    "original-twenty-final.json": "71008a02dc4390c32ca96389b01c9bad6a03cfc7b6684085302ed476e51d7d64",
+    "application.xml": "74959ca8c2c5946db2684da64baecc7896f2b1acddbb737d25eb0fda17679c10",
+    "repaired-four.json": "6e6616511773ee1b3f4f2a5d550e009be641e1be2f080469b16b1eba73cf27a7",
+    "application-final.xml.metadata.json": "9a80f959b9c97799fe7a780f959f2b7581e956d994cd67e0e65c4c5dd3803225",
+    "fresh-suite.json": "698bfac55c93790e25f42b758031fccf3017f6d1273118334937e3b08c175a0f",
+    "application-final-v2.xml": "226ac1a87b8d31fc99e503982cbcd8512c86fde807464679f81ccdfb01cfb356",
+    "fresh-suite-v2.json": "3753b93ba0345b5d665a8ae1daa7992078bab8316bcea7aa07126795d1fe57c2",
+    "dependent-scope.json": "664b491fab88e74fbaa0705c27d21cb5ed4411e050f47e08189975d006e8ca86",
+    "application-final-v2.xml.metadata.json": "493319bc80ec40726e4084b38b6dd673199f10d019a74ab169afa49c59e4db53",
+    "application.xml.metadata.json": "193dd98dc452bc7aba577e757cacb1dc0d5983edea82a99e217340ef55eb1d46",
+    "repaired-four-v2.json": "880f83edeb6c95c7ad2e3851dbe19aac2af6914bad324a3f51097fba0884f43d",
+    "baseline-four.json": "35936558818b3ec9f97155a7866f5bed1a46e1a17a00d433ff140e9029a52ce3"
+  }
+}

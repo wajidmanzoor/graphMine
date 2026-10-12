@@ -2,20 +2,28 @@
   "problem_id": "maximal_biclique_enumeration",
   "paper_id": "2023_efficient_mbe_gpus",
   "title": "Efficient Maximal Biclique Enumeration on GPUs",
-  "checked_at": "2026-10-03T22:04:41Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://shuibing9420.github.io/assets/pdf/gmbe-sc23.pdf",
     "status": "downloaded",
+    "source_url": "https://shuibing9420.github.io/assets/pdf/gmbe-sc23.pdf",
+    "resolved_url": "https://shuibing9420.github.io/assets/pdf/gmbe-sc23.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "bedcc57de29b60ed0a2580fdedddfecc8aaf906b508fab3ee30bfeb0d0beb6e2",
+    "bytes": 3163168,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/fhxu00/MBE-GPU",
-    "status": "cloned",
-    "local_path": "code",
+    "status": "not_collected",
+    "local_path": null,
     "commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made.",
+    "checked_at": "2026-10-10T02:15:29Z",
+    "existing_workspace_source_reference": "/home/wajid/projects/graphDatabaseAgent/problems/09_maximal_biclique_enumeration/papers/2023_efficient_mbe_gpus/code"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

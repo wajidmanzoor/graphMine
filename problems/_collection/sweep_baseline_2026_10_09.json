@@ -1,0 +1,441 @@
+{
+  "checked_at": "2026-10-10T01:37:06Z",
+  "problems": [
+    {
+      "problem_dir": "01_maximal_clique_enumeration",
+      "paper_ids": [
+        "2023_parallelizing_mce",
+        "2024_g2_aimd",
+        "2026_rdmce"
+      ]
+    },
+    {
+      "problem_dir": "02_maximum_clique",
+      "paper_ids": [
+        "2019_maximum_clique_cuda",
+        "2023_maximum_clique_enumeration_gpu",
+        "2024_maximum_clique_many_core_gpu"
+      ]
+    },
+    {
+      "problem_dir": "03_k_clique_counting_enumeration",
+      "paper_ids": [
+        "2022_parallel_k_clique_counting",
+        "2023_graphset",
+        "2024_gamma"
+      ]
+    },
+    {
+      "problem_dir": "04_quasi_clique_mining",
+      "paper_ids": [
+        "2025_cuqc"
+      ]
+    },
+    {
+      "problem_dir": "05_densest_subgraph",
+      "paper_ids": [
+        "2026_bound_tightened_dsd"
+      ]
+    },
+    {
+      "problem_dir": "06_densest_k_subgraph",
+      "paper_ids": []
+    },
+    {
+      "problem_dir": "07_k_core_decomposition",
+      "paper_ids": [
+        "2023_accelerating_k_core_gpu"
+      ]
+    },
+    {
+      "problem_dir": "08_k_truss_decomposition",
+      "paper_ids": [
+        "2020_accelerating_truss_heterogeneous"
+      ]
+    },
+    {
+      "problem_dir": "09_maximal_biclique_enumeration",
+      "paper_ids": [
+        "2023_efficient_mbe_gpus",
+        "2024_cumbe",
+        "2025_advanced_mbe_gpu_bitmaps"
+      ]
+    },
+    {
+      "problem_dir": "10_triangle_counting_listing",
+      "paper_ids": [
+        "2025_tot_tensor_cores",
+        "2025_wetric",
+        "2026_edtc"
+      ]
+    },
+    {
+      "problem_dir": "11_graph_motif_counting",
+      "paper_ids": [
+        "2022_g2miner",
+        "2023_graphset",
+        "2024_dumato"
+      ]
+    },
+    {
+      "problem_dir": "12_graphlet_counting",
+      "paper_ids": []
+    },
+    {
+      "problem_dir": "13_subgraph_isomorphism",
+      "paper_ids": [
+        "2026_gmatch"
+      ]
+    },
+    {
+      "problem_dir": "14_frequent_subgraph_mining",
+      "paper_ids": []
+    },
+    {
+      "problem_dir": "15_temporal_motif_mining",
+      "paper_ids": [
+        "2024_everest",
+        "2025_mayura"
+      ]
+    },
+    {
+      "problem_dir": "16_community_detection",
+      "paper_ids": [
+        "2026_gleiden",
+        "2026_multilevel_graph_clustering"
+      ]
+    },
+    {
+      "problem_dir": "17_overlapping_community_detection",
+      "paper_ids": []
+    },
+    {
+      "problem_dir": "18_centrality_influential_node_mining",
+      "paper_ids": [
+        "2021_turbobc"
+      ]
+    },
+    {
+      "problem_dir": "19_link_prediction",
+      "paper_ids": []
+    },
+    {
+      "problem_dir": "20_graph_anomaly_detection",
+      "paper_ids": []
+    },
+    {
+      "problem_dir": "21_personalized_pagerank_rwr",
+      "paper_ids": [
+        "2020_kpar"
+      ]
+    },
+    {
+      "problem_dir": "22_max_flow_min_cut",
+      "paper_ids": [
+        "2025_ecl_maxflow",
+        "2025_generalized_maxflow_gpu",
+        "2025_wbpr"
+      ]
+    },
+    {
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "paper_ids": [
+        "2022_g2miner_reuse",
+        "2022_gamma_reuse",
+        "2022_gbfc",
+        "2024_gbc_biclique"
+      ]
+    },
+    {
+      "problem_dir": "24_graph_edit_distance_mcs",
+      "paper_ids": [
+        "2016_gpu_mcs_drug_discovery",
+        "2026_fast_ged"
+      ]
+    },
+    {
+      "problem_dir": "25_network_alignment",
+      "paper_ids": [
+        "2015_hga_2n",
+        "2023_cualign",
+        "2024_gpu_local_network_alignment"
+      ]
+    },
+    {
+      "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+      "paper_ids": [
+        "2014_gpu_chordless_cycles",
+        "2022_gpu_elementary_circuits"
+      ]
+    },
+    {
+      "problem_dir": "27_group_steiner_tree",
+      "paper_ids": [
+        "2021_gpusteiner_kmb",
+        "2022_gpu_vlsi_gst",
+        "2025_gpu4gst"
+      ]
+    },
+    {
+      "problem_dir": "28_influence_maximization",
+      "paper_ids": [
+        "2020_curipples",
+        "2021_gim",
+        "2021_superfuser",
+        "2024_difuser"
+      ]
+    },
+    {
+      "problem_dir": "29_simrank_vertex_similarity",
+      "paper_ids": [
+        "2023_clipsim"
+      ]
+    },
+    {
+      "problem_dir": "30_balanced_graph_partitioning",
+      "paper_ids": [
+        "2024_gkway",
+        "2024_hyperg",
+        "2025_igkway"
+      ]
+    },
+    {
+      "problem_dir": "31_bipartite_matching_assignment",
+      "paper_ids": [
+        "2013_deveci_mcm_gpu",
+        "2019_hungariangpu"
+      ]
+    },
+    {
+      "problem_dir": "32_signed_network_structural_balance",
+      "paper_ids": [
+        "2021_graphbplus",
+        "2026_ecl_sgb"
+      ]
+    },
+    {
+      "problem_dir": "33_transitive_closure_reachability",
+      "paper_ids": [
+        "2021_atc",
+        "2024_gdlog",
+        "2026_curpq"
+      ]
+    },
+    {
+      "problem_dir": "34_entity_resolution_blocking",
+      "paper_ids": [
+        "2025_hyperblocker"
+      ]
+    },
+    {
+      "problem_dir": "35_connected_components",
+      "paper_ids": [
+        "2018_eclcc",
+        "2023_eclscc"
+      ]
+    },
+    {
+      "problem_dir": "36_graph_layout_force_directed",
+      "paper_ids": [
+        "2017_gpugraphlayout"
+      ]
+    },
+    {
+      "problem_dir": "37_null_model_significance_testing",
+      "paper_ids": []
+    },
+    {
+      "problem_dir": "38_breadth_first_search",
+      "paper_ids": [
+        "2017_gardenia_direction_bfs",
+        "2017_gunrock_bfs",
+        "2019_graphblast_bfs"
+      ]
+    },
+    {
+      "problem_dir": "39_single_source_shortest_paths",
+      "paper_ids": [
+        "2017_gardenia_delta_stepping",
+        "2017_gunrock_sssp",
+        "2019_graphblast_sssp"
+      ]
+    },
+    {
+      "problem_dir": "40_many_source_shortest_paths",
+      "paper_ids": [
+        "2023_tensor_floyd_warshall",
+        "2023_tensor_r_kleene",
+        "2026_cugraph_od_distances"
+      ]
+    },
+    {
+      "problem_dir": "41_spanning_tree_forest",
+      "paper_ids": [
+        "2016_lonestargpu_mst",
+        "2017_gardenia_mst",
+        "2017_gunrock_boruvka"
+      ]
+    },
+    {
+      "problem_dir": "42_maximal_independent_set",
+      "paper_ids": [
+        "2016_lonestargpu_mis",
+        "2018_ecl_mis",
+        "2019_graphblast_mis"
+      ]
+    },
+    {
+      "problem_dir": "43_vertex_coloring",
+      "paper_ids": [
+        "2016_gardenia_coloring",
+        "2017_gunrock_coloring",
+        "2019_graphblast_coloring"
+      ]
+    },
+    {
+      "problem_dir": "44_general_graph_weighted_matching",
+      "paper_ids": [
+        "2015_gpu_suitor_kepler",
+        "2018_bootcmatch_suitor",
+        "2024_locally_dominant_gpu"
+      ]
+    },
+    {
+      "problem_dir": "45_topological_sort",
+      "paper_ids": [
+        "2017_nvidia_parallel_dag_dfs",
+        "2026_cugraph_topological_levels",
+        "2026_topogpu_morse_sort"
+      ]
+    },
+    {
+      "problem_dir": "46_random_walk_generation",
+      "paper_ids": [
+        "2020_csaw_walks",
+        "2020_nextdoor_walks",
+        "2021_skywalker_walks"
+      ]
+    },
+    {
+      "problem_dir": "47_neighborhood_sampling",
+      "paper_ids": [
+        "2020_csaw_neighbors",
+        "2020_nextdoor_neighbors",
+        "2021_skywalker_neighbors"
+      ]
+    },
+    {
+      "problem_dir": "48_induced_subgraph_ego_extraction",
+      "paper_ids": [
+        "2019_dgl_node_subgraph",
+        "2019_pyg_induced_subgraph",
+        "2019_pyg_khop_subgraph"
+      ]
+    },
+    {
+      "problem_dir": "49_seeded_local_community_detection",
+      "paper_ids": [
+        "2017_gunrock_ppr",
+        "2017_gunrock_regularized_ppr",
+        "2019_graphblast_lgc"
+      ]
+    },
+    {
+      "problem_dir": "50_node_embedding",
+      "paper_ids": [
+        "2014_graphvite_deepwalk",
+        "2015_graphvite_line",
+        "2016_graphvite_node2vec"
+      ]
+    },
+    {
+      "problem_dir": "51_knowledge_graph_embedding",
+      "paper_ids": [
+        "2014_dgl_ke_distmult",
+        "2016_dgl_ke_complex",
+        "2019_dgl_ke_rotate"
+      ]
+    },
+    {
+      "problem_dir": "52_node_classification_regression",
+      "paper_ids": [
+        "2016_pyg_gcn",
+        "2017_pyg_gat",
+        "2017_pyg_graphsage"
+      ]
+    },
+    {
+      "problem_dir": "53_graph_classification_regression",
+      "paper_ids": [
+        "2018_pyg_diffpool",
+        "2018_pyg_gin",
+        "2019_pyg_sagpool"
+      ]
+    },
+    {
+      "problem_dir": "54_hypergraph_partitioning",
+      "paper_ids": [
+        "2025_ghypart",
+        "2026_axon_cuda",
+        "2026_hgnn_part"
+      ]
+    },
+    {
+      "problem_dir": "55_spectral_graph_sparsification",
+      "paper_ids": [
+        "2024_ingrass_candidate",
+        "2025_dygrass_decremental",
+        "2025_dygrass_incremental"
+      ]
+    },
+    {
+      "problem_dir": "56_biconnected_components",
+      "paper_ids": [
+        "2026_fast_bcc_filter",
+        "2026_pea_bcc",
+        "2026_wk_bcc_2018"
+      ]
+    },
+    {
+      "problem_dir": "57_temporal_fastest_paths",
+      "paper_ids": [
+        "2019_temporal_eat",
+        "2024_temporal_fastest",
+        "2025_tempgraph"
+      ]
+    },
+    {
+      "problem_dir": "58_top_k_critical_paths_dag",
+      "paper_ids": [
+        "2021_gpba",
+        "2021_heterocppr",
+        "2026_gpathgen"
+      ]
+    },
+    {
+      "problem_dir": "59_graph_signal_denoising",
+      "paper_ids": [
+        "2014_gtf_admm",
+        "2014_gtf_projected_newton",
+        "2014_gunrock_sparse_fused_lasso"
+      ]
+    },
+    {
+      "problem_dir": "60_graph_based_geolocation",
+      "paper_ids": [
+        "2017_gunrock_spatial_median",
+        "2026_gt_geo",
+        "2026_hb_geo"
+      ]
+    }
+  ],
+  "previous_expansion": {
+    "problems": 23,
+    "algorithm_records": 69,
+    "problems_meeting_three_local_pairs": 13,
+    "eligible_local_pairs": 48,
+    "local_gpu_source_entries": 57,
+    "local_main_papers": 61,
+    "upstream_source_snapshots": 24
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "problem_id": "graph_anomaly_detection",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2024_pygod_anomalydae",
+      "algorithm_name": "PyGOD ANOMALYDAE",
+      "metadata": "20_graph_anomaly_detection/papers/2024_pygod_anomalydae/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_pygod_cola",
+      "algorithm_name": "PyGOD COLA",
+      "metadata": "20_graph_anomaly_detection/papers/2024_pygod_cola/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_pygod_dominant",
+      "algorithm_name": "PyGOD DOMINANT",
+      "metadata": "20_graph_anomaly_detection/papers/2024_pygod_dominant/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

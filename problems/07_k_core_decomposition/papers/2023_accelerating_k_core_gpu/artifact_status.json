@@ -2,20 +2,30 @@
   "problem_id": "k_core_decomposition",
   "paper_id": "2023_accelerating_k_core_gpu",
   "title": "Accelerating k-Core Decomposition by a GPU",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://par.nsf.gov/servlets/purl/10472680",
     "status": "downloaded",
+    "source_url": "https://par.nsf.gov/servlets/purl/10472680",
+    "resolved_url": "https://par.nsf.gov/servlets/purl/10472680",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "55f18bed4c853619e37be5083ec9c9e85668a3aaa768050baa0367c868bf1ef6",
+    "bytes": 876845,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/akhlaqueak/KCoreGPU",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "0a2d37634024b4c841727da7c7279aa3c494c22b",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "main.cu": "abf847b79c549a213296f49bd493fbb5aa84d6d33c79599326a828dea214c4e3"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

@@ -1,0 +1,33 @@
+{
+  "problem_id": "centrality_influential_node_mining",
+  "paper_id": "2018_hornet_bc",
+  "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://davidbader.net/publication/2018-bgbb/2018-bgbb.pdf",
+    "resolved_url": "https://davidbader.net/publication/2018-bgbb/2018-bgbb.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:54Z",
+    "sha256": "1e079b84911e990c283ddbfde018446a621700a5f4add7f27a60bbccfbb59837",
+    "bytes": 7290453,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/hornet-gt/hornet",
+    "local_path": "code",
+    "commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/hornet.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "hornetsnest/src/Static/BetweennessCentrality/exact_bc.cu": "a1b37ca1d90457ada2a135924803c4b5f6d49adc8eddfc6a371946d083b57b93"
+    }
+  }
+}

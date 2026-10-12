@@ -1,0 +1,28 @@
+{
+  "problem_id": "induced_subgraph_ego_extraction",
+  "paper_id": "2026_cugraph_egonet",
+  "title": "cuGraph Ego-network extraction — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cugraph",
+    "local_path": "code",
+    "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cugraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/community/egonet_impl.cuh": "94565cd45e3b90289ab5157a50891c36ac73fca1f5eee220b32519c0595fa85e"
+    }
+  }
+}

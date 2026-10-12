@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/chenxuhao/GraphMiner",
+  "checked_at": "2026-10-10T01:37:18Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+  "archive_url": "https://codeload.github.com/chenxuhao/GraphMiner/tar.gz/2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+  "archive_sha256": "a69c9d3587c1e9352acff7fa5b1237fbb3dffa26878fe8bf8b008647a6f801bd",
+  "local_path": "graphminer-2a76e3f612e4",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

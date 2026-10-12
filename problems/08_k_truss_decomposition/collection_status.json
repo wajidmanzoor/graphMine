@@ -1,0 +1,78 @@
+{
+  "problem_id": "k_truss_decomposition",
+  "problem_dir": "08_k_truss_decomposition",
+  "name": "k-Truss Decomposition",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 3,
+  "local_gpu_code_entries": 3,
+  "local_paper_entries": 2,
+  "local_gpu_code_and_paper_including_related": 2,
+  "eligible_code_and_paper_references": 1,
+  "eligible_local_code_and_paper_pairs": 1,
+  "target_met": false,
+  "shortfall": 2,
+  "shortfall_explanation": "Fixed-k truss extraction is not a complete trussness decomposition; library building blocks and the available decomposition artifacts are listed separately.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "see_existing_validation",
+  "runtime_status": "see_existing_validation",
+  "canonical_adapters": null,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 1,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cugraph",
+      "hornet"
+    ],
+    "shortfall": "Fixed-k truss extraction is not a complete trussness decomposition; library building blocks and the available decomposition artifacts are listed separately.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2018_hornet_ktruss",
+      "algorithm_name": "Hornet K-truss peeling",
+      "paper_role": "framework",
+      "semantic_fit": "building_block",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Triangle-support peeling; inspect fixed-k versus full-decomposition output before adapting. The inspected driver exposes maximum k and fixed-k peeling, not a complete per-edge trussness map; it remains a building block for problem 08. The associated PDF describes the Hornet GPU framework; it is not a separate paper for each routine.",
+      "metadata_path": "08_k_truss_decomposition/papers/2018_hornet_ktruss/metadata.json"
+    },
+    {
+      "paper_id": "2020_accelerating_truss_heterogeneous",
+      "algorithm_name": "Accelerating Truss Decomposition on Heterogeneous Processors",
+      "paper_role": "algorithm",
+      "semantic_fit": "exact",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": null,
+      "metadata_path": "08_k_truss_decomposition/papers/2020_accelerating_truss_heterogeneous/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_k_truss",
+      "algorithm_name": "cuGraph Fixed-k truss extraction",
+      "paper_role": "none",
+      "semantic_fit": "building_block",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Returns a fixed-k truss subgraph. Full edge trussness decomposition requires an additional driver. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "08_k_truss_decomposition/papers/2026_cugraph_k_truss/metadata.json"
+    }
+  ]
+}

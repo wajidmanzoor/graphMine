@@ -1,0 +1,29 @@
+{
+  "problem_id": "butterfly_counting_bipartite",
+  "paper_id": "2022_gamma_reuse",
+  "title": "A Graph Pattern Mining Framework for Large Graphs on GPU",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://www.wict.pku.edu.cn/docs/20250717175100880217.pdf",
+    "resolved_url": "https://www.wict.pku.edu.cn/docs/20250717175100880217.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "71e23b3bfcc395c8d9ce5d7547f0cdad5bf5294a0e6560ae4f836b49732cb602",
+    "bytes": 3401538,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "present",
+    "source_url": "https://github.com/pkumod/GAMMA",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "entrypoint_sha256": {
+      "sm.cu": "42f3377eb457b6b62f1c73c8a6576f84406602e39ceeb481d28c62c688fbb077"
+    },
+    "license_file": null
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

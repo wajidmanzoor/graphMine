@@ -1,0 +1,37 @@
+{
+  "title": "DeepWalk: Online Learning of Social Representations",
+  "year": 2014,
+  "venue": "KDD 2014",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1403.6652",
+  "pdf_url": "https://arxiv.org/pdf/1403.6652",
+  "paper_id": "2014_graphvite_deepwalk",
+  "problem_id": "node_embedding",
+  "problem_dir": "50_node_embedding",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GraphVite DeepWalk",
+  "code_url": "https://github.com/DeepGraphLearning/graphvite",
+  "semantic_fit": "variant",
+  "gpu_scope": "GraphVite CPU/GPU hybrid pipeline with CUDA embedding optimization.",
+  "notes": "Original model paper plus GraphVite framework paper. CPU sampling/preprocessing is part of the pipeline; this is not an entirely GPU-resident trainer.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "include/instance/graph.cuh",
+    "include/instance/gpu/graph.cuh",
+    "python/graphvite/solver.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [
+    {
+      "title": "GraphVite: A High-Performance CPU-GPU Hybrid System for Node Embedding",
+      "publication_url": "https://arxiv.org/abs/1903.00757",
+      "pdf_url": "https://arxiv.org/pdf/1903.00757",
+      "local_path": "graphvite_paper.pdf",
+      "sha256": "eefa56331665734c80dd94c803050b9874880ef6eed6774794234ce26d61d1b5"
+    }
+  ]
+}

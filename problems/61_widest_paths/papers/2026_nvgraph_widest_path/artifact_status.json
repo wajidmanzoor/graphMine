@@ -1,0 +1,28 @@
+{
+  "problem_id": "widest_paths",
+  "paper_id": "2026_nvgraph_widest_path",
+  "title": "nvGRAPH max-min widest path — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/nvgraph",
+    "local_path": "code",
+    "commit": "1ea93b51387bd3ff149b6ac8fa91d64edd43d31c",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/nvgraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/widest_path.cu": "67a0188a18972e5346d36eb6b7be5c117920cc14902fa95ef36b063b45c0d388"
+    }
+  }
+}

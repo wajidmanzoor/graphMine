@@ -1,0 +1,35 @@
+{
+  "problem_id": "hypergraph_node_learning",
+  "paper_id": "2020_dhg_hgnn",
+  "title": "Hypergraph Neural Networks",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1809.09401",
+    "resolved_url": "https://arxiv.org/pdf/1809.09401",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "6a52a23caeb7aabc6f4c9b260a393f3fc0a333a6b9216ed76c55a73e14487e68",
+    "bytes": 665260,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/iMoonLab/DeepHypergraph",
+    "local_path": "code",
+    "commit": "b4f80211c2173b890d2779539683a3a65c4648ac",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/dhg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "dhg/models/hypergraphs/hgnn.py": "cad5349da0496a3b65989ae0f309ccfed1de215753984895f776dc78bd0057ae",
+      "dhg/structure/hypergraphs/hypergraph.py": "4987bd48cf3ed13cd1ba0eced55cd227b14e2044cf35923dfe4c2ef42a1c051b"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

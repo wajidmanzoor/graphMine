@@ -2,20 +2,26 @@
   "problem_id": "triangle_counting_listing",
   "paper_id": "2025_tot_tensor_cores",
   "title": "Triangle Counting on Tensor Cores",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
+    "status": "not_collected",
     "source_url": null,
-    "status": "not_available",
     "local_path": null,
-    "error": null
+    "error": "No local verified PDF; an open downloadable paper URL was not established during this sweep.",
+    "checked_at": "2026-10-10T02:15:29Z"
   },
   "code": {
     "source_url": "https://github.com/yuang-chen/ToT-TPDS25",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "5f9cde83a528120e8551b69fdd74425358b476f1",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "apps/tot.cu": "e9253e72b3b1e8c4d36202223e47bfd6952e2d0cbce96e4b353a20f1261efa42"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

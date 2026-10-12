@@ -1,0 +1,20 @@
+{
+  "problem_id": "simrank_vertex_similarity",
+  "paper_id": "2023_clipsim",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "title": "ClipSim: A GPU-friendly Parallel Framework for Single-Source SimRank with Accuracy Guarantee",
+  "code": {
+    "source_url": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "status": "not_collected",
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+  },
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified PDF; an open downloadable paper URL was not established during this sweep.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

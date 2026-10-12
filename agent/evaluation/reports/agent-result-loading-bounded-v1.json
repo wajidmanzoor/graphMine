@@ -1,0 +1,18 @@
+{
+  "version": "result-loading-pressure-v1",
+  "created_at": "2026-10-07T21:23:12.519779+00:00",
+  "label": "bounded-result-loading",
+  "source_bytes": 73400452,
+  "source_sha256": "4a87ca40d527bbe348c83bcfc08101941ba4615f033886dad56bc2607288bc68",
+  "configured_result_limit_bytes": 67108864,
+  "execution_source_sha256": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+  "profiler_sha256": "5580075cded99b12cf7d8b448f4bb06f6102e910c26514959bd598c5236f6ab4",
+  "scope": "Synthetic JSON with one large diagnostic string. Legacy mode reproduces the original inline JSON-loading expression; bounded mode calls the production loader. Traced allocation/elapsed measurements include tracing overhead. No native job, model, semantic accuracy or production-scale throughput claim.",
+  "model_inference": "not_run",
+  "native_execution": "not_run",
+  "path_taken": "production_result_loader",
+  "outcome": "rejected",
+  "error_code": "result_too_large",
+  "seconds_with_tracing": 6.61313533782959e-05,
+  "python_peak_bytes": 5798
+}

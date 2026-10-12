@@ -1,0 +1,29 @@
+{
+  "problem_id": "topological_sort",
+  "paper_id": "2026_cugraph_topological_levels",
+  "title": "cuGraph frontier-based topological levels (software entry; no paper collected)",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "error": "No associated paper was verified.",
+    "checked_at": "2026-10-09T19:45:05Z"
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cugraph",
+    "local_path": "code",
+    "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cugraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/dag/topological_sort_impl.cuh": "ec892159b974de6839f1a1b9a15cbcd9f1fd1d22d8a43bd3130e8da66e8a36fa"
+    }
+  }
+}

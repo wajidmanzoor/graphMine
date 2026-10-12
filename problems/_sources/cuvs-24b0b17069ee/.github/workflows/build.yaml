@@ -1,0 +1,317 @@
+name: build
+
+on:
+  push:
+    branches:
+      - "main"
+      - "release/*"
+    tags:
+      - v[0-9][0-9].[0-9][0-9].[0-9][0-9]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: |
+          branch: git branch the workflow run targets.
+          Required even when 'sha' is provided because it is also used for organizing artifacts.
+        required: true
+        type: string
+      date:
+        description: "date: Date (YYYY-MM-DD) this run is for. Used to organize artifacts produced by nightly builds"
+        required: true
+        type: string
+      sha:
+        description: "sha: full git commit SHA to check out"
+        required: true
+        type: string
+      build_type:
+        description: "build_type: one of [branch, nightly, pull-request]"
+        type: string
+        default: nightly
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ inputs.build_type || 'branch' }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  build-details:
+    uses: rapidsai/shared-workflows/.github/workflows/compute-build-details.yaml@main
+  cpp-build:
+    needs: [build-details]
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/conda-cpp-build.yaml@main
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      build-datetime: ${{ needs.build-details.outputs.build-datetime }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      node_type: cpu16
+      script: ci/build_cpp.sh
+      sha: ${{ inputs.sha }}
+
+  rocky8-clib-standalone-build:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: ./.github/workflows/clib-build.yaml
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+  rust-build:
+    needs: cpp-build
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: ./.github/workflows/matrix-job.yaml
+    # Artifacts are not published from these jobs, so it's safe to run for multiple CUDA versions.
+    # If these jobs start producing artifacts, the names will have to differentiate between CUDA versions.
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      matrix_filter: map(select(.ARCH == "amd64"))
+      script: "ci/build_rust.sh"
+  go-build:
+    needs: cpp-build
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: ./.github/workflows/matrix-job.yaml
+    # Artifacts are not published from these jobs, so it's safe to run for multiple CUDA versions.
+    # If these jobs start producing artifacts, the names will have to differentiate between CUDA versions.
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      matrix_filter: map(select(.ARCH == "amd64"))
+      script: "ci/build_go.sh"
+  java-build:
+    needs: cpp-build
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: ./.github/workflows/matrix-job.yaml
+    # Artifacts are not published from these jobs, so it's safe to run for multiple CUDA versions.
+    # If these jobs start producing artifacts, the names will have to differentiate between CUDA versions.
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      node_type: cpu8
+      matrix_filter: map(select(.ARCH == "amd64"))
+      script: "ci/build_java.sh"
+      artifact-name-prefix: "cuvs-java"
+      file_to_upload: "java/cuvs-java/target/"
+  lucene-build:
+    # Depends on the Java job for the cuvs-java artifact that cuvs-lucene builds against.
+    needs: java-build
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: ./.github/workflows/matrix-job.yaml
+    # Artifacts are not published from these jobs, so it's safe to run for multiple CUDA versions.
+    # If these jobs start producing artifacts, the names will have to differentiate between CUDA versions.
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      node_type: cpu8
+      matrix_filter: map(select(.ARCH == "amd64"))
+      script: "ci/build_lucene.sh"
+      artifact-name-prefix: "cuvs-lucene"
+      file_to_upload: "java/cuvs-lucene/target/"
+  python-build:
+    needs: [build-details, cpp-build]
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/conda-python-build.yaml@main
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      build-datetime: ${{ needs.build-details.outputs.build-datetime }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      script: ci/build_python.sh
+      sha: ${{ inputs.sha }}
+      # Build a conda package for each CUDA x ARCH x minimum supported Python version
+      matrix_filter: group_by({CUDA_VER, ARCH}) | map(min_by(.PY_VER | split(".") | map(tonumber)))
+  upload-conda:
+    needs: [cpp-build, python-build]
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: rapidsai/shared-workflows/.github/workflows/conda-upload-packages.yaml@main
+    secrets:
+      CONDA_RAPIDSAI_NIGHTLY_TOKEN: ${{ secrets.CONDA_RAPIDSAI_NIGHTLY_TOKEN }}
+      CONDA_RAPIDSAI_TOKEN: ${{ secrets.CONDA_RAPIDSAI_TOKEN }}
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      date: ${{ inputs.date }}
+      sha: ${{ inputs.sha }}
+      skip_upload_pkgs: libcuvs-template
+  rust-publish:
+    needs: [rust-build, upload-conda]
+    permissions:
+      contents: read
+    secrets:
+      GPUTESTER_CRATES_TOKEN: ${{ secrets.GPUTESTER_CRATES_TOKEN }}
+    uses: ./.github/workflows/publish-rust.yaml
+  docs-build-matrix:
+    permissions:
+      contents: read
+    uses: rapidsai/shared-workflows/.github/workflows/compute-matrix.yaml@main
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      matrix_name: docs-build
+  docs-build:
+    needs: [docs-build-matrix]
+    if: github.ref_type == 'branch'
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/custom-job.yaml@main
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.docs-build-matrix.outputs.matrix) }}
+    with:
+      arch: "${{ matrix.arch }}"
+      branch: ${{ inputs.branch }}
+      build_type: ${{ inputs.build_type || 'branch' }}
+      container_image: "rapidsai/ci-conda:26.12-cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PY_VER }}"
+      date: ${{ inputs.date }}
+      node_type: "gpu-${{ matrix.GPU }}-${{ matrix.DRIVER }}-1"
+      script: "ci/build_docs.sh"
+      sha: ${{ inputs.sha }}
+  wheel-build-libcuvs:
+    needs: [build-details]
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/wheels-build.yaml@main
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      build-datetime: ${{ needs.build-details.outputs.build-datetime }}
+      branch: ${{ inputs.branch }}
+      sha: ${{ inputs.sha }}
+      date: ${{ inputs.date }}
+      node_type: cpu16
+      script: ci/build_wheel_libcuvs.sh
+      # build for every combination of arch and CUDA version, but only for the latest Python
+      matrix_filter: group_by([.ARCH, (.CUDA_VER|split(".")|map(tonumber)|.[0])]) | map(max_by(.PY_VER|split(".")|map(tonumber)))
+      package-name: libcuvs
+      package-type: cpp
+  wheel-publish-libcuvs:
+    needs: wheel-build-libcuvs
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: rapidsai/shared-workflows/.github/workflows/wheels-publish.yaml@main
+    secrets:
+      CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
+      RAPIDSAI_PYPI_TOKEN: ${{ secrets.RAPIDSAI_PYPI_TOKEN }}
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      sha: ${{ inputs.sha }}
+      date: ${{ inputs.date }}
+      package-name: libcuvs
+      package-type: cpp
+      publish-wheel-search-key: cuvs_wheel_cpp_libcuvs
+  wheel-build-cuvs:
+    needs: [build-details, wheel-build-libcuvs]
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/wheels-build.yaml@main
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      build-datetime: ${{ needs.build-details.outputs.build-datetime }}
+      branch: ${{ inputs.branch }}
+      sha: ${{ inputs.sha }}
+      date: ${{ inputs.date }}
+      node_type: cpu8
+      script: ci/build_wheel_cuvs.sh
+      package-name: cuvs
+      package-type: python
+      # Build a wheel for each CUDA x ARCH x minimum supported Python version
+      matrix_filter: group_by({CUDA_VER, ARCH}) | map(min_by(.PY_VER | split(".") | map(tonumber)))
+  wheel-publish-cuvs:
+    needs: wheel-build-cuvs
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      pull-requests: read
+    uses: rapidsai/shared-workflows/.github/workflows/wheels-publish.yaml@main
+    secrets:
+      CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
+      RAPIDSAI_PYPI_TOKEN: ${{ secrets.RAPIDSAI_PYPI_TOKEN }}
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      sha: ${{ inputs.sha }}
+      date: ${{ inputs.date }}
+      package-name: cuvs
+      package-type: python
+      publish-wheel-search-key: cuvs_wheel_python_cuvs
+  devcontainers:
+    name: Build devcontainers
+    secrets: inherit  # zizmor: ignore[secrets-inherit]
+    uses: rapidsai/shared-workflows/.github/workflows/build-devcontainers.yaml@main
+    permissions:
+      packages: write
+    with:
+      push: true
+      cuda: '["12.9", "13.3"]'

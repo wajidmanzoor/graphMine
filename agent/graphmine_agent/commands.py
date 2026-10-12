@@ -40,6 +40,8 @@ def dispatch(database, settings, session_id, request, previous):
         )
     if command == "status":
         router = settings.active_routing_model
+        if settings.routing_adapter_experimental:
+            router += " (experimental for the current catalog)"
         return reply(
             f"Version: {settings.deployment_version}\nAnalysis selection: {router}\nPlanning and answers: {settings.llm_model}"
         )

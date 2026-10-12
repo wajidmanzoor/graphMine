@@ -1,0 +1,28 @@
+{
+  "title": "Gunrock: GPU Graph Analytics",
+  "year": 2017,
+  "venue": "ACM Transactions on Parallel Computing",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1701.01170",
+  "pdf_url": "https://arxiv.org/pdf/1701.01170",
+  "paper_id": "2017_gunrock_sssp",
+  "problem_id": "single_source_shortest_paths",
+  "problem_dir": "39_single_source_shortest_paths",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Gunrock frontier-based weighted relaxation",
+  "code_url": "https://github.com/gunrock/gunrock",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA frontier expansion with atomic distance relaxation.",
+  "notes": "The paper describes the Gunrock framework. This pinned implementation is a later revision, not the exact artifact evaluated in the 2017 paper. Use nonnegative weights and verify predecessor output before exposing it.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "include/gunrock/algorithms/sssp.hxx",
+    "examples/algorithms/sssp/sssp.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

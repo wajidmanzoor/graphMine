@@ -1,0 +1,33 @@
+{
+  "problem_id": "influence_maximization",
+  "paper_id": "2021_gim",
+  "title": "gIM: GPU Accelerated RIS-Based Influence Maximization Algorithm",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2009.07325",
+    "resolved_url": "https://arxiv.org/pdf/2009.07325",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "0db6d077e068a50fb56da5e62967572152d108dc08ab877f61c0fb81b220c750",
+    "bytes": 920897,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/LIS-Laboratory/gim",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "entrypoint_sha256": {
+      "IM.cu": "31661c19bd16bf086a7d6041441a1f3353cb3ae4085f443b3146946432e2dc95",
+      "kernels.cu": "11834a658ede5d437857cbee1e210008d3f4df8cc9a9d071b9b1e23559e00018"
+    },
+    "commit": "d84b81a47606aa7912a8d1a96770568f92f5c98d",
+    "source_manifest": "../../../_sources/gim.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/LICENSE"
+  }
+}

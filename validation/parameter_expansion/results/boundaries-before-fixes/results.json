@@ -1,0 +1,933 @@
+[
+  {
+    "id": "kcgpu-highest",
+    "operation": "k-cliques",
+    "backend": "kcgpu",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "k-cliques",
+      "--backend",
+      "kcgpu",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/kcgpu-highest/graph.json",
+      "--k",
+      "10"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.40265536308288574
+  },
+  {
+    "id": "kcgpu-too-high",
+    "operation": "k-cliques",
+    "backend": "kcgpu",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "k-cliques",
+      "--backend",
+      "kcgpu",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/kcgpu-too-high/graph.json",
+      "--k",
+      "11"
+    ],
+    "expected_rejection": true,
+    "exit_code": 3,
+    "passed": true,
+    "seconds": 0.005102634429931641
+  },
+  {
+    "id": "gamma-highest",
+    "operation": "k-cliques",
+    "backend": "gamma",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "k-cliques",
+      "--backend",
+      "gamma",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/gamma-highest/graph.json",
+      "--k",
+      "7"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 1.522653341293335
+  },
+  {
+    "id": "gamma-too-high",
+    "operation": "k-cliques",
+    "backend": "gamma",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "k-cliques",
+      "--backend",
+      "gamma",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/gamma-too-high/graph.json",
+      "--k",
+      "8"
+    ],
+    "expected_rejection": true,
+    "exit_code": 3,
+    "passed": true,
+    "seconds": 0.004930734634399414
+  },
+  {
+    "id": "graphset-highest",
+    "operation": "k-cliques",
+    "backend": "graphset",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "k-cliques",
+      "--backend",
+      "graphset",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/graphset-highest/graph.json",
+      "--k",
+      "6"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.36185455322265625
+  },
+  {
+    "id": "graphset-too-high",
+    "operation": "k-cliques",
+    "backend": "graphset",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "k-cliques",
+      "--backend",
+      "graphset",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/graphset-too-high/graph.json",
+      "--k",
+      "7"
+    ],
+    "expected_rejection": true,
+    "exit_code": 3,
+    "passed": true,
+    "seconds": 0.004538059234619141
+  },
+  {
+    "id": "auto-highest",
+    "operation": "k-cliques",
+    "backend": "auto",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "k-cliques",
+      "--backend",
+      "auto",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/auto-highest/graph.json",
+      "--k",
+      "10"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.6945879459381104
+  },
+  {
+    "id": "auto-too-high",
+    "operation": "k-cliques",
+    "backend": "auto",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "k-cliques",
+      "--backend",
+      "auto",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/auto-too-high/graph.json",
+      "--k",
+      "11"
+    ],
+    "expected_rejection": true,
+    "exit_code": 3,
+    "passed": true,
+    "seconds": 0.00463104248046875
+  },
+  {
+    "id": "cds-K16-k6",
+    "operation": "densest-subgraph",
+    "backend": "cds",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "densest-subgraph",
+      "--backend",
+      "cds",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/cds-K16-k6/graph.json",
+      "--clique-order",
+      "6"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.47901248931884766
+  },
+  {
+    "id": "cds-K16-k8",
+    "operation": "densest-subgraph",
+    "backend": "cds",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "densest-subgraph",
+      "--backend",
+      "cds",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/cds-K16-k8/graph.json",
+      "--clique-order",
+      "8"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.6178812980651855
+  },
+  {
+    "id": "cds-K16-k10",
+    "operation": "densest-subgraph",
+    "backend": "cds",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "densest-subgraph",
+      "--backend",
+      "cds",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/cds-K16-k10/graph.json",
+      "--clique-order",
+      "10"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5772721767425537
+  },
+  {
+    "id": "cds-K16-k14",
+    "operation": "densest-subgraph",
+    "backend": "cds",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "densest-subgraph",
+      "--backend",
+      "cds",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/cds-K16-k14/graph.json",
+      "--clique-order",
+      "14"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.49345827102661133
+  },
+  {
+    "id": "cds-K16-k16",
+    "operation": "densest-subgraph",
+    "backend": "cds",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "densest-subgraph",
+      "--backend",
+      "cds",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/cds-K16-k16/graph.json",
+      "--clique-order",
+      "16"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.4944441318511963
+  },
+  {
+    "id": "cds-K20-k10",
+    "operation": "densest-subgraph",
+    "backend": "cds",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "densest-subgraph",
+      "--backend",
+      "cds",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/cds-K20-k10/graph.json",
+      "--clique-order",
+      "10"
+    ],
+    "expected_rejection": false,
+    "exit_code": 3,
+    "passed": false,
+    "error": "{'ok': False, 'provenance': {'problem': 'densest_subgraph', 'backend': 'cds', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '3e704f98cf873336e2cf789570774039c8d6f092', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'cds worker failed: baseAgent/graphMine-repo/library/repaired-workers/.build/cds-6cb06add8f4aca6f/source/cudaCode/src/helpers.cu:350: void listMidCliques(deviceDAGpointer, cliqueLevelDataPointer, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int): block: [43,0,0], thread: [384,0,0] Assertion `*warpCount < pSize / (k - 1) && \"clique partition overflow\"` failed.\\n/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/repaired-workers/.build/cds-6cb06add8f4aca6f/source/cudaCode/src/helpers.cu:350: void listMidCliques(deviceDAGpointer, cliqueLevelDataPointer, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int): block: [43,0,0], thread: [128,0,0] Assertion `*warpCount < pSize / (k - 1) && \"clique partition overflow\"` failed.\\n/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/repaired-workers/.build/cds-6cb06add8f4aca6f/source/cudaCode/src/helpers.cu:350: void listMidCliques(deviceDAGpointer, cliqueLevelDataPointer, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int): block: [126,0,0], thread: [0,0,0] Assertion `*warpCount < pSize / (k - 1) && \"clique partition overflow\"` failed.\\n/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/repaired-workers/.build/cds-6cb06add8f4aca6f/source/cudaCode/src/helpers.cu:350: void listMidCliques(deviceDAGpointer, cliqueLevelDataPointer, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int): block: [154,0,0], thread: [320,0,0] Assertion `*warpCount < pSize / (k - 1) && \"clique partition overflow\"` failed.\\nCUDA Error in kernel Generate Mid Partial Cliques, file /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/repaired-workers/.build/cds-6cb06add8f4aca6f/source/cudaCode/main.cu at line 170: device-side assert triggered\\n'}}",
+    "seconds": 0.4836466312408447
+  },
+  {
+    "id": "cds-K4-k2147483647",
+    "operation": "densest-subgraph",
+    "backend": "cds",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "densest-subgraph",
+      "--backend",
+      "cds",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/cds-K4-k2147483647/graph.json",
+      "--clique-order",
+      "2147483647"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.005406618118286133
+  },
+  {
+    "id": "parallel-louvain-resolution-0",
+    "operation": "community-detection",
+    "backend": "parallel-louvain",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-louvain",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-louvain-resolution-0/graph.json",
+      "--resolution",
+      "0"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5889096260070801
+  },
+  {
+    "id": "parallel-louvain-resolution-0.01",
+    "operation": "community-detection",
+    "backend": "parallel-louvain",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-louvain",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-louvain-resolution-0.01/graph.json",
+      "--resolution",
+      "0.01"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.43393778800964355
+  },
+  {
+    "id": "parallel-louvain-resolution-8",
+    "operation": "community-detection",
+    "backend": "parallel-louvain",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-louvain",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-louvain-resolution-8/graph.json",
+      "--resolution",
+      "8"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5511729717254639
+  },
+  {
+    "id": "parallel-louvain-resolution-16",
+    "operation": "community-detection",
+    "backend": "parallel-louvain",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-louvain",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-louvain-resolution-16/graph.json",
+      "--resolution",
+      "16"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.525547981262207
+  },
+  {
+    "id": "parallel-louvain-resolution-1000",
+    "operation": "community-detection",
+    "backend": "parallel-louvain",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-louvain",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-louvain-resolution-1000/graph.json",
+      "--resolution",
+      "1000"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5055716037750244
+  },
+  {
+    "id": "parallel-leiden-resolution-0",
+    "operation": "community-detection",
+    "backend": "parallel-leiden",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-resolution-0/graph.json",
+      "--resolution",
+      "0"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.46480321884155273
+  },
+  {
+    "id": "parallel-leiden-resolution-0.01",
+    "operation": "community-detection",
+    "backend": "parallel-leiden",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-resolution-0.01/graph.json",
+      "--resolution",
+      "0.01"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.4413442611694336
+  },
+  {
+    "id": "parallel-leiden-resolution-8",
+    "operation": "community-detection",
+    "backend": "parallel-leiden",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-resolution-8/graph.json",
+      "--resolution",
+      "8"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.4796757698059082
+  },
+  {
+    "id": "parallel-leiden-resolution-16",
+    "operation": "community-detection",
+    "backend": "parallel-leiden",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-resolution-16/graph.json",
+      "--resolution",
+      "16"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.6200642585754395
+  },
+  {
+    "id": "parallel-leiden-resolution-1000",
+    "operation": "community-detection",
+    "backend": "parallel-leiden",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-resolution-1000/graph.json",
+      "--resolution",
+      "1000"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5232460498809814
+  },
+  {
+    "id": "parallel-leiden-plus-resolution-0",
+    "operation": "community-detection",
+    "backend": "parallel-leiden-plus",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden-plus",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-plus-resolution-0/graph.json",
+      "--resolution",
+      "0"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5086114406585693
+  },
+  {
+    "id": "parallel-leiden-plus-resolution-0.01",
+    "operation": "community-detection",
+    "backend": "parallel-leiden-plus",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden-plus",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-plus-resolution-0.01/graph.json",
+      "--resolution",
+      "0.01"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.4922480583190918
+  },
+  {
+    "id": "parallel-leiden-plus-resolution-8",
+    "operation": "community-detection",
+    "backend": "parallel-leiden-plus",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden-plus",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-plus-resolution-8/graph.json",
+      "--resolution",
+      "8"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.46865415573120117
+  },
+  {
+    "id": "parallel-leiden-plus-resolution-16",
+    "operation": "community-detection",
+    "backend": "parallel-leiden-plus",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden-plus",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-plus-resolution-16/graph.json",
+      "--resolution",
+      "16"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5938749313354492
+  },
+  {
+    "id": "parallel-leiden-plus-resolution-1000",
+    "operation": "community-detection",
+    "backend": "parallel-leiden-plus",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "parallel-leiden-plus",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/parallel-leiden-plus-resolution-1000/graph.json",
+      "--resolution",
+      "1000"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5499284267425537
+  },
+  {
+    "id": "auto-resolution-0",
+    "operation": "community-detection",
+    "backend": "auto",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "auto",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/auto-resolution-0/graph.json",
+      "--resolution",
+      "0"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.477541446685791
+  },
+  {
+    "id": "auto-resolution-0.01",
+    "operation": "community-detection",
+    "backend": "auto",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "auto",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/auto-resolution-0.01/graph.json",
+      "--resolution",
+      "0.01"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.46464014053344727
+  },
+  {
+    "id": "auto-resolution-8",
+    "operation": "community-detection",
+    "backend": "auto",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "auto",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/auto-resolution-8/graph.json",
+      "--resolution",
+      "8"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.4369642734527588
+  },
+  {
+    "id": "auto-resolution-16",
+    "operation": "community-detection",
+    "backend": "auto",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "auto",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/auto-resolution-16/graph.json",
+      "--resolution",
+      "16"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.3879575729370117
+  },
+  {
+    "id": "auto-resolution-1000",
+    "operation": "community-detection",
+    "backend": "auto",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "community-detection",
+      "--backend",
+      "auto",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/auto-resolution-1000/graph.json",
+      "--resolution",
+      "1000"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.4649994373321533
+  },
+  {
+    "id": "wetric-spread-1",
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "triangle-counting",
+      "--backend",
+      "wetric",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/wetric-spread-1/graph.json",
+      "--wetric-spread",
+      "1"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.537189245223999
+  },
+  {
+    "id": "wetric-spread-47",
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "triangle-counting",
+      "--backend",
+      "wetric",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/wetric-spread-47/graph.json",
+      "--wetric-spread",
+      "47"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5347027778625488
+  },
+  {
+    "id": "wetric-spread-48",
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "triangle-counting",
+      "--backend",
+      "wetric",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/wetric-spread-48/graph.json",
+      "--wetric-spread",
+      "48"
+    ],
+    "expected_rejection": true,
+    "exit_code": 3,
+    "passed": true,
+    "seconds": 0.482393741607666
+  },
+  {
+    "id": "wetric-length-32",
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "triangle-counting",
+      "--backend",
+      "wetric",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/wetric-length-32/graph.json",
+      "--wetric-adjacency-matrix-length",
+      "32"
+    ],
+    "expected_rejection": true,
+    "exit_code": 3,
+    "passed": true,
+    "seconds": 0.004666328430175781
+  },
+  {
+    "id": "wetric-length-64",
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "triangle-counting",
+      "--backend",
+      "wetric",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/wetric-length-64/graph.json",
+      "--wetric-adjacency-matrix-length",
+      "64"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5533225536346436
+  },
+  {
+    "id": "wetric-length-96",
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "triangle-counting",
+      "--backend",
+      "wetric",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/wetric-length-96/graph.json",
+      "--wetric-adjacency-matrix-length",
+      "96"
+    ],
+    "expected_rejection": true,
+    "exit_code": 3,
+    "passed": true,
+    "seconds": 0.004778385162353516
+  },
+  {
+    "id": "wetric-length-128",
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "triangle-counting",
+      "--backend",
+      "wetric",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/wetric-length-128/graph.json",
+      "--wetric-adjacency-matrix-length",
+      "128"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.4565117359161377
+  },
+  {
+    "id": "wetric-length-192",
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "triangle-counting",
+      "--backend",
+      "wetric",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/wetric-length-192/graph.json",
+      "--wetric-adjacency-matrix-length",
+      "192"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.45297932624816895
+  },
+  {
+    "id": "gmatch-query-2",
+    "operation": "subgraph-isomorphism",
+    "backend": "gmatch",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "subgraph-isomorphism",
+      "--backend",
+      "gmatch",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/gmatch-query-2/graph.json",
+      "--ignore-vertex-labels",
+      "--initial-match-capacity",
+      "1",
+      "--query-graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/gmatch-query-2/query.json"
+    ],
+    "expected_rejection": false,
+    "exit_code": 0,
+    "passed": true,
+    "seconds": 0.5240273475646973
+  },
+  {
+    "id": "gmatch-query-16",
+    "operation": "subgraph-isomorphism",
+    "backend": "gmatch",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "subgraph-isomorphism",
+      "--backend",
+      "gmatch",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/gmatch-query-16/graph.json",
+      "--ignore-vertex-labels",
+      "--initial-match-capacity",
+      "1",
+      "--query-graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/gmatch-query-16/query.json"
+    ],
+    "expected_rejection": false,
+    "exit_code": 3,
+    "passed": false,
+    "error": "{'ok': False, 'provenance': {'problem': 'subgraph_isomorphism', 'backend': 'gmatch', 'backend_version': 'gMatch artifact', 'source_commit': '4628e73dbcb564dba367b3f042595e71f98c9046', 'execution_path': 'original gMatch GPU count + optional exact embedding materializer'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'gMatch execution failed: gMatch CUDA call failed: invalid configuration argument'}}",
+    "seconds": 0.5297970771789551
+  },
+  {
+    "id": "gmatch-query-17",
+    "operation": "subgraph-isomorphism",
+    "backend": "gmatch",
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-gamma-candidate",
+      "run",
+      "subgraph-isomorphism",
+      "--backend",
+      "gmatch",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/gmatch-query-17/graph.json",
+      "--ignore-vertex-labels",
+      "--initial-match-capacity",
+      "1",
+      "--query-graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/boundaries/gmatch-query-17/query.json"
+    ],
+    "expected_rejection": true,
+    "exit_code": 3,
+    "passed": true,
+    "seconds": 0.005016326904296875
+  }
+]

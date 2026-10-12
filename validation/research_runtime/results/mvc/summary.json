@@ -1,0 +1,23 @@
+{
+  "family": "mvc",
+  "gpu": "0",
+  "cases": 576,
+  "passed": 576,
+  "failed": 0,
+  "startup_error": null,
+  "by_backend": {
+    "component-aware-mvc-hybrid": {
+      "passed": 288,
+      "failed": 0,
+      "scope": "Exact optimum SIZE vs exhaustive subsets; upstream exports no cover witness"
+    },
+    "component-aware-mvc-stackonly": {
+      "passed": 288,
+      "failed": 0,
+      "scope": "Exact optimum SIZE vs exhaustive subsets; upstream exports no cover witness"
+    }
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "numpy": "1.26.4",
+  "script_sha256": "4f0a341bc987d85c59a45f786fd10eb2ed3fdd71be4239155d249f157d2f2e47"
+}

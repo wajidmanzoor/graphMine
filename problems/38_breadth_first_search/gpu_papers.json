@@ -1,0 +1,46 @@
+{
+  "problem_id": "breadth_first_search",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gardenia_direction_bfs",
+      "algorithm_name": "GARDENIA direction-optimizing BFS",
+      "metadata": "38_breadth_first_search/papers/2017_gardenia_direction_bfs/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2017_gunrock_bfs",
+      "algorithm_name": "Gunrock frontier-based BFS",
+      "metadata": "38_breadth_first_search/papers/2017_gunrock_bfs/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_hornet_bfs",
+      "algorithm_name": "Hornet Top-down BFS",
+      "metadata": "38_breadth_first_search/papers/2018_hornet_bfs/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_bfs",
+      "algorithm_name": "GraphBLAST sparse linear-algebra BFS",
+      "metadata": "38_breadth_first_search/papers/2019_graphblast_bfs/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_bfs",
+      "algorithm_name": "cuGraph Breadth-first traversal",
+      "metadata": "38_breadth_first_search/papers/2026_cugraph_bfs/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

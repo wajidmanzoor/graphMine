@@ -1,0 +1,386 @@
+GPU 1: 100 cases, 0 failures
+GPU 0: 100 cases, 0 failures
+GPU 0: 100 cases, 0 failures
+GPU 1: 100 cases, 0 failures
+GPU 1: 100 cases, 0 failures
+GPU 0: 100 cases, 0 failures
+GPU 1: 100 cases, 0 failures
+GPU 1: 100 cases, 0 failures
+GPU 0: 100 cases, 0 failures
+GPU 1: 100 cases, 0 failures
+GPU 1: 100 cases, 0 failures
+GPU 1: 100 cases, 0 failures
+GPU 0: 100 cases, 0 failures
+GPU 0: 100 cases, 0 failures
+GPU 0: 100 cases, 0 failures
+GPU 0: 100 cases, 0 failures
+GPU 0: 200 cases, 0 failures
+GPU 1: 200 cases, 0 failures
+GPU 1: 200 cases, 0 failures
+GPU 0: 200 cases, 0 failures
+GPU 0: 200 cases, 0 failures
+GPU 1: 200 cases, 0 failures
+GPU 1: 200 cases, 0 failures
+GPU 0: 200 cases, 0 failures
+GPU 1: 200 cases, 0 failures
+GPU 0: 200 cases, 0 failures
+GPU 1: 200 cases, 0 failures
+GPU 1: 200 cases, 0 failures
+GPU 1: 200 cases, 0 failures
+GPU 0: 200 cases, 0 failures
+GPU 0: 200 cases, 0 failures
+GPU 0: 200 cases, 0 failures
+GPU 1: 300 cases, 0 failures
+GPU 0: 300 cases, 0 failures
+GPU 0: 300 cases, 0 failures
+GPU 1: 300 cases, 0 failures
+GPU 0: 300 cases, 0 failures
+GPU 1: 300 cases, 0 failures
+GPU 0: 300 cases, 0 failures
+GPU 0: 300 cases, 0 failures
+GPU 1: 300 cases, 0 failures
+GPU 1: 300 cases, 0 failures
+GPU 1: 300 cases, 0 failures
+GPU 0: 300 cases, 0 failures
+GPU 1: 300 cases, 0 failures
+GPU 1: 300 cases, 0 failures
+GPU 0: 300 cases, 0 failures
+GPU 0: 300 cases, 0 failures
+GPU 0: 400 cases, 0 failures
+GPU 1: 400 cases, 0 failures
+GPU 0: 400 cases, 0 failures
+GPU 1: 400 cases, 0 failures
+GPU 0: 400 cases, 0 failures
+GPU 1: 400 cases, 0 failures
+GPU 1: 400 cases, 0 failures
+GPU 0: 400 cases, 0 failures
+GPU 0: 400 cases, 0 failures
+GPU 0: 400 cases, 0 failures
+GPU 1: 400 cases, 0 failures
+GPU 1: 400 cases, 0 failures
+GPU 0: 400 cases, 0 failures
+GPU 1: 400 cases, 0 failures
+GPU 1: 400 cases, 0 failures
+GPU 0: 400 cases, 0 failures
+GPU 0: 500 cases, 0 failures
+GPU 0: 500 cases, 0 failures
+GPU 1: 500 cases, 0 failures
+GPU 0: 500 cases, 0 failures
+GPU 1: 500 cases, 0 failures
+GPU 1: 500 cases, 0 failures
+GPU 1: 500 cases, 0 failures
+GPU 1: 500 cases, 0 failures
+GPU 0: 500 cases, 0 failures
+GPU 0: 500 cases, 0 failures
+GPU 0: 500 cases, 0 failures
+GPU 1: 500 cases, 0 failures
+GPU 0: 500 cases, 0 failures
+GPU 1: 500 cases, 0 failures
+GPU 1: 500 cases, 0 failures
+GPU 0: 500 cases, 0 failures
+GPU 1: 600 cases, 0 failures
+GPU 0: 600 cases, 0 failures
+GPU 0: 600 cases, 0 failures
+GPU 0: 600 cases, 0 failures
+GPU 1: 600 cases, 0 failures
+GPU 1: 600 cases, 0 failures
+GPU 1: 600 cases, 0 failures
+GPU 0: 600 cases, 0 failures
+GPU 1: 600 cases, 0 failures
+GPU 0: 600 cases, 0 failures
+GPU 0: 600 cases, 0 failures
+GPU 0: 600 cases, 0 failures
+GPU 1: 600 cases, 0 failures
+GPU 1: 600 cases, 0 failures
+GPU 1: 600 cases, 0 failures
+GPU 0: 600 cases, 0 failures
+GPU 1: 700 cases, 0 failures
+FAIL 010073-bipartite-74-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010105-bipartite-82-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010101-bipartite-81-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010125-bipartite-87-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010141-bipartite-91-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010157-bipartite-95-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010273-bipartite-124-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010165-bipartite-97-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010173-bipartite-99-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010289-bipartite-128-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010197-bipartite-105-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010305-bipartite-132-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010201-bipartite-106-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010205-bipartite-107-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010249-bipartite-118-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010353-bipartite-144-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010369-bipartite-148-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010253-bipartite-119-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010281-bipartite-126-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010385-bipartite-152-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010293-bipartite-129-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010401-bipartite-156-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010285-bipartite-127-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010313-bipartite-134-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010301-bipartite-131-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010433-bipartite-164-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010325-bipartite-137-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010345-bipartite-142-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010341-bipartite-141-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010333-bipartite-139-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010365-bipartite-147-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010481-bipartite-176-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010393-bipartite-154-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+GPU 1: 700 cases, 0 failures
+GPU 1: 700 cases, 0 failures
+GPU 0: 700 cases, 0 failures
+GPU 1: 700 cases, 0 failures
+FAIL 011041-bipartite-316-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 010949-bipartite-293-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+GPU 0: 700 cases, 0 failures
+FAIL 011073-bipartite-324-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+GPU 0: 700 cases, 0 failures
+FAIL 010981-bipartite-301-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011105-bipartite-332-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011121-bipartite-336-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011029-bipartite-313-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011153-bipartite-344-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+GPU 0: 700 cases, 0 failures
+GPU 0: 700 cases, 0 failures
+FAIL 011169-bipartite-348-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+GPU 1: 700 cases, 15 failures
+GPU 1: 700 cases, 8 failures
+GPU 1: 700 cases, 9 failures
+GPU 1: 700 cases, 10 failures
+GPU 0: 700 cases, 0 failures
+GPU 0: 700 cases, 0 failures
+GPU 0: 700 cases, 0 failures
+GPU 1: 800 cases, 0 failures
+FAIL 011609-bipartite-458-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011581-bipartite-451-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011597-bipartite-455-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011625-bipartite-462-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011729-bipartite-488-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011745-bipartite-492-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011657-bipartite-470-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011653-bipartite-469-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011645-bipartite-467-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011669-bipartite-473-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011677-bipartite-475-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011685-bipartite-477-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011717-bipartite-485-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011753-bipartite-494-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011749-bipartite-493-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011785-bipartite-502-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+FAIL 011817-bipartite-510-mbe-gpu {'ok': False, 'provenance': {'problem': 'maximal_biclique_enumeration', 'backend': 'mbe-gpu', 'backend_version': 'validated repair 2026-10-04', 'source_commit': '4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942', 'execution_path': 'isolated repaired GPU worker; canonical external IDs'}, 'warnings': [], 'error': {'code': 'execution_failed', 'message': 'mbe-gpu worker failed: GPUassert: out of memory /home/
+GPU 1: 800 cases, 0 failures
+GPU 1: 800 cases, 0 failures
+GPU 0: 800 cases, 0 failures
+GPU 1: 800 cases, 0 failures
+GPU 0: 800 cases, 0 failures
+GPU 0: 800 cases, 0 failures
+GPU 0: 800 cases, 0 failures
+GPU 0: 800 cases, 0 failures
+GPU 1: 800 cases, 17 failures
+GPU 1: 900 cases, 0 failures
+GPU 1: 800 cases, 14 failures
+GPU 1: 800 cases, 14 failures
+GPU 1: 800 cases, 14 failures
+GPU 0: 800 cases, 0 failures
+GPU 0: 800 cases, 0 failures
+GPU 0: 800 cases, 0 failures
+GPU 1: 900 cases, 0 failures
+GPU 1: 900 cases, 0 failures
+GPU 1: 900 cases, 0 failures
+GPU 0: 900 cases, 0 failures
+GPU 0: 900 cases, 0 failures
+GPU 0: 900 cases, 0 failures
+GPU 0: 900 cases, 0 failures
+GPU 1: 900 cases, 17 failures
+GPU 0: 900 cases, 0 failures
+GPU 1: 900 cases, 14 failures
+GPU 1: 900 cases, 14 failures
+GPU 1: 900 cases, 14 failures
+GPU 0: 900 cases, 0 failures
+GPU 0: 900 cases, 0 failures
+GPU 0: 900 cases, 0 failures
+{
+  "mode": "full",
+  "binary_sha256": "9fbacd0bfc0a958ebb8326aa537a55363ff862029ec90aeab84cc90ff951f338",
+  "generator_sha256": "d6d8e95ec2b30101182d983a1fa989a549f99b1fe7963ed4ae7f170c8c663648",
+  "instructions_sha256": "e881e36be301d79b67ad3fd459a3d42c94c624c11d9719f97f5bfc972cda1585",
+  "worker_sha256": {
+    "graphmine-worker-gamma-butterfly": "ef14a0ea5f9236b2d59933aaa39b7eb6af3ced5fcc215b931276500961452cd6",
+    "graphmine-worker-acctd": "fa8e7c159d87dce9747639b167ae969e6a2cbc51004ad10808be59f3e24bb256",
+    "graphmine-worker-superfuser": "49acea3e10c81380b315a3dde14f7bdb7429c7298b2d4af1ab79f690818f668a",
+    "graphmine-worker-kpar": "0836723b0089583fab623097427e0030ddabb83cf6bedb56056a94bfd530b24d",
+    "graphmine-worker-mbe-gpu": "cef3bc8a416acc5f66948f73c976b38ef8adb6281f193871b73957c322252f91",
+    "graphmine-worker-gpu4gst": "1b8e6ab0d692711535095455305a5f4472aa1e4f0aa23ff3150475b2dc9f191f",
+    "graphmine-worker-cds": "43bb52b4d6593ef2fc9ae2b10605f469f40519e62c096970d85ca7a5d9e499fc"
+  },
+  "workers_per_gpu": 8,
+  "gpus": [
+    "0",
+    "1"
+  ],
+  "seconds": 1732.8508608341217,
+  "cases": 15204,
+  "passed": 15145,
+  "failed": 59,
+  "coverage": {
+    "maximal-cliques/mce-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-cliques/graphset": {
+      "passed": 916,
+      "failed": 0
+    },
+    "community-detection/parallel-louvain": {
+      "passed": 624,
+      "failed": 0
+    },
+    "maximal-cliques/g2-aimd": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximal-cliques/rdmce": {
+      "passed": 208,
+      "failed": 0
+    },
+    "quasi-cliques/cuqc": {
+      "passed": 624,
+      "failed": 0
+    },
+    "maximum-clique/cuda-ms": {
+      "passed": 208,
+      "failed": 0
+    },
+    "community-detection/parallel-leiden": {
+      "passed": 624,
+      "failed": 0
+    },
+    "maximum-clique/gpu-maximum-clique": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximum-clique/maximum-clique-on-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-core/kcore-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-cliques/kcgpu": {
+      "passed": 1252,
+      "failed": 0
+    },
+    "triangle-counting/tot": {
+      "passed": 208,
+      "failed": 0
+    },
+    "community-detection/parallel-leiden-plus": {
+      "passed": 624,
+      "failed": 0
+    },
+    "triangle-counting/wetric": {
+      "passed": 208,
+      "failed": 0
+    },
+    "dynamic-triangle-counting/edtc": {
+      "passed": 208,
+      "failed": 0
+    },
+    "graph-motifs/graphminer": {
+      "passed": 208,
+      "failed": 0
+    },
+    "betweenness-centrality/turbo-bc": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-cliques/gamma": {
+      "passed": 1000,
+      "failed": 0
+    },
+    "graph-motifs/graphset": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-truss/acctd": {
+      "passed": 208,
+      "failed": 0
+    },
+    "graph-motifs/dumato": {
+      "passed": 208,
+      "failed": 0
+    },
+    "densest-subgraph/cds": {
+      "passed": 1336,
+      "failed": 0
+    },
+    "subgraph-isomorphism/gmatch": {
+      "passed": 624,
+      "failed": 0
+    },
+    "community-detection/gleiden": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximal-bicliques/cumbe": {
+      "passed": 512,
+      "failed": 0
+    },
+    "connected-components/ecl-scc": {
+      "passed": 368,
+      "failed": 0
+    },
+    "max-flow-min-cut/ecl-maxflow": {
+      "passed": 184,
+      "failed": 0
+    },
+    "transitive-closure/gdlog": {
+      "passed": 184,
+      "failed": 0
+    },
+    "temporal-motif-mining/everest": {
+      "passed": 160,
+      "failed": 0
+    },
+    "linear-assignment/hungarian-cuda": {
+      "passed": 200,
+      "failed": 0
+    },
+    "group-steiner-tree/gpu4gst": {
+      "passed": 160,
+      "failed": 0
+    },
+    "k-cliques/auto": {
+      "passed": 420,
+      "failed": 0
+    },
+    "maximal-biclique-counting/mbe-gpu": {
+      "passed": 453,
+      "failed": 59
+    },
+    "influence-maximization/superfuser": {
+      "passed": 184,
+      "failed": 0
+    },
+    "personalized-pagerank/kpar": {
+      "passed": 184,
+      "failed": 0
+    },
+    "temporal-motif-mining/mayura": {
+      "passed": 160,
+      "failed": 0
+    },
+    "butterfly-counting/graphminer": {
+      "passed": 512,
+      "failed": 0
+    },
+    "butterfly-counting/gamma-butterfly": {
+      "passed": 512,
+      "failed": 0
+    }
+  },
+  "limitations": "Exact bounded oracles; heuristic partitions checked for score/feasibility, PPR errors measured, influence deterministic probabilities checked. No global optimality claim for heuristic operations."
+}

@@ -1,0 +1,79 @@
+{
+  "problem_id": "knn_graph_construction",
+  "problem_dir": "64_knn_graph_construction",
+  "name": "k-Nearest-Neighbor Graph Construction",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 3,
+  "local_gpu_code_entries": 3,
+  "local_paper_entries": 3,
+  "local_gpu_code_and_paper_including_related": 3,
+  "eligible_code_and_paper_references": 3,
+  "eligible_local_code_and_paper_pairs": 3,
+  "target_met": true,
+  "shortfall": 0,
+  "shortfall_explanation": null,
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cuvs",
+      "faiss",
+      "torch_cluster"
+    ],
+    "shortfall": "Fewer than three eligible local GPU implementation/research-paper pairs; individual records state missing artifacts or variant restrictions.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2017_faiss_flat_knn",
+      "algorithm_name": "Faiss GPU exhaustive nearest neighbors",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Query every input vector against a GPU flat index and remove its own ID. Distinct vectors with identical values remain valid neighbors. k+1 retrieval and tie handling must preserve k non-self outputs.",
+      "metadata_path": "64_knn_graph_construction/papers/2017_faiss_flat_knn/metadata.json"
+    },
+    {
+      "paper_id": "2019_torch_cluster_knn",
+      "algorithm_name": "PyTorch Cluster kNN graph",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "CUDA nearest-neighbor graph operator used by the PyG ecosystem. Respect the pinned kernel k limit, batch partitioning, distance convention and self-loop flag.",
+      "metadata_path": "64_knn_graph_construction/papers/2019_torch_cluster_knn/metadata.json"
+    },
+    {
+      "paper_id": "2021_cuvs_nn_descent",
+      "algorithm_name": "cuVS GPU NN-Descent",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Approximate kNN graph construction; recall must be measured. The cuVS implementation cites GPU NN-Descent. CAGRA navigation-graph pruning is not treated as an exact kNN output.",
+      "metadata_path": "64_knn_graph_construction/papers/2021_cuvs_nn_descent/metadata.json"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "problem_id": "general_graph_weighted_matching",
+  "paper_id": "2012_torch_cluster_greedy_matching",
+  "title": "A GPU Algorithm for Greedy Graph Matching",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://research-portal.uu.nl/ws/files/62547756/Algorithm.pdf",
+    "resolved_url": "https://research-portal.uu.nl/ws/files/62547756/Algorithm.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "878c85b6ac855739c9d66cb6a65d5c4a4f527ce4d955794408615e4b73663531",
+    "bytes": 439118,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rusty1s/pytorch_cluster",
+    "local_path": "code",
+    "commit": "e9a855c284b45edcbf0282cf70ac09bee0ce4e49",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/torch_cluster.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "torch_cluster/graclus.py": "df783cd5913be03ee724107d2ba6bc1bc1410d96184958031cb8fd062432c341",
+      "csrc/cuda/graclus_cuda.cu": "6a2b239fd2cb0ed8e3071c8a3f578bc284f770c178131198aa239c9b2eee586f"
+    }
+  }
+}

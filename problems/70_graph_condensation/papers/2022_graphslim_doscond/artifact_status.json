@@ -1,0 +1,33 @@
+{
+  "problem_id": "graph_condensation",
+  "paper_id": "2022_graphslim_doscond",
+  "title": "Condensing Graphs via One-Step Gradient Matching",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2206.07746",
+    "resolved_url": "https://arxiv.org/pdf/2206.07746",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "a05d6cd62ada3fab4343a07bccdc738d6355c05d737156cf91193737b6fc7e11",
+    "bytes": 906043,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/Emory-Melody/GraphSlim",
+    "local_path": "code",
+    "commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/graphslim.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "graphslim/condensation/doscond.py": "cde6c18a031e0201f3195d045556ed87643b811ed224fd7fc9c0fbabde9abbbe"
+    }
+  }
+}

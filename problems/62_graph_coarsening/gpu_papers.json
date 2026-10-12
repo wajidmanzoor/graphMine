@@ -1,0 +1,30 @@
+{
+  "problem_id": "graph_coarsening",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2019_pyg_average_pool",
+      "algorithm_name": "PyG quotient construction with average feature pooling",
+      "metadata": "62_graph_coarsening/papers/2019_pyg_average_pool/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_quotient",
+      "algorithm_name": "cuGraph Weighted graph coarsening",
+      "metadata": "62_graph_coarsening/papers/2026_cugraph_quotient/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_nvgraph_contraction",
+      "algorithm_name": "nvGRAPH graph contraction",
+      "metadata": "62_graph_coarsening/papers/2026_nvgraph_contraction/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

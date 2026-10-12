@@ -1,0 +1,33 @@
+{
+  "problem_id": "k_core_decomposition",
+  "paper_id": "2017_gunrock_kcore",
+  "title": "Gunrock: GPU Graph Analytics",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1701.01170",
+    "resolved_url": "https://arxiv.org/pdf/1701.01170",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:54Z",
+    "sha256": "c95340c9f7276a7bb572e2201d95c9bc9ae4e69faa5cfabbf6ec05b33037a79d",
+    "bytes": 4580298,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/gunrock/gunrock",
+    "local_path": "code",
+    "commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/gunrock.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "include/gunrock/algorithms/kcore.hxx": "cb2de4ada4b83a80ec0d0db70fa16921c39e1d5f795a40e0af358dab6c0902ae"
+    }
+  }
+}

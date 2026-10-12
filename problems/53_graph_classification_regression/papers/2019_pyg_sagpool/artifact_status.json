@@ -1,0 +1,35 @@
+{
+  "problem_id": "graph_classification_regression",
+  "paper_id": "2019_pyg_sagpool",
+  "title": "Self-Attention Graph Pooling",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1904.08082",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:34:47Z",
+    "sha256": "149d2a65033970dbc3860997d542ed1b8740ab6617856eab583daca41cafb009",
+    "bytes": 561438,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pyg-team/pytorch_geometric",
+    "local_path": "code",
+    "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pyg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "benchmark/kernel/sag_pool.py": "e0e317fbff389a9131f41f730c1929fc46ebe1aeb20373a135eadd3e4df9adaf",
+      "benchmark/kernel/train_eval.py": "5d63ec3928d17554fe5a4875207ff023c3991502a6bed21c49cf5ade057b36aa",
+      "torch_geometric/nn/pool/sag_pool.py": "6203495037765ab1363d6f7f89b402ed869796748e089ff8bedd8b635518960f"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

@@ -1,0 +1,47 @@
+{
+  "problem_id": "widest_paths",
+  "problem_dir": "61_widest_paths",
+  "name": "Single-Source Widest Paths",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 1,
+  "local_gpu_code_entries": 1,
+  "local_paper_entries": 0,
+  "local_gpu_code_and_paper_including_related": 0,
+  "eligible_code_and_paper_references": 0,
+  "eligible_local_code_and_paper_pairs": 0,
+  "target_met": false,
+  "shortfall": 3,
+  "shortfall_explanation": "The archived nvGRAPH widest-path implementation is local; its manual is documentation, so the research-paper target remains open.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "nvgraph"
+    ],
+    "shortfall": "The archived nvGRAPH widest-path implementation is local; its manual is documentation, so the research-paper target remains open.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2026_nvgraph_widest_path",
+      "algorithm_name": "nvGRAPH max-min widest path",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Archived NVIDIA nvGRAPH source implements max-min path relaxation. The CUDA library manual documents the operation but is not a research paper.",
+      "metadata_path": "61_widest_paths/papers/2026_nvgraph_widest_path/metadata.json"
+    }
+  ]
+}

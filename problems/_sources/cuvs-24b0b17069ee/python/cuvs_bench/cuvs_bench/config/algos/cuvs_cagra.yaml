@@ -1,0 +1,80 @@
+name: cuvs_cagra
+constraints:
+  build: cuvs_bench.config.algos.constraints.cuvs_cagra_build
+  search: cuvs_bench.config.algos.constraints.cuvs_cagra_search
+groups:
+  base:
+    build:
+      graph_degree: [32, 64, 96, 128]
+      intermediate_graph_degree: [32, 64, 96, 128]
+      graph_build_algo: ["NN_DESCENT"]
+    search:
+      itopk: [32, 64, 128, 256, 512]
+      search_width: [1, 2, 4, 8, 16, 32, 64]
+  test:
+    build:
+      graph_degree: [32]
+      intermediate_graph_degree: [32]
+      graph_build_algo: ["NN_DESCENT"]
+    search:
+      itopk: [32]
+      search_width: [1, 2]
+  persistent:
+    build:
+      graph_degree: [32, 64, 96]
+      intermediate_graph_degree: [128]
+      graph_build_algo: ["IVF_PQ"]
+    search:
+      persistent: [true]
+      persistent_device_usage: [0.95]
+      algo: ["single_cta"]
+      itopk: [32, 64, 128, 256, 512]
+      max_iterations: [0, 16]
+      search_width: [1, 2, 4, 8]
+  merge_fastener_default:
+    build:
+      graph_degree: [64]
+      intermediate_graph_degree: [64]
+      graph_build_algo: ["NN_DESCENT"]
+      num_dataset_splits: [2, 8, 32]
+      merge_type: ["PHYSICAL"]
+      merge_algo: ["FASTENER"]
+      fastener_levels: [2]
+      fastener_root_fanout: [2]
+      fastener_lower_fanout: [3]
+      fastener_leader_fraction: [0.02]
+      fastener_max_leaders: [1024]
+      fastener_leaf_size: [256]
+      fastener_leaf_degree: [4]
+    search:
+      itopk: [64]
+      search_width: [1, 4, 16]
+  merge_fastener_high_quality:
+    build:
+      graph_degree: [64]
+      intermediate_graph_degree: [64]
+      graph_build_algo: ["NN_DESCENT"]
+      num_dataset_splits: [2, 8, 32]
+      merge_type: ["PHYSICAL"]
+      merge_algo: ["FASTENER"]
+      fastener_levels: [2]
+      fastener_root_fanout: [4]
+      fastener_lower_fanout: [2]
+      fastener_leader_fraction: [0.01]
+      fastener_max_leaders: [1024]
+      fastener_leaf_size: [256]
+      fastener_leaf_degree: [4]
+    search:
+      itopk: [64]
+      search_width: [1, 4, 16]
+  merge_rebuild:
+    build:
+      graph_degree: [64]
+      intermediate_graph_degree: [64]
+      graph_build_algo: ["NN_DESCENT"]
+      num_dataset_splits: [2, 8, 32]
+      merge_type: ["PHYSICAL"]
+      merge_algo: ["REBUILD"]
+    search:
+      itopk: [64]
+      search_width: [1, 4, 16]

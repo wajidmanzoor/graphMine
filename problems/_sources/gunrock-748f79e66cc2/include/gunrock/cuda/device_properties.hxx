@@ -1,0 +1,351 @@
+/**
+ * @file device_properties.hxx
+ * @author Muhammad Osama (mosama@ucdavis.edu)
+ * @brief
+ * @date 2020-10-05
+ *
+ * @copyright Copyright (c) 2020
+ *
+ */
+#pragma once
+#include <iostream>
+#include <gunrock/compat/runtime_api.h>
+#include <gunrock/cuda/device.hxx>
+#include <gunrock/error.hxx>
+
+namespace gunrock {
+namespace gcuda {
+
+typedef hipDeviceProp_t device_properties_t;
+
+struct compute_capability_t {
+  unsigned major;
+  unsigned minor;
+  constexpr unsigned as_combined_number() const { return major * 10 + minor; }
+  constexpr bool operator==(int i) { return (int)as_combined_number() == i; }
+  constexpr bool operator!=(int i) { return (int)as_combined_number() != i; }
+  constexpr bool operator>(int i) { return (int)as_combined_number() > i; }
+  constexpr bool operator<(int i) { return (int)as_combined_number() < i; }
+  constexpr bool operator>=(int i) { return (int)as_combined_number() >= i; }
+  constexpr bool operator<=(int i) { return (int)as_combined_number() <= i; }
+};
+
+/**
+ * @brief Make compute capability from major and minor versions.
+ * @param major Compute capability major version
+ * @param minor Compute capability minor version
+ * \return compute_capability_t
+ */
+constexpr compute_capability_t make_compute_capability(unsigned major,
+                                                       unsigned minor) {
+  return compute_capability_t{major, minor};
+}
+
+/**
+ * @brief Make compute capability from combined major and minor version.
+ * @param combined Combined major and minor value, e.g. 86 for 8.6
+ * \return compute_capability_t
+ */
+constexpr compute_capability_t make_compute_capability(unsigned combined) {
+  return compute_capability_t{combined / 10, combined % 10};
+}
+
+/**
+ * @brief Fetch compute capability from SM_TARGET macro.
+ * \return compute_capabilty_t
+ */
+// constexpr compute_capability_t fetch_compute_capability() {
+//   return make_compute_capability(SM_TARGET);
+// }
+
+/**
+ * @namespace properties
+ * C++ based CUDA device properties.
+ */
+namespace properties {
+
+/**
+ * @brief Enums for units used by device property values.
+ */
+enum : size_t { KiB = 1024, K = 1024 };
+
+/**
+ * @brief Architecture name based on compute capability.
+ * https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capability
+ * @param capability Compute capability from which to get the result
+ * \return const char* architecture name or nullptr if capability is invalid
+ */
+inline constexpr const char* arch_name(compute_capability_t capability) {
+  return (capability.major == 8)                            ? "Ampere"
+         : (capability.major == 7 && capability.minor == 5) ? "Turing"
+         : (capability.major == 7)                          ? "Volta"
+         : (capability.major == 6)                          ? "Pascal"
+         : (capability.major == 5)                          ? "Maxwell"
+         : (capability.major == 3)                          ? "Kepler"
+                                                            : nullptr;
+}
+
+// Device properties retrieved from:
+// https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#features-and-technical-specifications
+
+/**
+ * @brief Maximum number of threads per block.
+ * \return unsigned
+ */
+inline constexpr unsigned cta_max_threads() {
+  return 1 << 10;  // 1024 threads per CTA
+}
+
+/**
+ * @brief Warp/wavefront size.
+ * NVIDIA: 32 (warp size)
+ * AMD: 64 (wavefront size for most architectures)
+ * \return unsigned
+ */
+inline constexpr unsigned warp_max_threads() {
+#if defined(__HIP_PLATFORM_AMD__)
+  return 64;  // AMD: wavefront size is 64 for most architectures
+#else
+  return 32;  // NVIDIA: warp size is always 32
+#endif
+}
+
+/**
+ * @brief Maximum number of resident blocks per SM/CU.
+ * @param capability Compute capability from which to get the result
+ * \return unsigned
+ * 
+ * NVIDIA: Maximum resident blocks per SM based on compute capability
+ * AMD: Reasonable default for most architectures (can vary by gfx architecture)
+ */
+inline constexpr unsigned sm_max_ctas(compute_capability_t capability) {
+#if defined(__HIP_PLATFORM_AMD__)
+  // AMD: Return a reasonable default (typically higher than NVIDIA)
+  // Actual value depends on gfx architecture but is generally 32-40 for modern GPUs
+  return 32;
+#else
+  // NVIDIA: Use compute capability-specific values
+  return (capability >= 86) ? 16 :  // SM86+
+             (capability >= 80) ? 32
+                                :  // SM80
+             (capability >= 75) ? 16
+                                :  // SM75
+             (capability >= 50) ? 32
+                                :  // SM50-SM72
+             16;                   // SM30-SM37
+#endif
+}
+
+/**
+ * @brief Maximum number of resident threads per SM.
+ * @param capability Compute capability from which to get the result
+ * \return unsigned
+ */
+inline constexpr unsigned sm_max_threads(compute_capability_t capability) {
+  return (capability >= 86) ? 1536 :  // SM86+
+             (capability >= 80) ? 2048
+                                :  // SM80
+             (capability >= 75) ? 1024
+                                :  // SM75
+             2048;                 // SM30-SM72
+}
+
+/**
+ * @brief Number of 32-bit registers per SM.
+ * @param capability Compute capability from which to get the result
+ * \return unsigned
+ */
+inline constexpr unsigned sm_registers(compute_capability_t capability) {
+  return (capability >= 50) ? 64 * K :  // SM50+
+             (capability >= 37) ? 128 * K
+                                :  // SM37
+             64 * K;               // SM30-SM35
+}
+
+/**
+ * @brief Maximum amount of shared memory per SM.
+ * @tparam sm3XCacheConfig hipFuncCache_t enum representing the shared data
+ *                         cache configuration used when called on compute
+ *                         capability 3.x
+ * @param capability       Compute capability from which to get the result
+ * \return unsigned
+ * @todo Test if this function can be resolved at compile time
+ */
+/*
+template <enum hipFuncCache_t sm3XCacheConfig = hipFuncCachePreferNone>
+inline constexpr unsigned sm_max_shared_memory_bytes(
+    compute_capability_t capability) {
+  unsigned sm3XConfiguredSmem =
+      (sm3XCacheConfig == hipFuncCachePreferNone)     ? 48 * KiB
+      : (sm3XCacheConfig == hipFuncCachePreferShared) ? 48 * KiB
+      : (sm3XCacheConfig == hipFuncCachePreferL1)     ? 16 * KiB
+      : (sm3XCacheConfig == hipFuncCachePreferEqual)  ? 32 * KiB
+                                                       : 48 * KiB;
+
+  return (capability >= 86) ? 100 * KiB :  // SM86+
+             (capability >= 80) ? 164 * KiB
+                                :  // SM80
+             (capability >= 75) ? 64 * KiB
+                                :  // SM75
+             (capability >= 70) ? 96 * KiB
+                                :  // SM70-SM72
+             (capability >= 62) ? 64 * KiB
+                                :  // SM62
+             (capability >= 61) ? 96 * KiB
+                                :  // SM61
+             (capability >= 53) ? 64 * KiB
+                                :  // SM53
+             (capability >= 52) ? 96 * KiB
+                                :  // SM52
+             (capability >= 50) ? 64 * KiB
+                                :  // SM50
+             (capability >= 37) ? 64 * KiB + sm3XConfiguredSmem
+                                :  // SM37
+             sm3XConfiguredSmem;   // SM30-SM35
+}
+*/
+/**
+ * @brief Number of shared memory banks.
+ * \return unsigned
+ */
+inline constexpr unsigned shared_memory_banks() {
+  return 1 << 5;  // 32 memory banks per SM
+}
+
+/**
+ * @brief Stride length (number of bytes per word) of shared memory in bytes.
+ * @tparam sm3XSmemConfig hipSharedMemConfig enum representing the shared
+ *                        memory bank size (stride) used when called on compute
+ *                        capability 3.x
+ * \return unsigned
+ */
+/*
+template <
+    enum hipSharedMemConfig sm3XSmemConfig = hipSharedMemBankSizeDefault>
+inline constexpr unsigned shared_memory_bank_stride() {
+  // The default config on 3.x is the same constant value for later archs
+  // Only let 3.x be configurable if stride later becomes dependent on arch
+  return (sm3XSmemConfig == hipSharedMemBankSizeDefault)     ? 1 << 2
+         : (sm3XSmemConfig == hipSharedMemBankSizeFourByte)  ? 1 << 2
+         : (sm3XSmemConfig == hipSharedMemBankSizeEightByte) ? 1 << 3
+                                                              : 1 << 2;
+}
+*/
+inline unsigned clock_rate(device_properties_t& prop, device_id_t device = 0) {
+#if defined(__CUDACC__) && !defined(__HIP__)
+  // CUDA 13.1+ removed clockRate from cudaDeviceProp, use attribute instead
+  int clock_rate_khz;
+  hipDeviceGetAttribute(&clock_rate_khz, hipDeviceAttributeClockRate, device);
+  return clock_rate_khz;
+#else
+  // HIP still has clockRate field
+  return prop.clockRate;
+#endif
+}
+
+inline constexpr unsigned compute_version(device_properties_t& prop) {
+  return prop.major * 10 + prop.minor;
+}
+
+unsigned device_count() {
+  int device_count;
+  hipGetDeviceCount(&device_count);
+  return device_count;
+}
+
+unsigned driver_version() {
+  int driver_version;
+  hipDriverGetVersion(&driver_version);
+  return driver_version;
+}
+
+inline std::string gpu_name(device_properties_t& prop) {
+  return prop.name;
+}
+
+inline constexpr unsigned sm_major(device_properties_t& prop) {
+  return prop.major;
+}
+
+inline constexpr unsigned sm_minor(device_properties_t& prop) {
+  return prop.minor;
+}
+
+inline constexpr unsigned multi_processor_count(device_properties_t& prop) {
+  return prop.multiProcessorCount;
+}
+
+unsigned runtime_version() {
+  int runtime_version;
+  hipRuntimeGetVersion(&runtime_version);
+  return runtime_version;
+}
+
+void set_device_properties(device_properties_t* prop) {
+  device_id_t ordinal;
+  hipGetDevice(&ordinal);
+  hipGetDeviceProperties(prop, ordinal);
+}
+
+inline constexpr unsigned total_global_memory(device_properties_t& prop) {
+  return prop.totalGlobalMem;
+}
+
+inline int get_max_grid_dimension_x(device_id_t device) {
+  int max_dim_x;
+  hipDeviceGetAttribute(&max_dim_x, hipDeviceAttributeMaxGridDimX, device);
+  return max_dim_x;
+}
+
+void print(device_properties_t& prop) {
+  device_id_t ordinal;
+  hipGetDevice(&ordinal);
+
+  size_t freeMem, totalMem;
+  error::error_t status = hipMemGetInfo(&freeMem, &totalMem);
+  error::throw_if_exception(status);
+
+#if defined(__CUDACC__) && !defined(__HIP__)
+  // CUDA 13.1+ removed clockRate and memoryClockRate from cudaDeviceProp
+  int clock_rate_khz, memory_clock_rate_khz;
+  hipDeviceGetAttribute(&clock_rate_khz, hipDeviceAttributeClockRate, ordinal);
+  hipDeviceGetAttribute(&memory_clock_rate_khz, hipDeviceAttributeMemoryClockRate, ordinal);
+  double memBandwidth =
+      (memory_clock_rate_khz * 1000.0) * (prop.memoryBusWidth / 8 * 2) / 1.0e9;
+  
+  std::cout << prop.name << " : " << clock_rate_khz / 1000.0 << " Mhz "
+            << "(Ordinal " << ordinal << ")" << std::endl;
+  std::cout << "FreeMem: " << (int)(freeMem / (1 << 20)) << " MB "
+            << "TotalMem: " << (int)(totalMem / (1 << 20)) << " MB "
+            << ((int)8 * sizeof(int*)) << "-bit pointers." << std::endl;
+  std::cout << prop.multiProcessorCount
+            << " SMs enabled, Compute Capability sm_" << prop.major
+            << prop.minor << std::endl;
+  std::cout << "Mem Clock: " << memory_clock_rate_khz / 1000.0 << " Mhz x "
+            << prop.memoryBusWidth << " bits (" << memBandwidth << " GB/s)"
+            << std::endl;
+#else
+  // HIP still has clockRate and memoryClockRate fields
+  double memBandwidth =
+      (prop.memoryClockRate * 1000.0) * (prop.memoryBusWidth / 8 * 2) / 1.0e9;
+
+  std::cout << prop.name << " : " << prop.clockRate / 1000.0 << " Mhz "
+            << "(Ordinal " << ordinal << ")" << std::endl;
+  std::cout << "FreeMem: " << (int)(freeMem / (1 << 20)) << " MB "
+            << "TotalMem: " << (int)(totalMem / (1 << 20)) << " MB "
+            << ((int)8 * sizeof(int*)) << "-bit pointers." << std::endl;
+  std::cout << prop.multiProcessorCount
+            << " SMs enabled, Compute Capability sm_" << prop.major
+            << prop.minor << std::endl;
+  std::cout << "Mem Clock: " << prop.memoryClockRate / 1000.0 << " Mhz x "
+            << prop.memoryBusWidth << " bits (" << memBandwidth << " GB/s)"
+            << std::endl;
+#endif
+  std::cout << "ECC " << (prop.ECCEnabled ? "Enabled" : "Disabled")
+            << std::endl;
+}
+
+}  // namespace properties
+
+}  // namespace gcuda
+}  // namespace gunrock

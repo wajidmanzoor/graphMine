@@ -1,0 +1,34 @@
+{
+  "problem_id": "hypergraph_partitioning",
+  "paper_id": "2026_hyspecpro",
+  "title": "HySpecPro: Scalable Hypergraph Partitioning via Spectral Projection Optimization",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2607.00055",
+    "resolved_url": "https://arxiv.org/pdf/2607.00055",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "b40095caf714a6e8beb4418642c7b832ee1913c941f44e6235e57a76a6d5eca7",
+    "bytes": 1770795,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/NVlabs/HySpecPro",
+    "local_path": "code",
+    "commit": "1e9db172ce26a33be394369c94bedfba913ca41a",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/hyspecpro.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "HySpecPro.py": "0c4115cd00987df095df98153dbf80f1d8d9d4990b090a200688d8887531e67b",
+      "helper.py": "b110c1d0f83a5a8e0419108d0973c89ae269bcb85fc97ebba1ca1b5d63d277a4"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "problem_id": "max_flow_min_cut",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2025_ecl_maxflow",
+      "algorithm_name": "An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs",
+      "metadata": "22_max_flow_min_cut/papers/2025_ecl_maxflow/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_generalized_maxflow_gpu",
+      "algorithm_name": "Novel GPU-Based Method for the Generalized Maximum Flow Problem",
+      "metadata": "22_max_flow_min_cut/papers/2025_generalized_maxflow_gpu/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_wbpr",
+      "algorithm_name": "Accelerating Push-Relabel Algorithm on GPU via Two-Level Parallelism Paradigm and Efficient CSR Designs",
+      "metadata": "22_max_flow_min_cut/papers/2025_wbpr/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    }
+  ]
+}

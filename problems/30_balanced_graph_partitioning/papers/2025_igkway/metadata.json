@@ -12,5 +12,12 @@
   "notes": "Incremental/dynamic-update variant of balanced k-way partitioning; no open PDF or public code repository was located during this pass.",
   "problem_id": "balanced_graph_partitioning",
   "problem_dir": "30_balanced_graph_partitioning",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "not_reviewed_or_no_local_source",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "paper_role": "algorithm"
 }

@@ -372,22 +372,13 @@ class GraphMineRunner:
         )
 
         if not result_path.is_file():
-            stderr = stderr_path.read_text(encoding="utf-8", errors="replace")[-8_000:]
+            stderr = self.stderr_tail(stderr_path)
             raise ExecutionError(
                 "missing_result",
                 stderr.strip() or "GraphMine did not create result.json",
                 exit_code=exit_code,
             )
-        try:
-            payload = json.loads(result_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError) as error:
-            raise ExecutionError(
-                "invalid_result", f"invalid result JSON: {error}"
-            ) from error
-        if not isinstance(payload, dict):
-            raise ExecutionError(
-                "invalid_result", "GraphMine result root is not an object"
-            )
+        payload = self.read_result(result_path)
         if exit_code not in {0, 3}:
             raise ExecutionError(
                 "process_failed",
@@ -395,6 +386,46 @@ class GraphMineRunner:
                 exit_code=exit_code,
             )
         return payload, command
+
+    def read_result(self, path: Path) -> dict[str, Any]:
+        """Reject oversized files before allocating or parsing their contents.
+
+        The source artifact remains intact. A bounded read also detects a file
+        that grows or shrinks after the completed process's size check.
+        """
+        limit = self.settings.max_result_bytes
+        try:
+            with path.open("rb") as handle:
+                size = os.fstat(handle.fileno()).st_size
+                if size > limit:
+                    raise ExecutionError(
+                        "result_too_large",
+                        f"The result exceeds the {limit}-byte loading limit. Narrow the selection or request fewer detailed instances.",
+                    )
+                text = handle.read(size + 1).decode("utf-8")
+                if handle.tell() != size:
+                    raise ExecutionError(
+                        "invalid_result", "Result file changed while being read"
+                    )
+            payload = json.loads(text)
+        except (json.JSONDecodeError, UnicodeDecodeError, RecursionError) as error:
+            raise ExecutionError(
+                "invalid_result", f"invalid result JSON: {error}"
+            ) from error
+        if not isinstance(payload, dict):
+            raise ExecutionError(
+                "invalid_result", "GraphMine result root is not an object"
+            )
+        return payload
+
+    @staticmethod
+    def stderr_tail(path: Path) -> str:
+        # Four UTF-8 bytes per retained character; never read the full log just
+        # to report its last 8,000 characters.
+        with path.open("rb") as handle:
+            handle.seek(0, os.SEEK_END)
+            handle.seek(max(0, handle.tell() - 32_000))
+            return handle.read(32_000).decode("utf-8", errors="replace")[-8_000:]
 
     @staticmethod
     def _terminate(process: asyncio.subprocess.Process) -> None:

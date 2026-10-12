@@ -1,0 +1,30 @@
+{
+  "problem_id": "maximum_clique",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2019_maximum_clique_cuda",
+      "algorithm_name": "Implementation of a Maximum Clique Search Procedure on CUDA",
+      "metadata": "02_maximum_clique/papers/2019_maximum_clique_cuda/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_maximum_clique_enumeration_gpu",
+      "algorithm_name": "Maximum Clique Enumeration on the GPU",
+      "metadata": "02_maximum_clique/papers/2023_maximum_clique_enumeration_gpu/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_maximum_clique_many_core_gpu",
+      "algorithm_name": "Efficiently Computing Maximum Clique of Sparse Graphs with Many-Core Graphical Processing Units",
+      "metadata": "02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

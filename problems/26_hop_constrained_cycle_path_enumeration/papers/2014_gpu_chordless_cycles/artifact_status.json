@@ -1,0 +1,24 @@
+{
+  "problem_id": "hop_constrained_cycle_path_enumeration",
+  "paper_id": "2014_gpu_chordless_cycles",
+  "title": "A GPU-based parallel algorithm for enumerating all chordless cycles in graphs",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1410.4876",
+    "resolved_url": "https://arxiv.org/pdf/1410.4876",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "546ea6aa3cc0e6c55cd2671bfab8d3046cc5eb6c7f1e21639d715fdcd3ecf8ff",
+    "bytes": 931869,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

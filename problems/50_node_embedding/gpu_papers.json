@@ -1,0 +1,30 @@
+{
+  "problem_id": "node_embedding",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2014_graphvite_deepwalk",
+      "algorithm_name": "GraphVite DeepWalk",
+      "metadata": "50_node_embedding/papers/2014_graphvite_deepwalk/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2015_graphvite_line",
+      "algorithm_name": "GraphVite LINE",
+      "metadata": "50_node_embedding/papers/2015_graphvite_line/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2016_graphvite_node2vec",
+      "algorithm_name": "GraphVite node2vec",
+      "metadata": "50_node_embedding/papers/2016_graphvite_node2vec/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

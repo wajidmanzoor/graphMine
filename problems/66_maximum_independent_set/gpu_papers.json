@@ -1,0 +1,30 @@
+{
+  "problem_id": "maximum_independent_set",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2023_difusco_mis",
+      "algorithm_name": "DIFUSCO independent set",
+      "metadata": "66_maximum_independent_set/papers/2023_difusco_mis/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_dynamic_mis",
+      "algorithm_name": "Dynamic programming self-trained MIS",
+      "metadata": "66_maximum_independent_set/papers/2023_dynamic_mis/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_pcqo_reference",
+      "algorithm_name": "pCQO-MIS",
+      "metadata": "66_maximum_independent_set/papers/2025_pcqo_reference/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    }
+  ]
+}

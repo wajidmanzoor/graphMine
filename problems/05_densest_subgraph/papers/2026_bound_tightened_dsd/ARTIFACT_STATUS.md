@@ -1,7 +1,17 @@
-# Artifact status
+Bound-Tightened Densest Subgraph Discovery on GPU
+=================================================
 
-- Paper: `downloaded`
-- Code: `cloned`
-- Resolved code commit: `3e704f98cf873336e2cf789570774039c8d6f092`
-- License: no explicit license file detected; review before redistribution.
-- Checked: `2026-10-03T22:04:41Z`
+Paper: downloaded. Source: not_collected.
+
+Reviewed local GPU source/research-paper pair: false.
+
+Semantic fit: exact.
+
+Redistribution: not_reviewed_or_no_local_source.
+
+The original collection sweep checked source/paper evidence only. Subsequent scoped runtime evidence is linked below.
+
+Subsequent runtime validation
+-----------------------------
+
+Status: **runtime_checks_passed**. See [per-record evidence](runtime_validation.json) and the [runtime report](../../../../validation/parameter_expansion/RESULTS.md). Checks exercise the existing CLI adapter with local repairs; they do not certify every paper claim.

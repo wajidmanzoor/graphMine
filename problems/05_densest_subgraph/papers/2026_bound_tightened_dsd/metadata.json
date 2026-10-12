@@ -12,5 +12,12 @@
   "notes": "The author repository contains the paper's CUDA implementation. For k=2 its k-clique-density objective is ordinary unweighted densest-subgraph density; k=3 and k=4 are higher-order variants.",
   "problem_id": "densest_subgraph",
   "problem_dir": "05_densest_subgraph",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "not_reviewed_or_no_local_source",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "paper_role": "algorithm"
 }

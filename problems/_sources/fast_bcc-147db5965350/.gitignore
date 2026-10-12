@@ -1,0 +1,11 @@
+*.o
+main
+main_debug
+FAST_BCC
+ext-bcc
+cuda_bcc
+bfs
+bin/
+baselines/wk-bcc-2017/bin/
+baselines/wk-bcc-2018/bin/
+.DS_Store

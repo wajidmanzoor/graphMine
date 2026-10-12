@@ -1,0 +1,43 @@
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
+# Order matters - match of highest importance goes last (last match wins)
+
+#doc code owners
+datasets/          @rapidsai/cugraph-doc-codeowners
+notebooks/         @rapidsai/cugraph-doc-codeowners
+docs/              @rapidsai/cugraph-doc-codeowners
+**/*.txt           @rapidsai/cugraph-doc-codeowners
+**/*.md            @rapidsai/cugraph-doc-codeowners
+**/*.rst           @rapidsai/cugraph-doc-codeowners
+**/*.ipynb         @rapidsai/cugraph-doc-codeowners
+**/*.pdf           @rapidsai/cugraph-doc-codeowners
+**/*.png           @rapidsai/cugraph-doc-codeowners
+
+#cpp code owners
+cpp/               @rapidsai/cugraph-cpp-codeowners
+
+#python code owners
+python/            @rapidsai/cugraph-python-codeowners
+
+#cmake code owners
+CMakeLists.txt     @rapidsai/cugraph-cmake-codeowners
+**/cmake/          @rapidsai/cugraph-cmake-codeowners
+*.cmake            @rapidsai/cugraph-cmake-codeowners
+
+#CI code owners
+/.github/                @rapidsai/ci-codeowners
+/.yamllint.yaml          @rapidsai/ci-codeowners
+/ci/                     @rapidsai/ci-codeowners
+
+#packaging code owners
+/.pre-commit-config.yaml @rapidsai/packaging-codeowners
+/.devcontainer/          @rapidsai/packaging-codeowners
+/conda/                  @rapidsai/packaging-codeowners
+dependencies.yaml        @rapidsai/packaging-codeowners
+/build.sh                @rapidsai/packaging-codeowners
+pyproject.toml           @rapidsai/packaging-codeowners
+
+# notebooks code owners
+*.ipynb @rapidsai/cugraph-python-codeowners
+
+# Ops code owners
+/SECURITY.md             @rapidsai/ops-codeowners

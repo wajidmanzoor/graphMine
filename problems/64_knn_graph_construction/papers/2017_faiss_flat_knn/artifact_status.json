@@ -1,0 +1,35 @@
+{
+  "problem_id": "knn_graph_construction",
+  "paper_id": "2017_faiss_flat_knn",
+  "title": "Billion-scale similarity search with GPUs",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1702.08734",
+    "resolved_url": "https://arxiv.org/pdf/1702.08734",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "89b2371b261846059d416bdf1423b15a6e3cc7d1b2d5dc2729ee5f6c3399049a",
+    "bytes": 1233821,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/facebookresearch/faiss",
+    "local_path": "code",
+    "commit": "07979b10e64d39a611196483f103b2d7b349b5f7",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/faiss.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "faiss/gpu/GpuIndexFlat.cu": "1778aa383a22b4884010a1ad4ba76c138baa097effba0a187105daa81af90869",
+      "faiss/gpu/impl/FlatIndex.cu": "441ea72604e9ae73426a4b63234ef2667ff7bc44454bceb53c9f4d6b5ae658aa"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

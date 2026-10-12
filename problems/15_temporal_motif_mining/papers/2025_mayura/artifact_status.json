@@ -2,20 +2,30 @@
   "problem_id": "temporal_motif_mining",
   "paper_id": "2025_mayura",
   "title": "Mayura: Exploiting Similarities in Motifs for Temporal Co-Mining",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://www.vldb.org/pvldb/vol18/p5596-singapuram.pdf",
     "status": "downloaded",
+    "source_url": "https://www.vldb.org/pvldb/vol18/p5596-singapuram.pdf",
+    "resolved_url": "https://www.vldb.org/pvldb/vol18/p5596-singapuram.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "739543bc065054ea9c09b6a0524cdab6c5719863ee6de42d87ed1e000d68fc85",
+    "bytes": 2572042,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/singam-sanjay/Mayura",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "8e4276aace4c711dc4ee047e2cb360ae587b092d",
     "license_file": "code/LICENSE.txt",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "GPU-co-mining/workdesk/allOpt_MG34cyc.cu": "c5c211501c0050ae0544a659f67299cc3eb557f08fe05784929557b99ec9e5fd"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

@@ -1,0 +1,63 @@
+{
+  "mode": "sanitizer",
+  "binary_sha256": "9fbacd0bfc0a958ebb8326aa537a55363ff862029ec90aeab84cc90ff951f338",
+  "generator_sha256": "d6d8e95ec2b30101182d983a1fa989a549f99b1fe7963ed4ae7f170c8c663648",
+  "instructions_sha256": "e881e36be301d79b67ad3fd459a3d42c94c624c11d9719f97f5bfc972cda1585",
+  "worker_sha256": {
+    "graphmine-worker-gamma-butterfly": "ef14a0ea5f9236b2d59933aaa39b7eb6af3ced5fcc215b931276500961452cd6",
+    "graphmine-worker-acctd": "fa8e7c159d87dce9747639b167ae969e6a2cbc51004ad10808be59f3e24bb256",
+    "graphmine-worker-superfuser": "49acea3e10c81380b315a3dde14f7bdb7429c7298b2d4af1ab79f690818f668a",
+    "graphmine-worker-kpar": "0836723b0089583fab623097427e0030ddabb83cf6bedb56056a94bfd530b24d",
+    "graphmine-worker-mbe-gpu": "cef3bc8a416acc5f66948f73c976b38ef8adb6281f193871b73957c322252f91",
+    "graphmine-worker-gpu4gst": "1b8e6ab0d692711535095455305a5f4472aa1e4f0aa23ff3150475b2dc9f191f",
+    "graphmine-worker-cds": "43bb52b4d6593ef2fc9ae2b10605f469f40519e62c096970d85ca7a5d9e499fc"
+  },
+  "workers_per_gpu": 1,
+  "gpus": [
+    "0",
+    "1"
+  ],
+  "seconds": 57.81989860534668,
+  "cases": 41,
+  "passed": 41,
+  "failed": 0,
+  "coverage": {
+    "subgraph-isomorphism/gmatch": {
+      "passed": 1,
+      "failed": 0
+    },
+    "community-detection/parallel-louvain": {
+      "passed": 3,
+      "failed": 0
+    },
+    "community-detection/parallel-leiden": {
+      "passed": 3,
+      "failed": 0
+    },
+    "community-detection/parallel-leiden-plus": {
+      "passed": 3,
+      "failed": 0
+    },
+    "densest-subgraph/cds": {
+      "passed": 12,
+      "failed": 0
+    },
+    "k-cliques/gamma": {
+      "passed": 4,
+      "failed": 0
+    },
+    "k-cliques/kcgpu": {
+      "passed": 7,
+      "failed": 0
+    },
+    "temporal-motif-mining/mayura": {
+      "passed": 4,
+      "failed": 0
+    },
+    "temporal-motif-mining/everest": {
+      "passed": 4,
+      "failed": 0
+    }
+  },
+  "limitations": "Exact bounded oracles; heuristic partitions checked for score/feasibility, PPR errors measured, influence deterministic probabilities checked. No global optimality claim for heuristic operations."
+}

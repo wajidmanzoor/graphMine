@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/LIONS-EPFL/dynamic-MIS",
+  "checked_at": "2026-10-10T01:39:38Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "32462fa7fb4bd5c459364a9efb6b749d9c06b53f",
+  "archive_url": "https://codeload.github.com/LIONS-EPFL/dynamic-MIS/tar.gz/32462fa7fb4bd5c459364a9efb6b749d9c06b53f",
+  "archive_sha256": "ba8a4d6702a8fdfb3c3838a55c53f4811681dfc9b3106e358200159c2202bb9a",
+  "local_path": "dynamic_mis-32462fa7fb4b",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "Apache-2.0",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

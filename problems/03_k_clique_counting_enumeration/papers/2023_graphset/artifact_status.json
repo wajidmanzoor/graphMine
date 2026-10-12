@@ -1,21 +1,27 @@
 {
   "problem_id": "k_clique_counting_enumeration",
   "paper_id": "2023_graphset",
-  "title": "GraphSet: High-Performance Graph Mining on GPUs",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "title": "GraphSet: High Performance Graph Mining through Equivalent Set Transformations",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
+    "status": "not_collected",
     "source_url": null,
-    "status": "not_available",
     "local_path": null,
-    "error": null
+    "error": "No local verified PDF; an open downloadable paper URL was not established during this sweep.",
+    "checked_at": "2026-10-10T02:15:29Z"
   },
   "code": {
     "source_url": "https://github.com/sth1997/GraphSet",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
     "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "gpu/gpu_clique.cu": "fff069fe7e3511575492b8756ed5d221a21e4af435aec19af76cd3694ebbf49d"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

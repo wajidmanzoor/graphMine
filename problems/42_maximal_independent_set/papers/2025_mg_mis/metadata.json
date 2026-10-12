@@ -1,0 +1,37 @@
+{
+  "title": "A Multi-GPU Algorithm for Computing Maximal Independent Sets in Large Graphs",
+  "authors": [
+    "Anju Mongandampulath Akathoott",
+    "Benila Virgin Jerald Xavier",
+    "Martin Burtscher"
+  ],
+  "year": 2025,
+  "venue": "ACM ICS 2025",
+  "doi": null,
+  "publication_url": "https://github.com/burtscher/MG-MIS",
+  "pdf_url": "https://userweb.cs.txstate.edu/~mb92/papers/ics25.pdf",
+  "paper_id": "2025_mg_mis",
+  "problem_id": "maximal_independent_set",
+  "problem_dir": "42_maximal_independent_set",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "MG-MIS",
+  "code_url": "https://github.com/burtscher/MG-MIS",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA multi-device implementation; device count and peer communication are deployment requirements.",
+  "notes": "Multi-GPU maximal independent set for large simple undirected graphs. It does not solve maximum independent set.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "MG-MIS_10.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "mg_mis",
+  "variant_constraints": [],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

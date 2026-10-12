@@ -1,0 +1,22 @@
+{
+  "problem_id": "signed_network_structural_balance",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2021_graphbplus",
+      "algorithm_name": "Discovering and Balancing Fundamental Cycles in Large Signed Graphs",
+      "metadata": "32_signed_network_structural_balance/papers/2021_graphbplus/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_ecl_sgb",
+      "algorithm_name": "Signed Graph Balancing in Linear Time",
+      "metadata": "32_signed_network_structural_balance/papers/2026_ecl_sgb/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

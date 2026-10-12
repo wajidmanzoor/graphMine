@@ -1,0 +1,21 @@
+{
+  "status": "runtime_checks_passed",
+  "canonical_adapter_available": false,
+  "scope_note": "Subsequent runtime checks; not a paper-version reproduction or an integrated solver.",
+  "checks": [
+    {
+      "backend": "dhg-hypergcn",
+      "passed": 55,
+      "failed": 0,
+      "scope": "Upstream model forward/backward, finite logits and gradients; HGNN/HNHN CPU parity; no training/generalization claim",
+      "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+    },
+    {
+      "backend": "dhg-hypergcn-domain-rejection",
+      "passed": 45,
+      "failed": 0,
+      "scope": "Expected rejection of singleton hyperedges; no model output",
+      "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+    }
+  ]
+}

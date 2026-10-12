@@ -5,7 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from ..catalog import Catalog
 from ..config import Settings
+from .catalog_audit import audit_suite
+from .catalog_compare import compare_reports, recheck_report, write_new_report
+from .catalog_replay import evaluate_suite
+from .catalog_suite import write_suite
 from .corpus import generate_corpus, load_corpus
 from .inference import ModelProfile
 from .pipeline import audit_native, evaluate_agent, export_candidates, run_pipeline
@@ -24,6 +29,50 @@ def add_parser(subcommands) -> None:
         help="generate and evaluate synthetic candidates and public real-data tasks",
     )
     commands = learning.add_subparsers(dest="learning_command", required=True)
+    current = commands.add_parser(
+        "prepare-current-catalog",
+        help="write evaluation-only current-catalog development fixtures; no model or native calls",
+    )
+    current.add_argument("--output", type=Path, required=True)
+    current.add_argument("--seed", type=int, default=20261007)
+    verify_current = commands.add_parser(
+        "verify-current-catalog",
+        help="rebuild and check development fixtures through CPU ingestion and planning contracts",
+    )
+    verify_current.add_argument("suite", type=Path)
+    verify_current.add_argument("--output", type=Path)
+    verify_current.add_argument(
+        "--compare-corpus",
+        type=Path,
+        action="append",
+        default=[],
+        help="check normalized question and unlabeled topology reuse against a verified synthetic corpus; repeatable",
+    )
+    live_current = commands.add_parser(
+        "evaluate-current-catalog",
+        help="execute the development suite through configured local models and native jobs in a new isolated runtime",
+    )
+    live_current.add_argument("suite", type=Path)
+    live_current.add_argument("--output", type=Path, required=True)
+    live_current.add_argument("--data-dir", type=Path, required=True)
+    live_current.add_argument("--label", required=True)
+    live_current.add_argument("--case-id", action="append", dest="case_ids")
+    live_current.add_argument("--repeats", type=int, choices=(1, 2, 3), default=1)
+    recheck_current = commands.add_parser(
+        "recheck-current-catalog",
+        help="verify saved workflow evidence and recompute grades offline; no model or native calls",
+    )
+    recheck_current.add_argument("suite", type=Path)
+    recheck_current.add_argument("--report", type=Path, required=True)
+    recheck_current.add_argument("--output", type=Path, required=True)
+    compare_current = commands.add_parser(
+        "compare-current-catalog",
+        help="regrade and pair two captures from the same development suite offline",
+    )
+    compare_current.add_argument("suite", type=Path)
+    compare_current.add_argument("--before", type=Path, required=True)
+    compare_current.add_argument("--after", type=Path, required=True)
+    compare_current.add_argument("--output", type=Path, required=True)
     real = commands.add_parser(
         "prepare-real-world",
         help="download catalogued public datasets and create source-separated evaluation slices",
@@ -198,6 +247,108 @@ def add_parser(subcommands) -> None:
 def run_learning(arguments, settings: Settings) -> int:
     command = arguments.learning_command
     try:
+        if command == "prepare-current-catalog":
+            report = write_suite(
+                Catalog(settings), arguments.output, seed=arguments.seed
+            )
+            print(
+                json.dumps(
+                    {
+                        "path": str(arguments.output),
+                        "cases": len(report["cases"]),
+                        "training_eligible": False,
+                        "human_review": "unreviewed",
+                    }
+                )
+            )
+            return 0
+        if command == "verify-current-catalog":
+            report = audit_suite(
+                settings, arguments.suite, reference_corpora=arguments.compare_corpus
+            )
+            if arguments.output:
+                arguments.output.parent.mkdir(parents=True, exist_ok=True)
+                with arguments.output.open("x", encoding="utf-8") as handle:
+                    json.dump(report, handle, indent=2)
+                    handle.write("\n")
+            print(
+                json.dumps(
+                    {
+                        key: report[key]
+                        for key in [
+                            "passed",
+                            "total",
+                            "problem_count",
+                            "operation_count",
+                            "native_execution",
+                            "model_inference",
+                            "numerical_validation",
+                        ]
+                    }
+                )
+            )
+            return 0 if report["passed"] == report["total"] else 1
+        if command in {
+            "evaluate-current-catalog",
+            "recheck-current-catalog",
+            "compare-current-catalog",
+        }:
+            if command == "evaluate-current-catalog":
+                report = run_pipeline(
+                    evaluate_suite,
+                    settings,
+                    suite_path=arguments.suite,
+                    output=arguments.output,
+                    data_dir=arguments.data_dir,
+                    label=arguments.label,
+                    case_ids=arguments.case_ids,
+                    repeats=arguments.repeats,
+                )
+            elif command == "recheck-current-catalog":
+                report = recheck_report(
+                    settings,
+                    suite_path=arguments.suite,
+                    report_path=arguments.report,
+                )
+                write_new_report(arguments.output, report)
+            else:
+                report = compare_reports(
+                    settings,
+                    suite_path=arguments.suite,
+                    before_path=arguments.before,
+                    after_path=arguments.after,
+                )
+                write_new_report(arguments.output, report)
+            if command == "compare-current-catalog":
+                print(
+                    json.dumps(
+                        {
+                            key: report[key]
+                            for key in (
+                                "complete",
+                                "expected_pairs",
+                                "matched_pairs",
+                                "dimensions",
+                            )
+                        }
+                    )
+                )
+                return (
+                    0
+                    if report["complete"]
+                    and not any(
+                        result["regressed"] for result in report["dimensions"].values()
+                    )
+                    else 1
+                )
+            print(json.dumps(report["summary"]))
+            summary = report["summary"]
+            return (
+                0
+                if summary["complete"]
+                and summary["workflow_contract_passes"] == summary["expected_trials"]
+                else 1
+            )
         if command == "prepare-real-world":
             report = prepare_realworld(
                 arguments.output,

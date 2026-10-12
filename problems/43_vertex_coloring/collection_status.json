@@ -1,0 +1,92 @@
+{
+  "problem_id": "vertex_coloring",
+  "problem_dir": "43_vertex_coloring",
+  "name": "Vertex Coloring",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 4,
+  "local_gpu_code_entries": 4,
+  "local_paper_entries": 3,
+  "local_gpu_code_and_paper_including_related": 3,
+  "eligible_code_and_paper_references": 3,
+  "eligible_local_code_and_paper_pairs": 3,
+  "target_met": true,
+  "shortfall": 0,
+  "shortfall_explanation": null,
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cugraph"
+    ],
+    "shortfall": "Fewer than three eligible local GPU implementation/research-paper pairs; individual records state missing artifacts or variant restrictions.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2016_gardenia_coloring",
+      "algorithm_name": "GARDENIA speculative greedy coloring",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Distance-1 coloring. Several CUDA schedules are included; they are one algorithm entry here.",
+      "metadata_path": "43_vertex_coloring/papers/2016_gardenia_coloring/metadata.json"
+    },
+    {
+      "paper_id": "2017_gunrock_coloring",
+      "algorithm_name": "Gunrock parallel priority coloring",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "The paper describes the Gunrock framework. This pinned implementation is a later revision, not the exact artifact evaluated in the 2017 paper. Distance-1 heuristic.",
+      "metadata_path": "43_vertex_coloring/papers/2017_gunrock_coloring/metadata.json"
+    },
+    {
+      "paper_id": "2019_graphblast_coloring",
+      "algorithm_name": "GraphBLAST independent-set coloring",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Distance-1 heuristic; does not establish a chromatic-number optimum or distance-2 support.",
+      "metadata_path": "43_vertex_coloring/papers/2019_graphblast_coloring/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_coloring",
+      "algorithm_name": "cuGraph Vertex coloring",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Proper coloring; no minimum-color guarantee. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "43_vertex_coloring/papers/2026_cugraph_coloring/metadata.json"
+    }
+  ]
+}

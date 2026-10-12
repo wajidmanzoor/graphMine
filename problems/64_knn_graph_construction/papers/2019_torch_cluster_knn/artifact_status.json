@@ -1,0 +1,35 @@
+{
+  "problem_id": "knn_graph_construction",
+  "paper_id": "2019_torch_cluster_knn",
+  "title": "Fast Graph Representation Learning with PyTorch Geometric",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1903.02428",
+    "resolved_url": "https://arxiv.org/pdf/1903.02428",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "8cfd9824d44c5aba66393ef05e70c1275ca7886e0a0502f7b09e86e6c3a38953",
+    "bytes": 379324,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rusty1s/pytorch_cluster",
+    "local_path": "code",
+    "commit": "e9a855c284b45edcbf0282cf70ac09bee0ce4e49",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/torch_cluster.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "torch_cluster/knn.py": "7db2985a66f6b4a8327d2f8ab6bb26cdc7ac560e4826c9724cdba0bef18cd161",
+      "csrc/cuda/knn_cuda.cu": "f827bb3ff63b2ebf4d7082344ba5cc1a3b053b6af58aa7709219e7c1464607ff"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

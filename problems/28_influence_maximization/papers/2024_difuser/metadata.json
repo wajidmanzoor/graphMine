@@ -12,5 +12,12 @@
   "notes": "No public repository confirmed distinct from the 2021 infuser/SuperFuseR codebase was located; do not substitute that repository as this paper's official code.",
   "problem_id": "influence_maximization",
   "problem_dir": "28_influence_maximization",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "not_reviewed_or_no_local_source",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "paper_role": "algorithm"
 }

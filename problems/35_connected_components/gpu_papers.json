@@ -1,0 +1,62 @@
+{
+  "problem_id": "connected_components",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gunrock_cc",
+      "algorithm_name": "Gunrock connected components",
+      "metadata": "35_connected_components/papers/2017_gunrock_cc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_eclcc",
+      "algorithm_name": "A High-Performance Connected Components Implementation for GPUs",
+      "metadata": "35_connected_components/papers/2018_eclcc/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_hornet_cc",
+      "algorithm_name": "Hornet Connected components",
+      "metadata": "35_connected_components/papers/2018_hornet_cc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_cc",
+      "algorithm_name": "GraphBLAST cc",
+      "metadata": "35_connected_components/papers/2019_graphblast_cc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_eclscc",
+      "algorithm_name": "A GPU Algorithm for Detecting Strongly Connected Components",
+      "metadata": "35_connected_components/papers/2023_eclscc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_scc",
+      "algorithm_name": "cuGraph Strongly connected components",
+      "metadata": "35_connected_components/papers/2026_cugraph_scc/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_wcc",
+      "algorithm_name": "cuGraph Weakly connected components",
+      "metadata": "35_connected_components/papers/2026_cugraph_wcc/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

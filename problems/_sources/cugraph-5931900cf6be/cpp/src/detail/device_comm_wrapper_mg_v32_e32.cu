@@ -1,0 +1,24 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2023-2026, NVIDIA CORPORATION.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "detail/device_comm_wrapper.cuh"
+
+#include <cugraph/export.hpp>
+
+namespace cugraph {
+namespace detail {
+
+template CUGRAPH_EXPORT rmm::device_uvector<int32_t> device_allgatherv(
+  raft::handle_t const& handle,
+  raft::comms::comms_t const& comm,
+  raft::device_span<int32_t const> d_input);
+
+template CUGRAPH_EXPORT rmm::device_uvector<float> device_allgatherv(
+  raft::handle_t const& handle,
+  raft::comms::comms_t const& comm,
+  raft::device_span<float const> d_input);
+
+}  // namespace detail
+}  // namespace cugraph

@@ -1,0 +1,43 @@
+{
+  "family": "models",
+  "gpu": "1",
+  "cases": 348,
+  "passed": 348,
+  "failed": 0,
+  "startup_error": null,
+  "by_backend": {
+    "pyg-gcn": {
+      "passed": 58,
+      "failed": 0,
+      "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim"
+    },
+    "pyg-gat": {
+      "passed": 58,
+      "failed": 0,
+      "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim"
+    },
+    "pyg-graphsage": {
+      "passed": 58,
+      "failed": 0,
+      "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim"
+    },
+    "pyg-gin": {
+      "passed": 58,
+      "failed": 0,
+      "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim"
+    },
+    "pyg-diffpool": {
+      "passed": 58,
+      "failed": 0,
+      "scope": "CUDA/CPU layer-output parity only; no trained graph classifier"
+    },
+    "pyg-sagpool": {
+      "passed": 58,
+      "failed": 0,
+      "scope": "CUDA/CPU pooling parity only; no trained graph classifier"
+    }
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "numpy": "1.26.4",
+  "script_sha256": "3f7b12d8ab8f95f3efbae3707b1c82d4a124cccc1bd7779beb6e909d4a4f1a26"
+}

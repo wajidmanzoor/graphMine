@@ -1,0 +1,9 @@
+{
+  "lr_feat": 0.05,
+  "lr_adj": 0.01,
+  "lr_teacher": 1e-2,
+  "ntrans": 2,
+  "threshold": 0.01,
+  "condense_model": "SGC",
+  "epochs": 3000
+}

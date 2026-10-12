@@ -1,0 +1,34 @@
+{
+  "problem_id": "general_graph_weighted_matching",
+  "paper_id": "2012_dgl_greedy_matching",
+  "title": "A GPU Algorithm for Greedy Graph Matching",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://research-portal.uu.nl/ws/files/62547756/Algorithm.pdf",
+    "resolved_url": "https://research-portal.uu.nl/ws/files/62547756/Algorithm.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "878c85b6ac855739c9d66cb6a65d5c4a4f527ce4d955794408615e4b73663531",
+    "bytes": 439118,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/dmlc/dgl",
+    "local_path": "code",
+    "commit": "3d16000b4170fa741ed9e9667f22ba84d3493026",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/dgl.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "python/dgl/geometry/edge_coarsening.py": "694713c91c74baaffe7622b7e6ea1e036d9d080f0a627e3e307712c8e24494c1",
+      "src/geometry/cuda/edge_coarsening_impl.cu": "b4688996dd2744ad0263cc7c9da46bffabf53a9e715933a0f7b5ab295225d479"
+    }
+  }
+}

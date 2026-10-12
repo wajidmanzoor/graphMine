@@ -2,20 +2,30 @@
   "problem_id": "centrality_influential_node_mining",
   "paper_id": "2021_turbobc",
   "title": "TurboBC: A Memory Efficient and Scalable GPU Based Betweenness Centrality Algorithm in the Language of Linear Algebra",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://par.nsf.gov/servlets/purl/10319544",
     "status": "downloaded",
+    "source_url": "https://par.nsf.gov/servlets/purl/10319544",
+    "resolved_url": "https://par.nsf.gov/servlets/purl/10319544",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "cb911d0613d3081b932b5e3d49ade6da8e659da263ca1d663de4dffae741f78e",
+    "bytes": 1861523,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/pcdslab/TurboBC",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "6e885a207902cfdac4cc375085c5a6ff58977fea",
     "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "TurboBC/bcgpugcooc_sc.cu": "5f3ee23a7fc21002210a39c79785b853f24ed1ec32dad5ba95f6596db7702a0f"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

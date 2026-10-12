@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/RapidsAtHKUST/AccTrussDecomposition",
+  "checked_at": "2026-10-10T01:45:33Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "a8faa445ccb45c18383087db488eff9d1836d8d1",
+  "archive_url": "https://codeload.github.com/RapidsAtHKUST/AccTrussDecomposition/tar.gz/a8faa445ccb45c18383087db488eff9d1836d8d1",
+  "archive_sha256": "79c7970c9396c0dba8460439be33e5a61f6976af17395928bd690a93be1d3be9",
+  "local_path": "acc_truss-a8faa445ccb4",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

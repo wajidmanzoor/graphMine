@@ -12,5 +12,14 @@
   "notes": "The paper points to the PCDS Lab organization; its official GPL-3.0 TurboBC repository contains the CUDA implementation.",
   "problem_id": "centrality_influential_node_mining",
   "problem_dir": "18_centrality_influential_node_mining",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "upstream_license_present",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "TurboBC/bcgpugcooc_sc.cu"
+  ],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "algorithm"
 }

@@ -1,0 +1,33 @@
+{
+  "problem_id": "topological_sort",
+  "paper_id": "2026_topogpu_morse_sort",
+  "title": "GPU-Accelerated Computation of Persistent Homology for Topological Analysis of Image Data",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2610.10959",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:34:47Z",
+    "sha256": "a1be9d61287020843aa2ecb61da30109532f489e8df2dc83c4a3e20fc4320f62",
+    "bytes": 19340066,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/seravee08/GPU-Computation-of-Persistent-Homology-for-Image-Data",
+    "local_path": "code",
+    "commit": "0f39a80e874dda736e90432ef1b4879f728b89d3",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/topogpu.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/morse_boundary.cu": "466bf95f63bd26eb80f3df2d43f9fbf7c5114b28dcceddaa8c4622c38d7e5bcf",
+      "src/topo.cu": "e22e16aed2e25c3e0b6c2eaae3323adc5ba017c510c93ebcefa05ce4e79a0b87"
+    }
+  }
+}

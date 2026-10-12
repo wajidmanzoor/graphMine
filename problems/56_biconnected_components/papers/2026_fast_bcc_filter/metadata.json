@@ -1,0 +1,29 @@
+{
+  "title": "GPU Algorithms for Biconnected Components on Large Graphs",
+  "year": 2026,
+  "venue": "IPDPS 2026",
+  "doi": null,
+  "publication_url": "https://github.com/Abhijeetkumar96/FAST-BCC-on-GPUs",
+  "pdf_url": "https://raw.githubusercontent.com/Abhijeetkumar96/FAST-BCC-on-GPUs/147db5965350/Fast-BCC-Filter-IPDPS-2026.pdf",
+  "paper_id": "2026_fast_bcc_filter",
+  "problem_id": "biconnected_components",
+  "problem_dir": "56_biconnected_components",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Fast-BCC-Filter",
+  "code_url": "https://github.com/Abhijeetkumar96/FAST-BCC-on-GPUs",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA arbitrary-spanning-tree biconnected-component decomposition.",
+  "notes": "Actual upstream path is gpu/with_filter although README says in-memory/with_filter. Published experiments connect inputs; verify disconnected components and bridge/block conventions.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "gpu/with_filter/main.cu",
+    "gpu/with_filter/euler.cu",
+    "gpu/with_filter/tags.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "counts": {
+    "problems": 33,
+    "algorithm_records": 111,
+    "problems_meeting_three_local_pairs": 20,
+    "eligible_local_pairs": 75,
+    "local_gpu_source_entries": 97,
+    "local_main_papers": 90,
+    "upstream_source_snapshots": 56
+  },
+  "errors": [],
+  "scope": "Artifact integrity only; no builds, GPU execution, or benchmark validation."
+}

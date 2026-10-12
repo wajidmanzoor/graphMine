@@ -1,0 +1,27 @@
+{
+  "problem_id": "graph_signal_denoising",
+  "paper_id": "2014_gtf_admm",
+  "title": "Trend Filtering on Graphs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1410.7690",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "sha256": "0a65da7c5341a962f8aa8ec06f2bc502b093b1890459367706995cf508064e4f",
+    "bytes": 5467153,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": "https://cseweb.ucsd.edu/~yuxiangw/codes/gtf_code.zip",
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

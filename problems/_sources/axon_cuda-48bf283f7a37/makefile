@@ -1,0 +1,128 @@
+# ==========================================
+# Project settings
+# ==========================================
+TARGET      := hgraph_gpu.exe
+
+SRC_DIRS    := sources kernels
+HDR_DIR     := headers
+INC_DIR     := includes
+BUILD_DIR   := build
+
+CXX         := g++
+NVCC        := nvcc
+ARCH        := native
+
+CXXFLAGS    := -O3 --std=c++20 -Wall -Wextra -fopenmp -I$(HDR_DIR) -I$(INC_DIR)
+NVCCFLAGS   := -O3 --std=c++20 -arch=$(ARCH) -dc -dlto -allow-unsupported-compiler --extended-lambda \
+               -Xptxas -O3 -Xcompiler "-Wall -Wextra -Wno-maybe-uninitialized -Wno-unused-function -fopenmp" \
+               -I $(HDR_DIR) -I $(INC_DIR)
+LINKFLAGS   := --std=c++20 -arch=$(ARCH) -dlto -allow-unsupported-compiler --extended-lambda -lgomp
+
+NPROC := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu)
+MAKEFLAGS += -j$(NPROC) # run with as many jobs as there are CPU cores
+
+# ==========================================
+# Source discovery
+# ==========================================
+SRC_CPPS    := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
+SRC_CUS     := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cu))
+SRCS        := $(SRC_CPPS) $(SRC_CUS)
+
+OBJS        := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRC_CPPS))
+OBJS        += $(patsubst %.cu,$(BUILD_DIR)/%.o,$(SRC_CUS))
+
+DEPS        := $(OBJS:.o=.d)
+
+# ==========================================
+# Build rules
+# ==========================================
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(NVCC) $(LINKFLAGS) -o $@ $^
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# C++ sources
+$(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+
+# CUDA sources
+$(BUILD_DIR)/%.o: %.cu | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	$(NVCC) $(NVCCFLAGS) -MMD -MP -c $< -o $@
+
+-include $(DEPS)
+
+# ==========================================
+# Argument extraction (for run, profile, memcheck)
+# ==========================================
+RUN_ARG_1     := $(word 2, $(MAKECMDGOALS))
+RUN_ARG_2     := $(word 3, $(MAKECMDGOALS))
+PROFILE_ARG_1 := $(word 2, $(MAKECMDGOALS))
+PROFILE_ARG_2 := $(word 3, $(MAKECMDGOALS))
+
+# Dummy rule to avoid "No rule to make target ..."
+$(RUN_ARG_1) $(RUN_ARG_2) $(PROFILE_ARG_1) $(PROFILE_ARG_2):
+	@:
+
+# ==========================================
+# Commands
+# ==========================================
+# Run:
+#   make run
+#   make run <input_file>
+#   make run <input_file> <config_name>
+run: $(TARGET)
+	@if [ -z "$(RUN_ARG_1)" ]; then \
+		./$(TARGET); \
+	elif [ -z "$(RUN_ARG_2)" ]; then \
+		./$(TARGET) -r $(RUN_ARG_1); \
+	else \
+		./$(TARGET) -r $(RUN_ARG_1) -c $(RUN_ARG_2); \
+	fi
+
+#   make run8k
+run8k: $(TARGET)
+	./$(TARGET) -r hgraphs/8k_model_ordered_processed.snn
+
+# Profile:
+#   make profile <input_file>
+#   make profile <input_file> <config_name>
+profile: $(TARGET)
+	@if [ -z "$(PROFILE_ARG_1)" ]; then \
+		echo "Usage: make profile <input_file> [cache_string]"; \
+		exit 1; \
+	elif [ -z "$(PROFILE_ARG_2)" ]; then \
+		nsys profile --stats=true --force-overwrite=true \
+			--output=$(TARGET)_profile \
+			./$(TARGET) -r $(PROFILE_ARG_1); \
+	else \
+		nsys profile --stats=true --force-overwrite=true \
+			--output=$(TARGET)_profile \
+			./$(TARGET) -r $(PROFILE_ARG_1) -c $(PROFILE_ARG_2); \
+	fi
+
+# Memcheck:
+#   make memcheck <input_file>
+#   make memcheck <input_file> <config_name>
+memcheck: $(TARGET)
+	@if [ -z "$(PROFILE_ARG_1)" ]; then \
+		echo "Usage: make memcheck <input_file> [cache_string]"; \
+		exit 1; \
+	elif [ -z "$(PROFILE_ARG_2)" ]; then \
+		compute-sanitizer --tool memcheck \
+			./$(TARGET) -r $(PROFILE_ARG_1); \
+	else \
+		compute-sanitizer --tool memcheck \
+			./$(TARGET) -r $(PROFILE_ARG_1) -c $(PROFILE_ARG_2); \
+	fi
+
+# ==========================================
+clean:
+	rm -f $(TARGET) *.qdrep *.nsys-rep *.sqlite
+	rm -rf $(BUILD_DIR)
+
+.PHONY: all run run8k profile memcheck clean

@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/Abhijeetkumar96/FAST-BCC-on-GPUs",
+  "checked_at": "2026-10-09T19:28:37Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "147db596535064ee6ea43efbcab315d5b224a1a6",
+  "archive_url": "https://codeload.github.com/Abhijeetkumar96/FAST-BCC-on-GPUs/tar.gz/147db596535064ee6ea43efbcab315d5b224a1a6",
+  "archive_sha256": "6e26a89b756dabf96268e866493515f568306a9c1638e6982d4542bef8c5ec10",
+  "local_path": "fast_bcc-147db5965350",
+  "license_files": [],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

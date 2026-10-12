@@ -1,0 +1,28 @@
+{
+  "title": "GPU-Accelerated Computation of Persistent Homology for Topological Analysis of Image Data",
+  "year": 2026,
+  "venue": "TPAMI 2026 accepted",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2610.10959",
+  "pdf_url": "https://arxiv.org/pdf/2610.10959",
+  "paper_id": "2026_topogpu_morse_sort",
+  "problem_id": "topological_sort",
+  "problem_dir": "45_topological_sort",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "TopoGPU parallel topological sorting",
+  "code_url": "https://github.com/seravee08/GPU-Computation-of-Persistent-Homology-for-Image-Data",
+  "semantic_fit": "restricted_domain",
+  "gpu_scope": "CUDA topoSort_kernel2D and topoSort_kernel3D inside a persistent-homology pipeline.",
+  "notes": "Specialized to Morse/cubical-complex DAGs derived from image data; not a general edge-list DAG sorter. Retained as related GPU code, excluded from the general-problem target.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "src/morse_boundary.cu",
+    "src/topo.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

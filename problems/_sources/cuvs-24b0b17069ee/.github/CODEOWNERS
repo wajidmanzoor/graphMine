@@ -1,0 +1,53 @@
+#c code owners
+c/                 @NVIDIA/cuvs-c-codeowners
+examples/c/        @NVIDIA/cuvs-c-codeowners
+
+#cpp code owners
+cpp/               @NVIDIA/cuvs-cpp-codeowners
+examples/cpp/      @NVIDIA/cuvs-cpp-codeowners
+
+
+#java code owners
+java/              @NVIDIA/cuvs-java-codeowners
+examples/java/     @NVIDIA/cuvs-java-codeowners
+
+#python code owners
+python/            @NVIDIA/cuvs-python-codeowners
+
+#rust code owners
+rust/              @NVIDIA/cuvs-rust-codeowners
+
+#docs code owners
+docs/              @NVIDIA/cuvs-docs-codeowners
+fern/              @NVIDIA/cuvs-docs-codeowners
+
+# The API reference pages are generated so they should be
+# reviewed by the corresponding language code owners.
+fern/pages/*_api/
+
+#cmake code owners
+CMakeLists.txt                  @NVIDIA/cuvs-cmake-codeowners
+**/cmake/                       @NVIDIA/cuvs-cmake-codeowners
+*.cmake                         @NVIDIA/cuvs-cmake-codeowners
+cpp/scripts/run-cmake-format.sh @NVIDIA/cuvs-cmake-codeowners
+
+#CI code owners
+/.coderabbit.yaml        @NVIDIA/adi-ci-codeowners
+/.github/                @NVIDIA/adi-ci-codeowners
+/.shellcheckrc           @NVIDIA/adi-ci-codeowners
+/.yamllint.yaml          @NVIDIA/adi-ci-codeowners
+/ci/                     @NVIDIA/adi-ci-codeowners
+
+#packaging code owners
+/.pre-commit-config.yaml @NVIDIA/adi-packaging-codeowners
+/.devcontainer/          @NVIDIA/adi-packaging-codeowners
+/conda/                  @NVIDIA/adi-packaging-codeowners
+dependencies.yaml        @NVIDIA/adi-packaging-codeowners
+/build.sh                @NVIDIA/adi-packaging-codeowners
+pyproject.toml           @NVIDIA/adi-packaging-codeowners
+python/setup.py          @NVIDIA/adi-packaging-codeowners
+build.sh                 @NVIDIA/adi-packaging-codeowners
+**/build.sh              @NVIDIA/adi-packaging-codeowners
+
+# Ops code owners
+/SECURITY.md             @NVIDIA/adi-ops-codeowners

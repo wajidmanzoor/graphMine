@@ -1,7 +1,17 @@
-# Artifact status
+Efficient Maximal Biclique Enumeration on GPUs
+==============================================
 
-- Paper: `downloaded`
-- Code: `cloned`
-- Resolved code commit: `4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942`
-- License: no explicit license file detected; review before redistribution.
-- Checked: `2026-10-03T22:04:41Z`
+Paper: downloaded. Source: not_collected.
+
+Reviewed local GPU source/research-paper pair: false.
+
+Semantic fit: exact.
+
+Redistribution: not_reviewed_or_no_local_source.
+
+The original collection sweep checked source/paper evidence only. Subsequent scoped runtime evidence is linked below.
+
+Subsequent runtime validation
+-----------------------------
+
+Status: **runtime_checks_passed**. See [per-record evidence](runtime_validation.json) and the [runtime report](../../../../validation/parameter_expansion/RESULTS.md). Checks exercise the existing CLI adapter with local repairs; they do not certify every paper claim.

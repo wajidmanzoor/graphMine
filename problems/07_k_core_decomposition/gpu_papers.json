@@ -1,0 +1,38 @@
+{
+  "problem_id": "k_core_decomposition",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gunrock_kcore",
+      "algorithm_name": "Gunrock kcore",
+      "metadata": "07_k_core_decomposition/papers/2017_gunrock_kcore/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_hornet_kcore",
+      "algorithm_name": "Hornet K-core peeling",
+      "metadata": "07_k_core_decomposition/papers/2018_hornet_kcore/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_accelerating_k_core_gpu",
+      "algorithm_name": "Accelerating k-Core Decomposition by a GPU",
+      "metadata": "07_k_core_decomposition/papers/2023_accelerating_k_core_gpu/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_core_number",
+      "algorithm_name": "cuGraph Core-number peeling",
+      "metadata": "07_k_core_decomposition/papers/2026_cugraph_core_number/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

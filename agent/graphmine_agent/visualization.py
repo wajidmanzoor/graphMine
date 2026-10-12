@@ -25,7 +25,7 @@ def answer_visualizations(
                 type=kind,
                 title=title,
                 data_ref=f"{prefix}.{field}",
-                encodings=encodings or {},
+                encodings={"answer_ref": prefix, **(encodings or {})},
                 description=description,
                 interactions=["filter"] if kind in {"network", "table"} else [],
                 limit=1000,
@@ -41,14 +41,57 @@ def answer_visualizations(
             {"time": "timestamp", "category": "sequence"},
             f"Only matched events; timestamps are from the original data. Unit: {answer['provenance']['timestamp_unit']}.",
         )
-    if answer["operation_id"] == "betweenness-centrality" and answer["rows"]:
+    if (
+        answer["operation_id"] in {"betweenness-centrality", "personalized-pagerank"}
+        and answer["rows"]
+    ):
+        proximity = answer["operation_id"] == "personalized-pagerank"
         add(
             "bar",
             "ranking",
             "rows",
-            "Who connects the network?",
+            "Proximity to the starting entity"
+            if proximity
+            else "Who connects the network?",
             {"category": "label", "value": "score"},
-            "Shortest-route mediation scores; not measured traffic or business importance.",
+            "Approximate scores through outgoing links; not a probability of a real-world outcome."
+            if proximity
+            else "Shortest-route mediation scores; not measured traffic or business importance. Equal values are ties.",
+        )
+    if answer["operation_id"] == "k-core" and answer["rows"]:
+        add(
+            "histogram",
+            "core_distribution",
+            "rows",
+            "Connection-core thresholds",
+            {"value": "core_number"},
+            "Number of returned entities at each core threshold, after any requested threshold filter.",
+        )
+    if len(answer["groups"]) > 1:
+        add(
+            "bar",
+            "group_sizes",
+            "groups",
+            "Size of each returned group",
+            {"category": "label", "value": "size"},
+            "Select a group to highlight its members across views. Overlapping members count in each group they belong to.",
+        )
+    if answer.get("pattern_rows"):
+        add(
+            "bar",
+            "pattern_counts",
+            "pattern_rows",
+            "Matches for each supplied pattern",
+            {"category": "Pattern", "value": "Matches"},
+            "Counts use the requested occurrence rule. Different patterns may share entities and matches.",
+        )
+        add(
+            "table",
+            "patterns",
+            "pattern_rows",
+            "Pattern counts and available instances",
+            {"readable": "true"},
+            "A complete count can accompany a partial or absent list of individual matches.",
         )
     if answer["network"]["nodes"]:
         nodes = answer["network"]["nodes"]
@@ -82,8 +125,9 @@ def answer_visualizations(
             "groups",
             field,
             "Group membership",
+            {"answer_ref": prefix, "table": "groups"},
             description=(
-                f"Showing {len(answer['tables']['groups'])} of {count} memberships; one row per named member. "
+                f"{count} returned memberships available to search; one row per named member. "
                 if count is not None
                 else ""
             )
@@ -96,7 +140,17 @@ def answer_visualizations(
             "members",
             field,
             f"Returned {noun} and their attributes",
+            {"answer_ref": prefix, "table": "members"},
             description=f"{len(answer['rows'])} named {noun}; values joined from the original data.",
+        )
+    if answer.get("edge_rows"):
+        add(
+            "table",
+            "relationships",
+            "edge_rows",
+            "Computed relationship values",
+            {"readable": "true"},
+            description="Values for the returned relationships, with endpoint names from the original data.",
         )
     if not views:
         add(

@@ -1,0 +1,79 @@
+{
+  "problem_id": "graph_coarsening",
+  "problem_dir": "62_graph_coarsening",
+  "name": "Graph Coarsening and Quotient Construction",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 3,
+  "local_gpu_code_entries": 3,
+  "local_paper_entries": 1,
+  "local_gpu_code_and_paper_including_related": 1,
+  "eligible_code_and_paper_references": 1,
+  "eligible_local_code_and_paper_pairs": 1,
+  "target_met": false,
+  "shortfall": 2,
+  "shortfall_explanation": "GPU quotient construction is available in cuGraph, nvGRAPH and PyG. Only PyG currently has a paired framework PDF; supplied assignment and clustering generation are separate stages.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cugraph",
+      "nvgraph",
+      "pyg"
+    ],
+    "shortfall": "GPU quotient construction is available in cuGraph, nvGRAPH and PyG. Only PyG currently has a paired framework PDF; supplied assignment and clustering generation are separate stages.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2019_pyg_average_pool",
+      "algorithm_name": "PyG quotient construction with average feature pooling",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Uses a supplied assignment and tensor scatter/coalesce to form a pooled graph. Select mean feature aggregation and drop internal self-loops to match upstream behavior; cluster assignment generation is separate.",
+      "metadata_path": "62_graph_coarsening/papers/2019_pyg_average_pool/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_quotient",
+      "algorithm_name": "cuGraph Weighted graph coarsening",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Supply a cluster assignment; quotient edges are aggregated on the GPU. Assignment generation is a separate stage. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "62_graph_coarsening/papers/2026_cugraph_quotient/metadata.json"
+    },
+    {
+      "paper_id": "2026_nvgraph_contraction",
+      "algorithm_name": "nvGRAPH graph contraction",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "GPU CSR quotient and vertex-value aggregation for a supplied assignment. Sum-reduction mode matches the contract; other semirings are different variants.",
+      "metadata_path": "62_graph_coarsening/papers/2026_nvgraph_contraction/metadata.json"
+    }
+  ]
+}

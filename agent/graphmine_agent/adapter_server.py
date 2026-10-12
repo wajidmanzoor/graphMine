@@ -1,6 +1,8 @@
 """Loopback-only serving of a verified, frozen routing adapter.
 
 Reuses the exact NF4 conversation runtime used in application comparisons.
+Expanded catalog routing is an explicit experimental opt-in with a separately
+identified runtime prompt; historical evaluation bindings remain unchanged.
 No evaluation cases are executed, no training occurs, and other model stages
 remain on the existing inference service.
 """
@@ -8,6 +10,7 @@ remain on the existing inference service.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import hmac
 import json
 import os
@@ -18,10 +21,11 @@ from typing import Any
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
+from .config import Settings
 from .history import HistoryStore
 from .learning.adapter_eval import routing_schema
 from .learning.adapter_workflows import ConversationRouter
-from .llm import ROUTING_SYSTEM_PROMPT, LLMError
+from .llm import EXPANDED_ROUTING_SYSTEM_PROMPT, ROUTING_SYSTEM_PROMPT, LLMError
 from .models import RouteDecision
 
 
@@ -35,6 +39,22 @@ def create_router_app() -> FastAPI:
     suite = Path(os.environ["GRAPHMINE_ROUTER_SUITE"])
     model_name = os.getenv("GRAPHMINE_ROUTER_MODEL", "graphmine-business-v1")
     api_key = os.environ["GRAPHMINE_LLM_API_KEY"]
+    settings = Settings.from_env()
+    supported_contracts = ["legacy-20"]
+    if settings.llm_route_allow_expanded_catalog:
+        contract = settings.routing_contract_version
+        if contract != "legacy-20":
+            supported_contracts.append(contract)
+
+    def identity_for(contract):
+        expanded = contract != "legacy-20"
+        prompt = EXPANDED_ROUTING_SYSTEM_PROMPT if expanded else ROUTING_SYSTEM_PROMPT
+        return {
+            **app.state.identity,
+            "routing_contract_version": contract,
+            "routing_experimental": expanded,
+            "system_prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+        }
 
     @asynccontextmanager
     async def lifespan(app):
@@ -63,7 +83,8 @@ def create_router_app() -> FastAPI:
             "base_model": config["base_model"],
             "precision": "NF4",
             "scope": "RouteDecision",
-            "routing_contract_version": "legacy-20",
+            "supported_routing_contracts": supported_contracts,
+            "evaluated_contract_version": "legacy-20",
             "max_input_tokens": 16384,
         }
         yield
@@ -84,28 +105,36 @@ def create_router_app() -> FastAPI:
 
     @app.get("/health")
     async def health():
-        return {"ready": True, **app.state.identity}
+        return {"ready": True, **identity_for(supported_contracts[-1])}
 
     @app.post("/route")
     async def route(body: RoutingRequest):
-        if (
-            body.payload.get("routing_context", {}).get("contract_version", "legacy-20")
-            != "legacy-20"
-        ):
+        contract = body.payload.get("routing_context", {}).get(
+            "contract_version", "legacy-20"
+        )
+        if contract not in supported_contracts:
             raise HTTPException(
                 422,
-                "This frozen adapter accepts only its evaluated legacy catalog; use the base router for the expanded catalog.",
+                "This adapter does not accept the requested catalog. Expanded routing requires explicit experimental configuration on both services.",
             )
         try:
             generated = await asyncio.to_thread(
-                app.state.router.route, body.payload, body.conversation, "adapter_nf4"
+                app.state.router.route,
+                body.payload,
+                body.conversation,
+                "adapter_nf4",
+                system_prompt=(
+                    EXPANDED_ROUTING_SYSTEM_PROMPT
+                    if contract != "legacy-20"
+                    else ROUTING_SYSTEM_PROMPT
+                ),
             )
             if generated["finish_reason"] != "stop":
                 raise LLMError("Routing exceeded its output budget")
             decision = RouteDecision.model_validate_json(generated["raw"])
             return {
                 "decision": decision.model_dump(mode="json"),
-                "identity": app.state.identity,
+                "identity": identity_for(contract),
                 "usage": {
                     key: generated[key]
                     for key in ("input_tokens", "output_tokens", "seconds")

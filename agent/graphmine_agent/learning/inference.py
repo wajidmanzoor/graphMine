@@ -38,14 +38,20 @@ class ModelProfile:
     model: str
     base_url: str | None = None
     max_output_tokens: int = 4096
+    reasoning_effort: str | None = None
 
     def __post_init__(self):
         if self.provider not in {"local", "openai", "codex"}:
             raise ValueError("Provider must be local, openai or codex")
-        if not self.model.strip() or not 512 <= self.max_output_tokens <= 8192:
+        maximum = 65536 if self.provider == "codex" else 8192
+        if not self.model.strip() or not 512 <= self.max_output_tokens <= maximum:
             raise ValueError(
-                "A model name and a 512-8192 output-token limit are required"
+                f"A model name and a 512-{maximum} output-token limit are required"
             )
+        if self.effort not in {"none", "low", "medium", "high", "xhigh", "max"}:
+            raise ValueError("Unsupported reasoning effort")
+        if self.provider == "codex" and self.effort == "none":
+            raise ValueError("ChatGPT teacher requires an explicit reasoning effort")
         if self.provider == "local":
             if not self.base_url:
                 raise ValueError("A loopback URL is required for local models")
@@ -55,6 +61,10 @@ class ModelProfile:
                 "External profiles must use a documented OpenAI model and the fixed OpenAI endpoint"
             )
 
+    @property
+    def effort(self) -> str:
+        return self.reasoning_effort or ("none" if self.provider == "local" else "low")
+
     def public(self) -> dict:
         value = {
             "provider": self.provider,
@@ -63,11 +73,11 @@ class ModelProfile:
             if self.provider == "local"
             else "https://api.openai.com/v1",
             "max_output_tokens": self.max_output_tokens,
-            "reasoning_effort": "none" if self.provider == "local" else "low",
+            "reasoning_effort": self.effort,
         }
         if self.provider == "codex":
             value["base_url"] = "codex://chatgpt"
-            value["execution_policy"] = execution_policy()
+            value["execution_policy"] = execution_policy(self.effort)
         return value
 
 
@@ -131,7 +141,8 @@ def request_body(
             "instructions": system,
             "input": payload,
             "output_schema": specification["schema"],
-            "execution_policy": execution_policy(),
+            "execution_policy": execution_policy(profile.effort),
+            "reasoning_effort": profile.effort,
         }
     if profile.provider == "local":
         return {
@@ -139,7 +150,7 @@ def request_body(
             "messages": messages,
             "temperature": 0,
             "seed": 314159,
-            "reasoning_effort": "none",
+            "reasoning_effort": profile.effort,
             "max_tokens": profile.max_output_tokens,
             "response_format": {"type": "json_schema", "json_schema": specification},
         }
@@ -147,7 +158,7 @@ def request_body(
         "model": profile.model,
         "input": messages,
         "store": False,
-        "reasoning": {"effort": "low"},
+        "reasoning": {"effort": profile.effort},
         "service_tier": "default",
         "max_output_tokens": profile.max_output_tokens,
         "text": {"format": {"type": "json_schema", **specification}},

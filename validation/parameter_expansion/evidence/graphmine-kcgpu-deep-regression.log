@@ -1,0 +1,8 @@
+Internal ctest changing into directory: /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build
+Test project /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build
+    Start 13: graphmine_k_cliques_test
+1/1 Test #13: graphmine_k_cliques_test .........   Passed    4.71 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   4.71 sec

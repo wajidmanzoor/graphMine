@@ -1,0 +1,14 @@
+{
+  "problem_id": "simrank_vertex_similarity",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2023_clipsim",
+      "algorithm_name": "ClipSim: A GPU-friendly Parallel Framework for Single-Source SimRank with Accuracy Guarantee",
+      "metadata": "29_simrank_vertex_similarity/papers/2023_clipsim/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    }
+  ]
+}

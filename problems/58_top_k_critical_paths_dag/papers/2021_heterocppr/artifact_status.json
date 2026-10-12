@@ -1,0 +1,27 @@
+{
+  "problem_id": "top_k_critical_paths_dag",
+  "paper_id": "2021_heterocppr",
+  "title": "HeteroCPPR: Accelerating Common Path Pessimism Removal with Heterogeneous CPU-GPU Parallelism",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://tsung-wei-huang.github.io/papers/heterocppr-iccad-21.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:43:08Z",
+    "sha256": "a29f7ef8b410907d2ab3f3b3ec4621e24f18bb1a81d47cd2323b759d789d3178",
+    "bytes": 444178,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

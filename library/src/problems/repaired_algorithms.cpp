@@ -119,6 +119,34 @@ Sides sides(const Graph& graph) {
 void simple_support(const Graph& graph,const IsolatedBackendOptions& options,const std::string& backend) {
   common(graph,options,backend);require(!graph.directed(),"this profile requires an undirected graph");unweighted(graph);
 }
+void density_support(const Graph& graph,const DensestSubgraphOptions& options) {
+  simple_support(graph,options,"cds");
+  require(graph.vertex_count()>0,"densest subgraph requires a nonempty graph");
+  require(options.clique_order>=2 && options.clique_order<=2147483647U,
+          "clique_order must be in [2,2147483647]");
+}
+std::uint64_t witness_cliques(const CsrGraph& graph,std::uint32_t order,
+                             std::vector<VertexIndex> chosen) {
+  // Iterative intersections avoid recursion depth proportional to clique order.
+  std::sort(chosen.begin(),chosen.end());
+  struct Frame { std::vector<VertexIndex> candidates; std::uint32_t needed; std::size_t next=0; };
+  std::vector<Frame> stack;stack.push_back({std::move(chosen),order});
+  std::uint64_t count=0;
+  while(!stack.empty()) {
+    auto& frame=stack.back();
+    if(frame.needed==1) {
+      certify(frame.candidates.size()<=UINT64_MAX-count,"density clique count overflows uint64");
+      count+=frame.candidates.size();stack.pop_back();continue;
+    }
+    if(frame.candidates.size()-frame.next<frame.needed){stack.pop_back();continue;}
+    const auto v=frame.candidates[frame.next++];std::vector<VertexIndex> next;
+    std::set_intersection(frame.candidates.begin()+frame.next,frame.candidates.end(),
+                         graph.neighbors.begin()+graph.offsets[v],graph.neighbors.begin()+graph.offsets[v+1],std::back_inserter(next));
+    const auto needed=frame.needed-1;
+    if(next.size()>=needed)stack.push_back({std::move(next),needed});
+  }
+  return count;
+}
 void ppr_support(const Graph& graph,const PersonalizedPageRankOptions& options) {
   common(graph,options,"kpar");require(graph.directed(),"kPAR profile requires directed outgoing edges");unweighted(graph);
   require(graph.vertex_count()>0 && options.top_k>0,"PPR needs a nonempty graph and positive top_k");
@@ -172,21 +200,61 @@ ExecutionResult<KTrussOutput> KTruss::run(const Graph& graph)const {
 }
 std::vector<BackendInfo> KTruss::backends(){return {info("acctd",{"exact full per-edge truss decomposition; single GPU","unweighted undirected; loops removed; parallel edges use smallest external edge ID"})};}
 
-SupportReport DensestSubgraph::supports(const Graph& graph)const{return support([&]{simple_support(graph,options_,"cds");require(graph.vertex_count()>0,"densest subgraph requires a nonempty graph");});}
+SupportReport DensestSubgraph::supports(const Graph& graph)const{return support([&]{density_support(graph,options_);});}
 ExecutionResult<DensestSubgraphOutput> DensestSubgraph::run(const Graph& graph)const {
   return execute<DensestSubgraphOutput>("cds",[&]{
-    simple_support(graph,options_,"cds");require(graph.vertex_count()>0,"densest subgraph requires a nonempty graph");auto csr=graph.simple_undirected().csr;TempDirectory temp;auto path=temp.path/"graph.txt";
+    density_support(graph,options_);auto csr=graph.simple_undirected().csr;
+    DensestSubgraphOutput result;result.clique_order=options_.clique_order;
+    if(options_.clique_order>graph.vertex_count()) {
+      result.vertices.push_back(graph.external_id(0));return result;
+    }
+    TempDirectory temp;auto path=temp.path/"graph.txt";
+    std::uint64_t maximum_degree=0;
+    for(std::size_t v=0;v<graph.vertex_count();++v)
+      maximum_degree=std::max(maximum_degree,csr.offsets[v+1]-csr.offsets[v]);
+    // CDS partitions store partial-clique vertices, not clique slots. A
+    // constant 64 shrinks their capacity as k grows and overflows even on K10.
+    const auto per_warp=std::max<std::uint64_t>(1,(graph.vertex_count()+6911)/6912);
+    auto partial_size=options_.clique_order==2 ? 64ULL :
+        std::max<std::uint64_t>(64,per_warp*maximum_degree*(options_.clique_order-1));
+    auto candidate_size=options_.clique_order==2 ? 128ULL :
+        std::max<std::uint64_t>(128,per_warp*maximum_degree*(options_.clique_order<=3 ? 1 : maximum_degree));
+    require(partial_size<=2147483647ULL/6912 && candidate_size<=2147483647ULL/6912,
+            "CDS clique partitions exceed the worker's signed-index capacity");
     std::ostringstream text;text<<graph.vertex_count()<<' '<<csr.undirected_edge_count()<<'\n';
     for(std::size_t v=0;v<graph.vertex_count();++v){text<<v;for(auto e=csr.offsets[v];e<csr.offsets[v+1];++e)text<<' '<<csr.neighbors[e];text<<'\n';}write_text(path,text.str());
-    auto output=json_result(invoke_worker("cds",{path.string(),"2","64","128",std::to_string(std::max<std::size_t>(1024,graph.vertex_count())),"1024","-1"},options_,temp),"CDS_RESULT ");
-    auto chosen=vertices(output.at("vertices"),graph);certify(!chosen.empty() && output.at("optimal").as_bool() && integer(output.at("k"))==2,"invalid density certificate");std::set<VertexIndex> present(chosen.begin(),chosen.end());DensestSubgraphOutput result;
+    const auto deadline=Clock::now()+std::chrono::seconds(options_.timeout_seconds);
+    json::object output;
+    while(true) {
+      const auto remaining=std::chrono::duration<double>(deadline-Clock::now()).count();
+      if(remaining<=0)throw BackendError(StatusCode::resource_exhausted,"CDS exhausted its total worker time budget");
+      auto attempt_options=options_;
+      attempt_options.timeout_seconds=static_cast<std::uint32_t>(std::ceil(remaining));
+      try {
+        output=json_result(invoke_worker("cds",{path.string(),std::to_string(options_.clique_order),std::to_string(partial_size),std::to_string(candidate_size),std::to_string(std::max<std::size_t>(1024,graph.vertex_count())),"1024","-1"},attempt_options,temp),"CDS_RESULT ");
+        break;
+      } catch(const BackendError& error) {
+        // Dense prefixes can outgrow a degree-based initial capacity. The
+        // checked worker aborts before writing out of bounds; retry only this
+        // specific failure in a fresh process (the old CUDA context is lost).
+        const std::string message=error.what();
+        if(error.code!=StatusCode::execution_failed || message.find("partition overflow")==std::string::npos)throw;
+        constexpr auto maximum=2147483647ULL/6912;
+        if(partial_size==maximum && candidate_size==maximum)
+          throw BackendError(StatusCode::resource_exhausted,"CDS partitions exhausted the worker's signed-index capacity");
+        partial_size=std::min(maximum,partial_size*2);
+        candidate_size=std::min(maximum,candidate_size*2);
+      }
+    }
+    auto chosen=vertices(output.at("vertices"),graph);certify(!chosen.empty() && output.at("optimal").as_bool() && integer(output.at("k"))==options_.clique_order,"invalid density certificate");std::set<VertexIndex> present(chosen.begin(),chosen.end());
     for(const auto& [edge,index]:edge_ids(graph))if(present.count(edge.first) && present.count(edge.second))++result.induced_edge_value;
-    result.density=static_cast<double>(result.induced_edge_value)/chosen.size();
-    certify(integer(output.at("vertex_count"))==chosen.size() && integer(output.at("clique_count"))==result.induced_edge_value && std::abs(real(output.at("density"))-result.density)<=1e-12,"density disagrees with returned vertex set");
+    result.clique_count=options_.clique_order==2 ? result.induced_edge_value : witness_cliques(csr,options_.clique_order,chosen);
+    result.density=static_cast<double>(result.clique_count)/chosen.size();
+    certify(integer(output.at("vertex_count"))==chosen.size() && integer(output.at("clique_count"))==result.clique_count && std::abs(real(output.at("density"))-result.density)<=1e-12*std::max(1.0,result.density),"density disagrees with returned vertex set");
     for(auto v:chosen)result.vertices.push_back(graph.external_id(v));return result;
   });
 }
-std::vector<BackendInfo> DensestSubgraph::backends(){return {info("cds",{"exact unweighted edge density |E(S)|/|S| with vertex witness","single GPU; nonempty undirected graph; no cardinality or weighted objective"})};}
+std::vector<BackendInfo> DensestSubgraph::backends(){return {info("cds",{"exact unweighted k-clique density C_k(S)/|S| with checked vertex witness; clique_order >= 2","single GPU; nonempty undirected graph; no cardinality or weighted objective"})};}
 
 SupportReport MaximalBicliqueCounting::supports(const Graph& graph)const{return support([&]{common(graph,options_,"mbe-gpu");sides(graph);});}
 ExecutionResult<MaximalBicliqueCountingOutput> MaximalBicliqueCounting::run(const Graph& graph)const {

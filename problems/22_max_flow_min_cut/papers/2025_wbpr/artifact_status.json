@@ -1,0 +1,25 @@
+{
+  "problem_id": "max_flow_min_cut",
+  "paper_id": "2025_wbpr",
+  "title": "Accelerating Push-Relabel Algorithm on GPU via Two-Level Parallelism Paradigm and Efficient CSR Designs",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://raw.githubusercontent.com/NTUDDSNLab/WBPR/master/WBPR_HPEC2025_CameraReady.pdf",
+    "resolved_url": "https://raw.githubusercontent.com/NTUDDSNLab/WBPR/master/WBPR_HPEC2025_CameraReady.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "557c42969cfb62190cd3ef196e1e619331e52f5f2a8c40b81e63d6786a68e702",
+    "bytes": 978161,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": "https://github.com/NTUDDSNLab/WBPR",
+    "local_path": null,
+    "error": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made.",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "existing_workspace_source_reference": "/home/wajid/projects/graphDatabaseAgent/problems/22_max_flow_min_cut/papers/2025_wbpr/code"
+  }
+}

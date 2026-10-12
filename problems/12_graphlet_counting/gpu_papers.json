@@ -1,0 +1,30 @@
+{
+  "problem_id": "graphlet_counting",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2022_g2miner_enumeration",
+      "algorithm_name": "g2miner_enumeration induced graphlets",
+      "metadata": "12_graphlet_counting/papers/2022_g2miner_enumeration/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2022_g2miner_formula",
+      "algorithm_name": "g2miner_formula induced graphlets",
+      "metadata": "12_graphlet_counting/papers/2022_g2miner_formula/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2022_pangolin",
+      "algorithm_name": "pangolin induced graphlets",
+      "metadata": "12_graphlet_counting/papers/2022_pangolin/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

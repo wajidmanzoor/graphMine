@@ -1,0 +1,34 @@
+{
+  "problem_id": "node_classification_regression",
+  "paper_id": "2017_pyg_graphsage",
+  "title": "Inductive Representation Learning on Large Graphs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1706.02216",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "sha256": "e1f354eb12011cde24af1eb500d72463fc971b09d26b55688c7f918a86e31ce8",
+    "bytes": 1086007,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pyg-team/pytorch_geometric",
+    "local_path": "code",
+    "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pyg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "torch_geometric/nn/conv/sage_conv.py": "db5a4998387eb0ae2ee1cb3d957699938e6c0fd1b0a1c8b6135c691dfe5af7c7",
+      "examples/reddit.py": "0b4ed71c657bfc62fe5323df5140f8f24b0ffb713d615f7bbc58a5d0506e0f8d"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

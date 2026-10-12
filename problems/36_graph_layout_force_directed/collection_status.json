@@ -1,0 +1,62 @@
+{
+  "problem_id": "graph_layout_force_directed",
+  "problem_dir": "36_graph_layout_force_directed",
+  "name": "Force-Directed Graph Layout",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 2,
+  "local_gpu_code_entries": 2,
+  "local_paper_entries": 1,
+  "local_gpu_code_and_paper_including_related": 1,
+  "eligible_code_and_paper_references": 1,
+  "eligible_local_code_and_paper_pairs": 1,
+  "target_met": false,
+  "shortfall": 2,
+  "shortfall_explanation": "GPU ForceAtlas2 implementations are available; the library-only cuGraph entry has no paired GPU research paper.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "see_existing_validation",
+  "runtime_status": "see_existing_validation",
+  "canonical_adapters": null,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 1,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cugraph"
+    ],
+    "shortfall": "GPU ForceAtlas2 implementations are available; the library-only cuGraph entry has no paired GPU research paper.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2017_gpugraphlayout",
+      "algorithm_name": "Exploiting GPUs for Fast Force-Directed Visualization of Large-Scale Networks",
+      "paper_role": "algorithm",
+      "semantic_fit": "exact",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Confirmed genuine repository (govertb/GPUGraphLayout) matching this exact paper and authors; the author's own PDF filename says icpp2018 despite the paper appearing in the ICPP 2017 proceedings.",
+      "metadata_path": "36_graph_layout_force_directed/papers/2017_gpugraphlayout/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_force_atlas2",
+      "algorithm_name": "cuGraph ForceAtlas2 layout",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "GPU force-directed layout; input positions, seed, iteration count and force parameters affect the result. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "36_graph_layout_force_directed/papers/2026_cugraph_force_atlas2/metadata.json"
+    }
+  ]
+}

@@ -70,12 +70,14 @@ def browser_evidence(request):
 def authored_model_transport():
     """A transport fixture tests browser routing wiring; it is not an LLM."""
     seen = []
+    payloads = []
 
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
             body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             payload = json.loads(body["messages"][-1]["content"])
             seen.append(payload["stage"])
+            payloads.append(payload)
             if payload["stage"] == "family":
                 result = {
                     "status": "selected",
@@ -98,16 +100,24 @@ def authored_model_transport():
                         "device": payload["device_policy"],
                         "steps": [
                             {
-                                "id": "triangles",
                                 "operation": "triangle-counting",
-                                "input": {"input": "main"},
+                                "input": {"source": "input", "input": "main"},
                                 "arguments": [],
                             }
                         ],
                     },
                 }
             raw = json.dumps(
-                {"choices": [{"message": {"content": json.dumps(result)}}]}
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(result),
+                                "reasoning": "Authored reasoning for the browser transport check.",
+                            }
+                        }
+                    ]
+                }
             ).encode()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -122,7 +132,7 @@ def authored_model_transport():
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
-        yield f"http://127.0.0.1:{server.server_port}/v1", seen
+        yield f"http://127.0.0.1:{server.server_port}/v1", seen, payloads
     finally:
         server.shutdown()
         server.server_close()
@@ -229,6 +239,13 @@ def browser(server, tmp_path):
         WebDriverWait(driver, 40).until(
             lambda d: "Library ready" in d.find_element(By.ID, "connection-state").text
         )
+        capture(driver, "domain-selection.png")
+        driver.find_element(By.CSS_SELECTOR, '[data-domain="general"]').click()
+        WebDriverWait(driver, 20).until(
+            lambda d: d.execute_script(
+                "return !!window.GraphMineWorkspace.state.session && !window.GraphMineWorkspace.state.busy"
+            )
+        )
         capture(driver, "workspace-overview.png")
         yield driver
     finally:
@@ -254,7 +271,31 @@ def typed_graph():
     }
 
 
+def chat(browser):
+    if not browser.find_element(By.ID, "workspace-view").is_displayed():
+        browser.find_element(By.ID, "chat-page-link").click()
+        WebDriverWait(browser, 15).until(
+            lambda d: d.find_element(By.ID, "workspace-view").is_displayed()
+        )
+
+
+def manual(browser):
+    chat(browser)
+    tools = browser.find_element(By.ID, "manual-tools")
+    if not tools.get_attribute("open"):
+        tools.find_element(By.TAG_NAME, "summary").click()
+    Select(browser.find_element(By.ID, "operation-select")).select_by_value("")
+
+
+def choose_device(browser, value):
+    chat(browser)
+    if not browser.find_element(By.ID, "device").is_displayed():
+        browser.find_element(By.CSS_SELECTOR, ".advanced-data summary").click()
+    Select(browser.find_element(By.ID, "device")).select_by_value(value)
+
+
 def upload(browser, tmp_path, graph=None, kind="graph"):
+    chat(browser)
     before = browser.execute_script(
         "return window.GraphMineWorkspace.state.files.length"
     )
@@ -273,7 +314,9 @@ def upload(browser, tmp_path, graph=None, kind="graph"):
     )
     if kind == "graph":
         WebDriverWait(browser, 10).until(
-            lambda d: d.execute_script("return !!window.GraphMineWorkspace.state.cy")
+            lambda d: d.execute_script(
+                "return window.GraphMineWorkspace.state.previews.has(window.GraphMineWorkspace.state.active)"
+            )
         )
 
 
@@ -290,6 +333,15 @@ def done(browser):
     status(browser, "completed")
     WebDriverWait(browser, 15).until(
         lambda d: d.execute_script("return !!window.GraphMineWorkspace.state.port")
+    )
+    browser.find_element(By.ID, "results-page-link").click()
+    WebDriverWait(browser, 15).until(
+        lambda d: d.find_element(By.ID, "results-view").is_displayed()
+    )
+    WebDriverWait(browser, 10).until(
+        lambda d: d.execute_script(
+            "return window.GraphMineWorkspace.state.graph === null || !!window.GraphMineWorkspace.state.cy"
+        )
     )
 
 
@@ -314,7 +366,7 @@ def capture(browser, name):
 
 def test_lookup_family_filters_and_links_original_ids(browser, tmp_path):
     upload(browser, tmp_path)
-    browser.find_element(By.CSS_SELECTOR, '[data-family="query"]').click()
+    manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
         "node-lookup"
     )
@@ -344,7 +396,7 @@ def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
     for edge, weight in zip(graph["edges"], [0.1, 0.2, 0.3, 0.4], strict=True):
         edge["weight"] = weight
     upload(browser, tmp_path, graph)
-    browser.find_element(By.CSS_SELECTOR, '[data-family="query"]').click()
+    manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
         "graph-aggregate"
     )
@@ -367,7 +419,7 @@ def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
         == "exact_value"
     )
     capture(browser, "query-aggregate-exact.png")
-    browser.find_element(By.CSS_SELECTOR, '[data-family="query"]').click()
+    manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
         "node-lookup"
     )
@@ -386,7 +438,9 @@ def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
         )
     )
     done(browser)
-    assert "Add filters" in browser.find_element(By.ID, "result-completeness").text
+    assert "Add filters" in browser.find_element(
+        By.ID, "result-completeness"
+    ).get_attribute("textContent")
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.port.complete")
         is False
@@ -395,8 +449,9 @@ def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
 
 def test_interactive_review_edit_linked_views_and_large_ids(browser, tmp_path):
     upload(browser, tmp_path)
+    chat(browser)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="interactive"]').click()
-    browser.find_element(By.CSS_SELECTOR, '[data-family="importance"]').click()
+    manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
         "degree-centrality"
     )
@@ -433,6 +488,7 @@ def test_interactive_review_edit_linked_views_and_large_ids(browser, tmp_path):
     ) == ["s:0"]
     browser.execute_script("document.getElementById('evidence-panel').scrollIntoView()")
     capture(browser, "linked-results-desktop.png")
+    chat(browser)
     details = browser.find_elements(By.CSS_SELECTOR, ".workflow-step .step-editor")[-1]
     details.find_element(By.TAG_NAME, "summary").click()
     Select(
@@ -449,7 +505,9 @@ def test_interactive_review_edit_linked_views_and_large_ids(browser, tmp_path):
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.result") is None
     )
-    assert "no new result" in browser.find_element(By.ID, "result-completeness").text
+    assert "no new result" in browser.find_element(
+        By.ID, "result-completeness"
+    ).get_attribute("textContent")
     browser.find_element(By.ID, "approve-plan").click()
     done(browser)
     assert [r[2] for r in values(browser)] == [2, 2, 3, 1, 0]
@@ -489,6 +547,7 @@ def test_interactive_review_edit_linked_views_and_large_ids(browser, tmp_path):
 
 def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
     upload(browser, tmp_path)
+    chat(browser)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
     plan = {
         "version": 1,
@@ -515,6 +574,7 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
         ],
     }
     editor = browser.find_element(By.ID, "plan-editor")
+    chat(browser)
     editor.clear()
     editor.send_keys(json.dumps(plan))
     browser.find_element(By.ID, "save-editor").click()
@@ -523,10 +583,13 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
     browser.find_element(By.ID, "approve-plan").click()
     done(browser)
     assert [r[2] for r in values(browser)] == pytest.approx([1 / 3] * 3)
-    assert "3 of 3 vertices" in browser.find_element(By.ID, "preview-scope").text
+    assert "3 of 3 vertices" in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
     assert browser.execute_script(
         "return window.GraphMineWorkspace.state.cy.nodes().map(n=>n.id())"
     ) == ["i:0", "s:0", "i:9007199254740993"]
+    chat(browser)
     browser.execute_script("document.getElementById('workflow-panel').scrollIntoView()")
     capture(browser, "dependent-workflow.png")
     plan["steps"] = [
@@ -537,6 +600,7 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
             "parameters": {"k": 2, "mode": "enumerate", "result_limit": 1},
         }
     ]
+    chat(browser)
     editor.clear()
     editor.send_keys(json.dumps(plan))
     browser.find_element(By.ID, "save-editor").click()
@@ -548,7 +612,9 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
     )
     browser.find_element(By.ID, "approve-plan").click()
     done(browser)
-    assert "incomplete" in browser.find_element(By.ID, "result-completeness").text
+    assert "incomplete" in browser.find_element(
+        By.ID, "result-completeness"
+    ).get_attribute("textContent")
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.result.complete")
         is False
@@ -557,7 +623,6 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
 
 
 def test_normal_mode_paging_outside_preview_and_fixed_renderers(browser, tmp_path):
-    Select(browser.find_element(By.ID, "graph-layout")).select_by_value("circle")
     graph = {
         "graph": {
             "id": "large-preview",
@@ -569,7 +634,7 @@ def test_normal_mode_paging_outside_preview_and_fixed_renderers(browser, tmp_pat
         "edges": [{"id": i, "source": 501, "target": i} for i in range(501)],
     }
     upload(browser, tmp_path, graph)
-    browser.find_element(By.CSS_SELECTOR, '[data-family="importance"]').click()
+    manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
         "degree-centrality"
     )
@@ -579,7 +644,10 @@ def test_normal_mode_paging_outside_preview_and_fixed_renderers(browser, tmp_pat
         browser.execute_script("return window.GraphMineWorkspace.state.record.mode")
         == "normal"
     )
-    assert "500 of 502 vertices" in browser.find_element(By.ID, "preview-scope").text
+    Select(browser.find_element(By.ID, "graph-layout")).select_by_value("circle")
+    assert "500 of 502 vertices" in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
     browser.find_element(By.CSS_SELECTOR, '#chart [data-result-row="501"]').click()
     assert (
         "outside this graph preview"
@@ -593,13 +661,16 @@ def test_normal_mode_paging_outside_preview_and_fixed_renderers(browser, tmp_pat
     assert browser.execute_script(
         "return Array.from(document.scripts).map(s=>s.src).every(s=>!s.includes('vega'))"
     )
+    chat(browser)
     browser.find_element(By.ID, "new-session").click()
     WebDriverWait(browser, 10).until(
         lambda d: d.execute_script(
             "return window.GraphMineWorkspace.state.session===null"
         )
     )
-    assert "Upload a graph" in browser.find_element(By.ID, "result-completeness").text
+    assert "Upload a graph" in browser.find_element(
+        By.ID, "result-completeness"
+    ).get_attribute("textContent")
     assert not browser.find_element(By.ID, "download-result").is_enabled()
     assert not browser.find_elements(
         By.CSS_SELECTOR, "#result-table tr[data-result-row]"
@@ -621,7 +692,7 @@ def test_pattern_input_can_bind_another_uploaded_graph(browser, tmp_path):
     }
     upload(browser, tmp_path, query)
     Select(browser.find_element(By.ID, "active-input")).select_by_value(data_id)
-    browser.find_element(By.CSS_SELECTOR, '[data-family="patterns"]').click()
+    manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
         "subgraph-isomorphism"
     )
@@ -659,9 +730,11 @@ def test_collection_patterns_have_independent_graph_views_and_can_feed_workflow(
         {"dataset_id": "observations", "graphs": [source, other]},
         kind="graph_collection",
     )
-    assert "Each collection member" in browser.find_element(By.ID, "preview-scope").text
+    assert "Each collection member" in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
     assert browser.execute_script("return window.GraphMineWorkspace.state.cy") is None
-    browser.find_element(By.CSS_SELECTOR, '[data-family="patterns"]').click()
+    manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
         "frequent-subgraphs"
     )
@@ -673,10 +746,9 @@ def test_collection_patterns_have_independent_graph_views_and_can_feed_workflow(
         "return window.GraphMineWorkspace.state.rows.map(r=>[r.vertex_count,r.edge_count,r.support_graph_count,r.support_fraction])"
     )
     assert sorted(rows) == [[2, 1, 2, 1], [3, 1, 2, 1], [3, 2, 2, 1]]
-    assert (
-        "vertex IDs are local to this pattern"
-        in browser.find_element(By.ID, "preview-scope").text
-    )
+    assert "vertex IDs are local to this pattern" in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
     for index in range(3):
         browser.find_element(
             By.CSS_SELECTOR, f'#result-table [data-result-row="{index}"] button'
@@ -696,6 +768,7 @@ def test_collection_patterns_have_independent_graph_views_and_can_feed_workflow(
         ) == str(index)
     capture(browser, "frequent-pattern-graph.png")
     # A fixed selector supplies a graph to another registered calculation.
+    chat(browser)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
     plan = browser.execute_script(
         "return window.GraphMineWorkspace.state.record.validation.plan"
@@ -713,6 +786,7 @@ def test_collection_patterns_have_independent_graph_views_and_can_feed_workflow(
         }
     )
     editor = browser.find_element(By.ID, "plan-editor")
+    chat(browser)
     editor.clear()
     editor.send_keys(json.dumps(plan))
     browser.find_element(By.ID, "save-editor").click()
@@ -720,7 +794,9 @@ def test_collection_patterns_have_independent_graph_views_and_can_feed_workflow(
     browser.find_element(By.ID, "approve-plan").click()
     done(browser)
     assert sorted(row[2] for row in values(browser)) == [0.5, 0.5, 1]
-    assert "3 of 3 vertices" in browser.find_element(By.ID, "preview-scope").text
+    assert "3 of 3 vertices" in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
 
 
 def test_mni_pattern_images_and_count_only_output(browser, tmp_path):
@@ -730,6 +806,7 @@ def test_mni_pattern_images_and_count_only_output(browser, tmp_path):
     for vertex in source["vertices"]:
         vertex["label"] = "same"
     upload(browser, tmp_path, source)
+    chat(browser)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
     plan = {
         "version": 1,
@@ -750,6 +827,7 @@ def test_mni_pattern_images_and_count_only_output(browser, tmp_path):
         ],
     }
     editor = browser.find_element(By.ID, "plan-editor")
+    chat(browser)
     editor.clear()
     editor.send_keys(json.dumps(plan))
     browser.find_element(By.ID, "save-editor").click()
@@ -763,6 +841,7 @@ def test_mni_pattern_images_and_count_only_output(browser, tmp_path):
         "return window.GraphMineWorkspace.state.rows[0].images[0].host_vertices.map(v=>[typeof v,String(v)])"
     ) == [["number", "0"], ["string", "0"], ["bigint", "9007199254740993"]]
     plan["steps"][0]["parameters"].update(output_mode="count", include_images=False)
+    chat(browser)
     editor.clear()
     editor.send_keys(json.dumps(plan))
     browser.find_element(By.ID, "save-editor").click()
@@ -774,7 +853,9 @@ def test_mni_pattern_images_and_count_only_output(browser, tmp_path):
         for option in browser.find_elements(By.CSS_SELECTOR, "#result-port option")
     ] == ["count"]
     assert browser.find_element(By.CSS_SELECTOR, "#metrics strong").text == "3"
-    assert "Canonical pattern" not in browser.find_element(By.ID, "preview-scope").text
+    assert "Canonical pattern" not in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
 
 
 def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
@@ -807,6 +888,7 @@ def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
             == 3
         )
     )
+    chat(browser)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
     plan = {
         "version": 1,
@@ -824,6 +906,7 @@ def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
         ],
     }
     editor = browser.find_element(By.ID, "plan-editor")
+    chat(browser)
     editor.clear()
     editor.send_keys(json.dumps(plan))
     browser.find_element(By.ID, "save-editor").click()
@@ -867,13 +950,16 @@ def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
             "input": {"step": "common", "port": "graph"},
         },
     ]
+    chat(browser)
     editor.clear()
     editor.send_keys(json.dumps(plan))
     browser.find_element(By.ID, "save-editor").click()
     status(browser, "ready")
     browser.find_element(By.ID, "approve-plan").click()
     done(browser)
-    assert "2 of 2 vertices" in browser.find_element(By.ID, "preview-scope").text
+    assert "2 of 2 vertices" in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
     assert len(values(browser)) == 2
     assert browser.execute_script(
         "return window.GraphMineWorkspace.state.cy.nodes().map(n=>n.id()).every(k=>['i:0','s:0','i:9007199254740993'].includes(k))"
@@ -900,6 +986,7 @@ def test_force_layout_displays_computed_coordinates_with_explicit_projection(
     browser, tmp_path
 ):
     upload(browser, tmp_path)
+    chat(browser)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
     coordinates = [[0, 0, 0], [1, 0, 1], [0, 2, 3], [-1, 0, 1], [3, 3, 0]]
     ids = [v["id"] for v in typed_graph()["vertices"]]
@@ -923,6 +1010,7 @@ def test_force_layout_displays_computed_coordinates_with_explicit_projection(
         ],
     }
     editor = browser.find_element(By.ID, "plan-editor")
+    chat(browser)
     editor.clear()
     editor.send_keys(json.dumps(plan))
     browser.find_element(By.ID, "save-editor").click()
@@ -935,7 +1023,9 @@ def test_force_layout_displays_computed_coordinates_with_explicit_projection(
         ).first_selected_option.get_attribute("value")
         == "computed"
     )
-    assert "XY projection of 3D" in browser.find_element(By.ID, "preview-scope").text
+    assert "XY projection of 3D" in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
     stored = browser.execute_script(
         "return window.GraphMineWorkspace.state.port.value.map(r=>r.coordinates)"
     )
@@ -946,14 +1036,16 @@ def test_force_layout_displays_computed_coordinates_with_explicit_projection(
     for actual, expected in zip(displayed, coordinates, strict=True):
         assert actual == pytest.approx([expected[0] / 3 * 200, expected[1] / 3 * 200])
     Select(browser.find_element(By.ID, "graph-layout")).select_by_value("circle")
-    assert "for display only" in browser.find_element(By.ID, "preview-scope").text
+    assert "for display only" in browser.find_element(
+        By.ID, "preview-scope"
+    ).get_attribute("textContent")
 
 
 def test_question_uses_family_then_operation_then_real_calculation(
     browser, tmp_path, authored_model_transport
 ):
     upload(browser, tmp_path)
-    Select(browser.find_element(By.ID, "device")).select_by_value("cpu")
+    choose_device(browser, "cpu")
     start = len(authored_model_transport[1])
     browser.find_element(By.ID, "question").send_keys(
         "How many three-way connections are in this data?"
@@ -961,18 +1053,120 @@ def test_question_uses_family_then_operation_then_real_calculation(
     browser.find_element(By.ID, "plan-question").click()
     done(browser)
     assert authored_model_transport[1][start:] == ["family", "operation", "plan"]
+    chat(browser)
     assert (
-        "Family: Patterns & events" in browser.find_element(By.ID, "routing-trace").text
+        "Choosing the calculation" in browser.find_element(By.ID, "activity-list").text
     )
+    assert (
+        "How many three-way connections" in browser.find_element(By.ID, "messages").text
+    )
+    assert browser.find_element(By.ID, "reasoning-count").text == "3"
+    browser.find_element(By.ID, "results-page-link").click()
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.port.value") == 1
     )
     assert (
         browser.execute_script(
-            "return window.GraphMineWorkspace.state.result.steps.triangles.result.backend.device"
+            "return window.GraphMineWorkspace.state.result.steps.step_1.result.backend.device"
         )
         == "cpu"
     )
+
+
+def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
+    browser, tmp_path, authored_model_transport
+):
+    browser.find_element(By.ID, "new-session").click()
+    WebDriverWait(browser, 10).until(
+        lambda d: d.find_element(By.ID, "domain-view").is_displayed()
+    )
+    assert not browser.find_element(By.ID, "workspace-view").is_displayed()
+    browser.find_element(By.ID, "session-name").send_keys("Account network review")
+    browser.find_element(By.CSS_SELECTOR, '[data-domain="fraud_detection"]').click()
+    WebDriverWait(browser, 15).until(
+        lambda d: d.execute_script(
+            "return window.GraphMineWorkspace.state.session?.domain_id === 'fraud_detection' && !window.GraphMineWorkspace.state.busy"
+        )
+    )
+    assert "Fraud" in browser.find_element(By.ID, "active-domain").text
+    assert not browser.find_elements(By.CSS_SELECTOR, "[data-family], #family-cards")
+    upload(browser, tmp_path)
+    start = len(authored_model_transport[2])
+    question = "Count triangles in these accounts."
+    # Lose the response after the real server has accepted and planned the turn.
+    # Recovery must read saved events, not run the model request a second time.
+    browser.execute_script("""
+        const originalFetch = window.fetch;
+        window.fetch = async (...args) => {
+            const response = await originalFetch(...args);
+            if (String(args[0]).endsWith('/analytics/plan')) {
+                window.fetch = originalFetch;
+                throw new TypeError('Simulated lost planning response');
+            }
+            return response;
+        };
+    """)
+    browser.find_element(By.ID, "question").send_keys(question, Keys.ENTER)
+    status(browser, "completed")
+    WebDriverWait(browser, 15).until(
+        lambda d: d.find_element(By.ID, "reasoning-count").text == "3"
+    )
+    assert browser.find_element(By.ID, "workspace-view").is_displayed()
+    assert not browser.find_element(By.ID, "results-view").is_displayed()
+    assert question in browser.find_element(By.ID, "messages").text
+    assert "Count: 1" in browser.find_element(By.ID, "messages").text
+    assert len(authored_model_transport[2][start:]) == 3
+    assert (
+        browser.execute_script(
+            "return window.GraphMineWorkspace.state.workflows.length"
+        )
+        == 1
+    )
+    assert all(
+        payload["domain"]["id"] == "fraud_detection"
+        for payload in authored_model_transport[2][start:]
+    )
+    browser.find_element(By.CSS_SELECTOR, "#model-reasoning-panel > summary").click()
+    browser.find_element(By.CSS_SELECTOR, "#model-reasoning details > summary").click()
+    assert "Authored reasoning" in browser.find_element(By.ID, "model-reasoning").text
+    capture(browser, "domain-chat-reasoning.png")
+    link = browser.find_element(By.CSS_SELECTOR, "#messages .result-link")
+    link.click()
+    WebDriverWait(browser, 15).until(
+        lambda d: d.find_element(By.ID, "results-view").is_displayed()
+    )
+    assert "/results/" in browser.current_url
+    assert not browser.find_element(By.ID, "workspace-view").is_displayed()
+    capture(browser, "separate-results-page.png")
+    url = browser.current_url
+    browser.refresh()
+    WebDriverWait(browser, 40).until(
+        lambda d: (
+            d.find_element(By.ID, "results-view").is_displayed()
+            and d.find_element(By.ID, "download-result").is_enabled()
+        )
+    )
+    assert browser.current_url == url
+    assert "1" in browser.find_element(By.ID, "metrics").text
+    browser.find_element(By.ID, "back-to-chat").click()
+    WebDriverWait(browser, 10).until(
+        lambda d: d.find_element(By.ID, "workspace-view").is_displayed()
+    )
+    assert question in browser.find_element(By.ID, "messages").text
+    assert browser.find_element(By.ID, "reasoning-count").text == "3"
+    assert (
+        browser.execute_script(
+            "return window.GraphMineWorkspace.state.session.domain_id"
+        )
+        == "fraud_detection"
+    )
+    browser.set_window_size(500, 844)
+    WebDriverWait(browser, 10).until(
+        lambda d: d.execute_script(
+            "return innerWidth <= 760 && document.documentElement.scrollWidth <= innerWidth"
+        )
+    )
+    capture(browser, "domain-chat-mobile.png")
 
 
 def test_explicit_example_review_does_not_approve_a_successful_run_automatically(
@@ -982,6 +1176,7 @@ def test_explicit_example_review_does_not_approve_a_successful_run_automatically
     browser.find_element(By.ID, "question").send_keys("Count triangles in this graph")
     browser.find_element(By.ID, "plan-question").click()
     done(browser)
+    chat(browser)
     button = browser.find_element(By.ID, "review-example")
     browser.execute_script("arguments[0].scrollIntoView({block:'center'})", button)
     button.click()
@@ -1023,6 +1218,7 @@ def test_native_csv_projection_preserves_ids_and_computes_in_browser(browser, tm
     WebDriverWait(browser, 30).until(
         lambda d: not d.find_element(By.ID, "projection-dialog").is_displayed()
     )
+    browser.find_element(By.ID, "results-page-link").click()
     WebDriverWait(browser, 15).until(
         lambda d: d.execute_script(
             "return window.GraphMineWorkspace.state.cy?.nodes().length === 3"
@@ -1033,6 +1229,7 @@ def test_native_csv_projection_preserves_ids_and_computes_in_browser(browser, tm
             "return window.GraphMineWorkspace.state.cy.nodes().map(n=>n.data('entity'))"
         )
     ) == ["001", "002", "003"]
+    chat(browser)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
     plan = {
         "version": 1,

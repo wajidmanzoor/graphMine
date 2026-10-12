@@ -1,0 +1,211 @@
+{
+  "mode": "acceptance_with_resource_rerun",
+  "binary_sha256": "9fbacd0bfc0a958ebb8326aa537a55363ff862029ec90aeab84cc90ff951f338",
+  "generator_sha256": "d6d8e95ec2b30101182d983a1fa989a549f99b1fe7963ed4ae7f170c8c663648",
+  "instructions_sha256": "e881e36be301d79b67ad3fd459a3d42c94c624c11d9719f97f5bfc972cda1585",
+  "worker_sha256": {
+    "graphmine-worker-gamma-butterfly": "ef14a0ea5f9236b2d59933aaa39b7eb6af3ced5fcc215b931276500961452cd6",
+    "graphmine-worker-acctd": "fa8e7c159d87dce9747639b167ae969e6a2cbc51004ad10808be59f3e24bb256",
+    "graphmine-worker-superfuser": "49acea3e10c81380b315a3dde14f7bdb7429c7298b2d4af1ab79f690818f668a",
+    "graphmine-worker-kpar": "0836723b0089583fab623097427e0030ddabb83cf6bedb56056a94bfd530b24d",
+    "graphmine-worker-mbe-gpu": "cef3bc8a416acc5f66948f73c976b38ef8adb6281f193871b73957c322252f91",
+    "graphmine-worker-gpu4gst": "1b8e6ab0d692711535095455305a5f4472aa1e4f0aa23ff3150475b2dc9f191f",
+    "graphmine-worker-cds": "43bb52b4d6593ef2fc9ae2b10605f469f40519e62c096970d85ca7a5d9e499fc"
+  },
+  "generator_sha256_by_run": {
+    "final": "d6d8e95ec2b30101182d983a1fa989a549f99b1fe7963ed4ae7f170c8c663648",
+    "mbe-resource-rerun": "d6d8e95ec2b30101182d983a1fa989a549f99b1fe7963ed4ae7f170c8c663648",
+    "vertex-id-rerun": "b8a1ffeaf2a7ff05f42e50d2532e0462f34b05c7e50667f050561c8440129894"
+  },
+  "gpus": [
+    "0",
+    "1"
+  ],
+  "seconds": 2479.721910238266,
+  "time_scope": "Sum of run durations; the runs overlapped in wall time.",
+  "cases": 15204,
+  "passed": 15204,
+  "failed": 0,
+  "coverage": {
+    "maximal-cliques/mce-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximal-cliques/g2-aimd": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximal-cliques/rdmce": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximum-clique/cuda-ms": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximum-clique/gpu-maximum-clique": {
+      "passed": 208,
+      "failed": 0
+    },
+    "maximum-clique/maximum-clique-on-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-cliques/kcgpu": {
+      "passed": 1252,
+      "failed": 0
+    },
+    "k-cliques/gamma": {
+      "passed": 1000,
+      "failed": 0
+    },
+    "k-cliques/graphset": {
+      "passed": 916,
+      "failed": 0
+    },
+    "quasi-cliques/cuqc": {
+      "passed": 624,
+      "failed": 0
+    },
+    "k-core/kcore-gpu": {
+      "passed": 208,
+      "failed": 0
+    },
+    "triangle-counting/tot": {
+      "passed": 208,
+      "failed": 0
+    },
+    "triangle-counting/wetric": {
+      "passed": 208,
+      "failed": 0
+    },
+    "dynamic-triangle-counting/edtc": {
+      "passed": 208,
+      "failed": 0
+    },
+    "graph-motifs/graphminer": {
+      "passed": 208,
+      "failed": 0
+    },
+    "graph-motifs/graphset": {
+      "passed": 208,
+      "failed": 0
+    },
+    "graph-motifs/dumato": {
+      "passed": 208,
+      "failed": 0
+    },
+    "subgraph-isomorphism/gmatch": {
+      "passed": 624,
+      "failed": 0
+    },
+    "community-detection/gleiden": {
+      "passed": 208,
+      "failed": 0
+    },
+    "community-detection/parallel-louvain": {
+      "passed": 624,
+      "failed": 0
+    },
+    "community-detection/parallel-leiden": {
+      "passed": 624,
+      "failed": 0
+    },
+    "community-detection/parallel-leiden-plus": {
+      "passed": 624,
+      "failed": 0
+    },
+    "betweenness-centrality/turbo-bc": {
+      "passed": 208,
+      "failed": 0
+    },
+    "k-truss/acctd": {
+      "passed": 208,
+      "failed": 0
+    },
+    "densest-subgraph/cds": {
+      "passed": 1336,
+      "failed": 0
+    },
+    "maximal-bicliques/cumbe": {
+      "passed": 512,
+      "failed": 0
+    },
+    "maximal-biclique-counting/mbe-gpu": {
+      "passed": 512,
+      "failed": 0
+    },
+    "butterfly-counting/graphminer": {
+      "passed": 512,
+      "failed": 0
+    },
+    "butterfly-counting/gamma-butterfly": {
+      "passed": 512,
+      "failed": 0
+    },
+    "connected-components/ecl-scc": {
+      "passed": 368,
+      "failed": 0
+    },
+    "transitive-closure/gdlog": {
+      "passed": 184,
+      "failed": 0
+    },
+    "personalized-pagerank/kpar": {
+      "passed": 184,
+      "failed": 0
+    },
+    "max-flow-min-cut/ecl-maxflow": {
+      "passed": 184,
+      "failed": 0
+    },
+    "influence-maximization/superfuser": {
+      "passed": 184,
+      "failed": 0
+    },
+    "temporal-motif-mining/everest": {
+      "passed": 160,
+      "failed": 0
+    },
+    "temporal-motif-mining/mayura": {
+      "passed": 160,
+      "failed": 0
+    },
+    "linear-assignment/hungarian-cuda": {
+      "passed": 200,
+      "failed": 0
+    },
+    "group-steiner-tree/gpu4gst": {
+      "passed": 160,
+      "failed": 0
+    },
+    "k-cliques/auto": {
+      "passed": 420,
+      "failed": 0
+    }
+  },
+  "full_run": {
+    "summary": "../final/summary.json",
+    "failed": 59,
+    "workers_per_gpu": 8
+  },
+  "resource_rerun": {
+    "summary": "../mbe-resource-rerun/summary.json",
+    "cases": 512,
+    "passed": 512,
+    "failed": 0,
+    "gpus": [
+      "0"
+    ],
+    "workers_per_gpu": 1
+  },
+  "vertex_id_rerun": {
+    "summary": "../vertex-id-rerun/summary.json",
+    "cases": 368,
+    "passed": 368,
+    "failed": 0,
+    "reason": "The harness now JSON-encodes vertex-ID arguments, preserving string zero versus integer zero. All PageRank and max-flow cases were repeated with identical fixtures and binaries. Dangling-seed PageRank is also checked exactly."
+  },
+  "limitations": "Exact bounded oracles; heuristic partitions checked for score/feasibility, PPR errors measured, influence deterministic probabilities checked. No global optimality claim for heuristic operations.",
+  "resource_note": "MBE-GPU fixed scratch allocations exhausted GPU memory with concurrent instances. Every MBE case was repeated at lower concurrency with identical binary, workers, generator, instructions and fixtures. All original attempts remain in results/final."
+}

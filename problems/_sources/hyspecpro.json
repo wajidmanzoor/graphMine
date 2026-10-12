@@ -1,0 +1,20 @@
+{
+  "source_url": "https://github.com/NVlabs/HySpecPro",
+  "checked_at": "2026-10-10T01:39:33Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "1e9db172ce26a33be394369c94bedfba913ca41a",
+  "archive_url": "https://codeload.github.com/NVlabs/HySpecPro/tar.gz/1e9db172ce26a33be394369c94bedfba913ca41a",
+  "archive_sha256": "011e7a2f81d74c0e77b189feecf67a35b7f8ee8890762aac6d1cfd2e9cc73890",
+  "local_path": "hyspecpro-1e9db172ce26",
+  "license_files": [
+    "LICENSE",
+    "LICENSES.txt"
+  ],
+  "license_spdx": "NOASSERTION",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

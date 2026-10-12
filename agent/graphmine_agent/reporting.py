@@ -31,6 +31,15 @@ def render_report(result: ResultRecord) -> str:
         + (static / "vendor/cytoscape.min.js").read_text(encoding="utf-8")
         + "</script>",
     )
+    for name in ("vega.min.js", "vega-lite.min.js", "vega-embed.min.js"):
+        html = html.replace(
+            f'<script src="/vendor/{name}" defer></script>',
+            "<script>"
+            + (static / "vendor" / name)
+            .read_text(encoding="utf-8")
+            .replace("</script", "<\\/script")
+            + "</script>",
+        )
     return html.replace(
         '<script src="/app.js" defer></script>',
         "<script>" + (static / "app.js").read_text(encoding="utf-8") + "</script>",

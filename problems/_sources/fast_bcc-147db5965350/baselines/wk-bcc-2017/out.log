@@ -1,0 +1,161 @@
+
+
+Reading AGATHA_2015 file.
+Reading input and csr creation finished in: 2 min 25.570 sec
+CUDA Error at src/bcc_memory_utils.cu:20 - Failed to allocate vertices array.
+CUDA Error description: out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/AGATHA_2015.egr
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/clueweb12.egr
+
+
+Reading com-Friendster file.
+Reading input and csr creation finished in: 44.490 sec
+CUDA Error at src/bcc_memory_utils.cu:40 - Failed to allocate memory for d_baseVertex
+CUDA Error description: out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/com-Friendster.egr
+
+
+Reading GAP-kron file.
+Reading input and csr creation finished in: 55.665 sec
+CUDA Error at src/bcc_memory_utils.cu:38 - Failed to allocate memory for d_baseU
+CUDA Error description: out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-kron.egr
+
+
+Reading GAP-twitter file.
+Reading input and csr creation finished in: 31.997 sec
+Allocation of all device memory took : 7 ms.
+After all Allocation done: Used GPU memory: 35923.7 MB, Free GPU Memory: 9544.81 MB, Total GPU Memory: 45468.5 MB
+Initialization of device memory took : 0 ms.
+numEdges = 1222439231
+numVert = 61578415
+Random root value: 2
+Spanning tree creation finished in: 5275129609 ms.
+find_LCA took: 1695667187 ns
+fundamental cycle traversal took: 1695 ms.
+cc took: 647947483 ns
+cc took: 647 ms.
+fundamental cycle taversal finished in : 2345519190 ns
+Propagate_Safeness_to_rep took: 131719 ns
+Propagate_Safeness_to_comp took: 13712 ns
+Find_Unsafe_Component took: 12495 ns
+updateCutVertex took: 1690782 ns
+implicit_bcc took: 11957 ns
+Propagating safeness and indirect labelling finished in : 5281473 ns
+cudaBCC finished in: 7625 ms.
+
+Destructor started
+Deallocation of device memory took : 161 ms.
+Destructor ended
+
+
+Reading GAP-web file.
+Reading input and csr creation finished in: 43.366 sec
+CUDA Error at src/bcc_memory_utils.cu:40 - Failed to allocate memory for d_baseVertex
+CUDA Error description: out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-web.egr
+
+
+Reading it-2004 file.
+Reading input and csr creation finished in: 27.056 sec
+Allocation of all device memory took : 7 ms.
+After all Allocation done: Used GPU memory: 29783.7 MB, Free GPU Memory: 15684.8 MB, Total GPU Memory: 45468.5 MB
+Initialization of device memory took : 0 ms.
+numEdges = 1027475925
+numVert = 41291594
+Random root value: 2
+Spanning tree creation finished in: 1208492403 ms.
+find_LCA took: 60327328 ns
+fundamental cycle traversal took: 60 ms.
+cc took: 385774379 ns
+cc took: 385 ms.
+fundamental cycle taversal finished in : 447295602 ns
+Propagate_Safeness_to_rep took: 149413 ns
+Propagate_Safeness_to_comp took: 11796 ns
+Find_Unsafe_Component took: 11598 ns
+updateCutVertex took: 695625 ns
+implicit_bcc took: 11891 ns
+Propagating safeness and indirect labelling finished in : 2797969 ns
+cudaBCC finished in: 1658 ms.
+
+Destructor started
+Deallocation of device memory took : 143 ms.
+Destructor ended
+
+
+Reading MOLIERE_2016 file.
+Reading input and csr creation finished in: 1 min 18.933 sec
+CUDA Error at src/bcc_memory_utils.cu:22 - Failed to allocate u_arr array.
+CUDA Error description: out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/MOLIERE_2016.egr
+
+
+Reading sk-2005 file.
+Reading input and csr creation finished in: 46.229 sec
+CUDA Error at src/bcc_memory_utils.cu:40 - Failed to allocate memory for d_baseVertex
+CUDA Error description: out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/sk-2005.egr
+
+
+Reading twitter7 file.
+Reading input and csr creation finished in: 30.893 sec
+Allocation of all device memory took : 7 ms.
+After all Allocation done: Used GPU memory: 34479.7 MB, Free GPU Memory: 10988.8 MB, Total GPU Memory: 45468.5 MB
+Initialization of device memory took : 0 ms.
+numEdges = 1202513046
+numVert = 41652230
+Random root value: 2
+Spanning tree creation finished in: 1338534425 ms.
+find_LCA took: 1578548101 ns
+fundamental cycle traversal took: 1578 ms.
+cc took: 400206713 ns
+cc took: 400 ms.
+fundamental cycle taversal finished in : 1979979594 ns
+Propagate_Safeness_to_rep took: 126764 ns
+Propagate_Safeness_to_comp took: 12992 ns
+Find_Unsafe_Component took: 12050 ns
+updateCutVertex took: 993376 ns
+implicit_bcc took: 15776 ns
+Propagating safeness and indirect labelling finished in : 3746316 ns
+cudaBCC finished in: 3322 ms.
+
+Destructor started
+Deallocation of device memory took : 151 ms.
+Destructor ended
+cuda_bcc: src/graph.cpp:106: void undirected_graph::csr_to_coo(): Assertion `ctr == numEdges/2' failed.
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-2014.egr
+
+
+Reading uk-union-2006-06-2007-05-underlying file.
+Reading input and csr creation finished in: 1 min 52.241 sec
+CUDA Error at src/bcc_memory_utils.cu:22 - Failed to allocate u_arr array.
+CUDA Error description: out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-union-2006-06-2007-05-underlying.egr
+
+
+Reading webbase-2001 file.
+Reading input and csr creation finished in: 24.001 sec
+Allocation of all device memory took : 7 ms.
+After all Allocation done: Used GPU memory: 28771.7 MB, Free GPU Memory: 16696.8 MB, Total GPU Memory: 45468.5 MB
+Initialization of device memory took : 0 ms.
+numEdges = 857530811
+numVert = 118142155
+Random root value: 2
+Spanning tree creation finished in: 1072717381 ms.
+find_LCA took: 64040147 ns
+fundamental cycle traversal took: 64 ms.
+cc took: 650670231 ns
+cc took: 650 ms.
+fundamental cycle taversal finished in : 715985523 ns
+Propagate_Safeness_to_rep took: 130600 ns
+Propagate_Safeness_to_comp took: 11676 ns
+Find_Unsafe_Component took: 11453 ns
+updateCutVertex took: 2544219 ns
+implicit_bcc took: 11920 ns
+Propagating safeness and indirect labelling finished in : 8743512 ns
+cudaBCC finished in: 1797 ms.
+
+Destructor started
+Deallocation of device memory took : 152 ms.
+Destructor ended
+All files processed!

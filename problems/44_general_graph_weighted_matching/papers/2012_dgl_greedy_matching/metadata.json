@@ -1,0 +1,41 @@
+{
+  "title": "A GPU Algorithm for Greedy Graph Matching",
+  "authors": [
+    "Bas O. Fagginger Auer",
+    "Rob H. Bisseling"
+  ],
+  "year": 2012,
+  "venue": "Facing the Multicore-Challenge II, LNCS 7174",
+  "doi": "10.1007/978-3-642-30397-5_10",
+  "publication_url": "https://research-portal.uu.nl/en/publications/a-gpu-algorithm-for-greedy-graph-matching",
+  "pdf_url": "https://research-portal.uu.nl/ws/files/62547756/Algorithm.pdf",
+  "paper_id": "2012_dgl_greedy_matching",
+  "problem_id": "general_graph_weighted_matching",
+  "problem_dir": "44_general_graph_weighted_matching",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "DGL weighted neighbor matching",
+  "code_url": "https://github.com/dmlc/dgl",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Independent DGL CUDA implementation of the same Auer-Bisseling greedy matching publication used by PyTorch Cluster. Pair/singleton cluster IDs require output conversion.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "python/dgl/geometry/edge_coarsening.py",
+    "src/geometry/cuda/edge_coarsening_impl.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "dgl",
+  "variant_constraints": [
+    "bidirected graph",
+    "nonnegative weights",
+    "approximate matching"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

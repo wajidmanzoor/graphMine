@@ -1,0 +1,35 @@
+{
+  "problem_id": "graph_coarsening",
+  "paper_id": "2019_pyg_average_pool",
+  "title": "Fast Graph Representation Learning with PyTorch Geometric",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1903.02428",
+    "resolved_url": "https://arxiv.org/pdf/1903.02428",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "8cfd9824d44c5aba66393ef05e70c1275ca7886e0a0502f7b09e86e6c3a38953",
+    "bytes": 379324,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pyg-team/pytorch_geometric",
+    "local_path": "code",
+    "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pyg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "torch_geometric/nn/pool/avg_pool.py": "a70890875e01095b13fa250ba950055be0f1b7b0e314ebbc0905ff1eedf8bd97",
+      "torch_geometric/nn/pool/pool.py": "a792ca5a0bfb508dfcfc9852fb522f87b8e95089042237f94a13429b247f1120"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

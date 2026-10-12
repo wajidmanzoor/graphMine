@@ -1,0 +1,29 @@
+{
+  "problem_id": "graph_coarsening",
+  "paper_id": "2026_nvgraph_contraction",
+  "title": "nvGRAPH graph contraction — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/nvgraph",
+    "local_path": "code",
+    "commit": "1ea93b51387bd3ff149b6ac8fa91d64edd43d31c",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/nvgraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/graph_contraction/contraction_csr_sum.cu": "88e7c3cb04fc74b71757a50b1ddee56cb17a006b70ec028b55497bfae1f12681",
+      "cpp/src/graph_contraction/contraction_mv_float_sum.cu": "cebdbdb9295a1a353494235936333d7af2108426dd422f9a8e2ff636a05651b9"
+    }
+  }
+}

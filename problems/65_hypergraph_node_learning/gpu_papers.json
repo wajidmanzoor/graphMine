@@ -1,0 +1,30 @@
+{
+  "problem_id": "hypergraph_node_learning",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2020_dhg_hgnn",
+      "algorithm_name": "DeepHypergraph HGNN",
+      "metadata": "65_hypergraph_node_learning/papers/2020_dhg_hgnn/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2020_dhg_hnhn",
+      "algorithm_name": "DeepHypergraph HNHN",
+      "metadata": "65_hypergraph_node_learning/papers/2020_dhg_hnhn/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2020_dhg_hypergcn",
+      "algorithm_name": "DeepHypergraph HYPERGCN",
+      "metadata": "65_hypergraph_node_learning/papers/2020_dhg_hypergcn/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

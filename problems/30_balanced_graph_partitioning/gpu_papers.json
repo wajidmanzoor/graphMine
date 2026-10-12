@@ -1,0 +1,30 @@
+{
+  "problem_id": "balanced_graph_partitioning",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2024_gkway",
+      "algorithm_name": "G-kway: Multilevel GPU-Accelerated k-way Graph Partitioner using Task Graph Parallelism",
+      "metadata": "30_balanced_graph_partitioning/papers/2024_gkway/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_hyperg",
+      "algorithm_name": "HyperG: Multilevel GPU-Accelerated k-way Hypergraph Partitioner",
+      "metadata": "30_balanced_graph_partitioning/papers/2024_hyperg/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2025_igkway",
+      "algorithm_name": "iG-kway: Incremental k-way Graph Partitioning on GPU",
+      "metadata": "30_balanced_graph_partitioning/papers/2025_igkway/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "problem_id": "spanning_tree_forest",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2016_lonestargpu_mst",
+      "algorithm_name": "LonestarGPU minimum spanning tree",
+      "metadata": "41_spanning_tree_forest/papers/2016_lonestargpu_mst/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2017_gardenia_mst",
+      "algorithm_name": "GARDENIA GPU minimum spanning tree",
+      "metadata": "41_spanning_tree_forest/papers/2017_gardenia_mst/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2017_gunrock_boruvka",
+      "algorithm_name": "Gunrock Boruvka-style minimum spanning tree",
+      "metadata": "41_spanning_tree_forest/papers/2017_gunrock_boruvka/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

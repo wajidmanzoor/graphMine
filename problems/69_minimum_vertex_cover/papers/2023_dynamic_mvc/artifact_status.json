@@ -1,0 +1,34 @@
+{
+  "problem_id": "minimum_vertex_cover",
+  "paper_id": "2023_dynamic_mvc",
+  "title": "Maximum Independent Set: Self-Training through Dynamic Programming",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2310.18672",
+    "resolved_url": "https://arxiv.org/pdf/2310.18672",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "6f561a0965d327cb35be09bec9978c09cfc1d0783be72408217fd1831af1ee3b",
+    "bytes": 701533,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/LIONS-EPFL/dynamic-MIS",
+    "local_path": "code",
+    "commit": "32462fa7fb4bd5c459364a9efb6b749d9c06b53f",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/dynamic_mis.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "MVC/model.py": "424ad8f2de319e273e8d29c1f3d9a6c4f58a6e943bbc20281fc83f967ee1bc1d",
+      "MVC/recursion_tree.py": "000f4b4e66e0f6d229954275f60057a8c6b42ca4369c9f4cf23c6f5cc1aa1985"
+    }
+  }
+}

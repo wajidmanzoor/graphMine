@@ -1,0 +1,30 @@
+{
+  "problem_id": "top_k_critical_paths_dag",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2021_gpba",
+      "algorithm_name": "G-PBA GPU path-based timing analysis",
+      "metadata": "58_top_k_critical_paths_dag/papers/2021_gpba/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2021_heterocppr",
+      "algorithm_name": "HeteroCPPR GPU critical-path candidate generation",
+      "metadata": "58_top_k_critical_paths_dag/papers/2021_heterocppr/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_gpathgen",
+      "algorithm_name": "G-PathGen exact GPU k-critical paths",
+      "metadata": "58_top_k_critical_paths_dag/papers/2026_gpathgen/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    }
+  ]
+}

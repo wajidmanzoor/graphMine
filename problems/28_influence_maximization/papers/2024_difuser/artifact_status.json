@@ -1,0 +1,24 @@
+{
+  "problem_id": "influence_maximization",
+  "paper_id": "2024_difuser",
+  "title": "DiFuseR: A Distributed Sketch-based Influence Maximization Algorithm for GPUs",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2410.14047",
+    "resolved_url": "https://arxiv.org/pdf/2410.14047",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "77472068a64b50535a447b509fa8291a5a9d0fef29183ed1ee8c43c870e30690",
+    "bytes": 963947,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

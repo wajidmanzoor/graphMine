@@ -1,0 +1,24 @@
+{
+  "problem_id": "butterfly_counting_bipartite",
+  "paper_id": "2024_gbc_biclique",
+  "title": "Accelerating Biclique Counting on GPU",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2403.07858",
+    "resolved_url": "https://arxiv.org/pdf/2403.07858",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "a01688abb50d6afe76962c0dbc55bedc68ae6a3a06139478740dc42c01e15c81",
+    "bytes": 2187116,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

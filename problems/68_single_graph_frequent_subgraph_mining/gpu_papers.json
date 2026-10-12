@@ -1,0 +1,22 @@
+{
+  "problem_id": "single_graph_frequent_subgraph_mining",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2022_graphminer_mni",
+      "algorithm_name": "graphminer single-graph MNI mining",
+      "metadata": "68_single_graph_frequent_subgraph_mining/papers/2022_graphminer_mni/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2022_pangolin_mni",
+      "algorithm_name": "pangolin single-graph MNI mining",
+      "metadata": "68_single_graph_frequent_subgraph_mining/papers/2022_pangolin_mni/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

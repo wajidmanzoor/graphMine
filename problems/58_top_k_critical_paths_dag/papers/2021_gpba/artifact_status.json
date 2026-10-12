@@ -1,0 +1,27 @@
+{
+  "problem_id": "top_k_critical_paths_dag",
+  "paper_id": "2021_gpba",
+  "title": "GPU-accelerated Path-based Timing Analysis",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://tsung-wei-huang.github.io/papers/dac21_pba.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:34:47Z",
+    "sha256": "9c7f15d27328ce010469023a783e344e5beb11a927852b9e86d698b92126687a",
+    "bytes": 413796,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

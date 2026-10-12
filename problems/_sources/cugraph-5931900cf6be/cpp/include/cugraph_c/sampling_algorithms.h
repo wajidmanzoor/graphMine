@@ -1,0 +1,1353 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2021-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#pragma once
+
+#include <cugraph_c/coo.h>
+#include <cugraph_c/error.h>
+#include <cugraph_c/graph.h>
+#include <cugraph_c/properties.h>
+#include <cugraph_c/random.h>
+#include <cugraph_c/resource_handle.h>
+
+/** @defgroup samplingC Sampling algorithms
+ */
+
+#include <cugraph_c/export.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief     Opaque random walk result type
+ */
+typedef struct {
+  int32_t align_;
+} cugraph_random_walk_result_t;
+
+/**
+ * @brief  Compute uniform random walks
+ *
+ * @param [in]  handle          Handle for accessing resources
+ * @param [in,out] rng_state    State of the random number generator, updated with each call
+ * @param [in]  graph           Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                              needs to be transposed
+ * @param [in]  start_vertices  Array of source vertices
+ * @param [in]  max_length      Maximum length of the generated path
+ * @param [out]  result         Output from the node2vec call
+ * @param [out] error           Pointer to an error object storing details of any error.  Will
+ *                              be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_uniform_random_walks(const cugraph_resource_handle_t* handle,
+                             cugraph_rng_state_t* rng_state,
+                             cugraph_graph_t* graph,
+                             const cugraph_type_erased_device_array_view_t* start_vertices,
+                             size_t max_length,
+                             cugraph_random_walk_result_t** result,
+                             cugraph_error_t** error);
+
+/**
+ * @brief  Compute biased random walks
+ *
+ * @param [in]  handle          Handle for accessing resources
+ * @param [in,out] rng_state    State of the random number generator, updated with each call
+ * @param [in]  graph           Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                              needs to be transposed
+ * @param [in]  start_vertices  Array of source vertices
+ * @param [in]  max_length      Maximum length of the generated path
+ * @param [out]  result         Output from the node2vec call
+ * @param [out] error           Pointer to an error object storing details of any error.  Will
+ *                              be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_biased_random_walks(const cugraph_resource_handle_t* handle,
+                            cugraph_rng_state_t* rng_state,
+                            cugraph_graph_t* graph,
+                            const cugraph_type_erased_device_array_view_t* start_vertices,
+                            size_t max_length,
+                            cugraph_random_walk_result_t** result,
+                            cugraph_error_t** error);
+
+/**
+ * @brief  Compute random walks using the node2vec framework.
+ *
+ * @param [in]  handle          Handle for accessing resources
+ * @param [in,out] rng_state    State of the random number generator, updated with each call
+ * @param [in]  graph           Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                              needs to be transposed
+ * @param [in]  start_vertices  Array of source vertices
+ * @param [in]  max_length      Maximum length of the generated path
+ * @param [in]  compress_result If true, return the paths as a compressed sparse row matrix,
+ *                              otherwise return as a dense matrix
+ * @param [in]  p               The return parameter
+ * @param [in]  q               The in/out parameter
+ * @param [out]  result         Output from the node2vec call
+ * @param [out] error           Pointer to an error object storing details of any error.  Will
+ *                              be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_node2vec_random_walks(const cugraph_resource_handle_t* handle,
+                              cugraph_rng_state_t* rng_state,
+                              cugraph_graph_t* graph,
+                              const cugraph_type_erased_device_array_view_t* start_vertices,
+                              size_t max_length,
+                              double p,
+                              double q,
+                              cugraph_random_walk_result_t** result,
+                              cugraph_error_t** error);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the max path length from random walk result
+ *
+ * @param [in]   result   The result from random walks
+ * @return maximum path length
+ */
+CUGRAPH_EXPORT size_t
+cugraph_random_walk_result_get_max_path_length(cugraph_random_walk_result_t* result);
+
+// FIXME:  Should this be the same as extract_paths_result_t?  The only
+//         difference at the moment is that RW results contain weights
+//         and extract_paths results don't.  But that's probably wrong.
+/**
+ * @ingroup samplingC
+ * @brief     Get the matrix (row major order) of vertices in the paths
+ *
+ * @param [in]   result   The result from a random walk algorithm
+ * @return type erased array pointing to the path matrix in device memory
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_random_walk_result_get_paths(
+  cugraph_random_walk_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the matrix (row major order) of edge weights in the paths
+ *
+ * @param [in]   result   The result from a random walk algorithm
+ * @return type erased array pointing to the path edge weights in device memory
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_random_walk_result_get_weights(
+  cugraph_random_walk_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     If the random walk result is compressed, get the path sizes
+ * @deprecated This call will no longer be relevant once the new node2vec are called
+ *
+ * @param [in]   result   The result from a random walk algorithm
+ * @return type erased array pointing to the path sizes in device memory
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_random_walk_result_get_path_sizes(
+  cugraph_random_walk_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Free random walks result
+ *
+ * @param [in]   result   The result from random walks
+ */
+CUGRAPH_EXPORT void cugraph_random_walk_result_free(cugraph_random_walk_result_t* result);
+
+/**
+ * @brief     Opaque neighborhood sampling result type
+ */
+typedef struct {
+  int32_t align_;
+} cugraph_sample_result_t;
+
+/**
+ * @brief     Opaque sampling options type
+ */
+typedef struct {
+  int32_t align_;
+} cugraph_sampling_options_t;
+
+/**
+ * @brief     Opaque sampling options type
+ */
+typedef struct {
+  int32_t align_;
+} sampling_flags_t;
+
+/**
+ * @brief     Enumeration for prior sources behavior
+ */
+typedef enum cugraph_prior_sources_behavior_t {
+  DEFAULT = 0, /** Construct sources for hop k from destination vertices from hop k-1 */
+  CARRY_OVER,  /** Construct sources for hop k from destination vertices from hop k-1
+                   and sources from hop k-1 */
+  EXCLUDE      /** Construct sources for hop k from destination vertices form hop k-1,
+                   but exclude any vertex that has already been used as a source */
+} cugraph_prior_sources_behavior_t;
+
+/**
+ * @brief   Enumeration for temporal comparison options
+ */
+typedef enum {
+  STRICTLY_INCREASING = 0,  /** Time strictly increasing (each time is after the previous one) */
+  MONOTONICALLY_INCREASING, /** Time monotonically increasing (could have multiple edges with same
+                              time) */
+  STRICTLY_DECREASING,      /** Time strictly decreasing (each time is before the previous one) */
+  MONOTONICALLY_DECREASING, /** Time monotonically decreasing (could have multiple edges with same
+                                time) */
+  LAST                      /** Deprecated Value, we moved last-n to a different parameter */
+} cugraph_temporal_sampling_comparison_t;
+
+/**
+ * @brief Selects neighbors from the set that satisfies the sampling filters.
+ */
+typedef enum {
+  CUGRAPH_NEIGHBOR_SELECTION_RANDOM = 0, /** Uniform without biases, biased with biases */
+  CUGRAPH_NEIGHBOR_SELECTION_LAST        /** Deterministically select the last-n eligible
+                                            edges (temporal only). Matches PyG
+                                            temporal_strategy='last': rank by edge start
+                                            time along the walk in
+                                            temporal_sampling_comparison — later times for
+                                            increasing modes, earlier times (last in
+                                            decreasing order) for decreasing modes. No edge
+                                            biases and no with-replacement. int32 start times
+                                            rank exactly over the full signed range; int64
+                                            ranks exactly on [-2^52, 2^52 - 1]. Beyond that,
+                                            int64 ordering is preserved but values may tie,
+                                            so fanout edges are still returned yet the chosen
+                                            set may be wrong when more than fanout K eligible
+                                            edges on one source share the same rank. Equal
+                                            timestamps always tie. */
+} cugraph_neighbor_selection_t;
+
+/**
+ * @brief Selects the type of compression to use for the output samples.
+ */
+typedef enum cugraph_compression_type_t {
+  COO = 0, /** Outputs in COO format.  Default. */
+  CSR,     /** Compresses in CSR format.  This means the row (src) column
+               is compressed into a row pointer. */
+  CSC,     /** Compresses in CSC format.  This means the col (dst) column
+               is compressed into a column pointer. */
+  DCSR,    /** Compresses in DCSR format.  This outputs an additional index
+              that avoids empty entries in the row pointer. */
+  DCSC     /** Compresses in DCSC format.  This outputs an additional index
+               that avoid empty entries in the col pointer. */
+} cugraph_compression_type_t;
+
+/**
+ * @ingroup samplingC
+ * @brief   Create sampling options object
+ *
+ * All sampling options set to FALSE
+ *
+ * @param [out] options Opaque pointer to the sampling options
+ * @param [out] error   Pointer to an error object storing details of any error.  Will
+ *                      be populated if error code is not CUGRAPH_SUCCESS
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_sampling_options_create(cugraph_sampling_options_t** options, cugraph_error_t** error);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set flag to retain seeds (original sources)
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_retain_seeds(cugraph_sampling_options_t* options,
+                                                      bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set flag to renumber results
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_renumber_results(cugraph_sampling_options_t* options,
+                                                          bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set whether to compress per-hop (True) or globally (False)
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_compress_per_hop(cugraph_sampling_options_t* options,
+                                                          bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set flag to sample with_replacement
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_with_replacement(cugraph_sampling_options_t* options,
+                                                          bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set flag to sample return_hops
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_return_hops(cugraph_sampling_options_t* options,
+                                                     bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set compression type
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Enum defining the compresion type
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_compression_type(cugraph_sampling_options_t* options,
+                                                          cugraph_compression_type_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set prior sources behavior
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Enum defining prior sources behavior
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_prior_sources_behavior(
+  cugraph_sampling_options_t* options, cugraph_prior_sources_behavior_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set flag to sample dedupe_sources prior to sampling
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_dedupe_sources(cugraph_sampling_options_t* options,
+                                                        bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief Set temporal sampling comparison (increasing vs decreasing).
+ *
+ * Enables temporal sampling. Direction (strict vs monotonic, increasing vs decreasing)
+ * is independent of cugraph_sampling_set_fixed_window.
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param comparison - Comparison value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_temporal_sampling_comparison(
+  cugraph_sampling_options_t* options, cugraph_temporal_sampling_comparison_t comparison);
+
+/**
+ * @ingroup samplingC
+ * @brief Clear temporal sampling comparison, disabling temporal sampling.
+ *
+ * @param options - opaque pointer to the sampling options
+ */
+CUGRAPH_EXPORT void cugraph_sampling_clear_temporal_sampling_comparison(
+  cugraph_sampling_options_t* options);
+
+/**
+ * @ingroup samplingC
+ * @brief Set neighbor selection mode.
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param selection - RANDOM or LAST
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_neighbor_selection(cugraph_sampling_options_t* options,
+                                                            cugraph_neighbor_selection_t selection);
+
+/**
+ * @ingroup samplingC
+ * @brief Keep each seed's original time window at every hop (temporal only).
+ *
+ * When TRUE, sampled edge times are not used as the next hop's frontier bound.
+ * Orthogonal to cugraph_sampling_set_temporal_sampling_comparison (increasing vs
+ * decreasing). Default is FALSE.
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_fixed_window(cugraph_sampling_options_t* options,
+                                                      bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief   Set flag to perform disjoint sampling
+ *
+ * Note: This flag is not supported in the current implementation.
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_disjoint_sampling(cugraph_sampling_options_t* options,
+                                                           bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief When TRUE and edge_biases is NULL, biased sampling uses graph edge weights as biases.
+ *
+ * When FALSE (default), a NULL edge_biases argument means uniform RANDOM selection.
+ * Ignored when a non-NULL edge_biases view is provided to cugraph_neighbor_sample.
+ *
+ * @param options - opaque pointer to the sampling options
+ * @param value - Boolean value to assign to the option
+ */
+CUGRAPH_EXPORT void cugraph_sampling_set_use_edge_weights_as_biases(
+  cugraph_sampling_options_t* options, bool_t value);
+
+/**
+ * @ingroup samplingC
+ * @brief     Free sampling options object
+ *
+ * @param [in]   options   Opaque pointer to sampling object
+ */
+CUGRAPH_EXPORT void cugraph_sampling_options_free(cugraph_sampling_options_t* options);
+
+/**
+ * @brief Unified homogeneous/heterogeneous and temporal/non-temporal neighborhood sampling.
+ *
+ * RANDOM selection samples according to @p edge_biases when provided. If @p edge_biases is NULL,
+ * sampling is uniform unless cugraph_sampling_set_use_edge_weights_as_biases has been set, in which
+ * case graph edge weights are used as biases (the graph must be weighted). LAST (PyG
+ * temporal_strategy='last') selects the last-n temporally eligible edges
+ * along the walk order: later times for increasing comparisons, earlier times (last in
+ * decreasing order) for decreasing comparisons. An edge start time equal to
+ * numeric_limits<time_stamp_t>::lowest() is ranked by a uniform key in [1, 2) instead, so an edge
+ * type stored entirely as that sentinel is a uniform sample of its fanout. An edge type must
+ * not mix that sentinel with real timestamps. When do_expensive_check is true, heterogeneous
+ * LAST sampling rejects a type that does. LAST requires
+ * temporal sampling, ignores edge biases, and rejects with-replacement. int32 start times
+ * rank exactly over the full signed range; int64 ranks exactly on [-2^52, 2^52 - 1] (typical unix
+ * seconds/milliseconds/microseconds). Beyond that, int64 ordering is preserved but values
+ * may tie, so fanout edges are still returned yet the chosen set may be wrong when more
+ * than fanout K eligible edges on one source share the same rank. Equal timestamps always
+ * tie.
+ *
+ * Sampling is non-temporal unless cugraph_sampling_set_temporal_sampling_comparison has been
+ * called on @p sampling_options; all temporal arguments must then be NULL. When temporal, an edge
+ * start time equal to numeric_limits<time_stamp_t>::lowest() means the
+ * edge has no time: it passes the temporal filter, and unless fixed_window is set the next
+ * frontier bound stays at the source's current bound instead of adopting that sentinel.
+ * cugraph_sampling_set_fixed_window(TRUE) reapplies each seed's original window at every hop
+ * instead of propagating sampled edge times; it is orthogonal to increasing vs decreasing.
+ * Sampling is homogeneous when @p num_edge_types is 1; otherwise @p fan_out contains one value per
+ * (hop, edge type). When @p vertex_type_offsets is NULL, all vertices are treated as a single
+ * vertex type.
+ *
+ * @param [in] handle Handle for accessing resources.
+ * @param [in,out] rng_state State of the random number generator, updated for RANDOM selection.
+ * @param [in] graph Graph to sample. It may be transposed internally.
+ * @param [in] edge_biases Optional edge biases. NULL means uniform RANDOM selection unless
+ * cugraph_sampling_set_use_edge_weights_as_biases is TRUE.
+ * @param [in] start_vertices Device array of starting vertices.
+ * @param [in] starting_vertex_start_times Optional per-seed lower time-window bounds.
+ * @param [in] starting_vertex_end_times Optional per-seed upper time-window bounds.
+ * @param [in] starting_vertex_label_offsets Optional offsets defining labels in the seed list.
+ * @param [in] vertex_type_offsets Optional vertex-type offsets, required for heterogeneous output
+ * processing.
+ * @param [in] fan_out Host array defining fanout per hop (and per edge type when heterogeneous).
+ * @param [in] num_edge_types Number of edge types. Use 1 for homogeneous sampling.
+ * @param [in] sampling_options Sampling options. Temporal sampling is enabled by
+ * cugraph_sampling_set_temporal_sampling_comparison; neighbor selection defaults to RANDOM and may
+ * be set with cugraph_sampling_set_neighbor_selection; fixed_window defaults to FALSE and may be
+ * set with cugraph_sampling_set_fixed_window.
+ * @param [in] do_expensive_check Whether to perform expensive input validation.
+ * @param [out] result Sampling result.
+ * @param [out] error Error details on failure.
+ * @return Error code.
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const cugraph_edge_property_view_t* edge_biases,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_start_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_end_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_device_array_view_t* vertex_type_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  int num_edge_types,
+  const cugraph_sampling_options_t* sampling_options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated Use cugraph_neighbor_sample instead.
+ * @brief     Homogeneous Uniform Neighborhood Sampling
+ *
+ * Returns a sample of the neighborhood around specified start vertices and fan_out.
+ * The neighborhood is sampled uniformly.
+ * Optionally, each start vertex can be associated with a label, allowing the caller to specify
+ * multiple batches of sampling requests in the same function call - which should improve GPU
+ * utilization.
+ *
+ * If label is NULL then all start vertices will be considered part of the same batch and the
+ * return value will not have a label column.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ *  * @param [in,out] rng_state State of the random number generator, updated with each call
+ * @param [in]  graph        Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                           needs to be transposed
+ * @param [in]  start_vertices Device array of start vertices for the sampling
+ * @param [in]  starting_vertex_label_offsets Device array of the offsets for each label in
+ * the seed list. This parameter is only used with the retain_seeds option.
+ * @param [in]  fan_out       Host array defining the fan out at each step in the sampling
+ * algorithm. We only support fan_out values of type INT32
+ * @param [in]  sampling_options
+ *                           Opaque pointer defining the sampling options.
+ * @param [in]  do_expensive_check
+ *                           A flag to run expensive checks for input arguments (if set to true)
+ * @param [out]  result      Output from the uniform_neighbor_sample call
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_homogeneous_uniform_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  const cugraph_sampling_options_t* options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated Use cugraph_neighbor_sample instead.
+ * @brief     Homogeneous Biased Neighborhood Sampling
+ *
+ * Returns a sample of the neighborhood around specified start vertices and fan_out.
+ * The neighborhood is sampled uniformly.
+ * Optionally, each start vertex can be associated with a label, allowing the caller to specify
+ * multiple batches of sampling requests in the same function call - which should improve GPU
+ * utilization.
+ *
+ * If label is NULL then all start vertices will be considered part of the same batch and the
+ * return value will not have a label column.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ *  * @param [in,out] rng_state State of the random number generator, updated with each call
+ * @param [in]  graph        Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                           needs to be transposed
+ * @param [in]  edge_biases  Device array of edge biases to use for sampling.  If NULL
+ * use the edge weight as the bias. If set to NULL, edges will be sampled uniformly.
+ * @param [in]  start_vertices Device array of start vertices for the sampling
+ * @param [in]  starting_vertex_label_offsets Device array of the offsets for each label in
+ * the seed list. This parameter is only used with the retain_seeds option.
+ * @param [in]  fan_out       Host array defining the fan out at each step in the sampling
+ * algorithm. We only support fan_out values of type INT32
+ * @param [in]  sampling_options
+ *                           Opaque pointer defining the sampling options.
+ * @param [in]  do_expensive_check
+ *                           A flag to run expensive checks for input arguments (if set to true)
+ * @param [out]  result      Output from the uniform_neighbor_sample call
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_homogeneous_biased_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const cugraph_edge_property_view_t* edge_biases,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  const cugraph_sampling_options_t* options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated Use cugraph_neighbor_sample instead.
+ * @brief     Heterogeneous Uniform Neighborhood Sampling
+ *
+ * Returns a sample of the neighborhood around specified start vertices and fan_out.
+ * The neighborhood is sampled uniformly.
+ * Optionally, each start vertex can be associated with a label, allowing the caller to specify
+ * multiple batches of sampling requests in the same function call - which should improve GPU
+ * utilization.
+ *
+ * If label is NULL then all start vertices will be considered part of the same batch and the
+ * return value will not have a label column.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ *  * @param [in,out] rng_state State of the random number generator, updated with each call
+ * @param [in]  graph        Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                           needs to be transposed
+ * @param [in]  start_vertices Device array of start vertices for the sampling
+ * @param [in]  starting_vertex_label_offsets Device array of the offsets for each label in
+ * the seed list. This parameter is only used with the retain_seeds option.
+ * @param [in]  vertex_type_offsets Device array of the offsets for each vertex type in the
+ * graph.
+ * @param [in]  fan_out       Host array defining the fan out at each step in the sampling
+ * algorithm. We only support fan_out values of type INT32
+ * @param [in]  num_edge_types Number of edge types where a value of 1 translates to homogeneous
+ * neighbor sample whereas a value greater than 1 translates to heterogeneous neighbor sample.
+ * @param [in]  sampling_options
+ *                           Opaque pointer defining the sampling options.
+ * @param [in]  do_expensive_check
+ *                           A flag to run expensive checks for input arguments (if set to true)
+ * @param [out]  result      Output from the uniform_neighbor_sample call
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_heterogeneous_uniform_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_device_array_view_t* vertex_type_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  int num_edge_types,
+  const cugraph_sampling_options_t* options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated Use cugraph_neighbor_sample instead.
+ * @brief     Heterogeneous Biased Neighborhood Sampling
+ *
+ * Returns a sample of the neighborhood around specified start vertices and fan_out.
+ * The neighborhood is sampled uniformly.
+ * Optionally, each start vertex can be associated with a label, allowing the caller to specify
+ * multiple batches of sampling requests in the same function call - which should improve GPU
+ * utilization.
+ *
+ * If label is NULL then all start vertices will be considered part of the same batch and the
+ * return value will not have a label column.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ *  * @param [in,out] rng_state State of the random number generator, updated with each call
+ * @param [in]  graph        Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                           needs to be transposed
+ * @param [in]  edge_biases  Device array of edge biases to use for sampling.  If NULL
+ * use the edge weight as the bias. If set to NULL, edges will be sampled uniformly.
+ * @param [in]  start_vertices Device array of start vertices for the sampling
+ * @param [in]  starting_vertex_label_offsets Device array of the offsets for each label in
+ * the seed list. This parameter is only used with the retain_seeds option.
+ * @param [in]  vertex_type_offsets Device array of the offsets for each vertex type in the
+ * graph.
+ * @param [in]  fan_out       Host array defining the fan out at each step in the sampling
+ * algorithm. We only support fan_out values of type INT32
+ * @param [in]  num_edge_types Number of edge types where a value of 1 translates to homogeneous
+ * neighbor sample whereas a value greater than 1 translates to heterogeneous neighbor sample.
+ * @param [in]  sampling_options
+ *                           Opaque pointer defining the sampling options.
+ * @param [in]  do_expensive_check
+ *                           A flag to run expensive checks for input arguments (if set to true)
+ * @param [out]  result      Output from the uniform_neighbor_sample call
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_heterogeneous_biased_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const cugraph_edge_property_view_t* edge_biases,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_device_array_view_t* vertex_type_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  int num_edge_types,
+  const cugraph_sampling_options_t* options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated Use cugraph_neighbor_sample instead.
+ * @brief     Homogeneous Uniform Temporal Neighborhood Sampling
+ *
+ * Returns a sample of the neighborhood around specified start vertices and fan_out.
+ * The neighborhood is sampled uniformly.
+ *
+ * Temporal sampling considers the time associated with the edges. For increasing walks, if we
+ * start at vertex v1 and sample an edge that takes us to vertex v2 at time t1, when we sample in
+ * the next hop from vertex v2 we consider only edges that occur after time t1; for decreasing
+ * walks the restriction is to edges that occur before time t1.
+ *
+ * Each seed may also supply an optional closed time window via @p starting_vertex_start_times and
+ * @p starting_vertex_end_times. Eligible edge times must lie in that window for the entire walk.
+ * The window bounds additionally determine the hop-0 frontier: increasing walks begin at the
+ * start bound (or -inf if omitted), while decreasing walks begin at the end bound (or +inf if
+ * omitted). See the parameter docs below for details.
+ *
+ * Optionally, each start vertex can be associated with a label, allowing the caller to specify
+ * multiple batches of sampling requests in the same function call - which should improve GPU
+ * utilization.
+ *
+ * If label is NULL then all start vertices will be considered part of the same batch and the
+ * return value will not have a label column.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in,out] rng_state State of the random number generator, updated with each call
+ * @param [in]  graph        Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                           needs to be transposed
+ * @param [in]  temporal_property_name Name associated with the edge property in the graph that
+ * should be used as the time.  Currently unused.
+ * @param [in]  start_vertices Device array of start vertices for the sampling
+ * @param [in]  starting_vertex_start_times Optional device array of per-seed lower bounds of the
+ * time window. Edge times must be >= this value when present. Either or both of
+ * @p starting_vertex_start_times and @p starting_vertex_end_times may be NULL (unbounded on that
+ * side). When both are provided, each start time must be <= the corresponding end time.
+ *
+ * For increasing walks (STRICTLY_INCREASING / MONOTONICALLY_INCREASING), the hop-0 frontier
+ * originates at this time (or is unbounded below if NULL), so this array is both the window's
+ * lower bound and the initial frontier time.
+ *
+ * For decreasing walks (STRICTLY_DECREASING / MONOTONICALLY_DECREASING), the hop-0 frontier
+ * originates at @p starting_vertex_end_times instead (or is unbounded above if that is NULL), and
+ * this array remains only the window's lower bound (a floor on eligible edge times). Providing
+ * only @p starting_vertex_start_times on a decreasing walk therefore yields a window [start, +inf)
+ * whose frontier begins at +inf.
+ * @param [in]  starting_vertex_end_times Optional device array of per-seed upper bounds of the
+ * time window. Edge times must be <= this value when present. See @p starting_vertex_start_times
+ * for optionality and the increasing/decreasing role reversal: for decreasing walks this array is
+ * both the window's upper bound and the hop-0 frontier time; for increasing walks it is only the
+ * upper bound (a ceiling).
+ * @param [in]  starting_vertex_label_offsets Device array of the offsets for each label in
+ * the seed list. This parameter is only used with the retain_seeds option.
+ * @param [in]  fan_out       Host array defining the fan out at each step in the sampling
+ * algorithm. We only support fan_out values of type INT32
+ * @param [in]  sampling_options
+ *                           Opaque pointer defining the sampling options.
+ * @param [in]  do_expensive_check
+ *                           A flag to run expensive checks for input arguments (if set to true)
+ * @param [out]  result      Output from the uniform_neighbor_sample call
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_homogeneous_uniform_temporal_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const char* temporal_property_name,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_start_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_end_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  const cugraph_sampling_options_t* sampling_options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated Use cugraph_neighbor_sample instead.
+ * @brief     Homogeneous Biased Temporal Neighborhood Sampling
+ *
+ * Returns a sample of the neighborhood around specified start vertices and fan_out.
+ * The neighborhood is sampled uniformly.
+ *
+ * Temporal sampling considers the time associated with the edges. For increasing walks, if we
+ * start at vertex v1 and sample an edge that takes us to vertex v2 at time t1, when we sample in
+ * the next hop from vertex v2 we consider only edges that occur after time t1; for decreasing
+ * walks the restriction is to edges that occur before time t1.
+ *
+ * Each seed may also supply an optional closed time window via @p starting_vertex_start_times and
+ * @p starting_vertex_end_times. Eligible edge times must lie in that window for the entire walk.
+ * The window bounds additionally determine the hop-0 frontier: increasing walks begin at the
+ * start bound (or -inf if omitted), while decreasing walks begin at the end bound (or +inf if
+ * omitted). See the parameter docs below for details.
+ *
+ * Optionally, each start vertex can be associated with a label, allowing the caller to specify
+ * multiple batches of sampling requests in the same function call - which should improve GPU
+ * utilization.
+ *
+ * If label is NULL then all start vertices will be considered part of the same batch and the
+ * return value will not have a label column.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in,out] rng_state State of the random number generator, updated with each call
+ * @param [in]  graph        Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                           needs to be transposed
+ * @param [in]  temporal_property_name Name associated with the edge property in the graph that
+ * should be used as the time.  Currently unused.
+ * @param [in]  edge_biases  Device array of edge biases to use for sampling.  If NULL
+ * use the edge weight as the bias. If set to NULL, edges will be sampled uniformly.
+ * @param [in]  start_vertices Device array of start vertices for the sampling
+ * @param [in]  starting_vertex_start_times Optional device array of per-seed lower bounds of the
+ * time window. Edge times must be >= this value when present. Either or both of
+ * @p starting_vertex_start_times and @p starting_vertex_end_times may be NULL (unbounded on that
+ * side). When both are provided, each start time must be <= the corresponding end time.
+ *
+ * For increasing walks (STRICTLY_INCREASING / MONOTONICALLY_INCREASING), the hop-0 frontier
+ * originates at this time (or is unbounded below if NULL), so this array is both the window's
+ * lower bound and the initial frontier time.
+ *
+ * For decreasing walks (STRICTLY_DECREASING / MONOTONICALLY_DECREASING), the hop-0 frontier
+ * originates at @p starting_vertex_end_times instead (or is unbounded above if that is NULL), and
+ * this array remains only the window's lower bound (a floor on eligible edge times). Providing
+ * only @p starting_vertex_start_times on a decreasing walk therefore yields a window [start, +inf)
+ * whose frontier begins at +inf.
+ * @param [in]  starting_vertex_end_times Optional device array of per-seed upper bounds of the
+ * time window. Edge times must be <= this value when present. See @p starting_vertex_start_times
+ * for optionality and the increasing/decreasing role reversal: for decreasing walks this array is
+ * both the window's upper bound and the hop-0 frontier time; for increasing walks it is only the
+ * upper bound (a ceiling).
+ * @param [in]  starting_vertex_label_offsets Device array of the offsets for each label in
+ * the seed list. This parameter is only used with the retain_seeds option.
+ * @param [in]  fan_out       Host array defining the fan out at each step in the sampling
+ * algorithm. We only support fan_out values of type INT32
+ * @param [in]  sampling_options
+ *                           Opaque pointer defining the sampling options.
+ * @param [in]  do_expensive_check
+ *                           A flag to run expensive checks for input arguments (if set to true)
+ * @param [out]  result      Output from the uniform_neighbor_sample call
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_homogeneous_biased_temporal_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const char* temporal_property_name,
+  const cugraph_edge_property_view_t* edge_biases,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_start_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_end_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  const cugraph_sampling_options_t* sampling_options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated Use cugraph_neighbor_sample instead.
+ * @brief     Heterogeneous Uniform Temporal Neighborhood Sampling
+ *
+ * Returns a sample of the neighborhood around specified start vertices and fan_out.
+ * The neighborhood is sampled uniformly.
+ *
+ * Temporal sampling considers the time associated with the edges. For increasing walks, if we
+ * start at vertex v1 and sample an edge that takes us to vertex v2 at time t1, when we sample in
+ * the next hop from vertex v2 we consider only edges that occur after time t1; for decreasing
+ * walks the restriction is to edges that occur before time t1.
+ *
+ * Each seed may also supply an optional closed time window via @p starting_vertex_start_times and
+ * @p starting_vertex_end_times. Eligible edge times must lie in that window for the entire walk.
+ * The window bounds additionally determine the hop-0 frontier: increasing walks begin at the
+ * start bound (or -inf if omitted), while decreasing walks begin at the end bound (or +inf if
+ * omitted). See the parameter docs below for details.
+ *
+ * Optionally, each start vertex can be associated with a label, allowing the caller to specify
+ * multiple batches of sampling requests in the same function call - which should improve GPU
+ * utilization.
+ *
+ * If label is NULL then all start vertices will be considered part of the same batch and the
+ * return value will not have a label column.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in,out] rng_state State of the random number generator, updated with each call
+ * @param [in]  graph        Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                           needs to be transposed
+ * @param [in]  temporal_property_name Name associated with the edge property in the graph that
+ * should be used as the time.  Currently unused.
+ * @param [in]  start_vertices Device array of start vertices for the sampling
+ * @param [in]  starting_vertex_start_times Optional device array of per-seed lower bounds of the
+ * time window. Edge times must be >= this value when present. Either or both of
+ * @p starting_vertex_start_times and @p starting_vertex_end_times may be NULL (unbounded on that
+ * side). When both are provided, each start time must be <= the corresponding end time.
+ *
+ * For increasing walks (STRICTLY_INCREASING / MONOTONICALLY_INCREASING), the hop-0 frontier
+ * originates at this time (or is unbounded below if NULL), so this array is both the window's
+ * lower bound and the initial frontier time.
+ *
+ * For decreasing walks (STRICTLY_DECREASING / MONOTONICALLY_DECREASING), the hop-0 frontier
+ * originates at @p starting_vertex_end_times instead (or is unbounded above if that is NULL), and
+ * this array remains only the window's lower bound (a floor on eligible edge times). Providing
+ * only @p starting_vertex_start_times on a decreasing walk therefore yields a window [start, +inf)
+ * whose frontier begins at +inf.
+ * @param [in]  starting_vertex_end_times Optional device array of per-seed upper bounds of the
+ * time window. Edge times must be <= this value when present. See @p starting_vertex_start_times
+ * for optionality and the increasing/decreasing role reversal: for decreasing walks this array is
+ * both the window's upper bound and the hop-0 frontier time; for increasing walks it is only the
+ * upper bound (a ceiling).
+ * @param [in]  starting_vertex_label_offsets Device array of the offsets for each label in
+ * the seed list. This parameter is only used with the retain_seeds option.
+ * @param [in]  vertex_type_offsets Device array of the offsets for each vertex type in the
+ * graph.
+ * @param [in]  fan_out       Host array defining the fan out at each step in the sampling
+ * algorithm. We only support fan_out values of type INT32
+ * @param [in]  num_edge_types Number of edge types where a value of 1 translates to homogeneous
+ * neighbor sample whereas a value greater than 1 translates to heterogeneous neighbor sample.
+ * @param [in]  sampling_options
+ *                           Opaque pointer defining the sampling options.
+ * @param [in]  do_expensive_check
+ *                           A flag to run expensive checks for input arguments (if set to true)
+ * @param [out]  result      Output from the uniform_neighbor_sample call
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_heterogeneous_uniform_temporal_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const char* temporal_property_name,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_start_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_end_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_device_array_view_t* vertex_type_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  int num_edge_types,
+  const cugraph_sampling_options_t* sampling_options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated Use cugraph_neighbor_sample instead.
+ * @brief     Heterogeneous Biased Temporal Neighborhood Sampling
+ *
+ * Returns a sample of the neighborhood around specified start vertices and fan_out.
+ * The neighborhood is sampled uniformly.
+ *
+ * Temporal sampling considers the time associated with the edges. For increasing walks, if we
+ * start at vertex v1 and sample an edge that takes us to vertex v2 at time t1, when we sample in
+ * the next hop from vertex v2 we consider only edges that occur after time t1; for decreasing
+ * walks the restriction is to edges that occur before time t1.
+ *
+ * Each seed may also supply an optional closed time window via @p starting_vertex_start_times and
+ * @p starting_vertex_end_times. Eligible edge times must lie in that window for the entire walk.
+ * The window bounds additionally determine the hop-0 frontier: increasing walks begin at the
+ * start bound (or -inf if omitted), while decreasing walks begin at the end bound (or +inf if
+ * omitted). See the parameter docs below for details.
+ *
+ * Optionally, each start vertex can be associated with a label, allowing the caller to specify
+ * multiple batches of sampling requests in the same function call - which should improve GPU
+ * utilization.
+ *
+ * If label is NULL then all start vertices will be considered part of the same batch and the
+ * return value will not have a label column.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in,out] rng_state State of the random number generator, updated with each call
+ * @param [in]  graph        Pointer to graph.  NOTE: Graph might be modified if the storage
+ *                           needs to be transposed
+ * @param [in]  temporal_property_name Name associated with the edge property in the graph that
+ * should be used as the time.  Currently unused.
+ * @param [in]  edge_biases  Device array of edge biases to use for sampling.  If NULL
+ * use the edge weight as the bias. If set to NULL, edges will be sampled uniformly.
+ * @param [in]  start_vertices Device array of start vertices for the sampling
+ * @param [in]  starting_vertex_start_times Optional device array of per-seed lower bounds of the
+ * time window. Edge times must be >= this value when present. Either or both of
+ * @p starting_vertex_start_times and @p starting_vertex_end_times may be NULL (unbounded on that
+ * side). When both are provided, each start time must be <= the corresponding end time.
+ *
+ * For increasing walks (STRICTLY_INCREASING / MONOTONICALLY_INCREASING), the hop-0 frontier
+ * originates at this time (or is unbounded below if NULL), so this array is both the window's
+ * lower bound and the initial frontier time.
+ *
+ * For decreasing walks (STRICTLY_DECREASING / MONOTONICALLY_DECREASING), the hop-0 frontier
+ * originates at @p starting_vertex_end_times instead (or is unbounded above if that is NULL), and
+ * this array remains only the window's lower bound (a floor on eligible edge times). Providing
+ * only @p starting_vertex_start_times on a decreasing walk therefore yields a window [start, +inf)
+ * whose frontier begins at +inf.
+ * @param [in]  starting_vertex_end_times Optional device array of per-seed upper bounds of the
+ * time window. Edge times must be <= this value when present. See @p starting_vertex_start_times
+ * for optionality and the increasing/decreasing role reversal: for decreasing walks this array is
+ * both the window's upper bound and the hop-0 frontier time; for increasing walks it is only the
+ * upper bound (a ceiling).
+ * @param [in]  starting_vertex_label_offsets Device array of the offsets for each label in
+ * the seed list. This parameter is only used with the retain_seeds option.
+ * @param [in]  vertex_type_offsets Device array of the offsets for each vertex type in the
+ * graph.
+ * @param [in]  fan_out       Host array defining the fan out at each step in the sampling
+ * algorithm. We only support fan_out values of type INT32
+ * @param [in]  num_edge_types Number of edge types where a value of 1 translates to homogeneous
+ * neighbor sample whereas a value greater than 1 translates to heterogeneous neighbor sample.
+ * @param [in]  sampling_options
+ *                           Opaque pointer defining the sampling options.
+ * @param [in]  do_expensive_check
+ *                           A flag to run expensive checks for input arguments (if set to true)
+ * @param [out]  result      Output from the uniform_neighbor_sample call
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_heterogeneous_biased_temporal_neighbor_sample(
+  const cugraph_resource_handle_t* handle,
+  cugraph_rng_state_t* rng_state,
+  cugraph_graph_t* graph,
+  const char* temporal_property_name,
+  const cugraph_edge_property_view_t* edge_biases,
+  const cugraph_type_erased_device_array_view_t* start_vertices,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_start_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_end_times,
+  const cugraph_type_erased_device_array_view_t* starting_vertex_label_offsets,
+  const cugraph_type_erased_device_array_view_t* vertex_type_offsets,
+  const cugraph_type_erased_host_array_view_t* fan_out,
+  int num_edge_types,
+  const cugraph_sampling_options_t* sampling_options,
+  bool_t do_expensive_check,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @deprecated This call should be replaced with cugraph_sample_result_get_majors
+ * @brief     Get the source vertices from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the source vertices in device memory
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_sources(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @deprecated This call should be replaced with cugraph_sample_result_get_minors
+ * @brief     Get the destination vertices from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the destination vertices in device memory
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_destinations(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the major vertices from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the major vertices in device memory
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_majors(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the minor vertices from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the minor vertices in device memory
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_minors(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the major offsets from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the major offsets in device memory
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_major_offsets(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the start labels from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the start labels
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_start_labels(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the edge_id from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the edge_id
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_edge_id(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the edge_type from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the edge_type
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_edge_type(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the edge_weight from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the edge_weight
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_edge_weight(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the edge_start_time from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the edge_start_time
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_edge_start_time(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the edge_end_time from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the edge_end_time
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_edge_end_time(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the hop from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the hop
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_hop(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the label-hop offsets from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the label-hop offsets
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_label_hop_offsets(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the label-type-hop offsets from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the label-type-hop offsets
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t*
+cugraph_sample_result_get_label_type_hop_offsets(const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the index from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the index
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_index(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @deprecated This call should be replaced with cugraph_sample_get_get_label_hop_offsets
+ * @brief     Get the result offsets from the sampling algorithm result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the result offsets
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_offsets(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the renumber map
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the renumber map
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_renumber_map(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the renumber map offsets
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the renumber map offsets
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t*
+cugraph_sample_result_get_renumber_map_offsets(const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the edge renumber map
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the renumber map
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_sample_result_get_edge_renumber_map(
+  const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Get the edge renumber map offets
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ * @return type erased array pointing to the renumber map
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t*
+cugraph_sample_result_get_edge_renumber_map_offsets(const cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Free a sampling result
+ *
+ * @param [in]   result   The result from a sampling algorithm
+ */
+CUGRAPH_EXPORT void cugraph_sample_result_free(cugraph_sample_result_t* result);
+
+/**
+ * @ingroup samplingC
+ * @brief     Create a sampling result (testing API)
+ *
+ * @param [in]   handle         Handle for accessing resources
+ * @param [in]   srcs           Device array view to populate srcs
+ * @param [in]   dsts           Device array view to populate dsts
+ * @param [in]   edge_id        Device array view to populate edge_id (can be NULL)
+ * @param [in]   edge_type      Device array view to populate edge_type (can be NULL)
+ * @param [in]   wgt            Device array view to populate wgt (can be NULL)
+ * @param [in]   hop            Device array view to populate hop
+ * @param [in]   label          Device array view to populate label (can be NULL)
+ * @param [out]  result         Pointer to the location to store the
+ *                              cugraph_sample_result_t*
+ * @param [out]  error          Pointer to an error object storing details of
+ *                              any error.  Will be populated if error code is
+ *                              not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_test_sample_result_create(const cugraph_resource_handle_t* handle,
+                                  const cugraph_type_erased_device_array_view_t* srcs,
+                                  const cugraph_type_erased_device_array_view_t* dsts,
+                                  const cugraph_type_erased_device_array_view_t* edge_id,
+                                  const cugraph_type_erased_device_array_view_t* edge_type,
+                                  const cugraph_type_erased_device_array_view_t* wgt,
+                                  const cugraph_type_erased_device_array_view_t* hop,
+                                  const cugraph_type_erased_device_array_view_t* label,
+                                  cugraph_sample_result_t** result,
+                                  cugraph_error_t** error);
+
+/**
+ * @ingroup samplingC
+ * @brief     Create a sampling result (testing API)
+ *
+ * @param [in]   handle         Handle for accessing resources
+ * @param [in]   srcs           Device array view to populate srcs
+ * @param [in]   dsts           Device array view to populate dsts
+ * @param [in]   edge_id        Device array view to populate edge_id
+ * @param [in]   edge_type      Device array view to populate edge_type
+ * @param [in]   weight         Device array view to populate weight
+ * @param [in]   hop            Device array view to populate hop
+ * @param [in]   label          Device array view to populate label
+ * @param [out]  result         Pointer to the location to store the
+ *                              cugraph_sample_result_t*
+ * @param [out]  error          Pointer to an error object storing details of
+ *                              any error.  Will be populated if error code is
+ *                              not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_test_uniform_neighborhood_sample_result_create(
+  const cugraph_resource_handle_t* handle,
+  const cugraph_type_erased_device_array_view_t* srcs,
+  const cugraph_type_erased_device_array_view_t* dsts,
+  const cugraph_type_erased_device_array_view_t* edge_id,
+  const cugraph_type_erased_device_array_view_t* edge_type,
+  const cugraph_type_erased_device_array_view_t* weight,
+  const cugraph_type_erased_device_array_view_t* hop,
+  const cugraph_type_erased_device_array_view_t* label,
+  cugraph_sample_result_t** result,
+  cugraph_error_t** error);
+
+/**
+ * @ingroup samplingC
+ * @brief Select random vertices from the graph
+ *
+ * @param [in]      handle        Handle for accessing resources
+ * @param [in]      graph         Pointer to graph
+ * @param [in,out]  rng_state     State of the random number generator, updated with each call
+ * @param [in]      num_vertices  Number of vertices to sample
+ * @param [out]     vertices      Device array view to populate label
+ * @param [out]     error         Pointer to an error object storing details of
+ *                                any error.  Will be populated if error code is
+ *                                not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_select_random_vertices(const cugraph_resource_handle_t* handle,
+                               const cugraph_graph_t* graph,
+                               cugraph_rng_state_t* rng_state,
+                               size_t num_vertices,
+                               cugraph_type_erased_device_array_t** vertices,
+                               cugraph_error_t** error);
+
+/**
+ * @ingroup samplingC
+ * @brief Perform negative sampling
+ *
+ * Negative sampling generates a COO structure defining edges according to the specified parameters
+ *
+ * @param [in]     handle                  Handle for accessing resources
+ * @param [in,out] rng_state               State of the random number generator, updated with each
+ *                                         call
+ * @param [in]     graph                   Pointer to graph
+ * @param [in]     vertices                Vertex ids for the source biases.  If @p src_bias and
+ *                                         @p dst_bias are not specified this is ignored.  If
+ *                                         @p vertices is specified then vertices[i] is the vertex
+ *                                         id of src_biases[i] and dst_biases[i].  If @p vertices
+ *                                         is not specified then i is the vertex id if src_biases[i]
+ *                                         and dst_biases[i]
+ * @param [in]     src_biases              Bias for selecting source vertices.  If NULL, do uniform
+ *                                         sampling, if provided probability of vertex i will be
+ *                                         src_bias[i] / (sum of all source biases)
+ * @param [in]     dst_biases              Bias for selecting destination vertices.  If NULL, do
+ *                                         uniform sampling, if provided probability of vertex i
+ *                                         will be dst_bias[i] / (sum of all destination biases)
+ * @param [in]     num_samples             Number of negative samples to generate
+ * @param [in]     remove_duplicates       If true, remove duplicates from sampled edges
+ * @param [in]     remove_existing_edges   If true, remove sampled edges that actually exist in
+ *                                         the graph
+ * @param [in]     exact_number_of_samples If true, result should contain exactly @p num_samples. If
+ *                                         false the code will generate @p num_samples and then do
+ *                                         any filtering as specified
+ * @param [in]     do_expensive_check      A flag to run expensive checks for input arguments (if
+ *                                         set to true)
+ * @param [out]    result                  Opaque pointer to generated coo list
+ * @param [out]    error                   Pointer to an error object storing details of any error.
+ *                                         Will be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_negative_sampling(const cugraph_resource_handle_t* handle,
+                          cugraph_rng_state_t* rng_state,
+                          cugraph_graph_t* graph,
+                          const cugraph_type_erased_device_array_view_t* vertices,
+                          const cugraph_type_erased_device_array_view_t* src_biases,
+                          const cugraph_type_erased_device_array_view_t* dst_biases,
+                          size_t num_samples,
+                          bool_t remove_duplicates,
+                          bool_t remove_existing_edges,
+                          bool_t exact_number_of_samples,
+                          bool_t do_expensive_check,
+                          cugraph_coo_t** result,
+                          cugraph_error_t** error);
+
+#include <cugraph_c/export.h>
+
+#ifdef __cplusplus
+}
+#endif

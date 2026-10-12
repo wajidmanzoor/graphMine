@@ -1,0 +1,33 @@
+{
+  "problem_id": "connected_components",
+  "paper_id": "2019_graphblast_cc",
+  "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1908.01407",
+    "resolved_url": "https://arxiv.org/pdf/1908.01407",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:54Z",
+    "sha256": "07f18814a7a40dbe71ea7fdabaea2914e79f01362983187eb1907aa836c48f4e",
+    "bytes": 3621402,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/gunrock/graphblast",
+    "local_path": "code",
+    "commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/graphblast.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "graphblas/algorithm/cc.hpp": "8c850a8a7d5136e36825e7813aca59da84899f91ba0919d5d9d14a6b978539e2"
+    }
+  }
+}

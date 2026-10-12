@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/cupy/cupy",
+  "checked_at": "2026-10-10T01:37:09Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0",
+  "archive_url": "https://codeload.github.com/cupy/cupy/tar.gz/379a2bedbca90d59a947d8bc26d02e7378ee1eb0",
+  "archive_sha256": "2e2a5e7bc66309fddc02dd60c36a7e1af0dcab76c6192f6b02ba3e3cc02ddd0d",
+  "local_path": "cupy-379a2bedbca9",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

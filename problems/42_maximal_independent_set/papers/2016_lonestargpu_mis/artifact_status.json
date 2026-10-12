@@ -1,0 +1,33 @@
+{
+  "problem_id": "maximal_independent_set",
+  "paper_id": "2016_lonestargpu_mis",
+  "title": "Lowering IrGL to CUDA",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1607.05707",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:32:14Z",
+    "sha256": "79a5e0ceda952fa2cc2dbc39cfdcc696125ab2c5068d79d3bd6f05022f09545f",
+    "bytes": 350454,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/IntelligentSoftwareSystems/Galois",
+    "local_path": "code",
+    "commit": "b67f94206a8c47fd414446621f6633a31c49fd98",
+    "license_file": "code/COPYRIGHT",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/galois.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "lonestar/analytics/gpu/independentset/mis.cu": "0fedebde5ace4a15292cfc99f7708316e73bc893888f1735ff5fccfe547bb691",
+      "lonestar/analytics/gpu/independentset/README.md": "9e60bd02651ac2111f82248193ab8e8b352580e84cc9b15431b31187f1a33945"
+    }
+  }
+}

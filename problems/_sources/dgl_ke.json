@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/awslabs/dgl-ke",
+  "checked_at": "2026-10-09T19:25:19Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "e00bccfc4638db8b1f703ecedbf8db81faedb2bb",
+  "archive_url": "https://codeload.github.com/awslabs/dgl-ke/tar.gz/e00bccfc4638db8b1f703ecedbf8db81faedb2bb",
+  "archive_sha256": "d9f3f9f3b6738364d2b4baea87cf9308f37bd8cd20b4a5d7ac10327ae71cc22f",
+  "local_path": "dgl_ke-e00bccfc4638",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

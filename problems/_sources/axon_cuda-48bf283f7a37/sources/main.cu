@@ -1,0 +1,942 @@
+#include <tuple>
+#include <chrono>
+#include <string>
+#include <vector>
+#include <cstdint>
+#include <numeric>
+#include <iomanip>
+#include <cassert>
+#include <iostream>
+#include <optional>
+#include <filesystem>
+
+#include <cuda_runtime.h>
+
+#include "thruster.cuh"
+
+#include <cub/cub.cuh>
+
+#include "hgraph.hpp"
+#include "constr.hpp"
+#include "runconfig.hpp"
+
+#include "utils.cuh"
+#include "defines.cuh"
+#include "constants.cuh"
+#include "data_types.cuh"
+#include "coarsening.cuh"
+#include "chaining.cuh"
+#include "construction.cuh"
+#include "refinement.cuh"
+#include "init_part.cuh"
+#include "postprocess.cuh"
+
+using namespace hgraph;
+using namespace constraints;
+using namespace config;
+
+
+int main(int argc, char** argv) {
+    if (argc == 1) {
+        printHelp();
+        return 0;
+    }
+
+    // parse CLI args
+    runconfig cfg = parseArgs(argc, argv);
+
+    // load hypergraph
+    HyperGraph hg = loadHgraph(cfg);
+
+    // setup constraints
+    Constraints constr = setupConstr(cfg, hg);
+
+    // print statistics
+    std::cout << "Loaded hypergraph:\n";
+    std::cout << "  Nodes:      " << hg.nodes() << "\n";
+    std::cout << "  Hyperedges: " << hg.hedges().size() << "\n";
+    std::cout << "  Total pins: " << hg.hedgesFlat().size() << "\n";
+    std::cout << "  Total connections weight: " << std::fixed << std::setprecision(3) << hg.connectivity() << "\n";
+
+    std::cout << "Using constraints \"" << constr.name() << "\":\n";
+    std::cout << "  Nodes per partition:         " << constr.nodesPerPart() << "\n";
+    std::cout << "  Inbound hedge per partition: " << constr.inboundPerPart() << "\n";
+    std::cout << "  Maximum partitions:          " << constr.maxParts() << "\n";
+
+    std::cout << "Using settings:\n";
+    std::cout << "  Candidates count:            " << cfg.candidates_count << "\n";
+    std::cout << "  Refinement repetitions:      " << cfg.refine_repeats << "\n";
+    std::cout << "  Oversized multiplier factor: " << std::fixed << std::setprecision(2) << cfg.oversized_multiplier << "\n";
+    std::cout << "  Host memory spill levels:    " << cfg.save_memory_up_to_level << "\n";
+    std::cout << "  Flags: " << (cfg.device_touching_construction ? "dtc " : "") << (cfg.initial_partitions_merge ? "ipm " : "") << "\n";
+
+    std::cout << "CUDA device:\n";
+    
+    // get device properties
+    int device_cnt;
+    cudaGetDeviceCount(&device_cnt);
+    std::cout << "  Found " << device_cnt << " devices: using device " << DEVICE_ID << "\n";
+    cudaDeviceProp props;
+    cudaGetDeviceProperties(&props, DEVICE_ID);
+    std::cout << "  Device name:            " << props.name << "\n";
+    std::cout << "  GPU clock rate:         " << props.clockRate / 1e3 << " MHz\n";
+    std::cout << "  Available VRAM:         " << std::fixed << std::setprecision(1) << (float)(props.totalGlobalMem) / (1 << 30) << " GB\n";
+    const float peak_bandwidth = 2.0f * props.memoryClockRate * (props.memoryBusWidth / 8) / 1e6;
+    std::cout << "  Peak VRAM bandwidth:    " << peak_bandwidth << " GB/s\n";
+    std::cout << "  SM count:               " << props.multiProcessorCount << "\n";
+    std::cout << "  Max. threads / SM:      " << props.maxThreadsPerMultiProcessor << "\n";
+    std::cout << "  Max. threads / block:   " << props.maxThreadsPerBlock << "\n";
+    std::cout << "  MAx. registers / block: " << props.regsPerBlock << "\n";
+    std::cout << "  Max. grid size:         " << props.maxGridSize[0] << " x " << props.maxGridSize[1] << " x " << props.maxGridSize[2] << "\n";
+    std::cout << "  Max. block size:        " << props.maxThreadsDim[0] << " x " << props.maxThreadsDim[1] << " x " << props.maxThreadsDim[2] << "\n";
+    std::cout << "  Shared mem. per block:  " << std::fixed << std::setprecision(1) << (float)(props.sharedMemPerBlock) / (1 << 10) << " KB\n";
+
+    INFO(cfg) std::cout << "Preparing hypergraph data...\n";
+
+    // build incidence sets on the host only if explicitly required
+    if (!cfg.device_touching_construction)
+        hg.buildIncidenceSets();
+
+    if (!cfg.device_touching_construction && cfg.verbose_errs_and_warns && !constr.checkFit(hg, false, cfg.verbose_errs_and_warns))
+        std::cerr << "WARNING, the hypergraph did not pass the fit check on the given constraints (NOTE: this test admits false negatives) !!\n";
+
+    /*
+    * Note: by design, only inbound hedges can be constrained (because their deduplication takes priority over outbound), therefore to support other constraints there are two options:
+    * - to constrain outbound hedges, simply swap inbound and outbound hedges
+    * - to constrain incident (touching) hedges, make them all inbound (no src)
+    * 
+    * Important:
+    * - no cycles admitted
+    * - during execution, hedges and incidence sets will diverge:
+    *   - hedges remove duplicates (cycles) between sources and destinations, from the destinations (sources preserved)
+    *   - incidence sets (touching) remove duplicates between inbound and outbound, from the outbound (inbound preserved -> for constraint checks)
+    * 
+    * Chore: for hedges and incidence sets alike, the half that "keeps the element" in case of a duplicate between srcs-dsts or in-out should always be the first half of the
+    *        contigous segment. Unfortunately, right now hedges are the other way around...
+    */
+
+    uint32_t num_hedges = static_cast<uint32_t>(hg.hedges().size());
+    std::vector<dim_t> hedges_offsets; // hedge idx -> hedge start index in the contiguous hedges array
+    std::vector<uint32_t> srcs_count;
+    hedges_offsets.reserve(num_hedges + 1);
+    srcs_count.reserve(num_hedges);
+    
+    // prepare hedge offsets
+    // HP: no duplicates per hedge, no self-cycles (keep the src only, arg=false -> still consider the hedge among the src's inbounds, arg=true -> update the inbound set to match)
+    hg.deduplicateHyperedges(2, false); // remove the srcs
+    for (uint32_t i = 0; i < num_hedges; ++i) {
+        hedges_offsets.push_back(static_cast<dim_t>(hg.hedges()[i].offset()));
+        srcs_count.push_back(hg.hedges()[i].src_count());
+    }
+    hedges_offsets.push_back(hg.hedgesFlat().size());
+    
+    // prepare hyperedge weights
+    std::vector<float> hedge_weights(num_hedges);
+    for (uint32_t i = 0; i < num_hedges; ++i) {
+        hedge_weights[i] = hg.hedges()[i].weight();
+    }
+    
+    // total number of distinct nodes (for output indexing)
+    const uint32_t num_nodes = hg.nodes(); // nodes count used when allocating outputs
+
+    // constraints
+    const uint32_t h_max_nodes_per_part = constr.nodesPerPart();
+    const uint32_t h_max_inbound_per_part = constr.inboundPerPart();
+    const uint32_t max_parts = constr.maxParts(); // not needed in kernels
+    const uint32_t target_parts = min(max_parts, (num_nodes + h_max_nodes_per_part - 1) / h_max_nodes_per_part);
+    assert(h_max_nodes_per_part <= INT32_MAX);
+    assert(h_max_inbound_per_part <= INT32_MAX);
+    assert(max_parts <= INT32_MAX);
+
+    INFO(cfg) std::cout << "Starting timer...\n";
+    auto time_start = std::chrono::high_resolution_clock::now();
+    cudaEvent_t d_time_start, d_time_stop;
+    CUDA_CHECK(cudaEventCreate(&d_time_start));
+    CUDA_CHECK(cudaEventCreate(&d_time_stop));
+    CUDA_CHECK(cudaEventRecord(d_time_start));
+
+    INFO(cfg) std::cout << "Setting up GPU memory...\n";
+
+    // ============================
+    // === CUDA STUFF GOES HERE ===
+    
+    // device streams
+    // TODO: use these!!
+    
+    //cudaStream_t compute_stream = nullptr;
+    //cudaStream_t transfer_stream = nullptr;
+    //CUDA_CHECK(cudaStreamCreateWithFlags(&compute_stream, cudaStreamNonBlocking));
+    //CUDA_CHECK(cudaStreamCreateWithFlags(&transfer_stream, cudaStreamNonBlocking));
+    //int least_priority = 0;
+    //int greatest_priority = 0;
+    //CUDA_CHECK(cudaDeviceGetStreamPriorityRange(&least_priority, &greatest_priority));
+    // give higher priority access to memory bandwidth to the compute kernel
+    //CUDA_CHECK(cudaStreamCreateWithPriority(&compute_stream, cudaStreamNonBlocking, greatest_priority));
+    //CUDA_CHECK(cudaStreamCreateWithPriority(&transfer_stream, cudaStreamNonBlocking, least_priority));
+    
+    // device pointers
+    uint32_t *d_hedges = nullptr; // hedges[hedges_offsets[hedge idx]] -> contigous array of pins of hedge (stored as src+destinations, with the srcs first)
+    dim_t *d_hedges_offsets = nullptr; // hedges_offsets[hedge idx] -> hedge start idx in d_hedges
+    uint32_t *d_srcs_count = nullptr; // srcs_count[hedge idx] -> number of sources of hedge idx
+    uint32_t *d_neighbors = nullptr; // neighbors[neighbors_offsets[node idx]] -> contigous set/array of neighbors of node (its neighborhood)
+    dim_t *d_neighbors_offsets = nullptr; // neighbors_offsets[node idx] -> neighbors set start idx in d_neighbors
+    uint32_t *d_touching = nullptr; // touching[touching_offsets[node idx]] -> contigous inbound+outbout set/array (first inbound, then outbound) of node
+    dim_t *d_touching_offsets = nullptr; // touching_offsets[node idx] -> touching set start idx in d_touching
+    uint32_t *d_inbound_count = nullptr; // inbound_count[node idx] -> how many hedge of touching[node idx] are inbound (inbound hedges are before inbound_count[node idx], then outbound)
+    float *d_hedge_weights = nullptr; // hedge_weights[hedge idx] -> weight
+    uint32_t *d_pairs = nullptr; // partitions[node idx] -> best neighbor of node idx
+    float *d_f_scores = nullptr; // connection strength for each pair, used during refinement
+    uint32_t *d_u_scores = nullptr; // fixed point version of the above, used for the candidates and grouping kernels
+    slot *d_slots = nullptr; // slot to finalize node pairs during grouping (true dtype: "slot")
+    dp_score *d_dp_scores = nullptr; // dynamic programming score for each node in the tree assuming it connected (with) or not (w/out) to its target
+    uint32_t *d_nodes_sizes = nullptr; // nodes_size[node idx] -> how many pins the node counts as towards the partition size limit
+    uint32_t *d_partitions_sizes = nullptr; // partitions_sizes[idx] -> how many nodes (by total size) are in the partition
+    uint32_t *d_partitions_inbound_sizes = nullptr; // partitions_inbound_sizes[partition] -> distinct inbound hedges count for "partition"
+
+    // allocate device memory
+    CUDA_CHECK(cudaMalloc(&d_hedges, hg.hedgesFlat().size() * sizeof(uint32_t)));
+    CUDA_CHECK(cudaMalloc(&d_hedges_offsets, (num_hedges + 1) * sizeof(dim_t)));
+    CUDA_CHECK(cudaMalloc(&d_srcs_count, num_hedges * sizeof(uint32_t)));
+    CUDA_CHECK(cudaMalloc(&d_hedge_weights, num_hedges * sizeof(float)));
+    CUDA_CHECK(cudaMalloc(&d_pairs, num_nodes * sizeof(uint32_t) * cfg.candidates_count));
+    CUDA_CHECK(cudaMalloc(&d_f_scores, num_nodes * sizeof(float)));
+    CUDA_CHECK(cudaMalloc(&d_u_scores, num_nodes * sizeof(uint32_t) * cfg.candidates_count));
+    CUDA_CHECK(cudaMalloc(&d_slots, num_nodes * sizeof(slot)));
+    CUDA_CHECK(cudaMalloc(&d_dp_scores, num_nodes * sizeof(dp_score)));
+    CUDA_CHECK(cudaMalloc(&d_nodes_sizes, num_nodes * sizeof(uint32_t)));
+
+    // copy to device
+    CUDA_CHECK(cudaMemcpy(d_hedges, hg.hedgesFlat().data(), hg.hedgesFlat().size() * sizeof(uint32_t), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_hedges_offsets, hedges_offsets.data(), (num_hedges + 1) * sizeof(dim_t), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_srcs_count, srcs_count.data(), num_hedges * sizeof(uint32_t), cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_hedge_weights, hedge_weights.data(), num_hedges * sizeof(float), cudaMemcpyHostToDevice));
+    std::vector<dim_t>().swap(hedges_offsets);
+    std::vector<uint32_t>().swap(srcs_count);
+    std::vector<float>().swap(hedge_weights);
+
+    // initialize
+    thrust::device_ptr<uint32_t> t_nodes_sizes(d_nodes_sizes);
+    thrust::fill(t_nodes_sizes, t_nodes_sizes + num_nodes, 1u); // each initial node counts as 1 (NOTE: can be tuned to give some nodes more "space")
+
+    // copy constants to device
+    CUDA_CHECK(cudaMemcpyToSymbol(max_nodes_per_part, &h_max_nodes_per_part, sizeof(uint32_t), 0, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpyToSymbol(max_inbound_per_part, &h_max_inbound_per_part, sizeof(uint32_t), 0, cudaMemcpyHostToDevice));
+
+    // wrap up memory duties with a sync
+    DBG(cfg) CUDA_CHECK(cudaGetLastError());
+    DBG(cfg) CUDA_CHECK(cudaDeviceSynchronize());
+
+    // prepare touching sets
+    dim_t touching_hedges_size;
+    if (cfg.device_touching_construction) {
+        std::tie(touching_hedges_size, d_touching, d_touching_offsets, d_inbound_count) = buildTouching(
+            cfg,
+            d_hedges,
+            d_hedges_offsets,
+            d_srcs_count,
+            num_nodes,
+            num_hedges
+        );
+        assert(touching_hedges_size == hg.hedgesFlat().size()); // touching sets are the reverse map of hedge pins, hence they must be the same size
+    } else {
+        std::tie(touching_hedges_size, d_touching, d_touching_offsets, d_inbound_count) = buildTouchingHost(
+            cfg,
+            hg
+        );
+    }
+
+    // estimated max neighbors count
+    //const dim_t max_neighbors = hg.sampleMaxNeighborhoodSize(NEIGHBORS_SAMPLE_SIZE); // TODO: is 240 enough here? Maybe 2400?
+    const dim_t max_neighbors = sampleMaxNeighborhoodSize(
+        cfg,
+        d_hedges,
+        d_hedges_offsets,
+        d_touching,
+        d_touching_offsets,
+        num_nodes,
+        NEIGHBORS_SAMPLE_SIZE
+    );
+    INFO(cfg) std::cout << "Max neighbors estimate set to: " << max_neighbors << "\n";
+
+    INFO(cfg) std::cout << "Starting core timer...\n";
+    cudaEvent_t d_time_core_start, d_time_core_stop;
+    CUDA_CHECK(cudaEventCreate(&d_time_core_start));
+    CUDA_CHECK(cudaEventCreate(&d_time_core_stop));
+    CUDA_CHECK(cudaEventRecord(d_time_core_start));
+
+    // prepare neighborhoods
+    dim_t neighbors_size;
+    std::tie(neighbors_size, d_neighbors, d_neighbors_offsets) = buildNeighbors(
+        cfg,
+        d_hedges,
+        d_hedges_offsets,
+        d_touching,
+        d_touching_offsets,
+        num_nodes,
+        max_neighbors,
+        d_neighbors,
+        d_neighbors_offsets
+    );
+
+
+    // returns the number of partitions and the pointer to the final partitions device buffer
+    std::function<std::tuple<uint32_t, uint32_t*>(const uint32_t, const uint32_t, uint32_t*&, dim_t*&, uint32_t*&, dim_t, uint32_t*&, dim_t*&, dim_t, uint32_t*&, uint32_t*&)> coarsen_refine_uncoarsen = [&](
+        const uint32_t level_idx,
+        const uint32_t curr_num_nodes,
+        uint32_t*& d_hedges,
+        dim_t*& d_hedges_offsets,
+        uint32_t*& d_srcs_count,
+        const dim_t hedges_size,
+        uint32_t*& d_touching,
+        dim_t*& d_touching_offsets,
+        const dim_t touching_size,
+        uint32_t*& d_inbound_count,
+        uint32_t*& d_nodes_sizes
+    ) { // this is a lambda
+        INFO(cfg) std::cout << "Coarsening level " << level_idx << ", remaining nodes=" << curr_num_nodes << "\n";
+
+        /*
+        * Flow:
+        * 1) coarsen
+        *   - propose valid candidate node pairs
+        *   - group nodes w.r.t. strongest pairs
+        *   => if groups are less than the threshold
+        *       -> return them as the initial partitions (INCC - inbound constrained case)
+        *       -> run the initial partitioning routine (KWAY - k-way balanced case)
+        *   - coarsen all data structures
+        * 2) recursive call to the next coarsening level
+        *   - returns the coarse partitions
+        * 3) uncoarsen
+        *   - uncoarsen partitions
+        *   - revert to using pre-coarsening data structures (free coarse ones)
+        * 4) refinement
+        *   - compute pins per partition
+        *   - propose refinement moves in isolation and rank them
+        *   - compute per-move gain as if applied in sequence
+        *   - compute per-move validity via a prefix sum of the # of invalid partitions
+        *     when applying the sequence of size, hedge, and inbound set events up to its rank
+        *   - apply the highest-gain valid subsequence of moves
+        *   => return final partitioning to the outer level
+        */
+
+        /*
+        * Buffers allocated on (and local to) each level:
+        * - d_groups
+        * - d_ungroups, d_ungroups_offsets
+        * - all event buffers for constraint checks
+        * Buffers constructed anew before (and passed as args to) each level:
+        * - d_hedges, d_hedges_offsets, d_srcs_count
+        * - d_touching, d_touching_offsets, d_inbound_count
+        * - d_nodes_sizes / d_groups_sizes
+        * Buffers (constructed by and) returned from each level:
+        * - d_partitions
+        * Buffers updated (globally) in-place after each level:
+        * - d_pairs
+        * - d_u_scores, d_f_scores
+        * - d_slots
+        * - d_ranks
+        * - d_neighbors, d_neighbors_offsets
+        * - d_partitions_sizes
+        * - d_pins_per_partitions
+        * - d_partitions_inbound_sizes
+        * Untouched buffers:
+        * - d_hedge_weights
+        *
+        * TODO: could remove some (or even all) the synchronizes
+        */
+
+        /*
+        * Constraint checks:
+        * - coarsening only proposes pairs that, individually, would not violated constraints if grouped
+        * - grouping more than two nodes checks if the larger group still fits constraints (TODO)
+        * - refinement proposes moves that do not violated constraints if applied in isolation
+        * - refinement selects the best subsequence of moves that ends on a valid state
+        */
+
+        // ======================================
+        // k-way base case, build inital partitioning
+        // => condition: passed the nodes threshold
+        if (cfg.mode == Mode::KWAY && curr_num_nodes < KWAY_INIT_UPPER_THREASHOLD) {
+            /*auto [d_init_partitions, d_init_partitions_sizes] = initial_partitioning(
+                cfg,
+                curr_num_nodes,
+                num_hedges,
+                d_hedges,
+                d_hedges_offsets,
+                d_hedge_weights,
+                hedges_size,
+                d_touching,
+                d_touching_offsets,
+                d_nodes_sizes,
+                max_parts,
+                h_max_nodes_per_part // -> rely on 'max_inbound_per_part' on the device for this
+            );*/
+            auto [d_init_partitions, d_init_partitions_sizes] = initial_partitioning_kahypar(
+                cfg,
+                curr_num_nodes,
+                num_hedges,
+                d_hedges,
+                d_hedges_offsets,
+                d_hedge_weights,
+                d_touching_offsets,
+                hedges_size,
+                d_nodes_sizes,
+                cfg.kway,
+                cfg.epsi,
+                h_max_nodes_per_part
+            );
+            d_partitions_sizes = d_init_partitions_sizes;
+            CUDA_CHECK(cudaMalloc(&d_partitions_inbound_sizes, max_parts * sizeof(uint32_t))); // TODO: remove, not needed in KWAY mode
+
+            return std::make_tuple(max_parts, d_init_partitions);
+        }
+        // ======================================
+
+        // each node picks its candidate(s)
+        candidatesProposal(
+            cfg,
+            d_hedges,
+            d_hedges_offsets,
+            d_srcs_count,
+            d_neighbors,
+            d_neighbors_offsets,
+            d_touching,
+            d_touching_offsets,
+            d_inbound_count,
+            d_hedge_weights,
+            d_nodes_sizes,
+            curr_num_nodes,
+            d_pairs,
+            d_u_scores
+        );
+
+        // =============================
+        // print some temporary results
+        LOG(cfg) {
+            logCandidates(
+                cfg,
+                d_pairs,
+                d_u_scores,
+                curr_num_nodes
+            );
+        }
+        // =============================
+
+        // matching over the candidates graph
+        uint32_t new_num_nodes; // new number of nodes after this coarsening round
+        uint32_t *d_groups = nullptr; // groups[node idx] -> node's group id (zero-based)
+        uint32_t *d_groups_sizes = nullptr; // group_sizes[group id] = sum of sizes of all nodes in that group
+        uint32_t *d_ungroups = nullptr; // ungroups[ungroups_offsets[group id] + i] -> the group's i-th node (its original idx)
+        dim_t *d_ungroups_offsets = nullptr; // ungroups_offsets[node idx] -> node's group id (zero-based)
+        // TODO: make groupNodes only build d_ungroups while sorting node ids by their group id, build the offsets array later, as it is only needed if you do not reach a base case
+        std::tie(new_num_nodes, d_groups, d_groups_sizes, d_ungroups, d_ungroups_offsets) = groupNodes(
+            cfg,
+            props,
+            d_inbound_count,
+            d_pairs,
+            d_u_scores,
+            d_nodes_sizes,
+            curr_num_nodes,
+            h_max_nodes_per_part,
+            h_max_inbound_per_part,
+            d_slots,
+            d_dp_scores
+        );
+
+        // ======================================
+        // k-way base case, build inital partitioning
+        // => condition: too little shrinking to justify further coarsening
+        if (cfg.mode == Mode::KWAY && ((float)new_num_nodes / (float)curr_num_nodes > KWAY_INIT_SHRINK_RATIO_LIMIT || new_num_nodes < KWAY_INIT_LOWER_THREASHOLD)) {
+            /*auto [d_init_partitions, d_init_partitions_sizes] = initial_partitioning(
+                cfg,
+                curr_num_nodes,
+                num_hedges,
+                d_hedges,
+                d_hedges_offsets,
+                d_hedge_weights,
+                hedges_size,
+                d_touching,
+                d_touching_offsets,
+                d_nodes_sizes,
+                max_parts,
+                h_max_nodes_per_part // -> rely on 'max_inbound_per_part' on the device for this
+            );*/
+            auto [d_init_partitions, d_init_partitions_sizes] = initial_partitioning_kahypar(
+                cfg,
+                curr_num_nodes,
+                num_hedges,
+                d_hedges,
+                d_hedges_offsets,
+                d_hedge_weights,
+                d_touching_offsets,
+                hedges_size,
+                d_nodes_sizes,
+                cfg.kway,
+                cfg.epsi,
+                h_max_nodes_per_part
+            );
+            d_partitions_sizes = d_init_partitions_sizes;
+            CUDA_CHECK(cudaMalloc(&d_partitions_inbound_sizes, max_parts * sizeof(uint32_t))); // TODO: remove, not needed in KWAY mode
+            CUDA_CHECK(cudaFree(d_groups));
+            CUDA_CHECK(cudaFree(d_ungroups));
+            CUDA_CHECK(cudaFree(d_ungroups_offsets));
+            CUDA_CHECK(cudaFree(d_groups_sizes));
+
+            return std::make_tuple(max_parts, d_init_partitions);
+        }
+        // ======================================
+
+        // ======================================
+        // base case, return inital partitioning
+        // TODO: could increase the threshold and instead of "become the partitions" run a host-side robust partitioning algorithm
+        //       => what this does now is equivalent to using the coarsening algorithm also as the algorithm to perform the initial partitioning
+        // NOTE: with the current setup, we stop as soon as we clear "max_parts" and let refinement eventually empty some if they are too many
+        //       => and alternative solution could be to always wait for "new_num_nodes == curr_num_nodes" and then enforce "max_parts" to spot failures
+        // NOTE: if not enough coarse nodes are formed after after a while, stop anyway
+        float coarsening_ratio = (float)new_num_nodes / curr_num_nodes;
+        if (
+            new_num_nodes <= target_parts
+            || new_num_nodes == curr_num_nodes
+            || (level_idx >= NUMBER_OF_LEVELS_WITH_NO_SHRINK_LIMIT && coarsening_ratio > SHRINK_RATIO_LIMIT)
+        ) {
+            // try to further merge partitions (groups) so long as it is allowed by constraints
+            // => here the goal is just to reduce partitions count, no concern about mergees connection strenght
+            if (cfg.initial_partitions_merge) {
+                new_num_nodes = greedyMergeGroups(
+                    cfg,
+                    d_nodes_sizes,
+                    d_inbound_count,
+                    d_ungroups,
+                    d_ungroups_offsets,
+                    curr_num_nodes,
+                    new_num_nodes,
+                    h_max_nodes_per_part,
+                    h_max_inbound_per_part,
+                    d_groups,
+                    d_groups_sizes
+                );
+            }
+
+            // HERE we repurpose the coarsening routine as the routine for initial partitions:
+            // - num_partitions = new_num_nodes
+            // - partitions = groups
+
+            // NOTE: d_partitions eventually will coincide with the innermost group each node was part of + refinement moves
+            //       => the innermost nodes (groups) count is also the number of partitions
+
+            // NOTE: just like groups, partitions need to ordered, as they be used as indices; however, partitions are few, and if one becomes
+            //       empty we can just discard its index and leave a few empty spots in the data structures, it's cheaper to compress at the end
+
+            // base case, reached the target number of partitions
+            if (new_num_nodes <= target_parts) {
+                INFO(cfg) std::cout << "Minimal initial partitioning built at level " << level_idx << ", remaining nodes=" << curr_num_nodes << ", number of partitions=" << new_num_nodes << "\n";
+            } else if (new_num_nodes <= max_parts) { // still valid but not minimal partitions count
+                INFO(cfg) std::cout << "Initial partitioning built at level " << level_idx << ", remaining nodes=" << curr_num_nodes << ", number of partitions=" << new_num_nodes << "\n";
+                if (new_num_nodes == curr_num_nodes) { // impossible to coarsen further
+                    ERR(cfg) std::cerr << "WARNING: could not coarsen any further, the partitioning is valid, but didn't reach the minimal number of partitions (" << target_parts << ") !!\n";
+                } else if (coarsening_ratio > SHRINK_RATIO_LIMIT) { // too little pairs created, too expensive to coarsen further
+                    ERR(cfg) std::cerr << "WARNING: coarsening rate too low (" << std::fixed << std::setprecision(2) << 1/coarsening_ratio << " < " << 1/SHRINK_RATIO_LIMIT << ") the partitioning is valid, but didn't reach the minimal number of partitions (" << target_parts << ") !!\n";
+                }
+            } else { // base case, failure to coarsen further
+                ERR(cfg) std::cerr << "FAILED TO COARSEN FURTHER at level " << level_idx << ", remaining nodes=" << curr_num_nodes << " number of partitions=" << new_num_nodes << " max allowed partitions=" << max_parts << "\n";
+                if (new_num_nodes == curr_num_nodes) { // impossible to coarsen further
+                    ERR(cfg) std::cerr << "  Reason: no coarsening pairs were formed\n";
+                } else if (coarsening_ratio > SHRINK_RATIO_LIMIT) { // too little pairs created, too expensive to coarsen further
+                    ERR(cfg) std::cerr << "  Reason: coarsening rate too low (" << std::fixed << std::setprecision(2) << 1/coarsening_ratio << " < " << 1/SHRINK_RATIO_LIMIT << ")\n";
+                }
+                ERR(cfg) std::cerr << "WARNING: falling back to returning current groups as individual partitions !!\n";
+            }
+
+            // neighbors are no longer needed after coarsening is done
+            CUDA_CHECK(cudaFree(d_neighbors));
+            CUDA_CHECK(cudaFree(d_neighbors_offsets));
+
+            // prepare initial partition sizes
+            // NOTE: current groups become the partitions, and so group sizes become partition sizes
+            d_partitions_sizes = d_groups_sizes;
+
+            // perpare inbound set size counts per partition (written by "refinementRepeats")
+            CUDA_CHECK(cudaMalloc(&d_partitions_inbound_sizes, new_num_nodes * sizeof(uint32_t)));
+
+            CUDA_CHECK(cudaFree(d_ungroups));
+            CUDA_CHECK(cudaFree(d_ungroups_offsets));
+
+            return std::make_tuple(new_num_nodes, d_groups);
+        }
+        // ======================================
+
+        // =============================
+        // print some temporary results
+        LOG(cfg) logGroups(
+            cfg,
+            d_pairs,
+            d_groups,
+            d_groups_sizes,
+            curr_num_nodes,
+            new_num_nodes,
+            h_max_nodes_per_part
+        );
+        // =============================
+
+        // prepare coarse neighbors buffers
+        // NOTE: overwrites previous neighbors
+        std::tie(neighbors_size, d_neighbors, d_neighbors_offsets) = coarsenNeighbors(
+            cfg,
+            d_hedges,
+            d_hedges_offsets,
+            d_touching,
+            d_touching_offsets,
+            d_groups,
+            d_ungroups,
+            d_ungroups_offsets,
+            curr_num_nodes,
+            new_num_nodes,
+            neighbors_size,
+            d_neighbors,
+            d_neighbors_offsets
+        );
+
+        // prepare coarse hedges buffers
+        dim_t new_hedges_size;
+        uint32_t *d_coarse_hedges = nullptr;
+        dim_t *d_coarse_hedges_offsets = nullptr;
+        uint32_t* d_coarse_srcs_count = nullptr;
+        std::tie(new_hedges_size, d_coarse_hedges, d_coarse_hedges_offsets, d_coarse_srcs_count) = coarsenHedges(
+            cfg,
+            d_hedges,
+            d_hedges_offsets,
+            d_srcs_count,
+            d_groups,
+            num_hedges,
+            hedges_size
+        );
+
+        // prepare coarse touching buffers
+        dim_t new_touching_size;
+        uint32_t *d_coarse_touching = nullptr;
+        dim_t *d_coarse_touching_offsets = nullptr;
+        uint32_t *d_coarse_inbound_count = nullptr;
+        std::tie(new_touching_size, d_coarse_touching, d_coarse_touching_offsets, d_coarse_inbound_count) = coarsenTouching(
+            cfg,
+            d_coarse_hedges,
+            d_coarse_hedges_offsets,
+            d_touching,
+            d_touching_offsets,
+            d_inbound_count,
+            d_ungroups,
+            d_ungroups_offsets,
+            new_num_nodes,
+            num_hedges
+        );
+        
+        // spill non-coarse data structures to host
+        std::vector<uint32_t> h_hedges;
+        std::vector<dim_t> h_hedges_offsets;
+        std::vector<uint32_t> h_srcs_count;
+        std::vector<uint32_t> h_touching;
+        std::vector<dim_t> h_touching_offsets;
+        std::vector<uint32_t> h_inbound_count;
+        if (level_idx < cfg.save_memory_up_to_level) {
+            // TODO: make these async, move everything out of the default stream and use a "compute" and a "transfer" stream
+            // TODO: spill inbound counts and src counts too!
+            h_hedges.resize(hedges_size);
+            h_hedges_offsets.resize(num_hedges + 1);
+            h_srcs_count.resize(num_hedges);
+            h_touching.resize(touching_size);
+            h_touching_offsets.resize(curr_num_nodes + 1);
+            h_inbound_count.resize(curr_num_nodes);
+            INFO(cfg) std::cout << "Spilling " << std::fixed << std::setprecision(3)
+                << (float)((hedges_size + touching_size) * sizeof(uint32_t) + (num_hedges + 1 + curr_num_nodes + 1) * sizeof(dim_t)) / (1 << 30)
+                << " GB from device to host at level " << level_idx << " ...\n";
+            CUDA_CHECK(cudaMemcpy(h_hedges.data(), d_hedges, hedges_size * sizeof(uint32_t), cudaMemcpyDeviceToHost));
+            CUDA_CHECK(cudaMemcpy(h_hedges_offsets.data(), d_hedges_offsets, (num_hedges + 1) * sizeof(dim_t), cudaMemcpyDeviceToHost));
+            CUDA_CHECK(cudaMemcpy(h_srcs_count.data(), d_srcs_count, num_hedges * sizeof(uint32_t), cudaMemcpyDeviceToHost));
+            CUDA_CHECK(cudaMemcpy(h_touching.data(), d_touching, touching_size * sizeof(uint32_t), cudaMemcpyDeviceToHost));
+            CUDA_CHECK(cudaMemcpy(h_touching_offsets.data(), d_touching_offsets, (curr_num_nodes + 1) * sizeof(dim_t), cudaMemcpyDeviceToHost));
+            CUDA_CHECK(cudaMemcpy(h_inbound_count.data(), d_inbound_count, curr_num_nodes * sizeof(uint32_t), cudaMemcpyDeviceToHost));
+            CUDA_CHECK(cudaFree(d_hedges));
+            CUDA_CHECK(cudaFree(d_hedges_offsets));
+            CUDA_CHECK(cudaFree(d_srcs_count));
+            CUDA_CHECK(cudaFree(d_touching));
+            CUDA_CHECK(cudaFree(d_touching_offsets));
+            CUDA_CHECK(cudaFree(d_inbound_count));
+        }
+        
+        // ======================================
+        // recursive call, go down one more level
+        auto [num_partitions, d_coarse_partitions] = coarsen_refine_uncoarsen(
+            level_idx + 1,
+            new_num_nodes,
+            d_coarse_hedges,
+            d_coarse_hedges_offsets,
+            d_coarse_srcs_count,
+            new_hedges_size,
+            d_coarse_touching,
+            d_coarse_touching_offsets,
+            new_touching_size,
+            d_coarse_inbound_count,
+            d_groups_sizes
+        );
+        // ======================================
+
+        INFO(cfg) std::cout << "Uncoarsening level " << level_idx << ", remaining nodes=" << curr_num_nodes << "\n";
+
+        // un-spill non-coarse data structures to device
+        if (level_idx < cfg.save_memory_up_to_level) {
+            INFO(cfg) std::cout << "Unspilling " << std::fixed << std::setprecision(3)
+                << (float)((hedges_size + touching_size) * sizeof(uint32_t) + (num_hedges + 1 + curr_num_nodes + 1) * sizeof(dim_t)) / (1 << 30)
+                << " GB from host to device at level " << level_idx << " ...\n";
+            CUDA_CHECK(cudaMalloc(&d_hedges, hedges_size * sizeof(uint32_t)));
+            CUDA_CHECK(cudaMalloc(&d_hedges_offsets, (num_hedges + 1) * sizeof(dim_t)));
+            CUDA_CHECK(cudaMalloc(&d_srcs_count, num_hedges * sizeof(uint32_t)));
+            CUDA_CHECK(cudaMalloc(&d_touching, touching_size * sizeof(uint32_t)));
+            CUDA_CHECK(cudaMalloc(&d_touching_offsets, (curr_num_nodes + 1) * sizeof(dim_t)));
+            CUDA_CHECK(cudaMalloc(&d_inbound_count, curr_num_nodes * sizeof(uint32_t)));
+            CUDA_CHECK(cudaMemcpy(d_hedges, h_hedges.data(), hedges_size * sizeof(uint32_t), cudaMemcpyHostToDevice));
+            CUDA_CHECK(cudaMemcpy(d_hedges_offsets, h_hedges_offsets.data(), (num_hedges + 1) * sizeof(dim_t), cudaMemcpyHostToDevice));
+            CUDA_CHECK(cudaMemcpy(d_srcs_count, h_srcs_count.data(), num_hedges * sizeof(uint32_t), cudaMemcpyHostToDevice));
+            CUDA_CHECK(cudaMemcpy(d_touching, h_touching.data(), touching_size * sizeof(uint32_t), cudaMemcpyHostToDevice));
+            CUDA_CHECK(cudaMemcpy(d_touching_offsets, h_touching_offsets.data(), (curr_num_nodes + 1) * sizeof(dim_t), cudaMemcpyHostToDevice));
+            CUDA_CHECK(cudaMemcpy(d_inbound_count, h_inbound_count.data(), curr_num_nodes * sizeof(uint32_t), cudaMemcpyHostToDevice));
+            std::vector<uint32_t>().swap(h_hedges);
+            std::vector<dim_t>().swap(h_hedges_offsets);
+            std::vector<uint32_t>().swap(h_srcs_count);
+            std::vector<uint32_t>().swap(h_touching);
+            std::vector<dim_t>().swap(h_touching_offsets);
+            std::vector<uint32_t>().swap(h_inbound_count);
+        }
+
+        // prepare this level's uncoarsened partitions
+        uint32_t *d_partitions = nullptr;
+        CUDA_CHECK(cudaMalloc(&d_partitions, curr_num_nodes * sizeof(uint32_t)));
+
+        {
+            // launch configuration - uncoarsening kernel (partitions)
+            // uncoarsen d_coarse_partitions into d_partitions
+            int threads_per_block = 128; // 128/32 -> 4 warps per block
+            int warps_per_block = threads_per_block / WARP_SIZE;
+            int num_warps_needed = curr_num_nodes ; // 1 warp per node
+            int blocks = (num_warps_needed + warps_per_block - 1) / warps_per_block;
+            // launch - uncoarsening kernel (partitions)
+            LAUNCH(cfg) RUN << "uncoarsening kernel (partitions) (blocks=" << blocks << ", thr-per-block=" << threads_per_block << ") ...\n";
+            apply_uncoarsening_partitions<<<blocks, threads_per_block>>>(
+                d_groups,
+                d_coarse_partitions,
+                curr_num_nodes,
+                d_partitions
+            );
+            DBG(cfg) CUDA_CHECK(cudaGetLastError());
+            DBG(cfg) CUDA_CHECK(cudaDeviceSynchronize());
+        }
+
+        // cleanup groups
+        CUDA_CHECK(cudaFree(d_groups));
+        CUDA_CHECK(cudaFree(d_ungroups));
+        CUDA_CHECK(cudaFree(d_ungroups_offsets));
+        CUDA_CHECK(cudaFree(d_coarse_hedges));
+        CUDA_CHECK(cudaFree(d_coarse_hedges_offsets));
+        CUDA_CHECK(cudaFree(d_coarse_srcs_count));
+        CUDA_CHECK(cudaFree(d_coarse_touching));
+        CUDA_CHECK(cudaFree(d_coarse_touching_offsets));
+        CUDA_CHECK(cudaFree(d_coarse_inbound_count));
+        CUDA_CHECK(cudaFree(d_groups_sizes));
+        CUDA_CHECK(cudaFree(d_coarse_partitions)); // allocated at the next inner level, freed here!
+
+        // =============================
+        // print some temporary results
+        LOG(cfg) {
+            logPartitions(
+                d_partitions,
+                d_partitions_sizes,
+                d_partitions_inbound_sizes,
+                curr_num_nodes,
+                num_partitions,
+                h_max_nodes_per_part,
+                h_max_inbound_per_part
+            );
+        }
+        // =============================
+
+        // fiduccia-mattheyses refinement (with events ^-^)
+        refinementRepeats(
+            cfg,
+            d_hedges,
+            d_hedges_offsets,
+            d_srcs_count,
+            d_touching,
+            d_touching_offsets,
+            d_inbound_count,
+            d_hedge_weights,
+            d_nodes_sizes,
+            level_idx,
+            curr_num_nodes,
+            num_hedges,
+            num_partitions,
+            touching_size,
+            level_idx == 0, // on the final level -> return true inbound set sizes
+            d_pairs,
+            d_f_scores,
+            d_partitions,
+            d_partitions_sizes,
+            d_partitions_inbound_sizes
+        );
+
+        return std::make_tuple(num_partitions, d_partitions);
+    };
+
+
+    // START: the multi-level recursive refinement routine, down we go!
+    auto [num_partitions, d_partitions] = coarsen_refine_uncoarsen(
+        0, // first level
+        num_nodes,
+        d_hedges,
+        d_hedges_offsets,
+        d_srcs_count,
+        hg.hedgesFlat().size(),
+        d_touching,
+        d_touching_offsets,
+        touching_hedges_size,
+        d_inbound_count,
+        d_nodes_sizes
+    );
+
+
+    if (cfg.mode == Mode::INCC) {
+        // final partitions rework: merge small ones and make partition ids zero-based
+        mergeSmallPartitions(
+            cfg,
+            d_partitions_sizes,
+            d_partitions_inbound_sizes,
+            num_nodes,
+            num_partitions,
+            h_max_nodes_per_part,
+            h_max_inbound_per_part,
+            d_partitions
+        );
+    }
+
+    // make d_partitions zero-based again, if we emptied some partitions... (same logic as that used for d_groups)
+    thrust::device_ptr<uint32_t> t_partitions(d_partitions);
+    thrust::device_vector<uint32_t> t_indices(num_nodes);
+    thrust::sequence(t_indices.begin(), t_indices.end());
+    thrust::sort_by_key(t_partitions, t_partitions + num_nodes, t_indices.begin());
+    thrust::device_vector<uint32_t> t_headflags(num_nodes);
+    t_headflags[0] = 0;
+    thrust::transform(
+        t_partitions + 1, t_partitions + num_nodes, t_partitions, t_headflags.begin() + 1,
+        [] __device__ (uint32_t curr, uint32_t prev) { return curr != prev ? 1u : 0u; }
+    );
+    thrust::inclusive_scan(t_headflags.begin(), t_headflags.end(), t_headflags.begin());
+    const uint32_t new_num_partitions = t_headflags.back() + 1;
+    thrust::scatter(t_headflags.begin(), t_headflags.end(), t_indices.begin(), t_partitions);
+
+    // copy back results
+    std::vector<uint32_t> partitions(num_nodes);
+    CUDA_CHECK(cudaMemcpy(partitions.data(), d_partitions, num_nodes * sizeof(uint32_t), cudaMemcpyDeviceToHost));
+
+    // =============================
+    // print some example outputs
+    LOG(cfg) {
+        std::set<uint32_t> part_count;
+        std::cout << "Final partitioning results:\n";
+        for (uint32_t i = 0; i < num_nodes; ++i) {
+            uint32_t part = partitions[i];
+            part_count.insert(part);
+            if (i < std::min<uint32_t>(num_nodes, VERBOSE_LENGTH)) {
+                if (part == UINT32_MAX) std::cout << "node " << i << " -> part=none";
+                else std::cout << "node " << i << " ->" << " part=" << part;
+                std::cout << ((i + 1) % 4 == 0 ? "\n" : "\t");
+            }
+        }
+        std::cout << "Partitions count: " << part_count.size() << " (plus " << num_partitions - part_count.size() << " empty ones)" << "\n";
+        if (new_num_partitions != part_count.size())
+            std::cerr << "WARNING, distinct partitions count (" << part_count.size() << ") does not match the computed number of partitions when zero-ing their ids (" << new_num_partitions << ") !!\n";
+        std::set<uint32_t>().swap(part_count);
+    }
+    // =============================
+
+    // cleanup device memory
+    CUDA_CHECK(cudaFree(d_hedges));
+    CUDA_CHECK(cudaFree(d_hedges_offsets));
+    CUDA_CHECK(cudaFree(d_srcs_count));
+    //CUDA_CHECK(cudaFree(d_neighbors)); // should have already been freed at the innermost recursion level
+    //CUDA_CHECK(cudaFree(d_neighbors_offsets));
+    CUDA_CHECK(cudaFree(d_touching));
+    CUDA_CHECK(cudaFree(d_touching_offsets));
+    CUDA_CHECK(cudaFree(d_inbound_count));
+    CUDA_CHECK(cudaFree(d_hedge_weights));
+    CUDA_CHECK(cudaFree(d_pairs));
+    CUDA_CHECK(cudaFree(d_f_scores));
+    CUDA_CHECK(cudaFree(d_u_scores));
+    CUDA_CHECK(cudaFree(d_slots));
+    CUDA_CHECK(cudaFree(d_dp_scores));
+    CUDA_CHECK(cudaFree(d_nodes_sizes));
+    CUDA_CHECK(cudaFree(d_partitions));
+    CUDA_CHECK(cudaFree(d_partitions_sizes));
+    CUDA_CHECK(cudaFree(d_partitions_inbound_sizes));
+
+    // final sync
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    //CUDA_CHECK(cudaStreamDestroy(transfer_stream));
+    //CUDA_CHECK(cudaStreamDestroy(compute_stream));
+
+    CUDA_CHECK(cudaEventRecord(d_time_stop));
+    CUDA_CHECK(cudaEventSynchronize(d_time_stop));
+    float d_total_ms = 0.0f;
+    CUDA_CHECK(cudaEventElapsedTime(&d_total_ms, d_time_start, d_time_stop));
+    CUDA_CHECK(cudaEventDestroy(d_time_start));
+    CUDA_CHECK(cudaEventDestroy(d_time_stop));
+
+    CUDA_CHECK(cudaEventRecord(d_time_core_stop));
+    CUDA_CHECK(cudaEventSynchronize(d_time_core_stop));
+    float d_core_ms = 0.0f;
+    CUDA_CHECK(cudaEventElapsedTime(&d_core_ms, d_time_core_start, d_time_core_stop));
+    CUDA_CHECK(cudaEventDestroy(d_time_core_start));
+    CUDA_CHECK(cudaEventDestroy(d_time_core_stop));
+
+    auto time_end = std::chrono::high_resolution_clock::now();
+    INFO(cfg) std::cout << "Stopping timer...\n";
+
+    // === CUDA STUFF ENDS HERE ===
+    // ============================
+
+    INFO(cfg) std::cout << "CUDA section: complete; proceeding with partitioning results validation and evalution...\n";
+
+    double total_ms = std::chrono::duration<double, std::milli>(time_end - time_start).count();
+    // core: excluding the initialization of hedges and incidence sets in device memory
+    std::cout << "Total device core execution time: " << std::fixed << std::setprecision(3) << d_core_ms << " ms\n";
+    std::cout << "Total device execution time: " << std::fixed << std::setprecision(3) << d_total_ms << " ms\n";
+    std::cout << "Total host execution time: " << std::fixed << std::setprecision(3) << total_ms << " ms\n";
+
+    /*DEBUG: check the metrics calculation!
+    float dbg_conn = hg.connectivityFromPart(partitions);
+    float dbg_cutn = hg.cutnetFromPart(partitions);
+    */
+
+    if (constr.checkPartitionValidity(hg, partitions, cfg.verbose_errs_and_warns)) {
+        // log metrics
+        DBG(cfg) std::cout << "Preparing partitioned hypergraph and computing quality metrics...\n";
+        auto partitioned_hg = hg.getPartitionsHypergraph(partitions, 2, true); // remove the destination if self-cycles happen
+        auto hedge_overlap = constr.hedgeOverlap(hg, partitions);
+        std::cout << "Partitioned hypergraph:\n";
+        std::cout << "  Nodes:         " << partitioned_hg.nodes() << "\n";
+        std::cout << "  Hyperedges:    " << partitioned_hg.hedges().size() << "\n";
+        std::cout << "  Total pins:    " << partitioned_hg.hedgesFlat().size() << "\n";
+        std::cout << "  Cut-net:       " << partitioned_hg.cutnet() << "\n";
+        std::cout << "  Connectivity:  " << partitioned_hg.connectivity() << "\n";
+        std::cout << "  SOED:          " << hg.soedFromPart(partitions) << "\n";
+        std::cout << "  Hedge overlap: " << std::fixed << std::setprecision(3) << hedge_overlap.ar_mean << " ar. mean, " << hedge_overlap.geo_mean << " geo. mean\n";
+        //if (dbg_conn != partitioned_hg.connectivity()) std::cerr << "ERROR, incorrect metric calculation for connectivity: " << dbg_conn << " vs " << partitioned_hg.connectivity() << " !!\n";
+        //if (dbg_cutn != partitioned_hg.cutnet()) std::cerr << "ERROR, incorrect metric calculation for cut-net: " << dbg_cutn << " vs " << partitioned_hg.cutnet() << " !!\n";
+        
+        // save results
+        saveResult(cfg, partitioned_hg, partitions);
+    } else {
+        std::cerr << "ERROR, invalid partitining !!\n";
+        return 1;
+    }
+
+    return 0;
+}

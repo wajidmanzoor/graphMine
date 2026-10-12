@@ -1,21 +1,31 @@
 {
   "problem_id": "graph_motif_counting",
   "paper_id": "2022_g2miner",
-  "title": "G²Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
     "status": "downloaded",
+    "source_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
+    "resolved_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "e1ef406ebc5f9151580966adffab2e4a9c8a9c4310bc179836e9fa4f108b00a8",
+    "bytes": 1399571,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/chenxuhao/GraphMiner",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
     "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "src/sgl/gpu_base.cu": "fd764ed56243cec2f105319c044174c0b8ede54655cb3bcd276c70148a4b8a9e"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

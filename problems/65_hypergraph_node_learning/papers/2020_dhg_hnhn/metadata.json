@@ -1,0 +1,37 @@
+{
+  "title": "HNHN: Hypergraph Networks with Hyperedge Neurons",
+  "authors": [],
+  "year": 2020,
+  "venue": "Research preprint",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2006.12278",
+  "pdf_url": "https://arxiv.org/pdf/2006.12278",
+  "paper_id": "2020_dhg_hnhn",
+  "problem_id": "hypergraph_node_learning",
+  "problem_dir": "65_hypergraph_node_learning",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "DeepHypergraph HNHN",
+  "code_url": "https://github.com/iMoonLab/DeepHypergraph",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch sparse/dense CUDA operations; CPU dataset preparation and training orchestration.",
+  "notes": "Hypergraph node-learning model on native incidence data. The model-specific propagation or mediator expansion is explicit; choose CUDA for both model and hypergraph tensors.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "dhg/models/hypergraphs/hnhn.py",
+    "dhg/structure/hypergraphs/hypergraph.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "dhg",
+  "variant_constraints": [
+    "explicit CUDA device",
+    "node classification configuration"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

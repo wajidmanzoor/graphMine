@@ -1,0 +1,31 @@
+{
+  "problem_id": "minimum_vertex_cover",
+  "paper_id": "2022_parallel_mvc_reference",
+  "title": "Parallel Vertex Cover Algorithms on GPUs",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2204.10402",
+    "resolved_url": "https://arxiv.org/pdf/2204.10402",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "d97130b29853e199a2214d4d3068b79c70f3eeafe608422daf5b1d35d5e55495",
+    "bytes": 1289076,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": "https://github.com/pky00/Parallel-Vertex-Cover-Algorithms-on-GPUs",
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": "No detected top-level license; new source redistribution blocked.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": null,
+    "submodules_materialized": false,
+    "entrypoint_sha256": {}
+  }
+}

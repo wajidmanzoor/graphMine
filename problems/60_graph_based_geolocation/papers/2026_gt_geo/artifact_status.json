@@ -1,0 +1,42 @@
+{
+  "problem_id": "graph_based_geolocation",
+  "paper_id": "2026_gt_geo",
+  "title": "Sparsity is not an obstacle: An accurate and efficient IP geolocation framework based on Graph Transformer",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "not_downloaded",
+    "source_url": "https://www.sciencedirect.com/science/article/pii/S1389128626002999/pdfft",
+    "local_path": null,
+    "error": [
+      {
+        "url": "https://www.sciencedirect.com/science/article/pii/S1389128626002999/pdfft",
+        "error": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "checked_at": "2026-10-09T19:34:48Z",
+    "download_attempts": [
+      {
+        "url": "https://www.sciencedirect.com/science/article/pii/S1389128626002999/pdfft",
+        "error": "HTTP Error 403: Forbidden"
+      }
+    ]
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/LuckyBoy0517/GT-Geo",
+    "local_path": "code",
+    "commit": "11afee62e645d74fb1dc5b9c2b23fd66175de8f7",
+    "license_file": null,
+    "license_note": "No root license file found; public source availability is not a blanket redistribution license.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/gt_geo.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "1GT/main_split_version.py": "109cf5a922dd5d1a36d236f6d6a624d7b74db6e9807abcace0499282ecef9592",
+      "1GT/models.py": "9ad0ce17a79ecf615d8cac86ed82cf71018b50a1fab8e7c906af8057b2554ec8",
+      "1GT/ours.py": "b393b3f72b1555a8bee9278b780b5a080c18e308ff977595ccbc1a6388ca127a"
+    }
+  }
+}

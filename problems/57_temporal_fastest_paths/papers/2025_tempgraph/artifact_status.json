@@ -1,0 +1,35 @@
+{
+  "problem_id": "temporal_fastest_paths",
+  "paper_id": "2025_tempgraph",
+  "title": "TempGraph: An Efficient Chain-driven Temporal Graph Computing Framework on the GPU",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "not_downloaded",
+    "source_url": "https://dl.acm.org/doi/pdf/10.1145/3676642.3736116",
+    "local_path": null,
+    "error": [
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3676642.3736116",
+        "error": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "checked_at": "2026-10-09T19:34:47Z",
+    "download_attempts": [
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3676642.3736116",
+        "error": "HTTP Error 403: Forbidden"
+      }
+    ]
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

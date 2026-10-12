@@ -1,0 +1,33 @@
+{
+  "problem_id": "max_flow_min_cut",
+  "paper_id": "2025_ecl_maxflow",
+  "title": "An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs",
+  "checked_at": "2026-10-10T02:15:29Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://userweb.cs.txstate.edu/~mb92/papers/ipccc25a.pdf",
+    "resolved_url": "https://userweb.cs.txstate.edu/~mb92/papers/ipccc25a.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "cefb10f6bf6ab1c798fe7597e2be7e2108b4f5551b180ae191d0875323cd0d52",
+    "bytes": 265950,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/burtscher/ECL-MaxFlow",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "src/maxflow.cu": "9d2634a5d10bdc901f2eeb208608c2c66cccacd573fd923203766e7fffa2e61a"
+    },
+    "commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+    "source_manifest": "../../../_sources/ecl_maxflow.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/LICENSE"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

@@ -1,0 +1,27 @@
+{
+  "title": "GARDENIA: A Domain-specific Benchmark Suite for Next-generation Accelerators",
+  "year": 2017,
+  "venue": "arXiv; ACM JETC 2018",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1708.04567",
+  "pdf_url": "https://arxiv.org/pdf/1708.04567",
+  "paper_id": "2017_gardenia_mst",
+  "problem_id": "spanning_tree_forest",
+  "problem_dir": "41_spanning_tree_forest",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GARDENIA GPU minimum spanning tree",
+  "code_url": "https://github.com/chenxuhao/gardenia",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA minimum-edge selection and component merging.",
+  "notes": "Minimum-spanning-tree benchmark; disconnected forest behavior and supported weight types need integration checks.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "src/mst/main.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

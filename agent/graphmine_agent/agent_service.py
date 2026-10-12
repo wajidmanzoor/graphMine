@@ -1,16 +1,19 @@
 from __future__ import annotations
 
-from .profiles import (
-    DIRECTION_PRESERVING_OPERATIONS,
-    ProfileInputError,
-    prepare_operation_graph,
-)
-
+import asyncio
 import json
 import time
+from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
+from .analysis import (
+    CHART_REPAIR_GUIDANCE,
+    analyst_payload,
+    apply_narrative,
+    prepare_analysis,
+    validate_narrative,
+)
 from .answers import answer_interpretation, build_answer
 from .catalog import Catalog
 from .commands import command_name
@@ -27,6 +30,7 @@ from .graph_store import GraphStore
 from .jobs import JobManager
 from .llm import LLMError, OpenAICompatibleModel, RuleBasedModel
 from .models import (
+    AnalysisTask,
     ApplicationIntent,
     ChatRequest,
     ChatResponse,
@@ -48,16 +52,27 @@ from .planning import (
     PlanValidator,
     bind_unique_required_auxiliary_inputs,
     normalize_route,
+    preserve_review_intent,
     resolve_route_scope,
     route_blocker,
     route_request_payload,
 )
-from .presentation import followup_options
+from .profiles import (
+    DIRECTION_PRESERVING_OPERATIONS,
+    ProfileInputError,
+    prepare_operation_graph,
+)
 from .reporting import render_report
 from .visualization import (
     answer_visualizations,
     sanitize_visualizations,
 )
+
+
+@dataclass(frozen=True)
+class _DraftAttempt:
+    outcome: PlanningOutcome
+    review_reason: dict[str, Any] | None = None
 
 
 class AgentService:
@@ -87,10 +102,16 @@ class AgentService:
     async def close(self) -> None:
         await self.model.close()
 
-    async def plan(self, session_id: str, request: PlanRequest) -> PlanningOutcome:
+    async def plan(
+        self,
+        session_id: str,
+        request: PlanRequest,
+        *,
+        followup: TurnDecision | None = None,
+    ) -> PlanningOutcome:
         self.database.get_session(session_id)
         with self.database.history.scope(session_id, "planning", request):
-            outcome = await self._plan(session_id, request)
+            outcome = await self._plan(session_id, request, followup=followup)
             self.database.history.current("planning.response", outcome)
             return outcome
 
@@ -166,7 +187,43 @@ class AgentService:
         )
         return result
 
-    async def _plan(self, session_id: str, request: PlanRequest) -> PlanningOutcome:
+    def _context_result(self, session_id, graph_id, result_id=None):
+        result = (
+            self.database.get_result(result_id)
+            if result_id
+            else self.database.latest_result(session_id, graph_id=graph_id)
+        )
+        if result is not None:
+            if result.session_id != session_id:
+                raise ValueError("result_id must identify a result from this session")
+            if self.database.get_job(result.job_id).plan.graph_id != graph_id:
+                raise ValueError(
+                    "result_id must identify a result from the selected graph"
+                )
+        return result
+
+    def _conversation_state(self, graph, result, conversation):
+        previous_plan = self.database.get_job(result.job_id).plan if result else None
+        intent = previous_plan.application_intent if previous_plan else None
+        return {
+            "graph_id": graph.id,
+            "graph_sha256": graph.sha256,
+            "result_id": result.id if result else None,
+            "active_constraints": intent.model_dump(mode="json") if intent else None,
+            "previous_objective": result.answer.get("question") if result else None,
+            "previous_result_status": result.answer.get("result_status")
+            if result
+            else None,
+            "pending_request": self._pending_request(conversation, graph.id),
+        }
+
+    async def _plan(
+        self,
+        session_id: str,
+        request: PlanRequest,
+        *,
+        followup: TurnDecision | None = None,
+    ) -> PlanningOutcome:
         session = self.database.get_session(session_id)
         graph = self.database.get_file(request.graph_id)
         if graph.session_id != session_id or graph.role != FileRole.graph:
@@ -176,12 +233,14 @@ class AgentService:
         context = getattr(graph.metadata, "semantic_context", None) or semantic_context(
             raw_graph
         )
-        previous = self.database.latest_result(session_id)
-        previous_intent = None
-        if previous:
-            previous_plan = self.database.get_job(previous.job_id).plan
-            if previous_plan.graph_id == request.graph_id:
-                previous_intent = previous_plan.application_intent
+        previous = self._context_result(session_id, request.graph_id, request.result_id)
+        previous_intent = (
+            self.database.get_job(previous.job_id).plan.application_intent
+            if previous
+            else None
+        )
+        state = self._conversation_state(graph, previous, conversation)
+        self.database.history.current("conversation.context", state)
         await self.jobs.event_bus.publish(
             session_id,
             "analysis.understanding",
@@ -201,6 +260,12 @@ class AgentService:
             ),
             routing_context=self.catalog.routing_context(session.domain_id),
         )
+        route_payload["conversation_state"] = state
+        if followup:
+            route_payload["followup_interpretation"] = {
+                **followup.model_dump(mode="json"),
+                "usage": "A model-proposed interpretation, not a replacement for the user's original message. Resolve it against that message, the selected result and its constraints. Do not omit or weaken explicit conditions.",
+            }
         for inspection_round in range(3):
             decision = await self._generate(
                 mode=LLMMode.planner,
@@ -259,6 +324,28 @@ class AgentService:
                     user_payload={**route_payload, "scope_review": review},
                     conversation=conversation,
                 )
+                # A scope review may correct a refusal, but cannot remove the
+                # constraints whose projection was just verified by the server.
+                protected_intent, conflicts = preserve_review_intent(
+                    decision.intent, revised.intent
+                )
+                if conflicts:
+                    self.database.history.current(
+                        "planning.scope_review.conflict", {"fields": conflicts}
+                    )
+                    return self._record_nonready(
+                        session_id,
+                        request,
+                        decision,
+                        "needs_information",
+                        "I could not verify a correction that keeps your selection and conditions. Please clarify the required result and filters.",
+                    )
+                revised = revised.model_copy(
+                    update={
+                        "intent": protected_intent,
+                        "additional_analyses": decision.additional_analyses,
+                    }
+                )
                 decision = resolve_route_scope(self.catalog, revised, previous_intent)
                 blocker = route_blocker(self.catalog, decision)
         if blocker:
@@ -285,6 +372,8 @@ class AgentService:
                 )
             )
         plans = []
+        planned_tasks = []
+        recovery_used = False
         for step_request, step_decision in tasks:
             step_decision = normalize_route(self.catalog, step_decision)
             blocker = route_blocker(self.catalog, step_decision)
@@ -300,19 +389,221 @@ class AgentService:
                     "unsupported",
                     "A required part of this question has no supported computation. No partial analysis has been executed.",
                 )
-            outcome = await self._draft(
+            attempt = await self._draft(
                 session_id, step_request, step_decision, raw_graph, context
             )
+            if attempt.review_reason and not recovery_used:
+                recovery_used = True
+                reviewed = await self._review_route(
+                    session_id,
+                    step_request,
+                    step_decision,
+                    raw_graph,
+                    route_payload,
+                    attempt.review_reason,
+                    request,
+                )
+                if isinstance(reviewed, PlanningOutcome):
+                    return self._record_nonready(
+                        session_id,
+                        request,
+                        reviewed.decision,
+                        reviewed.status,
+                        reviewed.message,
+                    )
+                step_decision = reviewed
+                attempt = await self._draft(
+                    session_id,
+                    step_request,
+                    step_decision,
+                    raw_graph,
+                    context,
+                    route_review=attempt.review_reason,
+                )
+                self.database.history.current(
+                    "planning.recovery.outcome",
+                    {
+                        "status": attempt.outcome.status,
+                        "operation_id": step_decision.operation_id,
+                        "reason": attempt.review_reason,
+                    },
+                )
+            outcome = attempt.outcome
             if outcome.status != "ready":
-                return outcome
+                if attempt.review_reason:
+                    # A failed choice is not proof that the entire catalog
+                    # cannot answer this question. Do not retry indefinitely.
+                    return self._record_nonready(
+                        session_id,
+                        request,
+                        step_decision,
+                        "needs_information",
+                        "I could not verify an analysis that keeps all of your conditions. Please clarify the required result and any filters that must apply.",
+                    )
+                return self._record_nonready(
+                    session_id,
+                    request,
+                    step_decision,
+                    outcome.status,
+                    outcome.message,
+                )
             plans.append(outcome.plan)
-        return PlanningOutcome(
+            planned_tasks.append((step_request, step_decision))
+        decision = planned_tasks[0][1].model_copy(
+            update={
+                "additional_analyses": [
+                    AnalysisTask(
+                        question=step.message,
+                        problem_id=selected.problem_id,
+                        operation_id=selected.operation_id,
+                    )
+                    for step, selected in planned_tasks[1:]
+                ],
+            }
+        )
+        outcome = PlanningOutcome(
             message=f"The analysis is ready ({len(plans)} step{'s' if len(plans) != 1 else ''}).",
             decision=decision,
             status="ready",
             plan=plans[0],
             plans=plans,
         )
+        # Persist one user-visible outcome only after every required step has
+        # passed validation. Intermediate failures remain in the trace.
+        self.database.add_message(
+            session_id,
+            "user",
+            {"message": request.message, "graph_id": request.graph_id},
+            LLMMode.planner.value,
+        )
+        self.database.add_message(
+            session_id,
+            "assistant",
+            {
+                "message": outcome.message,
+                "graph_id": request.graph_id,
+                "plan": plans[0].model_dump(mode="json"),
+                "plans": [plan.model_dump(mode="json") for plan in plans],
+            },
+            LLMMode.planner.value,
+        )
+        return outcome
+
+    async def _review_route(
+        self,
+        session_id,
+        request,
+        decision,
+        raw_graph,
+        route_payload,
+        reason,
+        original_request,
+    ) -> RouteDecision | PlanningOutcome:
+        """One catalog review per request, with at most one inspection round."""
+        review = {
+            "attempt": 1,
+            "maximum_attempts": 1,
+            "failed_decision": decision.model_dump(mode="json"),
+            "failure": reason,
+            "original_request": original_request.model_dump(mode="json"),
+            "step_request": request.model_dump(mode="json"),
+            "protected_intent": decision.intent.model_dump(mode="json"),
+            "instruction": "The selected operation could not produce a valid plan. Review the full catalog against this exact step and the original question. A limitation of one operation is not proof that all operations are unavailable. Correct the operation only when it answers the same question. Preserve every filter, weight, direction, pattern, time requirement, supplied parameter, backend, output and input. Do not add or remove supporting analyses. Missing input and genuinely unsupported requests must remain non-ready. If the meaning cannot be verified, ask a concrete question in the user's domain language. You may inspect records once; do not substitute a nearby computation to obtain a ready response.",
+        }
+        self.database.history.current("planning.recovery.request", review)
+        await self.jobs.event_bus.publish(
+            session_id,
+            "analysis.understanding",
+            {
+                "message": "Checking another way to answer your original question while keeping its conditions.",
+            },
+        )
+        payload = {
+            **route_payload,
+            "message": request.message,
+            "routing_review": review,
+        }
+        for round_index in range(2):
+            revised = await self._generate(
+                mode=LLMMode.planner,
+                schema=RouteDecision,
+                user_payload=payload,
+                conversation=self.database.messages(session_id),
+            )
+            if not revised.inspections:
+                break
+            if round_index == 1:
+                return PlanningOutcome(
+                    decision=decision,
+                    status="needs_information",
+                    message="I need a more specific selection to verify this request. Which entities or relationships should the analysis cover?",
+                )
+            observations = []
+            for inspection in revised.inspections:
+                try:
+                    value = inspect_records(raw_graph, inspection)
+                except ValueError as error:
+                    value = {"error": str(error)}
+                observation = {
+                    "request": inspection.model_dump(mode="json"),
+                    "result": value,
+                }
+                observations.append(observation)
+                self.database.history.current("tool.inspect_records", observation)
+            payload = {
+                **payload,
+                "inspection_results": [
+                    *payload.get("inspection_results", []),
+                    *observations,
+                ],
+                "remaining_inspection_rounds": 0,
+            }
+        # Omitting a constraint does not clear it. A contradictory or additional
+        # constraint needs clarification instead of silently changing the task.
+        protected_intent, conflicts = preserve_review_intent(
+            decision.intent, revised.intent
+        )
+        if any(
+            task not in decision.additional_analyses
+            for task in revised.additional_analyses
+        ):
+            conflicts.append("supporting_analyses")
+        if conflicts:
+            self.database.history.current(
+                "planning.recovery.constraint_conflict", {"fields": conflicts}
+            )
+            return PlanningOutcome(
+                decision=decision,
+                status="needs_information",
+                message="I could not verify a correction that keeps all of your conditions. Please clarify the required result and any filters that must apply.",
+            )
+        revised = revised.model_copy(
+            update={
+                "intent": protected_intent,
+                "additional_analyses": decision.additional_analyses,
+            }
+        )
+        try:
+            revised = normalize_route(self.catalog, revised)
+        except PlanValidationError as error:
+            self.database.history.current(
+                "planning.recovery.invalid_route", {"errors": error.errors}
+            )
+            return PlanningOutcome(
+                decision=decision,
+                status="needs_information",
+                message="I could not validate a supported analysis for this request. Please clarify the result you need.",
+            )
+        blocker = route_blocker(self.catalog, revised)
+        if blocker:
+            if blocker[0] == "unsupported":
+                revised = revised.model_copy(
+                    update={"supported": False, "operation_id": None}
+                )
+            return PlanningOutcome(
+                decision=revised, status=blocker[0], message=blocker[1]
+            )
+        return revised
 
     @staticmethod
     def _projection_evidence(original, projected, intent):
@@ -333,7 +624,17 @@ class AgentService:
         decision: RouteDecision,
         raw_graph: dict[str, Any],
         context: dict[str, Any],
-    ) -> PlanningOutcome:
+        *,
+        route_review: dict[str, Any] | None = None,
+    ) -> _DraftAttempt:
+        def stop(status, message, *, code=None, errors=None):
+            return _DraftAttempt(
+                PlanningOutcome(decision=decision, status=status, message=message),
+                {"code": code, "message": message, "errors": errors or []}
+                if code
+                else None,
+            )
+
         session = self.database.get_session(session_id)
         graph = self.database.get_file(request.graph_id)
         conversation = self.database.messages(session_id)
@@ -343,9 +644,7 @@ class AgentService:
         try:
             projected = project_graph(raw_graph, intent.filters)
         except ValueError as error:
-            return self._record_nonready(
-                session_id, request, decision, "needs_information", str(error)
-            )
+            return stop("needs_information", str(error))
         inferred_inputs = {}
         if (
             decision.operation_id == "maximal-bicliques"
@@ -442,10 +741,16 @@ class AgentService:
             "requested_backend": request.backend_id,
             "supplied_parameters": request.parameters,
             "requested_optional_outputs": request.optional_outputs,
+            "explicit_request_fields": sorted(request.model_fields_set),
             "supplied_auxiliary_inputs": request.auxiliary_inputs,
             "inferred_auxiliary_inputs": inferred_inputs,
             "allow_directed_projection": request.allow_directed_projection,
         }
+        if route_review:
+            planning_payload["routing_review"] = {
+                "previous_failure": route_review,
+                "instruction": "Recheck the exact original step against this operation. The catalog review did not approve execution or waive constraints. Return ready only if every requirement is met; retain genuine missing inputs and unsupported meanings.",
+            }
         draft = await self._generate(
             mode=LLMMode.planner,
             schema=PlanDraft,
@@ -468,8 +773,12 @@ class AgentService:
                 conversation=conversation,
             )
         if draft.status != "ready":
-            return self._record_nonready(
-                session_id, request, decision, draft.status, draft.message
+            return stop(
+                draft.status,
+                draft.message,
+                code="selected_operation_refused"
+                if draft.status == "unsupported"
+                else None,
             )
         assert draft.plan is not None
         plan = ExecutionPlan(
@@ -487,19 +796,13 @@ class AgentService:
             and "max_time_span" not in request.parameters
         ):
             if intent.time_window is None or intent.time_unit == "unspecified":
-                return self._record_nonready(
-                    session_id,
-                    request,
-                    decision,
+                return stop(
                     "needs_information",
                     "How much time may pass between the first and last event, and is that seconds or milliseconds?",
                 )
             source_unit = context["timestamp_unit"]
             if intent.time_unit != "native" and source_unit == "unspecified":
-                return self._record_nonready(
-                    session_id,
-                    request,
-                    decision,
+                return stop(
                     "needs_information",
                     "Do the event timestamps use seconds or milliseconds? Declare that unit in the upload options so I can apply your time window correctly.",
                 )
@@ -510,10 +813,7 @@ class AgentService:
                 )
             converted = Decimal(str(intent.time_window)) * factor
             if converted != converted.to_integral_value():
-                return self._record_nonready(
-                    session_id,
-                    request,
-                    decision,
+                return stop(
                     "unsupported",
                     "That time window cannot be represented exactly in this dataset's integer timestamp units.",
                 )
@@ -524,7 +824,11 @@ class AgentService:
         merged_auxiliary = dict(plan.auxiliary_inputs)
         merged_auxiliary.update(inferred_inputs)
         merged_auxiliary.update(request.auxiliary_inputs)
-        optional_outputs = request.optional_outputs or plan.optional_outputs
+        optional_outputs = (
+            request.optional_outputs
+            if "optional_outputs" in request.model_fields_set
+            else plan.optional_outputs
+        )
         plan = plan.model_copy(
             update={
                 "session_id": session_id,
@@ -549,29 +853,23 @@ class AgentService:
         try:
             plan = self.validator.validate(plan, for_execution=False)
         except PlanValidationError as error:
-            return self._record_nonready(
-                session_id,
-                request,
-                decision,
+            return stop(
                 "unsupported",
                 "I cannot safely answer that exact question with this computation. "
                 + str(error),
+                code="invalid_plan",
+                errors=error.errors,
             )
         try:
             prepare_operation_graph(projected, plan)
         except ProfileInputError as error:
-            return self._record_nonready(
-                session_id, request, decision, error.status, str(error)
-            )
+            return stop(error.status, str(error))
         if (
             raw_graph["graph"]["directed"]
             and plan.operation_id not in DIRECTION_PRESERVING_OPERATIONS
             and not plan.allow_directed_projection
         ):
-            return self._record_nonready(
-                session_id,
-                request,
-                decision,
+            return stop(
                 "needs_information",
                 "These connections have a direction, but this analysis requires two-way relationships. If that meaning fits your question, enable 'Treat directed links as two-way' in the browser or enter /direction two-way in the CLI, then ask again. Otherwise I cannot use this computation safely.",
             )
@@ -581,20 +879,15 @@ class AgentService:
             else self._missing_input_question(plan.missing_inputs)
         )
         if plan.missing_inputs:
-            return self._record_nonready(
-                session_id, request, decision, "needs_information", message
+            return stop("needs_information", message)
+        return _DraftAttempt(
+            PlanningOutcome(
+                message=message,
+                decision=decision,
+                plan=plan,
+                plans=[plan],
+                status="ready",
             )
-        self.database.add_message(
-            session_id, "user", {"message": request.message}, LLMMode.planner.value
-        )
-        self.database.add_message(
-            session_id,
-            "assistant",
-            {"message": message, "plan": plan.model_dump(mode="json")},
-            LLMMode.planner.value,
-        )
-        return PlanningOutcome(
-            message=message, decision=decision, plan=plan, plans=[plan], status="ready"
         )
 
     def _record_nonready(self, session_id, request, decision, status, message):
@@ -725,57 +1018,72 @@ class AgentService:
                     )
                 ),
             }
+        prepare_analysis(answer)
         defaults = answer_visualizations(answer)
         self.database.history.current("answer.materialized", answer)
         # Persist verified facts even when inference subsequently fails.
         self.database.update_result(result.model_copy(update={"answer": answer}))
         session = self.database.get_session(result.session_id)
-        payload = {
-            "task": "Select the verified facts and tested views that best answer the application question. Add only clearly uncertain, evidence-based implications if useful.",
-            "user_message": user_message,
-            "domain": self.catalog.domain(session.domain_id).model_dump(mode="json"),
-            "answer": {
-                "question": answer["question"],
-                "facts": answer["facts"][:60],
-                "limitations": answer["limitations"],
-                "provenance": answer["provenance"],
-            },
-            "supported_operations": [
-                {
-                    "operation_id": key,
-                    "description": self.catalog.problem(
-                        self.catalog.operation(key).problem_id
-                    )["spec"]["problem_statement"],
-                }
-                for key in self.catalog.instructions
-            ],
-            "default_visualizations": [
-                item.model_dump(mode="json") for item in defaults
-            ],
-            "followup_options": followup_options(answer),
-        }
+        payload = analyst_payload(
+            answer, defaults, self.catalog, session.domain_id, user_message
+        )
         source = "offline_rules"
         narrative = None
+        generated_views = []
         if is_final:
             source = "llm" if self.settings.llm_enabled else "offline_rules"
             try:
-                narrative = await self._generate(
-                    mode=LLMMode.analyst,
-                    schema=GroundedNarrative,
-                    user_payload=payload,
-                    conversation=self.database.messages(result.session_id),
-                )
-                known_facts = {fact["id"] for fact in payload["answer"]["facts"]}
-                known_views = {view.id for view in defaults}
-                known_followups = {item["id"] for item in payload["followup_options"]}
-                if (
-                    not set(narrative.fact_ids) <= known_facts
-                    or not set(narrative.view_ids) <= known_views
-                    or not set(narrative.followup_ids) <= known_followups
-                ):
-                    raise LLMError(
-                        "The model selected a fact or visualization outside the verified answer."
+                for attempt in range(2):
+                    narrative = await self._generate(
+                        mode=LLMMode.analyst,
+                        schema=GroundedNarrative,
+                        user_payload=payload,
+                        conversation=self.database.messages(result.session_id),
                     )
+                    try:
+                        known_facts = {
+                            fact["id"] for fact in payload["answer"]["facts"]
+                        }
+                        known_followups = {
+                            item["id"] for item in payload["followup_options"]
+                        }
+                        references = set(narrative.fact_ids)
+                        for statement in (
+                            ([narrative.summary] if narrative.summary else [])
+                            + narrative.findings
+                            + narrative.charts
+                        ):
+                            references.update(statement.fact_ids)
+                        if (
+                            not references <= known_facts
+                            or not set(narrative.followup_ids) <= known_followups
+                        ):
+                            raise ValueError(
+                                "The explanation references evidence or follow-ups absent from its input."
+                            )
+                        generated_views = await asyncio.to_thread(
+                            validate_narrative,
+                            narrative,
+                            answer,
+                            defaults,
+                            set(self.catalog.instructions),
+                        )
+                        break
+                    except ValueError as error:
+                        self.database.history.current(
+                            "analyst.validation",
+                            {"attempt": attempt + 1, "error": str(error)},
+                        )
+                        if attempt:
+                            raise LLMError(
+                                f"Analyst validation failed after repair: {error}"
+                            ) from error
+                        payload = {
+                            **payload,
+                            "validation_feedback": str(error),
+                            "repair_guidance": CHART_REPAIR_GUIDANCE,
+                            "previous_draft": narrative.model_dump(mode="json"),
+                        }
             except LLMError as error:
                 source = "fallback"
                 narrative = None
@@ -787,21 +1095,13 @@ class AgentService:
                     "The language model was unavailable or returned an invalid response. These findings and views are computed directly from the result and original data."
                 )
         # Recipes are validated against the same enriched dataset as the facts.
-        selected = [
+        selected = generated_views + [
             view for view in defaults if narrative and view.id in narrative.view_ids
         ]
-        # Membership inspection and selected-group exploration are answer
-        # affordances, not optional prose choices. Keep their recipes available.
-        required_views = {"members", "groups", "network"} | {
-            item["view_id"]
-            for item in payload["followup_options"]
-            if item["kind"] == "show_view"
-        }
-        selected.extend(
-            view
-            for view in defaults
-            if view.id in required_views and view not in selected
-        )
+        # Keep the deterministic operation-specific inspection views, including
+        # those belonging to supporting analyses. Narration may prioritize them
+        # but cannot remove access to computed values or linked exploration.
+        selected.extend(view for view in defaults if view not in selected)
         safe_views = sanitize_visualizations(
             selected or defaults, {"answer": answer, **result.payload}
         )
@@ -813,6 +1113,8 @@ class AgentService:
             followups=narrative.suggested_followups if narrative else None,
             followup_ids=narrative.followup_ids if narrative else None,
         )
+        if narrative:
+            apply_narrative(interpretation, narrative, answer)
         self.database.history.current(
             "visualization.selection",
             {
@@ -830,20 +1132,21 @@ class AgentService:
             }
         )
         self.database.update_result(updated)
-        report = self.database.history.text_snapshot(
-            result.session_id,
-            f"results/{result.id}/answer.html",
-            render_report(updated),
-        )
+        with self.database.history.best_effort("answer.report"):
+            report = self.database.history.text_snapshot(
+                result.session_id,
+                f"results/{result.id}/answer.html",
+                render_report(updated),
+            )
+            self.database.history.current(
+                "answer.report",
+                {
+                    "path": f"results/{result.id}/answer.html",
+                    "sha256": self.database.history.digest(report),
+                },
+            )
         self.database.history.snapshot(
             result.session_id, f"results/{result.id}/answer.json", answer
-        )
-        self.database.history.current(
-            "answer.report",
-            {
-                "path": f"results/{result.id}/answer.html",
-                "sha256": self.database.history.digest(report),
-            },
         )
         self.database.add_message(
             result.session_id,
@@ -893,9 +1196,18 @@ class AgentService:
             if self.settings.routing_adapter_active
             else None,
             "routing_contract_version": self.settings.routing_contract_version,
-            "answer_model": self.settings.llm_model,
+            "routing_experimental": self.settings.routing_adapter_experimental,
+            "adapter_evaluated_contract_version": "legacy-20"
+            if self.settings.routing_adapter_active
+            else None,
+            "answer_model": self.settings.llm_analyst_model or self.settings.llm_model,
+            "planner_model": self.settings.llm_planner_model or self.settings.llm_model,
+            "shared_base_model": self.settings.llm_model,
+            "dual_adapters_active": self.settings.dual_adapters_active,
             "llm_enabled": self.settings.llm_enabled,
-            "routing_scope": "RouteDecision"
+            "routing_scope": "understanding, routing, planning and recovery"
+            if self.settings.dual_adapters_active
+            else "RouteDecision"
             if self.settings.routing_adapter_active
             else "base",
         }
@@ -903,25 +1215,48 @@ class AgentService:
     async def _chat(self, session_id: str, request: ChatRequest) -> ChatResponse:
         self.database.get_session(session_id)
         result = (
-            self.database.get_result(request.result_id)
-            if request.result_id
-            else self.database.latest_result(session_id)
+            self.database.get_result(request.result_id) if request.result_id else None
         )
         if result is not None and result.session_id != session_id:
             raise ValueError("result_id must identify a result from this session")
-        if (
-            result is not None
-            and request.graph_id
-            and request.mode == "auto"
-            and self.database.get_job(result.job_id).plan.graph_id != request.graph_id
-        ):
-            result = None
+        if result is None and request.mode == "analyst" and not request.graph_id:
+            result = self.database.latest_result(session_id)
+        graph_id = request.graph_id or (
+            self.database.get_job(result.job_id).plan.graph_id
+            if result
+            else self._latest_graph_id(session_id)
+        )
+        if graph_id:
+            graph = self.database.get_file(graph_id)
+            if graph.session_id != session_id or graph.role != FileRole.graph:
+                raise ValueError(
+                    "graph_id must identify a graph uploaded to this session"
+                )
+            if (
+                result
+                and self.database.get_job(result.job_id).plan.graph_id != graph_id
+            ):
+                if request.mode == "analyst":
+                    raise ValueError(
+                        "result_id must identify a result from the selected graph"
+                    )
+                # A newly selected/uploaded graph replaces the browser's stale
+                # result selection. Never transfer its filters to this dataset.
+                result = None
+            result = self._context_result(
+                session_id, graph_id, result.id if result else None
+            )
         mode = request.mode
+        followup = None
         if mode == "auto":
             mode = "planner"
             if result is not None:
                 previous_plan = self.database.get_job(result.job_id).plan
                 previous_graph = self.database.get_file(previous_plan.graph_id)
+                state = self._conversation_state(
+                    previous_graph, result, self.database.messages(session_id)
+                )
+                self.database.history.current("conversation.context", state)
                 turn = await self._generate(
                     mode=LLMMode.planner,
                     schema=TurnDecision,
@@ -943,7 +1278,8 @@ class AgentService:
                         if previous_plan.application_intent
                         else None,
                         "previous_facts": result.answer.get("facts", [])[:8],
-                        "graph_id": request.graph_id,
+                        "graph_id": graph_id,
+                        "conversation_state": state,
                     },
                     conversation=self.database.messages(session_id),
                 )
@@ -962,7 +1298,7 @@ class AgentService:
                 elif turn.action == "explain":
                     mode = "analyst"
                 else:
-                    request = request.model_copy(update={"message": turn.request})
+                    followup = turn
         if mode == "analyst":
             if result is None:
                 raise ValueError("analysis mode requires a completed result")
@@ -977,7 +1313,6 @@ class AgentService:
                 interpretation_source=updated.interpretation_source,
                 result_id=updated.id,
             )
-        graph_id = request.graph_id or self._latest_graph_id(session_id)
         if graph_id is None:
             return ChatResponse(
                 mode=LLMMode.planner,
@@ -989,8 +1324,10 @@ class AgentService:
             PlanRequest(
                 message=request.message,
                 graph_id=graph_id,
+                result_id=result.id if result else None,
                 allow_directed_projection=request.allow_directed_projection,
             ),
+            followup=followup,
         )
         if outcome.status != "ready" or outcome.plan is None or not request.execute:
             return ChatResponse(
@@ -1013,16 +1350,7 @@ class AgentService:
             for plan in outcome.plans
         ]
         analysis_id = new_id("analysis")
-        jobs = []
-        for index, plan in enumerate(normalized):
-            jobs.append(
-                await self.jobs.enqueue(
-                    plan,
-                    analysis_id=analysis_id,
-                    step_index=index,
-                    step_count=len(normalized),
-                )
-            )
+        jobs = await self.jobs.enqueue_many(normalized, analysis_id=analysis_id)
         return ChatResponse(
             mode=LLMMode.planner,
             message=f"I'll answer your question using {len(jobs)} validated analysis step{'s' if len(jobs) != 1 else ''}.",

@@ -1,0 +1,54 @@
+{
+  "problem_id": "network_alignment",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2015_hga_2n",
+      "algorithm_name": "Graphics processing unit-based alignment of protein interaction networks",
+      "metadata": "25_network_alignment/papers/2015_hga_2n/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2023_cualign",
+      "algorithm_name": "cuAlign: Scalable Network Alignment on GPU Accelerators",
+      "metadata": "25_network_alignment/papers/2023_cualign/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2024_gpu_local_network_alignment",
+      "algorithm_name": "A GPU-based method for network alignment",
+      "metadata": "25_network_alignment/papers/2024_gpu_local_network_alignment/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2024_pygmtools_ipfp",
+      "algorithm_name": "pygmtools IPFP",
+      "metadata": "25_network_alignment/papers/2024_pygmtools_ipfp/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_pygmtools_rrwm",
+      "algorithm_name": "pygmtools RRWM",
+      "metadata": "25_network_alignment/papers/2024_pygmtools_rrwm/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_pygmtools_sm",
+      "algorithm_name": "pygmtools SM",
+      "metadata": "25_network_alignment/papers/2024_pygmtools_sm/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

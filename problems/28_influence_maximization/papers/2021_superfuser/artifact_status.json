@@ -1,0 +1,25 @@
+{
+  "problem_id": "influence_maximization",
+  "paper_id": "2021_superfuser",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "title": "Fast and Parallel Influence Maximization using Fused Sampling and Memory Access Regularization",
+  "code": {
+    "source_url": "https://github.com/ggokturk/infuser",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "status": "present",
+    "local_path": "code",
+    "error": null,
+    "entrypoint_sha256": {
+      "src/gpu.cu": "75270554bd7478112a6f9b74b07e2df843e745159c5532f09e9662289df6a60d"
+    },
+    "license_file": null
+  },
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified PDF; an open downloadable paper URL was not established during this sweep.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

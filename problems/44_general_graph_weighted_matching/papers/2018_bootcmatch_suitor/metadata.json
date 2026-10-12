@@ -1,0 +1,28 @@
+{
+  "title": "AMG based on compatible weighted matching for GPUs",
+  "year": 2018,
+  "venue": null,
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1810.04221",
+  "pdf_url": "https://arxiv.org/pdf/1810.04221",
+  "paper_id": "2018_bootcmatch_suitor",
+  "problem_id": "general_graph_weighted_matching",
+  "problem_dir": "44_general_graph_weighted_matching",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "BootCMatchG GPU Suitor weighted matching",
+  "code_url": "https://github.com/bootcmatch/BootCMatchG",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA approximate weighted matching inside an algebraic multigrid pipeline.",
+  "notes": "The kernel is reusable but the executable solves AMG systems. A standalone graph adapter must supply original graph weights and expose the matching, rather than AMG-generated weights.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "src/AMG/suitor.cu",
+    "src/AMG/matchingAggregation.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

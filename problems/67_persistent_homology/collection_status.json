@@ -1,0 +1,47 @@
+{
+  "problem_id": "persistent_homology",
+  "problem_dir": "67_persistent_homology",
+  "name": "Flag-Complex Persistent Homology",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 1,
+  "local_gpu_code_entries": 1,
+  "local_paper_entries": 1,
+  "local_gpu_code_and_paper_including_related": 1,
+  "eligible_code_and_paper_references": 1,
+  "eligible_local_code_and_paper_pairs": 1,
+  "target_met": false,
+  "shortfall": 2,
+  "shortfall_explanation": "Ripser++ is a verified hybrid GPU artifact. CPU Ripser/GUDHI and image-only persistence routines do not create two additional matching GPU pairs.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "ripserplusplus"
+    ],
+    "shortfall": "Ripser++ is a verified hybrid GPU artifact. CPU Ripser/GUDHI and image-only persistence routines do not create two additional matching GPU pairs.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2020_ripserplusplus",
+      "algorithm_name": "Ripser++",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "GPU-accelerated Vietoris-Rips/flag persistence. Use supported sparse or distance-matrix input with absent edges represented correctly; verify supported coefficient field and cutoff semantics.",
+      "metadata_path": "67_persistent_homology/papers/2020_ripserplusplus/metadata.json"
+    }
+  ]
+}

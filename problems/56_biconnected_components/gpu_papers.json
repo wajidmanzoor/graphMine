@@ -1,0 +1,30 @@
+{
+  "problem_id": "biconnected_components",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2026_fast_bcc_filter",
+      "algorithm_name": "Fast-BCC-Filter",
+      "metadata": "56_biconnected_components/papers/2026_fast_bcc_filter/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_pea_bcc",
+      "algorithm_name": "PEA-BCC external-memory decomposition",
+      "metadata": "56_biconnected_components/papers/2026_pea_bcc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_wk_bcc_2018",
+      "algorithm_name": "Wadwekar-Kothapalli 2018 GPU BCC baseline",
+      "metadata": "56_biconnected_components/papers/2026_wk_bcc_2018/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

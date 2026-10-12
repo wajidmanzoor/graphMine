@@ -1,0 +1,37 @@
+{
+  "title": "Self-Attention Graph Pooling",
+  "year": 2019,
+  "venue": "ICML 2019",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1904.08082",
+  "pdf_url": "https://arxiv.org/pdf/1904.08082",
+  "paper_id": "2019_pyg_sagpool",
+  "problem_id": "graph_classification_regression",
+  "problem_dir": "53_graph_classification_regression",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "SAGPool graph classification",
+  "code_url": "https://github.com/pyg-team/pytorch_geometric",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch CUDA attention-based graph pooling and training.",
+  "notes": "Original SAGPool paper and a full upstream graph-classification benchmark.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "benchmark/kernel/sag_pool.py",
+    "benchmark/kernel/train_eval.py",
+    "torch_geometric/nn/pool/sag_pool.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [
+    {
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "publication_url": "https://arxiv.org/abs/1903.02428",
+      "pdf_url": "https://arxiv.org/pdf/1903.02428",
+      "local_path": "pyg_paper.pdf",
+      "sha256": "8cfd9824d44c5aba66393ef05e70c1275ca7886e0a0502f7b09e86e6c3a38953"
+    }
+  ]
+}

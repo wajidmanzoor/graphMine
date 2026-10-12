@@ -1,0 +1,33 @@
+{
+  "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+  "authors": null,
+  "year": 2019,
+  "venue": "arXiv; later published in ACM TOPC",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1908.01407",
+  "pdf_url": "https://arxiv.org/pdf/1908.01407",
+  "paper_id": "2019_graphblast_cc",
+  "problem_id": "connected_components",
+  "problem_dir": "35_connected_components",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GraphBLAST cc",
+  "code_url": "https://github.com/gunrock/graphblast",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Undirected component propagation using GPU GraphBLAS primitives. This is a framework-paper pairing.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "graphblas/algorithm/cc.hpp"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "graphblast",
+  "variant_constraints": [],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

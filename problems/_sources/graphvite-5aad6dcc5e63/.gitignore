@@ -1,0 +1,11 @@
+# build
+/build/
+/doc/build
+
+# cmake
+/Makefile
+/src/Makefile
+/cmake-build-*/
+
+# JetBrains
+/.idea

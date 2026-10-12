@@ -1,0 +1,141 @@
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/AGATHA_2015.egr
+Number of vertices: 183964077
+Number of edges: 5794362994
+CUDA Error: Allocation failed - out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/AGATHA_2015.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/clueweb12.egr
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/clueweb12.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/com-Friendster.egr
+Number of vertices: 65608366
+Number of edges: 1806067135
+Last CC time using chrono: 44.4669 ms.
+
+Total execution time for Fast-BCC (Ours): 1578.25 ms.
+
+Function execution times:
+Time of Tags : 1005.89 ms
+Time of Eulerian Tour : 355.52 ms
+Time of AST Construction : 172.37 ms
+Time of Last CC : 44.46 ms
+
+Number of Bi-Connected Components: 14039045
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-kron.egr
+Number of vertices: 134217726
+Number of edges: 2182796584
+Last CC time using chrono: 52.3965 ms.
+
+Total execution time for Fast-BCC (Ours): 824.193 ms.
+
+Function execution times:
+Time of Eulerian Tour : 502.94 ms
+Time of AST Construction : 192.96 ms
+Time of Tags : 75.92 ms
+Time of Last CC : 52.38 ms
+
+Number of Bi-Connected Components: 71164262
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-twitter.egr
+Number of vertices: 61578415
+Number of edges: 1222439231
+Last CC time using chrono: 17.7937 ms.
+
+Total execution time for Fast-BCC (Ours): 710.671 ms.
+
+Function execution times:
+Time of Tags : 417.94 ms
+Time of Eulerian Tour : 189.69 ms
+Time of AST Construction : 85.26 ms
+Time of Last CC : 17.78 ms
+
+Number of Bi-Connected Components: 21862186
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-web.egr
+Number of vertices: 50636151
+Number of edges: 1810063452
+Last CC time using chrono: 6.05652 ms.
+
+Total execution time for Fast-BCC (Ours): 221.561 ms.
+
+Function execution times:
+Time of Eulerian Tour : 98.53 ms
+Time of Tags : 82.98 ms
+Time of AST Construction : 34.01 ms
+Time of Last CC : 6.05 ms
+
+Number of Bi-Connected Components: 4085479
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/it-2004.egr
+Number of vertices: 41291594
+Number of edges: 1027475925
+Last CC time using chrono: 5.14977 ms.
+
+Total execution time for Fast-BCC (Ours): 169.738 ms.
+
+Function execution times:
+Time of Eulerian Tour : 81.79 ms
+Time of Tags : 56.13 ms
+Time of AST Construction : 26.67 ms
+Time of Last CC : 5.14 ms
+
+Number of Bi-Connected Components: 4977124
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/MOLIERE_2016.egr
+Number of vertices: 30239687
+Number of edges: 3338675708
+Last CC time using chrono: 5.52379 ms.
+
+Total execution time for Fast-BCC (Ours): 227.805 ms.
+
+Function execution times:
+Time of Eulerian Tour : 119.84 ms
+Time of AST Construction : 81.72 ms
+Time of Tags : 20.73 ms
+Time of Last CC : 5.52 ms
+
+Number of Bi-Connected Components: 153
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/sk-2005.egr
+Number of vertices: 50636154
+Number of edges: 1810063455
+Last CC time using chrono: 5.9778 ms.
+
+Total execution time for Fast-BCC (Ours): 222.219 ms.
+
+Function execution times:
+Time of Eulerian Tour : 98.86 ms
+Time of Tags : 83.33 ms
+Time of AST Construction : 34.06 ms
+Time of Last CC : 5.97 ms
+
+Number of Bi-Connected Components: 4085482
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/twitter7.egr
+Number of vertices: 41652230
+Number of edges: 1202513046
+Last CC time using chrono: 12.5914 ms.
+
+Total execution time for Fast-BCC (Ours): 628.139 ms.
+
+Function execution times:
+Time of Tags : 392.47 ms
+Time of Eulerian Tour : 145.88 ms
+Time of AST Construction : 77.21 ms
+Time of Last CC : 12.58 ms
+
+Number of Bi-Connected Components: 1936001
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-2014.egr
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-2014.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-union-2006-06-2007-05-underlying.egr
+Number of vertices: 133633039
+Number of edges: 4665489787
+CUDA Error: Allocation failed - out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-union-2006-06-2007-05-underlying.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/webbase-2001.egr
+Number of vertices: 118142155
+Number of edges: 857530811
+Last CC time using chrono: 16.1003 ms.
+
+Total execution time for Fast-BCC (Ours): 386.606 ms.
+
+Function execution times:
+Time of Eulerian Tour : 246.39 ms
+Time of Tags : 95.55 ms
+Time of AST Construction : 28.58 ms
+Time of Last CC : 16.09 ms
+
+Number of Bi-Connected Components: 30449387
+All files processed!

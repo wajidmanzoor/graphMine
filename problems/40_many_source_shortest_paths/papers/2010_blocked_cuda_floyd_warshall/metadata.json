@@ -1,0 +1,41 @@
+{
+  "title": "A Multi-Stage CUDA Kernel for Floyd-Warshall",
+  "authors": [
+    "Ben Lund",
+    "Justin W. Smith"
+  ],
+  "year": 2010,
+  "venue": "Research preprint",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1001.4108",
+  "pdf_url": "https://arxiv.org/pdf/1001.4108",
+  "paper_id": "2010_blocked_cuda_floyd_warshall",
+  "problem_id": "many_source_shortest_paths",
+  "problem_dir": "40_many_source_shortest_paths",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "Blocked CUDA Floyd-Warshall (Bojanowski implementation)",
+  "code_url": "https://github.com/MTB90/cuda-floyd_warshall",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Public MIT-licensed third-party implementation explicitly based on Lund and Smith. It is not represented as the paper authors original artifact. Dense integer-distance APSP; check infinity sentinel, overflow and block-size assumptions; selected source/destination pairs are extracted from the full matrix.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "lib/cuda/cuda_apsp.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "apsp_blocked_lic",
+  "variant_constraints": [
+    "dense distance matrix",
+    "integer weights",
+    "no negative cycles",
+    "adapter must check numeric range"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

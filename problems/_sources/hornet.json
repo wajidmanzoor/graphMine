@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/hornet-gt/hornet",
+  "checked_at": "2026-10-10T01:37:07Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+  "archive_url": "https://codeload.github.com/hornet-gt/hornet/tar.gz/2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+  "archive_sha256": "bcb2b9ac4ae3f50885efc564e0cbfd9ddca5c870b5d5455d10e7088ba0e1a3b5",
+  "local_path": "hornet-2441ccabd44a",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "BSD-3-Clause",
+  "archived": false,
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

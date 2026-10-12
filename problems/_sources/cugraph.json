@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/rapidsai/cugraph",
+  "checked_at": "2026-10-09T19:25:12Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+  "archive_url": "https://codeload.github.com/rapidsai/cugraph/tar.gz/5931900cf6be7063cf855ef230fa14d4216b61de",
+  "archive_sha256": "9ac0a10d61581e917b8772f9db2c721fd26483526adc0101e0196ac77d7818db",
+  "local_path": "cugraph-5931900cf6be",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

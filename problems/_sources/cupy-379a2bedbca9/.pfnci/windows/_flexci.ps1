@@ -1,0 +1,77 @@
+function ActivatePython($version) {
+    # Bootstrap uv.
+    $uv_root = Join-Path $Env:TEMP "cupy-ci-uv"
+    if (-not (Test-Path "$uv_root\uv.exe")) {
+        $Env:UV_UNMANAGED_INSTALL = $uv_root
+        RunOrDie powershell -NoProfile -ExecutionPolicy Bypass -Command `
+            "Invoke-RestMethod -ErrorAction Stop https://astral.sh/uv/install.ps1 | Invoke-Expression"
+    }
+
+    # Download the requested interpreter and seed pip for the existing install steps.
+    $venv = Join-Path $Env:TEMP "cupy-ci-venv-$version"
+    RunOrDie "$uv_root\uv.exe" venv --clear --seed --managed-python --python $version $venv
+    $Env:VIRTUAL_ENV = $venv
+    $Env:PATH = "$venv\Scripts;" + $Env:PATH
+}
+
+function ActivateCUDA($version) {
+    if ($version -eq "12.0") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_0
+    } elseif ($version -eq "12.1") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_1
+    } elseif ($version -eq "12.2") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_2
+    } elseif ($version -eq "12.3") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_3
+    } elseif ($version -eq "12.4") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_4
+    } elseif ($version -eq "12.5") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_5
+    } elseif ($version -eq "12.6") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_6
+    } elseif ($version -eq "12.8") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_8
+    } elseif ($version -eq "12.9") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_9
+    } elseif ($version -eq "12.x") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V12_9
+    } elseif ($version -eq "13.0") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V13_0
+    } elseif ($version -eq "13.1") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V13_1
+    } elseif ($version -eq "13.2") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V13_2
+    } elseif ($version -eq "13.3") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V13_3
+    } elseif ($version -eq "13.4") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V13_4
+    } elseif ($version -eq "13.x") {
+        $Env:CUDA_PATH = $Env:CUDA_PATH_V13_4
+    } else {
+        throw "Unsupported CUDA version: $version"
+    }
+    $Env:PATH = "$Env:CUDA_PATH\bin;$Env:CUDA_PATH\bin\x64;" + $Env:PATH
+}
+
+function IsPullRequestTest() {
+    return ${Env:FLEXCI_BRANCH} -ne $null -and ${Env:FLEXCI_BRANCH}.StartsWith("refs/pull/")
+}
+
+function GetPullRequestNumber() {
+    if (${Env:FLEXCI_BRANCH} -match "refs/pull/(\d+)/") {
+        return $matches[1]
+    }
+    return 0
+}
+
+function PrioritizeFlexCIDaemon() {
+    echo "Prioritizing FlexCI daemon process..."
+    wmic.exe process where 'name="imosci.exe"' CALL setpriority realtime
+    if (-not $?) {
+        throw "Failed to change priority of daemon (exit code = $LastExitCode)"
+    }
+}
+
+function EnableLongPaths() {
+    Set-ItemProperty "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -value 1
+}

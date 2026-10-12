@@ -1,0 +1,28 @@
+{
+  "problem_id": "random_walk_generation",
+  "paper_id": "2026_cugraph_random_walks",
+  "title": "cuGraph GPU random walks — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cugraph",
+    "local_path": "code",
+    "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cugraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/sampling/random_walks_impl.cuh": "1272c38b2e0ddba91137c73338ba0ef00e1f91eaf6e6b853f674f1bc1754c8e2"
+    }
+  }
+}

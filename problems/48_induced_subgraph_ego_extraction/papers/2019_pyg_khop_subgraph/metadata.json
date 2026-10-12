@@ -1,0 +1,27 @@
+{
+  "title": "Fast Graph Representation Learning with PyTorch Geometric",
+  "year": 2019,
+  "venue": "ICLR 2019 workshop",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1903.02428",
+  "pdf_url": "https://arxiv.org/pdf/1903.02428",
+  "paper_id": "2019_pyg_khop_subgraph",
+  "problem_id": "induced_subgraph_ego_extraction",
+  "problem_dir": "48_induced_subgraph_ego_extraction",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "PyG frontier-expansion k-hop subgraph",
+  "code_url": "https://github.com/pyg-team/pytorch_geometric",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA tensor frontier expansion followed by edge masking.",
+  "notes": "Entry function k_hop_subgraph. Flow direction and directed flag affect semantics; directed=False retains all edges among the selected nodes. Separate algorithm from direct mask extraction, same framework paper.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "torch_geometric/utils/_subgraph.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

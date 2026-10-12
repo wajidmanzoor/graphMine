@@ -3,8 +3,8 @@
   "title": "Fast block distributed CUDA implementation of the Hungarian algorithm",
   "year": 2019,
   "venue": "Journal of Parallel and Distributed Computing",
-  "doi": null,
-  "publication_url": "https://github.com/paclopes/HungarianGPU",
+  "doi": "10.1016/j.jpdc.2019.03.014",
+  "publication_url": "https://doi.org/10.1016/j.jpdc.2019.03.014",
   "pdf_url": null,
   "code_url": "https://github.com/paclopes/HungarianGPU",
   "semantic_fit": "exact",
@@ -12,5 +12,14 @@
   "notes": "Confirmed genuine CUDA source (HungarianCUDA.cu) and MIT license by direct inspection; the journal publication's own DOI/page was not independently verified open-access, so publication_url points to the repository's own citation instead of a possibly paywalled venue link.",
   "problem_id": "bipartite_matching_assignment",
   "problem_dir": "31_bipartite_matching_assignment",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "upstream_license_present",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "HungarianCUDA.cu"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "algorithm"
 }

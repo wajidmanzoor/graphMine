@@ -1,0 +1,498 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2022-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#pragma once
+
+#include "detail/shuffle_wrappers.hpp"
+#include "sampling/detail/sampling_utils.hpp"
+
+#include <cugraph/graph.hpp>
+#include <cugraph/graph_view.hpp>
+#include <cugraph/sampling_functions.hpp>
+#include <cugraph/shuffle_functions.hpp>
+#include <cugraph/utilities/host_scalar_comm.hpp>
+#include <cugraph/utilities/thrust_tuple_utils.hpp>
+#include <cugraph/utilities/thrust_wrappers/sort.hpp>
+#include <cugraph/utilities/thrust_wrappers/unique.hpp>
+
+#include <raft/core/handle.hpp>
+#include <raft/util/cudart_utils.hpp>
+
+#include <rmm/device_uvector.hpp>
+
+#include <cuda/std/iterator>
+#include <cuda/std/tuple>
+#include <thrust/sort.h>
+#include <thrust/unique.h>
+
+#include <algorithm>
+#include <optional>
+#include <span>
+#include <tuple>
+
+namespace cugraph {
+namespace detail {
+
+template <typename vertex_t, typename label_t, typename time_stamp_t>
+std::tuple<rmm::device_uvector<vertex_t>,
+           std::optional<rmm::device_uvector<label_t>>,
+           std::optional<rmm::device_uvector<time_stamp_t>>,
+           std::optional<rmm::device_uvector<time_stamp_t>>,
+           std::optional<std::tuple<rmm::device_uvector<vertex_t>,
+                                    std::optional<rmm::device_uvector<label_t>>,
+                                    std::optional<rmm::device_uvector<time_stamp_t>>>>>
+prepare_next_frontier(
+  raft::handle_t const& handle,
+  raft::device_span<vertex_t const> sampled_src_vertices,
+  std::optional<raft::device_span<label_t const>> sampled_src_vertex_labels,
+  std::optional<raft::device_span<time_stamp_t const>> sampled_src_vertex_window_starts,
+  std::optional<raft::device_span<time_stamp_t const>> sampled_src_vertex_window_ends,
+  raft::host_span<raft::device_span<vertex_t const>> sampled_dst_vertices,
+  std::optional<raft::host_span<raft::device_span<label_t const>>> sampled_dst_vertex_labels,
+  std::optional<raft::host_span<raft::device_span<time_stamp_t const>>>
+    sampled_dst_vertex_window_start_spans,
+  std::optional<raft::host_span<raft::device_span<time_stamp_t const>>>
+    sampled_dst_vertex_window_end_spans,
+  std::optional<std::tuple<rmm::device_uvector<vertex_t>,
+                           std::optional<rmm::device_uvector<label_t>>,
+                           std::optional<rmm::device_uvector<time_stamp_t>>>>&&
+    vertex_used_as_source,
+  raft::host_span<vertex_t const> vertex_partition_range_lasts,
+  prior_sources_behavior_t prior_sources_behavior,
+  bool dedupe_sources,
+  bool multi_gpu,
+  bool do_expensive_check)
+{
+  size_t frontier_size = std::transform_reduce(sampled_dst_vertices.begin(),
+                                               sampled_dst_vertices.end(),
+                                               size_t{0},
+                                               std::plus{},
+                                               [](auto span) { return span.size(); });
+
+  if (prior_sources_behavior == prior_sources_behavior_t::CARRY_OVER) {
+    frontier_size += sampled_src_vertices.size();
+  }
+
+  auto has_sampled_dst_window_starts = sampled_dst_vertex_window_start_spans &&
+                                       std::any_of(sampled_dst_vertex_window_start_spans->begin(),
+                                                   sampled_dst_vertex_window_start_spans->end(),
+                                                   [](auto span) { return span.size() > 0; });
+  auto has_sampled_dst_window_ends =
+    sampled_dst_vertex_window_end_spans && std::any_of(sampled_dst_vertex_window_end_spans->begin(),
+                                                       sampled_dst_vertex_window_end_spans->end(),
+                                                       [](auto span) { return span.size() > 0; });
+
+  // These flags decide which optional frontier columns exist, and those columns are shuffled with a
+  // per-column collective below.  A rank that sampled nothing this hop sees only empty spans, so
+  // without a global reduction it would shuffle fewer columns than its peers and deadlock.
+  if (multi_gpu) {
+    auto& comm = handle.get_comms();
+    has_sampled_dst_window_starts =
+      host_scalar_allreduce(comm,
+                            static_cast<int32_t>(has_sampled_dst_window_starts ? 1 : 0),
+                            raft::comms::op_t::MAX,
+                            handle.get_stream()) != 0;
+    has_sampled_dst_window_ends =
+      host_scalar_allreduce(comm,
+                            static_cast<int32_t>(has_sampled_dst_window_ends ? 1 : 0),
+                            raft::comms::op_t::MAX,
+                            handle.get_stream()) != 0;
+  }
+
+  auto const carry_over = prior_sources_behavior == prior_sources_behavior_t::CARRY_OVER;
+
+  CUGRAPH_EXPECTS(!carry_over || !has_sampled_dst_window_starts || sampled_src_vertex_window_starts,
+                  "CARRY_OVER requires source window starts when sampled destinations have them.");
+  CUGRAPH_EXPECTS(!carry_over || !has_sampled_dst_window_ends || sampled_src_vertex_window_ends,
+                  "CARRY_OVER requires source window ends when sampled destinations have them.");
+
+  rmm::device_uvector<vertex_t> frontier_vertices(frontier_size, handle.get_stream());
+  auto frontier_vertex_labels =
+    sampled_dst_vertex_labels
+      ? std::make_optional<rmm::device_uvector<label_t>>(frontier_size, handle.get_stream())
+      : std::nullopt;
+  auto frontier_vertex_times =
+    (has_sampled_dst_window_starts || (carry_over && sampled_src_vertex_window_starts))
+      ? std::make_optional<rmm::device_uvector<time_stamp_t>>(frontier_size, handle.get_stream())
+      : std::nullopt;
+  auto frontier_vertex_window_ends =
+    (has_sampled_dst_window_ends || (carry_over && sampled_src_vertex_window_ends))
+      ? std::make_optional<rmm::device_uvector<time_stamp_t>>(frontier_size, handle.get_stream())
+      : std::nullopt;
+
+  size_t current_pos = 0;
+
+  if (prior_sources_behavior == prior_sources_behavior_t::CARRY_OVER) {
+    thrust::copy(handle.get_thrust_policy(),
+                 sampled_src_vertices.begin(),
+                 sampled_src_vertices.end(),
+                 frontier_vertices.begin());
+    current_pos = sampled_src_vertices.size();
+  }
+
+  std::for_each(sampled_dst_vertices.begin(),
+                sampled_dst_vertices.end(),
+                [&handle, &frontier_vertices, &current_pos](auto& list) {
+                  thrust::copy(handle.get_thrust_policy(),
+                               list.begin(),
+                               list.end(),
+                               frontier_vertices.begin() + current_pos);
+                  current_pos += list.size();
+                });
+
+  if (frontier_vertex_labels) {
+    current_pos = 0;
+    if (prior_sources_behavior == prior_sources_behavior_t::CARRY_OVER) {
+      thrust::copy(handle.get_thrust_policy(),
+                   sampled_src_vertex_labels->begin(),
+                   sampled_src_vertex_labels->end(),
+                   frontier_vertex_labels->begin());
+      current_pos = sampled_src_vertex_labels->size();
+    }
+
+    std::for_each(sampled_dst_vertex_labels->begin(),
+                  sampled_dst_vertex_labels->end(),
+                  [&handle, &frontier_vertex_labels, &current_pos](auto& list) {
+                    if (list.size() > 0)
+                      thrust::copy(handle.get_thrust_policy(),
+                                   list.begin(),
+                                   list.end(),
+                                   frontier_vertex_labels->begin() + current_pos);
+                    current_pos += list.size();
+                  });
+  }
+
+  if (frontier_vertex_times) {
+    current_pos = 0;
+    if (prior_sources_behavior == prior_sources_behavior_t::CARRY_OVER) {
+      thrust::copy(handle.get_thrust_policy(),
+                   sampled_src_vertex_window_starts->begin(),
+                   sampled_src_vertex_window_starts->end(),
+                   frontier_vertex_times->begin());
+      current_pos = sampled_src_vertex_window_starts->size();
+    }
+
+    if (sampled_dst_vertex_window_start_spans) {
+      std::for_each(sampled_dst_vertex_window_start_spans->begin(),
+                    sampled_dst_vertex_window_start_spans->end(),
+                    [&handle, &frontier_vertex_times, &current_pos](auto& list) {
+                      if (list.size() > 0)
+                        thrust::copy(handle.get_thrust_policy(),
+                                     list.begin(),
+                                     list.end(),
+                                     frontier_vertex_times->begin() + current_pos);
+                      current_pos += list.size();
+                    });
+    }
+  }
+
+  if (frontier_vertex_window_ends) {
+    current_pos = 0;
+    if (prior_sources_behavior == prior_sources_behavior_t::CARRY_OVER) {
+      thrust::copy(handle.get_thrust_policy(),
+                   sampled_src_vertex_window_ends->begin(),
+                   sampled_src_vertex_window_ends->end(),
+                   frontier_vertex_window_ends->begin());
+      current_pos = sampled_src_vertex_window_ends->size();
+    }
+
+    if (sampled_dst_vertex_window_end_spans) {
+      std::for_each(sampled_dst_vertex_window_end_spans->begin(),
+                    sampled_dst_vertex_window_end_spans->end(),
+                    [&handle, &frontier_vertex_window_ends, &current_pos](auto& list) {
+                      if (list.size() > 0)
+                        thrust::copy(handle.get_thrust_policy(),
+                                     list.begin(),
+                                     list.end(),
+                                     frontier_vertex_window_ends->begin() + current_pos);
+                      current_pos += list.size();
+                    });
+    }
+  }
+
+  if (multi_gpu) {
+    std::vector<cugraph::arithmetic_device_uvector_t> vertex_properties{};
+    if (frontier_vertex_labels) { vertex_properties.push_back(std::move(*frontier_vertex_labels)); }
+    if (frontier_vertex_times) { vertex_properties.push_back(std::move(*frontier_vertex_times)); }
+    if (frontier_vertex_window_ends) {
+      vertex_properties.push_back(std::move(*frontier_vertex_window_ends));
+    }
+
+    if (!vertex_properties.empty()) {
+      std::tie(frontier_vertices, vertex_properties) =
+        shuffle_int_vertices(handle,
+                             std::move(frontier_vertices),
+                             std::move(vertex_properties),
+                             vertex_partition_range_lasts);
+
+      size_t pos = 0;
+      if (frontier_vertex_labels) {
+        frontier_vertex_labels =
+          std::move(std::get<rmm::device_uvector<label_t>>(vertex_properties[pos++]));
+      }
+      if (frontier_vertex_times) {
+        frontier_vertex_times =
+          std::move(std::get<rmm::device_uvector<time_stamp_t>>(vertex_properties[pos++]));
+      }
+      if (frontier_vertex_window_ends) {
+        frontier_vertex_window_ends =
+          std::move(std::get<rmm::device_uvector<time_stamp_t>>(vertex_properties[pos++]));
+      }
+    } else {
+      std::tie(frontier_vertices, std::ignore) =
+        shuffle_int_vertices(handle,
+                             std::move(frontier_vertices),
+                             std::vector<cugraph::arithmetic_device_uvector_t>{},
+                             vertex_partition_range_lasts);
+    }
+  }
+
+  if (frontier_vertex_labels) {
+    auto begin_iter =
+      thrust::make_zip_iterator(frontier_vertices.begin(), frontier_vertex_labels->begin());
+    if (frontier_vertex_times) {
+      if (frontier_vertex_window_ends) {
+        thrust::sort_by_key(handle.get_thrust_policy(),
+                            begin_iter,
+                            begin_iter + frontier_vertices.size(),
+                            thrust::make_zip_iterator(frontier_vertex_times->begin(),
+                                                      frontier_vertex_window_ends->begin()));
+      } else {
+        thrust::sort_by_key(handle.get_thrust_policy(),
+                            begin_iter,
+                            begin_iter + frontier_vertices.size(),
+                            frontier_vertex_times->begin());
+      }
+    } else if (frontier_vertex_window_ends) {
+      thrust::sort_by_key(handle.get_thrust_policy(),
+                          begin_iter,
+                          begin_iter + frontier_vertices.size(),
+                          frontier_vertex_window_ends->begin());
+    } else {
+      cugraph::sort(handle.get_thrust_policy(), begin_iter, begin_iter + frontier_vertices.size());
+    }
+  } else if (frontier_vertex_times) {
+    if (frontier_vertex_window_ends) {
+      thrust::sort_by_key(handle.get_thrust_policy(),
+                          frontier_vertices.begin(),
+                          frontier_vertices.end(),
+                          thrust::make_zip_iterator(frontier_vertex_times->begin(),
+                                                    frontier_vertex_window_ends->begin()));
+    } else {
+      thrust::sort_by_key(handle.get_thrust_policy(),
+                          frontier_vertices.begin(),
+                          frontier_vertices.end(),
+                          frontier_vertex_times->begin());
+    }
+  } else if (frontier_vertex_window_ends) {
+    thrust::sort_by_key(handle.get_thrust_policy(),
+                        frontier_vertices.begin(),
+                        frontier_vertices.end(),
+                        frontier_vertex_window_ends->begin());
+  } else {
+    cugraph::sort(handle.get_thrust_policy(), frontier_vertices.begin(), frontier_vertices.end());
+  }
+
+  if (vertex_used_as_source) {
+    auto& [verts, labels, times] = *vertex_used_as_source;
+
+    size_t current_verts_size = verts.size();
+    size_t new_verts_size     = current_verts_size + sampled_src_vertices.size();
+
+    verts.resize(new_verts_size, handle.get_stream());
+
+    thrust::copy(handle.get_thrust_policy(),
+                 sampled_src_vertices.begin(),
+                 sampled_src_vertices.end(),
+                 verts.begin() + current_verts_size);
+
+    if (sampled_src_vertex_labels) {
+      labels->resize(new_verts_size, handle.get_stream());
+
+      thrust::copy(handle.get_thrust_policy(),
+                   sampled_src_vertex_labels->begin(),
+                   sampled_src_vertex_labels->end(),
+                   labels->begin() + current_verts_size);
+    }
+
+    if (sampled_src_vertex_window_starts) {
+      times->resize(new_verts_size, handle.get_stream());
+
+      thrust::copy(handle.get_thrust_policy(),
+                   sampled_src_vertex_window_starts->begin(),
+                   sampled_src_vertex_window_starts->end(),
+                   times->begin() + current_verts_size);
+    }
+
+    if (sampled_src_vertex_labels) {
+      if (sampled_src_vertex_window_starts) {
+        auto begin_iter = thrust::make_zip_iterator(verts.begin(), labels->begin(), times->begin());
+
+        cugraph::sort(handle.get_thrust_policy(), begin_iter, begin_iter + new_verts_size);
+
+        auto end_iter =
+          cugraph::unique(handle.get_thrust_policy(), begin_iter, begin_iter + new_verts_size);
+
+        verts.resize(cuda::std::distance(begin_iter, end_iter), handle.get_stream());
+        labels->resize(cuda::std::distance(begin_iter, end_iter), handle.get_stream());
+        times->resize(cuda::std::distance(begin_iter, end_iter), handle.get_stream());
+      } else {
+        auto begin_iter = thrust::make_zip_iterator(verts.begin(), labels->begin());
+
+        cugraph::sort(handle.get_thrust_policy(), begin_iter, begin_iter + new_verts_size);
+
+        auto end_iter =
+          cugraph::unique(handle.get_thrust_policy(), begin_iter, begin_iter + new_verts_size);
+
+        verts.resize(cuda::std::distance(begin_iter, end_iter), handle.get_stream());
+        labels->resize(cuda::std::distance(begin_iter, end_iter), handle.get_stream());
+      }
+    } else {
+      if (sampled_src_vertex_window_starts) {
+        auto begin_iter = thrust::make_zip_iterator(verts.begin(), times->begin());
+
+        cugraph::sort(handle.get_thrust_policy(), begin_iter, begin_iter + new_verts_size);
+
+        auto end_iter =
+          cugraph::unique(handle.get_thrust_policy(), begin_iter, begin_iter + new_verts_size);
+
+        verts.resize(cuda::std::distance(begin_iter, end_iter), handle.get_stream());
+        times->resize(cuda::std::distance(begin_iter, end_iter), handle.get_stream());
+
+      } else {
+        cugraph::sort(handle.get_thrust_policy(), verts.begin(), verts.end());
+
+        auto end_iter = cugraph::unique(handle.get_thrust_policy(), verts.begin(), verts.end());
+
+        verts.resize(cuda::std::distance(verts.begin(), end_iter), handle.get_stream());
+      }
+    }
+
+    std::tie(frontier_vertices,
+             frontier_vertex_labels,
+             frontier_vertex_times,
+             frontier_vertex_window_ends) =
+      remove_visited_vertices_from_frontier(
+        handle,
+        std::move(frontier_vertices),
+        std::move(frontier_vertex_labels),
+        std::move(frontier_vertex_times),
+        std::move(frontier_vertex_window_ends),
+        raft::device_span<vertex_t const>{verts.data(), verts.size()},
+        labels
+          ? std::make_optional(raft::device_span<label_t const>{labels->data(), labels->size()})
+          : std::nullopt);
+  }
+
+  if (dedupe_sources) {
+    if (frontier_vertex_labels) {
+      if (frontier_vertex_times) {
+        if (frontier_vertex_window_ends) {
+          auto begin_iter = thrust::make_zip_iterator(frontier_vertices.begin(),
+                                                      frontier_vertex_labels->begin(),
+                                                      frontier_vertex_times->begin(),
+                                                      frontier_vertex_window_ends->begin());
+
+          auto new_end = cugraph::unique(
+            handle.get_thrust_policy(), begin_iter, begin_iter + frontier_vertices.size());
+
+          frontier_vertices.resize(cuda::std::distance(begin_iter, new_end), handle.get_stream());
+          frontier_vertex_labels->resize(cuda::std::distance(begin_iter, new_end),
+                                         handle.get_stream());
+          frontier_vertex_times->resize(cuda::std::distance(begin_iter, new_end),
+                                        handle.get_stream());
+          frontier_vertex_window_ends->resize(cuda::std::distance(begin_iter, new_end),
+                                              handle.get_stream());
+        } else {
+          auto begin_iter = thrust::make_zip_iterator(frontier_vertices.begin(),
+                                                      frontier_vertex_labels->begin(),
+                                                      frontier_vertex_times->begin());
+
+          auto new_end = cugraph::unique(
+            handle.get_thrust_policy(), begin_iter, begin_iter + frontier_vertices.size());
+
+          frontier_vertices.resize(cuda::std::distance(begin_iter, new_end), handle.get_stream());
+          frontier_vertex_labels->resize(cuda::std::distance(begin_iter, new_end),
+                                         handle.get_stream());
+          frontier_vertex_times->resize(cuda::std::distance(begin_iter, new_end),
+                                        handle.get_stream());
+        }
+      } else if (frontier_vertex_window_ends) {
+        auto begin_iter = thrust::make_zip_iterator(frontier_vertices.begin(),
+                                                    frontier_vertex_labels->begin(),
+                                                    frontier_vertex_window_ends->begin());
+
+        auto new_end = cugraph::unique(
+          handle.get_thrust_policy(), begin_iter, begin_iter + frontier_vertices.size());
+
+        frontier_vertices.resize(cuda::std::distance(begin_iter, new_end), handle.get_stream());
+        frontier_vertex_labels->resize(cuda::std::distance(begin_iter, new_end),
+                                       handle.get_stream());
+        frontier_vertex_window_ends->resize(cuda::std::distance(begin_iter, new_end),
+                                            handle.get_stream());
+      } else {
+        auto begin_iter =
+          thrust::make_zip_iterator(frontier_vertices.begin(), frontier_vertex_labels->begin());
+
+        auto new_end = cugraph::unique(
+          handle.get_thrust_policy(), begin_iter, begin_iter + frontier_vertices.size());
+
+        frontier_vertices.resize(cuda::std::distance(begin_iter, new_end), handle.get_stream());
+        frontier_vertex_labels->resize(cuda::std::distance(begin_iter, new_end),
+                                       handle.get_stream());
+      }
+    } else if (frontier_vertex_times) {
+      if (frontier_vertex_window_ends) {
+        auto begin_iter = thrust::make_zip_iterator(frontier_vertices.begin(),
+                                                    frontier_vertex_times->begin(),
+                                                    frontier_vertex_window_ends->begin());
+
+        auto new_end = cugraph::unique(
+          handle.get_thrust_policy(), begin_iter, begin_iter + frontier_vertices.size());
+
+        frontier_vertices.resize(cuda::std::distance(begin_iter, new_end), handle.get_stream());
+        frontier_vertex_times->resize(cuda::std::distance(begin_iter, new_end),
+                                      handle.get_stream());
+        frontier_vertex_window_ends->resize(cuda::std::distance(begin_iter, new_end),
+                                            handle.get_stream());
+      } else {
+        auto begin_iter =
+          thrust::make_zip_iterator(frontier_vertices.begin(), frontier_vertex_times->begin());
+
+        auto new_end = cugraph::unique(
+          handle.get_thrust_policy(), begin_iter, begin_iter + frontier_vertices.size());
+
+        frontier_vertices.resize(cuda::std::distance(begin_iter, new_end), handle.get_stream());
+        frontier_vertex_times->resize(cuda::std::distance(begin_iter, new_end),
+                                      handle.get_stream());
+      }
+    } else if (frontier_vertex_window_ends) {
+      auto begin_iter =
+        thrust::make_zip_iterator(frontier_vertices.begin(), frontier_vertex_window_ends->begin());
+
+      auto new_end = cugraph::unique(
+        handle.get_thrust_policy(), begin_iter, begin_iter + frontier_vertices.size());
+
+      frontier_vertices.resize(cuda::std::distance(begin_iter, new_end), handle.get_stream());
+      frontier_vertex_window_ends->resize(cuda::std::distance(begin_iter, new_end),
+                                          handle.get_stream());
+    } else {
+      auto new_end = cugraph::unique(
+        handle.get_thrust_policy(), frontier_vertices.begin(), frontier_vertices.end());
+
+      frontier_vertices.resize(cuda::std::distance(frontier_vertices.begin(), new_end),
+                               handle.get_stream());
+    }
+  }
+
+  return std::make_tuple(std::move(frontier_vertices),
+                         std::move(frontier_vertex_labels),
+                         std::move(frontier_vertex_times),
+                         std::move(frontier_vertex_window_ends),
+                         std::move(vertex_used_as_source));
+}
+
+}  // namespace detail
+}  // namespace cugraph

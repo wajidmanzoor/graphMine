@@ -7,8 +7,113 @@ from dataclasses import replace
 import httpx
 import pytest
 from graphmine_agent.config import Settings
-from graphmine_agent.llm import LLMError, OpenAICompatibleModel, constrain_plan_schema
-from graphmine_agent.models import LLMMode, PlanDraft, RouteDecision
+from graphmine_agent.llm import (
+    LLMError,
+    OpenAICompatibleModel,
+    constrain_plan_schema,
+    decoder_schema,
+    runtime_schema,
+)
+from graphmine_agent.models import GroundedNarrative, LLMMode, PlanDraft, RouteDecision
+
+
+def test_decoder_compatibility_preserves_logical_contract_and_other_constraints():
+    logical = runtime_schema(GroundedNarrative, {})
+    snapshot = jsonlib.dumps(logical, sort_keys=True)
+    wire = decoder_schema(logical)
+    chart = wire["$defs"]["VegaLiteDraft"]["properties"]["spec_json"]
+    assert "minLength" not in chart and "maxLength" not in chart
+    assert (
+        logical["$defs"]["VegaLiteDraft"]["properties"]["spec_json"]["maxLength"]
+        == 60000
+    )
+    assert jsonlib.dumps(logical, sort_keys=True) == snapshot
+    bounds = {
+        "type": "object",
+        "required": ["label", "values"],
+        "additionalProperties": False,
+        "properties": {
+            "label": {"type": "string", "minLength": 1, "pattern": "^[a-z]+$"},
+            "values": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 3,
+                "items": {"type": "integer", "minimum": 0, "maximum": 9},
+            },
+        },
+    }
+    compatible = decoder_schema(bounds)
+    del bounds["properties"]["label"]["minLength"]
+    assert compatible == bounds
+
+
+def test_decoder_defers_only_unrepresentable_integer_bounds():
+    logical = {
+        "anyOf": [
+            {"type": "integer", "minimum": 0, "maximum": 2**64 - 1},
+            {"type": "integer", "exclusiveMinimum": -(2**63), "maximum": 100},
+            {"type": "integer", "minimum": 32, "maximum": 65536, "multipleOf": 32},
+        ]
+    }
+    wire = decoder_schema(logical)
+    assert wire["anyOf"][0] == {"type": "integer", "minimum": 0}
+    assert wire["anyOf"][1] == {"type": "integer", "maximum": 100}
+    assert wire["anyOf"][2] == logical["anyOf"][2]
+    assert logical["anyOf"][0]["maximum"] == 2**64 - 1
+
+
+@pytest.mark.parametrize("spec", [jsonlib.dumps({"mark": "bar"}), "x" * 60001])
+def test_escaped_chart_strings_keep_post_generation_length_validation(settings, spec):
+    async def scenario():
+        model = OpenAICompatibleModel(settings)
+        await model._client.aclose()
+        calls = []
+        target = {
+            "fact_ids": ["count"],
+            "charts": [
+                {
+                    "title": "Counts",
+                    "description": "Compare computed counts.",
+                    "spec_json": spec,
+                    "fact_ids": ["count"],
+                }
+            ],
+        }
+
+        def respond(request):
+            body = jsonlib.loads(request.content)
+            calls.append(body)
+            schema = body["response_format"]["json_schema"]["schema"]
+            assert (
+                "maxLength"
+                not in schema["$defs"]["VegaLiteDraft"]["properties"]["spec_json"]
+            )
+            return httpx.Response(
+                200, json={"choices": [{"message": {"content": jsonlib.dumps(target)}}]}
+            )
+
+        model._client = httpx.AsyncClient(
+            base_url="http://shared/v1", transport=httpx.MockTransport(respond)
+        )
+        try:
+            if len(spec) > 60000:
+                with pytest.raises(LLMError, match="at most 60000"):
+                    await model.generate(
+                        mode=LLMMode.analyst,
+                        schema=GroundedNarrative,
+                        user_payload={},
+                    )
+                assert len(calls) == 2  # One bounded repair, then reject.
+            else:
+                result = await model.generate(
+                    mode=LLMMode.analyst, schema=GroundedNarrative, user_payload={}
+                )
+                assert jsonlib.loads(result.charts[0].spec_json) == {"mark": "bar"}
+                assert len(calls) == 1
+        finally:
+            await model.close()
+
+    asyncio.run(scenario())
 
 
 def test_deployed_adapter_is_routing_only_and_checks_its_fingerprint(settings):
@@ -98,6 +203,90 @@ def test_deployed_adapter_is_routing_only_and_checks_its_fingerprint(settings):
                 user_payload={"message": "Find groups"},
             )
         assert calls == ["adapter", "base", "adapter"]  # No silent base-model fallback.
+        await model.close()
+
+    asyncio.run(scenario())
+
+
+@pytest.mark.parametrize("server_contract", ["current", "legacy-20", "unrecognized"])
+def test_explicit_expanded_adapter_dispatch_checks_server_compatibility(
+    settings, catalog, server_contract
+):
+    async def scenario():
+        configured = replace(
+            settings,
+            llm_route_base_url="http://router.test",
+            llm_route_model="business-v1",
+            llm_route_adapter_sha256="verified-hash",
+            llm_route_allow_expanded_catalog=True,
+        )
+        contract = configured.routing_contract_version
+        identity = {
+            "model": "business-v1",
+            "adapter_sha256": "verified-hash",
+            "supported_routing_contracts": ["legacy-20", contract],
+            "routing_contract_version": contract
+            if server_contract == "current"
+            else server_contract,
+        }
+        model = OpenAICompatibleModel(configured)
+        await model._client.aclose()
+        await model._route_client.aclose()
+        calls = []
+
+        def router(request):
+            calls.append(request.url.path)
+            if request.url.path == "/health":
+                return httpx.Response(200, json=identity)
+            body = jsonlib.loads(request.content)
+            assert body["payload"]["routing_context"]["contract_version"] == contract
+            return httpx.Response(
+                200,
+                json={
+                    "identity": identity,
+                    "decision": {
+                        "problem_id": "connected_components",
+                        "operation_id": "connected-components",
+                        "supported": True,
+                        "confidence": 1,
+                        "explanation": "Connected groups.",
+                    },
+                },
+            )
+
+        def base(request):
+            assert request.url.path == "/models", (
+                "Routing must never silently fall back"
+            )
+            return httpx.Response(200, json={"data": []})
+
+        model._route_client = httpx.AsyncClient(
+            base_url="http://router.test", transport=httpx.MockTransport(router)
+        )
+        model._client = httpx.AsyncClient(
+            base_url="http://base.test", transport=httpx.MockTransport(base)
+        )
+        assert await model.available()
+        request = {
+            "mode": LLMMode.planner,
+            "schema": RouteDecision,
+            "user_payload": {
+                "message": "Find connected groups",
+                "routing_context": catalog.routing_context("general"),
+            },
+        }
+        if server_contract == "current":
+            assert (
+                await model.generate(**request)
+            ).operation_id == "connected-components"
+        else:
+            with pytest.raises(LLMError, match="different catalog"):
+                await model.generate(**request)
+        identity["supported_routing_contracts"] = ["legacy-20"]
+        assert not await model.available()
+        with pytest.raises(LLMError, match="does not accept the current catalog"):
+            await model.generate(**request)
+        assert calls == ["/health", "/route", "/health", "/route"]
         await model.close()
 
     asyncio.run(scenario())

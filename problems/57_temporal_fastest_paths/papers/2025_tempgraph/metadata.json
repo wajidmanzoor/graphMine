@@ -1,0 +1,27 @@
+{
+  "title": "TempGraph: An Efficient Chain-driven Temporal Graph Computing Framework on the GPU",
+  "year": 2025,
+  "venue": "ASPLOS 2025",
+  "doi": "10.1145/3676642.3736116",
+  "publication_url": "https://doi.org/10.1145/3676642.3736116",
+  "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3676642.3736116",
+  "paper_id": "2025_tempgraph",
+  "problem_id": "temporal_fastest_paths",
+  "problem_dir": "57_temporal_fastest_paths",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "TempGraph chain-driven temporal paths",
+  "code_url": null,
+  "semantic_fit": "variant",
+  "gpu_scope": "Published chain-based GPU execution for temporal path queries.",
+  "notes": "Public author code not located. Publisher PDF request failed and the Warwick repository marks its PDF restricted. No access restrictions were bypassed.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [],
+  "documentation_urls": [
+    "https://wrap.warwick.ac.uk/id/eprint/191864/"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

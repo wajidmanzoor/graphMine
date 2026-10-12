@@ -1,0 +1,30 @@
+{
+  "problem_id": "seeded_local_community_detection",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gunrock_ppr",
+      "algorithm_name": "Gunrock personalized PageRank diffusion",
+      "metadata": "49_seeded_local_community_detection/papers/2017_gunrock_ppr/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2017_gunrock_regularized_ppr",
+      "algorithm_name": "Gunrock accelerated regularized PageRank diffusion",
+      "metadata": "49_seeded_local_community_detection/papers/2017_gunrock_regularized_ppr/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_lgc",
+      "algorithm_name": "GraphBLAST residual-push local diffusion",
+      "metadata": "49_seeded_local_community_detection/papers/2019_graphblast_lgc/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

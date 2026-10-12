@@ -1,0 +1,30 @@
+{
+  "problem_id": "graph_based_geolocation",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gunrock_spatial_median",
+      "algorithm_name": "Gunrock spatial-median propagation",
+      "metadata": "60_graph_based_geolocation/papers/2017_gunrock_spatial_median/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_gt_geo",
+      "algorithm_name": "GT-Geo graph-transformer geolocation",
+      "metadata": "60_graph_based_geolocation/papers/2026_gt_geo/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_hb_geo",
+      "algorithm_name": "HB-Geo graph-learning geolocation",
+      "metadata": "60_graph_based_geolocation/papers/2026_hb_geo/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

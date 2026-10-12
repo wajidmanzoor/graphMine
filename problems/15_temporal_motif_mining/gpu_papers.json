@@ -1,0 +1,22 @@
+{
+  "problem_id": "temporal_motif_mining",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2024_everest",
+      "algorithm_name": "Everest: GPU-Accelerated System for Mining Temporal Motifs",
+      "metadata": "15_temporal_motif_mining/papers/2024_everest/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_mayura",
+      "algorithm_name": "Mayura: Exploiting Similarities in Motifs for Temporal Co-Mining",
+      "metadata": "15_temporal_motif_mining/papers/2025_mayura/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

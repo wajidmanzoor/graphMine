@@ -20,12 +20,14 @@
           "flag": "--minimum-clique-size",
           "type": "integer",
           "minimum": 1,
-          "default": 1
+          "default": 1,
+          "maximum": 18446744073709551615
         },
         "result_limit": {
           "flag": "--result-limit",
           "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "maximum": 18446744073709551615
         }
       },
       "optional_outputs": {
@@ -56,7 +58,8 @@
         "known_lower_bound": {
           "flag": "--known-lower-bound",
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "maximum": 4294967295
         }
       },
       "optional_outputs": {
@@ -100,13 +103,15 @@
           "flag": "--k",
           "type": "integer",
           "minimum": 2,
-          "default": 3
+          "default": 3,
+          "maximum": 4294967295
         },
         "result_limit": {
           "flag": "--result-limit",
           "type": "integer",
           "minimum": 1,
-          "requires_output": "cliques"
+          "requires_output": "cliques",
+          "maximum": 18446744073709551615
         }
       },
       "optional_outputs": {
@@ -121,7 +126,7 @@
       "backend_constraints": {
         "kcgpu": {
           "parameter_maximum": {
-            "k": 5
+            "k": 10
           }
         },
         "graphset": {
@@ -131,7 +136,7 @@
         },
         "gamma": {
           "parameter_maximum": {
-            "k": 5
+            "k": 7
           }
         }
       },
@@ -158,7 +163,8 @@
           "flag": "--minimum-size",
           "type": "integer",
           "minimum": 2,
-          "default": 4
+          "default": 4,
+          "maximum": 18446744073709551615
         },
         "scheduling": {
           "flag": "--scheduling",
@@ -172,7 +178,8 @@
         "result_limit": {
           "flag": "--result-limit",
           "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "maximum": 18446744073709551615
         }
       },
       "optional_outputs": {
@@ -198,7 +205,8 @@
         "requested_k": {
           "flag": "--requested-k",
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "maximum": 4294967295
         }
       },
       "optional_outputs": {
@@ -235,18 +243,21 @@
           "flag": "--minimum-left-size",
           "type": "integer",
           "minimum": 1,
-          "default": 1
+          "default": 1,
+          "maximum": 18446744073709551615
         },
         "minimum_right_size": {
           "flag": "--minimum-right-size",
           "type": "integer",
           "minimum": 1,
-          "default": 1
+          "default": 1,
+          "maximum": 18446744073709551615
         },
         "result_limit": {
           "flag": "--result-limit",
           "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "maximum": 18446744073709551615
         }
       },
       "optional_outputs": {
@@ -281,7 +292,8 @@
           "flag": "--result-limit",
           "type": "integer",
           "minimum": 1,
-          "requires_output": "triangles"
+          "requires_output": "triangles",
+          "maximum": 18446744073709551615
         },
         "wetric_spread": {
           "flag": "--wetric-spread",
@@ -289,15 +301,18 @@
           "minimum": 1,
           "default": 5,
           "backend": "wetric",
-          "performance_only": true
+          "performance_only": true,
+          "maximum": 47
         },
         "wetric_adjacency_matrix_length": {
           "flag": "--wetric-adjacency-matrix-length",
           "type": "integer",
-          "minimum": 1,
+          "minimum": 64,
           "default": 64,
           "backend": "wetric",
-          "performance_only": true
+          "performance_only": true,
+          "maximum": 4294967295,
+          "multiple_of": 64
         }
       },
       "optional_outputs": {
@@ -329,7 +344,8 @@
           "requires_any_output": [
             "deleted_triangles",
             "inserted_triangles"
-          ]
+          ],
+          "maximum": 18446744073709551615
         }
       },
       "optional_outputs": {
@@ -382,7 +398,8 @@
           "flag": "--result-limit-per-motif",
           "type": "integer",
           "minimum": 1,
-          "requires_output": "instances"
+          "requires_output": "instances",
+          "maximum": 18446744073709551615
         }
       },
       "optional_outputs": {
@@ -439,13 +456,15 @@
           "type": "integer",
           "minimum": 1,
           "default": 1000000,
-          "performance_only": true
+          "performance_only": true,
+          "maximum": 2147483647
         },
         "result_limit": {
           "flag": "--result-limit",
           "type": "integer",
           "minimum": 1,
-          "requires_output": "embeddings"
+          "requires_output": "embeddings",
+          "maximum": 18446744073709551615
         }
       },
       "optional_outputs": {
@@ -478,13 +497,15 @@
           "flag": "--max-time-span",
           "type": "integer",
           "minimum": 0,
-          "required": true
+          "required": true,
+          "maximum": 2147483647
         },
         "result_limit": {
           "flag": "--result-limit",
           "type": "integer",
           "minimum": 1,
-          "requires_output": "instances"
+          "requires_output": "instances",
+          "maximum": 18446744073709551615
         }
       },
       "optional_outputs": {
@@ -506,7 +527,14 @@
       "id": "community-detection",
       "problem_id": "community_detection",
       "default_backend": "gleiden",
-      "parameters": {},
+      "parameters": {
+        "resolution": {
+          "flag": "--resolution",
+          "type": "number",
+          "minimum": 0,
+          "default": 1.0
+        }
+      },
       "optional_outputs": {
         "communities": "--include-communities",
         "edge_cut": "--include-edge-cut"
@@ -522,7 +550,15 @@
         "bar",
         "table",
         "metric_cards"
-      ]
+      ],
+      "backend_constraints": {
+        "gleiden": {
+          "parameter_equals": {
+            "resolution": 1.0
+          }
+        }
+      },
+      "validated_profile": "Unweighted undirected modularity clustering. Parallel Louvain/Leiden backends accept finite nonnegative resolution; gLeiden requires resolution=1. Heuristic partition with independently recomputed objective, not a global optimum certificate."
     },
     {
       "id": "betweenness-centrality",
@@ -689,7 +725,15 @@
       "id": "densest-subgraph",
       "problem_id": "densest_subgraph",
       "default_backend": "cds",
-      "parameters": {},
+      "parameters": {
+        "clique_order": {
+          "flag": "--clique-order",
+          "type": "integer",
+          "default": 2,
+          "minimum": 2,
+          "maximum": 2147483647
+        }
+      },
       "optional_outputs": {},
       "auxiliary_inputs": {},
       "required_outputs": [
@@ -700,7 +744,7 @@
         "clique_count",
         "optimal"
       ],
-      "validated_profile": "Exact unweighted edge density |E(S)|/|S| on a nonempty undirected graph. No fixed cardinality, minimum-size constraint, weighted objective, or higher-order clique-density mode.",
+      "validated_profile": "Exact unweighted k-clique density C_k(S)/|S| on a nonempty undirected graph; clique_order defaults to 2 (edge density). Returns clique_count and checks the witness for the requested order. No fixed cardinality, minimum-size constraint or weighted objective. Order above vertex count gives zero density.",
       "visualization_candidates": [
         "table",
         "metric_cards",

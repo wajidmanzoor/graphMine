@@ -14,7 +14,13 @@ from .graph_context import (
     timestamp_unit,
 )
 from .models import EvidenceItem, ExecutionPlan, Interpretation, VisualizationSpec
-from .presentation import answer_tables, followup_options
+from .presentation import (
+    answer_tables,
+    followup_options,
+    method_explanation,
+    result_status,
+)
+from .profiles import DIRECTION_PRESERVING_OPERATIONS
 
 
 def build_answer(
@@ -56,6 +62,7 @@ def build_answer(
     selected: set[str] = set()
     metrics: dict[str, Any] = {}
     edge_rows: list[dict[str, Any]] = []
+    pattern_rows: list[dict[str, Any]] = []
     answer_edge_ids: set[str] | None = None
 
     def fact(statement: str, value: Any, source: str, kind: str = "computed") -> None:
@@ -100,7 +107,9 @@ def build_answer(
             if (identity(graph["edges"][index]["source"]) in keys)
             != (identity(graph["edges"][index]["target"]) in keys)
         ]
-        records = [vertices[key] for key in keys]
+        # Counter ties in attribute summaries preserve input order. Canonical
+        # IDs keep saved facts identical across Python processes/restarts.
+        records = [vertices[key] for key in sorted(keys)]
         attributes = {
             key: value
             for key, value in attribute_profile(records).items()
@@ -111,6 +120,7 @@ def build_answer(
                 "id": identifier,
                 "label": f"Group {len(groups) + 1}",
                 "vertices": members,
+                "member_keys": [identity(value) for value in members],
                 "members": [
                     display_name(vertices[identity(value)]) for value in members
                 ],
@@ -149,19 +159,24 @@ def build_answer(
             "Self-loops are removed and parallel undirected relationships are collapsed before decomposition."
         )
     elif operation == "densest-subgraph":
+        order = output.get("clique_order", 2)
+        count = output.get("clique_count", output["induced_edge_value"])
+        density_kind = "edge" if order == 2 else f"{order}-clique"
         metrics.update(
             density=output["density"],
             induced_edge_value=output["induced_edge_value"],
+            clique_order=order,
+            clique_count=count,
             optimal=output["optimal"],
         )
         add_group("densest", output["vertices"])
         fact(
-            f"The densest returned group has {len(output['vertices'])} entities and {output['induced_edge_value']} normalized relationships, with edge density {output['density']:g}.",
+            f"The densest returned group has {len(output['vertices'])} entities and {count} {density_kind} occurrences, with {density_kind} density {output['density']:g}.",
             metrics,
             "output",
         )
         limitations.append(
-            "Density is the number of undirected edges divided by the number of vertices; this profile uses unweighted edges and no fixed group size."
+            f"Density is the number of {density_kind} occurrences divided by the number of vertices; this profile uses unweighted edges and no fixed group size."
         )
     elif operation == "maximal-biclique-counting":
         metrics.update(total_count=output["total_count"], complete=output["complete"])
@@ -344,6 +359,50 @@ def build_answer(
         limitations.append(
             "This is a global count; individual participation counts and core decomposition were not computed."
         )
+    elif operation == "graph-motifs":
+        motifs = output.get("motifs", [])
+        fact(
+            f"Counted matches for {len(motifs)} supplied patterns.",
+            len(motifs),
+            "output.motifs",
+            "pattern_count",
+        )
+        for index, motif in enumerate(motifs):
+            name = str(motif["motif_id"])
+            instances = motif.get("instances", [])
+            status = (
+                "Not returned"
+                if "instances" not in motif
+                else (
+                    "All returned"
+                    if motif.get("instances_complete") is True
+                    else "Partial list"
+                )
+            )
+            pattern_rows.append(
+                {
+                    "Pattern": name,
+                    "Matches": motif["count"],
+                    "Listed matches": len(instances),
+                    "Instance list": status,
+                }
+            )
+            fact(
+                f"Pattern {name}: {motif['count']} matches; {len(instances)} individual matches listed ({status.lower()}).",
+                pattern_rows[-1],
+                f"output.motifs.{index}",
+                "pattern_count",
+            )
+            for instance_index, instance in enumerate(instances):
+                add_group(
+                    f"pattern_{index}_{instance_index}",
+                    [mapping["data_vertex"] for mapping in instance],
+                    label=f"{name} · Match {instance_index + 1}",
+                )
+            if status != "All returned" and motif["count"]:
+                limitations.append(
+                    f"Pattern {name} has no complete instance list; displayed memberships cannot establish every participant or absence."
+                )
     elif operation == "community-detection":
         membership: dict[Any, list[Any]] = defaultdict(list)
         for item in output.get("assignment_by_vertex", []):
@@ -549,6 +608,32 @@ def build_answer(
                 "The analysis returned these computed measurements.", metrics, "output"
             )
 
+    if len(groups) > 1:
+        sizes = [group["size"] for group in groups]
+        occurrences: dict[str, int] = defaultdict(int)
+        for group in groups:
+            for member in {identity(value) for value in group["vertices"]}:
+                occurrences[member] += 1
+        shared = sum(count > 1 for count in occurrences.values())
+        distribution = {
+            "returned_groups": len(groups),
+            "smallest_group": min(sizes),
+            "largest_group": max(sizes),
+            "unique_members": len(occurrences),
+            "members_in_multiple_groups": shared,
+        }
+        size_description = (
+            f"Each returned group has {sizes[0]} {noun}."
+            if min(sizes) == max(sizes)
+            else f"Returned group sizes range from {min(sizes)} to {max(sizes)} {noun}."
+        )
+        fact(
+            f"{size_description} Across these returned groups, there are {len(occurrences)} distinct {noun}; {shared} belong to more than one group.",
+            distribution,
+            "result membership",
+            "group_comparison",
+        )
+
     for group in groups[:10]:
         names = ", ".join(group["members"][:8]) + (", …" if group["size"] > 8 else "")
         fact(
@@ -687,14 +772,14 @@ def build_answer(
         for edge in answer_edges
         if identity(edge["source"]) in view_ids and identity(edge["target"]) in view_ids
     ][:2000]
-    complete = output.get(
-        "complete",
-        output.get(
+    complete = all(
+        output.get(field) is not False
+        for field in (
+            "complete",
             "instances_complete",
-            output.get(
-                "embeddings_complete", output.get("changed_instances_complete", True)
-            ),
-        ),
+            "embeddings_complete",
+            "changed_instances_complete",
+        )
     )
     if not complete and operation != "personalized-pagerank":
         limitations.append(
@@ -703,6 +788,17 @@ def build_answer(
     if len(rows) > len(view_nodes) or len(answer_edges) > len(view_edges):
         limitations.append(
             f"The network view displays {len(view_nodes)} of {len(rows)} answer entities and {len(view_edges)} of {len(answer_edges)} answer connections."
+        )
+    if (
+        graph["graph"]["directed"]
+        and plan.allow_directed_projection
+        and operation not in DIRECTION_PRESERVING_OPERATIONS
+    ):
+        fact(
+            "As requested, relationship directions were ignored for this computation. Arrows in the network retain the directions from the original data.",
+            {"directed_input": True, "undirected_computation": True},
+            "plan.allow_directed_projection",
+            "scope",
         )
     if operation in {
         "max-flow-min-cut",
@@ -732,6 +828,8 @@ def build_answer(
         else "",
         "operation_id": operation,
         "entity_noun": noun,
+        "method_explanation": method_explanation(operation, plan.parameters),
+        "result_status": result_status(operation, output),
         "facts": facts,
         "metrics": metrics,
         "groups": groups,
@@ -739,6 +837,7 @@ def build_answer(
         "events": events,
         "tables": answer_tables(rows, groups),
         "edge_rows": edge_rows,
+        "pattern_rows": pattern_rows,
         "network": {
             "nodes": view_nodes,
             "edges": view_edges,
@@ -748,6 +847,7 @@ def build_answer(
             ],
             "default_group": groups[0]["id"] if len(groups) > 12 else None,
             "entity_noun": noun,
+            "directed": graph["graph"]["directed"],
             "total_nodes": len(rows),
             "total_edges": len(answer_edges),
             "truncated": len(rows) > len(view_nodes)
@@ -769,6 +869,8 @@ def build_answer(
             "filter_evidence": filter_evidence,
             "input_vertices": len(vertices),
             "input_edges": len(graph["edges"]),
+            "source_vertices": len(original["vertices"]),
+            "source_edges": len(original["edges"]),
             "attribute_use": "joined from original input for explanation and display; filters are applied before execution",
             "timestamp_unit": timestamp_unit(graph),
         },
@@ -792,7 +894,10 @@ def answer_interpretation(
         chosen.insert(0, facts[0])
     # Scope and empty-result evidence must survive narrative selection too.
     for item in facts:
-        if item["kind"] in {"filter_evidence", "scope"} and item not in chosen:
+        if (
+            item["kind"] in {"filter_evidence", "scope", "group_comparison"}
+            and item not in chosen
+        ):
             chosen.append(item)
     options = followup_options(answer)
     selected_actions = [

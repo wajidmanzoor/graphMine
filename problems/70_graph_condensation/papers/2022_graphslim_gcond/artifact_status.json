@@ -1,0 +1,33 @@
+{
+  "problem_id": "graph_condensation",
+  "paper_id": "2022_graphslim_gcond",
+  "title": "Graph Condensation for Graph Neural Networks",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2110.07580",
+    "resolved_url": "https://arxiv.org/pdf/2110.07580",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "b13eca1be1cad61b02e0e55353646700bd43dd81c9b47999e2fd47f0a035d466",
+    "bytes": 764168,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/Emory-Melody/GraphSlim",
+    "local_path": "code",
+    "commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/graphslim.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "graphslim/condensation/gcond.py": "5f0cc49a8e7edc267603292e9bb0720e39a149dee01f23b223d805bd00f7f0f7"
+    }
+  }
+}

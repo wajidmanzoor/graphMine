@@ -1,0 +1,70 @@
+{
+  "problem_id": "centrality_influential_node_mining",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gunrock_bc",
+      "algorithm_name": "Gunrock bc",
+      "metadata": "18_centrality_influential_node_mining/papers/2017_gunrock_bc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_hornet_bc",
+      "algorithm_name": "Hornet Exact betweenness centrality",
+      "metadata": "18_centrality_influential_node_mining/papers/2018_hornet_bc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_hornet_katz",
+      "algorithm_name": "Hornet Katz centrality",
+      "metadata": "18_centrality_influential_node_mining/papers/2018_hornet_katz/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_pr",
+      "algorithm_name": "GraphBLAST pr",
+      "metadata": "18_centrality_influential_node_mining/papers/2019_graphblast_pr/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2021_turbobc",
+      "algorithm_name": "TurboBC: A Memory Efficient and Scalable GPU Based Betweenness Centrality Algorithm in the Language of Linear Algebra",
+      "metadata": "18_centrality_influential_node_mining/papers/2021_turbobc/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_betweenness",
+      "algorithm_name": "cuGraph Betweenness centrality",
+      "metadata": "18_centrality_influential_node_mining/papers/2026_cugraph_betweenness/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_eigenvector",
+      "algorithm_name": "cuGraph Eigenvector centrality",
+      "metadata": "18_centrality_influential_node_mining/papers/2026_cugraph_eigenvector/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_katz",
+      "algorithm_name": "cuGraph Katz centrality",
+      "metadata": "18_centrality_influential_node_mining/papers/2026_cugraph_katz/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

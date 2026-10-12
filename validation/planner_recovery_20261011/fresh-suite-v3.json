@@ -1,0 +1,1268 @@
+{
+  "version": "planner-recovery-fresh-20261011-v3",
+  "created_at": "2026-10-11T18:46:42.799147+00:00",
+  "scope": "Thirteen assistant-authored cases: twelve variations of four known failure categories and an independent-input scope control. Frozen and independently checked before model exposure. New data/wording; targeted local generalization check, not a public benchmark or human evaluation.",
+  "cases": [
+    {
+      "id": "fresh_cover_0",
+      "question": "Choose the fewest sites so that each connection has at least one chosen endpoint. I need a global optimum with no size bound.",
+      "input": {
+        "graph": {
+          "id": "fresh-cover-0",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "site-0-A"
+          },
+          {
+            "id": "site-0-B"
+          },
+          {
+            "id": "site-0-C"
+          },
+          {
+            "id": "site-0-D"
+          },
+          {
+            "id": "site-0-E"
+          },
+          {
+            "id": "site-0-F"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "site-0-A",
+            "target": "site-0-B",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "site-0-B",
+            "target": "site-0-C",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "site-0-C",
+            "target": "site-0-D",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "minimum-vertex-cover"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "minimum-vertex-cover",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "site-0-A",
+              "site-0-C"
+            ],
+            [
+              "site-0-B",
+              "site-0-C"
+            ],
+            [
+              "site-0-B",
+              "site-0-D"
+            ]
+          ]
+        }
+      ],
+      "required_parameters": {},
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "minimum-vertex-cover",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "id": "fresh_cover_1",
+      "question": "Place inspectors at the smallest possible set of sites that touches every link. Solve this exactly, with no limit k.",
+      "input": {
+        "graph": {
+          "id": "fresh-cover-1",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "site-1-A"
+          },
+          {
+            "id": "site-1-B"
+          },
+          {
+            "id": "site-1-C"
+          },
+          {
+            "id": "site-1-D"
+          },
+          {
+            "id": "site-1-E"
+          },
+          {
+            "id": "site-1-F"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "site-1-A",
+            "target": "site-1-B",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "site-1-A",
+            "target": "site-1-C",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "site-1-A",
+            "target": "site-1-D",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "source": "site-1-A",
+            "target": "site-1-E",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "minimum-vertex-cover"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "minimum-vertex-cover",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "site-1-A"
+            ]
+          ]
+        }
+      ],
+      "required_parameters": {},
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "minimum-vertex-cover",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "id": "fresh_cover_2",
+      "question": "Return one exact minimum vertex cover, including all disconnected parts of the network in the optimization.",
+      "input": {
+        "graph": {
+          "id": "fresh-cover-2",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "site-2-A"
+          },
+          {
+            "id": "site-2-B"
+          },
+          {
+            "id": "site-2-C"
+          },
+          {
+            "id": "site-2-D"
+          },
+          {
+            "id": "site-2-E"
+          },
+          {
+            "id": "site-2-F"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "site-2-A",
+            "target": "site-2-B",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "site-2-B",
+            "target": "site-2-C",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "site-2-C",
+            "target": "site-2-A",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "source": "site-2-D",
+            "target": "site-2-E",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "minimum-vertex-cover"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "minimum-vertex-cover",
+          "port": "vertices",
+          "kind": "one_of_sets",
+          "value": [
+            [
+              "site-2-A",
+              "site-2-B",
+              "site-2-D"
+            ],
+            [
+              "site-2-A",
+              "site-2-B",
+              "site-2-E"
+            ],
+            [
+              "site-2-A",
+              "site-2-C",
+              "site-2-D"
+            ],
+            [
+              "site-2-A",
+              "site-2-C",
+              "site-2-E"
+            ],
+            [
+              "site-2-B",
+              "site-2-C",
+              "site-2-D"
+            ],
+            [
+              "site-2-B",
+              "site-2-C",
+              "site-2-E"
+            ]
+          ]
+        }
+      ],
+      "required_parameters": {},
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "minimum-vertex-cover",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "id": "fresh_costs_0",
+      "question": "For every depot, compute the lowest total travel cost from depot-0-P. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "input": {
+        "graph": {
+          "id": "fresh-costs-0",
+          "directed": true,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "depot-0-P"
+          },
+          {
+            "id": "depot-0-Q"
+          },
+          {
+            "id": "depot-0-R"
+          },
+          {
+            "id": "depot-0-S"
+          },
+          {
+            "id": "depot-0-Z"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "depot-0-P",
+            "target": "depot-0-Q",
+            "weight": 7
+          },
+          {
+            "id": "e1",
+            "source": "depot-0-P",
+            "target": "depot-0-R",
+            "weight": 1.5
+          },
+          {
+            "id": "e2",
+            "source": "depot-0-R",
+            "target": "depot-0-Q",
+            "weight": 0.5
+          },
+          {
+            "id": "e3",
+            "source": "depot-0-Q",
+            "target": "depot-0-S",
+            "weight": 2
+          },
+          {
+            "id": "e4",
+            "source": "depot-0-R",
+            "target": "depot-0-S",
+            "weight": 9
+          }
+        ]
+      },
+      "operations": [
+        "single-source-shortest-paths"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "single-source-shortest-paths",
+          "port": "distances",
+          "kind": "scores",
+          "value": {
+            "depot-0-P": 0,
+            "depot-0-Q": 2.0,
+            "depot-0-R": 1.5,
+            "depot-0-S": 4.0,
+            "depot-0-Z": null
+          }
+        }
+      ],
+      "required_parameters": {
+        "single-source-shortest-paths": {
+          "source": "depot-0-P"
+        }
+      },
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "single-source-shortest-paths",
+          "parameters": {
+            "source": "depot-0-P"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh_costs_1",
+      "question": "For every depot, compute the lowest total travel cost from depot-1-S. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "input": {
+        "graph": {
+          "id": "fresh-costs-1",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "depot-1-P"
+          },
+          {
+            "id": "depot-1-Q"
+          },
+          {
+            "id": "depot-1-R"
+          },
+          {
+            "id": "depot-1-S"
+          },
+          {
+            "id": "depot-1-Z"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "depot-1-P",
+            "target": "depot-1-Q",
+            "weight": 7
+          },
+          {
+            "id": "e1",
+            "source": "depot-1-P",
+            "target": "depot-1-R",
+            "weight": 1.5
+          },
+          {
+            "id": "e2",
+            "source": "depot-1-R",
+            "target": "depot-1-Q",
+            "weight": 0.5
+          },
+          {
+            "id": "e3",
+            "source": "depot-1-Q",
+            "target": "depot-1-S",
+            "weight": 2
+          },
+          {
+            "id": "e4",
+            "source": "depot-1-R",
+            "target": "depot-1-S",
+            "weight": 9
+          }
+        ]
+      },
+      "operations": [
+        "single-source-shortest-paths"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "single-source-shortest-paths",
+          "port": "distances",
+          "kind": "scores",
+          "value": {
+            "depot-1-P": 4.0,
+            "depot-1-Q": 2,
+            "depot-1-R": 2.5,
+            "depot-1-S": 0,
+            "depot-1-Z": null
+          }
+        }
+      ],
+      "required_parameters": {
+        "single-source-shortest-paths": {
+          "source": "depot-1-S"
+        }
+      },
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "single-source-shortest-paths",
+          "parameters": {
+            "source": "depot-1-S"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh_costs_2",
+      "question": "For every depot, compute the lowest total travel cost from depot-2-P. Edge weights are costs, not hop counts. Respect the graph direction and do not apply a cutoff.",
+      "input": {
+        "graph": {
+          "id": "fresh-costs-2",
+          "directed": true,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "depot-2-P"
+          },
+          {
+            "id": "depot-2-Q"
+          },
+          {
+            "id": "depot-2-R"
+          },
+          {
+            "id": "depot-2-S"
+          },
+          {
+            "id": "depot-2-Z"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "depot-2-P",
+            "target": "depot-2-Q",
+            "weight": 7
+          },
+          {
+            "id": "e1",
+            "source": "depot-2-P",
+            "target": "depot-2-R",
+            "weight": 1.5
+          },
+          {
+            "id": "e2",
+            "source": "depot-2-R",
+            "target": "depot-2-Q",
+            "weight": 0.5
+          },
+          {
+            "id": "e3",
+            "source": "depot-2-Q",
+            "target": "depot-2-S",
+            "weight": 0
+          },
+          {
+            "id": "e4",
+            "source": "depot-2-R",
+            "target": "depot-2-S",
+            "weight": 9
+          }
+        ]
+      },
+      "operations": [
+        "single-source-shortest-paths"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "single-source-shortest-paths",
+          "port": "distances",
+          "kind": "scores",
+          "value": {
+            "depot-2-P": 0,
+            "depot-2-Q": 2.0,
+            "depot-2-R": 1.5,
+            "depot-2-S": 2.0,
+            "depot-2-Z": null
+          }
+        }
+      ],
+      "required_parameters": {
+        "single-source-shortest-paths": {
+          "source": "depot-2-P"
+        }
+      },
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "single-source-shortest-paths",
+          "parameters": {
+            "source": "depot-2-P"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh_neighbors_0",
+      "question": "Which members have a direct edge pointing into member-0-X? Return all incoming neighbors at one hop, excluding the member itself.",
+      "input": {
+        "graph": {
+          "id": "fresh-neighbors-0",
+          "directed": true,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "member-0-W"
+          },
+          {
+            "id": "member-0-X"
+          },
+          {
+            "id": "member-0-Y"
+          },
+          {
+            "id": "member-0-Z"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "member-0-W",
+            "target": "member-0-X",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "member-0-Y",
+            "target": "member-0-X",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "member-0-X",
+            "target": "member-0-Z",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "neighbors"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "member-0-W",
+            "member-0-Y"
+          ]
+        }
+      ],
+      "required_parameters": {
+        "neighbors": {
+          "entity": "member-0-X",
+          "hops": 1,
+          "direction": "in",
+          "include_seed": false
+        }
+      },
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "neighbors",
+          "parameters": {
+            "entity": "member-0-X",
+            "hops": 1,
+            "direction": "in",
+            "include_seed": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh_neighbors_1",
+      "question": "List every member directly reached by following one outgoing edge from member-1-X. Exclude the starting member.",
+      "input": {
+        "graph": {
+          "id": "fresh-neighbors-1",
+          "directed": true,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "member-1-W"
+          },
+          {
+            "id": "member-1-X"
+          },
+          {
+            "id": "member-1-Y"
+          },
+          {
+            "id": "member-1-Z"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "member-1-W",
+            "target": "member-1-X",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "member-1-Y",
+            "target": "member-1-X",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "member-1-X",
+            "target": "member-1-Z",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "neighbors"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "member-1-Z"
+          ]
+        }
+      ],
+      "required_parameters": {
+        "neighbors": {
+          "entity": "member-1-X",
+          "hops": 1,
+          "direction": "out",
+          "include_seed": false
+        }
+      },
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "neighbors",
+          "parameters": {
+            "entity": "member-1-X",
+            "hops": 1,
+            "direction": "out",
+            "include_seed": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh_neighbors_2",
+      "question": "Show all immediate neighbors of member-2-X in this undirected network; exclude the starting member.",
+      "input": {
+        "graph": {
+          "id": "fresh-neighbors-2",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "member-2-W"
+          },
+          {
+            "id": "member-2-X"
+          },
+          {
+            "id": "member-2-Y"
+          },
+          {
+            "id": "member-2-Z"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "member-2-W",
+            "target": "member-2-X",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "member-2-Y",
+            "target": "member-2-X",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "member-2-X",
+            "target": "member-2-Z",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "neighbors"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "member-2-W",
+            "member-2-Y",
+            "member-2-Z"
+          ]
+        }
+      ],
+      "required_parameters": {
+        "neighbors": {
+          "entity": "member-2-X",
+          "hops": 1,
+          "direction": "both",
+          "include_seed": false
+        }
+      },
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "neighbors",
+          "parameters": {
+            "entity": "member-2-X",
+            "hops": 1,
+            "direction": "both",
+            "include_seed": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh_derived_0",
+      "question": "First use query-subgraph in vertex mode to keep only lab-A, lab-B, lab-D, lab-F and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "input": {
+        "graph": {
+          "id": "fresh-derived",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "lab-A"
+          },
+          {
+            "id": "lab-B"
+          },
+          {
+            "id": "lab-C"
+          },
+          {
+            "id": "lab-D"
+          },
+          {
+            "id": "lab-E"
+          },
+          {
+            "id": "lab-F"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "lab-A",
+            "target": "lab-B",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "lab-B",
+            "target": "lab-C",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "lab-A",
+            "target": "lab-C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "source": "lab-C",
+            "target": "lab-D",
+            "weight": 1
+          },
+          {
+            "id": "e4",
+            "source": "lab-D",
+            "target": "lab-E",
+            "weight": 1
+          },
+          {
+            "id": "e5",
+            "source": "lab-C",
+            "target": "lab-E",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "query-subgraph",
+        "triangle-counting"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "lab-A",
+            "lab-B",
+            "lab-D",
+            "lab-F"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 0
+        }
+      ],
+      "required_parameters": {},
+      "required_graph_dependency": {
+        "triangle-counting": "query-subgraph"
+      },
+      "oracle_requests": [
+        {
+          "operation": "query-subgraph",
+          "parameters": {
+            "mode": "vertices",
+            "vertices": [
+              "lab-A",
+              "lab-B",
+              "lab-D",
+              "lab-F"
+            ]
+          }
+        },
+        {
+          "operation": "triangle-counting",
+          "parameters": {},
+          "graph_from": "query-subgraph"
+        }
+      ]
+    },
+    {
+      "id": "fresh_derived_1",
+      "question": "First use query-subgraph in vertex mode to keep only lab-A, lab-B, lab-C, lab-F and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "input": {
+        "graph": {
+          "id": "fresh-derived",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "lab-A"
+          },
+          {
+            "id": "lab-B"
+          },
+          {
+            "id": "lab-C"
+          },
+          {
+            "id": "lab-D"
+          },
+          {
+            "id": "lab-E"
+          },
+          {
+            "id": "lab-F"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "lab-A",
+            "target": "lab-B",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "lab-B",
+            "target": "lab-C",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "lab-A",
+            "target": "lab-C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "source": "lab-C",
+            "target": "lab-D",
+            "weight": 1
+          },
+          {
+            "id": "e4",
+            "source": "lab-D",
+            "target": "lab-E",
+            "weight": 1
+          },
+          {
+            "id": "e5",
+            "source": "lab-C",
+            "target": "lab-E",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "query-subgraph",
+        "triangle-counting"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "lab-A",
+            "lab-B",
+            "lab-C",
+            "lab-F"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 1
+        }
+      ],
+      "required_parameters": {},
+      "required_graph_dependency": {
+        "triangle-counting": "query-subgraph"
+      },
+      "oracle_requests": [
+        {
+          "operation": "query-subgraph",
+          "parameters": {
+            "mode": "vertices",
+            "vertices": [
+              "lab-A",
+              "lab-B",
+              "lab-C",
+              "lab-F"
+            ]
+          }
+        },
+        {
+          "operation": "triangle-counting",
+          "parameters": {},
+          "graph_from": "query-subgraph"
+        }
+      ]
+    },
+    {
+      "id": "fresh_derived_2",
+      "question": "First use query-subgraph in vertex mode to keep only lab-C, lab-D, lab-E and their connecting edges. Then return the triangle count for that extracted graph, not the original network.",
+      "input": {
+        "graph": {
+          "id": "fresh-derived",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "lab-A"
+          },
+          {
+            "id": "lab-B"
+          },
+          {
+            "id": "lab-C"
+          },
+          {
+            "id": "lab-D"
+          },
+          {
+            "id": "lab-E"
+          },
+          {
+            "id": "lab-F"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "lab-A",
+            "target": "lab-B",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "lab-B",
+            "target": "lab-C",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "lab-A",
+            "target": "lab-C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "source": "lab-C",
+            "target": "lab-D",
+            "weight": 1
+          },
+          {
+            "id": "e4",
+            "source": "lab-D",
+            "target": "lab-E",
+            "weight": 1
+          },
+          {
+            "id": "e5",
+            "source": "lab-C",
+            "target": "lab-E",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "query-subgraph",
+        "triangle-counting"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "lab-C",
+            "lab-D",
+            "lab-E"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 1
+        }
+      ],
+      "required_parameters": {},
+      "required_graph_dependency": {
+        "triangle-counting": "query-subgraph"
+      },
+      "oracle_requests": [
+        {
+          "operation": "query-subgraph",
+          "parameters": {
+            "mode": "vertices",
+            "vertices": [
+              "lab-C",
+              "lab-D",
+              "lab-E"
+            ]
+          }
+        },
+        {
+          "operation": "triangle-counting",
+          "parameters": {},
+          "graph_from": "query-subgraph"
+        }
+      ]
+    },
+    {
+      "id": "fresh_independent_scope",
+      "question": "Give me two independent outputs: use query-subgraph in vertex mode to extract only lab-A, lab-B, lab-D, lab-F; separately count all triangles in the original full network. The triangle calculation must not use the extracted graph.",
+      "input": {
+        "graph": {
+          "id": "fresh-derived",
+          "directed": false,
+          "allows_self_loops": false,
+          "allows_parallel_edges": false
+        },
+        "vertices": [
+          {
+            "id": "lab-A"
+          },
+          {
+            "id": "lab-B"
+          },
+          {
+            "id": "lab-C"
+          },
+          {
+            "id": "lab-D"
+          },
+          {
+            "id": "lab-E"
+          },
+          {
+            "id": "lab-F"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e0",
+            "source": "lab-A",
+            "target": "lab-B",
+            "weight": 1
+          },
+          {
+            "id": "e1",
+            "source": "lab-B",
+            "target": "lab-C",
+            "weight": 1
+          },
+          {
+            "id": "e2",
+            "source": "lab-A",
+            "target": "lab-C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "source": "lab-C",
+            "target": "lab-D",
+            "weight": 1
+          },
+          {
+            "id": "e4",
+            "source": "lab-D",
+            "target": "lab-E",
+            "weight": 1
+          },
+          {
+            "id": "e5",
+            "source": "lab-C",
+            "target": "lab-E",
+            "weight": 1
+          }
+        ]
+      },
+      "operations": [
+        "query-subgraph",
+        "triangle-counting"
+      ],
+      "expected_status": "ready",
+      "checks": [
+        {
+          "operation": "query-subgraph",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "lab-A",
+            "lab-B",
+            "lab-D",
+            "lab-F"
+          ]
+        },
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 2
+        }
+      ],
+      "required_parameters": {},
+      "required_graph_dependency": {},
+      "oracle_requests": [
+        {
+          "operation": "query-subgraph",
+          "parameters": {
+            "mode": "vertices",
+            "vertices": [
+              "lab-A",
+              "lab-B",
+              "lab-D",
+              "lab-F"
+            ]
+          }
+        },
+        {
+          "operation": "triangle-counting",
+          "parameters": {}
+        }
+      ]
+    }
+  ]
+}

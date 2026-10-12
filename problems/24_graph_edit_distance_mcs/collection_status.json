@@ -1,0 +1,60 @@
+{
+  "problem_id": "graph_edit_distance_mcs",
+  "problem_dir": "24_graph_edit_distance_mcs",
+  "name": "Graph Edit Distance and Maximum Common Subgraph",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 2,
+  "local_gpu_code_entries": 1,
+  "local_paper_entries": 2,
+  "local_gpu_code_and_paper_including_related": 1,
+  "eligible_code_and_paper_references": 1,
+  "eligible_local_code_and_paper_pairs": 1,
+  "target_met": false,
+  "shortfall": 2,
+  "shortfall_explanation": "Graph matching/alignment optimizes a different objective from certified GED/MCS. Public fast-GED source exists in the older workspace; license and semantic review remain explicit.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "see_existing_validation",
+  "runtime_status": "see_existing_validation",
+  "canonical_adapters": null,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 2,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [],
+    "shortfall": "Graph matching/alignment optimizes a different objective from certified GED/MCS. Public fast-GED source exists in the older workspace; license and semantic review remain explicit.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2016_gpu_mcs_drug_discovery",
+      "algorithm_name": "A GPU Based Maximum Common Subgraph Algorithm for Drug Discovery Applications",
+      "paper_role": "algorithm",
+      "semantic_fit": "exact",
+      "local_gpu_code": false,
+      "local_paper": true,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "see_existing_validation",
+      "notes": "Predates common open-source hosting norms for this subfield; no public repository was located.",
+      "metadata_path": "24_graph_edit_distance_mcs/papers/2016_gpu_mcs_drug_discovery/metadata.json"
+    },
+    {
+      "paper_id": "2026_fast_ged",
+      "algorithm_name": "Efficient Accelerated Graph Edit Distance Computation on GPU",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "see_existing_validation",
+      "notes": "Official repository is hosted on the Juelich Supercomputing Centre GitLab, not GitHub.",
+      "metadata_path": "24_graph_edit_distance_mcs/papers/2026_fast_ged/metadata.json"
+    }
+  ]
+}

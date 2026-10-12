@@ -1,0 +1,38 @@
+{
+  "problem_id": "butterfly_counting_bipartite",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2022_g2miner_reuse",
+      "algorithm_name": "Efficient and Scalable Graph Pattern Mining on GPUs",
+      "metadata": "23_butterfly_counting_bipartite/papers/2022_g2miner_reuse/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2022_gamma_reuse",
+      "algorithm_name": "A Graph Pattern Mining Framework for Large Graphs on GPU",
+      "metadata": "23_butterfly_counting_bipartite/papers/2022_gamma_reuse/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2022_gbfc",
+      "algorithm_name": "Efficient Load-Balanced Butterfly Counting on GPU",
+      "metadata": "23_butterfly_counting_bipartite/papers/2022_gbfc/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_gbc_biclique",
+      "algorithm_name": "Accelerating Biclique Counting on GPU",
+      "metadata": "23_butterfly_counting_bipartite/papers/2024_gbc_biclique/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    }
+  ]
+}

@@ -28,6 +28,7 @@ struct CommunityDetectionBackendResult {
 
 [[nodiscard]] bool pggc_backend_compiled() noexcept;
 [[nodiscard]] CommunityDetectionBackendResult run_pggc(
-    const CsrGraph& graph, int device_id, PggcAlgorithm algorithm);
+    const CsrGraph& graph, int device_id, PggcAlgorithm algorithm,
+    double resolution = 1.0);
 
 }  // namespace graphmine::detail

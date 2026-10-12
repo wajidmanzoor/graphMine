@@ -1,0 +1,42 @@
+{
+  "title": "HySpecPro: Scalable Hypergraph Partitioning via Spectral Projection Optimization",
+  "authors": [
+    "Rongjian Liang",
+    "Zhuo Feng",
+    "Haoxing Ren"
+  ],
+  "year": 2026,
+  "venue": "Research preprint",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2607.00055",
+  "pdf_url": "https://arxiv.org/pdf/2607.00055",
+  "paper_id": "2026_hyspecpro",
+  "problem_id": "hypergraph_partitioning",
+  "problem_dir": "54_hypergraph_partitioning",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "HySpecPro",
+  "code_url": "https://github.com/NVlabs/HySpecPro",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch sparse and dense optimization on CUDA; Python orchestration and input loading remain on CPU.",
+  "notes": "GPU spectral-projection hypergraph bipartitioning. The public driver supports two-way partitioning; do not claim arbitrary k-way support or exact optimization.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "HySpecPro.py",
+    "helper.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "hyspecpro",
+  "variant_constraints": [
+    "two-way hypergraph partitioning",
+    "declared imbalance bound",
+    "heuristic cut objective"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

@@ -1,0 +1,30 @@
+{
+  "problem_id": "hop_constrained_cycle_path_enumeration",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2014_gpu_chordless_cycles",
+      "algorithm_name": "A GPU-based parallel algorithm for enumerating all chordless cycles in graphs",
+      "metadata": "26_hop_constrained_cycle_path_enumeration/papers/2014_gpu_chordless_cycles/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2022_gpu_elementary_circuits",
+      "algorithm_name": "Fast parallel algorithms for finding elementary circuits of a directed graph: a GPU-based approach",
+      "metadata": "26_hop_constrained_cycle_path_enumeration/papers/2022_gpu_elementary_circuits/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_simple_cycles",
+      "algorithm_name": "cuGraph Elementary cycle enumeration",
+      "metadata": "26_hop_constrained_cycle_path_enumeration/papers/2026_cugraph_simple_cycles/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

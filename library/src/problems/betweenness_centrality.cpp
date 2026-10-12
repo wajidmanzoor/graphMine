@@ -36,6 +36,10 @@ BetweennessCentrality::BetweennessCentrality(
     : options_(std::move(options)) {}
 
 SupportReport BetweennessCentrality::supports(const Graph& graph) const {
+  for (const auto& edge : graph.canonical().edges) {
+    if (edge.weight && *edge.weight != 1.0)
+      return {false, "TurboBC requires unweighted edges or unit weights"};
+  }
   if (graph.directed() && !options_.allow_directed_projection) {
     return {false,
             "directed input requires allow_directed_projection=true"};

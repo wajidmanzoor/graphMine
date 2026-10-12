@@ -1,0 +1,1009 @@
+[
+  {
+    "operation": "maximal-cliques",
+    "backend": "mce-gpu",
+    "parameters": {
+      "minimum_clique_size": {
+        "flag": "--minimum-clique-size",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1,
+        "maximum": 18446744073709551615
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact_count",
+      "multi_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "maximal-cliques",
+    "backend": "g2-aimd",
+    "parameters": {
+      "minimum_clique_size": {
+        "flag": "--minimum-clique-size",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1,
+        "maximum": 18446744073709551615
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact_count"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "maximal-cliques",
+    "backend": "rdmce",
+    "parameters": {
+      "minimum_clique_size": {
+        "flag": "--minimum-clique-size",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1,
+        "maximum": 18446744073709551615
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact_count",
+      "single_gpu",
+      "multi_gpu_upstream"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "maximum-clique",
+    "backend": "cuda-ms",
+    "parameters": {
+      "return_all_ties": {
+        "flag": "--return-all-ties",
+        "type": "boolean",
+        "default": false
+      },
+      "known_lower_bound": {
+        "flag": "--known-lower-bound",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4294967295
+      }
+    },
+    "backend_constraints": {
+      "forbids_true": [
+        "return_all_ties"
+      ]
+    },
+    "capabilities": [
+      "single_clique",
+      "single_gpu",
+      "dense_adjacency"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "maximum-clique",
+    "backend": "gpu-maximum-clique",
+    "parameters": {
+      "return_all_ties": {
+        "flag": "--return-all-ties",
+        "type": "boolean",
+        "default": false
+      },
+      "known_lower_bound": {
+        "flag": "--known-lower-bound",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4294967295
+      }
+    },
+    "backend_constraints": {
+      "supports": [
+        "return_all_ties"
+      ]
+    },
+    "capabilities": [
+      "single_clique",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "maximum-clique",
+    "backend": "maximum-clique-on-gpu",
+    "parameters": {
+      "return_all_ties": {
+        "flag": "--return-all-ties",
+        "type": "boolean",
+        "default": false
+      },
+      "known_lower_bound": {
+        "flag": "--known-lower-bound",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4294967295
+      }
+    },
+    "backend_constraints": {
+      "forbids_true": [
+        "return_all_ties"
+      ]
+    },
+    "capabilities": [
+      "single_clique",
+      "multi_gpu_upstream"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "k-cliques",
+    "backend": "kcgpu",
+    "parameters": {
+      "k": {
+        "flag": "--k",
+        "type": "integer",
+        "minimum": 2,
+        "default": 3,
+        "maximum": 4294967295
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "cliques",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {
+      "parameter_maximum": {
+        "k": 10
+      }
+    },
+    "capabilities": [
+      "exact_count",
+      "single_gpu",
+      "k_3_to_10"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "k-cliques",
+    "backend": "graphset",
+    "parameters": {
+      "k": {
+        "flag": "--k",
+        "type": "integer",
+        "minimum": 2,
+        "default": 3,
+        "maximum": 4294967295
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "cliques",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {
+      "parameter_maximum": {
+        "k": 6
+      }
+    },
+    "capabilities": [
+      "exact_count",
+      "single_gpu",
+      "k_3_to_6"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "k-cliques",
+    "backend": "gamma",
+    "parameters": {
+      "k": {
+        "flag": "--k",
+        "type": "integer",
+        "minimum": 2,
+        "default": 3,
+        "maximum": 4294967295
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "cliques",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {
+      "parameter_maximum": {
+        "k": 7
+      }
+    },
+    "capabilities": [
+      "exact_count",
+      "single_gpu",
+      "k_3_to_7"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "quasi-cliques",
+    "backend": "cuqc",
+    "parameters": {
+      "minimum_degree_ratio": {
+        "flag": "--minimum-degree-ratio",
+        "type": "number",
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "default": 0.8
+      },
+      "minimum_size": {
+        "flag": "--minimum-size",
+        "type": "integer",
+        "minimum": 2,
+        "default": 4,
+        "maximum": 18446744073709551615
+      },
+      "scheduling": {
+        "flag": "--scheduling",
+        "type": "string",
+        "choices": [
+          "dynamic",
+          "static"
+        ],
+        "default": "dynamic"
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "maximal_sets",
+      "gamma_at_least_one_half",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "k-core",
+    "backend": "kcore-gpu",
+    "parameters": {
+      "requested_k": {
+        "flag": "--requested-k",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4294967295
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "full_core_vector",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "maximal-bicliques",
+    "backend": "cumbe",
+    "parameters": {
+      "minimum_left_size": {
+        "flag": "--minimum-left-size",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1,
+        "maximum": 18446744073709551615
+      },
+      "minimum_right_size": {
+        "flag": "--minimum-right-size",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1,
+        "maximum": 18446744073709551615
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact_count",
+      "bipartite",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "triangle-counting",
+    "backend": "tot",
+    "parameters": {
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "triangles",
+        "maximum": 18446744073709551615
+      },
+      "wetric_spread": {
+        "flag": "--wetric-spread",
+        "type": "integer",
+        "minimum": 1,
+        "default": 5,
+        "backend": "wetric",
+        "performance_only": true,
+        "maximum": 47
+      },
+      "wetric_adjacency_matrix_length": {
+        "flag": "--wetric-adjacency-matrix-length",
+        "type": "integer",
+        "minimum": 64,
+        "default": 64,
+        "backend": "wetric",
+        "performance_only": true,
+        "maximum": 4294967295,
+        "multiple_of": 64
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact_global_count",
+      "single_gpu",
+      "tensor_cores"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "triangle-counting",
+    "backend": "wetric",
+    "parameters": {
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "triangles",
+        "maximum": 18446744073709551615
+      },
+      "wetric_spread": {
+        "flag": "--wetric-spread",
+        "type": "integer",
+        "minimum": 1,
+        "default": 5,
+        "backend": "wetric",
+        "performance_only": true,
+        "maximum": 47
+      },
+      "wetric_adjacency_matrix_length": {
+        "flag": "--wetric-adjacency-matrix-length",
+        "type": "integer",
+        "minimum": 64,
+        "default": 64,
+        "backend": "wetric",
+        "performance_only": true,
+        "maximum": 4294967295,
+        "multiple_of": 64
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact_global_count",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "dynamic-triangle-counting",
+    "backend": "edtc",
+    "parameters": {
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_any_output": [
+          "deleted_triangles",
+          "inserted_triangles"
+        ],
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact_batch_changes",
+      "single_gpu",
+      "dynamic_graph"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "graph-motifs",
+    "backend": "graphminer",
+    "parameters": {
+      "induced": {
+        "flag": "--induced",
+        "type": "boolean",
+        "default": false
+      },
+      "occurrence_identity": {
+        "flag": "--occurrence-identity",
+        "type": "string",
+        "choices": [
+          "unique-vertex-set-and-mapping-class",
+          "all-embeddings"
+        ],
+        "default": "unique-vertex-set-and-mapping-class"
+      },
+      "result_limit_per_motif": {
+        "flag": "--result-limit-per-motif",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "instances",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {
+      "parameter_equals": {
+        "induced": true
+      }
+    },
+    "capabilities": [
+      "induced",
+      "undirected",
+      "sizes_3_4",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "graph-motifs",
+    "backend": "graphset",
+    "parameters": {
+      "induced": {
+        "flag": "--induced",
+        "type": "boolean",
+        "default": false
+      },
+      "occurrence_identity": {
+        "flag": "--occurrence-identity",
+        "type": "string",
+        "choices": [
+          "unique-vertex-set-and-mapping-class",
+          "all-embeddings"
+        ],
+        "default": "unique-vertex-set-and-mapping-class"
+      },
+      "result_limit_per_motif": {
+        "flag": "--result-limit-per-motif",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "instances",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {
+      "parameter_equals": {
+        "induced": false
+      }
+    },
+    "capabilities": [
+      "non_induced",
+      "undirected",
+      "sizes_3_4",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "graph-motifs",
+    "backend": "dumato",
+    "parameters": {
+      "induced": {
+        "flag": "--induced",
+        "type": "boolean",
+        "default": false
+      },
+      "occurrence_identity": {
+        "flag": "--occurrence-identity",
+        "type": "string",
+        "choices": [
+          "unique-vertex-set-and-mapping-class",
+          "all-embeddings"
+        ],
+        "default": "unique-vertex-set-and-mapping-class"
+      },
+      "result_limit_per_motif": {
+        "flag": "--result-limit-per-motif",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "instances",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {
+      "parameter_equals": {
+        "induced": true
+      }
+    },
+    "capabilities": [
+      "induced",
+      "undirected",
+      "sizes_3_4",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "subgraph-isomorphism",
+    "backend": "gmatch",
+    "parameters": {
+      "ignore_vertex_labels": {
+        "flag": "--ignore-vertex-labels",
+        "type": "boolean",
+        "default": false
+      },
+      "initial_match_capacity": {
+        "flag": "--initial-match-capacity",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1000000,
+        "performance_only": true,
+        "maximum": 2147483647
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "embeddings",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "labeled",
+      "non_induced",
+      "exact_count",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "temporal-motif-mining",
+    "backend": "everest",
+    "parameters": {
+      "max_time_span": {
+        "flag": "--max-time-span",
+        "type": "integer",
+        "minimum": 0,
+        "required": true,
+        "maximum": 2147483647
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "instances",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "directed",
+      "parallel_events",
+      "integer_timestamps",
+      "feed_forward_triangle",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "temporal-motif-mining",
+    "backend": "mayura",
+    "parameters": {
+      "max_time_span": {
+        "flag": "--max-time-span",
+        "type": "integer",
+        "minimum": 0,
+        "required": true,
+        "maximum": 2147483647
+      },
+      "result_limit": {
+        "flag": "--result-limit",
+        "type": "integer",
+        "minimum": 1,
+        "requires_output": "instances",
+        "maximum": 18446744073709551615
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "directed",
+      "parallel_events",
+      "integer_timestamps",
+      "feed_forward_triangle",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "community-detection",
+    "backend": "gleiden",
+    "parameters": {
+      "resolution": {
+        "flag": "--resolution",
+        "type": "number",
+        "minimum": 0,
+        "default": 1.0
+      }
+    },
+    "backend_constraints": {
+      "parameter_equals": {
+        "resolution": 1.0
+      }
+    },
+    "capabilities": [
+      "unweighted",
+      "undirected",
+      "modularity",
+      "single_gpu"
+    ],
+    "validated_profile": "Unweighted undirected modularity clustering. Parallel Louvain/Leiden backends accept finite nonnegative resolution; gLeiden requires resolution=1. Heuristic partition with independently recomputed objective, not a global optimum certificate."
+  },
+  {
+    "operation": "community-detection",
+    "backend": "parallel-louvain",
+    "parameters": {
+      "resolution": {
+        "flag": "--resolution",
+        "type": "number",
+        "minimum": 0,
+        "default": 1.0
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "unweighted",
+      "undirected",
+      "modularity",
+      "kokkos_cuda"
+    ],
+    "validated_profile": "Unweighted undirected modularity clustering. Parallel Louvain/Leiden backends accept finite nonnegative resolution; gLeiden requires resolution=1. Heuristic partition with independently recomputed objective, not a global optimum certificate."
+  },
+  {
+    "operation": "community-detection",
+    "backend": "parallel-leiden",
+    "parameters": {
+      "resolution": {
+        "flag": "--resolution",
+        "type": "number",
+        "minimum": 0,
+        "default": 1.0
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "unweighted",
+      "undirected",
+      "modularity",
+      "kokkos_cuda"
+    ],
+    "validated_profile": "Unweighted undirected modularity clustering. Parallel Louvain/Leiden backends accept finite nonnegative resolution; gLeiden requires resolution=1. Heuristic partition with independently recomputed objective, not a global optimum certificate."
+  },
+  {
+    "operation": "community-detection",
+    "backend": "parallel-leiden-plus",
+    "parameters": {
+      "resolution": {
+        "flag": "--resolution",
+        "type": "number",
+        "minimum": 0,
+        "default": 1.0
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "unweighted",
+      "undirected",
+      "modularity",
+      "kokkos_cuda"
+    ],
+    "validated_profile": "Unweighted undirected modularity clustering. Parallel Louvain/Leiden backends accept finite nonnegative resolution; gLeiden requires resolution=1. Heuristic partition with independently recomputed objective, not a global optimum certificate."
+  },
+  {
+    "operation": "betweenness-centrality",
+    "backend": "turbo-bc",
+    "parameters": {},
+    "backend_constraints": {},
+    "capabilities": [
+      "unweighted",
+      "undirected",
+      "full_score_vector",
+      "single_gpu"
+    ],
+    "validated_profile": null
+  },
+  {
+    "operation": "connected-components",
+    "backend": "ecl-scc",
+    "parameters": {
+      "connectivity_mode": {
+        "flag": "--connectivity-mode",
+        "type": "string",
+        "required": true,
+        "choices": [
+          "weakly_connected",
+          "strongly_connected"
+        ]
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact weak/strong components; loops removed; parallel edges collapsed",
+      "at most 1M vertices/10M input edges; isolated CUDA worker"
+    ],
+    "validated_profile": "weak or strong exact connectivity"
+  },
+  {
+    "operation": "max-flow-min-cut",
+    "backend": "ecl-maxflow",
+    "parameters": {
+      "source": {
+        "flag": "--source",
+        "type": "vertex_id",
+        "required": true,
+        "description": "Exact external vertex ID; preserve integer versus string identity."
+      },
+      "sink": {
+        "flag": "--sink",
+        "type": "vertex_id",
+        "required": true,
+        "description": "Exact external vertex ID; preserve integer versus string identity."
+      },
+      "unit_capacity": {
+        "flag": "--unit-capacity",
+        "type": "boolean",
+        "default": false,
+        "description": "True only when the user explicitly assigns every edge capacity one."
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "directed edge capacities: nonnegative integers; unit_capacity supported",
+      "total capacity <= 1e9; no vertex capacities; exact flow/cut certificate",
+      "parallel capacities summed; original edge flows restored; bounded worker"
+    ],
+    "validated_profile": "directed, integer edge capacities, total capacity <= 1e9; no vertex capacities"
+  },
+  {
+    "operation": "linear-assignment",
+    "backend": "hungarian-cuda",
+    "parameters": {},
+    "backend_constraints": {},
+    "capabilities": [
+      "minimum-cost perfect assignment only; complete square graph; at most 64 per side",
+      "integer costs [0,999]; attributes.side = left|right; no general matching modes"
+    ],
+    "validated_profile": "complete square minimum-cost perfect assignment; <=64 per side; costs integer 0..999; declared sides"
+  },
+  {
+    "operation": "transitive-closure",
+    "backend": "gdlog",
+    "parameters": {},
+    "backend_constraints": {},
+    "capabilities": [
+      "exact reflexive transitive closure; directed input; loops/duplicates normalized",
+      "complete pair materialization, at most 1024 vertices; no persistent reachability index"
+    ],
+    "validated_profile": "directed full reflexive materialized closure; <=1024 vertices; build_index=false"
+  },
+  {
+    "operation": "butterfly-counting",
+    "backend": "graphminer",
+    "parameters": {},
+    "backend_constraints": {},
+    "capabilities": [
+      "exact global butterfly count on checked bipartite topology",
+      "reuses existing GraphMiner square kernel; no alpha/beta core or listing modes"
+    ],
+    "validated_profile": "exact global count only; declared bipartite sides"
+  },
+  {
+    "operation": "butterfly-counting",
+    "backend": "gamma-butterfly",
+    "parameters": {},
+    "backend_constraints": {},
+    "capabilities": [
+      "exact global butterfly count from injective unlabelled C4 embeddings / 8",
+      "declared bipartite sides; single GPU; no listing or alpha/beta cores"
+    ],
+    "validated_profile": "exact global count only; declared bipartite sides"
+  },
+  {
+    "operation": "k-truss",
+    "backend": "acctd",
+    "parameters": {},
+    "backend_constraints": {},
+    "capabilities": [
+      "exact full per-edge truss decomposition; single GPU",
+      "unweighted undirected; loops removed; parallel edges use smallest external edge ID"
+    ],
+    "validated_profile": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID."
+  },
+  {
+    "operation": "densest-subgraph",
+    "backend": "cds",
+    "parameters": {
+      "clique_order": {
+        "flag": "--clique-order",
+        "type": "integer",
+        "default": 2,
+        "minimum": 2,
+        "maximum": 2147483647
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact unweighted k-clique density C_k(S)/|S| with checked vertex witness; clique_order >= 2",
+      "single GPU; nonempty undirected graph; no cardinality or weighted objective"
+    ],
+    "validated_profile": "Exact unweighted k-clique density C_k(S)/|S| on a nonempty undirected graph; clique_order defaults to 2 (edge density). Returns clique_count and checks the witness for the requested order. No fixed cardinality, minimum-size constraint or weighted objective. Order above vertex count gives zero density."
+  },
+  {
+    "operation": "maximal-biclique-counting",
+    "backend": "mbe-gpu",
+    "parameters": {},
+    "backend_constraints": {},
+    "capabilities": [
+      "exact nonempty maximal-biclique count; scheduled single-GPU variant",
+      "declared bipartite sides; no vertex-set listing, size filter, bitmap or multi-GPU mode"
+    ],
+    "validated_profile": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode."
+  },
+  {
+    "operation": "personalized-pagerank",
+    "backend": "kpar",
+    "parameters": {
+      "seed_vertex": {
+        "flag": "--seed-vertex",
+        "type": "vertex_id",
+        "required": true
+      },
+      "top_k": {
+        "flag": "--top-k",
+        "type": "integer",
+        "required": true,
+        "minimum": 1,
+        "maximum": 1000000
+      },
+      "restart_probability": {
+        "flag": "--restart-probability",
+        "type": "number",
+        "required": true,
+        "choices": [
+          0.2
+        ]
+      },
+      "solution_quality": {
+        "flag": "--solution-quality",
+        "type": "string",
+        "default": "approximate",
+        "choices": [
+          "approximate"
+        ]
+      },
+      "epsilon": {
+        "flag": "--epsilon",
+        "type": "number",
+        "default": 0.01,
+        "minimum": 0.01,
+        "maximum": 0.5
+      },
+      "random_seed": {
+        "flag": "--random-seed",
+        "type": "integer",
+        "default": 20261004,
+        "minimum": 0,
+        "maximum": 2147483647
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "approximate top-k PPR; single seed; restart probability 0.2",
+      "directed unweighted outgoing multigraph; dangling mass returns to seed; no certified error bound"
+    ],
+    "validated_profile": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion."
+  },
+  {
+    "operation": "group-steiner-tree",
+    "backend": "gpu4gst",
+    "parameters": {
+      "groups": {
+        "flag": "--groups",
+        "type": "vertex_groups",
+        "required": true
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "exact undirected group Steiner tree; 1..16 nonempty groups; full tree certificate",
+      "nonnegative integer edge weights <=2^53-1; cost bound below 2^58; single GPU"
+    ],
+    "validated_profile": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint."
+  },
+  {
+    "operation": "influence-maximization",
+    "backend": "superfuser",
+    "parameters": {
+      "diffusion_model": {
+        "flag": "--diffusion-model",
+        "type": "string",
+        "required": true,
+        "choices": [
+          "independent_cascade"
+        ]
+      },
+      "seed_set_size": {
+        "flag": "--seed-set-size",
+        "type": "integer",
+        "required": true,
+        "minimum": 1,
+        "maximum": 1000000
+      },
+      "sample_count": {
+        "flag": "--sample-count",
+        "type": "integer",
+        "default": 256,
+        "minimum": 32,
+        "maximum": 65536,
+        "multiple_of": 32
+      },
+      "random_seed": {
+        "flag": "--random-seed",
+        "type": "integer",
+        "default": 42,
+        "minimum": 0,
+        "maximum": 18446744073709551615
+      },
+      "require_guarantee": {
+        "flag": "--require-guarantee",
+        "type": "boolean",
+        "default": false,
+        "choices": [
+          false
+        ]
+      }
+    },
+    "backend_constraints": {},
+    "capabilities": [
+      "approximate independent-cascade seed selection; guarantee_met=false",
+      "explicit edge probabilities; independent holdout spread; single GPU; no linear threshold"
+    ],
+    "validated_profile": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution."
+  }
+]

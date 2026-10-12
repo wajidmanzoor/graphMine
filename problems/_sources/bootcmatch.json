@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/bootcmatch/BootCMatchG",
+  "checked_at": "2026-10-09T19:29:08Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "e4636be918902feeb8dde63f3c5ee207ae3a5d94",
+  "archive_url": "https://codeload.github.com/bootcmatch/BootCMatchG/tar.gz/e4636be918902feeb8dde63f3c5ee207ae3a5d94",
+  "archive_sha256": "7ce2f6e55a101f78828f07a9fc47482f79034b449bc99d2a639ec1d0f5ced7e4",
+  "local_path": "bootcmatch-e4636be91890",
+  "license_files": [
+    "LICENSE.txt"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

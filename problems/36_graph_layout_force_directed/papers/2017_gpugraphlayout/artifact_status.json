@@ -1,0 +1,33 @@
+{
+  "problem_id": "graph_layout_force_directed",
+  "paper_id": "2017_gpugraphlayout",
+  "title": "Exploiting GPUs for Fast Force-Directed Visualization of Large-Scale Networks",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://liacs.leidenuniv.nl/~takesfw/pdf/network-visualization-gpu-icpp2018.pdf",
+    "resolved_url": "https://liacs.leidenuniv.nl/~takesfw/pdf/network-visualization-gpu-icpp2018.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "ddfcb1c8b37808c5fba286fdaec78f97a1e5def5a843d8feabdd8b89049306be",
+    "bytes": 2856370,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/govertb/GPUGraphLayout",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "entrypoint_sha256": {
+      "src/RPGPUForceAtlas2.cu": "eb2f6d2fd96a78b34555f18f22f03128106f1ac03a827906d4405ffbe32e5f45",
+      "src/RPFA2Kernels.cu": "89ce8600cab1d59123cf646b3a998c3d689335259220b55b96ac210f30f92911"
+    },
+    "commit": "9da3af0b7ae72dbfb04b2a7b6eaf28f4d9c13344",
+    "source_manifest": "../../../_sources/gpu_layout.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/COPYING"
+  }
+}

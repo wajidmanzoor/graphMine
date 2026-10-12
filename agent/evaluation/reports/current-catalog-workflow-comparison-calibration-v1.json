@@ -1,0 +1,615 @@
+{
+  "version": "current-catalog-comparison-v1",
+  "created_at": "2026-10-07T20:49:31.569479+00:00",
+  "suite_sha256": "863acddb403ee92d350182147c23c5709a5adea6fef0299b2818cc5657d59b01",
+  "capture_kind": "cpu_fixture",
+  "scope": "Paired unreviewed development contracts, not held-out accuracy or an isolated adapter effect. Declared model weights and precision are not verified by this harness.",
+  "human_review": "unreviewed",
+  "training_eligible": false,
+  "before": {
+    "label": "Authored CPU workflow calibration; no model predictions or native executions",
+    "sha256": "21023c184524a96602f33f5cc9979d1baa30b8f31d03873ef11ae28b06f3a5d4",
+    "summary": {
+      "expected_trials": 46,
+      "captured_trials": 46,
+      "complete": true,
+      "workflow_contract_passes": 46,
+      "missing_trials": 0,
+      "dimensions": {
+        "input_binding": {
+          "passed": 46,
+          "graded": 46
+        },
+        "status": {
+          "passed": 46,
+          "graded": 46
+        },
+        "initial_routing": {
+          "passed": 46,
+          "graded": 46
+        },
+        "planning": {
+          "passed": 46,
+          "graded": 46
+        },
+        "execution": {
+          "passed": 46,
+          "graded": 46
+        },
+        "numerical_checks": {
+          "passed": 26,
+          "graded": 26
+        },
+        "exact_numerical": {
+          "passed": 23,
+          "graded": 23
+        },
+        "grounding": {
+          "passed": 26,
+          "graded": 26
+        },
+        "presentation": {
+          "passed": 26,
+          "graded": 26
+        }
+      },
+      "by_operation": {
+        "maximal-cliques": {
+          "passed": 1,
+          "captured": 1
+        },
+        "maximum-clique": {
+          "passed": 1,
+          "captured": 1
+        },
+        "k-cliques": {
+          "passed": 2,
+          "captured": 2
+        },
+        "quasi-cliques": {
+          "passed": 1,
+          "captured": 1
+        },
+        "k-core": {
+          "passed": 1,
+          "captured": 1
+        },
+        "maximal-bicliques": {
+          "passed": 1,
+          "captured": 1
+        },
+        "triangle-counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "dynamic-triangle-counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graph-motifs": {
+          "passed": 2,
+          "captured": 2
+        },
+        "subgraph-isomorphism": {
+          "passed": 1,
+          "captured": 1
+        },
+        "temporal-motif-mining": {
+          "passed": 2,
+          "captured": 2
+        },
+        "community-detection": {
+          "passed": 1,
+          "captured": 1
+        },
+        "betweenness-centrality": {
+          "passed": 2,
+          "captured": 2
+        },
+        "connected-components": {
+          "passed": 2,
+          "captured": 2
+        },
+        "max-flow-min-cut": {
+          "passed": 2,
+          "captured": 2
+        },
+        "linear-assignment": {
+          "passed": 2,
+          "captured": 2
+        },
+        "transitive-closure": {
+          "passed": 1,
+          "captured": 1
+        },
+        "butterfly-counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "k-truss": {
+          "passed": 1,
+          "captured": 1
+        },
+        "densest-subgraph": {
+          "passed": 1,
+          "captured": 1
+        },
+        "maximal-biclique-counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "personalized-pagerank": {
+          "passed": 1,
+          "captured": 1
+        },
+        "group-steiner-tree": {
+          "passed": 1,
+          "captured": 1
+        },
+        "influence-maximization": {
+          "passed": 1,
+          "captured": 1
+        },
+        "balanced_graph_partitioning": {
+          "passed": 1,
+          "captured": 1
+        },
+        "densest_k_subgraph": {
+          "passed": 1,
+          "captured": 1
+        },
+        "entity_resolution_blocking": {
+          "passed": 1,
+          "captured": 1
+        },
+        "frequent_subgraph_mining": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graph_anomaly_detection": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graph_edit_distance_mcs": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graph_layout_force_directed": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graphlet_counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "hop_constrained_cycle_path_enumeration": {
+          "passed": 1,
+          "captured": 1
+        },
+        "link_prediction": {
+          "passed": 1,
+          "captured": 1
+        },
+        "network_alignment": {
+          "passed": 1,
+          "captured": 1
+        },
+        "null_model_significance_testing": {
+          "passed": 1,
+          "captured": 1
+        },
+        "overlapping_community_detection": {
+          "passed": 1,
+          "captured": 1
+        },
+        "signed_network_structural_balance": {
+          "passed": 1,
+          "captured": 1
+        },
+        "simrank_vertex_similarity": {
+          "passed": 1,
+          "captured": 1
+        }
+      },
+      "selected_case_count": 46,
+      "suite_case_count": 46,
+      "all_suite_cases_selected": true
+    },
+    "latency": {
+      "count": 46,
+      "p50_seconds": 0.061663612723350525,
+      "p95_seconds": 0.09084637463092804,
+      "scope": "Observed question-to-completion durations, including failures; no warmup or hardware normalization."
+    }
+  },
+  "after": {
+    "label": "Deliberately altered saved CPU evidence; not another inference run",
+    "sha256": "25d5c8580db9bfc983424bae91063b4de3efc14d379ab5ce430702a5238fc7c8",
+    "summary": {
+      "expected_trials": 46,
+      "captured_trials": 46,
+      "complete": true,
+      "workflow_contract_passes": 45,
+      "missing_trials": 0,
+      "dimensions": {
+        "input_binding": {
+          "passed": 46,
+          "graded": 46
+        },
+        "status": {
+          "passed": 46,
+          "graded": 46
+        },
+        "initial_routing": {
+          "passed": 46,
+          "graded": 46
+        },
+        "planning": {
+          "passed": 46,
+          "graded": 46
+        },
+        "execution": {
+          "passed": 46,
+          "graded": 46
+        },
+        "numerical_checks": {
+          "passed": 25,
+          "graded": 26
+        },
+        "exact_numerical": {
+          "passed": 22,
+          "graded": 23
+        },
+        "grounding": {
+          "passed": 25,
+          "graded": 26
+        },
+        "presentation": {
+          "passed": 26,
+          "graded": 26
+        }
+      },
+      "by_operation": {
+        "maximal-cliques": {
+          "passed": 1,
+          "captured": 1
+        },
+        "maximum-clique": {
+          "passed": 1,
+          "captured": 1
+        },
+        "k-cliques": {
+          "passed": 1,
+          "captured": 2
+        },
+        "quasi-cliques": {
+          "passed": 1,
+          "captured": 1
+        },
+        "k-core": {
+          "passed": 1,
+          "captured": 1
+        },
+        "maximal-bicliques": {
+          "passed": 1,
+          "captured": 1
+        },
+        "triangle-counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "dynamic-triangle-counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graph-motifs": {
+          "passed": 2,
+          "captured": 2
+        },
+        "subgraph-isomorphism": {
+          "passed": 1,
+          "captured": 1
+        },
+        "temporal-motif-mining": {
+          "passed": 2,
+          "captured": 2
+        },
+        "community-detection": {
+          "passed": 1,
+          "captured": 1
+        },
+        "betweenness-centrality": {
+          "passed": 2,
+          "captured": 2
+        },
+        "connected-components": {
+          "passed": 2,
+          "captured": 2
+        },
+        "max-flow-min-cut": {
+          "passed": 2,
+          "captured": 2
+        },
+        "linear-assignment": {
+          "passed": 2,
+          "captured": 2
+        },
+        "transitive-closure": {
+          "passed": 1,
+          "captured": 1
+        },
+        "butterfly-counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "k-truss": {
+          "passed": 1,
+          "captured": 1
+        },
+        "densest-subgraph": {
+          "passed": 1,
+          "captured": 1
+        },
+        "maximal-biclique-counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "personalized-pagerank": {
+          "passed": 1,
+          "captured": 1
+        },
+        "group-steiner-tree": {
+          "passed": 1,
+          "captured": 1
+        },
+        "influence-maximization": {
+          "passed": 1,
+          "captured": 1
+        },
+        "balanced_graph_partitioning": {
+          "passed": 1,
+          "captured": 1
+        },
+        "densest_k_subgraph": {
+          "passed": 1,
+          "captured": 1
+        },
+        "entity_resolution_blocking": {
+          "passed": 1,
+          "captured": 1
+        },
+        "frequent_subgraph_mining": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graph_anomaly_detection": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graph_edit_distance_mcs": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graph_layout_force_directed": {
+          "passed": 1,
+          "captured": 1
+        },
+        "graphlet_counting": {
+          "passed": 1,
+          "captured": 1
+        },
+        "hop_constrained_cycle_path_enumeration": {
+          "passed": 1,
+          "captured": 1
+        },
+        "link_prediction": {
+          "passed": 1,
+          "captured": 1
+        },
+        "network_alignment": {
+          "passed": 1,
+          "captured": 1
+        },
+        "null_model_significance_testing": {
+          "passed": 1,
+          "captured": 1
+        },
+        "overlapping_community_detection": {
+          "passed": 1,
+          "captured": 1
+        },
+        "signed_network_structural_balance": {
+          "passed": 1,
+          "captured": 1
+        },
+        "simrank_vertex_similarity": {
+          "passed": 1,
+          "captured": 1
+        }
+      },
+      "selected_case_count": 46,
+      "suite_case_count": 46,
+      "all_suite_cases_selected": true
+    },
+    "latency": {
+      "count": 46,
+      "p50_seconds": 0.061663612723350525,
+      "p95_seconds": 0.09084637463092804,
+      "scope": "Observed question-to-completion durations, including failures; no warmup or hardware normalization."
+    }
+  },
+  "complete": true,
+  "expected_pairs": 46,
+  "matched_pairs": 46,
+  "unmatched_before": [],
+  "unmatched_after": [],
+  "dimensions": {
+    "input_binding": {
+      "paired": 46,
+      "improved": 0,
+      "regressed": 0,
+      "both_passed": 46,
+      "both_failed": 0,
+      "not_comparable": 0
+    },
+    "status": {
+      "paired": 46,
+      "improved": 0,
+      "regressed": 0,
+      "both_passed": 46,
+      "both_failed": 0,
+      "not_comparable": 0
+    },
+    "initial_routing": {
+      "paired": 46,
+      "improved": 0,
+      "regressed": 0,
+      "both_passed": 46,
+      "both_failed": 0,
+      "not_comparable": 0
+    },
+    "planning": {
+      "paired": 46,
+      "improved": 0,
+      "regressed": 0,
+      "both_passed": 46,
+      "both_failed": 0,
+      "not_comparable": 0
+    },
+    "execution": {
+      "paired": 46,
+      "improved": 0,
+      "regressed": 0,
+      "both_passed": 46,
+      "both_failed": 0,
+      "not_comparable": 0
+    },
+    "numerical_checks": {
+      "paired": 26,
+      "improved": 0,
+      "regressed": 1,
+      "both_passed": 25,
+      "both_failed": 0,
+      "not_comparable": 20
+    },
+    "exact_numerical": {
+      "paired": 23,
+      "improved": 0,
+      "regressed": 1,
+      "both_passed": 22,
+      "both_failed": 0,
+      "not_comparable": 23
+    },
+    "grounding": {
+      "paired": 26,
+      "improved": 0,
+      "regressed": 1,
+      "both_passed": 25,
+      "both_failed": 0,
+      "not_comparable": 20
+    },
+    "presentation": {
+      "paired": 26,
+      "improved": 0,
+      "regressed": 0,
+      "both_passed": 26,
+      "both_failed": 0,
+      "not_comparable": 20
+    },
+    "workflow_contract_passed": {
+      "paired": 46,
+      "improved": 0,
+      "regressed": 1,
+      "both_passed": 45,
+      "both_failed": 0,
+      "not_comparable": 0
+    }
+  },
+  "changed_outcomes": [
+    {
+      "case_id": "k-cliques--supported",
+      "trial": 1,
+      "operation_id": "k-cliques",
+      "before_passed": true,
+      "after_passed": false,
+      "after_issues": {
+        "numerical_checks": [
+          "Group count differs from exhaustive oracle"
+        ],
+        "grounding": [
+          "Materialized answer differs from recomputed source-bound facts"
+        ]
+      }
+    }
+  ],
+  "numerical_measurements": [
+    {
+      "case_id": "influence-maximization--supported",
+      "trial": 1,
+      "values": {
+        "gap_to_exact_best_spread": {
+          "before": 1,
+          "after": 1,
+          "delta_after_minus_before": 0
+        }
+      }
+    },
+    {
+      "case_id": "personalized-pagerank--supported",
+      "trial": 1,
+      "values": {
+        "error_acceptance_threshold": {
+          "before": null,
+          "after": null,
+          "delta_after_minus_before": null
+        },
+        "maximum_returned_score_absolute_error": {
+          "before": 3.835820550079916e-14,
+          "after": 3.835820550079916e-14,
+          "delta_after_minus_before": 0.0
+        },
+        "returned_score_mass": {
+          "before": 1.0,
+          "after": 1.0,
+          "delta_after_minus_before": 0.0
+        }
+      }
+    }
+  ],
+  "changed_bindings": {
+    "profile": {},
+    "source_sha256": {}
+  },
+  "checker_source_sha256": {
+    "agent_service.py": "dbea60bb60828fb2c64ad2e1608ac24c27046881497b06c9d66cdc6a2cc5face",
+    "llm.py": "4aaa5690424a8ae1280a1eee15d16b23b73155d930fd2965a80e3aecd28ef81b",
+    "models.py": "d024b9ed83751389cc2c28cb965440e2fd88da264aebea37c9e5f7a259922584",
+    "planning.py": "b8da57219703e2fe93735120674da81d92904879c322f47963851ff4654fa71c",
+    "profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+    "graph_store.py": "553bff60b714eb7ce9aac94fbc1a32e8a3794258359a9ac5595abc52a3686785",
+    "graph_context.py": "b0d111c55e5216cee86f4b0316682f1aea3373edbb99270ba09bf3b9f4ca8bc0",
+    "execution.py": "c1404dbf5274116ed2a797bfe1e4db222f58e79eb8c8e59b54dd96b9df63a0f0",
+    "jobs.py": "049a7eb9f18ca63ee229c58e0f79a3915f6947bc9cb438162c2726e9c1642193",
+    "answers.py": "945a01a6754a9445359234b7491a6cfa00cb9a215d94e1714ce744083cca5cdf",
+    "presentation.py": "181b8bb3f880ee7049ed1099c6f53af5e6c16a1b73f993a93be1cad167eddff8",
+    "visualization.py": "ad2f3f96812b5d0db128e0ecdb3313342d1b7adb0ede75437d1a0963edaad71c",
+    "terminal.py": "c63ef14ddad7f98ad612f02d0cb90df7189f8a1d72637f3444768a4762747140",
+    "learning/catalog_replay.py": "1bb199c185954108d9c4cc6cacf3abbe1dd893ac57152c6e81a52958aabd9d3c",
+    "learning/catalog_compare.py": "a40d8614263fdbf7256b45c4589a24c4f6b692ebd68a408d9caceec7a7b98a4c",
+    "learning/catalog_grade.py": "29b049e5bb5bf4b2881671ad0da55a94d39922c366ecbb2a20fdf30468426cea",
+    "learning/catalog_reference.py": "5bec1f01727b3abf8d04a946d63fcbb0f8afe054c8c1086d7b61dccb561565d7",
+    "learning/oracles.py": "d56bd4b4c9394ab0b2c8a69eaecdeea921907c24d09f72be3d5bbe85bc8b32e7"
+  },
+  "model_inference": "not_run",
+  "native_execution": "not_run",
+  "calibration": {
+    "kind": "deliberate_saved_output_corruption",
+    "case_id": "k-cliques--supported",
+    "change": "Changed count from 5 to 999 and rehashed evidence while retaining saved pass flags. The offline checker must independently reject it.",
+    "actual_model_comparison": false,
+    "fixture_source_sha256": {
+      "agent/tests/test_catalog_replay.py": "fc6bb0b552c17e3f40992acb04117e90540d938b22f6b6fd42fe0dce69bf32b7",
+      "agent/tests/test_catalog_grade.py": "59bb2f60dcae4f411d4633188cb7ba4ae9a74f4c4ea665a771ffd55b58c1aeb1"
+    }
+  }
+}

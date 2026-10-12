@@ -1,0 +1,77 @@
+{
+  "problem_id": "bipartite_matching_assignment",
+  "problem_dir": "31_bipartite_matching_assignment",
+  "name": "Bipartite Matching and Linear Assignment",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 3,
+  "local_gpu_code_entries": 2,
+  "local_paper_entries": 1,
+  "local_gpu_code_and_paper_including_related": 0,
+  "eligible_code_and_paper_references": 1,
+  "eligible_local_code_and_paper_pairs": 0,
+  "target_met": false,
+  "shortfall": 3,
+  "shortfall_explanation": "Weighted dense assignment and unweighted bipartite cardinality matching are explicit variants; the cuGraph legacy implementation has documentation but no paired GPU research PDF.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "see_existing_validation",
+  "runtime_status": "see_existing_validation",
+  "canonical_adapters": null,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 2,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cugraph"
+    ],
+    "shortfall": "Weighted dense assignment and unweighted bipartite cardinality matching are explicit variants; the cuGraph legacy implementation has documentation but no paired GPU research PDF.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2013_deveci_mcm_gpu",
+      "algorithm_name": "GPU Accelerated Maximum Cardinality Matching Algorithms for Bipartite Graphs",
+      "paper_role": "algorithm",
+      "semantic_fit": "exact",
+      "local_gpu_code": false,
+      "local_paper": true,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "see_existing_validation",
+      "notes": "Code is distributed from the Georgia Tech HPC Lab's matchmaker2 project page rather than a git repository; a git clone of this URL is expected to fail and is recorded honestly rather than hidden.",
+      "metadata_path": "31_bipartite_matching_assignment/papers/2013_deveci_mcm_gpu/metadata.json"
+    },
+    {
+      "paper_id": "2019_hungariangpu",
+      "algorithm_name": "Fast block distributed CUDA implementation of the Hungarian algorithm",
+      "paper_role": "algorithm",
+      "semantic_fit": "exact",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Confirmed genuine CUDA source (HungarianCUDA.cu) and MIT license by direct inspection; the journal publication's own DOI/page was not independently verified open-access, so publication_url points to the repository's own citation instead of a possibly paywalled venue link.",
+      "metadata_path": "31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_hungarian",
+      "algorithm_name": "cuGraph Dense Hungarian assignment",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Legacy CUDA weighted rectangular assignment, not a general-graph matching solver; check padding and infeasible-edge conventions. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "31_bipartite_matching_assignment/papers/2026_cugraph_hungarian/metadata.json"
+    }
+  ]
+}

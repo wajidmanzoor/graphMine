@@ -1,0 +1,37 @@
+{
+  "title": "RotatE: Knowledge Graph Embedding by Relational Rotation in Complex Space",
+  "year": 2019,
+  "venue": "ICLR 2019",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1902.10197",
+  "pdf_url": "https://arxiv.org/pdf/1902.10197",
+  "paper_id": "2019_dgl_ke_rotate",
+  "problem_id": "knowledge_graph_embedding",
+  "problem_dir": "51_knowledge_graph_embedding",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "DGL-KE RotatE",
+  "code_url": "https://github.com/awslabs/dgl-ke",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch CUDA score functions and embedding training in DGL-KE.",
+  "notes": "Original model paper plus DGL-KE system paper. Select the named model and GPU option; entity and relation encodings and negative sampling must be recorded.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "python/dglke/models/pytorch/score_fun.py",
+    "python/dglke/models/general_models.py",
+    "python/dglke/train.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [
+    {
+      "title": "DGL-KE: Training Knowledge Graph Embeddings at Scale",
+      "publication_url": "https://arxiv.org/abs/2004.08532",
+      "pdf_url": "https://arxiv.org/pdf/2004.08532",
+      "local_path": "dgl_ke_paper.pdf",
+      "sha256": "68894224b4c0e3d9d8925defb7aef2daf1dd79668a807c4c05e293e3f6804471"
+    }
+  ]
+}

@@ -2,20 +2,30 @@
   "problem_id": "triangle_counting_listing",
   "paper_id": "2025_wetric",
   "title": "Wedge-Parallel Triangle Counting for GPUs",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://davidbader.net/publication/2025-scbv/2025-scbv.pdf",
     "status": "downloaded",
+    "source_url": "https://davidbader.net/publication/2025-scbv/2025-scbv.pdf",
+    "resolved_url": "https://davidbader.net/publication/2025-scbv/2025-scbv.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "12cd07d41461889ad1a4d455c9062a5e1a6b2b54bbfdf84dff3b88f6fc8d4e82",
+    "bytes": 1407901,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/jeffreyspaan/wedge-parallel-triangle-counting",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "f0c80447dc428ead5f8a41f2f1d9c4c4cbc41c2e",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "tc.cu": "57be3e8045cb1fcf3887862aecf6a252b031eb70cf72d2696d6bb8f6c74cbffe"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

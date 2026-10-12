@@ -1,0 +1,24 @@
+{
+  "problem_id": "butterfly_counting_bipartite",
+  "paper_id": "2022_gbfc",
+  "title": "Efficient Load-Balanced Butterfly Counting on GPU",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://www.vldb.org/pvldb/vol15/p2450-zhang.pdf",
+    "resolved_url": "https://www.vldb.org/pvldb/vol15/p2450-zhang.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "e52b16d7820727eb339a0a12bdd393e9389f8d7ec754088c6a182e957d6a3fe7",
+    "bytes": 1608312,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

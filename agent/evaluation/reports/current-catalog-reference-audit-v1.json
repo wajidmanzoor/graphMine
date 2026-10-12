@@ -1,0 +1,1819 @@
+{
+  "version": "current-catalog-contract-audit-v1",
+  "suite_sha256": "863acddb403ee92d350182147c23c5709a5adea6fef0299b2818cc5657d59b01",
+  "catalog_sha256": "a2130bb00d35560665446c0f9457d6f02829274be4d2b1952e0f8283c56da836",
+  "source_sha256": "e2081a8cd61599b8bac9e2bf305ebd084f69acb9d38be0a58d3d13a524b08bf8",
+  "label_source": "assistant_authored_contract_proposal",
+  "audit_source_sha256": "f3d21690c8aa01a2f3aa0035153df1a69f44c7bff37c80ca88541118163c21ed",
+  "human_review": "unreviewed",
+  "native_execution": "not_run",
+  "model_inference": "not_run",
+  "numerical_validation": "not_run",
+  "reference_computation": "complete",
+  "passed": 46,
+  "total": 46,
+  "problem_count": 37,
+  "operation_count": 24,
+  "by_status": {
+    "ready": 26,
+    "unsupported": 17,
+    "needs_information": 3
+  },
+  "overlap_checks": [
+    {
+      "reference_manifest_sha256": "3de74406ee40a265be6b89219056e43e59992bd446a446ac3094f83720e5dbf6",
+      "reference_generator": "synthetic-v2",
+      "distinct_input_graphs": 8,
+      "distinct_unlabeled_topologies": 8,
+      "normalized_question_matches": [],
+      "unlabeled_topology_matches": [],
+      "scope": "Exact normalized wording and exact unweighted graph isomorphism only. Direction is preserved; names, types, attributes, edge values, filters and task semantics are ignored in topology checks. Matches flag possible reuse, not identical task meaning. No-match does not establish semantic independence.",
+      "generalization_holdout": false
+    }
+  ],
+  "overlap_check_status": "completed",
+  "cases": [
+    {
+      "id": "maximal-cliques--supported",
+      "case_sha256": "2e8c8109ef6267dfabfdaf551ef8ac59d3f260a39d431a98822b29d022b31c6f",
+      "operation_id": "maximal-cliques",
+      "problem_id": "maximal_clique_enumeration",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "minimum_clique_size": 3
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "groups": [
+            [
+              "entity-2660",
+              "entity-5588",
+              "entity-3102"
+            ],
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-2249",
+              "entity-5772"
+            ]
+          ],
+          "size": 4,
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "maximum-clique--supported",
+      "case_sha256": "547501ca5f8c2d2c8937a8ca9bc247a893c3845f034f1ae4c4ea0249749b8ea6",
+      "operation_id": "maximum-clique",
+      "problem_id": "maximum_clique",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "return_all_ties": true
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "groups": [
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-2249",
+              "entity-5772"
+            ]
+          ],
+          "size": 4,
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "k-cliques--supported",
+      "case_sha256": "a999efd177541c320588a386988049662c169e1d2a0c35967a1e3e7d65888a5b",
+      "operation_id": "k-cliques",
+      "problem_id": "k_clique_counting_enumeration",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "k": 3
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "groups": [
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-2249"
+            ],
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-5772"
+            ],
+            [
+              "entity-4742",
+              "entity-2249",
+              "entity-5772"
+            ],
+            [
+              "entity-6810",
+              "entity-2249",
+              "entity-5772"
+            ],
+            [
+              "entity-2660",
+              "entity-5588",
+              "entity-3102"
+            ]
+          ],
+          "size": 3,
+          "count": 5
+        }
+      }
+    },
+    {
+      "id": "quasi-cliques--supported",
+      "case_sha256": "cf94fc3322e944f31e970987b5bbcbb3ee5309e1e56289c54cef88a7cdda31ba",
+      "operation_id": "quasi-cliques",
+      "problem_id": "quasi_clique_mining",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "minimum_size": 3,
+        "minimum_degree_ratio": 0.75,
+        "scheduling": "dynamic"
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "groups": [
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-2249"
+            ],
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-5772"
+            ],
+            [
+              "entity-4742",
+              "entity-2249",
+              "entity-5772"
+            ],
+            [
+              "entity-6810",
+              "entity-2249",
+              "entity-5772"
+            ],
+            [
+              "entity-2660",
+              "entity-5588",
+              "entity-3102"
+            ],
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-2249",
+              "entity-5772"
+            ]
+          ],
+          "count": 6
+        }
+      }
+    },
+    {
+      "id": "k-core--supported",
+      "case_sha256": "3fe77263fb324ec06bece1ad08d9c39eea7b6103754778af98a7b1472591dcf9",
+      "operation_id": "k-core",
+      "problem_id": "k_core_decomposition",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "requested_k": 2
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "vertices": [
+            "entity-4742",
+            "entity-6810",
+            "entity-2249",
+            "entity-5772",
+            "entity-2660",
+            "entity-5588",
+            "entity-3102"
+          ]
+        }
+      }
+    },
+    {
+      "id": "maximal-bicliques--supported",
+      "case_sha256": "cc973782053e08d5e6d3882c21cb4f4e44349de29d5a77db0129495031596a8a",
+      "operation_id": "maximal-bicliques",
+      "problem_id": "maximal_biclique_enumeration",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "minimum_left_size": 2,
+        "minimum_right_size": 2
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "bicliques": [
+            {
+              "left": [
+                "entity-4742",
+                "entity-6810"
+              ],
+              "right": [
+                "entity-5772",
+                "entity-2660"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "triangle-counting--supported",
+      "case_sha256": "f258f078f27c3ea3dd9a8acb419ae6a3ab89be21d56c12edeb6e603b7851a8b2",
+      "operation_id": "triangle-counting",
+      "problem_id": "triangle_counting_listing",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "groups": [
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-2249"
+            ],
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-5772"
+            ],
+            [
+              "entity-4742",
+              "entity-2249",
+              "entity-5772"
+            ],
+            [
+              "entity-6810",
+              "entity-2249",
+              "entity-5772"
+            ],
+            [
+              "entity-2660",
+              "entity-5588",
+              "entity-3102"
+            ]
+          ],
+          "count": 5
+        }
+      }
+    },
+    {
+      "id": "dynamic-triangle-counting--supported",
+      "case_sha256": "3754945e1df5f6b245bd9145aa787471e8c0f378da0360cca2095b4ad0458202",
+      "operation_id": "dynamic-triangle-counting",
+      "problem_id": "triangle_counting_listing",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "initial_count": 5,
+          "final_count": 4,
+          "deleted": [
+            [
+              "entity-2249",
+              "entity-4742",
+              "entity-6810"
+            ],
+            [
+              "entity-4742",
+              "entity-5772",
+              "entity-6810"
+            ]
+          ],
+          "inserted": [
+            [
+              "entity-2660",
+              "entity-4742",
+              "entity-5772"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "graph-motifs--supported",
+      "case_sha256": "38e80c7d112f6884bcb2c296d0339759a07709ffcc61a6b7cdcddca3a1491e42",
+      "operation_id": "graph-motifs",
+      "problem_id": "graph_motif_counting",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "induced": false,
+        "occurrence_identity": "unique-vertex-set-and-mapping-class"
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "patterns": [
+            {
+              "pattern_id": "catalog-development",
+              "count": 5,
+              "mappings": [
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2249"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2660"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5588"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-3102"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "subgraph-isomorphism--supported",
+      "case_sha256": "577af70f751cfde6a55408060b1782768973b2deada61f7c6230623ba50ca382",
+      "operation_id": "subgraph-isomorphism",
+      "problem_id": "subgraph_isomorphism",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "ignore_vertex_labels": true,
+        "initial_match_capacity": 1000000
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "patterns": [
+            {
+              "pattern_id": "catalog-development",
+              "count": 30,
+              "mappings": [
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2249"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-6810"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-6810"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2249"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2249"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-4742"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-4742"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2249"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-6810"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-4742"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5772"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-4742"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-6810"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-6810"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-4742"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2249"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-4742"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-6810"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2249"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-4742"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-5772"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2249"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-6810"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2660"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5588"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-3102"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-2660"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-3102"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5588"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-5588"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2660"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-3102"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-5588"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-3102"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2660"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-3102"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-2660"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-5588"
+                  }
+                ],
+                [
+                  {
+                    "query_vertex": "a",
+                    "data_vertex": "entity-3102"
+                  },
+                  {
+                    "query_vertex": "b",
+                    "data_vertex": "entity-5588"
+                  },
+                  {
+                    "query_vertex": "c",
+                    "data_vertex": "entity-2660"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "temporal-motif-mining--supported",
+      "case_sha256": "173ed3d087b05ed94717339962872f5c8110fcb0bcba833230ad14e06052ce97",
+      "operation_id": "temporal-motif-mining",
+      "problem_id": "temporal_motif_mining",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "max_time_span": 3
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "event_ids": [
+            [
+              "link-0",
+              "link-1",
+              "link-2"
+            ]
+          ],
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "community-detection--supported",
+      "case_sha256": "d0b939da49ed8f9e6c264a3c25df30c7d2e1aa6fe1edbdc0b54748a2194b6004",
+      "operation_id": "community-detection",
+      "problem_id": "community_detection",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "partition_and_score_consistency",
+        "expected": {
+          "check": "partition_coverage_and_modularity",
+          "vertex_ids": [
+            "entity-4742",
+            "entity-6810",
+            "entity-2249",
+            "entity-5772",
+            "entity-2660",
+            "entity-5588",
+            "entity-3102"
+          ]
+        }
+      }
+    },
+    {
+      "id": "betweenness-centrality--supported",
+      "case_sha256": "1dd78c72bbc80afce7fde7504ec9e0092a94ea8f08edb0a6e14413721a166ab0",
+      "operation_id": "betweenness-centrality",
+      "problem_id": "centrality_influential_node_mining",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "scores": [
+            {
+              "vertex": "entity-4742",
+              "score": 0.0
+            },
+            {
+              "vertex": "entity-6810",
+              "score": 0.0
+            },
+            {
+              "vertex": "entity-2249",
+              "score": 0.0
+            },
+            {
+              "vertex": "entity-5772",
+              "score": 18.0
+            },
+            {
+              "vertex": "entity-2660",
+              "score": 16.0
+            },
+            {
+              "vertex": "entity-5588",
+              "score": 0.0
+            },
+            {
+              "vertex": "entity-3102",
+              "score": 0.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "connected-components--supported",
+      "case_sha256": "df0670490075cdb66e79863358274a3564e10aed2e50c2a72922a96b0acda250",
+      "operation_id": "connected-components",
+      "problem_id": "connected_components",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "connectivity_mode": "strongly_connected"
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "groups": [
+            [
+              "entity-4742",
+              "entity-6810"
+            ],
+            [
+              "entity-2249"
+            ],
+            [
+              "entity-5772"
+            ],
+            [
+              "entity-2660"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "max-flow-min-cut--supported",
+      "case_sha256": "82b544f0d192474dc8216b88c916e2c5aa19d8f8a87ad600123785ee70e22454",
+      "operation_id": "max-flow-min-cut",
+      "problem_id": "max_flow_min_cut",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "source": "entity-4742",
+        "sink": "entity-5772",
+        "unit_capacity": false
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "max_flow_value": 6,
+          "min_cut_value": 6
+        }
+      }
+    },
+    {
+      "id": "linear-assignment--supported",
+      "case_sha256": "c4fb855d56e9c5f448ef6c443756bc3170105e3670b75a36ee098f286b5cfba8",
+      "operation_id": "linear-assignment",
+      "problem_id": "bipartite_matching_assignment",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "objective_value": 8,
+          "matching_size": 3,
+          "optimal_edge_sets": [
+            [
+              "link-1",
+              "link-3",
+              "link-8"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "transitive-closure--supported",
+      "case_sha256": "c0eccd19c12de83e43e49901377cf4c7e507108d79434db0da4558d1f804b531",
+      "operation_id": "transitive-closure",
+      "problem_id": "transitive_closure_reachability",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "pairs": [
+            [
+              "entity-4742",
+              "entity-4742"
+            ],
+            [
+              "entity-4742",
+              "entity-6810"
+            ],
+            [
+              "entity-4742",
+              "entity-2249"
+            ],
+            [
+              "entity-4742",
+              "entity-5772"
+            ],
+            [
+              "entity-6810",
+              "entity-4742"
+            ],
+            [
+              "entity-6810",
+              "entity-6810"
+            ],
+            [
+              "entity-6810",
+              "entity-2249"
+            ],
+            [
+              "entity-6810",
+              "entity-5772"
+            ],
+            [
+              "entity-2249",
+              "entity-2249"
+            ],
+            [
+              "entity-2249",
+              "entity-5772"
+            ],
+            [
+              "entity-5772",
+              "entity-5772"
+            ],
+            [
+              "entity-2660",
+              "entity-2660"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "butterfly-counting--supported",
+      "case_sha256": "8eeaf6b96d71e0d5a01af88a5b332cca6c00fc754a50ed5324f4667b60eaa29b",
+      "operation_id": "butterfly-counting",
+      "problem_id": "butterfly_counting_bipartite",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "k-truss--supported",
+      "case_sha256": "c47e152ef8ba96a6a2d797d3045032e4dff5a2afc0aaacde3073bdce172bdf62",
+      "operation_id": "k-truss",
+      "problem_id": "k_truss_decomposition",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "edges": [
+            {
+              "edge": "link-0",
+              "truss_number": 4
+            },
+            {
+              "edge": "link-1",
+              "truss_number": 4
+            },
+            {
+              "edge": "link-2",
+              "truss_number": 4
+            },
+            {
+              "edge": "link-3",
+              "truss_number": 4
+            },
+            {
+              "edge": "link-4",
+              "truss_number": 4
+            },
+            {
+              "edge": "link-5",
+              "truss_number": 4
+            },
+            {
+              "edge": "link-6",
+              "truss_number": 2
+            },
+            {
+              "edge": "link-7",
+              "truss_number": 3
+            },
+            {
+              "edge": "link-8",
+              "truss_number": 3
+            },
+            {
+              "edge": "link-9",
+              "truss_number": 3
+            }
+          ],
+          "maximum": 4
+        }
+      }
+    },
+    {
+      "id": "densest-subgraph--supported",
+      "case_sha256": "0828f3c8e0043d273740b5f7e485d8ba43699b4b0f274a9ff4b35e4641783bba",
+      "operation_id": "densest-subgraph",
+      "problem_id": "densest_subgraph",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "density": 1.5,
+          "optimal_groups": [
+            {
+              "vertices": [
+                "entity-4742",
+                "entity-6810",
+                "entity-2249",
+                "entity-5772"
+              ],
+              "induced_edge_value": 6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "maximal-biclique-counting--supported",
+      "case_sha256": "9a939a82ba3d0249413a5a567211f91f73872b05ef150c75c14e1a676711ee26",
+      "operation_id": "maximal-biclique-counting",
+      "problem_id": "maximal_biclique_enumeration",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "bicliques": [
+            {
+              "left": [
+                "entity-2249"
+              ],
+              "right": [
+                "entity-2660",
+                "entity-5588"
+              ]
+            },
+            {
+              "left": [
+                "entity-4742",
+                "entity-6810"
+              ],
+              "right": [
+                "entity-5772",
+                "entity-2660"
+              ]
+            },
+            {
+              "left": [
+                "entity-4742",
+                "entity-6810",
+                "entity-2249"
+              ],
+              "right": [
+                "entity-2660"
+              ]
+            }
+          ],
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "personalized-pagerank--supported",
+      "case_sha256": "978d9005081cbf0ddf24b5aa6b43f066ff1030b86eb3f13df17ab798a13110d9",
+      "operation_id": "personalized-pagerank",
+      "problem_id": "personalized_pagerank_rwr",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "seed_vertex": "entity-4742",
+        "top_k": 5,
+        "restart_probability": 0.2,
+        "epsilon": 0.01,
+        "solution_quality": "approximate",
+        "random_seed": 20261004
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "approximate_scores_measured_against_stationary_distribution",
+        "expected": {
+          "scores": [
+            {
+              "vertex": "entity-4742",
+              "score": 0.4208754208753827
+            },
+            {
+              "vertex": "entity-6810",
+              "score": 0.3367003367003751
+            },
+            {
+              "vertex": "entity-2249",
+              "score": 0.1346801346801156
+            },
+            {
+              "vertex": "entity-5772",
+              "score": 0.1077441077441269
+            },
+            {
+              "vertex": "entity-2660",
+              "score": 0.0
+            }
+          ]
+        },
+        "acceptance": "Measure error; do not treat epsilon as a certified per-run error bound or require exact stochastic scores."
+      }
+    },
+    {
+      "id": "group-steiner-tree--supported",
+      "case_sha256": "2febd112c77122bff86762ed1dcb7d77c76bedb3505aea3e494d8b4325a65153",
+      "operation_id": "group-steiner-tree",
+      "problem_id": "group_steiner_tree",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "groups": [
+          [
+            "entity-4742"
+          ],
+          [
+            "entity-2249"
+          ],
+          [
+            "entity-5772"
+          ]
+        ]
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "feasible": true,
+          "tree_weight": 6,
+          "optimal_trees": [
+            {
+              "edges": [
+                "link-0",
+                "link-1",
+                "link-3"
+              ],
+              "vertices": [
+                "entity-4742",
+                "entity-6810",
+                "entity-2249",
+                "entity-5772"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "influence-maximization--supported",
+      "case_sha256": "debc6079c103cd4e300c08be4bfe588ea904fac83a69d885df5b1a6f9c334902",
+      "operation_id": "influence-maximization",
+      "problem_id": "influence_maximization",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "diffusion_model": "independent_cascade",
+        "seed_set_size": 1,
+        "sample_count": 32,
+        "random_seed": 42,
+        "require_guarantee": false
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_spread_for_returned_seeds_without_optimality_requirement",
+        "expected": {
+          "seed_sets": [
+            {
+              "seeds": [
+                "entity-4742"
+              ],
+              "spread": 4
+            },
+            {
+              "seeds": [
+                "entity-6810"
+              ],
+              "spread": 3
+            },
+            {
+              "seeds": [
+                "entity-2249"
+              ],
+              "spread": 2
+            },
+            {
+              "seeds": [
+                "entity-5772"
+              ],
+              "spread": 1
+            }
+          ],
+          "best_possible_spread": 4
+        }
+      }
+    },
+    {
+      "id": "betweenness-centrality--weighted_unsupported",
+      "case_sha256": "714bbfea2494fc3365071da521616a70e22dcb87fe198f5aa3e06dd1c641e12b",
+      "operation_id": "betweenness-centrality",
+      "problem_id": "centrality_influential_node_mining",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This question needs connection costs or strengths to affect the calculation, but this analysis does not use those values. Adding cost data would not enable that calculation. I have not run an unweighted substitute.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "temporal-motif-mining--pattern_unsupported",
+      "case_sha256": "a3308547f81f9ad8b785af470ab230c48d72e0f8588cdc17b31b913ec8ca9855",
+      "operation_id": "temporal-motif-mining",
+      "problem_id": "temporal_motif_mining",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "Only the ordered three-entity pattern A\u2192B, B\u2192C, A\u2192C is supported; the requested pattern cannot be substituted.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "max-flow-min-cut--missing_endpoints",
+      "case_sha256": "02de07b9e76b4ff43eb23bf38169199f30d5cf06bc1d18fbe032cef6e24a7b9d",
+      "operation_id": "max-flow-min-cut",
+      "problem_id": "max_flow_min_cut",
+      "expected_status": "needs_information",
+      "observed_status": "needs_information",
+      "passed": true,
+      "reason": "sink, source",
+      "normalized_parameters": {
+        "unit_capacity": false
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "needs_information"
+      }
+    },
+    {
+      "id": "linear-assignment--missing_costs",
+      "case_sha256": "1c8463c8af553708f0b91fae654ae3525cc538d03a6ef026bcc2ffdd640e7671",
+      "operation_id": "linear-assignment",
+      "problem_id": "bipartite_matching_assignment",
+      "expected_status": "needs_information",
+      "observed_status": "needs_information",
+      "passed": true,
+      "reason": "Every relationship needs a assignment cost in attributes.value; that field is missing on at least one selected relationship.",
+      "normalized_parameters": {},
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "needs_information"
+      }
+    },
+    {
+      "id": "graph-motifs--missing_pattern",
+      "case_sha256": "1e53f6e152083aa31de59fcab745678b12529091a055b55acb869289fbeb0dbd",
+      "operation_id": "graph-motifs",
+      "problem_id": "graph_motif_counting",
+      "expected_status": "needs_information",
+      "observed_status": "needs_information",
+      "passed": true,
+      "reason": "motifs",
+      "normalized_parameters": {
+        "induced": false,
+        "occurrence_identity": "unique-vertex-set-and-mapping-class"
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "needs_information"
+      }
+    },
+    {
+      "id": "k-cliques--empty_filter",
+      "case_sha256": "ffacb2bf47b22fdba7421a0b2806a5388e857d3f7a318d41059b118815eab58a",
+      "operation_id": "k-cliques",
+      "problem_id": "k_clique_counting_enumeration",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "k": 3
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "groups": [],
+          "size": 0,
+          "count": 0
+        }
+      }
+    },
+    {
+      "id": "connected-components--weak_connectivity",
+      "case_sha256": "ce62134e92408b1bafaa79f450ffb1bd2160b9f6b3306d3bd5abb791f43b2859",
+      "operation_id": "connected-components",
+      "problem_id": "connected_components",
+      "expected_status": "ready",
+      "observed_status": "ready",
+      "passed": true,
+      "reason": null,
+      "normalized_parameters": {
+        "connectivity_mode": "weakly_connected"
+      },
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "exact_enumeration",
+        "expected": {
+          "groups": [
+            [
+              "entity-4742",
+              "entity-6810",
+              "entity-2249",
+              "entity-5772"
+            ],
+            [
+              "entity-2660"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "balanced_graph_partitioning--unavailable",
+      "case_sha256": "6c01de9150e98d05290d40596298a497b88aa69ca5576a11773e2cae4339dbfc",
+      "operation_id": null,
+      "problem_id": "balanced_graph_partitioning",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. 2024_gkway: No local executable GPU implementation to validate. 2024_hyperg: No local executable GPU implementation to validate. 2025_igkway: No local executable GPU implementation to validate.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "densest_k_subgraph--unavailable",
+      "case_sha256": "b299d465bb058c0a61e0177e98389643ec691c86fa4f44447ff548bbb4a2d438",
+      "operation_id": null,
+      "problem_id": "densest_k_subgraph",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "entity_resolution_blocking--unavailable",
+      "case_sha256": "ae94c25229887a2023b5b4787542ada5c5a1542f8ec4c6d1a6bcfaf3bd6cc1a0",
+      "operation_id": null,
+      "problem_id": "entity_resolution_blocking",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. 2025_hyperblocker: CMake cannot find gflags; required dependency/submodule tree is incomplete. No entity-resolution correctness claim.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "frequent_subgraph_mining--unavailable",
+      "case_sha256": "84791775cd37ca24292f4dcbdb050e8c6dbbcb7638614152b9989930bcdeb394",
+      "operation_id": null,
+      "problem_id": "frequent_subgraph_mining",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "graph_anomaly_detection--unavailable",
+      "case_sha256": "c774373dc7b02f89b468dc0cc97a451003838efeeacd5be420e1a8c68caec4e8",
+      "operation_id": null,
+      "problem_id": "graph_anomaly_detection",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "graph_edit_distance_mcs--unavailable",
+      "case_sha256": "c86412d8f3768340e8303dbb9efc824c87856d359825697948c6bdaba2475f0b",
+      "operation_id": null,
+      "problem_id": "graph_edit_distance_mcs",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. 2016_gpu_mcs_drug_discovery: No local executable GPU implementation to validate. 2026_fast_ged: javac is unavailable. No GED/MCS correctness claim.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "graph_layout_force_directed--unavailable",
+      "case_sha256": "c29da1f67c0e6a41c0a27d1f048951bf6ca931fd98af672cb07c5ca610a87ee3",
+      "operation_id": null,
+      "problem_id": "graph_layout_force_directed",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. 2017_gpugraphlayout: Build cannot find the pngwriter submodule header. No layout correctness claim.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "graphlet_counting--unavailable",
+      "case_sha256": "a479ec842dd3507b4e93ce68d2b711d971c3028ce6581b21cdf292186fcc067f",
+      "operation_id": null,
+      "problem_id": "graphlet_counting",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "hop_constrained_cycle_path_enumeration--unavailable",
+      "case_sha256": "8b80b4d56419a34b15c264b3c5b25d358468f9ffe39ff75bf57f7a881773cf94",
+      "operation_id": null,
+      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. 2014_gpu_chordless_cycles: No local executable GPU implementation to validate. 2022_gpu_elementary_circuits: No local executable GPU implementation to validate.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "link_prediction--unavailable",
+      "case_sha256": "945104acc10974f3efea3e99cb64d0b882e4fcff82dbca2e5b13213af81d0e68",
+      "operation_id": null,
+      "problem_id": "link_prediction",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "network_alignment--unavailable",
+      "case_sha256": "2e6834f4f408516bdb0bbddc314b502258b550c05ce38a4656792f00394afed9",
+      "operation_id": null,
+      "problem_id": "network_alignment",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. 2015_hga_2n: No local executable GPU implementation to validate. 2023_cualign: No local executable GPU implementation to validate. 2024_gpu_local_network_alignment: No local executable GPU implementation to validate.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "null_model_significance_testing--unavailable",
+      "case_sha256": "6507f6bbcffcf4e292452989f5c770153bdf2172bc6517febda13329edc2b3fe",
+      "operation_id": null,
+      "problem_id": "null_model_significance_testing",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. No local paper/code artifact is cataloged for this definition, so there is no implementation to validate or execute.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "overlapping_community_detection--unavailable",
+      "case_sha256": "8f2ed1fba097058f12dca3291c40cc7c033d29693b25d3d0d253f1c72dd7c959",
+      "operation_id": null,
+      "problem_id": "overlapping_community_detection",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "signed_network_structural_balance--unavailable",
+      "case_sha256": "f5fd0c7c53b4a2c494b2f16b6f3d71bf459b34db90458bbaffea2add86a05d4e",
+      "operation_id": null,
+      "problem_id": "signed_network_structural_balance",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. 2021_graphbplus: Three execution smoke checks succeeded. Output is edge/tree sampling statistics rather than the required minimum-frustration partition and certificate. Mathematical correctness is not certified. 2026_ecl_sgb: Three execution smoke checks succeeded. Output is edge/tree sampling statistics rather than the required minimum-frustration partition and certificate. Mathematical correctness is not certified.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    },
+    {
+      "id": "simrank_vertex_similarity--unavailable",
+      "case_sha256": "8a793ef6090be9731a124e3cb4d5f230d9d6fdaafde032989af3e6abcc172264",
+      "operation_id": null,
+      "problem_id": "simrank_vertex_similarity",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "passed": true,
+      "reason": "This analysis is not available in the current system. Providing more inputs would not enable it. 2023_clipsim: No local executable GPU implementation to validate.",
+      "normalized_parameters": null,
+      "verification": "cpu_ingestion_and_planning_contract_only",
+      "reference": {
+        "kind": "non_executable",
+        "expected_status": "unsupported"
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "problem_id": "graph_edit_distance_mcs",
+  "paper_id": "2026_fast_ged",
+  "title": "Efficient Accelerated Graph Edit Distance Computation on GPU",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2605.00830",
+    "resolved_url": "https://arxiv.org/pdf/2605.00830",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "823b68a352d77c6b87f7022fd9731a1d41f3429febbb1279bc1821b0d623bfdf",
+    "bytes": 658386,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "present",
+    "source_url": "https://gitlab.jsc.fz-juelich.de/dabah2/fast-ged.git",
+    "local_path": "code",
+    "error": null,
+    "local_recovery_source": "/home/wajid/projects/graphDatabaseAgent/problems/24_graph_edit_distance_mcs/papers/2026_fast_ged/code",
+    "acquisition_kind": "recovered_existing_licensed_workspace_copy",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "entrypoint_sha256": {
+      "gpu/gpu_evaluation.cu": "ad186dd9e7097028ce2be83b38bc9e5786f2043e2aba03b228e313ef7c3535ea"
+    },
+    "license_file": "code/LICENSE.MIT"
+  }
+}

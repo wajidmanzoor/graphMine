@@ -1,0 +1,28 @@
+{
+  "problem_id": "induced_subgraph_ego_extraction",
+  "paper_id": "2026_cugraph_induced_subgraph",
+  "title": "cuGraph Induced subgraph extraction — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cugraph",
+    "local_path": "code",
+    "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cugraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/structure/induced_subgraph_impl.cuh": "6c60ee01b13d569585c52f33c7a8b70742bef414903b338a3f66050713405727"
+    }
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "ok": true,
+  "checked_at": "2026-10-10T02:15:35Z",
+  "counts": {
+    "algorithm_records": 219,
+    "local_gpu_source_entries": 181,
+    "local_main_papers": 161,
+    "eligible_local_pairs": 126,
+    "problems": 70,
+    "problems_meeting_three_local_pairs": 29,
+    "upstream_source_snapshots": 56
+  },
+  "publication_identity_checks": [
+    {
+      "publication": "gunrock",
+      "title_matches_pdf": true,
+      "sha256": "c95340c9f7276a7bb572e2201d95c9bc9ae4e69faa5cfabbf6ec05b33037a79d"
+    },
+    {
+      "publication": "graphblast",
+      "title_matches_pdf": true,
+      "sha256": "07f18814a7a40dbe71ea7fdabaea2914e79f01362983187eb1907aa836c48f4e"
+    },
+    {
+      "publication": "gardenia",
+      "title_matches_pdf": true,
+      "sha256": "dd4d5a6771cd46156156f155cce9bd0fce8cec501d5d24f0857c35f696beb6ec"
+    },
+    {
+      "publication": "pyg",
+      "title_matches_pdf": true,
+      "sha256": "8cfd9824d44c5aba66393ef05e70c1275ca7886e0a0502f7b09e86e6c3a38953"
+    },
+    {
+      "publication": "dgl",
+      "title_matches_pdf": true,
+      "sha256": "6c70d6a46c443d67c98df81204bc51a6a42b593604798cea9ff280f94a8ad7e2"
+    },
+    {
+      "publication": "g2miner",
+      "title_matches_pdf": true,
+      "sha256": "e1ef406ebc5f9151580966adffab2e4a9c8a9c4310bc179836e9fa4f108b00a8"
+    },
+    {
+      "publication": "hornet",
+      "title_matches_pdf": true,
+      "sha256": "1e079b84911e990c283ddbfde018446a621700a5f4add7f27a60bbccfbb59837"
+    },
+    {
+      "publication": "pygod",
+      "title_matches_pdf": true,
+      "sha256": "b45238e624e6e2a23610eba91d2bc62b4930cd69850bd6a0bd963e048cee5494"
+    },
+    {
+      "publication": "greedy_matching",
+      "title_matches_pdf": true,
+      "sha256": "878c85b6ac855739c9d66cb6a65d5c4a4f527ce4d955794408615e4b73663531"
+    },
+    {
+      "publication": "hyspecpro",
+      "title_matches_pdf": true,
+      "sha256": "b40095caf714a6e8beb4418642c7b832ee1913c941f44e6235e57a76a6d5eca7"
+    },
+    {
+      "publication": "blocked_fw",
+      "title_matches_pdf": true,
+      "sha256": "2d5f29d59e00b6a5df3bc9c0132db15c9ae56758996315a996cf3e348f0aeeac"
+    },
+    {
+      "publication": "mg_mis",
+      "title_matches_pdf": true,
+      "sha256": "4a4f190d8394bf256356c724863892e2953b949ee2873f8aca0732f6274dd3d8"
+    },
+    {
+      "publication": "cupy",
+      "title_matches_pdf": true,
+      "sha256": "78a285a131ef1d08be4ee126091814004d6501d5fd6da277c40c1d154423c776"
+    },
+    {
+      "publication": "nn_descent",
+      "title_matches_pdf": true,
+      "sha256": "b464826037bffe3c87c03bec6b81609595d42ec1cf759b4728818272dcd43a8e"
+    },
+    {
+      "publication": "faiss",
+      "title_matches_pdf": true,
+      "sha256": "89b2371b261846059d416bdf1423b15a6e3cc7d1b2d5dc2729ee5f6c3399049a"
+    },
+    {
+      "publication": "hgnn",
+      "title_matches_pdf": true,
+      "sha256": "6a52a23caeb7aabc6f4c9b260a393f3fc0a333a6b9216ed76c55a73e14487e68"
+    },
+    {
+      "publication": "hypergcn",
+      "title_matches_pdf": true,
+      "sha256": "1aa43c364a73b9b3e533369b1ea43da221dda8b314ded9b31fbe4092637944af"
+    },
+    {
+      "publication": "hnhn",
+      "title_matches_pdf": true,
+      "sha256": "de16ada1d2b0ff3efe8a1187ee1cd0f0f6696ada13c5aea7214a53c1e16c84ca"
+    },
+    {
+      "publication": "dynamic_mis",
+      "title_matches_pdf": true,
+      "sha256": "6f561a0965d327cb35be09bec9978c09cfc1d0783be72408217fd1831af1ee3b"
+    },
+    {
+      "publication": "difusco",
+      "title_matches_pdf": true,
+      "sha256": "adacaf9adaad7069ad891aae5ba86eadb6e5cc06819d436176d2c31e3565e32b"
+    },
+    {
+      "publication": "pcqo",
+      "title_matches_pdf": true,
+      "sha256": "4dd3a6125570645df1a9e84a0188889a2b253b306cf83489f5fcafd8760733f9"
+    },
+    {
+      "publication": "ripser",
+      "title_matches_pdf": true,
+      "sha256": "b05d05a169649883bcf455e2002e8417367d42e809cc733f6426ebbd311e921e"
+    },
+    {
+      "publication": "pangolin",
+      "title_matches_pdf": true,
+      "sha256": "6cc44e80b6b1049eebe78a781d57b391fd49b6df6e2f6c839e5955ac2b9f0922"
+    },
+    {
+      "publication": "mvc_components",
+      "title_matches_pdf": true,
+      "sha256": "5090c6dd7737dd6aedf58489ec22511feacebff3dfa46353932c316222e3af3e"
+    },
+    {
+      "publication": "mvc_parallel",
+      "title_matches_pdf": true,
+      "sha256": "d97130b29853e199a2214d4d3068b79c70f3eeafe608422daf5b1d35d5e55495"
+    },
+    {
+      "publication": "gcond",
+      "title_matches_pdf": true,
+      "sha256": "b13eca1be1cad61b02e0e55353646700bd43dd81c9b47999e2fd47f0a035d466"
+    },
+    {
+      "publication": "doscond",
+      "title_matches_pdf": true,
+      "sha256": "a05d6cd62ada3fab4343a07bccdc738d6355c05d737156cf91193737b6fc7e11"
+    },
+    {
+      "publication": "gcdm",
+      "title_matches_pdf": true,
+      "sha256": "1f7a2b2249d32d6c0a898248952a18d45777f4bdf345f9a21e882cbbba8c826a"
+    },
+    {
+      "publication": "pygmtools",
+      "title_matches_pdf": true,
+      "sha256": "0acd7dd30511344cda4c8e7d3921d83d8916cecaf98ab04571306ebfa085506c"
+    }
+  ],
+  "errors": [],
+  "notes": [],
+  "scope": "Offline collection integrity, reviewed source entrypoints, PDF identity and schemas. No GPU code execution or runtime integration validation."
+}

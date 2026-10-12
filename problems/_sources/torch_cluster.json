@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/rusty1s/pytorch_cluster",
+  "checked_at": "2026-10-10T01:37:12Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "e9a855c284b45edcbf0282cf70ac09bee0ce4e49",
+  "archive_url": "https://codeload.github.com/rusty1s/pytorch_cluster/tar.gz/e9a855c284b45edcbf0282cf70ac09bee0ce4e49",
+  "archive_sha256": "7257ecb92c404f9e315315953957d3bc7ffb3929bf219c29b5bc113257d0b5d5",
+  "local_path": "torch_cluster-e9a855c284b4",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

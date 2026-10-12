@@ -1,0 +1,30 @@
+{
+  "problem_id": "topological_sort",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_nvidia_parallel_dag_dfs",
+      "algorithm_name": "NVIDIA parallel DAG DFS and reverse postorder",
+      "metadata": "45_topological_sort/papers/2017_nvidia_parallel_dag_dfs/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_topological_levels",
+      "algorithm_name": "cuGraph frontier-based topological levels",
+      "metadata": "45_topological_sort/papers/2026_cugraph_topological_levels/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_topogpu_morse_sort",
+      "algorithm_name": "TopoGPU parallel topological sorting",
+      "metadata": "45_topological_sort/papers/2026_topogpu_morse_sort/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "problem_id": "graph_classification_regression",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2018_pyg_diffpool",
+      "algorithm_name": "DiffPool graph classification",
+      "metadata": "53_graph_classification_regression/papers/2018_pyg_diffpool/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_pyg_gin",
+      "algorithm_name": "GIN graph classification",
+      "metadata": "53_graph_classification_regression/papers/2018_pyg_gin/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_pyg_sagpool",
+      "algorithm_name": "SAGPool graph classification",
+      "metadata": "53_graph_classification_regression/papers/2019_pyg_sagpool/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

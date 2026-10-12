@@ -12,5 +12,14 @@
   "notes": "Newest and most directly matching verified GPU work for this problem; authors state source code and datasets are publicly released.",
   "problem_id": "group_steiner_tree",
   "problem_dir": "27_group_steiner_tree",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "blocked_no_detected_license",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "code/TrimCDP-WB/src/GSTnonHop.cu"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "algorithm"
 }

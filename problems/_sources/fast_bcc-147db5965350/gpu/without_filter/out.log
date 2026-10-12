@@ -1,0 +1,123 @@
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/AGATHA_2015.egr
+Number of vertices: 183964077
+Number of edges: 5794362994
+CUDA Error: Allocation failed - out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/AGATHA_2015.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/clueweb12.egr
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/clueweb12.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/com-Friendster.egr
+Number of vertices: 65608366
+Number of edges: 1806067135
+Last CC time using chrono: 141.046 ms.
+
+Total execution time for Fast-BCC (Original): 3904.78 ms.
+
+Function execution times:
+Time of Tages : 3235.35 ms
+Time of Eulerian Tour : 355.93 ms
+Time of AST Construction : 172.48 ms
+Time of Last CC : 141.02 ms
+
+Number of BCC Labels: 14039046
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-kron.egr
+Number of vertices: 134217726
+Number of edges: 2182796584
+CUDA Error: Allocation failed - out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-kron.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-twitter.egr
+Number of vertices: 61578415
+Number of edges: 1222439231
+Last CC time using chrono: 73.5173 ms.
+
+Total execution time for Fast-BCC (Original): 2381.42 ms.
+
+Function execution times:
+Time of Tages : 2032.78 ms
+Time of Eulerian Tour : 189.73 ms
+Time of AST Construction : 85.42 ms
+Time of Last CC : 73.49 ms
+
+Number of BCC Labels: 21862187
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/GAP-web.egr
+Number of vertices: 50636151
+Number of edges: 1810063452
+Last CC time using chrono: 42.9089 ms.
+
+Total execution time for Fast-BCC (Original): 674.833 ms.
+
+Function execution times:
+Time of Tages : 499.62 ms
+Time of Eulerian Tour : 98.48 ms
+Time of Last CC : 42.90 ms
+Time of AST Construction : 33.83 ms
+
+Number of BCC Labels: 4085480
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/it-2004.egr
+Number of vertices: 41291594
+Number of edges: 1027475925
+Last CC time using chrono: 31.5172 ms.
+
+Total execution time for Fast-BCC (Original): 365.067 ms.
+
+Function execution times:
+Time of Tages : 225.29 ms
+Time of Eulerian Tour : 81.60 ms
+Time of Last CC : 31.51 ms
+Time of AST Construction : 26.67 ms
+
+Number of BCC Labels: 4977125
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/MOLIERE_2016.egr
+Number of vertices: 30239687
+Number of edges: 3338675708
+CUDA Error: Allocation failed - out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/MOLIERE_2016.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/sk-2005.egr
+Number of vertices: 50636154
+Number of edges: 1810063455
+Last CC time using chrono: 43.0892 ms.
+
+Total execution time for Fast-BCC (Original): 683.799 ms.
+
+Function execution times:
+Time of Tages : 507.91 ms
+Time of Eulerian Tour : 98.91 ms
+Time of Last CC : 43.08 ms
+Time of AST Construction : 33.91 ms
+
+Number of BCC Labels: 4085483
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/twitter7.egr
+Number of vertices: 41652230
+Number of edges: 1202513046
+Last CC time using chrono: 64.5251 ms.
+
+Total execution time for Fast-BCC (Original): 2262.33 ms.
+
+Function execution times:
+Time of Tages : 1974.74 ms
+Time of Eulerian Tour : 145.93 ms
+Time of AST Construction : 77.15 ms
+Time of Last CC : 64.51 ms
+
+Number of BCC Labels: 1936002
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-2014.egr
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-2014.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-union-2006-06-2007-05-underlying.egr
+Number of vertices: 133633039
+Number of edges: 4665489787
+CUDA Error: Allocation failed - out of memory
+Error processing /home/abhijeet/datasets/large_datasets/ecl_graphs/uk-union-2006-06-2007-05-underlying.egr
+Processing: /home/abhijeet/datasets/large_datasets/ecl_graphs/webbase-2001.egr
+Number of vertices: 118142155
+Number of edges: 857530811
+Last CC time using chrono: 34.1645 ms.
+
+Total execution time for Fast-BCC (Original): 477.371 ms.
+
+Function execution times:
+Time of Eulerian Tour : 246.70 ms
+Time of Tages : 167.92 ms
+Time of Last CC : 34.15 ms
+Time of AST Construction : 28.60 ms
+
+Number of BCC Labels: 30449388
+All files processed!

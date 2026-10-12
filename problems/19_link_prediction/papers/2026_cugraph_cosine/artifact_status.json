@@ -1,0 +1,28 @@
+{
+  "problem_id": "link_prediction",
+  "paper_id": "2026_cugraph_cosine",
+  "title": "cuGraph Cosine neighborhood link scores — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cugraph",
+    "local_path": "code",
+    "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cugraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/link_prediction/cosine_similarity_impl.cuh": "1814687afb4654e58e2bf41d61711d5c478db576cadd73ab4c4198334bde1c7c"
+    }
+  }
+}

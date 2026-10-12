@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/sparcityeu/FastPartitioner",
+  "checked_at": "2026-10-10T01:39:36Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "6697fcbe5bd957fbe1aa7f20bee725bdc1dc4dc7",
+  "archive_url": "https://codeload.github.com/sparcityeu/FastPartitioner/tar.gz/6697fcbe5bd957fbe1aa7f20bee725bdc1dc4dc7",
+  "archive_sha256": "939b23b7a68f9a73e2d71697810e5b7dd276ab0e9aa1a389406956cae8cb7fc5",
+  "local_path": "fastpartitioner-6697fcbe5bd9",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "MIT",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

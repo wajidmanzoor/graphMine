@@ -69,6 +69,39 @@ def resolve_route_scope(catalog, decision, previous_intent=None):
     return decision
 
 
+def preserve_review_intent(
+    original: ApplicationIntent,
+    proposed: ApplicationIntent,
+) -> tuple[ApplicationIntent, list[str]]:
+    """Fill missing meaning while preserving established execution constraints.
+
+    Reviews cannot change the data selection. Required weights/direction may
+    become explicit, but a later model response cannot turn them off. Conflicting
+    known values require clarification instead of an implicit substitution.
+    """
+    values = original.model_dump(mode="json")
+    defaults = ApplicationIntent().model_dump(mode="json")
+    conflicts = []
+    for field, value in proposed.model_dump(mode="json").items():
+        if field == "filters":
+            if any(item not in values[field] for item in value):
+                conflicts.append(field)
+        elif field == "filter_mode":
+            continue
+        elif field in {"objective", "relationship_meaning", "assumptions"}:
+            if not values[field]:
+                values[field] = value
+        elif field in {"requires_edge_weights", "requires_direction"}:
+            values[field] = values[field] or value
+        elif value == defaults[field]:
+            continue
+        elif values[field] == defaults[field]:
+            values[field] = value
+        elif values[field] != value:
+            conflicts.append(field)
+    return ApplicationIntent.model_validate(values), conflicts
+
+
 class PlanValidationError(ValueError):
     def __init__(self, errors: list[str]):
         self.errors = errors
@@ -424,10 +457,29 @@ class PlanValidator:
             if not specification.get("multiple") and len(values) > 1:
                 errors.append(f"auxiliary input {name} accepts exactly one file")
 
-        # The native CLI owns the operation-specific `auto` choice.  Applying the
-        # correctness constraints of one nominal default here would reject valid
-        # plans (for example, induced graph motifs select a different backend).
-        # Explicit choices remain fully constrained.
+        # Auto must have a compatible compiled candidate. Native dispatch owns
+        # the final choice, including motif semantics, clique order and resolution.
+        constraints = operation.instruction.get("backend_constraints", {})
+        def constraint_errors(backend: str) -> list[str]:
+            limits = constraints.get(backend, {})
+            failures = []
+            for name in limits.get("forbids_true", []):
+                if normalized_parameters.get(name) is True:
+                    failures.append(f"backend {backend} does not support {name}=true")
+            for name, maximum in limits.get("parameter_maximum", {}).items():
+                value = normalized_parameters.get(name)
+                if isinstance(value, (int, float)) and value > maximum:
+                    failures.append(f"backend {backend} supports {name} only up to {maximum}")
+            for name, expected in limits.get("parameter_equals", {}).items():
+                if normalized_parameters.get(name) != expected:
+                    failures.append(f"backend {backend} requires {name}={expected!r}")
+            return failures
+
+        if not explicit_backend:
+            candidates = [b for b in operation.backends if compiled_backends is None or b in compiled_backends]
+            if candidates and all(constraint_errors(b) for b in candidates):
+                errors.append("No available backend accepts these parameters: " + "; ".join(
+                    message for b in candidates for message in constraint_errors(b)))
         constraint = (
             operation.instruction.get("backend_constraints", {}).get(
                 effective_backend, {}
@@ -441,7 +493,8 @@ class PlanValidator:
                     f"backend {effective_backend} does not support {name}=true"
                 )
         for name, maximum in constraint.get("parameter_maximum", {}).items():
-            if normalized_parameters.get(name, -math.inf) > maximum:
+            value = normalized_parameters.get(name)
+            if isinstance(value, (int, float)) and value > maximum:
                 errors.append(
                     f"backend {effective_backend} supports {name} only up to {maximum}"
                 )

@@ -1,0 +1,52 @@
+# Gunrock/Essentials Windows Workflow
+name: Windows
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master and dev branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+  
+jobs:
+  build:
+    strategy:
+      matrix:
+        backend: [nvidia]
+        include:
+          - backend: nvidia
+            architectures: "90"
+            cmake_backend_flag: "-DESSENTIALS_NVIDIA_BACKEND=ON -DESSENTIALS_AMD_BACKEND=OFF"
+            cmake_arch_flag: "-DCMAKE_CUDA_ARCHITECTURES=90"
+        
+    # https://github.blog/changelog/2021-02-08-github-actions-skip-pull-request-and-push-workflows-with-skip-ci/
+    if: "!contains(github.event.commits[0].message, '[skip windows]')"
+    runs-on: windows-latest
+    name: Build (${{matrix.backend}})
+
+    steps:
+      # Fetch CUDA toolkit using Jimver/cuda-toolkit
+      - name: Fetch CUDA toolkit
+        uses: Jimver/cuda-toolkit@master
+        id: cuda-toolkit
+        with:
+          cuda: '12.5.0'
+          linux-local-args: '["--toolkit"]'
+
+      - name: Check nvcc version
+        run: nvcc -V
+        
+      - uses: actions/checkout@v6
+      
+      - name: Configure cmake
+        run: cmake -B ${{github.workspace}}/build -DESSENTIALS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{matrix.cmake_backend_flag}} ${{matrix.cmake_arch_flag}}
+        
+      - name: Build all applications
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}

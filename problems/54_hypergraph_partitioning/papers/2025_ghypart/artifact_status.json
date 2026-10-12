@@ -1,0 +1,42 @@
+{
+  "problem_id": "hypergraph_partitioning",
+  "paper_id": "2025_ghypart",
+  "title": "gHyPart: GPU-friendly End-to-End Hypergraph Partitioner",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "not_downloaded",
+    "source_url": "https://dl.acm.org/doi/pdf/10.1145/3711925",
+    "local_path": null,
+    "error": [
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3711925",
+        "error": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "checked_at": "2026-10-09T19:30:58Z",
+    "download_attempts": [
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3711925",
+        "error": "HTTP Error 403: Forbidden"
+      }
+    ]
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/zlwu92/gHyPart_TACO",
+    "local_path": "code",
+    "commit": "97b517195c16afe1a8c46d5e3fc418109ed6972a",
+    "license_file": null,
+    "license_note": "No root license file found; public source availability is not a blanket redistribution license.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/ghypart.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "main.cu": "ad58a842a5ff60c1bb72eb7b2166f0040c69c250e000adeaac91ad610d50978c",
+      "no_uvm_impl/kway_partition_no_uvm.cu": "17e0e0a707c3c4eda39b0beb6b5e9e7e4cb5129cc115a5e5f0abab40775492e3",
+      "kernels/coarsening_kernels.cu": "c962f155cfb1d65bbea4afff174e1326e4b7d7c84beb02c58eaa8fc78ab2fea0"
+    }
+  }
+}

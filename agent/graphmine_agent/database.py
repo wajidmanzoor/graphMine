@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from threading import RLock
 from typing import Any
@@ -24,6 +26,14 @@ class RecordNotFound(KeyError):
     pass
 
 
+class QueueCapacityError(ValueError):
+    def __init__(self, *, limit: int, pending: int, requested: int):
+        super().__init__(
+            "The analysis queue has no room for this request. Please retry after pending analyses finish."
+        )
+        self.limit, self.pending, self.requested = limit, pending, requested
+
+
 class Database:
     """Small durable metadata store; bulk graph/results remain in workspaces."""
 
@@ -34,12 +44,17 @@ class Database:
         self.history = history or HistoryStore(path.parent / "history")
         self._initialize()
 
-    def _connect(self) -> sqlite3.Connection:
+    @contextmanager
+    def _connect(self) -> Iterator[sqlite3.Connection]:
         connection = sqlite3.connect(self.path, timeout=30)
-        connection.row_factory = sqlite3.Row
-        connection.execute("PRAGMA foreign_keys = ON")
-        connection.execute("PRAGMA journal_mode = WAL")
-        return connection
+        try:
+            connection.row_factory = sqlite3.Row
+            connection.execute("PRAGMA foreign_keys = ON")
+            connection.execute("PRAGMA journal_mode = WAL")
+            with connection:
+                yield connection
+        finally:
+            connection.close()
 
     def _initialize(self) -> None:
         with self._lock, self._connect() as connection:
@@ -69,6 +84,7 @@ class Database:
                 );
                 CREATE INDEX IF NOT EXISTS jobs_session_idx ON jobs(session_id);
                 CREATE INDEX IF NOT EXISTS jobs_status_idx ON jobs(status);
+                CREATE INDEX IF NOT EXISTS jobs_status_created_idx ON jobs(status,created_at);
                 CREATE TABLE IF NOT EXISTS results (
                   id TEXT PRIMARY KEY,
                   job_id TEXT NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
@@ -145,14 +161,25 @@ class Database:
         return [SessionRecord.model_validate_json(row["payload"]) for row in rows]
 
     def touch_session(self, session_id: str) -> None:
-        session = self.get_session(session_id)
-        updated = session.model_copy(update={"updated_at": utc_now()})
         with self._lock, self._connect() as connection:
-            connection.execute(
-                "UPDATE sessions SET payload=?,updated_at=? WHERE id=?",
-                (self._json(updated), updated.updated_at.isoformat(), session_id),
-            )
+            updated = self._touch_session(connection, session_id)
         self.history.snapshot(session_id, "session.json", updated)
+
+    def _touch_session(
+        self, connection: sqlite3.Connection, session_id: str
+    ) -> SessionRecord:
+        row = connection.execute(
+            "SELECT payload FROM sessions WHERE id=?", (session_id,)
+        ).fetchone()
+        if row is None:
+            raise RecordNotFound(f"unknown session: {session_id}")
+        session = SessionRecord.model_validate_json(row["payload"])
+        updated = session.model_copy(update={"updated_at": utc_now()})
+        connection.execute(
+            "UPDATE sessions SET payload=?,updated_at=? WHERE id=?",
+            (self._json(updated), updated.updated_at.isoformat(), session_id),
+        )
+        return updated
 
     def add_file(self, record: StoredFile) -> StoredFile:
         self.get_session(record.session_id)
@@ -167,7 +194,8 @@ class Database:
                     record.created_at.isoformat(),
                 ),
             )
-        self.touch_session(record.session_id)
+            session = self._touch_session(connection, record.session_id)
+        self.history.snapshot(record.session_id, "session.json", session)
         self.history.file(record)
         return record
 
@@ -208,10 +236,74 @@ class Database:
                     now,
                 ),
             )
-        self.touch_session(job.session_id)
+            session = self._touch_session(connection, job.session_id)
+        self.history.snapshot(job.session_id, "session.json", session)
+        self._record_job(job)
+        return job
+
+    def _record_job(self, job: JobRecord) -> None:
         self.history.snapshot(job.session_id, f"jobs/{job.id}/job.json", job)
         self.history.record(job.session_id, "job.state", job)
-        return job
+
+    def admit_jobs(self, jobs: list[JobRecord], *, max_pending: int) -> list[JobRecord]:
+        """Atomically admit an entire analysis against durable pending counts."""
+        if (
+            not jobs
+            or max_pending < 1
+            or any(job.status != JobStatus.queued for job in jobs)
+        ):
+            raise ValueError(
+                "Admission requires queued jobs and a positive pending limit"
+            )
+        with self._lock, self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            pending = connection.execute(
+                "SELECT COUNT(*) FROM jobs WHERE status IN ('queued','running','interpreting')"
+            ).fetchone()[0]
+            if pending + len(jobs) > max_pending:
+                raise QueueCapacityError(
+                    limit=max_pending, pending=pending, requested=len(jobs)
+                )
+            now = utc_now().isoformat()
+            connection.executemany(
+                "INSERT INTO jobs(id,session_id,status,payload,created_at,updated_at) VALUES(?,?,?,?,?,?)",
+                [
+                    (
+                        job.id,
+                        job.session_id,
+                        job.status.value,
+                        self._json(job),
+                        job.created_at.isoformat(),
+                        now,
+                    )
+                    for job in jobs
+                ],
+            )
+            sessions = [
+                self._touch_session(connection, sid)
+                for sid in {job.session_id for job in jobs}
+            ]
+        for session in sessions:
+            self.history.snapshot(session.id, "session.json", session)
+        for job in jobs:
+            self._record_job(job)
+        return jobs
+
+    def pending_job_counts(self) -> dict[str, int]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                "SELECT status,COUNT(*) AS count FROM jobs WHERE status IN ('queued','running','interpreting') GROUP BY status"
+            ).fetchall()
+        return {"queued": 0, "running": 0, "interpreting": 0} | {
+            row["status"]: row["count"] for row in rows
+        }
+
+    def next_queued_job(self) -> JobRecord | None:
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT payload FROM jobs WHERE status='queued' ORDER BY created_at,rowid LIMIT 1"
+            ).fetchone()
+        return None if row is None else JobRecord.model_validate_json(row["payload"])
 
     def get_job(self, job_id: str) -> JobRecord:
         with self._connect() as connection:
@@ -292,11 +384,20 @@ class Database:
             raise RecordNotFound(f"unknown result: {result_id}")
         return ResultRecord.model_validate_json(row["payload"])
 
-    def latest_result(self, session_id: str) -> ResultRecord | None:
+    def latest_result(
+        self, session_id: str, *, graph_id: str | None = None
+    ) -> ResultRecord | None:
         with self._connect() as connection:
             row = connection.execute(
-                "SELECT payload FROM results WHERE session_id=? ORDER BY created_at DESC LIMIT 1",
-                (session_id,),
+                "SELECT results.payload FROM results JOIN jobs ON jobs.id=results.job_id "
+                "WHERE results.session_id=? "
+                + (
+                    "AND json_extract(jobs.payload, '$.plan.graph_id')=? "
+                    if graph_id
+                    else ""
+                )
+                + "ORDER BY results.created_at DESC, results.rowid DESC LIMIT 1",
+                (session_id, graph_id) if graph_id else (session_id,),
             ).fetchone()
         return None if row is None else ResultRecord.model_validate_json(row["payload"])
 
@@ -313,7 +414,8 @@ class Database:
                 "INSERT INTO messages(session_id,role,mode,payload,created_at) VALUES(?,?,?,?,?)",
                 (session_id, role, mode, self._json(payload), utc_now().isoformat()),
             )
-        self.touch_session(session_id)
+            session = self._touch_session(connection, session_id)
+        self.history.snapshot(session_id, "session.json", session)
         self.history.record(
             session_id,
             "conversation.message",
@@ -494,9 +596,10 @@ class Database:
                     record.created_at.isoformat(),
                 ),
             )
+            session = self._touch_session(connection, session_id)
         self.history.snapshot(session_id, f"feedback/{record.id}.json", record)
         self.history.record(session_id, "feedback.saved", record)
-        self.touch_session(session_id)
+        self.history.snapshot(session_id, "session.json", session)
         return record
 
     def feedback(self, session_id: str) -> list[FeedbackRecord]:

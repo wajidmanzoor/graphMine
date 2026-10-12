@@ -1,0 +1,28 @@
+{
+  "title": "Efficient and High-quality Sparse Graph Coloring on the GPU",
+  "year": 2016,
+  "venue": "arXiv; Concurrency and Computation 2017",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1606.06025",
+  "pdf_url": "https://arxiv.org/pdf/1606.06025",
+  "paper_id": "2016_gardenia_coloring",
+  "problem_id": "vertex_coloring",
+  "problem_dir": "43_vertex_coloring",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GARDENIA speculative greedy coloring",
+  "code_url": "https://github.com/chenxuhao/gardenia",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA tentative coloring and conflict resolution.",
+  "notes": "Distance-1 coloring. Several CUDA schedules are included; they are one algorithm entry here.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "src/vc/linear_bitset.cu",
+    "src/vc/topo_bitset.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

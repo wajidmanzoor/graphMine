@@ -1,0 +1,38 @@
+{
+  "problem_id": "random_walk_generation",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2020_csaw_walks",
+      "algorithm_name": "C-SAW GPU random walks",
+      "metadata": "46_random_walk_generation/papers/2020_csaw_walks/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2020_nextdoor_walks",
+      "algorithm_name": "NextDoor transit-parallel random walks",
+      "metadata": "46_random_walk_generation/papers/2020_nextdoor_walks/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2021_skywalker_walks",
+      "algorithm_name": "Skywalker alias-table random walks",
+      "metadata": "46_random_walk_generation/papers/2021_skywalker_walks/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_random_walks",
+      "algorithm_name": "cuGraph GPU random walks",
+      "metadata": "46_random_walk_generation/papers/2026_cugraph_random_walks/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

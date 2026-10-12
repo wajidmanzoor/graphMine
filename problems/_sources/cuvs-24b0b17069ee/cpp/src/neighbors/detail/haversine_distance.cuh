@@ -1,0 +1,145 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2020-2025, NVIDIA CORPORATION.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#pragma once
+
+#include "faiss_select/Select.cuh"
+#include <raft/core/resources.hpp>
+#include <raft/util/cuda_utils.cuh>
+#include <raft/util/cudart_utils.hpp>
+#include <raft/util/pow2_utils.cuh>
+
+#include <cuda_fp16.h>
+
+namespace cuvs::neighbors::detail {
+template <typename value_t, typename distance_t>
+DI distance_t compute_haversine(value_t x1, value_t y1, value_t x2, value_t y2)
+{
+  if constexpr ((std::is_same_v<distance_t, float> && std::is_same_v<value_t, half>)) {
+    distance_t _x1 = __half2float(x1);
+    distance_t _y1 = __half2float(y1);
+    distance_t _x2 = __half2float(x2);
+    distance_t _y2 = __half2float(y2);
+
+    distance_t sin_0 = raft::sin(distance_t(0.5) * (_x1 - _y1));
+    distance_t sin_1 = raft::sin(distance_t(0.5) * (_x2 - _y2));
+    distance_t rdist = sin_0 * sin_0 + raft::cos(_x1) * raft::cos(_y1) * sin_1 * sin_1;
+
+    return static_cast<distance_t>(2) * raft::asin(raft::sqrt(rdist));
+  } else {
+    distance_t sin_0 = raft::sin(distance_t(0.5) * (x1 - y1));
+    distance_t sin_1 = raft::sin(distance_t(0.5) * (x2 - y2));
+    distance_t rdist = sin_0 * sin_0 + raft::cos(x1) * raft::cos(y1) * sin_1 * sin_1;
+
+    return static_cast<distance_t>(2) * raft::asin(raft::sqrt(rdist));
+  }
+}
+
+/**
+ * @tparam value_idx data type of indices
+ * @tparam value_t data type of values and distances
+ * @tparam warp_q
+ * @tparam thread_q
+ * @tparam tpb
+ * @param[out] out_inds output indices
+ * @param[out] out_dists output distances
+ * @param[in] index index array
+ * @param[in] query query array
+ * @param[in] n_index_rows number of rows in index array
+ * @param[in] k number of closest neighbors to return
+ */
+template <typename value_idx,
+          typename value_t,
+          int warp_q          = 1024,
+          int thread_q        = 8,
+          int tpb             = 128,
+          typename distance_t = float>
+RAFT_KERNEL haversine_knn_kernel(value_idx* out_inds,
+                                 distance_t* out_dists,
+                                 const value_t* index,
+                                 const value_t* query,
+                                 size_t n_index_rows,
+                                 int k)
+{
+  constexpr int kNumWarps = tpb / raft::WarpSize;
+
+  __shared__ distance_t smemK[kNumWarps * warp_q];
+  __shared__ value_idx smemV[kNumWarps * warp_q];
+
+  using namespace cuvs::neighbors::detail::faiss_select;
+  BlockSelect<distance_t, value_idx, false, Comparator<distance_t>, warp_q, thread_q, tpb> heap(
+    std::numeric_limits<distance_t>::max(), std::numeric_limits<value_idx>::max(), smemK, smemV, k);
+
+  // Grid is exactly sized to rows available
+  int limit = raft::Pow2<raft::WarpSize>::roundDown(n_index_rows);
+
+  const value_t* query_ptr = query + (blockIdx.x * 2);
+  value_t x1               = query_ptr[0];
+  value_t x2               = query_ptr[1];
+
+  int i = threadIdx.x;
+
+  for (; i < limit; i += tpb) {
+    const value_t* idx_ptr = index + (i * 2);
+    value_t y1             = idx_ptr[0];
+    value_t y2             = idx_ptr[1];
+
+    distance_t dist = compute_haversine<value_t, distance_t>(x1, y1, x2, y2);
+
+    heap.add(dist, i);
+  }
+
+  // Handle last remainder fraction of a warp of elements
+  if (i < n_index_rows) {
+    const value_t* idx_ptr = index + (i * 2);
+    value_t y1             = idx_ptr[0];
+    value_t y2             = idx_ptr[1];
+
+    distance_t dist = compute_haversine<value_t, distance_t>(x1, y1, x2, y2);
+
+    heap.addThreadQ(dist, i);
+  }
+
+  heap.reduce();
+
+  for (int i = threadIdx.x; i < k; i += tpb) {
+    out_dists[blockIdx.x * k + i] = smemK[i];
+    out_inds[blockIdx.x * k + i]  = smemV[i];
+  }
+}
+
+/**
+ * Conmpute the k-nearest neighbors using the Haversine
+ * (great circle arc) distance. Input is assumed to have
+ * 2 dimensions (latitude, longitude) in radians.
+
+ * @tparam value_idx
+ * @tparam value_t
+ * @param[out] out_inds output indices array on device (size n_query_rows * k)
+ * @param[out] out_dists output dists array on device (size n_query_rows * k)
+ * @param[in] index input index array on device (size n_index_rows * 2)
+ * @param[in] query input query array on device (size n_query_rows * 2)
+ * @param[in] n_index_rows number of rows in index array
+ * @param[in] n_query_rows number of rows in query array
+ * @param[in] k number of closest neighbors to return
+ * @param[in] stream stream to order kernel launch
+ */
+template <typename value_idx, typename value_t, typename distance_t = float>
+void haversine_knn(value_idx* out_inds,
+                   distance_t* out_dists,
+                   const value_t* index,
+                   const value_t* query,
+                   size_t n_index_rows,
+                   size_t n_query_rows,
+                   int k,
+                   cudaStream_t stream)
+{
+  // ensure kernel does not breach shared memory limits
+  constexpr int kWarpQ = sizeof(value_t) > 4 ? 512 : 1024;
+  haversine_knn_kernel<value_idx, value_t, kWarpQ>
+    <<<n_query_rows, 128, 0, stream>>>(out_inds, out_dists, index, query, n_index_rows, k);
+}
+
+}  // namespace cuvs::neighbors::detail

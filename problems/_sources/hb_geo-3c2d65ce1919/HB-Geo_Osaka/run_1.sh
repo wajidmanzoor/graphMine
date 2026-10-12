@@ -1,0 +1,9 @@
+python main.py  --lr 0.002 --device cuda:0 --dim_in 9  --num_hidden 128  --num_heads 2,2,2
+python main.py  --lr 0.002 --device cuda:0 --dim_in 9  --num_hidden 128  --num_heads 1,1,1
+python main.py  --lr 0.002 --device cuda:0 --dim_in 9  --num_hidden 128  --num_heads 4,4,4
+python main.py  --lr 0.002 --device cuda:0 --dim_in 9  --num_hidden 64  --num_heads 2,2,2
+python main.py  --lr 0.002 --device cuda:0 --dim_in 9  --num_hidden 64  --num_heads 1,1,1
+python main.py  --lr 0.002 --device cuda:0 --dim_in 9  --num_hidden 64  --num_heads 4,4,4
+python main.py  --lr 0.005 --device cuda:0 --dim_in 9  --num_hidden 128  --num_heads 2,2,2
+python main.py  --lr 0.005 --device cuda:0 --dim_in 9  --num_hidden 128  --num_heads 1,1,1
+python main.py  --lr 0.005 --device cuda:0 --dim_in 9  --num_hidden 128  --num_heads 4,4,4

@@ -1,0 +1,24 @@
+{
+  "problem_id": "max_flow_min_cut",
+  "paper_id": "2025_generalized_maxflow_gpu",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "title": "Novel GPU-Based Method for the Generalized Maximum Flow Problem",
+  "code": {
+    "source_url": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "status": "not_collected",
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+  },
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://www.mdpi.com/2079-3197/13/2/40/pdf",
+    "resolved_url": "https://www.mdpi.com/2079-3197/13/2/40/pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "5851648061c1805b3aa79bee07271f75647ce96691d7c402401cd34c1f7b312f",
+    "bytes": 2621602,
+    "pdfinfo_valid": true
+  }
+}

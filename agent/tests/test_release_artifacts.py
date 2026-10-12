@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import hashlib
 import json
-import tomllib
 from pathlib import Path
 
+import tomllib
 from graphmine_agent import __version__
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 

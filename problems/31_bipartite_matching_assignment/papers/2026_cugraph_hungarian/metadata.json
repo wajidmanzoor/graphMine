@@ -1,0 +1,35 @@
+{
+  "title": "cuGraph Dense Hungarian assignment — upstream implementation documentation",
+  "authors": [],
+  "year": 2026,
+  "venue": "Official upstream implementation and API documentation",
+  "doi": null,
+  "publication_url": null,
+  "pdf_url": null,
+  "paper_id": "2026_cugraph_hungarian",
+  "problem_id": "bipartite_matching_assignment",
+  "problem_dir": "31_bipartite_matching_assignment",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "cuGraph Dense Hungarian assignment",
+  "code_url": "https://github.com/rapidsai/cugraph",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Legacy CUDA weighted rectangular assignment, not a general-graph matching solver; check padding and infeasible-edge conventions. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+  "paper_role": "none",
+  "code_entrypoints": [
+    "cpp/src/linear_assignment/legacy/hungarian.cu"
+  ],
+  "documentation_urls": [
+    "https://docs.nvidia.com/cugraph/stable/api_docs/cugraph_cpp/"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "cugraph",
+  "variant_constraints": [],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

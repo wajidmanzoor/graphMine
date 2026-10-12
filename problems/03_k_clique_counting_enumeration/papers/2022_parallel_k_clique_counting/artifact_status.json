@@ -2,20 +2,30 @@
   "problem_id": "k_clique_counting_enumeration",
   "paper_id": "2022_parallel_k_clique_counting",
   "title": "Parallel K-Clique Counting on GPUs",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://arxiv.org/pdf/2104.13209",
     "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2104.13209",
+    "resolved_url": "https://arxiv.org/pdf/2104.13209",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "19210ab13e61d8e6fa66129400bf378f3572de1346289a399ad10a1e7fa2d936",
+    "bytes": 1670579,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/ssmoha7/KCGPU",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "314ac6d41fbe6582c2a258c2094c67ec1aa47116",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "src/main.cu": "015352fdc132c02786d1169e1df43903a82539623b42530ac521f17ae6f18783"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

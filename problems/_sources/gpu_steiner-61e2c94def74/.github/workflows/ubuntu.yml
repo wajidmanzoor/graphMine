@@ -1,0 +1,42 @@
+name: Ubuntu/NVCC
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+  ARCHITECTURES: 75
+  
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        
+    # https://github.blog/changelog/2021-02-08-github-actions-skip-pull-request-and-push-workflows-with-skip-ci/
+    if: "!contains(github.event.commits[0].message, '[skip ubuntu]')"
+    runs-on: ${{matrix.os}}
+
+    steps:
+
+      # Fetch CUDA toolkit using Jimver/cuda-toolkit
+      - name: Fetch CUDA toolkit
+        uses: Jimver/cuda-toolkit@v0.2.11
+        id: cuda-toolkit
+        with:
+          cuda: '12.1.0'
+          linux-local-args: '["--toolkit"]'
+
+      - name: Check nvcc version
+        run: nvcc -V
+        
+      - uses: actions/checkout@v3
+        
+      - name: Configure make
+        run: make gpu

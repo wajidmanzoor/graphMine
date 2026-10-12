@@ -1,7 +1,17 @@
-# Artifact status
+Accelerating Truss Decomposition on Heterogeneous Processors
+============================================================
 
-- Paper: `downloaded`
-- Code: `cloned`
-- Resolved code commit: `a8faa445ccb45c18383087db488eff9d1836d8d1`
-- Detected license file: `code/msp/LICENSE.txt`
-- Checked: `2026-10-03T22:04:41Z`
+Paper: downloaded. Source: downloaded_archive.
+
+Reviewed local GPU source/research-paper pair: true.
+
+Semantic fit: exact.
+
+Redistribution: upstream_license_present.
+
+The original collection sweep checked source/paper evidence only. Subsequent scoped runtime evidence is linked below.
+
+Subsequent runtime validation
+-----------------------------
+
+Status: **runtime_checks_passed**. See [per-record evidence](runtime_validation.json) and the [runtime report](../../../../validation/parameter_expansion/RESULTS.md). Checks exercise the existing CLI adapter with local repairs; they do not certify every paper claim.

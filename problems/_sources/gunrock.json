@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/gunrock/gunrock",
+  "checked_at": "2026-10-09T19:25:10Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+  "archive_url": "https://codeload.github.com/gunrock/gunrock/tar.gz/748f79e66cc26762cd3f99422b028e742a737bde",
+  "archive_sha256": "1a813964943f02098a40ac79606aa91e58593b2fdd2faaaf433788b78e5f09d8",
+  "local_path": "gunrock-748f79e66cc2",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

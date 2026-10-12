@@ -1,0 +1,46 @@
+{
+  "problem_id": "hypergraph_partitioning",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2025_ghypart",
+      "algorithm_name": "gHyPart multilevel hypergraph partitioning",
+      "metadata": "54_hypergraph_partitioning/papers/2025_ghypart/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_axon_cuda",
+      "algorithm_name": "AxonCUDA constrained hypergraph partitioning",
+      "metadata": "54_hypergraph_partitioning/papers/2026_axon_cuda/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_fastpartitioner",
+      "algorithm_name": "FastPartitioner GPU hypergraph refinement",
+      "metadata": "54_hypergraph_partitioning/papers/2026_fastpartitioner/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_hgnn_part",
+      "algorithm_name": "HGNN-Part learned hypergraph partitioning",
+      "metadata": "54_hypergraph_partitioning/papers/2026_hgnn_part/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_hyspecpro",
+      "algorithm_name": "HySpecPro",
+      "metadata": "54_hypergraph_partitioning/papers/2026_hyspecpro/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

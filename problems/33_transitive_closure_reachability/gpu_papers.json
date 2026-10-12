@@ -1,0 +1,30 @@
+{
+  "problem_id": "transitive_closure_reachability",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2021_atc",
+      "algorithm_name": "Anti-Section Transitive Closure",
+      "metadata": "33_transitive_closure_reachability/papers/2021_atc/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_gdlog",
+      "algorithm_name": "Optimizing Datalog for the GPU",
+      "metadata": "33_transitive_closure_reachability/papers/2024_gdlog/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_curpq",
+      "algorithm_name": "cuRPQ: A High-Performance GPU-Based Framework for Processing Regular and Conjunctive Regular Path Queries",
+      "metadata": "33_transitive_closure_reachability/papers/2026_curpq/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    }
+  ]
+}

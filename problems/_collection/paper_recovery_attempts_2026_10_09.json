@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.learningsys.org/nips17/assets/papers/paper_16.pdf",
+    "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'www.learningsys.org'. (_ssl.c:1000)>"
+  },
+  {
+    "url": "https://learningsys.github.io/nips17/assets/papers/paper_16.pdf",
+    "success": true
+  }
+]

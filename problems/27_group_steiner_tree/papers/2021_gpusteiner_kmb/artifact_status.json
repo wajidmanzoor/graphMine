@@ -1,0 +1,28 @@
+{
+  "problem_id": "group_steiner_tree",
+  "paper_id": "2021_gpusteiner_kmb",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "title": "Accelerating Computation of Steiner Trees on GPUs",
+  "code": {
+    "source_url": "https://github.com/mrprajesh/gpuSteiner",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "status": "downloaded_archive",
+    "local_path": "code",
+    "error": null,
+    "entrypoint_sha256": {
+      "gpuSteiner6-oddAgainWithKtimer2Sh3.cu": "3af50f0e416f149f1526c10878d85583bccda1f6b38590d9517338e217cbb6b4"
+    },
+    "commit": "61e2c94def74d84d4d79d59c7499218ab75d720e",
+    "source_manifest": "../../../_sources/gpu_steiner.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/LICENSE"
+  },
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No local verified PDF; an open downloadable paper URL was not established during this sweep.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

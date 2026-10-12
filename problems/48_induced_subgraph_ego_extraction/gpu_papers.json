@@ -1,0 +1,46 @@
+{
+  "problem_id": "induced_subgraph_ego_extraction",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2019_dgl_node_subgraph",
+      "algorithm_name": "DGL sparse graph slicing for induced subgraphs",
+      "metadata": "48_induced_subgraph_ego_extraction/papers/2019_dgl_node_subgraph/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_pyg_induced_subgraph",
+      "algorithm_name": "PyG mask-based induced subgraph",
+      "metadata": "48_induced_subgraph_ego_extraction/papers/2019_pyg_induced_subgraph/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_pyg_khop_subgraph",
+      "algorithm_name": "PyG frontier-expansion k-hop subgraph",
+      "metadata": "48_induced_subgraph_ego_extraction/papers/2019_pyg_khop_subgraph/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_egonet",
+      "algorithm_name": "cuGraph Ego-network extraction",
+      "metadata": "48_induced_subgraph_ego_extraction/papers/2026_cugraph_egonet/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_induced_subgraph",
+      "algorithm_name": "cuGraph Induced subgraph extraction",
+      "metadata": "48_induced_subgraph_ego_extraction/papers/2026_cugraph_induced_subgraph/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

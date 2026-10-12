@@ -1,0 +1,42 @@
+{
+  "title": "Fast k-NN Graph Construction by GPU based NN-Descent",
+  "authors": [
+    "Hui Wang",
+    "Wanlei Zhao",
+    "Xiangxiang Zeng",
+    "Jianye Yang"
+  ],
+  "year": 2021,
+  "venue": "ACM CIKM 2021",
+  "doi": "10.1145/3459637.3482344",
+  "publication_url": "https://doi.org/10.1145/3459637.3482344",
+  "pdf_url": "https://cmmlab.xmu.edu.cn/pubs/cikmwang2021.pdf",
+  "paper_id": "2021_cuvs_nn_descent",
+  "problem_id": "knn_graph_construction",
+  "problem_dir": "64_knn_graph_construction",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "cuVS GPU NN-Descent",
+  "code_url": "https://github.com/rapidsai/cuvs",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Approximate kNN graph construction; recall must be measured. The cuVS implementation cites GPU NN-Descent. CAGRA navigation-graph pruning is not treated as an exact kNN output.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "cpp/src/neighbors/nn_descent.cu",
+    "cpp/src/neighbors/detail/nn_descent.cuh"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "cuvs",
+  "variant_constraints": [
+    "approximate search",
+    "supported distance metrics only"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

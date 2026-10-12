@@ -1,0 +1,33 @@
+{
+  "problem_id": "graph_condensation",
+  "paper_id": "2022_graphslim_gcdm",
+  "title": "Graph Condensation via Receptive Field Distribution Matching",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2206.13697",
+    "resolved_url": "https://arxiv.org/pdf/2206.13697",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "1f7a2b2249d32d6c0a898248952a18d45777f4bdf345f9a21e882cbbba8c826a",
+    "bytes": 644292,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/Emory-Melody/GraphSlim",
+    "local_path": "code",
+    "commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/graphslim.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "graphslim/condensation/gcdm.py": "4642ba7aff2e2df423f3e71f968b8d430746ecf0933929cdeaaf3082dfe16ab0"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "problem_id": "maximal_clique_enumeration",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2023_parallelizing_mce",
+      "algorithm_name": "Parallelizing Maximal Clique Enumeration on GPUs",
+      "metadata": "01_maximal_clique_enumeration/papers/2023_parallelizing_mce/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_g2_aimd",
+      "algorithm_name": "G2-AIMD: A Memory-Efficient Subgraph-Centric Framework for Efficient Subgraph Finding on GPUs",
+      "metadata": "01_maximal_clique_enumeration/papers/2024_g2_aimd/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_rdmce",
+      "algorithm_name": "Root-Down Exposure for Maximal Clique Enumeration on GPUs",
+      "metadata": "01_maximal_clique_enumeration/papers/2026_rdmce/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

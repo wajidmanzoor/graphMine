@@ -1,0 +1,29 @@
+{
+  "problem_id": "hypergraph_partitioning",
+  "paper_id": "2026_fastpartitioner",
+  "title": "FastPartitioner GPU hypergraph refinement — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/sparcityeu/FastPartitioner",
+    "local_path": "code",
+    "commit": "6697fcbe5bd957fbe1aa7f20bee725bdc1dc4dc7",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/fastpartitioner.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "CN/gpu_partition.cu": "1875b1a8a501009d94b846c18122d6274646b519421bcce9c1cfcf6cb02ae7bd",
+      "TV/gpu_partition.cu": "9f16b9f9ee2b5739cab60f269f58f222dc9c9e5dd6e9d4d3b7a90ac01969f418"
+    }
+  }
+}

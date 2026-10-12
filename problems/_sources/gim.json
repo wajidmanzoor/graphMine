@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/LIS-Laboratory/gim",
+  "checked_at": "2026-10-10T01:46:22Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "d84b81a47606aa7912a8d1a96770568f92f5c98d",
+  "archive_url": "https://codeload.github.com/LIS-Laboratory/gim/tar.gz/d84b81a47606aa7912a8d1a96770568f92f5c98d",
+  "archive_sha256": "8f1d387c26b26492b95d3d44b2186e1a56bc0cf0093dca304f1c9fbae607d2f4",
+  "local_path": "gim-d84b81a47606",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "GPL-3.0",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

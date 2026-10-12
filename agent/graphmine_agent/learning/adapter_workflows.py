@@ -33,9 +33,9 @@ from .adapter_eval import ARMS, LocalRouter, read_suite
 from .teacher import local_endpoint
 
 
-def route_messages(payload, conversation):
+def route_messages(payload, conversation, *, system_prompt=ROUTING_SYSTEM_PROMPT):
     """Use the same history window/serialization as OpenAICompatibleModel."""
-    messages = [{"role": "system", "content": ROUTING_SYSTEM_PROMPT}]
+    messages = [{"role": "system", "content": system_prompt}]
     for item in (conversation or [])[-12:]:
         if item.get("role") in {"user", "assistant"}:
             messages.append(
@@ -64,14 +64,14 @@ class ConversationRouter(LocalRouter):
         self.max_input_tokens = max_input_tokens
         self._lock = threading.Lock()
 
-    def route(self, payload, conversation, arm):
+    def route(self, payload, conversation, arm, *, system_prompt=ROUTING_SYSTEM_PROMPT):
         import torch
         from transformers import GenerationConfig
         from xgrammar.contrib.hf import LogitsProcessor
 
         if arm not in {"base_nf4", "adapter_nf4"}:
             raise ValueError("The local router supports matched NF4 arms only")
-        messages = route_messages(payload, conversation)
+        messages = route_messages(payload, conversation, system_prompt=system_prompt)
         with self._lock:
             prompt = self.tokenizer.apply_chat_template(
                 messages,

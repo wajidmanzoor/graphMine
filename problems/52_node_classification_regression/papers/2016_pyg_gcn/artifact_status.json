@@ -1,0 +1,34 @@
+{
+  "problem_id": "node_classification_regression",
+  "paper_id": "2016_pyg_gcn",
+  "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1609.02907",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "sha256": "a654f884db04a317b0f2414a83f2ba32a9f8442d29bcf1cb5f73f7af78a98070",
+    "bytes": 873897,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pyg-team/pytorch_geometric",
+    "local_path": "code",
+    "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pyg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "torch_geometric/nn/conv/gcn_conv.py": "036b464769ad1d98501c9fc18ff3132b507890b2c5cb41b3e6f9e1f22d4f57f6",
+      "examples/gcn.py": "4222098f1ec15cd375c78a004fa3181dd2913d5966d857d89f63c11ddefbb9e6"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

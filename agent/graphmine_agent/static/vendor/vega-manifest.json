@@ -1,0 +1,37 @@
+{
+  "packages": {
+    "vega": "6.4.0",
+    "vega-lite": "6.4.3",
+    "vega-embed": "7.3.0"
+  },
+  "files": {
+    "vega.min.js": {
+      "source": "vega/build/vega.min.js",
+      "sha256": "8f6a3587cf8d4f42c7e08120e3eb05d067e746d554e39d2dcf52acc0bd5ba28f"
+    },
+    "vega-lite.min.js": {
+      "source": "vega-lite/build/vega-lite.min.js",
+      "sha256": "35a9821df838825b05a6a73e9414b58747a1b18321583858ed903c66393a5c7e"
+    },
+    "vega-embed.min.js": {
+      "source": "vega-embed/build/vega-embed.min.js",
+      "sha256": "b1455caba2fb1a72fb46025ba0ba1316e2dbc7f0dd40a3f6040172bf9c08ba91"
+    },
+    "vega-lite-schema.json": {
+      "source": "vega-lite/build/vega-lite-schema.json",
+      "sha256": "4f11cd379b7cac0ddee17eefea84c028bd41619ace28778acf843c009e43abd2"
+    },
+    "vega.LICENSE": {
+      "source": "vega/LICENSE",
+      "sha256": "63727832aaf62004a2b249c933e327f3c90caf49e41a72f4bf436edf632cbda8"
+    },
+    "vega-lite.LICENSE": {
+      "source": "vega-lite/LICENSE",
+      "sha256": "f618900fd0d64046963b29f40590cdd1e341a2f41449f99110d82fd81fea808c"
+    },
+    "vega-embed.LICENSE": {
+      "source": "vega-embed/LICENSE",
+      "sha256": "32df67148f0fc3db0eb9e263a7b75d07f1eb14c61955005a4a39c6918d10d137"
+    }
+  }
+}

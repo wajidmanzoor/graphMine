@@ -1,10 +1,29 @@
 # Native analysis workspace
 
-The browser at `/` provides three modes over the same validated workflow API.
+The browser at `/` starts with the original domain picker and opens a chat
+workspace. The selected domain is saved with the conversation and supplies
+vocabulary to the planner. Questions, clarification replies, planning decisions
+and model-returned reasoning are saved as authenticated workspace events.
+Follow-ups receive bounded conversation context; evaluation requests exclude it.
+The task-family picker is removed from the UI; constrained family selection
+still runs inside the planner.
+
+Chat provides three modes over the same validated workflow API.
 Normal runs a validated plan immediately. Interactive saves it for inspection
 and explicit approval. Expert accepts an explicit JSON workflow and also
 requires review before execution. Editing increments the revision and
 invalidates prior approval. `/classic` retains the earlier application.
+
+The **Results** tab and each answer's **View results & visualizations** link
+open a separate page for graph exploration, tables and downloads. Chat remains
+visible during planning and execution. Routes such as
+`#workspace/{session}/chat` and `#workspace/{session}/results/{workflow}` restore
+the selected conversation and result on refresh. Old `#workspace/{session}`
+links still open the conversation. Reasoning appears after each model stage
+returns; the UI does not fabricate a live token stream or numerical findings.
+Each question has a request ID. If its HTTP reply is lost, the browser retrieves
+the saved planning outcome from authenticated events without repeating model
+generation. A saved plan retains its original input files and mode for recovery.
 
 ## Library and application setup
 
@@ -48,12 +67,24 @@ is omitted when the setting is blank; leave it blank on servers that do not
 support `thinking_token_budget`. Its value must be smaller than
 `GRAPHMINE_LLM_PLAN_MAX_TOKENS`. Reasoning remains enabled.
 
+Routing decisions choose a status first. A selection requires at least one
+operation; a reroute requires at least one destination family; clarification
+and unsupported decisions cannot also select operations. The JSON schemas
+enforce these states during generation and response validation.
+
 Model generation assigns each argument either a literal or a reference to an
-earlier result. Operation selection sees output-port contracts, and generated
-references can name only ports from selected operations. The server converts
-that representation to the public workflow
-format, rejects duplicate argument names and validates the complete dependency
-graph. There is at most one family reroute and one plan repair. Individual model
+earlier result. Each reference first selects `source: input` for an uploaded
+input or `source: step` for a previous result. Steps use zero-based positional
+references (`step_index`) rather than model-generated names. Their schemas allow
+only indices of earlier steps. Operation selection sees output-port contracts,
+and generated references can name only ports from selected operations. The
+server assigns stable step IDs and converts references to the public workflow
+format. It rejects duplicate argument names, missing or forward references,
+and invalid typed dependencies. An invalid reference enters the bounded repair
+path; the server never guesses which input the model intended. Planning retains
+the operation selection's explanation as fallible context and distinguishes
+calculations on derived graphs from independent calculations on original inputs.
+There is at most one family reroute and one plan repair. Individual model
 requests have a 120-second deadline and the entire planning attempt is bounded
 at 360 seconds. See the [acceptance report](NATIVE_ANALYTICS_ACCEPTANCE.md) for
 the measured accuracy and timing of the local model.

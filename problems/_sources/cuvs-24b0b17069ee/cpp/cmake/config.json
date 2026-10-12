@@ -1,0 +1,143 @@
+{
+  "parse": {
+    "additional_commands": {
+      "ConfigureTest": {
+        "flags": ["NOCUDA", "FETCH_CODEBOOKS"],
+        "kwargs": {
+          "NAME": 1,
+          "GPUS": "?",
+          "PERCENT": "?",
+          "ADDITIONAL_DEP": "?",
+          "PATH": "*"
+        }
+      },
+      "compute_matrix_product": {
+        "pargs": {
+          "nargs": 1
+        },
+        "kwargs": {
+          "MATRIX_JSON_FILE": "?",
+          "MATRIX_JSON_STRING": "?"
+        }
+      },
+      "cuvs_find_build_python": {
+        "pargs": {
+          "nargs": 1
+        }
+      },
+      "process_cutile_matrix_entry": {
+        "pargs": {
+          "nargs": 1
+        },
+        "kwargs": {
+          "KERNEL_DIR": 1,
+          "KERNEL_BASENAME": 1,
+          "KERNEL_PYTHON": 1,
+          "EXPORT_SCRIPT": 1,
+          "OUTPUT_DIRECTORY": 1,
+          "FRAGMENT_TAG_FORMAT_CUBIN": 1,
+          "FRAGMENT_TAG_HEADER_FILES": "*",
+          "MATRIX_JSON_ENTRY": 1
+        }
+      },
+      "generate_cutile_kernels": {
+        "pargs": {
+          "nargs": 1
+        },
+        "kwargs": {
+          "KERNEL_DIR": 1,
+          "KERNEL_BASENAME": 1,
+          "KERNEL_PYTHON": 1,
+          "EXPORT_SCRIPT": 1,
+          "OUTPUT_DIRECTORY": 1,
+          "MATRIX_JSON_FILE": 1,
+          "FRAGMENT_TAG_FORMAT_CUBIN": 1,
+          "FRAGMENT_TAG_HEADER_FILES": "*"
+        }
+      },
+      "add_jit_lto_kernel": {
+        "pargs": {
+          "nargs": 1
+        },
+        "kwargs": {
+          "KERNEL_FILE": 1,
+          "FATBIN_HEADER_FILE": 1,
+          "LINK_LIBRARIES": "*",
+          "EXTRA_COMPILE_OPTIONS": "*"
+        }
+      },
+      "process_jit_lto_matrix_entry": {
+        "pargs": {
+          "nargs": 1
+        },
+        "kwargs": {
+          "NAME_FORMAT": 1,
+          "KERNEL_INPUT_FILE": 1,
+          "FRAGMENT_TAG_FORMAT": 1,
+          "FRAGMENT_TAG_HEADER_FILES": "*",
+          "OUTPUT_DIRECTORY": 1,
+          "MATRIX_JSON_ENTRY": 1,
+          "KERNEL_LINK_LIBRARIES": "*",
+          "KERNEL_EXTRA_COMPILE_OPTIONS": "*"
+        }
+      },
+      "generate_jit_lto_kernels": {
+        "pargs": {
+          "nargs": 1
+        },
+        "kwargs": {
+          "NAME_FORMAT": 1,
+          "MATRIX_JSON_FILE": "?",
+          "MATRIX_JSON_STRING": "?",
+          "KERNEL_INPUT_FILE": 1,
+          "FRAGMENT_TAG_FORMAT": 1,
+          "FRAGMENT_TAG_HEADER_FILES": "*",
+          "OUTPUT_DIRECTORY": 1,
+          "KERNEL_LINK_LIBRARIES": "*",
+          "KERNEL_EXTRA_COMPILE_OPTIONS": "*"
+        }
+      },
+      "generate_inst_matrix": {
+        "pargs": {
+          "nargs": 1
+        },
+        "kwargs": {
+          "MATRIX_JSON_FILE": "?",
+          "MATRIX_JSON_STRING": "?",
+          "INPUT_FILE": 1,
+          "OUTPUT_FILE_FORMAT": 1
+        }
+      },
+      "process_inst_matrix_entry": {
+        "pargs": {
+          "nargs": 1
+        },
+        "kwargs": {
+          "INPUT_FILE": 1,
+          "OUTPUT_FILE_FORMAT": 1,
+          "MATRIX_JSON_ENTRY": 1
+        }
+      }
+    }
+  },
+  "format": {
+    "line_width": 100,
+    "tab_size": 2,
+    "command_case": "unchanged",
+    "max_lines_hwrap": 1,
+    "max_pargs_hwrap": 999,
+    "dangle_parens": true
+  },
+  "lint": {
+    "disabled_codes": ["C0301", "C0111", "C0113"],
+    "function_pattern": "[0-9A-z_]+",
+    "macro_pattern": "[0-9A-z_]+",
+    "global_var_pattern": "[A-z][0-9A-z_]+",
+    "internal_var_pattern": "_[A-z][0-9A-z_]+",
+    "local_var_pattern": "[A-z][A-z0-9_]+",
+    "private_var_pattern": "_[0-9A-z_]+",
+    "public_var_pattern": "[A-z][0-9A-z_]+",
+    "argument_var_pattern": "[A-z][A-z0-9_]+",
+    "keyword_pattern": "[A-z][0-9A-z_]+"
+  }
+}

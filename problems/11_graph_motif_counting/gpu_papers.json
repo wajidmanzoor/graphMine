@@ -1,0 +1,30 @@
+{
+  "problem_id": "graph_motif_counting",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2022_g2miner",
+      "algorithm_name": "Efficient and Scalable Graph Pattern Mining on GPUs",
+      "metadata": "11_graph_motif_counting/papers/2022_g2miner/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2023_graphset",
+      "algorithm_name": "GraphSet: High Performance Graph Mining through Equivalent Set Transformations",
+      "metadata": "11_graph_motif_counting/papers/2023_graphset/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2024_dumato",
+      "algorithm_name": "DuMato: A Dynamic GPU System for Graph Pattern Mining",
+      "metadata": "11_graph_motif_counting/papers/2024_dumato/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

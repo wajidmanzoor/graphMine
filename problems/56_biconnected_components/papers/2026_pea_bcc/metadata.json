@@ -1,0 +1,28 @@
+{
+  "title": "GPU Algorithms for Biconnected Components on Large Graphs",
+  "year": 2026,
+  "venue": "IPDPS 2026",
+  "doi": null,
+  "publication_url": "https://github.com/Abhijeetkumar96/FAST-BCC-on-GPUs",
+  "pdf_url": "https://raw.githubusercontent.com/Abhijeetkumar96/FAST-BCC-on-GPUs/147db5965350/Fast-BCC-Filter-IPDPS-2026.pdf",
+  "paper_id": "2026_pea_bcc",
+  "problem_id": "biconnected_components",
+  "problem_dir": "56_biconnected_components",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "PEA-BCC external-memory decomposition",
+  "code_url": "https://github.com/Abhijeetkumar96/FAST-BCC-on-GPUs",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA external-memory processing with streams and CPU/GPU transfers.",
+  "notes": "Distinct external-memory algorithm from the same paper. Host-memory capacity and stream settings are part of the experiment.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "external/streams/main.cu",
+    "external/streams/ExternalSpanningTree.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

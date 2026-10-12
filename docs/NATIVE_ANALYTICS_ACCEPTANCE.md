@@ -1,5 +1,15 @@
 # Native library and workspace acceptance
 
+Planner follow-up, 2026-10-11: the four original planning failures are repaired.
+The original suite now passes **20/20** as a regression replay, and **81
+application checks pass** (two physical-GPU checks skipped). Thirteen fresh
+cases produced correct results and dependencies; the strict grader scores
+12/13 because one undirected-neighbor case uses an equivalent default. Its
+separate semantic audit and all intermediate results are preserved in the
+[planner recovery report](../validation/planner_recovery_20261011/REPORT.md).
+These follow-up changes are in the working tree; the original acceptance
+commits and measurements below remain historical records.
+
 The migration implements native CPU profiles for all **70 formal contracts**,
 with **80 operations** in one C++/CUDA catalog. **23 operations** have GPU
 profiles admitted on both locally tested RTX 6000 Ada devices. Each profile has
@@ -21,7 +31,7 @@ remain separate.
 | A2: standalone C++/CUDA, thin Python | Installed C/C++ consumers and CLI work with Python absent from PATH. Public Python workflows run under `python -S` without optional Python algorithm packages. The app uses the same native catalog and C ABI. `consumers.json`, `installed-gpu.json`, `public-package-isolation.json`, binding suite. |
 | A3: all 70 native CPU contracts | `catalog/native_runtime_coverage.json` maps every formal contract. Native completion tests and baseline sweeps run with CUDA hidden on both CPU and GPU-linked builds. |
 | A4/R4: GPU integrations and independent oracles | 44,884 native requests per physical GPU, including declared boundary rejections, plus independent small-graph checks and native provenance. cuGraph and original CUDA workers remain distinct profiles. |
-| A5: family then exact operation | Separate constrained stages, semantic ambiguity checks, one bounded family reroute, and one validation repair. Authored tests cover recovery; final real-model evaluation is 16/20. Unattended language-planning reliability remains unproven; details below. |
+| A5: family then exact operation | Separate constrained stages, semantic ambiguity checks, one bounded family reroute, and one validation repair. Original real-model acceptance was 16/20; the planner follow-up passes all 20 as regression cases. Unattended language-planning reliability remains unproven; details below and in the follow-up report. |
 | A6/R5: three modes and editable review | Normal executes validated plans; Interactive and Expert require approval. Edits invalidate approval. API and Firefox checks cover all three. |
 | A7: browser without Node | Fourteen Firefox checks with Node absent from server PATH; desktop/mobile screenshots visually inspected; keyboard, labels, overflow and typed-ID binding assertions. |
 | R1/R6: typed dependent workflows and recovery | Static DAG/port validation, native actual-input checks, completeness/namespace checks, persisted affected-step retry, cancellation and reviewed-hash checks. |

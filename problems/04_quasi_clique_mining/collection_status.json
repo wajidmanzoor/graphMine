@@ -1,0 +1,45 @@
+{
+  "problem_id": "quasi_clique_mining",
+  "problem_dir": "04_quasi_clique_mining",
+  "name": "Quasi-Clique Mining",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 1,
+  "local_gpu_code_entries": 1,
+  "local_paper_entries": 1,
+  "local_gpu_code_and_paper_including_related": 1,
+  "eligible_code_and_paper_references": 1,
+  "eligible_local_code_and_paper_pairs": 1,
+  "target_met": false,
+  "shortfall": 2,
+  "shortfall_explanation": "Only cuQC is currently paired with verified local GPU source and paper; no two further matching GPU quasi-clique artifacts were verified.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "see_existing_validation",
+  "runtime_status": "see_existing_validation",
+  "canonical_adapters": null,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 1,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [],
+    "shortfall": "Only cuQC is currently paired with verified local GPU source and paper; no two further matching GPU quasi-clique artifacts were verified.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2025_cuqc",
+      "algorithm_name": "GPU-Accelerated Maximal Quasi-Clique Mining",
+      "paper_role": "algorithm",
+      "semantic_fit": "exact",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "see_existing_validation",
+      "notes": "The paper presents this as the first GPU solution for maximal quasi-clique mining.",
+      "metadata_path": "04_quasi_clique_mining/papers/2025_cuqc/metadata.json"
+    }
+  ]
+}

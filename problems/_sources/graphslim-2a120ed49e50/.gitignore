@@ -1,0 +1,6 @@
+/.idea/
+/graphslim.egg-info/
+*.log
+*.out
+checkpoints/
+dist/

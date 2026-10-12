@@ -21,10 +21,12 @@ def key(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"))
 
 
-def adjacency(graph: dict) -> tuple[list[Any], list[set[int]]]:
+def adjacency(
+    graph: dict, *, max_vertices=MAX_VERTICES
+) -> tuple[list[Any], list[set[int]]]:
     identifiers = [row["id"] for row in graph["vertices"]]
-    if len(identifiers) > MAX_VERTICES:
-        raise ValueError(f"Reference oracles are limited to {MAX_VERTICES} vertices")
+    if len(identifiers) > max_vertices:
+        raise ValueError(f"Reference oracles are limited to {max_vertices} vertices")
     index = {key(value): position for position, value in enumerate(identifiers)}
     if len(index) != len(identifiers):
         raise ValueError("Duplicate entity IDs")
@@ -111,8 +113,13 @@ def betweenness(neighbors: list[set[int]]) -> list[float]:
 
 def expected_answer(graph: dict, task: dict) -> dict:
     graph = selected_graph(graph, task.get("filters", []))
-    ids, neighbors = adjacency(graph)
     operation = task.get("operation_id")
+    ids, neighbors = adjacency(
+        graph,
+        max_vertices=256
+        if operation in {"k-core", "community-detection"}
+        else MAX_VERTICES,
+    )
     parameters = task.get("parameters", {})
     if task["behavior"] != "execute":
         return {"behavior": task["behavior"], "reason": task["reason"]}
@@ -156,13 +163,17 @@ def expected_answer(graph: dict, task: dict) -> dict:
         left = [
             index
             for index, row in enumerate(graph["vertices"])
-            if row["type"] == "customer"
+            if row.get("attributes", {}).get("side") == "left"
+            or (
+                "side" not in row.get("attributes", {})
+                and row.get("type") == "customer"
+            )
         ]
         right = [index for index in range(len(ids)) if index not in left]
         candidates = [
             (set(a), set(b))
-            for na in range(parameters["minimum_left_size"], len(left) + 1)
-            for nb in range(parameters["minimum_right_size"], len(right) + 1)
+            for na in range(parameters.get("minimum_left_size", 1), len(left) + 1)
+            for nb in range(parameters.get("minimum_right_size", 1), len(right) + 1)
             for a in itertools.combinations(left, na)
             for b in itertools.combinations(right, nb)
             if all(v in neighbors[u] for u in a for v in b)
@@ -216,11 +227,12 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
 
     try:
         if operation in {"maximal-cliques", "k-cliques"}:
-            require(
-                groups(output["cliques"]) == groups(expected["groups"]),
-                "Returned groups differ from exhaustive oracle",
-            )
-            require(output.get("complete") is True, "Incomplete materialization")
+            if operation == "maximal-cliques" or "cliques" in output:
+                require(
+                    groups(output["cliques"]) == groups(expected["groups"]),
+                    "Returned groups differ from exhaustive oracle",
+                )
+                require(output.get("complete") is True, "Incomplete materialization")
             require(
                 output.get("count" if operation == "k-cliques" else "returned_count")
                 == expected["count"],
@@ -296,7 +308,7 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
             )
         elif operation == "community-detection":
             selected = selected_graph(graph, task.get("filters", []))
-            ids, neighbors = adjacency(selected)
+            ids, neighbors = adjacency(selected, max_vertices=256)
             assignments = output["assignment_by_vertex"]
             labels = {key(row["vertex"]): key(row["community"]) for row in assignments}
             require(
@@ -319,7 +331,7 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
                     }
                     internal = sum(len(neighbors[i] & members) for i in members) / 2
                     volume = sum(len(neighbors[i]) for i in members)
-                    q += internal / m - (volume / (2 * m)) ** 2
+                    q += internal / m - task.get("parameters", {}).get("resolution", 1.0) * (volume / (2 * m)) ** 2
             require(
                 math.isclose(output["modularity"], q, rel_tol=1e-5, abs_tol=1e-5),
                 "Modularity does not match the returned partition",

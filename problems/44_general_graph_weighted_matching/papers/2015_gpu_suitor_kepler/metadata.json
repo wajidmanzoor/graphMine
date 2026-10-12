@@ -1,0 +1,27 @@
+{
+  "title": "Optimizing Approximate Weighted Matching on Nvidia Kepler K40",
+  "year": 2015,
+  "venue": "HiPC 2015",
+  "doi": null,
+  "publication_url": "https://hpc.pnl.gov/people/hala/suitor.html",
+  "pdf_url": null,
+  "paper_id": "2015_gpu_suitor_kepler",
+  "problem_id": "general_graph_weighted_matching",
+  "problem_dir": "44_general_graph_weighted_matching",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GPU-Suitor for NVIDIA Kepler",
+  "code_url": "https://hpc.pnl.gov/people/hala/suitor.html",
+  "semantic_fit": "variant",
+  "gpu_scope": "The original GPU-Suitor implementation is described by the author project page.",
+  "notes": "Original 2015 source is available upon request according to the author page; no request was sent. A public PDF was not located. BootCMatchG supplies a separate publicly available implementation and is cataloged separately.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [],
+  "documentation_urls": [
+    "https://hpc.pnl.gov/people/hala/suitor.html"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

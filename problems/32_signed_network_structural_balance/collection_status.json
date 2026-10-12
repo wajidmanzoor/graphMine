@@ -1,0 +1,60 @@
+{
+  "problem_id": "signed_network_structural_balance",
+  "problem_dir": "32_signed_network_structural_balance",
+  "name": "Signed Network Structural Balance and Frustration Minimization",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 2,
+  "local_gpu_code_entries": 2,
+  "local_paper_entries": 2,
+  "local_gpu_code_and_paper_including_related": 2,
+  "eligible_code_and_paper_references": 0,
+  "eligible_local_code_and_paper_pairs": 0,
+  "target_met": false,
+  "shortfall": 3,
+  "shortfall_explanation": "GraphB+ and ECL-SGB source availability is restored where licensed; fewer than three independent implementation records have a verified local paper.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "see_existing_validation",
+  "runtime_status": "see_existing_validation",
+  "canonical_adapters": null,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 2,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [],
+    "shortfall": "GraphB+ and ECL-SGB source availability is restored where licensed; fewer than three independent implementation records have a verified local paper.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2021_graphbplus",
+      "algorithm_name": "Discovering and Balancing Fundamental Cycles in Large Signed Graphs",
+      "paper_role": "algorithm",
+      "semantic_fit": "related_variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Confirmed genuine CUDA source (graphBplus_02.cu) alongside a CPU OpenMP variant in the same repository, with a LICENSE file present.",
+      "metadata_path": "32_signed_network_structural_balance/papers/2021_graphbplus/metadata.json"
+    },
+    {
+      "paper_id": "2026_ecl_sgb",
+      "algorithm_name": "Signed Graph Balancing in Linear Time",
+      "paper_role": "algorithm",
+      "semantic_fit": "related_variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "From the same ECL (Texas State) lab behind ECL-MaxFlow already validated in this catalog; newest and most directly matching artifact for this problem.",
+      "metadata_path": "32_signed_network_structural_balance/papers/2026_ecl_sgb/metadata.json"
+    }
+  ]
+}

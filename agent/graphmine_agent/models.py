@@ -52,6 +52,7 @@ class VisualizationKind(str, Enum):
     heatmap = "heatmap"
     table = "table"
     metric_cards = "metric_cards"
+    vega_lite = "vega_lite"
 
 
 class SessionRecord(StrictModel):
@@ -253,6 +254,7 @@ class PlanDraft(StrictModel):
 class PlanRequest(StrictModel):
     message: str = Field(min_length=1, max_length=20_000)
     graph_id: str
+    result_id: str | None = None
     backend_id: str | None = None
     parameters: dict[str, JsonParameter] = Field(default_factory=dict)
     optional_outputs: list[str] = Field(default_factory=list)
@@ -330,6 +332,8 @@ class VisualizationSpec(StrictModel):
     ] = Field(default_factory=list)
     limit: int | None = Field(default=None, ge=1, le=100_000)
     description: str = ""
+    vega_lite: dict[str, Any] | None = None
+    evidence_ids: list[str] = Field(default_factory=list)
 
 
 class EvidenceItem(StrictModel):
@@ -354,6 +358,20 @@ class FollowupAction(StrictModel):
         return self
 
 
+class GroundedStatement(StrictModel):
+    text: str = Field(min_length=1, max_length=2400)
+    fact_ids: list[str] = Field(min_length=1, max_length=12)
+
+
+class VegaLiteDraft(StrictModel):
+    """The model supplies a full specification; data is bound by the server."""
+
+    title: str = Field(min_length=1, max_length=200)
+    description: str = Field(min_length=1, max_length=1600)
+    spec_json: str = Field(min_length=2, max_length=60000)
+    fact_ids: list[str] = Field(min_length=1, max_length=12)
+
+
 class Interpretation(StrictModel):
     schema_version: Literal["1.0.0"] = "1.0.0"
     summary: str
@@ -366,16 +384,22 @@ class Interpretation(StrictModel):
     requires_new_execution: bool = False
     proposed_request: str | None = None
     hypotheses: list[str] = Field(default_factory=list)
+    explanation: list[GroundedStatement] = Field(default_factory=list)
 
 
 class GroundedNarrative(StrictModel):
-    """The model selects computed facts; it cannot rewrite their values/claims."""
+    """Evidence-linked prose and custom charts alongside the computed answer."""
 
     fact_ids: list[str] = Field(min_length=1, max_length=8)
     hypotheses: list[str] = Field(default_factory=list, max_length=3)
     suggested_followups: list[str] = Field(default_factory=list, max_length=3)
     followup_ids: list[str] = Field(default_factory=list, max_length=3)
     view_ids: list[str] = Field(default_factory=list, max_length=4)
+    summary: GroundedStatement | None = None
+    findings: list[GroundedStatement] = Field(default_factory=list, max_length=8)
+    charts: list[VegaLiteDraft] = Field(default_factory=list, max_length=4)
+    analysis_request: str | None = Field(default=None, max_length=2000)
+    analysis_operation_ids: list[str] = Field(default_factory=list, max_length=4)
 
 
 class ChatRequest(StrictModel):

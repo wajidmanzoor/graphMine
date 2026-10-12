@@ -1,0 +1,27 @@
+{
+  "problem_id": "spectral_graph_sparsification",
+  "paper_id": "2024_ingrass_candidate",
+  "title": "inGRASS: Incremental Graph Spectral Sparsification via Low-Resistance-Diameter Decomposition",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2402.16990",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:43:08Z",
+    "sha256": "3ed29e1d5e770e3a609b5163ed3599b15cbb6c87ee2529c30b9f92d06505d917",
+    "bytes": 1465241,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

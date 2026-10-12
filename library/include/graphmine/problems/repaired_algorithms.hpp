@@ -18,13 +18,18 @@ class KTruss {
  private: KTrussOptions options_;
 };
 
-// Exact unweighted edge density |E(S)|/|S|. No fixed-cardinality constraint.
-struct DensestSubgraphOptions : IsolatedBackendOptions {};
+// Exact unweighted k-clique density C_k(S)/|S|. k=2 is edge density.
+// Clique order is not a constraint on the number of selected vertices.
+struct DensestSubgraphOptions : IsolatedBackendOptions {
+  std::uint32_t clique_order = 2;
+};
 struct DensestSubgraphOutput {
   std::vector<ExternalId> vertices;
   double density = 0;
   std::uint64_t induced_edge_value = 0;
   bool optimal = true;
+  std::uint32_t clique_order = 2;
+  std::uint64_t clique_count = 0;
 };
 class DensestSubgraph {
  public:

@@ -1,0 +1,92 @@
+{
+  "problem_id": "neighborhood_sampling",
+  "problem_dir": "47_neighborhood_sampling",
+  "name": "Neighborhood Sampling",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 4,
+  "local_gpu_code_entries": 4,
+  "local_paper_entries": 3,
+  "local_gpu_code_and_paper_including_related": 3,
+  "eligible_code_and_paper_references": 3,
+  "eligible_local_code_and_paper_pairs": 3,
+  "target_met": true,
+  "shortfall": 0,
+  "shortfall_explanation": null,
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cugraph"
+    ],
+    "shortfall": "Fewer than three eligible local GPU implementation/research-paper pairs; individual records state missing artifacts or variant restrictions.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2020_csaw_neighbors",
+      "algorithm_name": "C-SAW neighborhood sampling",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Upstream framework supplies both walks and neighbor sampling; temporal and typed modes are not claimed.",
+      "metadata_path": "47_neighborhood_sampling/papers/2020_csaw_neighbors/metadata.json"
+    },
+    {
+      "paper_id": "2020_nextdoor_neighbors",
+      "algorithm_name": "NextDoor transit-parallel neighborhood sampling",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Finite-fanout sampling is not exact induced ego-graph extraction. Replacement and fanout conventions must be declared.",
+      "metadata_path": "47_neighborhood_sampling/papers/2020_nextdoor_neighbors/metadata.json"
+    },
+    {
+      "paper_id": "2021_skywalker_neighbors",
+      "algorithm_name": "Skywalker alias-method neighbor sampling",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Select the neighbor-sampling mode. Check the upstream newsampler flag and result-layout notes in README.md.",
+      "metadata_path": "47_neighborhood_sampling/papers/2021_skywalker_neighbors/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_neighbor_sampling",
+      "algorithm_name": "cuGraph Neighbor sampling",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Declare hop fanouts, with/without replacement, edge direction and seed. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "47_neighborhood_sampling/papers/2026_cugraph_neighbor_sampling/metadata.json"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "problem_id": "graph_edit_distance_mcs",
+  "paper_id": "2016_gpu_mcs_drug_discovery",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "title": "A GPU Based Maximum Common Subgraph Algorithm for Drug Discovery Applications",
+  "code": {
+    "source_url": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "status": "not_collected",
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+  },
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://people.cse.nitc.ac.in/jayaraj/files/gpumcs_chicago.pdf",
+    "resolved_url": "https://people.cse.nitc.ac.in/jayaraj/files/gpumcs_chicago.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "c64a04a48b7eae2e55267ffd45a47e1349d557ad2c7630b076280977466416f7",
+    "bytes": 915024,
+    "pdfinfo_valid": true
+  }
+}

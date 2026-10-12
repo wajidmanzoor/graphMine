@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/EMJzero/AxonCUDA",
+  "checked_at": "2026-10-09T19:25:31Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "48bf283f7a370f57bacd7e88677fb4e099bb7f8a",
+  "archive_url": "https://codeload.github.com/EMJzero/AxonCUDA/tar.gz/48bf283f7a370f57bacd7e88677fb4e099bb7f8a",
+  "archive_sha256": "5fd52cf63c9519f4f2692da1df4f108f838b0341770eefc1bb35b25feaf93765",
+  "local_path": "axon_cuda-48bf283f7a37",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

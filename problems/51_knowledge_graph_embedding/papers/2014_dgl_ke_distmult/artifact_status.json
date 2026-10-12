@@ -1,0 +1,34 @@
+{
+  "problem_id": "knowledge_graph_embedding",
+  "paper_id": "2014_dgl_ke_distmult",
+  "title": "Embedding Entities and Relations for Learning and Inference in Knowledge Bases",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1412.6575",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:57Z",
+    "sha256": "728f546dd92b146ae1cd1aa5ef1f72f289d7fb87fb58c275ce8907cdde0a2124",
+    "bytes": 1495321,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/awslabs/dgl-ke",
+    "local_path": "code",
+    "commit": "e00bccfc4638db8b1f703ecedbf8db81faedb2bb",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/dgl_ke.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "python/dglke/models/pytorch/score_fun.py": "5d45a734bc436deb78f8ccf162c402dc793a5f259585ea3617eeb653f64948a3",
+      "python/dglke/models/general_models.py": "a7bd054bda545bac07df2aea1b02d488e7d91016d1b67982298f241b7ef8cdf8",
+      "python/dglke/train.py": "4d66225df5cf5ed19fa41f61f488198cd7e632300bfafb70070b57a613daa4d7"
+    }
+  }
+}

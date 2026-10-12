@@ -1,0 +1,28 @@
+{
+  "problem_id": "community_detection",
+  "paper_id": "2026_cugraph_leiden",
+  "title": "cuGraph Leiden community detection — upstream implementation documentation",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "not_collected",
+    "source_url": null,
+    "local_path": null,
+    "error": "No verified associated research PDF."
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cugraph",
+    "local_path": "code",
+    "commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cugraph.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/community/leiden_impl.cuh": "aa91cebc25f10b4493e6c9e682d8657c5c5c00b755f89d23f1a9b2d069a38372"
+    }
+  }
+}

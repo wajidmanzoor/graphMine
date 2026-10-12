@@ -2,20 +2,31 @@
   "problem_id": "subgraph_isomorphism",
   "paper_id": "2026_gmatch",
   "title": "gMatch: A Fast GPU-Based Subgraph Matching System",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://arxiv.org/pdf/2604.10601",
     "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/2604.10601",
+    "resolved_url": "https://arxiv.org/pdf/2604.10601",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "c627385182d29cb5f210fca54ee2be79108492612ae5384322474d4242b00bb2",
+    "bytes": 4663194,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/SJTU-Liquid/gMatch",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "4628e73dbcb564dba367b3f042595e71f98c9046",
     "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "bitmap/main.cu": "8a49f22ce97a4f2011c5d21645c6c13c9d0fa5c6e41e6688f67a075aa3a9ebd2",
+      "bitmap/join_bfs_dfs.cu": "ffd4dbcb075f0cb124795044ca85a35e51b00fa95ac07ddf3ce478957b00c3e9"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

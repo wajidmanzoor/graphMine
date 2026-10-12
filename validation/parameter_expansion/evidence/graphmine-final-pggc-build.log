@@ -1,0 +1,301 @@
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- kokkos_launch_compiler is enabled globally. C++ compiler commands with -DKOKKOS_DEPENDENCE will be redirected to the appropriate compiler for Kokkos
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Configuring done (0.2s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build
+[  1%] Built target graphmine_core
+[  2%] Built target graphmine_worker_ecl_scc
+[  3%] Built target graphmine_worker_hungarian
+[  4%] Built target graphmine_json
+[  5%] Built target graphmine_worker_ecl_flow
+[  5%] Built target graphmine_gmatch_pool_test
+[ 10%] Built target graphmine_backend_g2_aimd
+[ 12%] Built target graphmine_backend_kcoregpu
+[ 17%] Built target graphmine_backend_rdmce
+[ 19%] Built target graphmine_backend_cuda_ms
+[ 21%] Built target graphmine_backend_mce_gpu
+[ 23%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 28%] Built target graphmine_worker_gdlog_tc
+[ 32%] Built target graphmine_backend_gpu_maximum_clique
+[ 33%] Built target graphmine_backend_wetric
+[ 34%] Built target graphmine_backend_graphset_kclique
+[ 37%] Built target graphmine_backend_tot
+[ 37%] Building CUDA object CMakeFiles/graphmine_backend_kcgpu.dir/src/backends/kcgpu.cu.o
+[ 40%] Built target graphmine_backend_edtc
+[ 40%] Building CUDA object CMakeFiles/graphmine_backend_gamma_kclique.dir/src/backends/gamma_kclique.cu.o
+[ 41%] Built target graphmine_backend_turbobc
+[ 42%] Built target graphmine_backend_cumbe
+[ 43%] Built target graphmine_backend_cuqc
+[ 46%] Built target graphmine_backend_graphminer_motif
+[ 53%] Built target graphmine_backend_graphset_motif
+[ 54%] Building CUDA object CMakeFiles/graphmine_backend_gmatch.dir/gmatch-generated/join_bfs_dfs.cu.o
+[ 57%] Built target graphmine_backend_dumato_motif
+[ 58%] Building CUDA object CMakeFiles/graphmine_backend_everest.dir/src/backends/everest.cu.o
+[ 58%] Building CUDA object CMakeFiles/graphmine_backend_mayura.dir/src/backends/mayura.cu.o
+[ 59%] Built target graphmine_maximal_cliques
+[ 61%] Built target graphmine_backend_gleiden
+[ 61%] Built target graphmine_repaired_algorithms
+[ 61%] Building CXX object CMakeFiles/graphmine_backend_pggc.dir/pggc-generated/clustering_methods.cpp.o
+[ 62%] Built target graphmine_maximal_cliques_example
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 63%] Built target graphmine_graph_test
+[ 64%] Built target graphmine_maximal_cliques_test
+[ 65%] Built target graphmine_k_core
+[ 66%] Built target graphmine_maximum_clique
+[ 67%] Built target graphmine_triangle_counting
+[ 68%] Built target graphmine_dynamic_triangle_counting
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 70%] Built target graphmine_betweenness_centrality
+[ 70%] Built target graphmine_maximal_bicliques
+[ 71%] Built target graphmine_quasi_cliques
+[ 72%] Built target graphmine_graph_motifs
+[ 73%] Built target graphmine_k_core_test
+[ 74%] Built target graphmine_maximum_clique_test
+[ 75%] Built target graphmine_triangle_counting_test
+[ 76%] Built target graphmine_dynamic_triangle_counting_test
+[ 78%] Built target graphmine_betweenness_centrality_test
+[ 78%] Built target graphmine_maximal_bicliques_test
+[ 79%] Built target graphmine_graph_motifs_test
+[ 80%] Built target graphmine_quasi_cliques_test
+[ 81%] Built target graphmine_validated_expansion
+[ 82%] Built target graphmine_validated_expansion_test
+[ 83%] Built target graphmine_repaired_algorithms_test
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2234): warning #83-D: type qualifier specified more than once
+          const T const aBegin,
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2235): warning #83-D: type qualifier specified more than once
+          const T const aEnd,
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2236): warning #83-D: type qualifier specified more than once
+          const T const bBegin,
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2237): warning #83-D: type qualifier specified more than once
+          const T const bEnd
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gmatch-generated/join_bfs_dfs.cu(599): warning #127-D: expected a statement
+  }
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gmatch-generated/join_bfs_dfs.cu(1111): warning #127-D: expected a statement
+  }
+  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2234): warning #83-D: type qualifier specified more than once
+          const T const aBegin,
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2235): warning #83-D: type qualifier specified more than once
+          const T const aEnd,
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2236): warning #83-D: type qualifier specified more than once
+          const T const bBegin,
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2237): warning #83-D: type qualifier specified more than once
+          const T const bEnd
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gmatch-generated/join_bfs_dfs.cu(599): warning #127-D: expected a statement
+  }
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gmatch-generated/join_bfs_dfs.cu(1111): warning #127-D: expected a statement
+  }
+  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/../include/cub_wrappers.cuh(131): warning #177-D: variable "start" was declared but never referenced
+      cudaEvent_t start, end;
+                  ^
+          detected during:
+            instantiation of "void graph::SingleGPU_Kclique<T>::bucket_scan(graph::GPUArray<T>, T, T, T, graph::GraphQueue<T, __nv_bool> &, graph::GPUArray<T>, graph::GraphQueue<T, __nv_bool> &, T &) [with T=uint]" at line 1770 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/../include/cub_wrappers.cuh(131): warning #177-D: variable "end" was declared but never referenced
+      cudaEvent_t start, end;
+                         ^
+          detected during:
+            instantiation of "void graph::SingleGPU_Kclique<T>::bucket_scan(graph::GPUArray<T>, T, T, T, graph::GraphQueue<T, __nv_bool> &, graph::GPUArray<T>, graph::GraphQueue<T, __nv_bool> &, T &) [with T=uint]" at line 1770 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/../include/cub_wrappers.cuh(132): warning #177-D: variable "elaspedTime" was declared but never referenced
+      float elaspedTime = 0, singleKernelTime = 0;
+            ^
+          detected during:
+            instantiation of "void graph::SingleGPU_Kclique<T>::bucket_scan(graph::GPUArray<T>, T, T, T, graph::GraphQueue<T, __nv_bool> &, graph::GPUArray<T>, graph::GraphQueue<T, __nv_bool> &, T &) [with T=uint]" at line 1770 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/../include/cub_wrappers.cuh(132): warning #177-D: variable "singleKernelTime" was declared but never referenced
+      float elaspedTime = 0, singleKernelTime = 0;
+                             ^
+          detected during:
+            instantiation of "void graph::SingleGPU_Kclique<T>::bucket_scan(graph::GPUArray<T>, T, T, T, graph::GraphQueue<T, __nv_bool> &, graph::GPUArray<T>, graph::GraphQueue<T, __nv_bool> &, T &) [with T=uint]" at line 1770 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/kcgpu-generated/kckernels_pivoting.cuh(31): warning #177-D: variable "clique_count" was declared but never referenced
+                uint64 clique_count[numPartitions];
+                       ^
+          detected during instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(1875): warning #177-D: variable "warpIdx" was declared but never referenced
+          const int warpIdx = threadIdx.x / CPARTSIZE;
+                    ^
+          detected during:
+            instantiation of "void kckernel_node_block_warp_binary_pivot_count<T,BLOCK_DIM_X,CPARTSIZE>(uint64 *, graph::COOCSRGraph_d<T>, graph::GraphQueue_d<T, __nv_bool>, T *, uint64 *, T *, T *, T *, T *, T *, T *, T *, T *, T *, unsigned long long *) [with T=uint, BLOCK_DIM_X=128U, CPARTSIZE=8U]" at line 1830 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/Logger.cuh: In instantiation of ‘void Log(LogPriorityEnum, const char*, Args ...) [with bool NEWLINE = true; Args = {}]’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/CGArray.cuh:155:4:   required from ‘void graph::GPUArray<T>::switch_to_gpu(int, size_t) [with T = long long unsigned int; size_t = long unsigned int]’
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/kcgpu-generated/kclique.cuh:1743:18:   required from ‘void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async(int, graph::COOCSRGraph_d<T>&, ProcessingElementEnum, size_t, size_t) [with int PSIZE = 8; T = unsigned int; size_t = long unsigned int]’
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/src/backends/kcgpu.cu:154:54:   required from here
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/Logger.cuh:63:21: warning: format not a string literal and no format arguments [-Wformat-security]
+   63 |                 printf(f, args...);
+      |                 ~~~~^~~~~~~~~~~~
+[ 83%] Linking CUDA device code CMakeFiles/graphmine_backend_everest.dir/cmake_device_link.o
+[ 84%] Linking CUDA device code CMakeFiles/graphmine_backend_mayura.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 85%] Linking CXX static library libgraphmine_backend_everest.a
+[ 85%] Linking CXX static library libgraphmine_backend_mayura.a
+[ 85%] Built target graphmine_backend_everest
+[ 85%] Built target graphmine_backend_mayura
+[ 86%] Built target graphmine_temporal_motif_mining
+[ 86%] Linking CXX executable graphmine_temporal_motif_mining_test
+[ 87%] Built target graphmine_temporal_motif_mining_test
+[ 87%] Linking CXX static library libgraphmine_backend_kcgpu.a
+[ 87%] Built target graphmine_backend_kcgpu
+[ 87%] Linking CUDA device code CMakeFiles/graphmine_backend_gmatch.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 87%] Linking CXX static library libgraphmine_backend_gmatch.a
+[ 89%] Built target graphmine_backend_gmatch
+[ 90%] Built target graphmine_subgraph_isomorphism
+[ 90%] Linking CXX executable graphmine_subgraph_isomorphism_test
+[ 91%] Built target graphmine_subgraph_isomorphism_test
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/embedding.cuh: In member function ‘void GraphMineGammaEmbeddingList::check_all(int, uint64_t, patternID*, GraphMineGammaCSRGraph)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/embedding.cuh:184:22: warning: format ‘%u’ expects argument of type ‘unsigned int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  184 |                 printf("show %u embeddings:\n", display_num);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~
+      |                                               |
+      |                                               uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/embedding.cuh:191:36: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  191 |                                 printf("node %d %d data %d %d id_data %d %d\n", first, sec, nodeData[first], nodeData[sec], lab&0xff, (lab>>8)&0xff);
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                              ~~~~~~~~~~~
+      |                                                                                                                             |
+      |                                                                                                                             uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/embedding.cuh:191:36: warning: format ‘%d’ expects argument of type ‘int’, but argument 7 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  191 |                                 printf("node %d %d data %d %d id_data %d %d\n", first, sec, nodeData[first], nodeData[sec], lab&0xff, (lab>>8)&0xff);
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                           ~~~~~~~~~~~~~~~~  
+      |                                                                                                                                                 |
+      |                                                                                                                                                 uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/expand.cuh: In function ‘void graphmine_gamma_expand_in_batch(GraphMineGammaCSRGraph&, GraphMineGammaEmbeddingList&, int, GraphMineGammaExpandConstraint&)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/expand.cuh:700:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘emb_off_type’ {aka ‘long unsigned int’} [-Wformat=]
+  700 |                 printf("for the %d th expand_alloc, the total size is %d\n", i, batch_expand_off[i]);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     ~~~~~~~~~~~~~~~~~~~
+      |                                                                                                 |
+      |                                                                                                 emb_off_type {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/expand.cuh: In function ‘void graphmine_gamma_expand_dynamic_by_edge(GraphMineGammaCSRGraph&, GraphMineGammaEmbeddingList&, int, uint32_t*)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/expand.cuh:1068:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+ 1068 |                 printf("all used mem is %d MB, and data label is %d MB\n", all_size/1024/1024, g.nnodes/1024/1024);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                              |
+      |                                                                                              uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/clock.h: In member function ‘const char* GraphMineGammaClock::count(const char*, ...)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/clock.h:38:14: warning: ‘%s’ directive writing up to 999 bytes into a region of size between 957 and 962 [-Wformat-overflow=]
+   38 |         sprintf(str, "[\033[1m\033[44;31m%-12s\033[0m] %.6lfs   %s", s.c_str(), t, str2);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                  ~~~~
+In function ‘int sprintf(char*, const char*, ...)’,
+    inlined from ‘const char* GraphMineGammaClock::count(const char*, ...)’ at /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/build/gamma-kclique-generated/clock.h:38:8:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:30:31: note: ‘__builtin___sprintf_chk’ output 39 or more bytes (assuming 1043) into a destination of size 1000
+   30 |   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+      |        ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                  
+[ 92%] Linking CXX static library libgraphmine_backend_gamma_kclique.a
+[ 92%] Built target graphmine_backend_gamma_kclique
+[ 93%] Building CXX object CMakeFiles/graphmine_k_cliques.dir/src/problems/k_cliques.cpp.o
+[ 93%] Linking CXX static library libgraphmine_k_cliques.a
+[ 93%] Built target graphmine_k_cliques
+[ 93%] Linking CXX executable graphmine_k_cliques_test
+[ 94%] Built target graphmine_k_cliques_test
+[ 95%] Linking CXX static library libgraphmine_backend_pggc.a
+[ 97%] Built target graphmine_backend_pggc
+[ 97%] Building CXX object CMakeFiles/graphmine_community_detection.dir/src/problems/community_detection.cpp.o
+[ 98%] Linking CXX static library libgraphmine_community_detection.a
+[ 98%] Built target graphmine_community_detection
+[ 99%] Linking CXX executable graphmine_community_detection_test
+[100%] Linking CXX executable graphmine
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+ptxas warning : Value of threads per SM for entry _Z16cycle4_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z18triangle_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z15wedge_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+[100%] Built target graphmine_community_detection_test
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+[100%] Built target graphmine_cli

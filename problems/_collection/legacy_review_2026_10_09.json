@@ -1,0 +1,785 @@
+{
+  "checked_at": "2026-10-10T02:15:30Z",
+  "entries": [
+    {
+      "problem_dir": "01_maximal_clique_enumeration",
+      "paper_id": "2023_parallelizing_mce",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "01_maximal_clique_enumeration",
+      "paper_id": "2024_g2_aimd",
+      "before": {
+        "paper": "not_available",
+        "code": "cloned"
+      },
+      "paper": "not_collected",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "01_maximal_clique_enumeration",
+      "paper_id": "2026_rdmce",
+      "before": {
+        "paper": "not_available",
+        "code": "cloned"
+      },
+      "paper": "not_collected",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "02_maximum_clique",
+      "paper_id": "2019_maximum_clique_cuda",
+      "before": {
+        "paper": "download_failed",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "variant"
+    },
+    {
+      "problem_dir": "02_maximum_clique",
+      "paper_id": "2023_maximum_clique_enumeration_gpu",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "02_maximum_clique",
+      "paper_id": "2024_maximum_clique_many_core_gpu",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "03_k_clique_counting_enumeration",
+      "paper_id": "2022_parallel_k_clique_counting",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "03_k_clique_counting_enumeration",
+      "paper_id": "2023_graphset",
+      "before": {
+        "paper": "not_available",
+        "code": "cloned"
+      },
+      "paper": "not_collected",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "03_k_clique_counting_enumeration",
+      "paper_id": "2024_gamma",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "04_quasi_clique_mining",
+      "paper_id": "2025_cuqc",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "05_densest_subgraph",
+      "paper_id": "2026_bound_tightened_dsd",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "07_k_core_decomposition",
+      "paper_id": "2023_accelerating_k_core_gpu",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "08_k_truss_decomposition",
+      "paper_id": "2020_accelerating_truss_heterogeneous",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "09_maximal_biclique_enumeration",
+      "paper_id": "2023_efficient_mbe_gpus",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "09_maximal_biclique_enumeration",
+      "paper_id": "2024_cumbe",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "09_maximal_biclique_enumeration",
+      "paper_id": "2025_advanced_mbe_gpu_bitmaps",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "10_triangle_counting_listing",
+      "paper_id": "2025_tot_tensor_cores",
+      "before": {
+        "paper": "not_available",
+        "code": "cloned"
+      },
+      "paper": "not_collected",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "10_triangle_counting_listing",
+      "paper_id": "2025_wetric",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "10_triangle_counting_listing",
+      "paper_id": "2026_edtc",
+      "before": {
+        "paper": "not_available",
+        "code": "cloned"
+      },
+      "paper": "not_collected",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "variant"
+    },
+    {
+      "problem_dir": "11_graph_motif_counting",
+      "paper_id": "2022_g2miner",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "11_graph_motif_counting",
+      "paper_id": "2023_graphset",
+      "before": {
+        "paper": "not_available",
+        "code": "cloned"
+      },
+      "paper": "not_collected",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "11_graph_motif_counting",
+      "paper_id": "2024_dumato",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "13_subgraph_isomorphism",
+      "paper_id": "2026_gmatch",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "15_temporal_motif_mining",
+      "paper_id": "2024_everest",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "15_temporal_motif_mining",
+      "paper_id": "2025_mayura",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "16_community_detection",
+      "paper_id": "2026_gleiden",
+      "before": {
+        "paper": "not_available",
+        "code": "cloned"
+      },
+      "paper": "download_failed",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "16_community_detection",
+      "paper_id": "2026_multilevel_graph_clustering",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "18_centrality_influential_node_mining",
+      "paper_id": "2021_turbobc",
+      "before": {
+        "paper": "downloaded",
+        "code": "cloned"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "21_personalized_pagerank_rwr",
+      "paper_id": "2020_kpar",
+      "before": {
+        "paper": "downloaded",
+        "code": "present_unreviewed"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "22_max_flow_min_cut",
+      "paper_id": "2025_ecl_maxflow",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "22_max_flow_min_cut",
+      "paper_id": "2025_generalized_maxflow_gpu",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "related_variant"
+    },
+    {
+      "problem_dir": "22_max_flow_min_cut",
+      "paper_id": "2025_wbpr",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "paper_id": "2022_g2miner_reuse",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": true,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "paper_id": "2022_gamma_reuse",
+      "before": {
+        "paper": "downloaded",
+        "code": "present_unreviewed"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "paper_id": "2022_gbfc",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "23_butterfly_counting_bipartite",
+      "paper_id": "2024_gbc_biclique",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "24_graph_edit_distance_mcs",
+      "paper_id": "2016_gpu_mcs_drug_discovery",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "24_graph_edit_distance_mcs",
+      "paper_id": "2026_fast_ged",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "present",
+      "eligible_local_pair": true,
+      "semantic_fit": "variant"
+    },
+    {
+      "problem_dir": "25_network_alignment",
+      "paper_id": "2015_hga_2n",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "25_network_alignment",
+      "paper_id": "2023_cualign",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "25_network_alignment",
+      "paper_id": "2024_gpu_local_network_alignment",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+      "paper_id": "2014_gpu_chordless_cycles",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "variant"
+    },
+    {
+      "problem_dir": "26_hop_constrained_cycle_path_enumeration",
+      "paper_id": "2022_gpu_elementary_circuits",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "27_group_steiner_tree",
+      "paper_id": "2021_gpusteiner_kmb",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "downloaded_archive",
+      "eligible_local_pair": false,
+      "semantic_fit": "restricted_domain"
+    },
+    {
+      "problem_dir": "27_group_steiner_tree",
+      "paper_id": "2022_gpu_vlsi_gst",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "restricted_domain"
+    },
+    {
+      "problem_dir": "27_group_steiner_tree",
+      "paper_id": "2025_gpu4gst",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "download_failed",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "28_influence_maximization",
+      "paper_id": "2020_curipples",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "28_influence_maximization",
+      "paper_id": "2021_gim",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "28_influence_maximization",
+      "paper_id": "2021_superfuser",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "present",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "28_influence_maximization",
+      "paper_id": "2024_difuser",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "29_simrank_vertex_similarity",
+      "paper_id": "2023_clipsim",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "30_balanced_graph_partitioning",
+      "paper_id": "2024_gkway",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "30_balanced_graph_partitioning",
+      "paper_id": "2024_hyperg",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "related_variant"
+    },
+    {
+      "problem_dir": "30_balanced_graph_partitioning",
+      "paper_id": "2025_igkway",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "variant"
+    },
+    {
+      "problem_dir": "31_bipartite_matching_assignment",
+      "paper_id": "2013_deveci_mcm_gpu",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "31_bipartite_matching_assignment",
+      "paper_id": "2019_hungariangpu",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "not_collected",
+      "code": "downloaded_archive",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "32_signed_network_structural_balance",
+      "paper_id": "2021_graphbplus",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": false,
+      "semantic_fit": "related_variant"
+    },
+    {
+      "problem_dir": "32_signed_network_structural_balance",
+      "paper_id": "2026_ecl_sgb",
+      "before": {
+        "paper": null,
+        "code": null
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": false,
+      "semantic_fit": "related_variant"
+    },
+    {
+      "problem_dir": "33_transitive_closure_reachability",
+      "paper_id": "2021_atc",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "33_transitive_closure_reachability",
+      "paper_id": "2024_gdlog",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": true,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "33_transitive_closure_reachability",
+      "paper_id": "2026_curpq",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "general_framework"
+    },
+    {
+      "problem_dir": "34_entity_resolution_blocking",
+      "paper_id": "2025_hyperblocker",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "35_connected_components",
+      "paper_id": "2018_eclcc",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "not_collected",
+      "eligible_local_pair": false,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "35_connected_components",
+      "paper_id": "2023_eclscc",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    },
+    {
+      "problem_dir": "36_graph_layout_force_directed",
+      "paper_id": "2017_gpugraphlayout",
+      "before": {
+        "paper": "downloaded",
+        "code": "not_collected"
+      },
+      "paper": "downloaded",
+      "code": "downloaded_archive",
+      "eligible_local_pair": true,
+      "semantic_fit": "exact"
+    }
+  ]
+}

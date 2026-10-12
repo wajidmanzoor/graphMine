@@ -1,0 +1,20 @@
+{
+  "before": {
+    "cases": 40,
+    "timeouts": 9,
+    "timeout_seconds": 10,
+    "binary_sha256": "bb822a387004b977c6bcc8e9fe9c626ae65182f8c5e80b8d20f037f941b3772d"
+  },
+  "candidate": {
+    "cases": 60,
+    "passed": 60,
+    "timeout_seconds": 10,
+    "binary_sha256": "e63b676ef17e94f4455ce693a8750e3fdc8caba88d419021cefb227de2d0ec08"
+  },
+  "gpus": [
+    0,
+    1
+  ],
+  "fixture": "graph.json",
+  "scope": "Reproduced no-contraction hang; candidate checks partition coverage and independently recomputed modularity, not global optimality."
+}

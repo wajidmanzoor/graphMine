@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/zlwu92/gHyPart_TACO",
+  "checked_at": "2026-10-09T19:25:28Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "97b517195c16afe1a8c46d5e3fc418109ed6972a",
+  "archive_url": "https://codeload.github.com/zlwu92/gHyPart_TACO/tar.gz/97b517195c16afe1a8c46d5e3fc418109ed6972a",
+  "archive_sha256": "0d10f03b97a34ea585ad210445fe81a3a68a600e503644cc89603ced0d5ed406",
+  "local_path": "ghypart-97b517195c16",
+  "license_files": [],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

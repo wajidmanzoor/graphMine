@@ -1,0 +1,45 @@
+{
+  "problem_id": "simrank_vertex_similarity",
+  "problem_dir": "29_simrank_vertex_similarity",
+  "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 1,
+  "local_gpu_code_entries": 0,
+  "local_paper_entries": 0,
+  "local_gpu_code_and_paper_including_related": 0,
+  "eligible_code_and_paper_references": 0,
+  "eligible_local_code_and_paper_pairs": 0,
+  "target_met": false,
+  "shortfall": 3,
+  "shortfall_explanation": "No new verified GPU SimRank artifact was found. Jaccard, cosine and learned embeddings do not solve the SimRank fixed-point objective.",
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "see_existing_validation",
+  "runtime_status": "see_existing_validation",
+  "canonical_adapters": null,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 1,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [],
+    "shortfall": "No new verified GPU SimRank artifact was found. Jaccard, cosine and learned embeddings do not solve the SimRank fixed-point objective.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2023_clipsim",
+      "algorithm_name": "ClipSim: A GPU-friendly Parallel Framework for Single-Source SimRank with Accuracy Guarantee",
+      "paper_role": "algorithm",
+      "semantic_fit": "exact",
+      "local_gpu_code": false,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": true,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "see_existing_validation",
+      "notes": "ACM publisher page is paywalled; no open PDF or public code repository was located during this pass.",
+      "metadata_path": "29_simrank_vertex_similarity/papers/2023_clipsim/metadata.json"
+    }
+  ]
+}

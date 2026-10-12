@@ -1,0 +1,32 @@
+{
+  "problem_id": "influence_maximization",
+  "paper_id": "2020_curipples",
+  "title": "cuRipples: Influence Maximization on Multi-GPU Systems",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://eecs.wsu.edu/~ananth/papers/Minutoli_ICS20.pdf",
+    "resolved_url": "https://eecs.wsu.edu/~ananth/papers/Minutoli_ICS20.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "c3946c6aa2958936f6edd6605d90904fa658c86236593a0652155e476a41fa18",
+    "bytes": 1655413,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pnnl/ripples",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "entrypoint_sha256": {
+      "tools/cuda/cuda_hc_engine.cu": "2e587b5f3b939062f5b4a73514a24c6d1f5dcf0bcb32ebe1f96d8ff24d8208c0"
+    },
+    "commit": "82b20dc261ea8d097ecd31c2d2ad07c218abc488",
+    "source_manifest": "../../../_sources/curipples.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/LICENSE.rst"
+  }
+}

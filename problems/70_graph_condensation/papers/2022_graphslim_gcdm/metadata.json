@@ -1,0 +1,33 @@
+{
+  "title": "Graph Condensation via Receptive Field Distribution Matching",
+  "authors": [],
+  "year": 2022,
+  "venue": "Research preprint",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2206.13697",
+  "pdf_url": "https://arxiv.org/pdf/2206.13697",
+  "paper_id": "2022_graphslim_gcdm",
+  "problem_id": "graph_condensation",
+  "problem_dir": "70_graph_condensation",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GraphSlim GCDM",
+  "code_url": "https://github.com/Emory-Melody/GraphSlim",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch CUDA optimization when the device is configured; preprocessing and evaluation orchestration may use CPU.",
+  "notes": "GPU graph condensation implementation. Synthetic graph utility must be measured under a fixed train/validation/test protocol. GraphSlim CPU sparsification routines are not GPU spectral sparsifiers.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "graphslim/condensation/gcdm.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "graphslim",
+  "variant_constraints": [],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

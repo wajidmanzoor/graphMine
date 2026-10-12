@@ -193,6 +193,10 @@ ExecutionResult<MaximumCliqueOutput> MaximumClique::run(
   } else if (normalized.csr.undirected_edge_count() == 0) {
     backend.status = Status::success();
     backend.clique = {0};
+    if (options_.return_all_ties) {
+      for (VertexIndex v=0;v<normalized.csr.vertex_count();++v)
+        backend.tied_cliques.push_back({v});
+    }
     provenance.execution_path += " (trivial edgeless-graph result)";
   } else {
     const auto lower_bound = options_.known_lower_bound.value_or(0U);

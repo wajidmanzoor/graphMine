@@ -1,0 +1,79 @@
+name: "CodeQL"
+
+on:
+  schedule:
+    #        ┌───────────── minute (0 - 59)
+    #        │  ┌───────────── hour (0 - 23)
+    #        │  │ ┌───────────── day of the month (1 - 31)
+    #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+    #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+    #        │  │ │ │ │
+    #        │  │ │ │ │
+    #        │  │ │ │ │
+    #        *  * * * *
+    - cron: '0 0 1 * *' # At 00:00 on day-of-month 1.
+  workflow_dispatch:
+
+env:
+  # Customize the CMake build type here (Release, Debug)
+  BUILD_TYPE: Release
+  ARCHITECTURES: 90
+  
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: true
+      matrix:
+        language: [ 'cpp' ]
+        backend: [nvidia]
+        include:
+          - backend: nvidia
+            architectures: "90"
+            cmake_backend_flag: "-DESSENTIALS_NVIDIA_BACKEND=ON -DESSENTIALS_AMD_BACKEND=OFF"
+            cmake_arch_flag: "-DCMAKE_CUDA_ARCHITECTURES=90"
+
+    steps:
+      - name: Free up space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          
+      # Fetch/Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        
+      # Fetch CUDA toolkit using Jimver/cuda-toolkit
+      - name: Fetch CUDA toolkit
+        uses: Jimver/cuda-toolkit@master
+        id: cuda-toolkit
+        with:
+          cuda: '12.5.0'
+          linux-local-args: '["--toolkit"]'
+          
+      # Runs a single command using the runners shell
+      - name: Check nvcc version
+        run: nvcc -V
+          
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+      
+      - name: Configure cmake
+        run: cmake -B ${{github.workspace}}/build -DESSENTIALS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{matrix.cmake_backend_flag}} ${{matrix.cmake_arch_flag}}
+        
+      - name: Build all applications
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target sssp
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3

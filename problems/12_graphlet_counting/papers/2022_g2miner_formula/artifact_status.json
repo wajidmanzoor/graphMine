@@ -1,0 +1,33 @@
+{
+  "problem_id": "graphlet_counting",
+  "paper_id": "2022_g2miner_formula",
+  "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+  "checked_at": "2026-10-10T02:10:54Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
+    "resolved_url": "https://www.usenix.org/system/files/osdi22-chen.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:54Z",
+    "sha256": "e1ef406ebc5f9151580966adffab2e4a9c8a9c4310bc179836e9fa4f108b00a8",
+    "bytes": 1399571,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/chenxuhao/GraphMiner",
+    "local_path": "code",
+    "commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/graphminer.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/motif/gpu_formula.cu": "2e886e7b8d2833385b280f829f9d9ddf48700cbedd442585362dacc261f3f726"
+    }
+  }
+}

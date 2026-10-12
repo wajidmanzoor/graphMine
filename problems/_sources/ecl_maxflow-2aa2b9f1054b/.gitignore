@@ -1,0 +1,3 @@
+maxflow
+convert_dimacs_to_eclgraph/dimacsflow2ecl
+preprocess_eclgraph/preprocess

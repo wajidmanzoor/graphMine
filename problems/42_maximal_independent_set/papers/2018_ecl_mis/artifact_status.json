@@ -1,0 +1,33 @@
+{
+  "problem_id": "maximal_independent_set",
+  "paper_id": "2018_ecl_mis",
+  "title": "A High-Quality and Fast Maximal Independent Set Implementation for GPUs",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://cs.txstate.edu/~mb92/papers/topc18.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:57Z",
+    "sha256": "088744d7e91120a6427c35881335fc0d8b0bc4eb178a1cac0f4a969587290ecd",
+    "bytes": 4991110,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_files",
+    "source_url": "https://userweb.cs.txstate.edu/~mb92/research/ECL-MIS/",
+    "local_path": "code",
+    "commit": null,
+    "license_file": "code/ECL-MIS_13.cu",
+    "license_note": "License is embedded in the CUDA source header.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/ecl_mis.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "ECL-MIS_13.cu": "e7fd16b707ea709843673bd008042b4ade92359fb866e436d3c082ed85cd443c",
+      "ECLgraph.h": "035ccdb233070f607c477265da86ef360485b6053f2b73572f099d8950ae871c"
+    }
+  }
+}

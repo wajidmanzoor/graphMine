@@ -1,0 +1,30 @@
+{
+  "problem_id": "node_classification_regression",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2016_pyg_gcn",
+      "algorithm_name": "GCN node classification",
+      "metadata": "52_node_classification_regression/papers/2016_pyg_gcn/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2017_pyg_gat",
+      "algorithm_name": "GAT node classification",
+      "metadata": "52_node_classification_regression/papers/2017_pyg_gat/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2017_pyg_graphsage",
+      "algorithm_name": "GraphSAGE node classification",
+      "metadata": "52_node_classification_regression/papers/2017_pyg_graphsage/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

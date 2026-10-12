@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/dmlc/dgl",
+  "checked_at": "2026-10-09T19:25:17Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "3d16000b4170fa741ed9e9667f22ba84d3493026",
+  "archive_url": "https://codeload.github.com/dmlc/dgl/tar.gz/3d16000b4170fa741ed9e9667f22ba84d3493026",
+  "archive_sha256": "d97203e711f630e5f98110811907d07411e195121cb4a93473f538e7546e1b38",
+  "local_path": "dgl-3d16000b4170",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

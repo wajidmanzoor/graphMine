@@ -1,0 +1,33 @@
+{
+  "problem_id": "connected_components",
+  "paper_id": "2023_eclscc",
+  "title": "A GPU Algorithm for Detecting Strongly Connected Components",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://userweb.cs.txstate.edu/~burtscher/papers/sc23c.pdf",
+    "resolved_url": "https://userweb.cs.txstate.edu/~burtscher/papers/sc23c.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "1573bd7aabee0cdacf295c57211f37f34dbbd775d1b81c2255c9831dc77576de",
+    "bytes": 922163,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/burtscher/ECL-SCC",
+    "local_path": "code",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "entrypoint_sha256": {
+      "source/ECL-SCC_10.cu": "6666bec4e4874354912348035b3048a0916e5dde5ef8c85febc15258652872ae"
+    },
+    "commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+    "source_manifest": "../../../_sources/ecl_scc.json",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "license_file": "code/LICENSE"
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

@@ -1,0 +1,63 @@
+{
+  "version": "graphmine-training-preparation-v1",
+  "created_at": "2026-10-07T22:14:25.206189+00:00",
+  "review_queue": ".graphmine-learning/failure-review-queue-v1.json",
+  "review_queue_sha256": "d45bb6ec8f68d107cb52bb2be54a63c067dc35918ebe3aacc2cf15730546b879",
+  "source_reports": [
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/agent/evaluation/reports/current-catalog-workflow-cpu-v2.json",
+      "sha256": "39bef8a0fad9a5234b749a0b67348bb7ffdb3c2f0d51dc0413eb49e072747bf1",
+      "kind": "current_catalog_workflow",
+      "turns_rechecked": null,
+      "workflow_contract_passes": 46
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/base_nf4.json",
+      "sha256": "6de73d1045b1113dea6658eb59a723f8308d71bc58c4d59bbf7d4d24566a4e32",
+      "kind": "archived_realworld_application",
+      "turns_rechecked": 22,
+      "workflow_contract_passes": null
+    },
+    {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.graphmine-learning/adapter-realworld-nf4-v1/adapter_nf4.json",
+      "sha256": "6cac5874651bdbc0293624b7e1b0505a042306ca720693d8d8011ad66c002ce7",
+      "kind": "archived_realworld_application",
+      "turns_rechecked": 22,
+      "workflow_contract_passes": null
+    }
+  ],
+  "candidate_count": 20,
+  "counts_by_kind": {
+    "archived_presentation_compatibility": 18,
+    "archived_workflow_contract": 2
+  },
+  "observations_by_kind": {
+    "archived_presentation_compatibility": 36,
+    "archived_workflow_contract": 2
+  },
+  "request_scope_candidates": [
+    {
+      "id": "candidate_1b7b6fa6216d2213e98e8339",
+      "query": "In the anonymous workplace contact sample, which groups of at least three participants have a direct connection between every pair, using only relationships with recorded contact_intervals equal to 0? List every such group that cannot be expanded by adding another participant while keeping every pair directly connected, and include each member\u2019s anonymous participant label and department.",
+      "issues": [
+        "Requested attribute scope changed"
+      ],
+      "source_id": "sociopatterns-workplace"
+    },
+    {
+      "id": "candidate_1f1305ddb6dfcbebc03f8abc",
+      "query": "For organizing follow-up experiments, can you list every group of at least three proteins in the supplied E. coli association sample where every pair is directly connected and no additional protein can be added while keeping every pair connected? Use only relationships whose recorded score equals 0, and identify the proteins by gene name and original STRING identifier. Treat these associations as associations, not proof of binding or causation.",
+      "issues": [
+        "Requested attribute scope changed"
+      ],
+      "source_id": "string-ecoli"
+    }
+  ],
+  "training_eligible_candidates": 0,
+  "corrected_labels_created": 0,
+  "human_review": "unreviewed",
+  "training_started": false,
+  "model_inference": "not_run",
+  "native_execution": "not_run",
+  "scope": "Offline recheck of saved observations. The 18 presentation compatibility candidates concern old materialized tables, not a current model regression. Two request-scope failures were observed in archived adapter runs; current-runtime reproduction and domain review remain necessary. No fresh inference, automatic labels, SFT records, held-out examples or training jobs."
+}

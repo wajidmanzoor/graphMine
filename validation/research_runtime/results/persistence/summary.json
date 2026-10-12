@@ -1,0 +1,23 @@
+{
+  "family": "persistence",
+  "gpu": "0",
+  "cases": 200,
+  "passed": 100,
+  "failed": 100,
+  "startup_error": null,
+  "by_backend": {
+    "ripserplusplus-finite-bars": {
+      "passed": 100,
+      "failed": 0,
+      "scope": "Hybrid upstream implementation vs independent F2 boundary reduction, finite intervals H0 through H2"
+    },
+    "ripserplusplus-essential-h0": {
+      "passed": 0,
+      "failed": 100,
+      "scope": "Full barcode contract: Python export must include essential H0 interval"
+    }
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "numpy": "1.26.4",
+  "script_sha256": "4f0a341bc987d85c59a45f786fd10eb2ed3fdd71be4239155d249f157d2f2e47"
+}

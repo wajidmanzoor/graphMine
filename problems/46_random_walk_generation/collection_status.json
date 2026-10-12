@@ -1,0 +1,92 @@
+{
+  "problem_id": "random_walk_generation",
+  "problem_dir": "46_random_walk_generation",
+  "name": "Graph Random-Walk Generation",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 4,
+  "local_gpu_code_entries": 4,
+  "local_paper_entries": 3,
+  "local_gpu_code_and_paper_including_related": 3,
+  "eligible_code_and_paper_references": 3,
+  "eligible_local_code_and_paper_pairs": 3,
+  "target_met": true,
+  "shortfall": 0,
+  "shortfall_explanation": null,
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cugraph"
+    ],
+    "shortfall": "Fewer than three eligible local GPU implementation/research-paper pairs; individual records state missing artifacts or variant restrictions.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2020_csaw_walks",
+      "algorithm_name": "C-SAW GPU random walks",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Distribution, walk-length convention, and dead-end behavior need to be mapped to the problem contract.",
+      "metadata_path": "46_random_walk_generation/papers/2020_csaw_walks/metadata.json"
+    },
+    {
+      "paper_id": "2020_nextdoor_walks",
+      "algorithm_name": "NextDoor transit-parallel random walks",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Collects walk generation, not embedding training. Node2vec and uniform walks are modes within this entry.",
+      "metadata_path": "46_random_walk_generation/papers/2020_nextdoor_walks/metadata.json"
+    },
+    {
+      "paper_id": "2021_skywalker_walks",
+      "algorithm_name": "Skywalker alias-table random walks",
+      "paper_role": "algorithm",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Select DeepWalk or node2vec modes. Later Skywalker+ extensions also exist in this snapshot; the attached PACT paper describes the original framework.",
+      "metadata_path": "46_random_walk_generation/papers/2021_skywalker_walks/metadata.json"
+    },
+    {
+      "paper_id": "2026_cugraph_random_walks",
+      "algorithm_name": "cuGraph GPU random walks",
+      "paper_role": "none",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": false,
+      "counts_toward_three": false,
+      "has_upstream_code_and_verified_paper_reference": false,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Use only the transition rule supported by the selected API; specify dead-end padding and seed. No associated GPU research paper was verified for this specific implementation; documentation is retained as documentation.",
+      "metadata_path": "46_random_walk_generation/papers/2026_cugraph_random_walks/metadata.json"
+    }
+  ]
+}

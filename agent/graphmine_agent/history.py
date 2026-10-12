@@ -8,13 +8,16 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import re
 import shutil
 from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
+from functools import wraps
 from pathlib import Path
+from threading import RLock
 from typing import Any
 
 from .models import StoredFile, new_id, utc_now
@@ -22,6 +25,18 @@ from .models import StoredFile, new_id, utc_now
 _context: ContextVar[dict[str, str] | None] = ContextVar(
     "history_context", default=None
 )
+_logger = logging.getLogger(__name__)
+
+
+def _archive_write(method):
+    """Archive I/O cannot undo an already committed operational record."""
+
+    @wraps(method)
+    def write(self, *args, **kwargs):
+        with self.best_effort(method.__name__):
+            return method(self, *args, **kwargs)
+
+    return write
 
 
 def _json_value(value: Any) -> Any:
@@ -34,6 +49,47 @@ class HistoryStore:
     def __init__(self, root: Path):
         self.root = root.resolve()
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
+        self._failure_lock = RLock()
+        self._failure_count = 0
+        self._last_failure: dict[str, Any] | None = None
+
+    def record_failure(self, operation: str, error: Exception) -> None:
+        # Bounded diagnostics, without graph data or exception text in health.
+        with self._failure_lock:
+            self._failure_count += 1
+            self._last_failure = {
+                "operation": operation,
+                "type": type(error).__name__,
+                "errno": getattr(error, "errno", None),
+                "timestamp": utc_now().isoformat(),
+            }
+            count = self._failure_count
+        # Bound repeated log volume while retaining the first and latest counts.
+        if count == 1 or count % 100 == 0:
+            _logger.error(
+                "Archive/notification gap during %s (%s); %d failures since startup",
+                operation,
+                type(error).__name__,
+                count,
+            )
+
+    def statistics(self) -> dict[str, Any]:
+        with self._failure_lock:
+            return {
+                "status": "degraded" if self._failure_count else "ok",
+                "failure_count": self._failure_count,
+                "last_failure": dict(self._last_failure)
+                if self._last_failure
+                else None,
+                "scope": "Archive/notification failures since process startup; gaps are not automatically reconstructed.",
+            }
+
+    @contextmanager
+    def best_effort(self, operation: str):
+        try:
+            yield
+        except OSError as error:
+            self.record_failure(operation, error)
 
     @staticmethod
     def identifier(value: str) -> str:
@@ -59,6 +115,7 @@ class HistoryStore:
         finally:
             temporary.unlink(missing_ok=True)
 
+    @_archive_write
     def snapshot(self, session_id: str, relative: str, value: Any) -> None:
         # Relative names are internal, never supplied directly by an API client.
         path = self.session_path(session_id) / relative
@@ -81,7 +138,8 @@ class HistoryStore:
             temporary.unlink(missing_ok=True)
         return path
 
-    def record(self, session_id: str, kind: str, data: Any) -> str:
+    @_archive_write
+    def record(self, session_id: str, kind: str, data: Any) -> str | None:
         context = _context.get() or {}
         if context.get("session_id") != session_id:
             context = {}
@@ -270,6 +328,7 @@ class HistoryStore:
         finally:
             _context.reset(token)
 
+    @_archive_write
     def file(self, record: StoredFile) -> None:
         directory = (
             self.session_path(record.session_id) / "files" / self.identifier(record.id)
@@ -305,6 +364,7 @@ class HistoryStore:
         with path.open("rb") as stream:
             return hashlib.file_digest(stream, "sha256").hexdigest()
 
+    @_archive_write
     def capture_workspace(self, session_id: str, job_id: str, workspace: Path) -> None:
         directory = self.session_path(session_id) / "jobs" / self.identifier(job_id)
         directory.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -314,6 +374,7 @@ class HistoryStore:
             "stdout.log",
             "stderr.log",
             "process.json",
+            "timings.json",
             "projection.json",
             "projected-graph.json",
         ):

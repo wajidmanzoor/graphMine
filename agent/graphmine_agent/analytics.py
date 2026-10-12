@@ -39,6 +39,7 @@ class WorkflowRequest(BaseModel):
     plan: dict[str, Any]
     inputs: dict[str, InputReference]
     evaluation_id: str | None = Field(default=None, min_length=1, max_length=200)
+    planning_turn_id: str | None = Field(default=None, min_length=1, max_length=64)
 
 
 class WorkflowRevision(WorkflowRequest):
@@ -351,6 +352,14 @@ class AnalyticsService:
         return result
 
     async def create(self, session_id, body):
+        if body.planning_turn_id and not any(
+            event.type == "workflow.chat"
+            and event.payload.get("turn_id") == body.planning_turn_id
+            and event.payload.get("role") == "assistant"
+            and event.payload.get("status") == "ready"
+            for event in self.database.events(session_id)
+        ):
+            raise AnalyticsError("The planning turn is not ready in this workspace")
         inputs = self._inputs(session_id, body.inputs)
         checked = await self._call(
             {"command": "validate", "plan": body.plan, "inputs": inputs}
@@ -361,6 +370,7 @@ class AnalyticsService:
             "revision": 1,
             "mode": body.mode,
             "evaluation_id": body.evaluation_id,
+            "planning_turn_id": body.planning_turn_id,
             "status": "awaiting_review" if body.mode == "interactive" else "ready",
             "created_at": _now(),
             "approved_hash": None,

@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/rapidsai/nvgraph",
+  "checked_at": "2026-10-10T01:37:08Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "1ea93b51387bd3ff149b6ac8fa91d64edd43d31c",
+  "archive_url": "https://codeload.github.com/rapidsai/nvgraph/tar.gz/1ea93b51387bd3ff149b6ac8fa91d64edd43d31c",
+  "archive_sha256": "92fffb60e2f78e9638a0d43326a2a90bf39b321d4196b0f3cb756dc2e6fa6ab4",
+  "local_path": "nvgraph-1ea93b51387b",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "Apache-2.0",
+  "archived": true,
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

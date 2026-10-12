@@ -1,0 +1,33 @@
+{
+  "problem_id": "breadth_first_search",
+  "paper_id": "2017_gardenia_direction_bfs",
+  "title": "GARDENIA: A Domain-specific Benchmark Suite for Next-generation Accelerators",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1708.04567",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:56Z",
+    "sha256": "dd4d5a6771cd46156156f155cce9bd0fce8cec501d5d24f0857c35f696beb6ec",
+    "bytes": 692093,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/chenxuhao/gardenia",
+    "local_path": "code",
+    "commit": "5894df11cf47f8839945edadff43dc79e260216d",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/gardenia.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/bfs/hybrid_lb.cu": "6d3e43bdf32612c600b9ac32dffaafbd512e40379548559d53525122e4aa5373",
+      "src/bfs/bottom_up.cu": "2e8254ba5352915ec95ced2adf1b6f4c3db98daaabf0db1ebda5e8621b98af10"
+    }
+  }
+}

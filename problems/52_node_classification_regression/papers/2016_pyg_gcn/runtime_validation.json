@@ -1,0 +1,14 @@
+{
+  "status": "runtime_checks_passed",
+  "canonical_adapter_available": false,
+  "scope_note": "Subsequent runtime checks; not a paper-version reproduction or an integrated solver.",
+  "checks": [
+    {
+      "backend": "pyg-gcn",
+      "passed": 58,
+      "failed": 0,
+      "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim",
+      "evidence": "validation/research_runtime/results/models/summary.json"
+    }
+  ]
+}

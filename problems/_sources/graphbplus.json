@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/burtscher/graphBplus",
+  "checked_at": "2026-10-10T01:46:24Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "85dc76604835484d9cbc0f12b243c9c290737e75",
+  "archive_url": "https://codeload.github.com/burtscher/graphBplus/tar.gz/85dc76604835484d9cbc0f12b243c9c290737e75",
+  "archive_sha256": "2a1ed0eb6dcc7c1d6c0ea7791dfee32b901d0027a586bd0c1a4a32cd2891fb82",
+  "local_path": "graphbplus-85dc76604835",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "BSD-3-Clause",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

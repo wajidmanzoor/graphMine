@@ -1,0 +1,27 @@
+{
+  "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+  "year": 2019,
+  "venue": "arXiv; later published in ACM TOPC",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1908.01407",
+  "pdf_url": "https://arxiv.org/pdf/1908.01407",
+  "paper_id": "2019_graphblast_coloring",
+  "problem_id": "vertex_coloring",
+  "problem_dir": "43_vertex_coloring",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GraphBLAST independent-set coloring",
+  "code_url": "https://github.com/gunrock/graphblast",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA GraphBLAS repeated parallel color assignment.",
+  "notes": "Distance-1 heuristic; does not establish a chromatic-number optimum or distance-2 support.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "graphblas/algorithm/gc.hpp"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

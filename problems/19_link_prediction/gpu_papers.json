@@ -1,0 +1,38 @@
+{
+  "problem_id": "link_prediction",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2026_cugraph_cosine",
+      "algorithm_name": "cuGraph Cosine neighborhood link scores",
+      "metadata": "19_link_prediction/papers/2026_cugraph_cosine/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_jaccard",
+      "algorithm_name": "cuGraph Jaccard link scores",
+      "metadata": "19_link_prediction/papers/2026_cugraph_jaccard/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_overlap",
+      "algorithm_name": "cuGraph Overlap-coefficient link scores",
+      "metadata": "19_link_prediction/papers/2026_cugraph_overlap/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_sorensen",
+      "algorithm_name": "cuGraph Sorensen-Dice link scores",
+      "metadata": "19_link_prediction/papers/2026_cugraph_sorensen/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

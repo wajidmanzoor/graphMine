@@ -1,0 +1,11 @@
+{
+  "name": "graphmine-visualization-validation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pinned local Vega-Lite compiler and renderer used by GraphMine and its training-data checks.",
+  "dependencies": {
+    "vega": "6.4.0",
+    "vega-lite": "6.4.3",
+    "vega-embed": "7.3.0"
+  }
+}

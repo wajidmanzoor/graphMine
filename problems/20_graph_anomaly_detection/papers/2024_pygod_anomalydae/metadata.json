@@ -1,0 +1,38 @@
+{
+  "title": "PyGOD: A Python Library for Graph Outlier Detection",
+  "authors": [],
+  "year": 2024,
+  "venue": "Journal of Machine Learning Research 25(141)",
+  "doi": null,
+  "publication_url": "https://jmlr.org/papers/v25/23-0963.html",
+  "pdf_url": "https://jmlr.org/papers/volume25/23-0963/23-0963.pdf",
+  "paper_id": "2024_pygod_anomalydae",
+  "problem_id": "graph_anomaly_detection",
+  "problem_dir": "20_graph_anomaly_detection",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "PyGOD ANOMALYDAE",
+  "code_url": "https://github.com/pygod-team/pygod",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch/PyG tensor operations on CUDA when gpu>=0; preprocessing and sampling can include CPU stages.",
+  "notes": "Attributed-graph node anomaly scores. GPU selection is explicit: the default gpu=-1 uses CPU. The PDF is the PyGOD framework paper, shared by three distinct models.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "pygod/detector/anomalydae.py",
+    "pygod/nn/anomalydae.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "pygod",
+  "variant_constraints": [
+    "node anomaly mode",
+    "numeric vertex features",
+    "gpu must be explicitly enabled"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

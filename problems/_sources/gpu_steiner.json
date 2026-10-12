@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/mrprajesh/gpuSteiner",
+  "checked_at": "2026-10-10T01:46:08Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "61e2c94def74d84d4d79d59c7499218ab75d720e",
+  "archive_url": "https://codeload.github.com/mrprajesh/gpuSteiner/tar.gz/61e2c94def74d84d4d79d59c7499218ab75d720e",
+  "archive_sha256": "42d9bd9a112fe962679a24a0780bc5885bb298fd36a723ae4d1b239c35898c7b",
+  "local_path": "gpu_steiner-61e2c94def74",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "NOASSERTION",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

@@ -1,0 +1,34 @@
+{
+  "problem_id": "node_classification_regression",
+  "paper_id": "2017_pyg_gat",
+  "title": "Graph Attention Networks",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1710.10903",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:58Z",
+    "sha256": "a7d811a44e1c65bf27da3a01859f23a8edbe33b8f96114b4b5066aedb078f284",
+    "bytes": 1637828,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/pyg-team/pytorch_geometric",
+    "local_path": "code",
+    "commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/pyg.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "torch_geometric/nn/conv/gat_conv.py": "e7e0808977b0aa8f411e7a2e25ee64345fe958d023cc5b706aab70ef8d1d59b6",
+      "examples/gat.py": "9ac32e90d7d7256f813d3668e60f7ece4bab9693ff691e1f97d8bbf8fd2e4c2a"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
+}

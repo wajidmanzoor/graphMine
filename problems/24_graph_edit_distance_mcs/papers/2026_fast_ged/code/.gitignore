@@ -1,0 +1,11 @@
+# Ignore all .log files
+*.txt
+*.out
+*.cxl 
+
+# Ignore a specific file
+secret-config.txt  
+
+# Ignore a directory
+.ipynb_checkpoints
+build/

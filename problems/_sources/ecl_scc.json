@@ -1,0 +1,19 @@
+{
+  "source_url": "https://github.com/burtscher/ECL-SCC",
+  "checked_at": "2026-10-10T01:46:30Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+  "archive_url": "https://codeload.github.com/burtscher/ECL-SCC/tar.gz/8e67732687d06f75cdd602f36e1fe54429ba4f99",
+  "archive_sha256": "9de74fb4cc4bd4727362f1f57715e5a8d05e20a6a0110799510a93878ddac8b7",
+  "local_path": "ecl_scc-8e67732687d0",
+  "license_files": [
+    "LICENSE"
+  ],
+  "license_spdx": "BSD-3-Clause",
+  "archived": false,
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

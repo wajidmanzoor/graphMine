@@ -81,6 +81,32 @@
       "title": "FollowupAction",
       "type": "object"
     },
+    "GroundedStatement": {
+      "additionalProperties": false,
+      "properties": {
+        "fact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "Fact Ids",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 2400,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "fact_ids"
+      ],
+      "title": "GroundedStatement",
+      "type": "object"
+    },
     "Interpretation": {
       "additionalProperties": false,
       "properties": {
@@ -90,6 +116,13 @@
           },
           "minItems": 1,
           "title": "Evidence",
+          "type": "array"
+        },
+        "explanation": {
+          "items": {
+            "$ref": "#/$defs/GroundedStatement"
+          },
+          "title": "Explanation",
           "type": "array"
         },
         "findings": {
@@ -182,7 +215,8 @@
         "timeline",
         "heatmap",
         "table",
-        "metric_cards"
+        "metric_cards",
+        "vega_lite"
       ],
       "title": "VisualizationKind",
       "type": "string"
@@ -205,6 +239,13 @@
           },
           "title": "Encodings",
           "type": "object"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
         },
         "filters": {
           "items": {
@@ -257,6 +298,19 @@
         },
         "type": {
           "$ref": "#/$defs/VisualizationKind"
+        },
+        "vega_lite": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vega Lite"
         }
       },
       "required": [

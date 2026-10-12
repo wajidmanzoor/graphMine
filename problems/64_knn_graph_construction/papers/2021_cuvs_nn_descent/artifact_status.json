@@ -1,0 +1,34 @@
+{
+  "problem_id": "knn_graph_construction",
+  "paper_id": "2021_cuvs_nn_descent",
+  "title": "Fast k-NN Graph Construction by GPU based NN-Descent",
+  "checked_at": "2026-10-10T02:10:55Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://cmmlab.xmu.edu.cn/pubs/cikmwang2021.pdf",
+    "resolved_url": "https://cmmlab.xmu.edu.cn/pubs/cikmwang2021.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:10:55Z",
+    "sha256": "b464826037bffe3c87c03bec6b81609595d42ec1cf759b4728818272dcd43a8e",
+    "bytes": 1275857,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/rapidsai/cuvs",
+    "local_path": "code",
+    "commit": "24b0b17069ee1547354d15847d9c614dd4fb4a43",
+    "license_file": "code/LICENSE",
+    "license_note": "Inspect upstream license and dependency notices before redistribution.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/cuvs.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "cpp/src/neighbors/nn_descent.cu": "20fd56458ba99b4ab5d6a859c077ad9ac1f170ef4d25f0ab1a4d879a6735a6e4",
+      "cpp/src/neighbors/detail/nn_descent.cuh": "d1465e902f267064773336938ad157c6f807f83520153956a1cecdd9d8a937ae"
+    }
+  }
+}

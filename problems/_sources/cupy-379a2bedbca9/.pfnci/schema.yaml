@@ -1,0 +1,466 @@
+###############################################################################
+# System
+###############################################################################
+# Target system to test on.
+system:
+  "linux":
+  "windows":
+
+###############################################################################
+# OS
+###############################################################################
+# Name and version of the operating system to test on.
+os:
+  "ubuntu:22.04":    # CUDA 11.7+
+    system: "linux"
+  "ubuntu:24.04":    # CUDA 12.5.1+
+    system: "linux"
+  "centos:7":
+    system: "linux"
+  "centos:8":
+    system: "linux"
+  "ws:2022":
+    system: "windows"
+
+###############################################################################
+# CUDA & ROCm
+###############################################################################
+# The platform to test with.
+# `cuda` and `rocm` are mutually exclusive; when one is set, the other must be null.
+# `full_version` is the version used in base Docker images.
+# `repository` is the Docker repository. (CUDA only)
+# `packages` is the list of DEB/RPM packages to be installed. (ROCm only)
+# When adding a new CUDA version, you may also need to add the version to the
+# list of supported CUDA versions in the optional libraries.
+cuda:
+  null:
+    full_version: null
+    repository: null
+  "12.0":
+    full_version: "12.0.1"
+    repository: "nvidia/cuda"
+  "12.1":
+    full_version: "12.1.1"
+    repository: "nvidia/cuda"
+  "12.2":
+    full_version: "12.2.0"
+    repository: "nvidia/cuda"
+  "12.3":
+    full_version: "12.3.0"
+    repository: "nvidia/cuda"
+  "12.4":
+    full_version: "12.4.1"
+    repository: "nvidia/cuda"
+  "12.5":
+    full_version: "12.5.0"
+    repository: "nvidia/cuda"
+  "12.6":
+    full_version: "12.6.0"
+    repository: "nvidia/cuda"
+  "12.8":
+    full_version: "12.8.0"
+    repository: "nvidia/cuda"
+  "12.9":
+    full_version: "12.9.1"
+    repository: "nvidia/cuda"
+  "13.0":
+    full_version: "13.0.0"
+    repository: "nvidia/cuda"
+  "13.1":
+    full_version: "13.1.0"
+    repository: "nvidia/cuda"
+  "13.2":
+    full_version: "13.2.0"
+    repository: "nvidia/cuda"
+  "13.3":
+    full_version: "13.3.0"
+    repository: "nvidia/cuda"
+  "13.4":
+    full_version: "13.4.1"
+    repository: "nvidia/cuda"
+rocm:
+  null:
+    full_version: null
+    packages: []
+  "7.14":
+    full_version: "7.14.0-full"
+    packages: []
+
+###############################################################################
+# CUDA Optional Libraries
+###############################################################################
+# The optional libraries to install: NCCL, cuTENSOR, and cuSPARSELt.
+# `spec` must be a version specifier accepted by apt and yum.
+# `cuda` lists the supported CUDA version.
+# `cuda.alias` (ex: NCCL) is an alias name for package name suffix.
+nccl:
+  # https://docs.nvidia.com/deeplearning/nccl/archives/
+  # https://developer.nvidia.com/nccl/nccl-download
+  null:
+    spec: null
+  "2.16":
+    spec: "2.16.*"
+    cuda:
+      "12.0":
+  "2.17":
+    spec: "2.17.*"
+    cuda:
+      "12.0":  # Note: DEB package unavailable on Ubuntu 22.04
+      "12.1":
+  "2.18":
+    spec: "2.18.*"
+    cuda:
+      "12.0":  # Note: DEB package unavailable on Ubuntu 22.04
+      "12.2":
+  "2.19":
+    spec: "2.19.*"
+    cuda:
+      "12.0":  # Note: DEB package unavailable on Ubuntu 22.04
+      "12.2":
+      "12.3":
+  "2.20":
+    spec: "2.20.*"
+    cuda:
+      "12.0":  # Note: DEB package unavailable on Ubuntu 22.04
+      "12.2":  # Note: DEB package unavailable on Ubuntu 22.04
+      "12.3":
+      "12.4":
+  "2.21":
+    spec: "2.21.*"
+    cuda:
+      "12.2":  # Note: DEB package unavailable on Ubuntu 22.04
+      "12.4":
+      "12.5":
+  "2.22":
+    spec: "2.22.*"
+    cuda:
+      "12.2":  # Note: DEB package unavailable on Ubuntu 20.04
+      "12.4":
+      "12.5":
+      "12.6":
+  "2.25":
+    spec: "2.25.*"
+    cuda:
+      "12.2":
+      "12.4":
+      "12.8":
+  "2.26":
+    spec: "2.26.*"
+    cuda:
+      "12.2":
+      "12.4":
+      "12.8":
+      "12.9":
+  "2.27":
+    spec: "2.27.*"
+    cuda:
+      "12.2":
+      "12.4":
+      "12.9":
+      "13.0":
+  "2.28":
+    spec: "2.28.*"
+    cuda:
+      "12.0":
+      "12.1":
+      "12.2":
+      "12.3":
+      "12.4":
+      "12.5":
+      "12.6":
+      "12.8":
+      "12.9":
+      "13.0":
+      "13.1":
+        alias: "13.0"
+  "2.29":
+    spec: "2.29.*"
+    cuda:
+      "13.2":
+  "2.30":
+    spec: "2.30.*"
+    cuda:
+      "13.3":
+  "2.31":
+    spec: "2.31.*"
+    cuda:
+      "13.4":
+cutensor:
+  # https://docs.nvidia.com/cuda/cutensor/
+  # https://developer.nvidia.com/cutensor/downloads
+  null:
+    spec: null
+  "2.4":
+    spec: "2.4.*"
+    cuda:
+      "12.0":
+      "12.1":
+      "12.2":
+      "12.3":
+      "12.4":
+      "12.5":
+      "12.6":
+      "12.8":
+      "12.9":
+      "13.0":
+      "13.1":
+      "13.2":
+      "13.3":
+      "13.4":
+cusparselt:
+  # https://docs.nvidia.com/cuda/cusparselt/
+  # https://developer.nvidia.com/cusparselt/downloads
+  null:
+    spec: null
+  "0.8.1":
+    spec: "0.8.1.*"
+    cuda:
+      "12.9":
+  "0.9.1":
+    spec: "0.9.1.*"
+    cuda:
+      "13.0":
+      "13.1":
+      "13.2":
+      "13.3":
+      "13.4":
+
+###############################################################################
+# Python
+###############################################################################
+# Python version to test with.
+# `spec` must be a version specifier accepted by pyenv.
+# When adding a new Python version, you may also need to add the version to the
+# list of supported Python versions in the Python libraries.
+python:
+  "3.10":
+    spec: "3.10.18"
+  "3.11":
+    spec: "3.11.13"
+  "3.12":
+    spec: "3.12.11"
+  "3.13":
+    spec: "3.13.8"
+  "3.14":
+    spec: "3.14.6"
+  "3.14t":
+    spec: "3.14t"
+  "3.15":
+    spec: "3.15.0rc3"
+  "3.15t":
+    spec: "3.15.0rc3t"
+  "pre":
+    spec: "3.16-dev"  # note that dependency python libraies may not work
+
+###############################################################################
+# Python Libraries
+###############################################################################
+# Library versions to test with.
+# `spec` must be a version specifier accepted by pip.
+# When adding a new NumPy version, you may also need to add the version to the
+# list of supported Python versions in SciPy.
+numpy:
+  "2.0":
+    spec: "==2.0.*"
+    python:
+      - "3.10"
+      - "3.11"
+      - "3.12"
+  "2.1":
+    spec: "==2.1.*"
+    python:
+      - "3.10"
+      - "3.11"
+      - "3.12"
+  "2.2":
+    spec: "==2.2.*"
+    python:
+      - "3.10"
+      - "3.11"
+      - "3.12"
+      - "3.13"
+  "2.3":
+    spec: "==2.3.*"
+    python:
+      - "3.11"
+      - "3.12"
+      - "3.13"
+      - "3.14"
+      - "3.14t"
+  "2.4":
+    spec: "==2.4.*"
+    python:
+      - "3.11"
+      - "3.12"
+      - "3.13"
+      - "3.14"
+      - "3.14t"
+  "2.5":
+    spec: "==2.5.*"
+    python:
+      # Python 3.11 support was dropped in NumPy 2.5.
+      - "3.12"
+      - "3.13"
+      - "3.14"
+      - "3.14t"
+      - "3.15"
+      - "3.15t"
+  "pre":
+    spec: ">=0a0,<2.6"  # TODO(seberg): allow nightlies
+scipy:
+  # https://docs.scipy.org/doc/scipy/dev/toolchain.html#numpy
+  null:
+    # Note: Optuna depends on SciPy, so Optuna must also be set to null when
+    # setting SciPy to null to run tests without SciPy.
+    spec: null
+  "1.14":
+    spec: "==1.14.*"
+    python:
+      - "3.10"
+      - "3.11"
+      - "3.12"
+      - "3.13"
+    numpy:
+      - "2.0"
+      - "2.1"
+      - "2.2"
+  "1.15":
+    spec: "==1.15.*"
+    python:
+      - "3.10"
+      - "3.11"
+      - "3.12"
+      - "3.13"
+    numpy:
+      - "2.0"
+      - "2.1"
+      - "2.2"
+      - "2.3"
+  "1.16":
+    spec: "==1.16.*"
+    python:
+      - "3.11"
+      - "3.12"
+      - "3.13"
+      - "3.14"
+      - "3.14t"
+    numpy:
+      - "2.0"
+      - "2.1"
+      - "2.2"
+      - "2.3"
+      - "2.4"
+      - "2.5"
+  "1.17":
+    spec: "==1.17.*"
+    python:
+      - "3.11"
+      - "3.12"
+      - "3.13"
+      - "3.14"
+    numpy:
+      - "2.0"
+      - "2.1"
+      - "2.2"
+      - "2.3"
+      - "2.4"
+      - "2.5"
+  "1.18":
+    spec: "==1.18.*"
+    python:
+      # Python 3.11 support was dropped in SciPy 1.18.
+      - "3.12"
+      - "3.13"
+      - "3.14"
+      - "3.14t"
+      - "3.15"
+      - "3.15t"
+    numpy:
+      - "2.0"
+      - "2.1"
+      - "2.2"
+      - "2.3"
+      - "2.4"
+      - "2.5"
+  "pre":
+    spec: ">=0a0,<2.0"  # TODO(seberg): allow nightlies
+optuna:
+  null:
+    spec: null
+  "3":
+    spec: "==3.*"
+  "4":
+    spec: "==4.*"
+  "5":
+    spec: "==5.*"
+  "pre":
+    spec: ">=0a0"  # latest, including pre-releases
+ml_dtypes:
+  null:
+    spec: null
+  "0.5":
+    spec: "==0.5.*"
+  "pre":
+    spec: ">=0a0"  # latest, including pre-releases
+mpi4py:
+  null:
+    spec: null
+  "4":
+    spec: "==4.*"
+    python:
+      - "3.10"
+      - "3.11"
+      - "3.12"
+      - "3.13"
+      - "3.14"
+      - "3.15"
+cython:
+  "3.2":
+    spec: "==3.2.*,!=3.2.6"
+  "pre":
+    spec: ">=0a0"  # latest, including pre-releases
+cuda-python:
+  null:
+    spec: null
+  "12":
+    spec: "==12.*"
+  "13.2":
+    spec: "==13.2.*"
+  "13.3":
+    spec: "==13.3.*"
+  "13.4":
+    spec: "==13.4.*"
+nvmath-python:
+  null:
+    spec: null
+  "1":
+    spec: "==1.*"
+cuda-cccl:
+  null:
+    spec: null
+  "cu12":
+    spec: "[minimal-sysctk12]>=1.1.1,!=1.2.0"
+  "cu13":
+    spec: "[minimal-sysctk13]>=1.1.1,!=1.2.0"
+
+###############################################################################
+# Environment Variables
+###############################################################################
+env:CUPY_ACCELERATORS:
+  null:                   # Default ("cub")
+  "":                     # Disable all accelerators
+  # "cub":                # Equivalent to null
+  "cutensor":
+  "cub,cutensor":
+  "cutensor,cub":
+  "cuda_compute,cutensor,cub":
+
+###############################################################################
+# Test Variant
+###############################################################################
+test:
+  "unit":
+  "unit-multi":
+  "unit-slow":
+  "example":
+  "benchmark":

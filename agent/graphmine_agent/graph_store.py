@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import math
 import re
 import shutil
-import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, BinaryIO
 
 from jsonschema import Draft202012Validator, FormatChecker
 
@@ -48,55 +48,41 @@ class GraphStore:
         target_column: str | None = None,
         timestamp_unit: str | None = None,
     ) -> StoredFile:
-        self.database.get_session(session_id)
-        if not content:
-            raise UploadError("uploaded file is empty")
-        if len(content) > self.settings.max_upload_bytes:
-            raise UploadError(
-                f"upload exceeds {self.settings.max_upload_bytes} byte limit"
-            )
+        return self.ingest_stream(
+            session_id=session_id,
+            role=role,
+            filename=filename,
+            stream=io.BytesIO(content),
+            media_type=media_type,
+            directed=directed,
+            source_column=source_column,
+            target_column=target_column,
+            timestamp_unit=timestamp_unit,
+        )
 
+    def ingest_stream(
+        self,
+        *,
+        session_id: str,
+        role: FileRole,
+        filename: str,
+        stream: BinaryIO,
+        media_type: str | None = None,
+        directed: bool = False,
+        source_column: str | None = None,
+        target_column: str | None = None,
+        timestamp_unit: str | None = None,
+    ) -> StoredFile:
+        """Consume a caller-owned stream in bounded chunks; graphs remain in memory.
+
+        Original bytes are copied and hashed before parsing. Rejected inputs
+        leave no file record or staged source directory behind.
+        """
+        self.database.get_session(session_id)
         file_id = new_id("file")
         safe_name = _safe_name(filename)
-        digest = hashlib.sha256(content).hexdigest()
-
-        canonical_graph: dict[str, Any] | None = None
-        metadata: GraphMetadata | dict[str, Any] | None = None
-        if role in {FileRole.graph, FileRole.query_graph, FileRole.motif}:
-            canonical_graph = self._read_graph(
-                safe_name,
-                content,
-                directed=directed,
-                source_column=source_column,
-                target_column=target_column,
-            )
-            if timestamp_unit:
-                if timestamp_unit not in {"seconds", "milliseconds"}:
-                    raise UploadError(
-                        "Timestamp units must be seconds or milliseconds."
-                    )
-                canonical_graph["graph"].setdefault("attributes", {})[
-                    "timestamp_unit"
-                ] = timestamp_unit
-            self._validate_graph(canonical_graph)
-            metadata = self._metadata(file_id, canonical_graph)
-        elif role == FileRole.left_partition:
-            value = self._read_json(content)
-            if not isinstance(value, dict) or not isinstance(
-                value.get("left_partition"), list
-            ):
-                raise UploadError(
-                    'left-partition input must be {"left_partition": [...]}'
-                )
-            metadata = {"item_count": len(value["left_partition"])}
-        elif role == FileRole.updates:
-            value = self._read_json(content)
-            if not isinstance(value, dict) or not isinstance(
-                value.get("updates"), list
-            ):
-                raise UploadError('updates input must be {"updates": [...]}')
-            metadata = {"update_count": len(value["updates"])}
-
+        digest = hashlib.sha256()
+        size = 0
         directory = (
             self.settings.data_root / "sessions" / session_id / "files" / file_id
         )
@@ -107,13 +93,61 @@ class GraphStore:
             source_directory = directory / "source"
             source_directory.mkdir()
             source_path = source_directory / safe_name
-            source_path.write_bytes(content)
+            with source_path.open("xb") as destination:
+                while chunk := stream.read(
+                    min(1024 * 1024, self.settings.max_upload_bytes - size + 1)
+                ):
+                    size += len(chunk)
+                    if size > self.settings.max_upload_bytes:
+                        raise UploadError(
+                            f"upload exceeds {self.settings.max_upload_bytes} byte limit"
+                        )
+                    destination.write(chunk)
+                    digest.update(chunk)
+            if not size:
+                raise UploadError("uploaded file is empty")
+            canonical_graph: dict[str, Any] | None = None
+            metadata: GraphMetadata | dict[str, Any] | None = None
+            if role in {FileRole.graph, FileRole.query_graph, FileRole.motif}:
+                canonical_graph = self._read_graph_path(
+                    source_path,
+                    directed=directed,
+                    source_column=source_column,
+                    target_column=target_column,
+                )
+                if timestamp_unit:
+                    if timestamp_unit not in {"seconds", "milliseconds"}:
+                        raise UploadError(
+                            "Timestamp units must be seconds or milliseconds."
+                        )
+                    canonical_graph["graph"].setdefault("attributes", {})[
+                        "timestamp_unit"
+                    ] = timestamp_unit
+                self._validate_graph(canonical_graph)
+                metadata = self._metadata(file_id, canonical_graph)
+            elif role == FileRole.left_partition:
+                value = self._read_json_path(source_path)
+                if not isinstance(value, dict) or not isinstance(
+                    value.get("left_partition"), list
+                ):
+                    raise UploadError(
+                        'left-partition input must be {"left_partition": [...]}'
+                    )
+                metadata = {"item_count": len(value["left_partition"])}
+            elif role == FileRole.updates:
+                value = self._read_json_path(source_path)
+                if not isinstance(value, dict) or not isinstance(
+                    value.get("updates"), list
+                ):
+                    raise UploadError('updates input must be {"updates": [...]}')
+                metadata = {"update_count": len(value["updates"])}
             if canonical_graph is not None:
                 canonical_path = directory / "graph.json"
-                canonical_path.write_text(
-                    json.dumps(canonical_graph, ensure_ascii=False, indent=2) + "\n",
-                    encoding="utf-8",
-                )
+                with canonical_path.open("w", encoding="utf-8") as destination:
+                    json.dump(
+                        canonical_graph, destination, ensure_ascii=False, indent=2
+                    )
+                    destination.write("\n")
             record = StoredFile(
                 id=file_id,
                 session_id=session_id,
@@ -122,8 +156,8 @@ class GraphStore:
                 media_type=media_type,
                 source_path=str(source_path),
                 canonical_path=str(canonical_path) if canonical_path else None,
-                sha256=digest,
-                size_bytes=len(content),
+                sha256=digest.hexdigest(),
+                size_bytes=size,
                 metadata=metadata,
             )
             return self.database.add_file(record)
@@ -141,31 +175,38 @@ class GraphStore:
         except json.JSONDecodeError as error:
             raise UploadError(f"invalid JSON: {error}") from error
 
-    def _read_graph(
+    @staticmethod
+    def _read_json_path(path: Path) -> Any:
+        try:
+            with path.open("r", encoding="utf-8") as stream:
+                return json.load(stream)
+        except UnicodeDecodeError as error:
+            raise UploadError("JSON input must be UTF-8") from error
+        except json.JSONDecodeError as error:
+            raise UploadError(f"invalid JSON: {error}") from error
+
+    def _read_graph_path(
         self,
-        filename: str,
-        content: bytes,
+        path: Path,
         *,
         directed: bool,
         source_column: str | None = None,
         target_column: str | None = None,
     ) -> dict[str, Any]:
+        filename = path.name
         if filename.lower().endswith(".json"):
-            value = self._read_json(content)
+            value = self._read_json_path(path)
             if not isinstance(value, dict):
                 raise UploadError("canonical graph JSON must be an object")
             return value
         try:
-            with tempfile.TemporaryDirectory(prefix="graphmine-upload-") as temporary:
-                path = Path(temporary) / _safe_name(filename)
-                path.write_bytes(content)
-                return read_delimited_graph(
-                    self.settings,
-                    path,
-                    directed=directed,
-                    source_column=source_column,
-                    target_column=target_column,
-                )
+            return read_delimited_graph(
+                self.settings,
+                path,
+                directed=directed,
+                source_column=source_column,
+                target_column=target_column,
+            )
         except IngestionError as error:
             raise UploadError(str(error)) from error
 

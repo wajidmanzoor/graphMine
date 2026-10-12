@@ -1,0 +1,15 @@
+{
+  "eigen_k": 120,
+  "ratio": 0.95,
+  "epochs": 500,
+  "e1": 1,
+  "e2": 10,
+  "alpha": 0.001,
+  "beta": 1e-06,
+  "gamma": 0.1,
+  "lr_feat": 0.001,
+  "lr_eigenvec": 0.0001,
+  "lr": 0.01,
+  "weight_decay": 0.0005,
+  "dropout": 0.5
+}

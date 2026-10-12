@@ -2,20 +2,26 @@
   "problem_id": "community_detection",
   "paper_id": "2026_gleiden",
   "title": "gLeiden: Accelerated Community Detection Algorithms Using Directed and Undirected Graphs on GPUs",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": null,
-    "status": "not_available",
+    "status": "download_failed",
+    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12987761/pdf/vbaf327.pdf",
     "local_path": null,
-    "error": null
+    "error": "Response is not a PDF",
+    "checked_at": "2026-10-10T02:03:13Z"
   },
   "code": {
     "source_url": "https://github.com/Beenishgul/Leiden",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "6aacd7f8e91dbf8994ef21640355172ad1a67771",
     "license_file": null,
     "license_note": "No explicit license file detected in the repository root or one directory below it; review before redistribution.",
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "leiden.cu": "a176fc89c7cf97169635c71c3a1d236a10a91c39ae53ac5ae5e00a4bf841a594"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

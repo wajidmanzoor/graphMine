@@ -12,5 +12,12 @@
   "notes": "Code is distributed from the Georgia Tech HPC Lab's matchmaker2 project page rather than a git repository; a git clone of this URL is expected to fail and is recorded honestly rather than hidden.",
   "problem_id": "bipartite_matching_assignment",
   "problem_dir": "31_bipartite_matching_assignment",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "not_reviewed_or_no_local_source",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "paper_role": "algorithm"
 }

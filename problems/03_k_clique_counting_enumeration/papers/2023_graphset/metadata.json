@@ -1,6 +1,6 @@
 {
   "paper_id": "2023_graphset",
-  "title": "GraphSet: High-Performance Graph Mining on GPUs",
+  "title": "GraphSet: High Performance Graph Mining through Equivalent Set Transformations",
   "year": 2023,
   "venue": "SC 2023",
   "doi": "10.1145/3581784.3613213",
@@ -12,5 +12,14 @@
   "notes": "No stable author-hosted open PDF was located during this pass.",
   "problem_id": "k_clique_counting_enumeration",
   "problem_dir": "03_k_clique_counting_enumeration",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "upstream_license_present",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "gpu/gpu_clique.cu"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "framework"
 }

@@ -1,0 +1,5102 @@
+[
+  {
+    "repeat": 0,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1067.20083,
+        "backend_ms": 62.181888,
+        "output_materialization_ms": 0.001522
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.28047513961792
+  },
+  {
+    "repeat": 1,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1180.914001,
+        "backend_ms": 66.799536,
+        "output_materialization_ms": 0.001722
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3435957431793213
+  },
+  {
+    "repeat": 2,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1130.98846,
+        "backend_ms": 31.990837,
+        "output_materialization_ms": 0.001783
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3000195026397705
+  },
+  {
+    "repeat": 3,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1144.930169,
+        "backend_ms": 41.707009,
+        "output_materialization_ms": 0.001723
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3944032192230225
+  },
+  {
+    "repeat": 4,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1131.389024,
+        "backend_ms": 31.11798,
+        "output_materialization_ms": 0.001863
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2761881351470947
+  },
+  {
+    "repeat": 5,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1174.434613,
+        "backend_ms": 29.740731,
+        "output_materialization_ms": 0.001643
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3548223972320557
+  },
+  {
+    "repeat": 6,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1210.275499,
+        "backend_ms": 27.732541,
+        "output_materialization_ms": 0.001522
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3422765731811523
+  },
+  {
+    "repeat": 7,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1201.593278,
+        "backend_ms": 29.445766,
+        "output_materialization_ms": 0.001542
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.4640555381774902
+  },
+  {
+    "repeat": 8,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1034.650238,
+        "backend_ms": 44.253652,
+        "output_materialization_ms": 0.001422
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 0
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              5
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2519500255584717
+  },
+  {
+    "repeat": 9,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1153.063412,
+        "backend_ms": 43.891135,
+        "output_materialization_ms": 0.001643
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 0
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              5
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3559415340423584
+  },
+  {
+    "repeat": 10,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1046.920835,
+        "backend_ms": 48.982689,
+        "output_materialization_ms": 0.001432
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.1584861278533936
+  },
+  {
+    "repeat": 11,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1172.519102,
+        "backend_ms": 44.334645,
+        "output_materialization_ms": 0.001582
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.5112104415893555
+  },
+  {
+    "repeat": 12,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1019.016455,
+        "backend_ms": 53.454376,
+        "output_materialization_ms": 0.006339
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 0
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              5
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2984435558319092
+  },
+  {
+    "repeat": 13,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1178.320758,
+        "backend_ms": 25.655536,
+        "output_materialization_ms": 0.001603
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3963165283203125
+  },
+  {
+    "repeat": 14,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1113.983528,
+        "backend_ms": 31.821731,
+        "output_materialization_ms": 0.001813
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 0
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              4
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2368865013122559
+  },
+  {
+    "repeat": 15,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1236.034762,
+        "backend_ms": 42.657653,
+        "output_materialization_ms": 0.001302
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.4083187580108643
+  },
+  {
+    "repeat": 16,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1194.841368,
+        "backend_ms": 30.243289,
+        "output_materialization_ms": 0.001602
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3008718490600586
+  },
+  {
+    "repeat": 17,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1210.286255,
+        "backend_ms": 42.336829,
+        "output_materialization_ms": 0.001662
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.4000310897827148
+  },
+  {
+    "repeat": 18,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1174.496596,
+        "backend_ms": 92.842076,
+        "output_materialization_ms": 0.001503
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.4121489524841309
+  },
+  {
+    "repeat": 19,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1030.964976,
+        "backend_ms": 50.424344,
+        "output_materialization_ms": 0.002243
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2996792793273926
+  },
+  {
+    "repeat": 20,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1011.209313,
+        "backend_ms": 51.060564,
+        "output_materialization_ms": 0.001943
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2231395244598389
+  },
+  {
+    "repeat": 21,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1105.539674,
+        "backend_ms": 66.603269,
+        "output_materialization_ms": 0.001772
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.289599895477295
+  },
+  {
+    "repeat": 22,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 986.124508,
+        "backend_ms": 23.69636,
+        "output_materialization_ms": 0.001843
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.1447227001190186
+  },
+  {
+    "repeat": 23,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1137.002535,
+        "backend_ms": 37.025173,
+        "output_materialization_ms": 0.001673
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3360564708709717
+  },
+  {
+    "repeat": 24,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1160.586244,
+        "backend_ms": 29.871368,
+        "output_materialization_ms": 0.001643
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3198168277740479
+  },
+  {
+    "repeat": 25,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1167.742934,
+        "backend_ms": 37.497156,
+        "output_materialization_ms": 0.001612
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 0
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              4
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3111588954925537
+  },
+  {
+    "repeat": 26,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1164.1091,
+        "backend_ms": 64.717885,
+        "output_materialization_ms": 0.001902
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2927320003509521
+  },
+  {
+    "repeat": 27,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1243.369811,
+        "backend_ms": 43.147162,
+        "output_materialization_ms": 0.002374
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.378953218460083
+  },
+  {
+    "repeat": 28,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1147.115476,
+        "backend_ms": 89.865474,
+        "output_materialization_ms": 0.001483
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2763187885284424
+  },
+  {
+    "repeat": 29,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1220.036669,
+        "backend_ms": 39.421741,
+        "output_materialization_ms": 0.001412
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.4363548755645752
+  },
+  {
+    "repeat": 30,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1098.765332,
+        "backend_ms": 68.991794,
+        "output_materialization_ms": 0.001553
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2239103317260742
+  },
+  {
+    "repeat": 31,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1129.434273,
+        "backend_ms": 45.930332,
+        "output_materialization_ms": 0.002074
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2883107662200928
+  },
+  {
+    "repeat": 32,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1069.230551,
+        "backend_ms": 30.002115,
+        "output_materialization_ms": 0.001702
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2472035884857178
+  },
+  {
+    "repeat": 33,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1172.35951,
+        "backend_ms": 27.24855,
+        "output_materialization_ms": 0.001843
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2984752655029297
+  },
+  {
+    "repeat": 34,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1171.608677,
+        "backend_ms": 93.899461,
+        "output_materialization_ms": 0.001482
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 0
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              5
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3127906322479248
+  },
+  {
+    "repeat": 35,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1203.803331,
+        "backend_ms": 38.396143,
+        "output_materialization_ms": 0.001512
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 0
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              4
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.4678411483764648
+  },
+  {
+    "repeat": 36,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 955.114481,
+        "backend_ms": 34.04064,
+        "output_materialization_ms": 0.001222
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 0
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              4
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.1272046566009521
+  },
+  {
+    "repeat": 37,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1030.387824,
+        "backend_ms": 54.133331,
+        "output_materialization_ms": 0.001692
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2808678150177002
+  },
+  {
+    "repeat": 38,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1037.751647,
+        "backend_ms": 50.250361,
+        "output_materialization_ms": 0.001853
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.220353126525879
+  },
+  {
+    "repeat": 39,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1123.344072,
+        "backend_ms": 35.003644,
+        "output_materialization_ms": 0.001623
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3453896045684814
+  },
+  {
+    "repeat": 40,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1208.55377,
+        "backend_ms": 67.919956,
+        "output_materialization_ms": 0.001753
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3696162700653076
+  },
+  {
+    "repeat": 41,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1178.439906,
+        "backend_ms": 81.588403,
+        "output_materialization_ms": 0.001983
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3712284564971924
+  },
+  {
+    "repeat": 42,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 987.424409,
+        "backend_ms": 61.359196,
+        "output_materialization_ms": 0.001783
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.174990177154541
+  },
+  {
+    "repeat": 43,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1103.346584,
+        "backend_ms": 43.436979,
+        "output_materialization_ms": 0.001312
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 0
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              5
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3058927059173584
+  },
+  {
+    "repeat": 44,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1006.796723,
+        "backend_ms": 38.118334,
+        "output_materialization_ms": 0.001612
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.1438813209533691
+  },
+  {
+    "repeat": 45,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1090.981404,
+        "backend_ms": 41.867701,
+        "output_materialization_ms": 0.001522
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3327410221099854
+  },
+  {
+    "repeat": 46,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1054.964723,
+        "backend_ms": 77.158438,
+        "output_materialization_ms": 0.001393
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 0
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              5
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.305349588394165
+  },
+  {
+    "repeat": 47,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1151.250195,
+        "backend_ms": 69.538609,
+        "output_materialization_ms": 0.001593
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3834469318389893
+  },
+  {
+    "repeat": 48,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 975.82193,
+        "backend_ms": 61.727862,
+        "output_materialization_ms": 0.001753
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.114959716796875
+  },
+  {
+    "repeat": 49,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1136.332001,
+        "backend_ms": 44.796882,
+        "output_materialization_ms": 0.001602
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2698192596435547
+  },
+  {
+    "repeat": 50,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1097.090663,
+        "backend_ms": 77.056694,
+        "output_materialization_ms": 0.001692
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2315266132354736
+  },
+  {
+    "repeat": 51,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1080.163189,
+        "backend_ms": 69.217445,
+        "output_materialization_ms": 0.001513
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.212787389755249
+  },
+  {
+    "repeat": 52,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1060.616601,
+        "backend_ms": 28.378415,
+        "output_materialization_ms": 0.001412
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2532782554626465
+  },
+  {
+    "repeat": 53,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1100.55444,
+        "backend_ms": 54.382898,
+        "output_materialization_ms": 0.001683
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.260723352432251
+  },
+  {
+    "repeat": 54,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1015.500388,
+        "backend_ms": 37.865643,
+        "output_materialization_ms": 0.001462
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 0
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              5
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.1397695541381836
+  },
+  {
+    "repeat": 55,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1189.417441,
+        "backend_ms": 72.366998,
+        "output_materialization_ms": 0.001633
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.3672289848327637
+  },
+  {
+    "repeat": 56,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1237.625611,
+        "backend_ms": 39.863918,
+        "output_materialization_ms": 0.001772
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.4009716510772705
+  },
+  {
+    "repeat": 57,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1244.537471,
+        "backend_ms": 107.473336,
+        "output_materialization_ms": 0.001492
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.438704013824463
+  },
+  {
+    "repeat": 58,
+    "gpu": 0,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1111.87932,
+        "backend_ms": 49.399458,
+        "output_materialization_ms": 0.001563
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 1
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": -2.710505431213761e-20,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              4,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2324151992797852
+  },
+  {
+    "repeat": 59,
+    "gpu": 1,
+    "command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/graphmine-pggc-candidate",
+      "run",
+      "community-detection",
+      "--graph",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/validation/parameter_expansion/results/final/gpu-1-worker-3/007979-atlas-169-n6-r1.0-parallel-leiden/graph.json",
+      "--backend",
+      "parallel-leiden-plus",
+      "--resolution",
+      "1.0",
+      "--include-communities",
+      "--include-edge-cut"
+    ],
+    "passed": true,
+    "payload": {
+      "ok": true,
+      "provenance": {
+        "problem": "community_detection",
+        "backend": "parallel-leiden-plus",
+        "backend_version": "Parallel Multilevel Graph Clustering artifact",
+        "source_commit": "29c69d27ba38",
+        "execution_path": "original Kokkos parallel-leiden-plus clustering path + in-memory CSR adapter"
+      },
+      "warnings": [],
+      "statistics": {
+        "end_to_end_ms": 1154.436873,
+        "backend_ms": 60.572999,
+        "output_materialization_ms": 0.001382
+      },
+      "output": {
+        "assignment_by_vertex": [
+          {
+            "vertex": 0,
+            "community": 0
+          },
+          {
+            "vertex": 1,
+            "community": 1
+          },
+          {
+            "vertex": 2,
+            "community": 0
+          },
+          {
+            "vertex": 3,
+            "community": 1
+          },
+          {
+            "vertex": 4,
+            "community": 0
+          },
+          {
+            "vertex": 5,
+            "community": 1
+          }
+        ],
+        "community_count": 2,
+        "modularity": 0.04938271604938271,
+        "resolution": 1.0,
+        "communities": [
+          {
+            "id": 0,
+            "vertices": [
+              0,
+              2,
+              4
+            ]
+          },
+          {
+            "id": 1,
+            "vertices": [
+              1,
+              3,
+              5
+            ]
+          }
+        ],
+        "edge_cut": 4
+      }
+    },
+    "seconds": 1.2706611156463623
+  }
+]

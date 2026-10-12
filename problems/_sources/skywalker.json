@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/sjtu-SAIL-lab/Skywalker",
+  "checked_at": "2026-10-09T19:25:27Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "b12bb95d01c5feabb69699985b85a6ea3cbdc944",
+  "archive_url": "https://codeload.github.com/sjtu-SAIL-lab/Skywalker/tar.gz/b12bb95d01c5feabb69699985b85a6ea3cbdc944",
+  "archive_sha256": "2cc44daf01ff27c6ff8238913c92646b7f18e1718b1161387c755102114584d4",
+  "local_path": "skywalker-b12bb95d01c5",
+  "license_files": [],
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

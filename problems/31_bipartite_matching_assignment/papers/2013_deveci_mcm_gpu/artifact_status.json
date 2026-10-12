@@ -1,0 +1,24 @@
+{
+  "problem_id": "bipartite_matching_assignment",
+  "paper_id": "2013_deveci_mcm_gpu",
+  "title": "GPU Accelerated Maximum Cardinality Matching Algorithms for Bipartite Graphs",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1303.1379",
+    "resolved_url": "https://arxiv.org/pdf/1303.1379",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "4d8949403058a73427779116b60f2de9342939f97cd8fcf92f7d5478eb9162ec",
+    "bytes": 542392,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": "http://tda.gatech.edu/software/matchmaker2/index.html",
+    "local_path": null,
+    "error": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage.",
+    "checked_at": "2026-10-10T02:15:30Z"
+  }
+}

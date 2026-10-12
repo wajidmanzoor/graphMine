@@ -12,5 +12,14 @@
   "notes": "Dynamic-update variant; it can be evaluated for exact counts but is not a drop-in static triangle-listing implementation.",
   "problem_id": "triangle_counting_listing",
   "problem_dir": "10_triangle_counting_listing",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "blocked_no_detected_license",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "tricount.cu"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "paper_role": "algorithm"
 }

@@ -1,0 +1,29 @@
+{
+  "title": "Accelerating Graph Sampling for Graph Machine Learning using GPUs",
+  "year": 2020,
+  "venue": "arXiv; EuroSys 2021",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2009.06693",
+  "pdf_url": "https://arxiv.org/pdf/2009.06693",
+  "paper_id": "2020_nextdoor_neighbors",
+  "problem_id": "neighborhood_sampling",
+  "problem_dir": "47_neighborhood_sampling",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "NextDoor transit-parallel neighborhood sampling",
+  "code_url": "https://github.com/plasma-umass/NextDoor",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA transit-parallel k-hop and layer sampling.",
+  "notes": "Finite-fanout sampling is not exact induced ego-graph extraction. Replacement and fanout conventions must be declared.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "src/apps/khop/khop.cu",
+    "src/apps/layer/layerSampling.cu",
+    "src/sampler.cuh"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

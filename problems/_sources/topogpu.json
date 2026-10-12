@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/seravee08/GPU-Computation-of-Persistent-Homology-for-Image-Data",
+  "checked_at": "2026-10-09T19:34:07Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "0f39a80e874dda736e90432ef1b4879f728b89d3",
+  "archive_url": "https://codeload.github.com/seravee08/GPU-Computation-of-Persistent-Homology-for-Image-Data/tar.gz/0f39a80e874dda736e90432ef1b4879f728b89d3",
+  "archive_sha256": "8d58db146c4e8a26e30be04f1987f88e31ff9548afd6c8e9a4019ba0ff6cba0f",
+  "local_path": "topogpu-0f39a80e874d",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

@@ -2,20 +2,30 @@
   "problem_id": "quasi_clique_mining",
   "paper_id": "2025_cuqc",
   "title": "GPU-Accelerated Maximal Quasi-Clique Mining",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://kokofan16.github.io/assets/papers/bigdata-2025.pdf",
     "status": "downloaded",
+    "source_url": "https://kokofan16.github.io/assets/papers/bigdata-2025.pdf",
+    "resolved_url": "https://kokofan16.github.io/assets/papers/bigdata-2025.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "18dfca85396d9adfe3b899c7bb4662c6df1afaf90eaebf9c3102a8f8b9885f67",
+    "bytes": 592750,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/Mike12041204/cuQC",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "e3785db225f2730898c2b316a4fcc06516b16c06",
     "license_file": "code/LICENSE.md",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "main.cu": "64c5414e0536214d24ef276856d1407cabbeb4922c4aaf96df82ce1276087f56"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

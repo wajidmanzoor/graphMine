@@ -1,0 +1,30 @@
+{
+  "problem_id": "graph_signal_denoising",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2014_gtf_admm",
+      "algorithm_name": "Graph trend filtering via specialized ADMM",
+      "metadata": "59_graph_signal_denoising/papers/2014_gtf_admm/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2014_gtf_projected_newton",
+      "algorithm_name": "Graph trend filtering via projected Newton",
+      "metadata": "59_graph_signal_denoising/papers/2014_gtf_projected_newton/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2014_gunrock_sparse_fused_lasso",
+      "algorithm_name": "Gunrock max-flow-based sparse fused lasso",
+      "metadata": "59_graph_signal_denoising/papers/2014_gunrock_sparse_fused_lasso/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

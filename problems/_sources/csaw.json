@@ -1,0 +1,15 @@
+{
+  "source_url": "https://github.com/concept-inversion/C-SAW",
+  "checked_at": "2026-10-09T19:25:20Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "d91ff3ac896a90a3ea7b71e9251d5e79f67f8c6c",
+  "archive_url": "https://codeload.github.com/concept-inversion/C-SAW/tar.gz/d91ff3ac896a90a3ea7b71e9251d5e79f67f8c6c",
+  "archive_sha256": "e4e2c7e9af66de75e9cab903540bc8e07ca085cfd111487e73e5c38aa165341f",
+  "local_path": "csaw-d91ff3ac896a",
+  "license_files": [],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

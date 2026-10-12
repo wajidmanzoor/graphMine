@@ -1,0 +1,37 @@
+{
+  "title": "Fast Graph Representation Learning with PyTorch Geometric",
+  "authors": null,
+  "year": 2019,
+  "venue": "ICLR 2019 workshop",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1903.02428",
+  "pdf_url": "https://arxiv.org/pdf/1903.02428",
+  "paper_id": "2019_torch_cluster_knn",
+  "problem_id": "knn_graph_construction",
+  "problem_dir": "64_knn_graph_construction",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "PyTorch Cluster kNN graph",
+  "code_url": "https://github.com/rusty1s/pytorch_cluster",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA kNN kernel selected for CUDA-resident tensors.",
+  "notes": "CUDA nearest-neighbor graph operator used by the PyG ecosystem. Respect the pinned kernel k limit, batch partitioning, distance convention and self-loop flag.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "torch_cluster/knn.py",
+    "csrc/cuda/knn_cuda.cu"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "torch_cluster",
+  "variant_constraints": [
+    "supported k bound",
+    "explicit distance convention"
+  ],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

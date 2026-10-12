@@ -1,0 +1,25 @@
+{
+  "problem_id": "group_steiner_tree",
+  "paper_id": "2022_gpu_vlsi_gst",
+  "title": "GPU-Accelerated VLSI Routing using Group Steiner Trees",
+  "checked_at": "2026-10-10T02:15:30Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://jocse.org/downloads/jocse-8-1-4.pdf",
+    "resolved_url": "https://jocse.org/downloads/jocse-8-1-4.pdf",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-10T02:15:30Z",
+    "sha256": "c1b6d5637c50f53b63f6d65c2f03616b636b08e45282664d8d440d898f30fb50",
+    "bytes": 1175361,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_collected",
+    "source_url": "https://github.com/yosephbasileal/group-steiner-vlsi-routing-gpu",
+    "local_path": null,
+    "error": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made.",
+    "checked_at": "2026-10-10T02:15:30Z",
+    "existing_workspace_source_reference": "/home/wajid/projects/graphDatabaseAgent/problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/code"
+  }
+}

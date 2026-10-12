@@ -1,0 +1,33 @@
+{
+  "family": "hypergraph",
+  "gpu": "0",
+  "cases": 400,
+  "passed": 355,
+  "failed": 45,
+  "startup_error": null,
+  "by_backend": {
+    "dhg-hgnn": {
+      "passed": 100,
+      "failed": 0,
+      "scope": "Upstream model forward/backward, finite logits and gradients; HGNN/HNHN CPU parity; no training/generalization claim"
+    },
+    "dhg-hnhn": {
+      "passed": 100,
+      "failed": 0,
+      "scope": "Upstream model forward/backward, finite logits and gradients; HGNN/HNHN CPU parity; no training/generalization claim"
+    },
+    "dhg-hypergcn": {
+      "passed": 55,
+      "failed": 45,
+      "scope": "Upstream model forward/backward, finite logits and gradients; HGNN/HNHN CPU parity; no training/generalization claim"
+    },
+    "dhg-hgnn-formula": {
+      "passed": 100,
+      "failed": 0,
+      "scope": "Independent dense NumPy incidence-matrix formula for HGNN convolution"
+    }
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "numpy": "1.26.4",
+  "script_sha256": "3f7b12d8ab8f95f3efbae3707b1c82d4a124cccc1bd7779beb6e909d4a4f1a26"
+}

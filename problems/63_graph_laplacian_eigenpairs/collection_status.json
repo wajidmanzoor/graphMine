@@ -1,0 +1,77 @@
+{
+  "problem_id": "graph_laplacian_eigenpairs",
+  "problem_dir": "63_graph_laplacian_eigenpairs",
+  "name": "Graph Laplacian Eigenpairs",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "target_algorithms": 3,
+  "entries": 3,
+  "local_gpu_code_entries": 3,
+  "local_paper_entries": 3,
+  "local_gpu_code_and_paper_including_related": 3,
+  "eligible_code_and_paper_references": 3,
+  "eligible_local_code_and_paper_pairs": 3,
+  "target_met": true,
+  "shortfall": 0,
+  "shortfall_explanation": null,
+  "limitation_notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility.",
+  "build_status": "not_tested",
+  "runtime_status": "not_tested",
+  "canonical_adapters": 0,
+  "legacy_records_not_reclassified": 0,
+  "legacy_records_reviewed": 0,
+  "research_coverage": {
+    "method": "Problem-contract audit against pinned library implementations, existing author artifacts and targeted publication/repository searches.",
+    "sources_reviewed": [
+      "cupy"
+    ],
+    "shortfall": "Fewer than three eligible local GPU implementation/research-paper pairs; individual records state missing artifacts or variant restrictions.",
+    "notes": "A matching input variant can qualify without supporting every optional mode. Missing canonical adapters and absent runtime validation remain separate from research collection eligibility."
+  },
+  "algorithms": [
+    {
+      "paper_id": "2017_cupy_dense_eigh",
+      "algorithm_name": "CuPy Dense Hermitian eigensolver",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Apply the upstream eigensolver to the explicitly constructed symmetric graph Laplacian. These are three numerical algorithms sharing the CuPy framework paper, not three graph-specific publications. Laplacian assembly and canonical output conversion are adapter requirements; verify residuals and nullspace multiplicity.",
+      "metadata_path": "63_graph_laplacian_eigenpairs/papers/2017_cupy_dense_eigh/metadata.json"
+    },
+    {
+      "paper_id": "2017_cupy_lanczos",
+      "algorithm_name": "CuPy Sparse Lanczos eigsh",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Apply the upstream eigensolver to the explicitly constructed symmetric graph Laplacian. These are three numerical algorithms sharing the CuPy framework paper, not three graph-specific publications. Laplacian assembly and canonical output conversion are adapter requirements; verify residuals and nullspace multiplicity.",
+      "metadata_path": "63_graph_laplacian_eigenpairs/papers/2017_cupy_lanczos/metadata.json"
+    },
+    {
+      "paper_id": "2017_cupy_lobpcg",
+      "algorithm_name": "CuPy Block LOBPCG",
+      "paper_role": "framework",
+      "semantic_fit": "variant",
+      "local_gpu_code": true,
+      "local_paper": true,
+      "counts_toward_three": true,
+      "has_upstream_code_and_verified_paper_reference": true,
+      "legacy_record": false,
+      "legacy_eligibility_not_reclassified": false,
+      "runtime_status": "not_tested",
+      "notes": "Apply the upstream eigensolver to the explicitly constructed symmetric graph Laplacian. These are three numerical algorithms sharing the CuPy framework paper, not three graph-specific publications. Laplacian assembly and canonical output conversion are adapter requirements; verify residuals and nullspace multiplicity.",
+      "metadata_path": "63_graph_laplacian_eigenpairs/papers/2017_cupy_lobpcg/metadata.json"
+    }
+  ]
+}

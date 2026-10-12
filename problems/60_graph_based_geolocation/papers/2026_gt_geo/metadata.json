@@ -1,0 +1,29 @@
+{
+  "title": "Sparsity is not an obstacle: An accurate and efficient IP geolocation framework based on Graph Transformer",
+  "year": 2026,
+  "venue": "Computer Networks",
+  "doi": "10.1016/j.comnet.2026.112287",
+  "publication_url": "https://doi.org/10.1016/j.comnet.2026.112287",
+  "pdf_url": "https://www.sciencedirect.com/science/article/pii/S1389128626002999/pdfft",
+  "paper_id": "2026_gt_geo",
+  "problem_id": "graph_based_geolocation",
+  "problem_dir": "60_graph_based_geolocation",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GT-Geo graph-transformer geolocation",
+  "code_url": "https://github.com/LuckyBoy0517/GT-Geo",
+  "semantic_fit": "variant",
+  "gpu_scope": "PyTorch CUDA graph-transformer training for IP-network geolocation.",
+  "notes": "Source downloaded and publication verified; publisher PDF request failed. One-/two-/three-layer configurations count as one algorithm.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "1GT/main_split_version.py",
+    "1GT/models.py",
+    "1GT/ours.py"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

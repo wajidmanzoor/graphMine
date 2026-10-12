@@ -32,7 +32,11 @@ const problemDirectories = fs
 
 const problemSources = problemDirectories.map((directory) => {
   const source = `problems/${directory}/problem.json`;
-  return { source, spec: readJson(source) };
+  const collectionSource = `problems/${directory}/collection_status.json`;
+  const collection = fs.existsSync(path.join(repositoryRoot, collectionSource))
+    ? readJson(collectionSource)
+    : null;
+  return { source, spec: readJson(source), collection, collectionSource };
 });
 
 const intentSignals = {
@@ -367,7 +371,7 @@ for (const operation of operations) {
   operationsByProblem.set(operation.research_problem_id, entries);
 }
 
-const problems = problemSources.map(({ source, spec }) => {
+const problems = problemSources.map(({ source, spec, collection, collectionSource }) => {
   const problemOperations = operationsByProblem.get(spec.problem_id) || [];
   const validationWorkloads = workloadsByProblem.get(spec.problem_id) || [];
   const validatedBackendCount = problemOperations.reduce(
@@ -383,7 +387,18 @@ const problems = problemSources.map(({ source, spec }) => {
 
   return {
     source,
-    intent_signals: intentSignals[spec.problem_id] || expansion.intent_signals[spec.problem_id] || [],
+    intent_signals: intentSignals[spec.problem_id] || expansion.intent_signals[spec.problem_id] ||
+      spec.intent_signals || [spec.name.toLowerCase(), spec.problem_id.replaceAll("_", " ")],
+    ...(collection ? {
+      research_collection: {
+        source: collectionSource,
+        algorithm_records: collection.entries,
+        local_gpu_source_entries: collection.local_gpu_code_entries,
+        local_paper_entries: collection.local_paper_entries,
+        eligible_local_pairs: collection.eligible_local_code_and_paper_pairs,
+        collection_target_met: collection.target_met,
+      },
+    } : {}),
     library_support: {
       available,
       status: available ? "validated" : "no_validated_backend",
@@ -394,7 +409,10 @@ const problems = problemSources.map(({ source, spec }) => {
         ? (profiles.length
           ? "Only the listed profiles are executable; broader research modes remain unsupported."
           : "At least one implementation passed the GPU correctness validation and is exposed by GraphMine.")
-        : (screening.length
+        : (collection?.entries
+          ? `${collection.entries} research/implementation records are cataloged, including ${collection.eligible_local_code_and_paper_pairs} eligible local source-and-paper pairs. No implementation is exposed as a validated GraphMine backend for this problem.` +
+            (screening.length ? ` Prior implementation screening: ${screening.map((entry) => `${entry.paper_id}: ${entry.note}`).join(" ")}` : "")
+          : screening.length
           ? screening.map((entry) => `${entry.paper_id}: ${entry.note}`).join(" ")
           : (expansion.intent_signals[spec.problem_id]
             ? "No local paper/code artifact is cataloged for this definition, so there is no implementation to validate or execute."

@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/chenxuhao/gardenia",
+  "checked_at": "2026-10-09T19:25:11Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "5894df11cf47f8839945edadff43dc79e260216d",
+  "archive_url": "https://codeload.github.com/chenxuhao/gardenia/tar.gz/5894df11cf47f8839945edadff43dc79e260216d",
+  "archive_sha256": "bed3ee9a615c3bd275a1b5f14e8002228973b0fc4fc74619fc15e4d83972b4f8",
+  "local_path": "gardenia-5894df11cf47",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": true,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

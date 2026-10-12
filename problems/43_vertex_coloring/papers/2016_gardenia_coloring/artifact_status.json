@@ -1,0 +1,33 @@
+{
+  "problem_id": "vertex_coloring",
+  "paper_id": "2016_gardenia_coloring",
+  "title": "Efficient and High-quality Sparse Graph Coloring on the GPU",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1606.06025",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:30:56Z",
+    "sha256": "879fc9049b1c819779d2dc86cbbaac84f3723a62a83cf3e4a00e5b5b425b297b",
+    "bytes": 551682,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "downloaded_archive",
+    "source_url": "https://github.com/chenxuhao/gardenia",
+    "local_path": "code",
+    "commit": "5894df11cf47f8839945edadff43dc79e260216d",
+    "license_file": "code/LICENSE",
+    "license_note": "See upstream license and third-party notices.",
+    "error": null,
+    "build_status": "not_tested",
+    "runtime_status": "not_tested",
+    "source_manifest": "../../../_sources/gardenia.json",
+    "submodules_materialized": false,
+    "entrypoint_sha256": {
+      "src/vc/linear_bitset.cu": "504d0d7282bc5617a8af9240f84bd39b5fe6f23493e334f094733f78ad410ea1",
+      "src/vc/topo_bitset.cu": "5fca1dd6c9ce6d8b8cba747188fbf8cadae4dbe26e750466294cbe4259376b25"
+    }
+  }
+}

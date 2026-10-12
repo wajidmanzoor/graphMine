@@ -1,0 +1,46 @@
+{
+  "problem_id": "maximal_independent_set",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2016_lonestargpu_mis",
+      "algorithm_name": "LonestarGPU priority-based MIS",
+      "metadata": "42_maximal_independent_set/papers/2016_lonestargpu_mis/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_ecl_mis",
+      "algorithm_name": "ECL-MIS degree-prioritized asynchronous MIS",
+      "metadata": "42_maximal_independent_set/papers/2018_ecl_mis/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_mis",
+      "algorithm_name": "GraphBLAST randomized MIS",
+      "metadata": "42_maximal_independent_set/papers/2019_graphblast_mis/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_mg_mis",
+      "algorithm_name": "MG-MIS",
+      "metadata": "42_maximal_independent_set/papers/2025_mg_mis/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_mis",
+      "algorithm_name": "cuGraph Maximal independent set",
+      "metadata": "42_maximal_independent_set/papers/2026_cugraph_mis/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "problem_id": "single_source_shortest_paths",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2017_gardenia_delta_stepping",
+      "algorithm_name": "GARDENIA delta-stepping SSSP",
+      "metadata": "39_single_source_shortest_paths/papers/2017_gardenia_delta_stepping/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2017_gunrock_sssp",
+      "algorithm_name": "Gunrock frontier-based weighted relaxation",
+      "metadata": "39_single_source_shortest_paths/papers/2017_gunrock_sssp/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2018_hornet_sssp",
+      "algorithm_name": "Hornet SSSP",
+      "metadata": "39_single_source_shortest_paths/papers/2018_hornet_sssp/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_graphblast_sssp",
+      "algorithm_name": "GraphBLAST min-plus SSSP",
+      "metadata": "39_single_source_shortest_paths/papers/2019_graphblast_sssp/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_cugraph_sssp",
+      "algorithm_name": "cuGraph Single-source shortest paths",
+      "metadata": "39_single_source_shortest_paths/papers/2026_cugraph_sssp/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

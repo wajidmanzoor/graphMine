@@ -1,0 +1,17 @@
+{
+  "source_url": "https://github.com/DeepGraphLearning/graphvite",
+  "checked_at": "2026-10-09T19:25:18Z",
+  "status": "downloaded",
+  "error": null,
+  "commit": "5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc",
+  "archive_url": "https://codeload.github.com/DeepGraphLearning/graphvite/tar.gz/5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc",
+  "archive_sha256": "a51393f2713780ae788fe37126e998880cb1525ae6ea8ce3f21169ba5e319706",
+  "local_path": "graphvite-5aad6dcc5e63",
+  "license_files": [
+    "LICENSE"
+  ],
+  "submodules_present": false,
+  "submodules_materialized": false,
+  "build_status": "not_tested",
+  "runtime_status": "not_tested"
+}

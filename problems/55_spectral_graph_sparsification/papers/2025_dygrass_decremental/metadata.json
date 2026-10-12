@@ -1,0 +1,29 @@
+{
+  "title": "dyGRASS: Dynamic Spectral Graph Sparsification via Localized Random Walks on GPUs",
+  "year": 2025,
+  "venue": "ICCAD 2025",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/2505.02741",
+  "pdf_url": "https://arxiv.org/pdf/2505.02741",
+  "paper_id": "2025_dygrass_decremental",
+  "problem_id": "spectral_graph_sparsification",
+  "problem_dir": "55_spectral_graph_sparsification",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "dyGRASS decremental spectral sparsifier updates",
+  "code_url": "https://github.com/Feng-Research/dyGRASS",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA localized random walks for edge-deletion updates.",
+  "notes": "Deletion-specific algorithm in the same paper as incremental dyGRASS. Use the dynamic-update mode with an initial sparsifier and deletion updates; preprocessing and spectral analysis include CPU stages.",
+  "paper_role": "algorithm",
+  "code_entrypoints": [
+    "random_walk_decremental/main.cu",
+    "random_walk_decremental/functions.cpp",
+    "dyGRASS.jl"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

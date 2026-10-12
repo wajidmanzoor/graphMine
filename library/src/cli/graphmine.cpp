@@ -1000,7 +1000,8 @@ json::object community_output(
   }
   json::object result{{"assignment_by_vertex", std::move(assignments)},
                       {"community_count", output.community_count},
-                      {"modularity", output.modularity}};
+                      {"modularity", output.modularity},
+                      {"resolution", output.resolution}};
   if (output.communities) {
     json::array communities;
     for (const auto& community : *output.communities) {
@@ -1396,6 +1397,8 @@ json::object run_temporal_motifs(Arguments& arguments,
 json::object run_community_detection(Arguments& arguments,
                                      const CommonOptions& common) {
   graphmine::CommunityDetectionOptions options;
+  if (auto value = arguments.optional("resolution"))
+    options.resolution = parse_double(*value, "resolution");
   options.backend = parse_backend<graphmine::CommunityDetectionBackend>(
       common.backend,
       {{"auto", graphmine::CommunityDetectionBackend::automatic},
@@ -1497,9 +1500,11 @@ json::object run_repaired(const std::string& operation, Arguments& arguments, co
     });
   }
   if(operation=="densest-subgraph") {
-    expansion_backend(common,"cds");graphmine::DensestSubgraphOptions options;isolated_options(options,arguments,common);arguments.finish();
+    expansion_backend(common,"cds");graphmine::DensestSubgraphOptions options;isolated_options(options,arguments,common);
+    if(auto value=arguments.optional("clique-order"))options.clique_order=parse_integer<std::uint32_t>(*value,"clique-order",2);
+    arguments.finish();
     auto result=graphmine::DensestSubgraph(options).run(graph);
-    return result_json(result,common.execution.collect_statistics,[](const graphmine::DensestSubgraphOutput& out){return json::object{{"vertices",ids_json(out.vertices)},{"density",out.density},{"induced_edge_value",out.induced_edge_value},{"optimal",out.optimal}};});
+    return result_json(result,common.execution.collect_statistics,[](const graphmine::DensestSubgraphOutput& out){return json::object{{"vertices",ids_json(out.vertices)},{"density",out.density},{"induced_edge_value",out.induced_edge_value},{"clique_order",out.clique_order},{"clique_count",out.clique_count},{"optimal",out.optimal}};});
   }
   if(operation=="maximal-biclique-counting") {
     expansion_backend(common,"mbe-gpu");graphmine::MaximalBicliqueCountingOptions options;isolated_options(options,arguments,common);arguments.finish();
@@ -1545,7 +1550,7 @@ struct OperationDescriptor {
 const std::vector<OperationDescriptor>& operations() {
   static const std::vector<OperationDescriptor> values = {
       {"k-truss","k_truss_decomposition","graphmine run k-truss --graph GRAPH.json [--backend acctd]",graphmine::KTruss::backends},
-      {"densest-subgraph","densest_subgraph","graphmine run densest-subgraph --graph GRAPH.json [--backend cds]",graphmine::DensestSubgraph::backends},
+      {"densest-subgraph","densest_subgraph","graphmine run densest-subgraph --graph GRAPH.json [--backend cds] [--clique-order K]",graphmine::DensestSubgraph::backends},
       {"maximal-biclique-counting","maximal_biclique_enumeration","graphmine run maximal-biclique-counting --graph GRAPH.json [--backend mbe-gpu] (count only; attributes.side = left|right)",graphmine::MaximalBicliqueCounting::backends},
       {"personalized-pagerank","personalized_pagerank_rwr","graphmine run personalized-pagerank --graph GRAPH.json --seed-vertex ID --top-k N --restart-probability 0.2 [--epsilon 0.01] [--random-seed N]",graphmine::PersonalizedPageRank::backends},
       {"group-steiner-tree","group_steiner_tree","graphmine run group-steiner-tree --graph GRAPH.json --groups '[[ID,...],...]' [--backend gpu4gst]",graphmine::GroupSteinerTree::backends},
@@ -1618,7 +1623,7 @@ const std::vector<OperationDescriptor>& operations() {
       {"community-detection", "community_detection",
        "graphmine run community-detection --graph GRAPH.json [--backend "
        "auto|gleiden|parallel-louvain|parallel-leiden|parallel-leiden-plus] "
-       "[--include-communities] [--include-edge-cut]",
+       "[--resolution R] [--include-communities] [--include-edge-cut]",
        graphmine::CommunityDetection::backends},
       {"betweenness-centrality", "centrality_influential_node_mining",
        "graphmine run betweenness-centrality --graph GRAPH.json "

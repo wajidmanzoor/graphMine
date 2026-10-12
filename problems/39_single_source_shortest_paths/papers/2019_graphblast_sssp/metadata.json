@@ -1,0 +1,27 @@
+{
+  "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+  "year": 2019,
+  "venue": "arXiv; later published in ACM TOPC",
+  "doi": null,
+  "publication_url": "https://arxiv.org/abs/1908.01407",
+  "pdf_url": "https://arxiv.org/pdf/1908.01407",
+  "paper_id": "2019_graphblast_sssp",
+  "problem_id": "single_source_shortest_paths",
+  "problem_dir": "39_single_source_shortest_paths",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "GraphBLAST min-plus SSSP",
+  "code_url": "https://github.com/gunrock/graphblast",
+  "semantic_fit": "variant",
+  "gpu_scope": "CUDA min-plus sparse linear algebra.",
+  "notes": "Check stopping criteria and distance dtype; this contract excludes negative edge weights.",
+  "paper_role": "framework",
+  "code_entrypoints": [
+    "graphblas/algorithm/sssp.hpp"
+  ],
+  "documentation_urls": [],
+  "counts_toward_three": true,
+  "has_upstream_code_and_verified_paper_reference": true,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": []
+}

@@ -1,0 +1,30 @@
+{
+  "problem_id": "maximal_biclique_enumeration",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2023_efficient_mbe_gpus",
+      "algorithm_name": "Efficient Maximal Biclique Enumeration on GPUs",
+      "metadata": "09_maximal_biclique_enumeration/papers/2023_efficient_mbe_gpus/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2024_cumbe",
+      "algorithm_name": "cuMBE: GPU-Accelerated Maximal Biclique Enumeration",
+      "metadata": "09_maximal_biclique_enumeration/papers/2024_cumbe/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2025_advanced_mbe_gpu_bitmaps",
+      "algorithm_name": "Advanced Maximal Biclique Enumeration on GPUs Using Bitmaps",
+      "metadata": "09_maximal_biclique_enumeration/papers/2025_advanced_mbe_gpu_bitmaps/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    }
+  ]
+}

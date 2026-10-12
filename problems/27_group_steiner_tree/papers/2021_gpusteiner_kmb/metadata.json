@@ -7,10 +7,20 @@
   "publication_url": "https://doi.org/10.1007/s10766-021-00723-0",
   "pdf_url": null,
   "code_url": "https://github.com/mrprajesh/gpuSteiner",
-  "semantic_fit": "variant",
+  "semantic_fit": "restricted_domain",
   "gpu_scope": "GPU-parallelized KMB 2-approximation algorithm for the classic (single-group-per-terminal) Steiner Tree Problem in Graphs.",
   "notes": "Regular Steiner tree is the special case of group Steiner tree where every group is a singleton; a reproducibility artifact is also archived at https://zenodo.org/records/4477087.",
   "problem_id": "group_steiner_tree",
   "problem_dir": "27_group_steiner_tree",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "collection_variant_note": "Ordinary terminal Steiner tree covers the singleton-group special case, not unrestricted group Steiner tree.",
+  "redistribution_status": "upstream_license_present",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [
+    "gpuSteiner6-oddAgainWithKtimer2Sh3.cu"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "paper_role": "algorithm"
 }

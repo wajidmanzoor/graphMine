@@ -2,20 +2,30 @@
   "problem_id": "maximum_clique",
   "paper_id": "2024_maximum_clique_many_core_gpu",
   "title": "Efficiently Computing Maximum Clique of Sparse Graphs with Many-Core Graphical Processing Units",
-  "checked_at": "2026-09-30T16:43:19Z",
+  "checked_at": "2026-10-10T02:15:29Z",
   "paper": {
-    "source_url": "https://www.scitepress.org/Papers/2024/128527/128527.pdf",
     "status": "downloaded",
+    "source_url": "https://www.scitepress.org/Papers/2024/128527/128527.pdf",
+    "resolved_url": "https://www.scitepress.org/Papers/2024/128527/128527.pdf",
     "local_path": "paper.pdf",
-    "error": null
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "sha256": "8bee743e0ad69eb45db7a8abad607266d89ce7a60873a7e2215fc7b4bf465aa2",
+    "bytes": 342682,
+    "pdfinfo_valid": true
   },
   "code": {
     "source_url": "https://github.com/stefanoquer/Maximum-Clique-on-GPU",
-    "status": "cloned",
+    "status": "present",
     "local_path": "code",
     "commit": "62708c588219cc4d176ef55bbce9e5a21ad8c6d2",
     "license_file": "code/LICENSE",
     "license_note": null,
-    "error": null
-  }
+    "error": null,
+    "checked_at": "2026-10-10T02:15:29Z",
+    "entrypoint_sha256": {
+      "src/main.cu": "12db3fb30a5aebdb7ad0dae1708c32f891d4c8b384356421d85e4c00f0dc536e"
+    }
+  },
+  "subsequent_runtime_validation": "runtime_validation.json"
 }

@@ -1,0 +1,326 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2022-2026, NVIDIA CORPORATION.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#pragma once
+
+#include <cugraph_c/array.h>
+#include <cugraph_c/error.h>
+#include <cugraph_c/graph.h>
+#include <cugraph_c/graph_functions.h>
+#include <cugraph_c/resource_handle.h>
+
+/** @defgroup similarity Similarity algorithms
+ */
+
+#include <cugraph_c/export.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief       Opaque similarity result type
+ */
+typedef struct {
+  int32_t align_;
+} cugraph_similarity_result_t;
+
+/**
+ * @ingroup similarity
+ * @brief       Get vertex pair from the similarity result.
+ *
+ * @param [in]     result   The result from a similarity algorithm
+ * @return vertex pairs
+ */
+CUGRAPH_EXPORT cugraph_vertex_pairs_t* cugraph_similarity_result_get_vertex_pairs(
+  cugraph_similarity_result_t* result);
+
+/**
+ * @ingroup similarity
+ * @brief       Get the similarity coefficient array
+ *
+ * @param [in]     result   The result from a similarity algorithm
+ * @return type erased array of similarity coefficients
+ */
+CUGRAPH_EXPORT cugraph_type_erased_device_array_view_t* cugraph_similarity_result_get_similarity(
+  cugraph_similarity_result_t* result);
+
+/**
+ * @ingroup similarity
+ * @brief     Free similarity result
+ *
+ * @param [in]    result    The result from a similarity algorithm
+ */
+CUGRAPH_EXPORT void cugraph_similarity_result_free(cugraph_similarity_result_t* result);
+
+/**
+ * @brief     Perform Jaccard similarity computation
+ *
+ * Compute the similarity for the specified vertex_pairs
+ *
+ * Note that Jaccard similarity must run on a symmetric graph.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in]  graph        Pointer to graph
+ * @param [in]  vertex_pairs Vertex pair for input
+ * @param [in]  use_weight   If true consider the edge weight in the graph, if false use an
+ *                           edge weight of 1
+ * @param [in]  do_expensive_check A flag to run expensive checks for input arguments (if set to
+ * `true`).
+ * @param [out] result       Opaque pointer to similarity results
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_jaccard_coefficients(const cugraph_resource_handle_t* handle,
+                             cugraph_graph_t* graph,
+                             const cugraph_vertex_pairs_t* vertex_pairs,
+                             bool_t use_weight,
+                             bool_t do_expensive_check,
+                             cugraph_similarity_result_t** result,
+                             cugraph_error_t** error);
+
+/**
+ * @brief     Perform Sorensen similarity computation
+ *
+ * Compute the similarity for the specified vertex_pairs
+ *
+ * Note that Sorensen similarity must run on a symmetric graph.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in]  graph        Pointer to graph
+ * @param [in]  vertex_pairs Vertex pair for input
+ * @param [in]  use_weight   If true consider the edge weight in the graph, if false use an
+ *                           edge weight of 1
+ * @param [in]  do_expensive_check A flag to run expensive checks for input arguments (if set to
+ * `true`).
+ * @param [out] result       Opaque pointer to similarity results
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_sorensen_coefficients(const cugraph_resource_handle_t* handle,
+                              cugraph_graph_t* graph,
+                              const cugraph_vertex_pairs_t* vertex_pairs,
+                              bool_t use_weight,
+                              bool_t do_expensive_check,
+                              cugraph_similarity_result_t** result,
+                              cugraph_error_t** error);
+
+/**
+ * @brief     Perform overlap similarity computation
+ *
+ * Compute the similarity for the specified vertex_pairs
+ *
+ * Note that overlap similarity must run on a symmetric graph.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in]  graph        Pointer to graph
+ * @param [in]  vertex_pairs Vertex pair for input
+ * @param [in]  use_weight   If true consider the edge weight in the graph, if false use an
+ *                           edge weight of 1
+ * @param [in]  do_expensive_check A flag to run expensive checks for input arguments (if set to
+ * `true`).
+ * @param [out] result       Opaque pointer to similarity results
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_overlap_coefficients(const cugraph_resource_handle_t* handle,
+                             cugraph_graph_t* graph,
+                             const cugraph_vertex_pairs_t* vertex_pairs,
+                             bool_t use_weight,
+                             bool_t do_expensive_check,
+                             cugraph_similarity_result_t** result,
+                             cugraph_error_t** error);
+
+/**
+ * @brief     Perform cosine similarity computation
+ *
+ * Compute the similarity for the specified vertex_pairs
+ *
+ * Note that cosine similarity must run on a symmetric graph.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in]  graph        Pointer to graph
+ * @param [in]  vertex_pairs Vertex pair for input
+ * @param [in]  use_weight   If true consider the edge weight in the graph, if false use an
+ *                           edge weight of 1
+ * @param [in]  do_expensive_check A flag to run expensive checks for input arguments (if set to
+ * `true`).
+ * @param [out] result       Opaque pointer to similarity results
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_cosine_similarity_coefficients(const cugraph_resource_handle_t* handle,
+                                       cugraph_graph_t* graph,
+                                       const cugraph_vertex_pairs_t* vertex_pairs,
+                                       bool_t use_weight,
+                                       bool_t do_expensive_check,
+                                       cugraph_similarity_result_t** result,
+                                       cugraph_error_t** error);
+
+/**
+ * @brief     Perform All-Pairs Jaccard similarity computation
+ *
+ * Compute the similarity for all vertex pairs derived from the two-hop neighbors
+ * of an optional specified vertex list.  This function will identify the two-hop
+ * neighbors of the specified vertices (all vertices in the graph if not specified)
+ * and compute similarity for those vertices.
+ *
+ * If the topk parameter is specified then the result will only contain the top k
+ * highest scoring results.
+ *
+ * Note that Jaccard similarity must run on a symmetric graph.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in]  graph        Pointer to graph
+ * @param [in]  vertices     Vertex list for input.  If null then compute based on
+ *                           all vertices in the graph.
+ * @param [in]  use_weight   If true consider the edge weight in the graph, if false use an
+ *                           edge weight of 1
+ * @param [in]  topk         Specify how many answers to return.  Specifying SIZE_MAX
+ *                           will return all values.
+ * @param [in]  do_expensive_check A flag to run expensive checks for input arguments (if set to
+ * `true`).
+ * @param [out] result       Opaque pointer to similarity results
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_all_pairs_jaccard_coefficients(const cugraph_resource_handle_t* handle,
+                                       cugraph_graph_t* graph,
+                                       const cugraph_type_erased_device_array_view_t* vertices,
+                                       bool_t use_weight,
+                                       size_t topk,
+                                       bool_t do_expensive_check,
+                                       cugraph_similarity_result_t** result,
+                                       cugraph_error_t** error);
+
+/**
+ * @brief     Perform All Pairs Sorensen similarity computation
+ *
+ * Compute the similarity for all vertex pairs derived from the two-hop neighbors
+ * of an optional specified vertex list.  This function will identify the two-hop
+ * neighbors of the specified vertices (all vertices in the graph if not specified)
+ * and compute similarity for those vertices.
+ *
+ * If the topk parameter is specified then the result will only contain the top k
+ * highest scoring results.
+ *
+ * Note that Sorensen similarity must run on a symmetric graph.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in]  graph        Pointer to graph
+ * @param [in]  vertices     Vertex list for input.  If null then compute based on
+ *                           all vertices in the graph.
+ * @param [in]  use_weight   If true consider the edge weight in the graph, if false use an
+ *                           edge weight of 1
+ * @param [in]  topk         Specify how many answers to return.  Specifying SIZE_MAX
+ *                           will return all values.
+ * @param [in]  do_expensive_check A flag to run expensive checks for input arguments (if set to
+ * `true`).
+ * @param [out] result       Opaque pointer to similarity results
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_all_pairs_sorensen_coefficients(const cugraph_resource_handle_t* handle,
+                                        cugraph_graph_t* graph,
+                                        const cugraph_type_erased_device_array_view_t* vertices,
+                                        bool_t use_weight,
+                                        size_t topk,
+                                        bool_t do_expensive_check,
+                                        cugraph_similarity_result_t** result,
+                                        cugraph_error_t** error);
+
+/**
+ * @brief     Perform All Pairs overlap similarity computation
+ *
+ * Compute the similarity for all vertex pairs derived from the two-hop neighbors
+ * of an optional specified vertex list.  This function will identify the two-hop
+ * neighbors of the specified vertices (all vertices in the graph if not specified)
+ * and compute similarity for those vertices.
+ *
+ * If the topk parameter is specified then the result will only contain the top k
+ * highest scoring results.
+ *
+ * Note that overlap similarity must run on a symmetric graph.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in]  graph        Pointer to graph
+ * @param [in]  vertices     Vertex list for input.  If null then compute based on
+ *                           all vertices in the graph.
+ * @param [in]  use_weight   If true consider the edge weight in the graph, if false use an
+ *                           edge weight of 1
+ * @param [in]  topk         Specify how many answers to return.  Specifying SIZE_MAX
+ *                           will return all values.
+ * @param [in]  do_expensive_check A flag to run expensive checks for input arguments (if set to
+ * `true`).
+ * @param [out] result       Opaque pointer to similarity results
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t
+cugraph_all_pairs_overlap_coefficients(const cugraph_resource_handle_t* handle,
+                                       cugraph_graph_t* graph,
+                                       const cugraph_type_erased_device_array_view_t* vertices,
+                                       bool_t use_weight,
+                                       size_t topk,
+                                       bool_t do_expensive_check,
+                                       cugraph_similarity_result_t** result,
+                                       cugraph_error_t** error);
+
+/**
+ * @brief     Perform All Pairs cosine similarity computation
+ *
+ * Compute the similarity for all vertex pairs derived from the two-hop neighbors
+ * of an optional specified vertex list.  This function will identify the two-hop
+ * neighbors of the specified vertices (all vertices in the graph if not specified)
+ * and compute similarity for those vertices.
+ *
+ * If the topk parameter is specified then the result will only contain the top k
+ * highest scoring results.
+ *
+ * Note that cosine similarity must run on a symmetric graph.
+ *
+ * @param [in]  handle       Handle for accessing resources
+ * @param [in]  graph        Pointer to graph
+ * @param [in]  vertices     Vertex list for input.  If null then compute based on
+ *                           all vertices in the graph.
+ * @param [in]  use_weight   If true consider the edge weight in the graph, if false use an
+ *                           edge weight of 1
+ * @param [in]  topk         Specify how many answers to return.  Specifying SIZE_MAX
+ *                           will return all values.
+ * @param [in]  do_expensive_check A flag to run expensive checks for input arguments (if set to
+ * `true`).
+ * @param [out] result       Opaque pointer to similarity results
+ * @param [out] error        Pointer to an error object storing details of any error.  Will
+ *                           be populated if error code is not CUGRAPH_SUCCESS
+ * @return error code
+ */
+CUGRAPH_EXPORT cugraph_error_code_t cugraph_all_pairs_cosine_similarity_coefficients(
+  const cugraph_resource_handle_t* handle,
+  cugraph_graph_t* graph,
+  const cugraph_type_erased_device_array_view_t* vertices,
+  bool_t use_weight,
+  size_t topk,
+  bool_t do_expensive_check,
+  cugraph_similarity_result_t** result,
+  cugraph_error_t** error);
+
+#include <cugraph_c/export.h>
+
+#ifdef __cplusplus
+}
+#endif

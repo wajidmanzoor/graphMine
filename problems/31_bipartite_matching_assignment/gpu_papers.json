@@ -1,0 +1,30 @@
+{
+  "problem_id": "bipartite_matching_assignment",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2013_deveci_mcm_gpu",
+      "algorithm_name": "GPU Accelerated Maximum Cardinality Matching Algorithms for Bipartite Graphs",
+      "metadata": "31_bipartite_matching_assignment/papers/2013_deveci_mcm_gpu/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2019_hungariangpu",
+      "algorithm_name": "Fast block distributed CUDA implementation of the Hungarian algorithm",
+      "metadata": "31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2026_cugraph_hungarian",
+      "algorithm_name": "cuGraph Dense Hungarian assignment",
+      "metadata": "31_bipartite_matching_assignment/papers/2026_cugraph_hungarian/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "problem_id": "graph_edit_distance_mcs",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2016_gpu_mcs_drug_discovery",
+      "algorithm_name": "A GPU Based Maximum Common Subgraph Algorithm for Drug Discovery Applications",
+      "metadata": "24_graph_edit_distance_mcs/papers/2016_gpu_mcs_drug_discovery/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2026_fast_ged",
+      "algorithm_name": "Efficient Accelerated Graph Edit Distance Computation on GPU",
+      "metadata": "24_graph_edit_distance_mcs/papers/2026_fast_ged/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    }
+  ]
+}

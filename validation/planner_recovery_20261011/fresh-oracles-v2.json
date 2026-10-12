@@ -1,0 +1,83 @@
+{
+  "suite_sha256": "8bf8e88c4a1c2aef10783190685f51b3f4f1ad55c2cf942a2a8517ab5dbe40f3",
+  "generator_sha256": "941bbee30d215da9f08c493e756e3e61a4cab5bbd293bbff6b90a8bb876f3b13",
+  "implementation_sha256": "5f6b0a179e4bcdde48b14c8e12b37f27fafd5eb372dece14e61922891a72deeb",
+  "passed": 12,
+  "cases": [
+    {
+      "id": "fresh_cover_0",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_cover_1",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_cover_2",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_costs_0",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_costs_1",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_costs_2",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_neighbors_0",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_neighbors_1",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_neighbors_2",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "fresh_derived_0",
+      "checks": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "fresh_derived_1",
+      "checks": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "fresh_derived_2",
+      "checks": [
+        true,
+        true
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "title": "nvGRAPH max-min widest path — upstream implementation documentation",
+  "authors": [],
+  "year": 2026,
+  "venue": "Official upstream implementation and API documentation",
+  "doi": null,
+  "publication_url": null,
+  "pdf_url": null,
+  "paper_id": "2026_nvgraph_widest_path",
+  "problem_id": "widest_paths",
+  "problem_dir": "61_widest_paths",
+  "research_cutoff": "2026-10-09",
+  "algorithm_name": "nvGRAPH max-min widest path",
+  "code_url": "https://github.com/rapidsai/nvgraph",
+  "semantic_fit": "variant",
+  "gpu_scope": "Inspected CUDA implementation; host orchestration and input conversion remain outside GPU kernels. No build or runtime validation performed.",
+  "notes": "Archived NVIDIA nvGRAPH source implements max-min path relaxation. The CUDA library manual documents the operation but is not a research paper.",
+  "paper_role": "none",
+  "code_entrypoints": [
+    "cpp/src/widest_path.cu"
+  ],
+  "documentation_urls": [
+    "https://docs.nvidia.com/cuda/archive/9.1/pdf/nvGRAPH_Library.pdf"
+  ],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "collection_only": true,
+  "canonical_adapter_available": false,
+  "supplementary_papers": [],
+  "sweep_managed": true,
+  "implementation_family": "nvgraph",
+  "variant_constraints": [],
+  "redistribution_status": "upstream_license_present",
+  "paper_version_commit_verified": false
+}

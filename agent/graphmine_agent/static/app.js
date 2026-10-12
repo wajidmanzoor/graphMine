@@ -8,7 +8,7 @@
     token: stored("graphmine.apiToken"),
     domains: [], session: null, files: [], graphId: null,
     result: null, graphPreview: null, socket: null, lastEvent: 0,
-    networks: [], page: "chat", savedResults: [], activity: new Map(),
+    networks: [], explorers: [], selections: new Map(), page: "chat", savedResults: [], activity: new Map(),
     feedbackTarget: {}, feedbackCount: 0, lastTurnId: null, resultJob: null,
     busy: false, sessionEpoch: 0, reconnectTimer: null, announcedResults: new Set(),
     reasoningRefresh: 0,
@@ -62,6 +62,7 @@
   function resetWorkspace() {
     disconnectEvents(); state.sessionEpoch++;
     state.networks.forEach(network => network.destroy()); state.networks = [];
+    clearExplorers();
     Object.assign(state, {session:null, files:[], graphId:null, result:null, resultJob:null, graphPreview:null, lastEvent:0, lastTurnId:null, savedResults:[], feedbackCount:0});
     state.activity.clear(); state.announcedResults.clear();
     $("#messages").innerHTML = ""; $("#activity-list").innerHTML = "";
@@ -223,7 +224,7 @@
     $("#graphmine-state").textContent = report.graphmine.binary_available && !report.graphmine.error ? `${report.graphmine.compiled_backend_count} backends · v${report.graphmine.library_version || "?"}` : "Unavailable";
     $("#llm-state").textContent = report.llm.enabled ? report.llm.model.split("/").pop() : "Offline fallback";
     $("#model-version").textContent = report.deployment?.version || "Base model";
-    $("#model-version").title = `Analysis selection: ${report.deployment?.routing_model || report.llm.model}\nAnswers: ${report.llm.model}`;
+    $("#model-version").title = `Analysis selection: ${report.deployment?.routing_model || report.llm.model}${report.deployment?.routing_experimental ? " (experimental for the current catalog)" : ""}\nAnswers: ${report.llm.model}`;
   }
 
   function setStatus(label, kind) {
@@ -316,13 +317,13 @@
     $("#messages").appendChild(article); $("#messages").scrollTop = $("#messages").scrollHeight;
   }
 
-  async function sendChat(message) {
+  async function sendChat(message, context = {}) {
     if (!state.session || state.busy) return;
     const sessionId = state.session.id;
     state.busy = true;
     addMessage("user", message); $("#send-button").disabled = true;
     try {
-      const response = await api(`/api/sessions/${state.session.id}/chat`, {method:"POST", body:JSON.stringify({message, graph_id:state.graphId, result_id:state.result?.id || null, mode:"auto", execute:$("#execute-toggle").checked, ...($("#projection-toggle").checked ? {allow_directed_projection:true} : {})})});
+      const response = await api(`/api/sessions/${state.session.id}/chat`, {method:"POST", body:JSON.stringify({message, graph_id:state.graphId, result_id:state.result?.id || null, ...context, mode:"auto", execute:$("#execute-toggle").checked, ...($("#projection-toggle").checked ? {allow_directed_projection:true} : {})})});
       if (state.session?.id !== sessionId) return;
       if (!response.command) state.lastTurnId = response.turn_id;
       addMessage("assistant", response.message, response.plan, response);
@@ -365,15 +366,34 @@
     return path.split(".").filter(Boolean).reduce((value, key) => value != null && Object.prototype.hasOwnProperty.call(value, key) ? value[key] : undefined, object);
   }
 
+  function answerContext(answer) {
+    if (answer.steps) return Object.values(answer.steps).map((step, index) => `<section class="answer-step"><h3>Analysis ${index + 1}</h3>${answerContext(step)}</section>`).join("");
+    const source = answer.provenance || {};
+    const statuses = (answer.result_status || []).map(item => `<span class="result-status ${item.tone === "caution" ? "status-caution" : item.tone === "positive" ? "status-positive" : ""}" title="${escape(item.detail)}">${escape(item.label)}</span>`).join("");
+    const scope = Number.isInteger(source.input_vertices) && Number.isInteger(source.input_edges)
+      ? `<p>Analysed <strong>${escape(formatValue(source.input_vertices))} ${escape(answer.entity_noun || "entities")}</strong> and <strong>${escape(formatValue(source.input_edges))} relationships</strong>${Number.isInteger(source.source_vertices) && (source.source_vertices !== source.input_vertices || source.source_edges !== source.input_edges) ? ` from ${escape(formatValue(source.source_vertices))} entities and ${escape(formatValue(source.source_edges))} relationships in the upload` : ""}.</p>` : "";
+    const filters = (answer.facts || []).filter(item => ["filter_evidence", "scope"].includes(item.kind));
+    return `${statuses ? `<div class="result-statuses" aria-label="Result status">${statuses}</div>` : ""}${answer.method_explanation ? `<section class="answer-method"><h3>How to read this result</h3><p>${escape(answer.method_explanation)}</p></section>` : ""}${scope || filters.length ? `<section class="answer-scope"><h3>Data and filters used</h3>${scope}${filters.length ? `<ul>${filters.map(item => `<li>${escape(item.statement)}</li>`).join("")}</ul>` : ""}</section>` : ""}`;
+  }
+
   function renderResult() {
     if (!state.result) return;
+    clearExplorers();
     const result = state.result, interpretation = result.interpretation;
     $("#insight-column").classList.remove("empty"); $("#empty-insights").classList.add("hidden"); $("#result-content").classList.remove("hidden");
     $("#result-title").textContent = interpretation?.summary || "Analysis result";
     $("#raw-result").textContent = JSON.stringify({result: result.payload, diagnostics: result.answer?.diagnostics}, null, 2);
     if (interpretation) {
       const additional = interpretation.findings.filter(value => value !== interpretation.summary);
-      $("#interpretation").innerHTML = `${listSection("What this means", interpretation.limitations)}<details class="answer-evidence"><summary>Question and supporting evidence</summary><p>${escape(result.answer?.question || "")}</p>${listSection("Computed findings", additional)}${listSection("Possible implications · model suggestions, not verified findings", interpretation.hypotheses)}</details>`;
+      const answer = result.answer || {};
+      const scopeFacts = new Set((answer.facts || []).filter(item => ["filter_evidence", "scope"].includes(item.kind)).map(item => item.statement));
+      const findings = additional.filter(value => !scopeFacts.has(value));
+      const evidence = (interpretation.evidence || []).map(item => `<li><p>${escape(item.claim)}</p><small>Recorded value: ${escape(formatValue(item.value))}</small></li>`).join("");
+      const explanation = (interpretation.explanation || []).map(item => {
+        const support = (answer.facts || []).filter(fact => item.fact_ids.includes(fact.id));
+        return `<div class="analysis-paragraph"><p>${escape(item.text)}</p><details><summary>Supporting evidence</summary><ul>${support.map(fact => `<li>${escape(fact.statement)}</li>`).join("")}</ul></details></div>`;
+      }).join("");
+      $("#interpretation").innerHTML = `${answer.question ? `<p class="answer-question"><span>Your question</span>${escape(answer.question)}</p>` : ""}${explanation ? `<section class="analysis-explanation"><h3>What this means</h3>${explanation}</section>` : ""}${listSection(explanation ? "Computed findings" : "Key findings", findings)}${answerContext(answer)}${listSection("Limitations", interpretation.limitations)}${listSection("Possible implications · model suggestions, not verified findings", interpretation.hypotheses)}${evidence ? `<details class="answer-evidence"><summary>Inspect supporting values</summary><ol>${evidence}</ol></details>` : ""}`;
       state.networks.forEach(network => network.destroy()); state.networks = [];
       $("#visualizations").innerHTML = "";
       interpretation.visualizations.forEach(spec => renderVisualization(spec, resolvePath({...result.payload, answer: result.answer}, spec.data_ref)));
@@ -389,7 +409,8 @@
           button.title = action.request;
           button.addEventListener("click", () => {
             if (document.querySelector("#graphmine-report")) { toast("Open a live session to ask: " + action.request); return; }
-            navigate("chat"); sendChat(action.request);
+            const context = {result_id:result.id, graph_id:state.resultJob?.plan.graph_id || null};
+            navigate("chat"); sendChat(action.request, context);
           });
         }
         actions.appendChild(button);
@@ -397,6 +418,8 @@
       if (actions.children.length > 1) $("#visualizations").appendChild(actions);
     } else {
       $("#interpretation").innerHTML = "<p>The computation completed; interpretation is not yet available.</p>";
+      state.networks.forEach(network => network.destroy()); state.networks = [];
+      $("#visualizations").innerHTML = "";
     }
   }
 
@@ -408,18 +431,162 @@
     data = applyViewFilters(data, spec.filters || []);
     const card = document.createElement("section"); card.className = "viz-card";
     card.dataset.viewId = spec.id;
-    const previewNote = spec.type === "network" && state.graphPreview && (state.graphPreview.vertices_truncated || state.graphPreview.edges_truncated)
+    const previewNote = spec.type === "network" && !Array.isArray(data?.nodes) && state.graphPreview && (state.graphPreview.vertices_truncated || state.graphPreview.edges_truncated)
       ? ` Preview shows ${state.graphPreview.vertices.length}/${state.graphPreview.vertex_count} vertices and ${state.graphPreview.edges.length}/${state.graphPreview.edge_count} edges.` : "";
-    card.innerHTML = `<div class="viz-head"><div><h3>${escape(spec.title)}</h3><p>${escape((spec.description || "") + previewNote)}</p></div><span class="viz-kind">${escape(spec.type)}</span></div><div class="viz-body"></div>`;
+    card.innerHTML = `<div class="viz-head"><div><h3>${escape(spec.title)}</h3><p>${escape((spec.description || "") + previewNote)}</p></div><span class="viz-kind">${escape(spec.type === "vega_lite" ? "Custom chart" : spec.type)}</span></div><div class="viz-body"></div>`;
     const body = card.querySelector(".viz-body");
     $("#visualizations").appendChild(card);
-    if (spec.type === "metric_cards") renderMetrics(body, data, spec.encodings);
+    if (spec.type === "vega_lite") renderVega(body, spec);
+    else if (spec.type === "metric_cards") renderMetrics(body, data, spec.encodings);
     else if (["bar", "histogram"].includes(spec.type)) renderBars(body, data, spec);
     else if (spec.type === "line") renderLine(body, data, spec);
     else if (spec.type === "timeline") renderTimeline(body, data, spec);
     else if (spec.type === "heatmap") renderHeatmap(body, data, spec);
     else if (spec.type === "network") renderNetwork(body, data, spec);
-    else renderTable(body, data, spec.limit || 1000, spec.data_ref.includes(".tables."));
+    else {
+      const legacy = spec.data_ref.match(/^(answer(?:\.steps\.[^.]+)*)\.tables\.(members|groups)$/);
+      const scope = spec.encodings?.answer_ref || legacy?.[1], kind = spec.encodings?.table || legacy?.[2];
+      const answer = resolvePath({answer: state.result?.answer}, scope || "");
+      const model = Array.isArray(answer?.rows) && ["members", "groups"].includes(kind) ? answerTableModel(answer, kind) : null;
+      renderTable(body, data, spec.limit || 1000, spec.data_ref.includes(".tables.") || spec.encodings?.readable === "true", model, {...spec, encodings: {...spec.encodings, answer_ref: scope}});
+    }
+  }
+
+  async function renderVega(body, spec) {
+    const scope = spec.encodings?.answer_ref || "answer";
+    const host = document.createElement("div"); host.className = "vega-chart";
+    host.setAttribute("role", "figure"); host.setAttribute("aria-label", spec.title);
+    host.tabIndex = 0;
+    const scrollHint = document.createElement("p"); scrollHint.className = "chart-scroll-hint muted";
+    scrollHint.textContent = "Scroll sideways to see the full chart."; scrollHint.hidden = true;
+    const updateOverflow = () => { scrollHint.hidden = host.scrollWidth <= host.clientWidth + 1; };
+    const status = document.createElement("p"); status.className = "chart-selection-status muted";
+    const reset = document.createElement("button"); reset.className = "text-button"; reset.textContent = "Clear shared selection";
+    reset.addEventListener("click", () => selectEntities(scope, []));
+    body.append(host, scrollHint, status, reset);
+    let view = null, disposed = false;
+    const explorer = {
+      scope,
+      update() {
+        const keys = [...selectedEntities(scope)];
+        status.textContent = keys.length ? `${keys.length} entities selected across these views.` : "Select an entity or group to explore the supporting views.";
+        if (view && !disposed) view.signal("graphmine_selection", keys).runAsync().catch(() => {});
+      },
+      destroy() { disposed = true; view?.finalize(); }
+    };
+    state.explorers.push(explorer); explorer.update();
+    try {
+      if (!window.vegaEmbed || !spec.vega_lite) throw new Error("Visualization renderer unavailable");
+      const chart = structuredClone(spec.vega_lite);
+      chart.params = [...(chart.params || []).filter(param => param.name !== "graphmine_selection"), {name:"graphmine_selection", value:[]}];
+      function link(node) {
+        if (node.mark && node.encoding && !node.encoding.opacity) node.encoding.opacity = {condition:{test:"!isValid(datum.entity_key) || length(graphmine_selection) === 0 || indexof(graphmine_selection, datum.entity_key) >= 0", value:1}, value:0.2};
+        for (const key of ["layer", "hconcat", "vconcat", "concat"]) (node[key] || []).forEach(link);
+        if (node.spec) link(node.spec);
+      }
+      link(chart);
+      const rendered = await window.vegaEmbed(host, chart, {
+        mode:"vega-lite", renderer:"svg", defaultStyle:true,
+        actions:{export:true, source:true, compiled:false, editor:false},
+        loader:{load(){return Promise.reject(new Error("External data is disabled"));}, sanitize(){return Promise.reject(new Error("External resources are disabled"));}},
+        config:{font:"system-ui", background:"transparent", axis:{labelFontSize:12,titleFontSize:13}, legend:{labelFontSize:12,titleFontSize:13}, view:{stroke:null}}
+      });
+      view = rendered.view;
+      if (disposed) { view.finalize(); return; }
+      host.graphmineVega = view;
+      view.addEventListener("click", (_event, item) => {
+        const row = item?.datum;
+        if (row?.entity_key != null) selectEntities(scope, [String(row.entity_key)]);
+        else if (row?.group_id != null) {
+          const answer = resolvePath({answer:state.result?.answer}, scope);
+          const group = answer?.groups?.find(group => String(group.id) === String(row.group_id));
+          if (group?.member_keys) selectEntities(scope, group.member_keys);
+        }
+      });
+      for (const parameter of chart.params) {
+        if (parameter.select?.fields?.includes("entity_key")) view.addSignalListener(parameter.name, (_name, value) => {
+          if (Array.isArray(value?.entity_key)) selectEntities(scope, value.entity_key.map(String));
+        });
+      }
+      const observer = new ResizeObserver(() => { if (!disposed) view.resize().runAsync().then(updateOverflow).catch(() => {}); });
+      observer.observe(host);
+      explorer.destroy = () => { disposed = true; observer.disconnect(); view.finalize(); };
+      explorer.update();
+      updateOverflow();
+    } catch (error) {
+      if (!disposed) {
+        host.replaceChildren();
+        const message = document.createElement("p"); message.className = "muted";
+        message.textContent = "This chart could not be drawn. The computed findings and supporting tables are still available.";
+        host.appendChild(message); host.dataset.renderError = String(error);
+      }
+    }
+  }
+
+  function selectEntities(scope, keys) {
+    state.selections.set(scope, new Set(keys));
+    state.explorers.filter(view => view.scope === scope).forEach(view => view.update());
+  }
+
+  function clearExplorers() {
+    state.explorers.forEach(view => view.destroy?.());
+    state.explorers = []; state.selections.clear();
+  }
+
+  function selectedEntities(scope) { return state.selections.get(scope) || new Set(); }
+
+  function answerTableModel(answer, kind) {
+    const rows = answer.rows || [], columns = answer.tables?.columns || legacyTableColumns(rows);
+    const byId = kind === "groups" ? new Map(rows.map(row => [row.key, row])) : null;
+    const aliases = kind === "groups" && answer.groups.some(group => !group.member_keys) ? legacyEntityAliases(rows) : null;
+    if (aliases && [...aliases.values()].some(value => value === null)) {
+      const preview = answer.tables?.groups || [];
+      return {length: preview.length, row: index => Object.fromEntries(Object.entries(preview[index]).map(([label, value]) => [label, label === "Original ID" && typeof value === "number" && !Number.isSafeInteger(value) ? "Unavailable in this older preview" : value])), keys: [...new Set(preview.flatMap(row => Object.keys(row)))], notice:"This older group preview contains identifiers that cannot be linked reliably. The returned-entities table still has every available named entity."};
+    }
+    const ends = []; let length = 0;
+    if (kind === "groups") (answer.groups || []).forEach(group => { length += group.vertices.length; ends.push(length); });
+    else length = rows.length;
+    const source = index => {
+      if (kind !== "groups") return {entity: rows[index]};
+      let low = 0, high = ends.length - 1;
+      while (low < high) { const mid = Math.floor((low + high) / 2); if (index < ends[mid]) high = mid; else low = mid + 1; }
+      const group = answer.groups[low], offset = low ? ends[low - 1] : 0;
+      return {group, entity: byId.get(group.member_keys?.[index - offset] ?? aliases?.get(JSON.stringify(group.vertices[index - offset])))};
+    };
+    return {
+      length, keys: [...(kind === "groups" ? ["Group"] : []), ...columns.map(column => column.label)],
+      entity: index => source(index).entity?.key,
+      row: index => {
+        const {group, entity} = source(index);
+        return {...(group ? {Group: group.label} : {}), ...Object.fromEntries(columns.map(column => [column.label, column.path.length === 1 && column.path[0] === "id" && typeof entity?.id === "number" && !Number.isSafeInteger(entity.id) ? entity.key : column.path.reduce((value, field) => value != null && Object.prototype.hasOwnProperty.call(value, field) ? value[field] : undefined, entity)]))};
+      },
+    };
+  }
+
+  function legacyEntityAliases(rows) {
+    const aliases = new Map();
+    for (const row of rows) { const key = JSON.stringify(row.id); aliases.set(key, aliases.has(key) && aliases.get(key) !== row.key ? null : row.key); }
+    return aliases;
+  }
+
+  function legacyTableColumns(rows) {
+    // Old saved answers retain full source-derived rows but predate column
+    // metadata. Reconstruct display columns without rewriting stored evidence.
+    const columns = new Map([["Name", ["label"]], ["Original ID", ["id"]]]);
+    const titles = {rank:"Rank", score:"Connection score", core_number:"Remaining-partner threshold", assigned_to:"Assigned to", assignment_cost:"Assignment cost"};
+    for (const [field, label] of Object.entries(titles)) if (rows.some(row => row[field] !== undefined)) columns.set(label, [field]);
+    const attributeTitles = {string_id:"STRING ID", participant_id:"Participant ID", iata:"Airport code"};
+    for (const row of rows) {
+      for (const [field, value] of Object.entries(row.attributes || {})) {
+        if (["import_note", "note", "description"].includes(field) || value !== null && typeof value === "object") continue;
+        if (["gene_name", "name", "display_name"].includes(field) && String(value) === String(row.label)) continue;
+        const plain = field.replaceAll("_", " "), label = attributeTitles[field] || plain.charAt(0).toUpperCase() + plain.slice(1).toLowerCase();
+        const title = columns.has(label) && columns.get(label)[0] !== "attributes" ? `Attribute: ${label}` : label;
+        if (!columns.has(title) && columns.size < 15) columns.set(title, ["attributes", field]);
+      }
+      if (columns.size >= 15) break;
+    }
+    return [...columns].map(([label, path]) => ({label, path}));
   }
 
   function applyViewFilters(data, filters) {
@@ -452,22 +619,46 @@
 
   function renderMetrics(body, data, encodings) {
     const entries = Object.entries(encodings || {}).map(([label, field]) => [label, pick(data, field)]).filter(([,value]) => value !== undefined);
-    const values = entries.length ? entries : Object.entries(data || {}).filter(([,value]) => ["number","string","boolean"].includes(typeof value)).slice(0,12);
+    const values = (entries.length ? entries : Object.entries(data || {})).filter(([,value]) => ["number","string"].includes(typeof value)).slice(0,12);
+    if (!values.length) { body.textContent = "See the result status and findings above."; return; }
     body.innerHTML = `<div class="metric-grid">${values.map(([label,value]) => `<div class="metric"><strong>${escape(formatValue(value))}</strong><span>${escape(label.replaceAll("_"," "))}</span></div>`).join("")}</div>`;
   }
 
   function renderBars(body, data, spec) {
-    const rows = rowsFrom(data).slice(0, spec.limit || 80), category = spec.encodings?.category || spec.encodings?.x, valueField = spec.encodings?.value || spec.encodings?.y;
+    const rows = rowsFrom(data), category = spec.encodings?.category || spec.encodings?.x, valueField = spec.encodings?.value || spec.encodings?.y, scope = spec.encodings?.answer_ref;
+    let aliases;
     let points = rows.map((row,index) => {
-      const numeric = Number(pick(row,valueField) ?? row.value ?? Object.values(row).find(value => typeof value === "number") ?? 0);
-      return {label:String(pick(row,category) ?? row.key ?? row.vertex ?? row.index ?? index), value:Number.isFinite(numeric) ? numeric : 0};
-    });
+      const numeric = pick(row,valueField) ?? row.value;
+      let keys = scope && typeof row.key === "string" && row.id !== undefined ? [row.key] : [];
+      if (scope && Array.isArray(row.vertices)) {
+        if (row.member_keys) keys = row.member_keys;
+        else { aliases ||= legacyEntityAliases(resolvePath({answer: state.result?.answer}, scope)?.rows || []); const candidates = row.vertices.map(value => aliases.get(JSON.stringify(value))); keys = candidates.every(value => typeof value === "string") ? candidates : []; }
+      }
+      return {label:String(pick(row,category) ?? row.key ?? row.vertex ?? row.index ?? index), value:numeric, keys};
+    }).filter(point => typeof point.value === "number" && Number.isFinite(point.value));
     if (spec.type === "histogram") {
-      const counts = new Map(); points.forEach(point => counts.set(point.value, (counts.get(point.value)||0)+1)); points = [...counts].map(([label,value]) => ({label:String(label),value})).sort((a,b)=>Number(a.label)-Number(b.label));
-    }
+      const counts = new Map();
+      points.forEach(point => { const bin = counts.get(point.value) || {value:0, keys:[]}; bin.value++; bin.keys.push(...point.keys); counts.set(point.value, bin); });
+      points = [...counts].map(([label, bin]) => ({label:String(label), ...bin})).sort((a,b)=>Number(a.label)-Number(b.label));
+    } else points.sort((a,b) => b.value - a.value);
     if (!points.length) { body.textContent = "No values to plot."; return; }
-    const width=620,height=230,pad=35,max=Math.max(...points.map(p=>Math.abs(p.value)),1),barWidth=Math.max(3,(width-pad*2)/points.length-3);
-    body.innerHTML = `<svg class="chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escape(spec.title)}"><line class="axis" x1="${pad}" y1="${height-pad}" x2="${width-pad/2}" y2="${height-pad}"/>${points.map((point,index)=>{const h=Math.abs(point.value)/max*(height-pad*2);const x=pad+index*((width-pad*2)/points.length);return `<rect class="bar" x="${x}" y="${height-pad-h}" width="${barWidth}" height="${h}"><title>${escape(point.label)}: ${escape(point.value)}</title></rect>${points.length<18?`<text x="${x}" y="${height-17}" transform="rotate(30 ${x} ${height-17})">${escape(point.label.slice(0,10))}</text>`:""}`}).join("")}</svg>`;
+    const total = points.length; points = points.slice(0, Math.min(spec.limit || 20, 20));
+    const min = Math.min(0, ...points.map(point => point.value)), max = Math.max(0, ...points.map(point => point.value)), span = max - min || 1, zero = -min / span * 100;
+    body.innerHTML = `<p class="chart-scope">${total > points.length ? `Showing ${spec.type === "histogram" ? "the first" : "the highest"} ${points.length} of ${total} ${spec.type === "histogram" ? "thresholds" : "entries"}. ` : ""}Bars share a zero baseline. Exact values are shown alongside each label.</p><div class="chart-bars" role="list" aria-label="${escape(spec.title)}">${points.map((point,index) => {
+      const tag = point.keys.length ? "button" : "div", left = Math.min(zero, (point.value - min) / span * 100), width = Math.abs(point.value) / span * 100;
+      return `<div role="listitem"><${tag} class="bar-row" data-bar-index="${index}"${tag === "button" ? ' aria-pressed="false"' : ""}><span class="bar-label">${escape(point.label)}</span><span class="bar-track" aria-hidden="true"><span class="bar-zero" style="left:${zero}%"></span><span class="bar-fill${point.value < 0 ? " negative" : ""}" style="left:${left}%;width:${width}%"></span></span><span class="bar-value">${escape(formatValue(point.value))}</span></${tag}></div>`;
+    }).join("")}</div>`;
+    body.querySelector(".chart-bars").addEventListener("click", event => {
+      const button = event.target.closest("button.bar-row"); if (button) selectEntities(scope, points[Number(button.dataset.barIndex)].keys);
+    });
+    if (scope) state.explorers.push({scope, update: () => {
+      const selected = selectedEntities(scope);
+      body.querySelectorAll("button.bar-row").forEach(button => {
+        const keys = points[Number(button.dataset.barIndex)].keys;
+        button.setAttribute("aria-pressed", String(keys.every(key => selected.has(key))));
+        button.classList.toggle("contains-selection", keys.some(key => selected.has(key)));
+      });
+    }});
   }
 
   function numericSeries(data, spec, limit = 200) {
@@ -494,14 +685,22 @@
 
   function renderTimeline(body, data, spec) {
     if (Array.isArray(data) && data.some(row => Number.isFinite(row.timestamp))) {
-      const events = data.slice(0, spec.limit || 300), sequences = [...new Set(events.map(row => row.sequence))];
+      const available = [...new Set(data.map(row => row.sequence))], sequences = available.slice(0, Math.min(spec.limit || 8, 8));
+      const visible = new Set(sequences), events = data.filter(row => visible.has(row.sequence));
       const minimum = Math.min(...events.map(row => row.timestamp)), maximum = Math.max(...events.map(row => row.timestamp));
-      const width = 660, pad = 75, height = Math.max(160, sequences.length * 75 + 65);
+      const width = 660, pad = 75, height = Math.max(160, sequences.length * 55 + 75);
       const x = time => pad + (time - minimum) / (maximum - minimum || 1) * (width - pad - 40);
       body.innerHTML = `<svg class="chart timeline-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escape(spec.title)}">${sequences.map((id,index) => {
-        const y = 38 + index * 75;
-        return `<text x="5" y="${y+4}">Match ${escape(id)}</text><line class="timeline-track" x1="${pad}" y1="${y}" x2="${width-30}" y2="${y}"/>${events.filter(row => row.sequence === id).map(row => `<g class="matched-event" data-event-id="${escape(row.id)}"><circle class="timeline-event" cx="${x(row.timestamp)}" cy="${y}" r="6"><title>${escape(row.source_label)} → ${escape(row.target_label)} · ${escape(row.timestamp)}</title></circle><text x="${x(row.timestamp)}" y="${y+23}" text-anchor="middle">${escape(row.timestamp)}</text><text x="${x(row.timestamp)}" y="${y-14}" text-anchor="middle">${escape(row.source_label)} → ${escape(row.target_label)}</text></g>`).join("")}`;
-      }).join("")}</svg>`;
+        const y = 38 + index * 55;
+        return `<text x="5" y="${y+4}">Match ${escape(id)}</text><line class="timeline-track" x1="${pad}" y1="${y}" x2="${width-30}" y2="${y}"/>${events.filter(row => row.sequence === id).map(row => `<g class="matched-event" data-event-id="${escape(row.id)}"><circle class="timeline-event" cx="${x(row.timestamp)}" cy="${y}" r="6"><title>${escape(row.source_label)} → ${escape(row.target_label)} · ${escape(row.timestamp)}</title></circle><text x="${x(row.timestamp)}" y="${y-14}" text-anchor="middle">${escape(row.order)}</text></g>`).join("")}`;
+      }).join("")}<line class="axis" x1="${pad}" y1="${height-37}" x2="${width-40}" y2="${height-37}"/><text x="${pad}" y="${height-17}">${escape(minimum)}</text><text x="${width-40}" y="${height-17}" text-anchor="end">${escape(maximum)}</text></svg>`;
+      const svg = body.querySelector("svg"), scroll = document.createElement("div"); scroll.className = "timeline-scroll"; svg.replaceWith(scroll); scroll.appendChild(svg);
+      body.insertAdjacentHTML("afterbegin", `<p class="chart-scope">Showing ${sequences.length} of ${available.length} available sequences, including all available events for each shown sequence. Positions show time; numbers show event order. Hover over a point or inspect the table for names and timestamps. The table contains all ${data.length} available event rows; the same event can belong to multiple matches.</p>`);
+      body.insertAdjacentHTML("beforeend", '<details class="timeline-values"><summary>Inspect all event values</summary><div class="event-values"></div></details>');
+      renderTable(body.querySelector(".event-values"), [], 50, true, {
+        length: data.length, keys: ["Match", "Order", "From", "To", "Timestamp"],
+        row: index => ({Match: data[index].sequence, Order: data[index].order, From: data[index].source_label, To: data[index].target_label, Timestamp: data[index].timestamp}),
+      }, {title: "Events in the available matches"});
       return;
     }
     const rows=rowsFrom(data).slice(0,spec.limit||30);
@@ -579,19 +778,53 @@
 
   function renderAnswerNetwork(body, data, spec) {
     if (!window.cytoscape) { renderTable(body, data.nodes, 1000); return; }
+    const scope = spec.encodings?.answer_ref || spec.data_ref.replace(/\.network$/, "");
+    const answer = resolvePath({answer: state.result?.answer}, scope);
     const key = value => JSON.stringify(value), palette = ["#246a73", "#d17b36", "#7765a6", "#36845b", "#bf5275", "#5576b4", "#898039"];
-    const color = value => { let hash = 0; for (const c of String(value ?? "Unknown")) hash = (hash * 31 + c.charCodeAt(0)) >>> 0; return palette[hash % palette.length]; };
+    let colorDomain = new Map();
+    const color = value => palette[(colorDomain.get(String(value ?? "Unknown")) || 0) % palette.length];
     const attributes = [...new Set(data.nodes.flatMap(node => Object.keys(node.attributes || {})))];
     const colorFields = ["community", "type", ...attributes.map(name => `attributes.${name}`)].filter(field => data.nodes.some(node => pick(node, field) != null));
     const numericFields = ["score", "core_number", ...attributes.map(name => `attributes.${name}`)].filter(field => data.nodes.some(node => typeof pick(node, field) === "number"));
     body.innerHTML = `<div class="network-controls"><label>Show<select class="group-selector"><option value="all">Answer overview</option>${(data.groups || []).map(group => `<option value="${escape(key(group.id))}">${escape(group.label)} · ${group.size} members</option>`).join("")}</select></label><label>Color by<select class="color-selector">${colorFields.length ? colorFields.map(field => `<option value="${escape(field)}">${escape(field === "community" ? "Detected group" : field.replace("attributes.", ""))}</option>`).join("") : '<option value="">Entity</option>'}</select></label><label>Size by<select class="size-selector"><option value="">Equal size</option>${numericFields.map(field => `<option value="${escape(field)}">${escape(field.replace("attributes.", ""))}</option>`).join("")}</select></label><button class="secondary-button fit-network">Fit</button></div><div class="answer-network" role="img" aria-label="${escape(spec.title)}"></div><div class="network-legend"></div><div class="entity-details" aria-live="polite">Select an entity or connection to inspect its original attributes.</div><details class="network-accessible"><summary>Entities shown</summary><ul></ul></details>`;
+    body.querySelector(".network-controls").insertAdjacentHTML("beforeend", '<label class="network-search-label">Find in network preview<input type="search" class="network-search" placeholder="Name, ID or attribute…"></label><button class="secondary-button focus-selection" disabled>Focus selection</button><button class="secondary-button reset-network">Reset view</button>');
+    body.querySelector(".network-legend").insertAdjacentHTML("afterend", '<p class="network-selection" role="status">Select a name in a table or in the network to highlight it across views.</p>');
     const container = body.querySelector(".answer-network");
     if (colorFields.includes(spec.encodings?.node_color)) body.querySelector(".color-selector").value = spec.encodings.node_color;
     if (data.default_group !== null && data.default_group !== undefined) body.querySelector(".group-selector").value = key(data.default_group);
     let cy;
+    const showDetails = original => {
+      body.querySelector(".entity-details").innerHTML = `<strong>${escape(original.label ?? original.id)}</strong><dl>${Object.entries(original).filter(([field]) => !["key", "source_key", "target_key", "groups"].includes(field)).map(([field,value]) => `<dt>${escape(field)}</dt><dd>${escape(field === "id" && typeof value === "number" && !Number.isSafeInteger(value) && original.key ? original.key : formatValue(value))}</dd>`).join("")}</dl>`;
+      if (original.groups?.length) body.querySelector(".entity-details dl").insertAdjacentHTML("beforeend", `<dt>Returned groups</dt><dd>${original.groups.map(id => escape(data.groups?.find(group => key(group.id) === key(id))?.label ?? id)).join(", ")}</dd>`);
+    };
+    const updateSelection = () => {
+      if (!cy) return;
+      const selected = selectedEntities(scope);
+      const outsideGroup = data.nodes.some(node => selected.has(node.key) && !cy.getElementById(node.key).length);
+      if (outsideGroup) { body.querySelector(".group-selector").value = "all"; draw(); return; }
+      const nodes = cy.nodes().filter(node => selected.has(node.id()));
+      cy.batch(() => {
+        cy.elements().unselect().removeClass("selection-muted");
+        if (selected.size) {
+          cy.elements().addClass("selection-muted");
+          nodes.closedNeighborhood().union(nodes.parents()).removeClass("selection-muted");
+          nodes.select();
+        }
+      });
+      body.querySelector(".focus-selection").disabled = !nodes.length;
+      const missing = selected.size - nodes.length;
+      body.querySelector(".network-selection").textContent = selected.size
+        ? `${selected.size} selected · ${nodes.length} in the network preview.${missing ? ` ${missing} outside this preview; inspect their table rows and original attributes below.` : " Use Focus selection to zoom to their nearby connections."}`
+        : "Select a name in a table or in the network to highlight it across views.";
+      body.querySelectorAll(".network-entity").forEach(button => button.setAttribute("aria-pressed", String(selected.has(button.dataset.nodeId))));
+      const original = (answer?.rows || data.nodes).find(node => selected.has(node.key));
+      if (original) showDetails(original);
+      else body.querySelector(".entity-details").textContent = "Select an entity or connection to inspect its original attributes.";
+    };
     const draw = () => {
       if (cy) { cy.destroy(); state.networks = state.networks.filter(value => value !== cy); }
       const group = body.querySelector(".group-selector").value, colorField = body.querySelector(".color-selector").value, sizeField = body.querySelector(".size-selector").value;
+      colorDomain = new Map([...new Set(data.nodes.map(node => String(pick(node, colorField) ?? "Unknown")))].sort().map((value, index) => [value, index]));
       const nodes = data.nodes.filter(node => group === "all" || (node.groups || []).some(value => key(value) === group));
       const ids = new Set(nodes.map(node => node.key)), edges = data.edges.filter(edge => ids.has(edge.source_key) && ids.has(edge.target_key));
       const maxSize = Math.max(1, ...nodes.map(node => Math.abs(Number(pick(node, sizeField))) || 0));
@@ -627,7 +860,8 @@
           {selector:"node",style:{"background-color":"data(color)",shape:"data(shape)",width:"data(size)",height:"data(size)",label:"data(label)","font-size":12,"font-family":"system-ui",color:"#203e37","text-valign":"bottom","text-margin-y":8,"text-background-color":"#f8fbf9","text-background-opacity":.9,"text-background-padding":3,"border-width":2,"border-color":"#fff"}},
           {selector:"edge",style:{width:"data(width)","line-color":"#a8bcb3","curve-style":"bezier",opacity:.7}},
           {selector:".answer-group",style:{"background-color":"#edf3ef","background-opacity":.65,"border-width":1,"border-style":"dashed","border-color":"#bdcfc5",padding:28,label:"data(label)","text-valign":"top","text-margin-y":-7,"font-weight":650}},
-          {selector:":selected",style:{"border-color":"#e48b3e","border-width":4,"line-color":"#e48b3e"}}
+          {selector:":selected",style:{"border-color":"#a65d1f","border-width":4,"line-color":"#a65d1f"}},
+          {selector:".selection-muted",style:{opacity:.25}}
         ], layout:grouped ? {name:"preset",fit:true,padding:40} : {name:"cose",animate:false,randomize:false,nodeDimensionsIncludeLabels:true,nodeRepulsion:()=>18000,idealEdgeLength:()=>125,componentSpacing:70,padding:32,numIter:500}});
       if (data.layout === "bipartite" && types.length === 2) {
         types.forEach((type,column) => cy.nodes().filter(node => node.data("original")?.type === type).forEach((node,index) => node.position({x:column*270,y:index*90})));
@@ -638,18 +872,55 @@
         cy.nodes().filter(node => !!node.data("original")).style("font-size", Math.max(12, 11 / cy.zoom()));
       }
       state.networks.push(cy); container.graphmineNetwork = cy;
-      if (state.result?.answer?.provenance?.directed) cy.edges().style({"target-arrow-shape":"triangle","target-arrow-color":"#a8bcb3"});
+      if (data.directed ?? answer?.provenance?.directed) cy.edges().style({"target-arrow-shape":"triangle","target-arrow-color":"#a8bcb3"});
       cy.on("tap", "node, edge", event => {
         const original = event.target.data("original"); if (!original) return;
-        body.querySelector(".entity-details").innerHTML = `<strong>${escape(original.label || original.id)}</strong><dl>${Object.entries(original).filter(([field]) => !["key", "source_key", "target_key", "groups"].includes(field)).map(([field,value]) => `<dt>${escape(field)}</dt><dd>${escape(formatValue(value))}</dd>`).join("")}</dl>`;
+        selectEntities(scope, event.target.isNode() ? [original.key] : [original.source_key, original.target_key]);
+        showDetails(original);
       });
       const legend = [...new Set(nodes.map(node => String(pick(node, colorField) ?? "Unknown")))];
-      body.querySelector(".network-legend").innerHTML = `<span>${nodes.length} ${escape(data.entity_noun || "entities")} · ${edges.length} connections${data.truncated ? " · limited view" : ""}</span>` + legend.slice(0,12).map(value => `<span><i style="background:${color(value)}"></i>${escape(colorField === "community" ? data.groups?.find(item => String(item.id) === value)?.label || value : value)}</span>`).join("") + (types.length > 1 ? `<span>Shapes: ${types.map((type,index) => `${escape(shapes[index % shapes.length])} = ${escape(type)}`).join("; ")}</span>` : "");
-      body.querySelector(".network-accessible ul").innerHTML = nodes.map(node => `<li data-node-id="${escape(node.key)}">${escape(node.label)}${node.type ? ` · ${escape(node.type)}` : ""}${Object.keys(node.attributes || {}).length ? ` · ${escape(formatValue(node.attributes))}` : ""}</li>`).join("");
+      body.querySelector(".network-legend").innerHTML = `<span>${nodes.length} of ${data.total_nodes ?? data.nodes.length} returned ${escape(data.entity_noun || "entities")} · ${edges.length} of ${data.total_edges ?? data.edges.length} returned connections${data.truncated ? " · limited preview" : ""}</span>` + legend.slice(0,12).map(value => `<span><i style="background:${color(value)}"></i>${escape(colorField === "community" ? data.groups?.find(item => String(item.id) === value)?.label || value : value)}</span>`).join("") + (legend.length > palette.length ? "<span>Some colors repeat; inspect names and attributes to distinguish categories.</span>" : "") + (types.length > 1 ? `<span>Shapes: ${types.map((type,index) => `${escape(shapes[index % shapes.length])} = ${escape(type)}`).join("; ")}</span>` : "");
+      if (colorField === "community" && nodes.some(node => node.groups?.length > 1)) body.querySelector(".network-legend").insertAdjacentHTML("beforeend", "<span>Overlapping memberships use the first group's color. Select an entity to see every returned group it belongs to.</span>");
+      body.querySelector(".network-accessible ul").innerHTML = nodes.map(node => `<li data-node-id="${escape(node.key)}"><button class="network-entity" data-node-id="${escape(node.key)}" aria-pressed="false">${escape(node.label)}</button>${node.type ? ` · ${escape(node.type)}` : ""}${Object.keys(node.attributes || {}).length ? ` · ${escape(formatValue(node.attributes))}` : ""}</li>`).join("");
+      updateSelection();
     };
-    body.querySelectorAll("select").forEach(select => select.addEventListener("change", draw));
+    body.querySelectorAll("select").forEach(select => select.addEventListener("change", () => {
+      if (select.classList.contains("group-selector")) { state.selections.delete(scope); body.querySelector(".network-search").value = ""; }
+      draw();
+      if (select.classList.contains("group-selector")) selectEntities(scope, []);
+    }));
     body.querySelector(".fit-network").addEventListener("click", () => cy?.fit(undefined, 35));
+    body.querySelector(".network-search").addEventListener("input", event => {
+      const query = event.target.value.trim().toLocaleLowerCase();
+      if (query && body.querySelector(".group-selector").value !== "all") { body.querySelector(".group-selector").value = "all"; state.selections.delete(scope); draw(); }
+      const matches = query ? data.nodes.filter(node => [node.label, node.id, formatValue(node.attributes)].some(value => String(value).toLocaleLowerCase().includes(query))) : [];
+      selectEntities(scope, matches.map(node => node.key));
+      body.querySelector(".network-selection").textContent = query ? `${matches.length} matches in the available network preview. Search the tables to include every available answer row.` : "Selection cleared.";
+    });
+    body.querySelector(".network-accessible ul").addEventListener("click", event => {
+      const button = event.target.closest(".network-entity");
+      if (button) selectEntities(scope, [button.dataset.nodeId]);
+    });
+    body.querySelector(".focus-selection").addEventListener("click", () => {
+      const nodes = cy.nodes(":selected"); if (nodes.length) cy.fit(nodes.closedNeighborhood().union(nodes.parents()), 45);
+    });
+    body.querySelector(".reset-network").addEventListener("click", () => {
+      body.querySelector(".network-search").value = "";
+      body.querySelector(".group-selector").value = "all";
+      state.selections.delete(scope); draw(); selectEntities(scope, []);
+    });
+    // Refit when a results pane becomes visible or changes width. Keeping the
+    // old desktop pan after a mobile resize can place every node off screen.
+    let dimensions = "";
+    const resizeObserver = new ResizeObserver(entries => {
+      const {width, height} = entries[0].contentRect, next = `${width}:${height}`;
+      if (!cy || cy.destroyed() || !width || !height || dimensions === next) return;
+      dimensions = next; cy.resize(); cy.fit(undefined, 35);
+      if (cy.zoom() > 1.5) { cy.zoom(1.5); cy.center(); }
+    });
+    state.explorers.push({scope, update: updateSelection, destroy: () => resizeObserver.disconnect()});
     draw();
+    resizeObserver.observe(container);
   }
 
   function enablePanZoom(svg,group) {
@@ -659,14 +930,65 @@
     svg.addEventListener("pointermove",event=>{if(drag){x=event.clientX-drag.x;y=event.clientY-drag.y;apply()}}); svg.addEventListener("pointerup",()=>drag=null);
   }
 
-  function renderTable(body, data, limit, readable=false) {
-    const rows=(readable && Array.isArray(data) ? data : rowsFrom(data)).slice(0,limit), keys=[...new Set(rows.flatMap(row=>Object.keys(row)))].slice(0,15);
+  function renderTable(body, data, limit, readable=false, model=null, spec={}) {
+    if (!model) {
+      const rows = readable && Array.isArray(data) ? data : rowsFrom(data);
+      model = {length: rows.length, row: index => rows[index], keys: [...new Set(rows.flatMap(row => Object.keys(row)))].slice(0,15)};
+    }
+    const keys = model.keys, scope = spec.encodings?.answer_ref;
     if (readable) body.classList.add("readable-table");
-    body.innerHTML=`<input class="viz-filter" placeholder="Filter rows…"><div class="table-wrap"><table class="data-table"><thead><tr>${keys.map(key=>`<th>${escape(key)}</th>`).join("")}</tr></thead><tbody>${tableRows(rows,keys)}</tbody></table></div>`;
-    body.querySelector("input").addEventListener("input",event=>{const match=event.target.value.toLowerCase();body.querySelector("tbody").innerHTML=tableRows(rows.filter(row=>JSON.stringify(row).toLowerCase().includes(match)),keys)});
+    body.innerHTML = `<div class="table-controls"><label>Search all available rows<input type="search" class="viz-filter" placeholder="Name, ID or attribute…"></label><label>Rows per page<select class="page-size"><option>25</option><option selected>50</option><option>100</option></select></label></div><p class="table-status" role="status"></p><div class="table-wrap" tabindex="0" role="region" aria-label="${escape(spec.title || "Result table")}"><table class="data-table"><caption class="sr-only">${escape(spec.title || "Result table")}</caption><thead><tr>${keys.map(key=>`<th scope="col">${escape(key)}</th>`).join("")}</tr></thead><tbody></tbody></table></div><div class="table-pagination"><button class="secondary-button first-page" aria-label="First page">First</button><button class="secondary-button previous-page" aria-label="Previous page">Previous</button><span class="page-label"></span><button class="secondary-button next-page" aria-label="Next page">Next</button><button class="secondary-button last-page" aria-label="Last page">Last</button></div>`;
+    let indices = null, page = 0, pageSize = 50, revision = 0, searching = false;
+    const count = () => indices === null ? model.length : indices.length;
+    const sourceIndex = index => indices === null ? index : indices[index];
+    const draw = () => {
+      const total = count(), pages = Math.max(1, Math.ceil(total / pageSize));
+      page = Math.min(page, pages - 1);
+      const start = page * pageSize, end = Math.min(total, start + pageSize), selected = selectedEntities(scope);
+      body.querySelector(".table-status").textContent = searching ? `Searching ${formatValue(model.length)} available rows…` : `${total ? `Rows ${formatValue(start + 1)}–${formatValue(end)}` : "No matching rows"} of ${formatValue(total)}${indices !== null ? ` matches across ${formatValue(model.length)} available rows` : " available rows"}.${selected.size ? ` ${formatValue(selected.size)} entities selected across views.` : ""}${model.notice ? ` ${model.notice}` : ""}`;
+      body.querySelector("tbody").innerHTML = Array.from({length: end - start}, (_, offset) => {
+        const index = sourceIndex(start + offset), row = model.row(index), entity = model.entity?.(index), active = entity !== undefined && selected.has(entity);
+        return `<tr${active ? ' class="selected-row"' : ""}>${keys.map((key, column) => `<td title="${escape(formatValue(row[key]))}">${entity !== undefined && (key === "Name" || !keys.includes("Name") && column === 0) ? `<button class="table-entity" data-row-index="${index}" aria-pressed="${active}">${escape(formatValue(row[key]))}</button>` : escape(formatValue(row[key]))}</td>`).join("")}</tr>`;
+      }).join("") || `<tr><td colspan="${Math.max(keys.length, 1)}">No rows match the current search.</td></tr>`;
+      body.querySelector(".page-label").textContent = `Page ${page + 1} of ${pages}`;
+      for (const name of ["first", "previous"]) body.querySelector(`.${name}-page`).disabled = page === 0 || searching;
+      for (const name of ["next", "last"]) body.querySelector(`.${name}-page`).disabled = page >= pages - 1 || searching;
+    };
+    const search = () => {
+      const current = ++revision, query = body.querySelector("input").value.trim().toLocaleLowerCase();
+      page = 0;
+      if (!query && !spec.filters?.length) { indices = null; searching = false; draw(); return; }
+      indices = []; searching = true; draw();
+      let cursor = 0;
+      const scan = () => {
+        if (current !== revision || !body.isConnected) return;
+        const end = Math.min(model.length, cursor + 1000);
+        for (; cursor < end; cursor++) {
+          const row = model.row(cursor);
+          if (applyViewFilters([row], spec.filters || []).length && (!query || Object.values(row).some(value => formatValue(value).toLocaleLowerCase().includes(query)))) indices.push(cursor);
+        }
+        if (cursor < model.length) setTimeout(scan, 0);
+        else { searching = false; draw(); }
+      };
+      scan();
+    };
+    body.querySelector("input").addEventListener("input", search);
+    body.querySelector(".page-size").addEventListener("change", event => { pageSize = Number(event.target.value); page = 0; draw(); });
+    for (const [name, destination] of [["first", () => 0], ["previous", () => Math.max(0, page - 1)], ["next", () => page + 1], ["last", () => Math.max(0, Math.ceil(count() / pageSize) - 1)]]) {
+      body.querySelector(`.${name}-page`).addEventListener("click", () => { page = destination(); draw(); body.querySelector(".table-wrap").scrollTop = 0; });
+    }
+    body.querySelector("tbody").addEventListener("click", event => {
+      const button = event.target.closest(".table-entity");
+      if (!button) return;
+      const index = Number(button.dataset.rowIndex);
+      selectEntities(scope, [model.entity(index)]);
+      // Redrawing a linked table must not lose the keyboard user's focus.
+      body.querySelector(`.table-entity[data-row-index="${index}"]`)?.focus({preventScroll: true});
+    });
+    state.explorers.push({scope, update: draw, destroy: () => { revision++; }});
+    search();
   }
 
-  function tableRows(rows,keys){return rows.map(row=>`<tr>${keys.map(key=>`<td title="${escape(formatValue(row[key]))}">${escape(formatValue(row[key]))}</td>`).join("")}</tr>`).join("")}
   function formatValue(value){if(value===null||value===undefined)return "—";if(typeof value==="object")return JSON.stringify(value);if(typeof value==="number")return Number.isInteger(value)?String(value):value.toLocaleString(undefined,{maximumSignificantDigits:6});return String(value)}
 
   $("#chat-form").addEventListener("submit", event => { event.preventDefault(); const input=$("#chat-input"),message=input.value.trim(); if(message && !state.busy){input.value="";sendChat(message);} });

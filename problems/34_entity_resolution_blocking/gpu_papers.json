@@ -1,0 +1,14 @@
+{
+  "problem_id": "entity_resolution_blocking",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2025_hyperblocker",
+      "algorithm_name": "HyperBlocker: Accelerating Rule-based Blocking in Entity Resolution using GPUs",
+      "metadata": "34_entity_resolution_blocking/papers/2025_hyperblocker/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    }
+  ]
+}

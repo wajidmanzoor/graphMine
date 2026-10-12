@@ -1,0 +1,3035 @@
+{
+  "records": 219,
+  "counts": {
+    "not_runtime_validated": 164,
+    "runtime_checks_passed": 52,
+    "runtime_failures": 3
+  },
+  "records_by_problem": {
+    "balanced_graph_partitioning": [
+      "2024_gkway",
+      "2024_hyperg",
+      "2025_igkway"
+    ],
+    "biconnected_components": [
+      "2026_fast_bcc_filter",
+      "2026_pea_bcc",
+      "2026_wk_bcc_2018"
+    ],
+    "bipartite_matching_assignment": [
+      "2013_deveci_mcm_gpu",
+      "2019_hungariangpu",
+      "2026_cugraph_hungarian"
+    ],
+    "breadth_first_search": [
+      "2017_gardenia_direction_bfs",
+      "2017_gunrock_bfs",
+      "2018_hornet_bfs",
+      "2019_graphblast_bfs",
+      "2026_cugraph_bfs"
+    ],
+    "butterfly_counting_bipartite": [
+      "2022_g2miner_reuse",
+      "2022_gamma_reuse",
+      "2022_gbfc",
+      "2024_gbc_biclique"
+    ],
+    "centrality_influential_node_mining": [
+      "2017_gunrock_bc",
+      "2018_hornet_bc",
+      "2018_hornet_katz",
+      "2019_graphblast_pr",
+      "2021_turbobc",
+      "2026_cugraph_betweenness",
+      "2026_cugraph_eigenvector",
+      "2026_cugraph_katz"
+    ],
+    "community_detection": [
+      "2026_cugraph_ecg",
+      "2026_cugraph_leiden",
+      "2026_cugraph_louvain",
+      "2026_gleiden",
+      "2026_multilevel_graph_clustering"
+    ],
+    "connected_components": [
+      "2017_gunrock_cc",
+      "2018_eclcc",
+      "2018_hornet_cc",
+      "2019_graphblast_cc",
+      "2023_eclscc",
+      "2026_cugraph_scc",
+      "2026_cugraph_wcc"
+    ],
+    "densest_subgraph": [
+      "2026_bound_tightened_dsd"
+    ],
+    "entity_resolution_blocking": [
+      "2025_hyperblocker"
+    ],
+    "general_graph_weighted_matching": [
+      "2012_dgl_greedy_matching",
+      "2012_torch_cluster_greedy_matching",
+      "2015_gpu_suitor_kepler",
+      "2018_bootcmatch_suitor",
+      "2024_locally_dominant_gpu",
+      "2026_cugraph_weighted_matching"
+    ],
+    "graph_anomaly_detection": [
+      "2024_pygod_anomalydae",
+      "2024_pygod_cola",
+      "2024_pygod_dominant"
+    ],
+    "graph_based_geolocation": [
+      "2017_gunrock_spatial_median",
+      "2026_gt_geo",
+      "2026_hb_geo"
+    ],
+    "graph_classification_regression": [
+      "2018_pyg_diffpool",
+      "2018_pyg_gin",
+      "2019_pyg_sagpool"
+    ],
+    "graph_coarsening": [
+      "2019_pyg_average_pool",
+      "2026_cugraph_quotient",
+      "2026_nvgraph_contraction"
+    ],
+    "graph_condensation": [
+      "2022_graphslim_doscond",
+      "2022_graphslim_gcdm",
+      "2022_graphslim_gcond"
+    ],
+    "graph_edit_distance_mcs": [
+      "2016_gpu_mcs_drug_discovery",
+      "2026_fast_ged"
+    ],
+    "graph_laplacian_eigenpairs": [
+      "2017_cupy_dense_eigh",
+      "2017_cupy_lanczos",
+      "2017_cupy_lobpcg"
+    ],
+    "graph_layout_force_directed": [
+      "2017_gpugraphlayout",
+      "2026_cugraph_force_atlas2"
+    ],
+    "graph_motif_counting": [
+      "2022_g2miner",
+      "2023_graphset",
+      "2024_dumato"
+    ],
+    "graph_signal_denoising": [
+      "2014_gtf_admm",
+      "2014_gtf_projected_newton",
+      "2014_gunrock_sparse_fused_lasso"
+    ],
+    "graphlet_counting": [
+      "2022_g2miner_enumeration",
+      "2022_g2miner_formula",
+      "2022_pangolin"
+    ],
+    "group_steiner_tree": [
+      "2021_gpusteiner_kmb",
+      "2022_gpu_vlsi_gst",
+      "2025_gpu4gst"
+    ],
+    "hop_constrained_cycle_path_enumeration": [
+      "2014_gpu_chordless_cycles",
+      "2022_gpu_elementary_circuits",
+      "2026_cugraph_simple_cycles"
+    ],
+    "hypergraph_node_learning": [
+      "2020_dhg_hgnn",
+      "2020_dhg_hnhn",
+      "2020_dhg_hypergcn"
+    ],
+    "hypergraph_partitioning": [
+      "2025_ghypart",
+      "2026_axon_cuda",
+      "2026_fastpartitioner",
+      "2026_hgnn_part",
+      "2026_hyspecpro"
+    ],
+    "induced_subgraph_ego_extraction": [
+      "2019_dgl_node_subgraph",
+      "2019_pyg_induced_subgraph",
+      "2019_pyg_khop_subgraph",
+      "2026_cugraph_egonet",
+      "2026_cugraph_induced_subgraph"
+    ],
+    "influence_maximization": [
+      "2020_curipples",
+      "2021_gim",
+      "2021_superfuser",
+      "2024_difuser"
+    ],
+    "k_clique_counting_enumeration": [
+      "2022_parallel_k_clique_counting",
+      "2023_graphset",
+      "2024_gamma"
+    ],
+    "k_core_decomposition": [
+      "2017_gunrock_kcore",
+      "2018_hornet_kcore",
+      "2023_accelerating_k_core_gpu",
+      "2026_cugraph_core_number"
+    ],
+    "k_truss_decomposition": [
+      "2018_hornet_ktruss",
+      "2020_accelerating_truss_heterogeneous",
+      "2026_cugraph_k_truss"
+    ],
+    "knn_graph_construction": [
+      "2017_faiss_flat_knn",
+      "2019_torch_cluster_knn",
+      "2021_cuvs_nn_descent"
+    ],
+    "knowledge_graph_embedding": [
+      "2014_dgl_ke_distmult",
+      "2016_dgl_ke_complex",
+      "2019_dgl_ke_rotate"
+    ],
+    "link_prediction": [
+      "2026_cugraph_cosine",
+      "2026_cugraph_jaccard",
+      "2026_cugraph_overlap",
+      "2026_cugraph_sorensen"
+    ],
+    "many_source_shortest_paths": [
+      "2010_blocked_cuda_floyd_warshall",
+      "2023_tensor_floyd_warshall",
+      "2023_tensor_r_kleene",
+      "2026_cugraph_od_distances"
+    ],
+    "max_flow_min_cut": [
+      "2025_ecl_maxflow",
+      "2025_generalized_maxflow_gpu",
+      "2025_wbpr"
+    ],
+    "maximal_biclique_enumeration": [
+      "2023_efficient_mbe_gpus",
+      "2024_cumbe",
+      "2025_advanced_mbe_gpu_bitmaps"
+    ],
+    "maximal_clique_enumeration": [
+      "2023_parallelizing_mce",
+      "2024_g2_aimd",
+      "2026_rdmce"
+    ],
+    "maximal_independent_set": [
+      "2016_lonestargpu_mis",
+      "2018_ecl_mis",
+      "2019_graphblast_mis",
+      "2025_mg_mis",
+      "2026_cugraph_mis"
+    ],
+    "maximum_clique": [
+      "2019_maximum_clique_cuda",
+      "2023_maximum_clique_enumeration_gpu",
+      "2024_maximum_clique_many_core_gpu"
+    ],
+    "maximum_independent_set": [
+      "2023_difusco_mis",
+      "2023_dynamic_mis",
+      "2025_pcqo_reference"
+    ],
+    "minimum_vertex_cover": [
+      "2022_parallel_mvc_reference",
+      "2023_dynamic_mvc",
+      "2026_component_aware_mvc"
+    ],
+    "neighborhood_sampling": [
+      "2020_csaw_neighbors",
+      "2020_nextdoor_neighbors",
+      "2021_skywalker_neighbors",
+      "2026_cugraph_neighbor_sampling"
+    ],
+    "network_alignment": [
+      "2015_hga_2n",
+      "2023_cualign",
+      "2024_gpu_local_network_alignment",
+      "2024_pygmtools_ipfp",
+      "2024_pygmtools_rrwm",
+      "2024_pygmtools_sm"
+    ],
+    "node_classification_regression": [
+      "2016_pyg_gcn",
+      "2017_pyg_gat",
+      "2017_pyg_graphsage"
+    ],
+    "node_embedding": [
+      "2014_graphvite_deepwalk",
+      "2015_graphvite_line",
+      "2016_graphvite_node2vec"
+    ],
+    "persistent_homology": [
+      "2020_ripserplusplus"
+    ],
+    "personalized_pagerank_rwr": [
+      "2017_gunrock_ppr",
+      "2019_graphblast_seeded_diffusion",
+      "2020_kpar",
+      "2026_cugraph_personalized_pagerank"
+    ],
+    "quasi_clique_mining": [
+      "2025_cuqc"
+    ],
+    "random_walk_generation": [
+      "2020_csaw_walks",
+      "2020_nextdoor_walks",
+      "2021_skywalker_walks",
+      "2026_cugraph_random_walks"
+    ],
+    "seeded_local_community_detection": [
+      "2017_gunrock_ppr",
+      "2017_gunrock_regularized_ppr",
+      "2019_graphblast_lgc"
+    ],
+    "signed_network_structural_balance": [
+      "2021_graphbplus",
+      "2026_ecl_sgb"
+    ],
+    "simrank_vertex_similarity": [
+      "2023_clipsim"
+    ],
+    "single_graph_frequent_subgraph_mining": [
+      "2022_graphminer_mni",
+      "2022_pangolin_mni"
+    ],
+    "single_source_shortest_paths": [
+      "2017_gardenia_delta_stepping",
+      "2017_gunrock_sssp",
+      "2018_hornet_sssp",
+      "2019_graphblast_sssp",
+      "2026_cugraph_sssp"
+    ],
+    "spanning_tree_forest": [
+      "2016_lonestargpu_mst",
+      "2017_gardenia_mst",
+      "2017_gunrock_boruvka"
+    ],
+    "spectral_graph_sparsification": [
+      "2024_ingrass_candidate",
+      "2025_dygrass_decremental",
+      "2025_dygrass_incremental"
+    ],
+    "subgraph_isomorphism": [
+      "2026_gmatch"
+    ],
+    "temporal_fastest_paths": [
+      "2019_temporal_eat",
+      "2024_temporal_fastest",
+      "2025_tempgraph"
+    ],
+    "temporal_motif_mining": [
+      "2024_everest",
+      "2025_mayura"
+    ],
+    "top_k_critical_paths_dag": [
+      "2021_gpba",
+      "2021_heterocppr",
+      "2026_gpathgen"
+    ],
+    "topological_sort": [
+      "2017_nvidia_parallel_dag_dfs",
+      "2026_cugraph_topological_levels",
+      "2026_topogpu_morse_sort"
+    ],
+    "transitive_closure_reachability": [
+      "2021_atc",
+      "2024_gdlog",
+      "2026_curpq"
+    ],
+    "triangle_counting_listing": [
+      "2017_gunrock_tc",
+      "2018_hornet_triangles",
+      "2019_graphblast_tc",
+      "2025_tot_tensor_cores",
+      "2025_wetric",
+      "2026_cugraph_triangle_count",
+      "2026_edtc"
+    ],
+    "vertex_coloring": [
+      "2016_gardenia_coloring",
+      "2017_gunrock_coloring",
+      "2019_graphblast_coloring",
+      "2026_cugraph_coloring"
+    ],
+    "widest_paths": [
+      "2026_nvgraph_widest_path"
+    ]
+  },
+  "artifacts": [
+    {
+      "problem_id": "balanced_graph_partitioning",
+      "paper_id": "2024_gkway",
+      "title": "G-kway: Multilevel GPU-Accelerated k-way Graph Partitioner using Task Graph Parallelism",
+      "code_commit": null,
+      "collection_metadata": "problems/30_balanced_graph_partitioning/papers/2024_gkway/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "balanced_graph_partitioning",
+      "paper_id": "2024_hyperg",
+      "title": "HyperG: Multilevel GPU-Accelerated k-way Hypergraph Partitioner",
+      "code_commit": null,
+      "collection_metadata": "problems/30_balanced_graph_partitioning/papers/2024_hyperg/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "balanced_graph_partitioning",
+      "paper_id": "2025_igkway",
+      "title": "iG-kway: Incremental k-way Graph Partitioning on GPU",
+      "code_commit": null,
+      "collection_metadata": "problems/30_balanced_graph_partitioning/papers/2025_igkway/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "biconnected_components",
+      "paper_id": "2026_fast_bcc_filter",
+      "title": "GPU Algorithms for Biconnected Components on Large Graphs",
+      "code_commit": "147db596535064ee6ea43efbcab315d5b224a1a6",
+      "collection_metadata": "problems/56_biconnected_components/papers/2026_fast_bcc_filter/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "biconnected_components",
+      "paper_id": "2026_pea_bcc",
+      "title": "GPU Algorithms for Biconnected Components on Large Graphs",
+      "code_commit": "147db596535064ee6ea43efbcab315d5b224a1a6",
+      "collection_metadata": "problems/56_biconnected_components/papers/2026_pea_bcc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "biconnected_components",
+      "paper_id": "2026_wk_bcc_2018",
+      "title": "GPU Algorithms for Biconnected Components on Large Graphs",
+      "code_commit": "147db596535064ee6ea43efbcab315d5b224a1a6",
+      "collection_metadata": "problems/56_biconnected_components/papers/2026_wk_bcc_2018/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "bipartite_matching_assignment",
+      "paper_id": "2013_deveci_mcm_gpu",
+      "title": "GPU Accelerated Maximum Cardinality Matching Algorithms for Bipartite Graphs",
+      "code_commit": null,
+      "collection_metadata": "problems/31_bipartite_matching_assignment/papers/2013_deveci_mcm_gpu/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "bipartite_matching_assignment",
+      "paper_id": "2019_hungariangpu",
+      "title": "Fast block distributed CUDA implementation of the Hungarian algorithm",
+      "code_commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
+      "collection_metadata": "problems/31_bipartite_matching_assignment/papers/2019_hungariangpu/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "linear-assignment/hungarian-cuda",
+          "passed": 200,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "bipartite_matching_assignment",
+      "paper_id": "2026_cugraph_hungarian",
+      "title": "cuGraph Dense Hungarian assignment \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/31_bipartite_matching_assignment/papers/2026_cugraph_hungarian/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "breadth_first_search",
+      "paper_id": "2017_gardenia_direction_bfs",
+      "title": "GARDENIA: A Domain-specific Benchmark Suite for Next-generation Accelerators",
+      "code_commit": "5894df11cf47f8839945edadff43dc79e260216d",
+      "collection_metadata": "problems/38_breadth_first_search/papers/2017_gardenia_direction_bfs/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "breadth_first_search",
+      "paper_id": "2017_gunrock_bfs",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/38_breadth_first_search/papers/2017_gunrock_bfs/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "breadth_first_search",
+      "paper_id": "2018_hornet_bfs",
+      "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+      "code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+      "collection_metadata": "problems/38_breadth_first_search/papers/2018_hornet_bfs/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "breadth_first_search",
+      "paper_id": "2019_graphblast_bfs",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/38_breadth_first_search/papers/2019_graphblast_bfs/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "breadth_first_search",
+      "paper_id": "2026_cugraph_bfs",
+      "title": "cuGraph Breadth-first traversal \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/38_breadth_first_search/papers/2026_cugraph_bfs/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "paper_id": "2022_g2miner_reuse",
+      "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "collection_metadata": "problems/23_butterfly_counting_bipartite/papers/2022_g2miner_reuse/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "butterfly-counting/graphminer",
+          "passed": 512,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "paper_id": "2022_gamma_reuse",
+      "title": "A Graph Pattern Mining Framework for Large Graphs on GPU",
+      "code_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+      "collection_metadata": "problems/23_butterfly_counting_bipartite/papers/2022_gamma_reuse/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "butterfly-counting/gamma-butterfly",
+          "passed": 512,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "paper_id": "2022_gbfc",
+      "title": "Efficient Load-Balanced Butterfly Counting on GPU",
+      "code_commit": null,
+      "collection_metadata": "problems/23_butterfly_counting_bipartite/papers/2022_gbfc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "butterfly_counting_bipartite",
+      "paper_id": "2024_gbc_biclique",
+      "title": "Accelerating Biclique Counting on GPU",
+      "code_commit": null,
+      "collection_metadata": "problems/23_butterfly_counting_bipartite/papers/2024_gbc_biclique/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "paper_id": "2017_gunrock_bc",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/18_centrality_influential_node_mining/papers/2017_gunrock_bc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "paper_id": "2018_hornet_bc",
+      "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+      "code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+      "collection_metadata": "problems/18_centrality_influential_node_mining/papers/2018_hornet_bc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "paper_id": "2018_hornet_katz",
+      "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+      "code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+      "collection_metadata": "problems/18_centrality_influential_node_mining/papers/2018_hornet_katz/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "paper_id": "2019_graphblast_pr",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/18_centrality_influential_node_mining/papers/2019_graphblast_pr/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "paper_id": "2021_turbobc",
+      "title": "TurboBC: A Memory Efficient and Scalable GPU Based Betweenness Centrality Algorithm in the Language of Linear Algebra",
+      "code_commit": "6e885a207902cfdac4cc375085c5a6ff58977fea",
+      "collection_metadata": "problems/18_centrality_influential_node_mining/papers/2021_turbobc/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "betweenness-centrality/turbo-bc",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "paper_id": "2026_cugraph_betweenness",
+      "title": "cuGraph Betweenness centrality \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/18_centrality_influential_node_mining/papers/2026_cugraph_betweenness/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "paper_id": "2026_cugraph_eigenvector",
+      "title": "cuGraph Eigenvector centrality \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/18_centrality_influential_node_mining/papers/2026_cugraph_eigenvector/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "centrality_influential_node_mining",
+      "paper_id": "2026_cugraph_katz",
+      "title": "cuGraph Katz centrality \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/18_centrality_influential_node_mining/papers/2026_cugraph_katz/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "community_detection",
+      "paper_id": "2026_cugraph_ecg",
+      "title": "cuGraph Ensemble Clustering for Graphs \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/16_community_detection/papers/2026_cugraph_ecg/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "community_detection",
+      "paper_id": "2026_cugraph_leiden",
+      "title": "cuGraph Leiden community detection \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/16_community_detection/papers/2026_cugraph_leiden/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "community_detection",
+      "paper_id": "2026_cugraph_louvain",
+      "title": "cuGraph Louvain modularity optimization \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/16_community_detection/papers/2026_cugraph_louvain/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "community_detection",
+      "paper_id": "2026_gleiden",
+      "title": "gLeiden: Accelerated Community Detection Algorithms Using Directed and Undirected Graphs on GPUs",
+      "code_commit": "6aacd7f8e91dbf8994ef21640355172ad1a67771",
+      "collection_metadata": "problems/16_community_detection/papers/2026_gleiden/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "community-detection/gleiden",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "community_detection",
+      "paper_id": "2026_multilevel_graph_clustering",
+      "title": "GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden",
+      "code_commit": "29c69d27ba38f16476dcd8a6cb4ee70c68d96c49",
+      "collection_metadata": "problems/16_community_detection/papers/2026_multilevel_graph_clustering/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "community-detection/parallel-louvain",
+          "passed": 624,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        },
+        {
+          "backend": "community-detection/parallel-leiden",
+          "passed": 624,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        },
+        {
+          "backend": "community-detection/parallel-leiden-plus",
+          "passed": 624,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2017_gunrock_cc",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "386d04450b9ae11097e9789a648042d4d310f199",
+      "collection_metadata": "problems/35_connected_components/papers/2017_gunrock_cc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2018_eclcc",
+      "title": "A High-Performance Connected Components Implementation for GPUs",
+      "code_commit": null,
+      "collection_metadata": "problems/35_connected_components/papers/2018_eclcc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2018_hornet_cc",
+      "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+      "code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+      "collection_metadata": "problems/35_connected_components/papers/2018_hornet_cc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2019_graphblast_cc",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/35_connected_components/papers/2019_graphblast_cc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2023_eclscc",
+      "title": "A GPU Algorithm for Detecting Strongly Connected Components",
+      "code_commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
+      "collection_metadata": "problems/35_connected_components/papers/2023_eclscc/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "connected-components/ecl-scc",
+          "passed": 368,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2026_cugraph_scc",
+      "title": "cuGraph Strongly connected components \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/35_connected_components/papers/2026_cugraph_scc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "connected_components",
+      "paper_id": "2026_cugraph_wcc",
+      "title": "cuGraph Weakly connected components \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/35_connected_components/papers/2026_cugraph_wcc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "densest_subgraph",
+      "paper_id": "2026_bound_tightened_dsd",
+      "title": "Bound-Tightened Densest Subgraph Discovery on GPU",
+      "code_commit": "3e704f98cf873336e2cf789570774039c8d6f092",
+      "collection_metadata": "problems/05_densest_subgraph/papers/2026_bound_tightened_dsd/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "densest-subgraph/cds",
+          "passed": 1336,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "entity_resolution_blocking",
+      "paper_id": "2025_hyperblocker",
+      "title": "HyperBlocker: Accelerating Rule-based Blocking in Entity Resolution using GPUs",
+      "code_commit": null,
+      "collection_metadata": "problems/34_entity_resolution_blocking/papers/2025_hyperblocker/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made."
+    },
+    {
+      "problem_id": "general_graph_weighted_matching",
+      "paper_id": "2012_dgl_greedy_matching",
+      "title": "A GPU Algorithm for Greedy Graph Matching",
+      "code_commit": "3d16000b4170fa741ed9e9667f22ba84d3493026",
+      "collection_metadata": "problems/44_general_graph_weighted_matching/papers/2012_dgl_greedy_matching/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "general_graph_weighted_matching",
+      "paper_id": "2012_torch_cluster_greedy_matching",
+      "title": "A GPU Algorithm for Greedy Graph Matching",
+      "code_commit": "e9a855c284b45edcbf0282cf70ac09bee0ce4e49",
+      "collection_metadata": "problems/44_general_graph_weighted_matching/papers/2012_torch_cluster_greedy_matching/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "general_graph_weighted_matching",
+      "paper_id": "2015_gpu_suitor_kepler",
+      "title": "Optimizing Approximate Weighted Matching on Nvidia Kepler K40",
+      "code_commit": null,
+      "collection_metadata": "problems/44_general_graph_weighted_matching/papers/2015_gpu_suitor_kepler/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "general_graph_weighted_matching",
+      "paper_id": "2018_bootcmatch_suitor",
+      "title": "AMG based on compatible weighted matching for GPUs",
+      "code_commit": "e4636be918902feeb8dde63f3c5ee207ae3a5d94",
+      "collection_metadata": "problems/44_general_graph_weighted_matching/papers/2018_bootcmatch_suitor/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "general_graph_weighted_matching",
+      "paper_id": "2024_locally_dominant_gpu",
+      "title": "Efficient Weighted Graph Matching on GPUs",
+      "code_commit": null,
+      "collection_metadata": "problems/44_general_graph_weighted_matching/papers/2024_locally_dominant_gpu/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "general_graph_weighted_matching",
+      "paper_id": "2026_cugraph_weighted_matching",
+      "title": "cuGraph Approximate weighted matching \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/44_general_graph_weighted_matching/papers/2026_cugraph_weighted_matching/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "graph_anomaly_detection",
+      "paper_id": "2024_pygod_anomalydae",
+      "title": "PyGOD: A Python Library for Graph Outlier Detection",
+      "code_commit": "c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8",
+      "collection_metadata": "problems/20_graph_anomaly_detection/papers/2024_pygod_anomalydae/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graph_anomaly_detection",
+      "paper_id": "2024_pygod_cola",
+      "title": "PyGOD: A Python Library for Graph Outlier Detection",
+      "code_commit": "c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8",
+      "collection_metadata": "problems/20_graph_anomaly_detection/papers/2024_pygod_cola/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graph_anomaly_detection",
+      "paper_id": "2024_pygod_dominant",
+      "title": "PyGOD: A Python Library for Graph Outlier Detection",
+      "code_commit": "c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8",
+      "collection_metadata": "problems/20_graph_anomaly_detection/papers/2024_pygod_dominant/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graph_based_geolocation",
+      "paper_id": "2017_gunrock_spatial_median",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/60_graph_based_geolocation/papers/2017_gunrock_spatial_median/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graph_based_geolocation",
+      "paper_id": "2026_gt_geo",
+      "title": "Sparsity is not an obstacle: An accurate and efficient IP geolocation framework based on Graph Transformer",
+      "code_commit": "11afee62e645d74fb1dc5b9c2b23fd66175de8f7",
+      "collection_metadata": "problems/60_graph_based_geolocation/papers/2026_gt_geo/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graph_based_geolocation",
+      "paper_id": "2026_hb_geo",
+      "title": "HB-Geo: a street-level IP geolocation method based on hop-constrained subgraphs and binary gates",
+      "code_commit": "3c2d65ce19199ed963e16d0617003a478b05fa23",
+      "collection_metadata": "problems/60_graph_based_geolocation/papers/2026_hb_geo/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graph_classification_regression",
+      "paper_id": "2018_pyg_diffpool",
+      "title": "Hierarchical Graph Representation Learning with Differentiable Pooling",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/53_graph_classification_regression/papers/2018_pyg_diffpool/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-diffpool",
+          "passed": 58,
+          "failed": 0,
+          "scope": "CUDA/CPU layer-output parity only; no trained graph classifier",
+          "evidence": "validation/research_runtime/results/models/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_classification_regression",
+      "paper_id": "2018_pyg_gin",
+      "title": "How Powerful are Graph Neural Networks?",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/53_graph_classification_regression/papers/2018_pyg_gin/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-gin",
+          "passed": 58,
+          "failed": 0,
+          "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim",
+          "evidence": "validation/research_runtime/results/models/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_classification_regression",
+      "paper_id": "2019_pyg_sagpool",
+      "title": "Self-Attention Graph Pooling",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/53_graph_classification_regression/papers/2019_pyg_sagpool/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-sagpool",
+          "passed": 58,
+          "failed": 0,
+          "scope": "CUDA/CPU pooling parity only; no trained graph classifier",
+          "evidence": "validation/research_runtime/results/models/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_coarsening",
+      "paper_id": "2019_pyg_average_pool",
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/62_graph_coarsening/papers/2019_pyg_average_pool/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-average-pool",
+          "passed": 288,
+          "failed": 0,
+          "scope": "Exact quotient for supplied assignment, drop self-loops, mean features, sum weights; no clustering generation",
+          "evidence": "validation/research_runtime/results/pyg/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_coarsening",
+      "paper_id": "2026_cugraph_quotient",
+      "title": "cuGraph Weighted graph coarsening \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/62_graph_coarsening/papers/2026_cugraph_quotient/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "graph_coarsening",
+      "paper_id": "2026_nvgraph_contraction",
+      "title": "nvGRAPH graph contraction \u2014 upstream implementation documentation",
+      "code_commit": "1ea93b51387bd3ff149b6ac8fa91d64edd43d31c",
+      "collection_metadata": "problems/62_graph_coarsening/papers/2026_nvgraph_contraction/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned legacy nvGraph configure fails at cpp/CMakeLists.txt:113 (empty include path); no runtime evidence."
+    },
+    {
+      "problem_id": "graph_condensation",
+      "paper_id": "2022_graphslim_doscond",
+      "title": "Condensing Graphs via One-Step Gradient Matching",
+      "code_commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235",
+      "collection_metadata": "problems/70_graph_condensation/papers/2022_graphslim_doscond/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No condensation training/evaluation integration; synthetic graph quality and downstream accuracy remain untested."
+    },
+    {
+      "problem_id": "graph_condensation",
+      "paper_id": "2022_graphslim_gcdm",
+      "title": "Graph Condensation via Receptive Field Distribution Matching",
+      "code_commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235",
+      "collection_metadata": "problems/70_graph_condensation/papers/2022_graphslim_gcdm/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No condensation training/evaluation integration; synthetic graph quality and downstream accuracy remain untested."
+    },
+    {
+      "problem_id": "graph_condensation",
+      "paper_id": "2022_graphslim_gcond",
+      "title": "Graph Condensation for Graph Neural Networks",
+      "code_commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235",
+      "collection_metadata": "problems/70_graph_condensation/papers/2022_graphslim_gcond/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No condensation training/evaluation integration; synthetic graph quality and downstream accuracy remain untested."
+    },
+    {
+      "problem_id": "graph_edit_distance_mcs",
+      "paper_id": "2016_gpu_mcs_drug_discovery",
+      "title": "A GPU Based Maximum Common Subgraph Algorithm for Drug Discovery Applications",
+      "code_commit": null,
+      "collection_metadata": "problems/24_graph_edit_distance_mcs/papers/2016_gpu_mcs_drug_discovery/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "graph_edit_distance_mcs",
+      "paper_id": "2026_fast_ged",
+      "title": "Efficient Accelerated Graph Edit Distance Computation on GPU",
+      "code_commit": null,
+      "collection_metadata": "problems/24_graph_edit_distance_mcs/papers/2026_fast_ged/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graph_laplacian_eigenpairs",
+      "paper_id": "2017_cupy_dense_eigh",
+      "title": "CuPy: A NumPy-Compatible Library for NVIDIA GPU Calculations",
+      "code_commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0",
+      "collection_metadata": "problems/63_graph_laplacian_eigenpairs/papers/2017_cupy_dense_eigh/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "cupy-dense-eigh",
+          "passed": 301,
+          "failed": 0,
+          "scope": "Pinned upstream algorithm; independent NumPy eigenvalues, residuals, orthonormality, repeated zero eigenvalues",
+          "evidence": "validation/research_runtime/results/eigen/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_laplacian_eigenpairs",
+      "paper_id": "2017_cupy_lanczos",
+      "title": "CuPy: A NumPy-Compatible Library for NVIDIA GPU Calculations",
+      "code_commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0",
+      "collection_metadata": "problems/63_graph_laplacian_eigenpairs/papers/2017_cupy_lanczos/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "cupy-lanczos",
+          "passed": 300,
+          "failed": 0,
+          "scope": "Pinned upstream algorithm; independent NumPy eigenvalues, residuals, orthonormality, repeated zero eigenvalues",
+          "evidence": "validation/research_runtime/results/eigen/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_laplacian_eigenpairs",
+      "paper_id": "2017_cupy_lobpcg",
+      "title": "CuPy: A NumPy-Compatible Library for NVIDIA GPU Calculations",
+      "code_commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0",
+      "collection_metadata": "problems/63_graph_laplacian_eigenpairs/papers/2017_cupy_lobpcg/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "cupy-lobpcg",
+          "passed": 298,
+          "failed": 2,
+          "scope": "Pinned upstream algorithm; independent NumPy eigenvalues, residuals, orthonormality, repeated zero eigenvalues",
+          "evidence": "validation/research_runtime/results/eigen/summary.json"
+        }
+      ],
+      "status": "runtime_failures",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_layout_force_directed",
+      "paper_id": "2017_gpugraphlayout",
+      "title": "Exploiting GPUs for Fast Force-Directed Visualization of Large-Scale Networks",
+      "code_commit": "9da3af0b7ae72dbfb04b2a7b6eaf28f4d9c13344",
+      "collection_metadata": "problems/36_graph_layout_force_directed/papers/2017_gpugraphlayout/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graph_layout_force_directed",
+      "paper_id": "2026_cugraph_force_atlas2",
+      "title": "cuGraph ForceAtlas2 layout \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/36_graph_layout_force_directed/papers/2026_cugraph_force_atlas2/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "graph_motif_counting",
+      "paper_id": "2022_g2miner",
+      "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "collection_metadata": "problems/11_graph_motif_counting/papers/2022_g2miner/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "graph-motifs/graphminer",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_motif_counting",
+      "paper_id": "2023_graphset",
+      "title": "GraphSet: High Performance Graph Mining through Equivalent Set Transformations",
+      "code_commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
+      "collection_metadata": "problems/11_graph_motif_counting/papers/2023_graphset/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "graph-motifs/graphset",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_motif_counting",
+      "paper_id": "2024_dumato",
+      "title": "DuMato: A Dynamic GPU System for Graph Pattern Mining",
+      "code_commit": "79c255ee2467e436d49e3ee974b4d7149551c641",
+      "collection_metadata": "problems/11_graph_motif_counting/papers/2024_dumato/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "graph-motifs/dumato",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "graph_signal_denoising",
+      "paper_id": "2014_gtf_admm",
+      "title": "Trend Filtering on Graphs",
+      "code_commit": null,
+      "collection_metadata": "problems/59_graph_signal_denoising/papers/2014_gtf_admm/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "graph_signal_denoising",
+      "paper_id": "2014_gtf_projected_newton",
+      "title": "Trend Filtering on Graphs",
+      "code_commit": null,
+      "collection_metadata": "problems/59_graph_signal_denoising/papers/2014_gtf_projected_newton/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "graph_signal_denoising",
+      "paper_id": "2014_gunrock_sparse_fused_lasso",
+      "title": "Trend Filtering on Graphs",
+      "code_commit": "386d04450b9ae11097e9789a648042d4d310f199",
+      "collection_metadata": "problems/59_graph_signal_denoising/papers/2014_gunrock_sparse_fused_lasso/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graphlet_counting",
+      "paper_id": "2022_g2miner_enumeration",
+      "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "collection_metadata": "problems/12_graphlet_counting/papers/2022_g2miner_enumeration/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graphlet_counting",
+      "paper_id": "2022_g2miner_formula",
+      "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "collection_metadata": "problems/12_graphlet_counting/papers/2022_g2miner_formula/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "graphlet_counting",
+      "paper_id": "2022_pangolin",
+      "title": "Pangolin: An Efficient and Flexible Graph Pattern Mining System on CPU and GPU",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "collection_metadata": "problems/12_graphlet_counting/papers/2022_pangolin/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "group_steiner_tree",
+      "paper_id": "2021_gpusteiner_kmb",
+      "title": "Accelerating Computation of Steiner Trees on GPUs",
+      "code_commit": "61e2c94def74d84d4d79d59c7499218ab75d720e",
+      "collection_metadata": "problems/27_group_steiner_tree/papers/2021_gpusteiner_kmb/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "group_steiner_tree",
+      "paper_id": "2022_gpu_vlsi_gst",
+      "title": "GPU-Accelerated VLSI Routing using Group Steiner Trees",
+      "code_commit": null,
+      "collection_metadata": "problems/27_group_steiner_tree/papers/2022_gpu_vlsi_gst/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made."
+    },
+    {
+      "problem_id": "group_steiner_tree",
+      "paper_id": "2025_gpu4gst",
+      "title": "Fast Optimal Group Steiner Tree Search using GPUs",
+      "code_commit": "716a19c240c480cb2d23435bbaca55163a48e174",
+      "collection_metadata": "problems/27_group_steiner_tree/papers/2025_gpu4gst/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "group-steiner-tree/gpu4gst",
+          "passed": 160,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "paper_id": "2014_gpu_chordless_cycles",
+      "title": "A GPU-based parallel algorithm for enumerating all chordless cycles in graphs",
+      "code_commit": null,
+      "collection_metadata": "problems/26_hop_constrained_cycle_path_enumeration/papers/2014_gpu_chordless_cycles/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "paper_id": "2022_gpu_elementary_circuits",
+      "title": "Fast parallel algorithms for finding elementary circuits of a directed graph: a GPU-based approach",
+      "code_commit": null,
+      "collection_metadata": "problems/26_hop_constrained_cycle_path_enumeration/papers/2022_gpu_elementary_circuits/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "paper_id": "2026_cugraph_simple_cycles",
+      "title": "cuGraph Elementary cycle enumeration \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/26_hop_constrained_cycle_path_enumeration/papers/2026_cugraph_simple_cycles/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "hypergraph_node_learning",
+      "paper_id": "2020_dhg_hgnn",
+      "title": "Hypergraph Neural Networks",
+      "code_commit": "b4f80211c2173b890d2779539683a3a65c4648ac",
+      "collection_metadata": "problems/65_hypergraph_node_learning/papers/2020_dhg_hgnn/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "dhg-hgnn",
+          "passed": 100,
+          "failed": 0,
+          "scope": "Upstream model forward/backward, finite logits and gradients; HGNN/HNHN CPU parity; no training/generalization claim",
+          "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+        },
+        {
+          "backend": "dhg-hgnn-formula",
+          "passed": 100,
+          "failed": 0,
+          "scope": "Independent dense NumPy incidence-matrix formula for HGNN convolution",
+          "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "hypergraph_node_learning",
+      "paper_id": "2020_dhg_hnhn",
+      "title": "HNHN: Hypergraph Networks with Hyperedge Neurons",
+      "code_commit": "b4f80211c2173b890d2779539683a3a65c4648ac",
+      "collection_metadata": "problems/65_hypergraph_node_learning/papers/2020_dhg_hnhn/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "dhg-hnhn",
+          "passed": 100,
+          "failed": 0,
+          "scope": "Upstream model forward/backward, finite logits and gradients; HGNN/HNHN CPU parity; no training/generalization claim",
+          "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "hypergraph_node_learning",
+      "paper_id": "2020_dhg_hypergcn",
+      "title": "HyperGCN: A New Method of Training Graph Convolutional Networks on Hypergraphs",
+      "code_commit": "b4f80211c2173b890d2779539683a3a65c4648ac",
+      "collection_metadata": "problems/65_hypergraph_node_learning/papers/2020_dhg_hypergcn/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "dhg-hypergcn",
+          "passed": 55,
+          "failed": 0,
+          "scope": "Upstream model forward/backward, finite logits and gradients; HGNN/HNHN CPU parity; no training/generalization claim",
+          "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+        },
+        {
+          "backend": "dhg-hypergcn-domain-rejection",
+          "passed": 45,
+          "failed": 0,
+          "scope": "Expected rejection of singleton hyperedges; no model output",
+          "evidence": "validation/research_runtime/results/hypergraph/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "hypergraph_partitioning",
+      "paper_id": "2025_ghypart",
+      "title": "gHyPart: GPU-friendly End-to-End Hypergraph Partitioner",
+      "code_commit": "97b517195c16afe1a8c46d5e3fc418109ed6972a",
+      "collection_metadata": "problems/54_hypergraph_partitioning/papers/2025_ghypart/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "hypergraph_partitioning",
+      "paper_id": "2026_axon_cuda",
+      "title": "Hypergraph Partitioning on GPU with Distinct Incident Hyperedges and Size Constraints",
+      "code_commit": "48bf283f7a370f57bacd7e88677fb4e099bb7f8a",
+      "collection_metadata": "problems/54_hypergraph_partitioning/papers/2026_axon_cuda/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "hypergraph_partitioning",
+      "paper_id": "2026_fastpartitioner",
+      "title": "FastPartitioner GPU hypergraph refinement \u2014 upstream implementation documentation",
+      "code_commit": "6697fcbe5bd957fbe1aa7f20bee725bdc1dc4dc7",
+      "collection_metadata": "problems/54_hypergraph_partitioning/papers/2026_fastpartitioner/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "hypergraph_partitioning",
+      "paper_id": "2026_hgnn_part",
+      "title": "HGNN-Part: A High-Quality Hypergraph Partitioner Based on Hypergraph Generative Model",
+      "code_commit": "0a70e44f3bccbb06c386edaf84927433c9441cb7",
+      "collection_metadata": "problems/54_hypergraph_partitioning/papers/2026_hgnn_part/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "hypergraph_partitioning",
+      "paper_id": "2026_hyspecpro",
+      "title": "HySpecPro: Scalable Hypergraph Partitioning via Spectral Projection Optimization",
+      "code_commit": "1e9db172ce26a33be394369c94bedfba913ca41a",
+      "collection_metadata": "problems/54_hypergraph_partitioning/papers/2026_hyspecpro/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "induced_subgraph_ego_extraction",
+      "paper_id": "2019_dgl_node_subgraph",
+      "title": "Deep Graph Library: A Graph-Centric, Highly-Performant Package for Graph Neural Networks",
+      "code_commit": "3d16000b4170fa741ed9e9667f22ba84d3493026",
+      "collection_metadata": "problems/48_induced_subgraph_ego_extraction/papers/2019_dgl_node_subgraph/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "induced_subgraph_ego_extraction",
+      "paper_id": "2019_pyg_induced_subgraph",
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/48_induced_subgraph_ego_extraction/papers/2019_pyg_induced_subgraph/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-induced-subgraph",
+          "passed": 288,
+          "failed": 0,
+          "scope": "Exact selected-vertex edge extraction; caller preserves isolated vertices",
+          "evidence": "validation/research_runtime/results/pyg/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "induced_subgraph_ego_extraction",
+      "paper_id": "2019_pyg_khop_subgraph",
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/48_induced_subgraph_ego_extraction/papers/2019_pyg_khop_subgraph/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-khop-subgraph",
+          "passed": 288,
+          "failed": 0,
+          "scope": "Exact undirected k-hop induced extraction",
+          "evidence": "validation/research_runtime/results/pyg/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "induced_subgraph_ego_extraction",
+      "paper_id": "2026_cugraph_egonet",
+      "title": "cuGraph Ego-network extraction \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/48_induced_subgraph_ego_extraction/papers/2026_cugraph_egonet/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "induced_subgraph_ego_extraction",
+      "paper_id": "2026_cugraph_induced_subgraph",
+      "title": "cuGraph Induced subgraph extraction \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/48_induced_subgraph_ego_extraction/papers/2026_cugraph_induced_subgraph/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "influence_maximization",
+      "paper_id": "2020_curipples",
+      "title": "cuRipples: Influence Maximization on Multi-GPU Systems",
+      "code_commit": "82b20dc261ea8d097ecd31c2d2ad07c218abc488",
+      "collection_metadata": "problems/28_influence_maximization/papers/2020_curipples/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "influence_maximization",
+      "paper_id": "2021_gim",
+      "title": "gIM: GPU Accelerated RIS-Based Influence Maximization Algorithm",
+      "code_commit": "d84b81a47606aa7912a8d1a96770568f92f5c98d",
+      "collection_metadata": "problems/28_influence_maximization/papers/2021_gim/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "influence_maximization",
+      "paper_id": "2021_superfuser",
+      "title": "Fast and Parallel Influence Maximization using Fused Sampling and Memory Access Regularization",
+      "code_commit": "1506d275671a456e41bbc7bcb294876615353b2d",
+      "collection_metadata": "problems/28_influence_maximization/papers/2021_superfuser/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "influence-maximization/superfuser",
+          "passed": 184,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "influence_maximization",
+      "paper_id": "2024_difuser",
+      "title": "DiFuseR: A Distributed Sketch-based Influence Maximization Algorithm for GPUs",
+      "code_commit": null,
+      "collection_metadata": "problems/28_influence_maximization/papers/2024_difuser/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "k_clique_counting_enumeration",
+      "paper_id": "2022_parallel_k_clique_counting",
+      "title": "Parallel K-Clique Counting on GPUs",
+      "code_commit": "314ac6d41fbe6582c2a258c2094c67ec1aa47116",
+      "collection_metadata": "problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "k-cliques/kcgpu",
+          "passed": 1252,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "k_clique_counting_enumeration",
+      "paper_id": "2023_graphset",
+      "title": "GraphSet: High Performance Graph Mining through Equivalent Set Transformations",
+      "code_commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
+      "collection_metadata": "problems/03_k_clique_counting_enumeration/papers/2023_graphset/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "k-cliques/graphset",
+          "passed": 916,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "k_clique_counting_enumeration",
+      "paper_id": "2024_gamma",
+      "title": "A Graph Pattern Mining Framework for Large Graphs on GPU",
+      "code_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
+      "collection_metadata": "problems/03_k_clique_counting_enumeration/papers/2024_gamma/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "k-cliques/gamma",
+          "passed": 1000,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "k_core_decomposition",
+      "paper_id": "2017_gunrock_kcore",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/07_k_core_decomposition/papers/2017_gunrock_kcore/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "k_core_decomposition",
+      "paper_id": "2018_hornet_kcore",
+      "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+      "code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+      "collection_metadata": "problems/07_k_core_decomposition/papers/2018_hornet_kcore/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "k_core_decomposition",
+      "paper_id": "2023_accelerating_k_core_gpu",
+      "title": "Accelerating k-Core Decomposition by a GPU",
+      "code_commit": "0a2d37634024b4c841727da7c7279aa3c494c22b",
+      "collection_metadata": "problems/07_k_core_decomposition/papers/2023_accelerating_k_core_gpu/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "k-core/kcore-gpu",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "k_core_decomposition",
+      "paper_id": "2026_cugraph_core_number",
+      "title": "cuGraph Core-number peeling \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/07_k_core_decomposition/papers/2026_cugraph_core_number/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "k_truss_decomposition",
+      "paper_id": "2018_hornet_ktruss",
+      "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+      "code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+      "collection_metadata": "problems/08_k_truss_decomposition/papers/2018_hornet_ktruss/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "k_truss_decomposition",
+      "paper_id": "2020_accelerating_truss_heterogeneous",
+      "title": "Accelerating Truss Decomposition on Heterogeneous Processors",
+      "code_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1",
+      "collection_metadata": "problems/08_k_truss_decomposition/papers/2020_accelerating_truss_heterogeneous/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "k-truss/acctd",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "k_truss_decomposition",
+      "paper_id": "2026_cugraph_k_truss",
+      "title": "cuGraph Fixed-k truss extraction \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/08_k_truss_decomposition/papers/2026_cugraph_k_truss/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "knn_graph_construction",
+      "paper_id": "2017_faiss_flat_knn",
+      "title": "Billion-scale similarity search with GPUs",
+      "code_commit": "07979b10e64d39a611196483f103b2d7b349b5f7",
+      "collection_metadata": "problems/64_knn_graph_construction/papers/2017_faiss_flat_knn/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "faiss-flat-knn",
+          "passed": 200,
+          "failed": 0,
+          "scope": "Collected GPU FlatL2 search plus explicit self-ID removal, exact distances and tied-neighbor optimum vs NumPy",
+          "evidence": "validation/research_runtime/results/faiss/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "knn_graph_construction",
+      "paper_id": "2019_torch_cluster_knn",
+      "title": "Fast Graph Representation Learning with PyTorch Geometric",
+      "code_commit": "e9a855c284b45edcbf0282cf70ac09bee0ce4e49",
+      "collection_metadata": "problems/64_knn_graph_construction/papers/2019_torch_cluster_knn/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "torch-cluster-knn",
+          "passed": 203,
+          "failed": 51,
+          "scope": "Exact squared-Euclidean directed kNN, distinct IDs including tied/duplicate vectors",
+          "evidence": "validation/research_runtime/results/knn/summary.json"
+        }
+      ],
+      "status": "runtime_failures",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "knn_graph_construction",
+      "paper_id": "2021_cuvs_nn_descent",
+      "title": "Fast k-NN Graph Construction by GPU based NN-Descent",
+      "code_commit": "24b0b17069ee1547354d15847d9c614dd4fb4a43",
+      "collection_metadata": "problems/64_knn_graph_construction/papers/2021_cuvs_nn_descent/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No compatible cuVS runtime or NN-descent adapter established; approximate recall remains untested."
+    },
+    {
+      "problem_id": "knowledge_graph_embedding",
+      "paper_id": "2014_dgl_ke_distmult",
+      "title": "Embedding Entities and Relations for Learning and Inference in Knowledge Bases",
+      "code_commit": "e00bccfc4638db8b1f703ecedbf8db81faedb2bb",
+      "collection_metadata": "problems/51_knowledge_graph_embedding/papers/2014_dgl_ke_distmult/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "knowledge_graph_embedding",
+      "paper_id": "2016_dgl_ke_complex",
+      "title": "Complex Embeddings for Simple Link Prediction",
+      "code_commit": "e00bccfc4638db8b1f703ecedbf8db81faedb2bb",
+      "collection_metadata": "problems/51_knowledge_graph_embedding/papers/2016_dgl_ke_complex/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "knowledge_graph_embedding",
+      "paper_id": "2019_dgl_ke_rotate",
+      "title": "RotatE: Knowledge Graph Embedding by Relational Rotation in Complex Space",
+      "code_commit": "e00bccfc4638db8b1f703ecedbf8db81faedb2bb",
+      "collection_metadata": "problems/51_knowledge_graph_embedding/papers/2019_dgl_ke_rotate/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "link_prediction",
+      "paper_id": "2026_cugraph_cosine",
+      "title": "cuGraph Cosine neighborhood link scores \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/19_link_prediction/papers/2026_cugraph_cosine/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "link_prediction",
+      "paper_id": "2026_cugraph_jaccard",
+      "title": "cuGraph Jaccard link scores \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/19_link_prediction/papers/2026_cugraph_jaccard/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "link_prediction",
+      "paper_id": "2026_cugraph_overlap",
+      "title": "cuGraph Overlap-coefficient link scores \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/19_link_prediction/papers/2026_cugraph_overlap/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "link_prediction",
+      "paper_id": "2026_cugraph_sorensen",
+      "title": "cuGraph Sorensen-Dice link scores \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/19_link_prediction/papers/2026_cugraph_sorensen/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "many_source_shortest_paths",
+      "paper_id": "2010_blocked_cuda_floyd_warshall",
+      "title": "A Multi-Stage CUDA Kernel for Floyd-Warshall",
+      "code_commit": "c21f114eb4da7d4900a6017e293fdb0f43d94141",
+      "collection_metadata": "problems/40_many_source_shortest_paths/papers/2010_blocked_cuda_floyd_warshall/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "many_source_shortest_paths",
+      "paper_id": "2023_tensor_floyd_warshall",
+      "title": "The Floyd-Warshall Algorithm Re-implemented Using 3D-Tensors and Hardware Acceleration",
+      "code_commit": "92935ab3a16c59dccb948da8f198381881793e19",
+      "collection_metadata": "problems/40_many_source_shortest_paths/papers/2023_tensor_floyd_warshall/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "many_source_shortest_paths",
+      "paper_id": "2023_tensor_r_kleene",
+      "title": "The Floyd-Warshall Algorithm Re-implemented Using 3D-Tensors and Hardware Acceleration",
+      "code_commit": "92935ab3a16c59dccb948da8f198381881793e19",
+      "collection_metadata": "problems/40_many_source_shortest_paths/papers/2023_tensor_r_kleene/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "many_source_shortest_paths",
+      "paper_id": "2026_cugraph_od_distances",
+      "title": "cuGraph origin-destination shortest distances (software entry; no paper collected)",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/40_many_source_shortest_paths/papers/2026_cugraph_od_distances/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "max_flow_min_cut",
+      "paper_id": "2025_ecl_maxflow",
+      "title": "An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs",
+      "code_commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
+      "collection_metadata": "problems/22_max_flow_min_cut/papers/2025_ecl_maxflow/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "max-flow-min-cut/ecl-maxflow",
+          "passed": 184,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "max_flow_min_cut",
+      "paper_id": "2025_generalized_maxflow_gpu",
+      "title": "Novel GPU-Based Method for the Generalized Maximum Flow Problem",
+      "code_commit": null,
+      "collection_metadata": "problems/22_max_flow_min_cut/papers/2025_generalized_maxflow_gpu/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "max_flow_min_cut",
+      "paper_id": "2025_wbpr",
+      "title": "Accelerating Push-Relabel Algorithm on GPU via Two-Level Parallelism Paradigm and Efficient CSR Designs",
+      "code_commit": null,
+      "collection_metadata": "problems/22_max_flow_min_cut/papers/2025_wbpr/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made."
+    },
+    {
+      "problem_id": "maximal_biclique_enumeration",
+      "paper_id": "2023_efficient_mbe_gpus",
+      "title": "Efficient Maximal Biclique Enumeration on GPUs",
+      "code_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
+      "collection_metadata": "problems/09_maximal_biclique_enumeration/papers/2023_efficient_mbe_gpus/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "maximal-biclique-counting/mbe-gpu",
+          "passed": 512,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "maximal_biclique_enumeration",
+      "paper_id": "2024_cumbe",
+      "title": "cuMBE: GPU-Accelerated Maximal Biclique Enumeration",
+      "code_commit": "2fff8005b2f74e5683d915f9cd817409f6499bcf",
+      "collection_metadata": "problems/09_maximal_biclique_enumeration/papers/2024_cumbe/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "maximal-bicliques/cumbe",
+          "passed": 512,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "maximal_biclique_enumeration",
+      "paper_id": "2025_advanced_mbe_gpu_bitmaps",
+      "title": "Advanced Maximal Biclique Enumeration on GPUs Using Bitmaps",
+      "code_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
+      "collection_metadata": "problems/09_maximal_biclique_enumeration/papers/2025_advanced_mbe_gpu_bitmaps/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "An older workspace copy exists, but no detected redistribution license was verified; no new source copy was made."
+    },
+    {
+      "problem_id": "maximal_clique_enumeration",
+      "paper_id": "2023_parallelizing_mce",
+      "title": "Parallelizing Maximal Clique Enumeration on GPUs",
+      "code_commit": "44ef6e034e39660c77c31eee475455a16af470e1",
+      "collection_metadata": "problems/01_maximal_clique_enumeration/papers/2023_parallelizing_mce/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "maximal-cliques/mce-gpu",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "maximal_clique_enumeration",
+      "paper_id": "2024_g2_aimd",
+      "title": "G2-AIMD: A Memory-Efficient Subgraph-Centric Framework for Efficient Subgraph Finding on GPUs",
+      "code_commit": "751595c0511acadd662d4f999ebf04ff6cc3483a",
+      "collection_metadata": "problems/01_maximal_clique_enumeration/papers/2024_g2_aimd/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "maximal-cliques/g2-aimd",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "maximal_clique_enumeration",
+      "paper_id": "2026_rdmce",
+      "title": "Root-Down Exposure for Maximal Clique Enumeration on GPUs",
+      "code_commit": "59452dcfbcdc8dabf41abef277ef3e240248ee0c",
+      "collection_metadata": "problems/01_maximal_clique_enumeration/papers/2026_rdmce/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "maximal-cliques/rdmce",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "maximal_independent_set",
+      "paper_id": "2016_lonestargpu_mis",
+      "title": "Lowering IrGL to CUDA",
+      "code_commit": "b67f94206a8c47fd414446621f6633a31c49fd98",
+      "collection_metadata": "problems/42_maximal_independent_set/papers/2016_lonestargpu_mis/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "maximal_independent_set",
+      "paper_id": "2018_ecl_mis",
+      "title": "A High-Quality and Fast Maximal Independent Set Implementation for GPUs",
+      "code_commit": null,
+      "collection_metadata": "problems/42_maximal_independent_set/papers/2018_ecl_mis/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "maximal_independent_set",
+      "paper_id": "2019_graphblast_mis",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/42_maximal_independent_set/papers/2019_graphblast_mis/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "maximal_independent_set",
+      "paper_id": "2025_mg_mis",
+      "title": "A Multi-GPU Algorithm for Computing Maximal Independent Sets in Large Graphs",
+      "code_commit": "db7fb2355ac68c3cf96dd2b672ead516c33bf50f",
+      "collection_metadata": "problems/42_maximal_independent_set/papers/2025_mg_mis/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "maximal_independent_set",
+      "paper_id": "2026_cugraph_mis",
+      "title": "cuGraph Maximal independent set \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/42_maximal_independent_set/papers/2026_cugraph_mis/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "maximum_clique",
+      "paper_id": "2019_maximum_clique_cuda",
+      "title": "Implementation of a Maximum Clique Search Procedure on CUDA",
+      "code_commit": "a0b6b00a1f67b6fe65380b2efcb242cf40889d83",
+      "collection_metadata": "problems/02_maximum_clique/papers/2019_maximum_clique_cuda/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "maximum-clique/cuda-ms",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "maximum_clique",
+      "paper_id": "2023_maximum_clique_enumeration_gpu",
+      "title": "Maximum Clique Enumeration on the GPU",
+      "code_commit": "2365400c7b4a172afdbf60c6c559a49e0567caac",
+      "collection_metadata": "problems/02_maximum_clique/papers/2023_maximum_clique_enumeration_gpu/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "maximum-clique/gpu-maximum-clique",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "maximum_clique",
+      "paper_id": "2024_maximum_clique_many_core_gpu",
+      "title": "Efficiently Computing Maximum Clique of Sparse Graphs with Many-Core Graphical Processing Units",
+      "code_commit": "62708c588219cc4d176ef55bbce9e5a21ad8c6d2",
+      "collection_metadata": "problems/02_maximum_clique/papers/2024_maximum_clique_many_core_gpu/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "maximum-clique/maximum-clique-on-gpu",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "maximum_independent_set",
+      "paper_id": "2023_difusco_mis",
+      "title": "DIFUSCO: Graph-based Diffusion Solvers for Combinatorial Optimization",
+      "code_commit": "65eb3b7bde76097c0d3438ce743fa6769baf9ce5",
+      "collection_metadata": "problems/66_maximum_independent_set/papers/2023_difusco_mis/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Learned solver has no validated checkpoint/inference integration here; feasibility and solution quality remain untested."
+    },
+    {
+      "problem_id": "maximum_independent_set",
+      "paper_id": "2023_dynamic_mis",
+      "title": "Maximum Independent Set: Self-Training through Dynamic Programming",
+      "code_commit": "32462fa7fb4bd5c459364a9efb6b749d9c06b53f",
+      "collection_metadata": "problems/66_maximum_independent_set/papers/2023_dynamic_mis/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Learned solver has no validated checkpoint/inference integration here; feasibility and solution quality remain untested."
+    },
+    {
+      "problem_id": "maximum_independent_set",
+      "paper_id": "2025_pcqo_reference",
+      "title": "Differentiable Quadratic Optimization For the Maximum Independent Set Problem",
+      "code_commit": null,
+      "collection_metadata": "problems/66_maximum_independent_set/papers/2025_pcqo_reference/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Published refactor branch unavailable; default-branch snapshot has no detected top-level license."
+    },
+    {
+      "problem_id": "minimum_vertex_cover",
+      "paper_id": "2022_parallel_mvc_reference",
+      "title": "Parallel Vertex Cover Algorithms on GPUs",
+      "code_commit": null,
+      "collection_metadata": "problems/69_minimum_vertex_cover/papers/2022_parallel_mvc_reference/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No detected top-level license; new source redistribution blocked."
+    },
+    {
+      "problem_id": "minimum_vertex_cover",
+      "paper_id": "2023_dynamic_mvc",
+      "title": "Maximum Independent Set: Self-Training through Dynamic Programming",
+      "code_commit": "32462fa7fb4bd5c459364a9efb6b749d9c06b53f",
+      "collection_metadata": "problems/69_minimum_vertex_cover/papers/2023_dynamic_mvc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Learned solver has no validated checkpoint/inference integration here; feasibility and solution quality remain untested."
+    },
+    {
+      "problem_id": "minimum_vertex_cover",
+      "paper_id": "2026_component_aware_mvc",
+      "title": "Faster Vertex Cover Algorithms on GPUs with Component-Aware Parallel Branching",
+      "code_commit": "9adba41659d320ca2fd0e01c6907916db1f4fdf5",
+      "collection_metadata": "problems/69_minimum_vertex_cover/papers/2026_component_aware_mvc/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "component-aware-mvc-hybrid",
+          "passed": 288,
+          "failed": 0,
+          "scope": "Exact optimum SIZE vs exhaustive subsets; upstream exports no cover witness",
+          "evidence": "validation/research_runtime/results/mvc/summary.json"
+        },
+        {
+          "backend": "component-aware-mvc-stackonly",
+          "passed": 288,
+          "failed": 0,
+          "scope": "Exact optimum SIZE vs exhaustive subsets; upstream exports no cover witness",
+          "evidence": "validation/research_runtime/results/mvc/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "neighborhood_sampling",
+      "paper_id": "2020_csaw_neighbors",
+      "title": "C-SAW: A Framework for Graph Sampling and Random Walk on GPUs",
+      "code_commit": "d91ff3ac896a90a3ea7b71e9251d5e79f67f8c6c",
+      "collection_metadata": "problems/47_neighborhood_sampling/papers/2020_csaw_neighbors/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "neighborhood_sampling",
+      "paper_id": "2020_nextdoor_neighbors",
+      "title": "Accelerating Graph Sampling for Graph Machine Learning using GPUs",
+      "code_commit": "dcbc46d60bb9623616a10f5e7518fe5214575226",
+      "collection_metadata": "problems/47_neighborhood_sampling/papers/2020_nextdoor_neighbors/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "neighborhood_sampling",
+      "paper_id": "2021_skywalker_neighbors",
+      "title": "Skywalker: Efficient Alias-Method-Based Graph Sampling and Random Walk on GPUs",
+      "code_commit": "b12bb95d01c5feabb69699985b85a6ea3cbdc944",
+      "collection_metadata": "problems/47_neighborhood_sampling/papers/2021_skywalker_neighbors/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "neighborhood_sampling",
+      "paper_id": "2026_cugraph_neighbor_sampling",
+      "title": "cuGraph Neighbor sampling \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/47_neighborhood_sampling/papers/2026_cugraph_neighbor_sampling/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "network_alignment",
+      "paper_id": "2015_hga_2n",
+      "title": "Graphics processing unit-based alignment of protein interaction networks",
+      "code_commit": null,
+      "collection_metadata": "problems/25_network_alignment/papers/2015_hga_2n/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "network_alignment",
+      "paper_id": "2023_cualign",
+      "title": "cuAlign: Scalable Network Alignment on GPU Accelerators",
+      "code_commit": null,
+      "collection_metadata": "problems/25_network_alignment/papers/2023_cualign/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "network_alignment",
+      "paper_id": "2024_gpu_local_network_alignment",
+      "title": "A GPU-based method for network alignment",
+      "code_commit": null,
+      "collection_metadata": "problems/25_network_alignment/papers/2024_gpu_local_network_alignment/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "network_alignment",
+      "paper_id": "2024_pygmtools_ipfp",
+      "title": "Pygmtools: A Python Graph Matching Toolkit",
+      "code_commit": "5b7b3f84a34528e455a6df6404822c306aa45dc1",
+      "collection_metadata": "problems/25_network_alignment/papers/2024_pygmtools_ipfp/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "network_alignment",
+      "paper_id": "2024_pygmtools_rrwm",
+      "title": "Pygmtools: A Python Graph Matching Toolkit",
+      "code_commit": "5b7b3f84a34528e455a6df6404822c306aa45dc1",
+      "collection_metadata": "problems/25_network_alignment/papers/2024_pygmtools_rrwm/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "network_alignment",
+      "paper_id": "2024_pygmtools_sm",
+      "title": "Pygmtools: A Python Graph Matching Toolkit",
+      "code_commit": "5b7b3f84a34528e455a6df6404822c306aa45dc1",
+      "collection_metadata": "problems/25_network_alignment/papers/2024_pygmtools_sm/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "node_classification_regression",
+      "paper_id": "2016_pyg_gcn",
+      "title": "Semi-Supervised Classification with Graph Convolutional Networks",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/52_node_classification_regression/papers/2016_pyg_gcn/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-gcn",
+          "passed": 58,
+          "failed": 0,
+          "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim",
+          "evidence": "validation/research_runtime/results/models/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "node_classification_regression",
+      "paper_id": "2017_pyg_gat",
+      "title": "Graph Attention Networks",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/52_node_classification_regression/papers/2017_pyg_gat/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-gat",
+          "passed": 58,
+          "failed": 0,
+          "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim",
+          "evidence": "validation/research_runtime/results/models/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "node_classification_regression",
+      "paper_id": "2017_pyg_graphsage",
+      "title": "Inductive Representation Learning on Large Graphs",
+      "code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939",
+      "collection_metadata": "problems/52_node_classification_regression/papers/2017_pyg_graphsage/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "pyg-graphsage",
+          "passed": 58,
+          "failed": 0,
+          "scope": "Collected model layer: CUDA/CPU output parity and finite backward gradients; no trained predictive-quality claim",
+          "evidence": "validation/research_runtime/results/models/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "node_embedding",
+      "paper_id": "2014_graphvite_deepwalk",
+      "title": "DeepWalk: Online Learning of Social Representations",
+      "code_commit": "5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc",
+      "collection_metadata": "problems/50_node_embedding/papers/2014_graphvite_deepwalk/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "node_embedding",
+      "paper_id": "2015_graphvite_line",
+      "title": "LINE: Large-scale Information Network Embedding",
+      "code_commit": "5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc",
+      "collection_metadata": "problems/50_node_embedding/papers/2015_graphvite_line/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "node_embedding",
+      "paper_id": "2016_graphvite_node2vec",
+      "title": "node2vec: Scalable Feature Learning for Networks",
+      "code_commit": "5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc",
+      "collection_metadata": "problems/50_node_embedding/papers/2016_graphvite_node2vec/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "persistent_homology",
+      "paper_id": "2020_ripserplusplus",
+      "title": "GPU-Accelerated Computation of Vietoris-Rips Persistence Barcodes",
+      "code_commit": "30243c0c752de26d7fdf6e41f08bf7b840ca4744",
+      "collection_metadata": "problems/67_persistent_homology/papers/2020_ripserplusplus/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "ripserplusplus-finite-bars",
+          "passed": 100,
+          "failed": 0,
+          "scope": "Hybrid upstream implementation vs independent F2 boundary reduction, finite intervals H0 through H2",
+          "evidence": "validation/research_runtime/results/persistence/summary.json"
+        },
+        {
+          "backend": "ripserplusplus-essential-h0",
+          "passed": 0,
+          "failed": 100,
+          "scope": "Full barcode contract: Python export must include essential H0 interval",
+          "evidence": "validation/research_runtime/results/persistence/summary.json"
+        }
+      ],
+      "status": "runtime_failures",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "personalized_pagerank_rwr",
+      "paper_id": "2017_gunrock_ppr",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/21_personalized_pagerank_rwr/papers/2017_gunrock_ppr/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "personalized_pagerank_rwr",
+      "paper_id": "2019_graphblast_seeded_diffusion",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/21_personalized_pagerank_rwr/papers/2019_graphblast_seeded_diffusion/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "personalized_pagerank_rwr",
+      "paper_id": "2020_kpar",
+      "title": "Realtime Top-k Personalized PageRank over Large Graphs on GPUs",
+      "code_commit": "31acf04abb62d8829234379617bbdca6168cbe67",
+      "collection_metadata": "problems/21_personalized_pagerank_rwr/papers/2020_kpar/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "personalized-pagerank/kpar",
+          "passed": 184,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "personalized_pagerank_rwr",
+      "paper_id": "2026_cugraph_personalized_pagerank",
+      "title": "cuGraph Personalized PageRank \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/21_personalized_pagerank_rwr/papers/2026_cugraph_personalized_pagerank/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "quasi_clique_mining",
+      "paper_id": "2025_cuqc",
+      "title": "GPU-Accelerated Maximal Quasi-Clique Mining",
+      "code_commit": "e3785db225f2730898c2b316a4fcc06516b16c06",
+      "collection_metadata": "problems/04_quasi_clique_mining/papers/2025_cuqc/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "quasi-cliques/cuqc",
+          "passed": 624,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "random_walk_generation",
+      "paper_id": "2020_csaw_walks",
+      "title": "C-SAW: A Framework for Graph Sampling and Random Walk on GPUs",
+      "code_commit": "d91ff3ac896a90a3ea7b71e9251d5e79f67f8c6c",
+      "collection_metadata": "problems/46_random_walk_generation/papers/2020_csaw_walks/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "random_walk_generation",
+      "paper_id": "2020_nextdoor_walks",
+      "title": "Accelerating Graph Sampling for Graph Machine Learning using GPUs",
+      "code_commit": "dcbc46d60bb9623616a10f5e7518fe5214575226",
+      "collection_metadata": "problems/46_random_walk_generation/papers/2020_nextdoor_walks/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "random_walk_generation",
+      "paper_id": "2021_skywalker_walks",
+      "title": "Skywalker: Efficient Alias-Method-Based Graph Sampling and Random Walk on GPUs",
+      "code_commit": "b12bb95d01c5feabb69699985b85a6ea3cbdc944",
+      "collection_metadata": "problems/46_random_walk_generation/papers/2021_skywalker_walks/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "random_walk_generation",
+      "paper_id": "2026_cugraph_random_walks",
+      "title": "cuGraph GPU random walks \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/46_random_walk_generation/papers/2026_cugraph_random_walks/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "seeded_local_community_detection",
+      "paper_id": "2017_gunrock_ppr",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/49_seeded_local_community_detection/papers/2017_gunrock_ppr/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "seeded_local_community_detection",
+      "paper_id": "2017_gunrock_regularized_ppr",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "386d04450b9ae11097e9789a648042d4d310f199",
+      "collection_metadata": "problems/49_seeded_local_community_detection/papers/2017_gunrock_regularized_ppr/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "seeded_local_community_detection",
+      "paper_id": "2019_graphblast_lgc",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/49_seeded_local_community_detection/papers/2019_graphblast_lgc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "signed_network_structural_balance",
+      "paper_id": "2021_graphbplus",
+      "title": "Discovering and Balancing Fundamental Cycles in Large Signed Graphs",
+      "code_commit": "85dc76604835484d9cbc0f12b243c9c290737e75",
+      "collection_metadata": "problems/32_signed_network_structural_balance/papers/2021_graphbplus/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "signed_network_structural_balance",
+      "paper_id": "2026_ecl_sgb",
+      "title": "Signed Graph Balancing in Linear Time",
+      "code_commit": "230b2e8b7e82a39e7e627424a77ae724f7f8a92c",
+      "collection_metadata": "problems/32_signed_network_structural_balance/papers/2026_ecl_sgb/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "simrank_vertex_similarity",
+      "paper_id": "2023_clipsim",
+      "title": "ClipSim: A GPU-friendly Parallel Framework for Single-Source SimRank with Accuracy Guarantee",
+      "code_commit": null,
+      "collection_metadata": "problems/29_simrank_vertex_similarity/papers/2023_clipsim/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "single_graph_frequent_subgraph_mining",
+      "paper_id": "2022_graphminer_mni",
+      "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "collection_metadata": "problems/68_single_graph_frequent_subgraph_mining/papers/2022_graphminer_mni/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "single_graph_frequent_subgraph_mining",
+      "paper_id": "2022_pangolin_mni",
+      "title": "Pangolin: An Efficient and Flexible Graph Pattern Mining System on CPU and GPU",
+      "code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
+      "collection_metadata": "problems/68_single_graph_frequent_subgraph_mining/papers/2022_pangolin_mni/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "single_source_shortest_paths",
+      "paper_id": "2017_gardenia_delta_stepping",
+      "title": "GARDENIA: A Domain-specific Benchmark Suite for Next-generation Accelerators",
+      "code_commit": "5894df11cf47f8839945edadff43dc79e260216d",
+      "collection_metadata": "problems/39_single_source_shortest_paths/papers/2017_gardenia_delta_stepping/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "single_source_shortest_paths",
+      "paper_id": "2017_gunrock_sssp",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/39_single_source_shortest_paths/papers/2017_gunrock_sssp/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "single_source_shortest_paths",
+      "paper_id": "2018_hornet_sssp",
+      "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+      "code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+      "collection_metadata": "problems/39_single_source_shortest_paths/papers/2018_hornet_sssp/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "single_source_shortest_paths",
+      "paper_id": "2019_graphblast_sssp",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/39_single_source_shortest_paths/papers/2019_graphblast_sssp/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "single_source_shortest_paths",
+      "paper_id": "2026_cugraph_sssp",
+      "title": "cuGraph Single-source shortest paths \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/39_single_source_shortest_paths/papers/2026_cugraph_sssp/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "spanning_tree_forest",
+      "paper_id": "2016_lonestargpu_mst",
+      "title": "Lowering IrGL to CUDA",
+      "code_commit": "b67f94206a8c47fd414446621f6633a31c49fd98",
+      "collection_metadata": "problems/41_spanning_tree_forest/papers/2016_lonestargpu_mst/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "spanning_tree_forest",
+      "paper_id": "2017_gardenia_mst",
+      "title": "GARDENIA: A Domain-specific Benchmark Suite for Next-generation Accelerators",
+      "code_commit": "5894df11cf47f8839945edadff43dc79e260216d",
+      "collection_metadata": "problems/41_spanning_tree_forest/papers/2017_gardenia_mst/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "spanning_tree_forest",
+      "paper_id": "2017_gunrock_boruvka",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/41_spanning_tree_forest/papers/2017_gunrock_boruvka/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "spectral_graph_sparsification",
+      "paper_id": "2024_ingrass_candidate",
+      "title": "inGRASS: Incremental Graph Spectral Sparsification via Low-Resistance-Diameter Decomposition",
+      "code_commit": null,
+      "collection_metadata": "problems/55_spectral_graph_sparsification/papers/2024_ingrass_candidate/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "spectral_graph_sparsification",
+      "paper_id": "2025_dygrass_decremental",
+      "title": "dyGRASS: Dynamic Spectral Graph Sparsification via Localized Random Walks on GPUs",
+      "code_commit": "3a69c8b45bf044fbf3b60b47cb5efa8c40576691",
+      "collection_metadata": "problems/55_spectral_graph_sparsification/papers/2025_dygrass_decremental/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "spectral_graph_sparsification",
+      "paper_id": "2025_dygrass_incremental",
+      "title": "dyGRASS: Dynamic Spectral Graph Sparsification via Localized Random Walks on GPUs",
+      "code_commit": "3a69c8b45bf044fbf3b60b47cb5efa8c40576691",
+      "collection_metadata": "problems/55_spectral_graph_sparsification/papers/2025_dygrass_incremental/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "subgraph_isomorphism",
+      "paper_id": "2026_gmatch",
+      "title": "gMatch: A Fast GPU-Based Subgraph Matching System",
+      "code_commit": "4628e73dbcb564dba367b3f042595e71f98c9046",
+      "collection_metadata": "problems/13_subgraph_isomorphism/papers/2026_gmatch/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "subgraph-isomorphism/gmatch",
+          "passed": 624,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "temporal_fastest_paths",
+      "paper_id": "2019_temporal_eat",
+      "title": "GPU Algorithm for Earliest Arrival Time Problem in Public Transport Networks",
+      "code_commit": null,
+      "collection_metadata": "problems/57_temporal_fastest_paths/papers/2019_temporal_eat/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "temporal_fastest_paths",
+      "paper_id": "2024_temporal_fastest",
+      "title": "GPU Algorithms for Fastest Path Problem in Temporal Graphs",
+      "code_commit": null,
+      "collection_metadata": "problems/57_temporal_fastest_paths/papers/2024_temporal_fastest/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "temporal_fastest_paths",
+      "paper_id": "2025_tempgraph",
+      "title": "TempGraph: An Efficient Chain-driven Temporal Graph Computing Framework on the GPU",
+      "code_commit": null,
+      "collection_metadata": "problems/57_temporal_fastest_paths/papers/2025_tempgraph/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "temporal_motif_mining",
+      "paper_id": "2024_everest",
+      "title": "Everest: GPU-Accelerated System for Mining Temporal Motifs",
+      "code_commit": "ef530d36f23e0830d815392a5b6fa8237c29cec4",
+      "collection_metadata": "problems/15_temporal_motif_mining/papers/2024_everest/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "temporal-motif-mining/everest",
+          "passed": 160,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "temporal_motif_mining",
+      "paper_id": "2025_mayura",
+      "title": "Mayura: Exploiting Similarities in Motifs for Temporal Co-Mining",
+      "code_commit": "8e4276aace4c711dc4ee047e2cb360ae587b092d",
+      "collection_metadata": "problems/15_temporal_motif_mining/papers/2025_mayura/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "temporal-motif-mining/mayura",
+          "passed": 160,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "top_k_critical_paths_dag",
+      "paper_id": "2021_gpba",
+      "title": "GPU-accelerated Path-based Timing Analysis",
+      "code_commit": null,
+      "collection_metadata": "problems/58_top_k_critical_paths_dag/papers/2021_gpba/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "top_k_critical_paths_dag",
+      "paper_id": "2021_heterocppr",
+      "title": "HeteroCPPR: Accelerating Common Path Pessimism Removal with Heterogeneous CPU-GPU Parallelism",
+      "code_commit": null,
+      "collection_metadata": "problems/58_top_k_critical_paths_dag/papers/2021_heterocppr/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "top_k_critical_paths_dag",
+      "paper_id": "2026_gpathgen",
+      "title": "G-PathGen: An Efficient GPU-Parallel k-Critical Path Generation Algorithm",
+      "code_commit": null,
+      "collection_metadata": "problems/58_top_k_critical_paths_dag/papers/2026_gpathgen/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "topological_sort",
+      "paper_id": "2017_nvidia_parallel_dag_dfs",
+      "title": "Parallel Depth-First Search for Directed Acyclic Graphs",
+      "code_commit": null,
+      "collection_metadata": "problems/45_topological_sort/papers/2017_nvidia_parallel_dag_dfs/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No public upstream GPU implementation was verified."
+    },
+    {
+      "problem_id": "topological_sort",
+      "paper_id": "2026_cugraph_topological_levels",
+      "title": "cuGraph frontier-based topological levels (software entry; no paper collected)",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/45_topological_sort/papers/2026_cugraph_topological_levels/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "topological_sort",
+      "paper_id": "2026_topogpu_morse_sort",
+      "title": "GPU-Accelerated Computation of Persistent Homology for Topological Analysis of Image Data",
+      "code_commit": "0f39a80e874dda736e90432ef1b4879f728b89d3",
+      "collection_metadata": "problems/45_topological_sort/papers/2026_topogpu_morse_sort/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "transitive_closure_reachability",
+      "paper_id": "2021_atc",
+      "title": "Anti-Section Transitive Closure",
+      "code_commit": null,
+      "collection_metadata": "problems/33_transitive_closure_reachability/papers/2021_atc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "transitive_closure_reachability",
+      "paper_id": "2024_gdlog",
+      "title": "Optimizing Datalog for the GPU",
+      "code_commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
+      "collection_metadata": "problems/33_transitive_closure_reachability/papers/2024_gdlog/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "transitive-closure/gdlog",
+          "passed": 184,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "transitive_closure_reachability",
+      "paper_id": "2026_curpq",
+      "title": "cuRPQ: A High-Performance GPU-Based Framework for Processing Regular and Conjunctive Regular Path Queries",
+      "code_commit": null,
+      "collection_metadata": "problems/33_transitive_closure_reachability/papers/2026_curpq/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "No local verified GPU source in this checkout. Public-source availability and license restrictions are recorded in the sweep coverage."
+    },
+    {
+      "problem_id": "triangle_counting_listing",
+      "paper_id": "2017_gunrock_tc",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/10_triangle_counting_listing/papers/2017_gunrock_tc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "triangle_counting_listing",
+      "paper_id": "2018_hornet_triangles",
+      "title": "Hornet: An Efficient Data Structure for Dynamic Sparse Graphs and Matrices on GPUs",
+      "code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8",
+      "collection_metadata": "problems/10_triangle_counting_listing/papers/2018_hornet_triangles/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "triangle_counting_listing",
+      "paper_id": "2019_graphblast_tc",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/10_triangle_counting_listing/papers/2019_graphblast_tc/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "triangle_counting_listing",
+      "paper_id": "2025_tot_tensor_cores",
+      "title": "Triangle Counting on Tensor Cores",
+      "code_commit": "5f9cde83a528120e8551b69fdd74425358b476f1",
+      "collection_metadata": "problems/10_triangle_counting_listing/papers/2025_tot_tensor_cores/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "triangle-counting/tot",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "triangle_counting_listing",
+      "paper_id": "2025_wetric",
+      "title": "Wedge-Parallel Triangle Counting for GPUs",
+      "code_commit": "f0c80447dc428ead5f8a41f2f1d9c4c4cbc41c2e",
+      "collection_metadata": "problems/10_triangle_counting_listing/papers/2025_wetric/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "triangle-counting/wetric",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "triangle_counting_listing",
+      "paper_id": "2026_cugraph_triangle_count",
+      "title": "cuGraph Vertex triangle counting \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/10_triangle_counting_listing/papers/2026_cugraph_triangle_count/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "triangle_counting_listing",
+      "paper_id": "2026_edtc",
+      "title": "Exact Triangle Counting for Dynamic Graphs on GPU",
+      "code_commit": "7da15bf9aded217c8bff9fdc4c7b52a6b1e25947",
+      "collection_metadata": "problems/10_triangle_counting_listing/papers/2026_edtc/metadata.json",
+      "runtime_evidence": [
+        {
+          "backend": "dynamic-triangle-counting/edtc",
+          "passed": 208,
+          "failed": 0,
+          "scope": "public CLI validated profile, including local repairs; not a paper-version reproduction",
+          "evidence": "validation/parameter_expansion/results/acceptance/summary.json"
+        }
+      ],
+      "status": "runtime_checks_passed",
+      "gap": "Only the named scopes were exercised; broader paper claims are not certified."
+    },
+    {
+      "problem_id": "vertex_coloring",
+      "paper_id": "2016_gardenia_coloring",
+      "title": "Efficient and High-quality Sparse Graph Coloring on the GPU",
+      "code_commit": "5894df11cf47f8839945edadff43dc79e260216d",
+      "collection_metadata": "problems/43_vertex_coloring/papers/2016_gardenia_coloring/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "vertex_coloring",
+      "paper_id": "2017_gunrock_coloring",
+      "title": "Gunrock: GPU Graph Analytics",
+      "code_commit": "748f79e66cc26762cd3f99422b028e742a737bde",
+      "collection_metadata": "problems/43_vertex_coloring/papers/2017_gunrock_coloring/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "vertex_coloring",
+      "paper_id": "2019_graphblast_coloring",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165",
+      "collection_metadata": "problems/43_vertex_coloring/papers/2019_graphblast_coloring/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Collected research source has no executable adapter and independent problem-specific runtime test in this sweep."
+    },
+    {
+      "problem_id": "vertex_coloring",
+      "paper_id": "2026_cugraph_coloring",
+      "title": "cuGraph Vertex coloring \u2014 upstream implementation documentation",
+      "code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de",
+      "collection_metadata": "problems/43_vertex_coloring/papers/2026_cugraph_coloring/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned cuGraph requires CMake >=4, installed CMake is 3.28.3; no compatible RAPIDS build/runtime was established."
+    },
+    {
+      "problem_id": "widest_paths",
+      "paper_id": "2026_nvgraph_widest_path",
+      "title": "nvGRAPH max-min widest path \u2014 upstream implementation documentation",
+      "code_commit": "1ea93b51387bd3ff149b6ac8fa91d64edd43d31c",
+      "collection_metadata": "problems/61_widest_paths/papers/2026_nvgraph_widest_path/metadata.json",
+      "runtime_evidence": [],
+      "status": "not_runtime_validated",
+      "gap": "Pinned legacy nvGraph configure fails at cpp/CMakeLists.txt:113 (empty include path); no runtime evidence."
+    }
+  ]
+}

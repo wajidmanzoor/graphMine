@@ -1,0 +1,38 @@
+{
+  "problem_id": "influence_maximization",
+  "checked_at": "2026-10-10T02:19:24Z",
+  "papers": [
+    {
+      "paper_id": "2020_curipples",
+      "algorithm_name": "cuRipples: Influence Maximization on Multi-GPU Systems",
+      "metadata": "28_influence_maximization/papers/2020_curipples/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2021_gim",
+      "algorithm_name": "gIM: GPU Accelerated RIS-Based Influence Maximization Algorithm",
+      "metadata": "28_influence_maximization/papers/2021_gim/metadata.json",
+      "counts_toward_three": true,
+      "collected_code": true,
+      "collected_pdf": true
+    },
+    {
+      "paper_id": "2021_superfuser",
+      "algorithm_name": "Fast and Parallel Influence Maximization using Fused Sampling and Memory Access Regularization",
+      "metadata": "28_influence_maximization/papers/2021_superfuser/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": true,
+      "collected_pdf": false
+    },
+    {
+      "paper_id": "2024_difuser",
+      "algorithm_name": "DiFuseR: A Distributed Sketch-based Influence Maximization Algorithm for GPUs",
+      "metadata": "28_influence_maximization/papers/2024_difuser/metadata.json",
+      "counts_toward_three": false,
+      "collected_code": false,
+      "collected_pdf": true
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "family": "knn",
+  "gpu": "1",
+  "cases": 254,
+  "passed": 203,
+  "failed": 51,
+  "startup_error": null,
+  "by_backend": {
+    "torch-cluster-knn": {
+      "passed": 203,
+      "failed": 51,
+      "scope": "Exact squared-Euclidean directed kNN, distinct IDs including tied/duplicate vectors"
+    }
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "numpy": "1.26.4",
+  "script_sha256": "43372233ce41e42a62618ee1cee936306ccacba938dab0d345f5da26178113d9"
+}

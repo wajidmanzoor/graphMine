@@ -1,0 +1,27 @@
+{
+  "problem_id": "temporal_fastest_paths",
+  "paper_id": "2019_temporal_eat",
+  "title": "GPU Algorithm for Earliest Arrival Time Problem in Public Transport Networks",
+  "checked_at": "2026-10-09T19:45:05Z",
+  "paper": {
+    "status": "downloaded",
+    "source_url": "https://arxiv.org/pdf/1912.00966",
+    "local_path": "paper.pdf",
+    "error": null,
+    "checked_at": "2026-10-09T19:34:47Z",
+    "sha256": "e92b3a6cceafd530e4756177bb52692eefd64ab69d9858c8bc48472a312df66d",
+    "bytes": 455584,
+    "pdfinfo_valid": true
+  },
+  "code": {
+    "status": "not_located",
+    "source_url": null,
+    "local_path": null,
+    "commit": null,
+    "license_file": null,
+    "license_note": null,
+    "error": "No public upstream GPU implementation was verified.",
+    "build_status": "not_tested",
+    "runtime_status": "not_tested"
+  }
+}

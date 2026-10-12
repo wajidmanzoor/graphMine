@@ -1,0 +1,18 @@
+MVC Results:
+- web-webbase-2001 2651
+- power-eris1176 744
+- movielens-100k_rating 849
+- qc324 320
+- SYNTHETIC 15900
+- SYNTHETICnew 15968
+- vc-exact-017 12082
+- vc-exact-029 6622
+- c-fat500-5 492
+- scc-infect-dublin 9103
+- rajat28 40539
+- rajat20 40077
+- mhda416 256
+- rajat17 42081
+- rajat18 41594
+- web-spam 2297
+- PROTEINS-full 26298

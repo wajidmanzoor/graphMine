@@ -12,5 +12,12 @@
   "notes": "Paper PDF is hosted directly in the repository.",
   "problem_id": "max_flow_min_cut",
   "problem_dir": "22_max_flow_min_cut",
-  "research_cutoff": "2026-09-30"
+  "research_cutoff": "2026-09-30",
+  "redistribution_status": "not_reviewed_or_no_local_source",
+  "collection_reviewed": true,
+  "collection_review_date": "2026-10-09",
+  "code_entrypoints": [],
+  "counts_toward_three": false,
+  "has_upstream_code_and_verified_paper_reference": false,
+  "paper_role": "algorithm"
 }
