@@ -35,6 +35,8 @@ from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
 
 from . import __version__
+from .account_api import AccountMiddleware, account_response, register_account_routes
+from .accounts import Accounts
 from .agent_service import AgentService
 from .analytics import (
     AnalyticsError,
@@ -43,8 +45,8 @@ from .analytics import (
     WorkflowRequest,
     WorkflowRevision,
 )
-from .analytics_planning import AnalyticsPlanner, PlanningRequest
 from .analytics_examples import register_example_routes
+from .analytics_planning import AnalyticsPlanner, PlanningRequest
 from .analytics_projection import register_projection_routes
 from .catalog import Catalog, CatalogError
 from .config import Settings
@@ -52,6 +54,7 @@ from .database import Database, QueueCapacityError, RecordNotFound
 from .execution import ExecutionError, GraphMineRunner
 from .graph_store import GraphStore, UploadError
 from .history import HistoryStore
+from .identity import AccountError, current_principal
 from .jobs import EventBus, JobManager
 from .llm import LLMError
 from .models import (
@@ -91,13 +94,15 @@ class Runtime:
     agent: AgentService
     upload_slots: asyncio.Semaphore
     analytics: AnalyticsService
+    accounts: Accounts
 
 
-def build_runtime(settings: Settings) -> Runtime:
+def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
     settings.data_root.mkdir(parents=True, exist_ok=True)
     settings.workspaces_root.mkdir(parents=True, exist_ok=True)
     catalog = Catalog(settings)
     database = Database(settings.database_path, HistoryStore(settings.history_root))
+    accounts = Accounts(settings, database)
     graph_store = GraphStore(settings, database)
     validator = PlanValidator(catalog)
     runner = GraphMineRunner(settings, catalog, graph_store, validator)
@@ -108,6 +113,7 @@ def build_runtime(settings: Settings) -> Runtime:
         events,
         summary_items=settings.result_summary_items,
         max_pending_jobs=settings.max_pending_jobs,
+        accounts=accounts if settings.accounts_enabled and serving else None,
     )
     agent = AgentService(settings, catalog, database, graph_store, validator, jobs)
     jobs.result_handler = agent.handle_completed_result
@@ -123,6 +129,7 @@ def build_runtime(settings: Settings) -> Runtime:
         agent=agent,
         upload_slots=asyncio.Semaphore(settings.max_concurrent_uploads),
         analytics=AnalyticsService(settings, database, graph_store, events),
+        accounts=accounts,
     )
 
 
@@ -135,6 +142,10 @@ def _authorization(
     authorization: Annotated[str | None, Header()] = None,
     x_graphmine_token: Annotated[str | None, Header()] = None,
 ) -> None:
+    if _runtime(request).settings.accounts_enabled:
+        if current_principal.get() is None:
+            raise AccountError("Please sign in to continue.", "unauthorized", 401)
+        return
     expected = _runtime(request).settings.api_token
     if expected is None:
         return
@@ -205,12 +216,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-        runtime = build_runtime(configured)
+        runtime = build_runtime(configured, serving=True)
         app.state.runtime = runtime
         try:
             runtime.runner.probe()
             await runtime.jobs.start()
             runtime.analytics.open()
+            if configured.accounts_enabled:
+                # Both store locks are held and interrupted jobs are now terminal.
+                with runtime.database._connect() as db:
+                    db.execute("DELETE FROM account_leases WHERE kind != 'model'")
             yield
         finally:
             try:
@@ -230,13 +245,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         ),
         lifespan=lifespan,
     )
+    app.add_middleware(AccountMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(configured.allowed_origins),
         allow_credentials=False,
         allow_methods=["GET", "POST", "DELETE"],
-        allow_headers=["Authorization", "Content-Type", "X-GraphMine-Token"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type",
+            "X-GraphMine-Token",
+            "X-GraphMine-Request",
+        ],
     )
+    register_account_routes(app)
+
+    @app.exception_handler(AccountError)
+    async def account_error_handler(_request, error):
+        return account_response(error)
 
     @app.exception_handler(AnalyticsError)
     async def analytics_error_handler(
@@ -777,8 +803,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         runtime: Runtime = websocket.app.state.runtime
         expected = runtime.settings.api_token
         supplied, accepted_protocol = _websocket_credentials(websocket, token)
-        if expected is not None and (
-            supplied is None or not hmac.compare_digest(supplied, expected)
+        if (
+            not runtime.settings.accounts_enabled
+            and expected is not None
+            and (supplied is None or not hmac.compare_digest(supplied, expected))
         ):
             await websocket.close(code=4401, reason="invalid API token")
             return
@@ -795,6 +823,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 await websocket.send_json(event.model_dump(mode="json"))
                 last_sequence = max(last_sequence, event.sequence or 0)
             while True:
+                principal = current_principal.get()
+                if principal and not principal.accounts.session_active(principal):
+                    await websocket.close(code=4401, reason="Sign in again.")
+                    return
                 try:
                     event = await asyncio.wait_for(queue.get(), timeout=20)
                 except TimeoutError:

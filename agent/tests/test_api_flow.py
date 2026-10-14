@@ -190,7 +190,9 @@ def test_static_ui_and_openapi_are_bundled(settings: Settings) -> None:
     with TestClient(create_app(settings)) as client:
         page = client.get("/")
         assert page.status_code == 200
-        assert "What kind of network are you exploring?" in page.text
+        assert "What kind of network are you exploring?" in page.text.replace(
+            "<br>", " "
+        )
         schema = client.get("/openapi.json").json()
         assert schema["info"]["version"] == "1.0.0"
         assert "/api/sessions/{session_id}/chat" in schema["paths"]

@@ -11,6 +11,7 @@ from typing import Any
 
 from .database import Database
 from .execution import ExecutionError, GraphMineRunner
+from .identity import AccountError, current_principal, identity_scope
 from .models import (
     ConversationEvent,
     ExecutionPlan,
@@ -91,6 +92,7 @@ class JobManager:
         *,
         summary_items: int,
         max_pending_jobs: int = 64,
+        accounts=None,
         result_handler: Callable[[ResultRecord, ExecutionPlan], Awaitable[ResultRecord]]
         | None = None,
     ):
@@ -102,6 +104,8 @@ class JobManager:
             raise ValueError("max_pending_jobs must be positive")
         self.max_pending_jobs = max_pending_jobs
         self.result_handler = result_handler
+        self.accounts = accounts
+        self._quota_jobs = {}
         # SQLite owns the pending backlog. This event is only a wakeup signal,
         # so canceled jobs and pre-existing backlogs consume no in-memory queue.
         self._ready = asyncio.Event()
@@ -111,8 +115,14 @@ class JobManager:
         self._fatal_error: dict[str, str] | None = None
 
     def statistics(self) -> dict[str, Any]:
+        active_ids = sorted(self._active)
         try:
             counts = self.database.pending_job_counts()
+            if current_principal.get():
+                visible = {job.id for job in self.database.list_jobs()}
+                active_ids = [
+                    identifier for identifier in active_ids if identifier in visible
+                ]
         except (sqlite3.Error, OSError):
             return {
                 "worker_running": self._worker is not None and not self._worker.done(),
@@ -125,7 +135,7 @@ class JobManager:
                 "available_slots": 0,
                 "max_pending_jobs": self.max_pending_jobs,
                 "active_count": len(self._active),
-                "active_job_ids": sorted(self._active),
+                "active_job_ids": [] if current_principal.get() else active_ids,
             }
         return {
             "queue_depth": counts["queued"],
@@ -133,7 +143,7 @@ class JobManager:
             "max_pending_jobs": self.max_pending_jobs,
             "available_slots": max(0, self.max_pending_jobs - sum(counts.values())),
             "active_count": len(self._active),
-            "active_job_ids": sorted(self._active),
+            "active_job_ids": active_ids,
             "worker_running": self._worker is not None and not self._worker.done(),
             "error": self._fatal_error,
         }
@@ -143,7 +153,11 @@ class JobManager:
             return
         self._ownership.acquire()
         try:
-            self.database.mark_interrupted_jobs_failed()
+            # Account admission leases are recovered at startup. Do not resume
+            # an old queue outside those per-user and shared admission slots.
+            self.database.mark_interrupted_jobs_failed(
+                include_queued=self.accounts is not None
+            )
             self._fatal_error = None
             self._ready.set()
             self._worker = asyncio.create_task(
@@ -230,7 +244,24 @@ class JobManager:
                 "worker_unavailable",
                 "The worker stopped after a storage failure. Repair storage and restart the API before submitting more work.",
             )
-        self.database.admit_jobs(jobs, max_pending=self.max_pending_jobs)
+        principal = current_principal.get()
+        admission = (
+            self.accounts.admit_jobs(principal.user_id, len(jobs))
+            if self.accounts and principal
+            else None
+        )
+        if self.accounts and principal is None:
+            raise AccountError(
+                "A job requires an account owner.", "account_required", 401
+            )
+        try:
+            self.database.admit_jobs(jobs, max_pending=self.max_pending_jobs)
+        except BaseException:
+            if admission:
+                self.accounts.abort_admission(admission)
+            raise
+        if admission:
+            self._quota_jobs.update({job.id: admission for job in jobs})
         self._ready.set()
         for job in jobs:
             await self.event_bus.publish(
@@ -248,6 +279,8 @@ class JobManager:
         task = self._active.get(job_id)
         if task:
             task.cancel()
+        else:
+            self._finish_admission(job_id)
         cancelled = job.model_copy(
             update={"status": JobStatus.cancelled, "finished_at": utc_now()}
         )
@@ -294,6 +327,24 @@ class JobManager:
                 self._active.pop(job.id, None)
 
     async def _execute(self, job: JobRecord) -> None:
+        if self.accounts is None:
+            return await self._execute_unlimited(job)
+        try:
+            principal = self.accounts.session_principal(job.session_id)
+            with identity_scope(principal):
+                async with self.accounts.execution_slot(principal.user_id):
+                    await self._execute_unlimited(job)
+        except AccountError as error:
+            await self._fail_job(job, error)
+        finally:
+            self._finish_admission(job.id)
+
+    def _finish_admission(self, job_id):
+        admission = self._quota_jobs.pop(job_id, None)
+        if admission and admission not in self._quota_jobs.values():
+            self.accounts.release(admission)
+
+    async def _execute_unlimited(self, job: JobRecord) -> None:
         history = self.database.history
         workspace = self.runner.settings.workspaces_root / job.id
         started = time.monotonic()
@@ -444,10 +495,13 @@ class JobManager:
         if current.status in {
             JobStatus.completed,
             JobStatus.failed,
-            JobStatus.cancelled,
         }:
             return
-        code = error.code if isinstance(error, ExecutionError) else "execution_error"
+        if current.status == JobStatus.cancelled and not (
+            isinstance(error, AccountError) and error.code == "job_time_limit"
+        ):
+            return
+        code = getattr(error, "code", "execution_error")
         failed = current.model_copy(
             update={
                 "status": JobStatus.failed,

@@ -156,6 +156,7 @@ def server(tmp_path_factory, authored_model_transport):
     base = f"http://127.0.0.1:{port}"
     env = {
         **os.environ,
+        "GRAPHMINE_ACCOUNTS_ENABLED": "false",
         "PATH": str(executables),
         "GRAPHMINE_LLM_ENABLED": "true",
         "GRAPHMINE_LLM_BASE_URL": authored_model_transport[0],

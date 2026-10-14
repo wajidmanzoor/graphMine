@@ -538,7 +538,9 @@ class AnalyticsPlanner:
                 headers={"Authorization": f"Bearer {self.settings.llm_api_key}"},
                 timeout=httpx.Timeout(120, connect=5),
             ) as client:
-                response = await client.post("/chat/completions", json=request)
+                from .accounts import model_post
+
+                response = await model_post(client, "/chat/completions", json=request)
                 response.raise_for_status()
                 message = response.json()["choices"][0]["message"]
                 data = json.loads(message["content"])

@@ -17,6 +17,11 @@ GPU coverage applies to declared parameter profiles, not every CPU operation.
 The [acceptance report](docs/NATIVE_ANALYTICS_ACCEPTANCE.md) records completed
 checks, measured model accuracy and remaining limits.
 
+For a shared server, see [accounts and daily limits](docs/ACCOUNTS_AND_QUOTAS.md).
+Login is enabled by default; the server operator creates accounts. Both web
+workspaces enforce private user data, persistent 24-hour AI token budgets and
+shared calculation limits.
+
 The [repaired algorithm guide](library/docs/repaired_algorithms.md) documents the nine repaired integrations, their exact profiles, installation, and agent JSON contracts.
 
 The [2026-10-04 expansion](docs/ALGORITHM_EXPANSION.md) explains the five new
@@ -104,14 +109,17 @@ For an end-to-end local deployment on the two-GPU server:
 ```bash
 deploy/validate-v1.sh
 deploy/configure-v1.sh --origin http://GPU_SERVER_LAN_IP:8000
+deploy/manage-accounts.sh create alice
+# For this local HTTP preview only, set GRAPHMINE_ACCOUNT_COOKIE_SECURE=false
+# in agent/.env. Keep it true when using an HTTPS domain/tunnel.
 deploy/start-vllm.sh   # terminal 1
 deploy/start-agent.sh  # terminal 2
-deploy/smoke-v1.sh     # terminal 3, after Qwen is ready
 ```
 
-Then open `http://GPU_SERVER_LAN_IP:8000` from the research computer and enter
-the generated token through the UI settings button. Deployment scripts are
-available in [`deploy/`](deploy/).
+Then open `http://GPU_SERVER_LAN_IP:8000` from the research computer and sign in
+with the account you created. See the account guide for migration of existing
+conversations and API/smoke-test credentials. Deployment scripts are available
+in [`deploy/`](deploy/).
 
 ## Problem-first catalog
 

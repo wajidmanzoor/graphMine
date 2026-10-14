@@ -9,6 +9,7 @@ from threading import RLock
 from typing import Any
 
 from .history import HistoryStore
+from .identity import current_principal
 from .models import (
     ConversationEvent,
     FeedbackCreate,
@@ -120,6 +121,14 @@ class Database:
                 CREATE INDEX IF NOT EXISTS feedback_session_idx ON feedback(session_id);
                 """
             )
+            columns = {
+                row[1] for row in connection.execute("PRAGMA table_info(sessions)")
+            }
+            if "owner_id" not in columns:
+                connection.execute("ALTER TABLE sessions ADD COLUMN owner_id TEXT")
+            connection.execute(
+                "CREATE INDEX IF NOT EXISTS sessions_owner ON sessions(owner_id)"
+            )
 
     @staticmethod
     def _json(model: Any) -> str:
@@ -131,12 +140,15 @@ class Database:
         payload = self._json(session)
         with self._lock, self._connect() as connection:
             connection.execute(
-                "INSERT INTO sessions(id,payload,created_at,updated_at) VALUES(?,?,?,?)",
+                "INSERT INTO sessions(id,payload,created_at,updated_at,owner_id) VALUES(?,?,?,?,?)",
                 (
                     session.id,
                     payload,
                     session.created_at.isoformat(),
                     session.updated_at.isoformat(),
+                    current_principal.get().user_id
+                    if current_principal.get()
+                    else None,
                 ),
             )
         self.history.snapshot(session.id, "session.json", session)
@@ -144,23 +156,30 @@ class Database:
         return session
 
     def get_session(self, session_id: str) -> SessionRecord:
+        principal = current_principal.get()
         with self._connect() as connection:
             row = connection.execute(
-                "SELECT payload FROM sessions WHERE id=?", (session_id,)
+                "SELECT payload FROM sessions WHERE id=?"
+                + (" AND owner_id=?" if principal else ""),
+                (session_id, principal.user_id) if principal else (session_id,),
             ).fetchone()
         if row is None:
             raise RecordNotFound(f"unknown session: {session_id}")
         return SessionRecord.model_validate_json(row["payload"])
 
     def list_sessions(self, limit: int = 100) -> list[SessionRecord]:
+        principal = current_principal.get()
         with self._connect() as connection:
             rows = connection.execute(
-                "SELECT payload FROM sessions ORDER BY updated_at DESC LIMIT ?",
-                (limit,),
+                "SELECT payload FROM sessions"
+                + (" WHERE owner_id=?" if principal else "")
+                + " ORDER BY updated_at DESC LIMIT ?",
+                (principal.user_id, limit) if principal else (limit,),
             ).fetchall()
         return [SessionRecord.model_validate_json(row["payload"]) for row in rows]
 
     def touch_session(self, session_id: str) -> None:
+        self.get_session(session_id)
         with self._lock, self._connect() as connection:
             updated = self._touch_session(connection, session_id)
         self.history.snapshot(session_id, "session.json", updated)
@@ -206,7 +225,9 @@ class Database:
             ).fetchone()
         if row is None:
             raise RecordNotFound(f"unknown file: {file_id}")
-        return StoredFile.model_validate_json(row["payload"])
+        record = StoredFile.model_validate_json(row["payload"])
+        self.get_session(record.session_id)
+        return record
 
     def list_files(self, session_id: str) -> list[StoredFile]:
         self.get_session(session_id)
@@ -312,13 +333,19 @@ class Database:
             ).fetchone()
         if row is None:
             raise RecordNotFound(f"unknown job: {job_id}")
-        return JobRecord.model_validate_json(row["payload"])
+        record = JobRecord.model_validate_json(row["payload"])
+        self.get_session(record.session_id)
+        return record
 
     def list_jobs(
         self, session_id: str | None = None, statuses: set[JobStatus] | None = None
     ) -> list[JobRecord]:
         clauses: list[str] = []
         arguments: list[Any] = []
+        principal = current_principal.get()
+        if principal:
+            clauses.append("session_id IN (SELECT id FROM sessions WHERE owner_id=?)")
+            arguments.append(principal.user_id)
         if session_id:
             clauses.append("session_id=?")
             arguments.append(session_id)
@@ -382,11 +409,14 @@ class Database:
             ).fetchone()
         if row is None:
             raise RecordNotFound(f"unknown result: {result_id}")
-        return ResultRecord.model_validate_json(row["payload"])
+        record = ResultRecord.model_validate_json(row["payload"])
+        self.get_session(record.session_id)
+        return record
 
     def latest_result(
         self, session_id: str, *, graph_id: str | None = None
     ) -> ResultRecord | None:
+        self.get_session(session_id)
         with self._connect() as connection:
             row = connection.execute(
                 "SELECT results.payload FROM results JOIN jobs ON jobs.id=results.job_id "
@@ -427,6 +457,7 @@ class Database:
         )
 
     def messages(self, session_id: str, limit: int | None = 40) -> list[dict[str, Any]]:
+        self.get_session(session_id)
         with self._connect() as connection:
             rows = connection.execute(
                 """
@@ -448,6 +479,7 @@ class Database:
 
     def conversation_transcript(self, session_id: str) -> list[dict[str, Any]]:
         """Include chats created before the append-only history feature existed."""
+        self.get_session(session_id)
         current = self.history.transcript(session_id)
         boundary = min((row["created_at"] for row in current), default=None)
         legacy = []
@@ -488,6 +520,7 @@ class Database:
         return event.model_copy(update={"sequence": int(cursor.lastrowid)})
 
     def events(self, session_id: str, after: int = 0) -> list[ConversationEvent]:
+        self.get_session(session_id)
         with self._connect() as connection:
             rows = connection.execute(
                 """
@@ -509,8 +542,11 @@ class Database:
             for row in rows
         ]
 
-    def mark_interrupted_jobs_failed(self) -> int:
-        jobs = self.list_jobs(statuses={JobStatus.running, JobStatus.interpreting})
+    def mark_interrupted_jobs_failed(self, *, include_queued: bool = False) -> int:
+        statuses = {JobStatus.running, JobStatus.interpreting}
+        if include_queued:
+            statuses.add(JobStatus.queued)
+        jobs = self.list_jobs(statuses=statuses)
         for job in jobs:
             failed = job.model_copy(
                 update={
@@ -518,7 +554,7 @@ class Database:
                     "finished_at": utc_now(),
                     "error": {
                         "code": "server_restarted",
-                        "message": "the agent server restarted while this job was active",
+                        "message": "the agent server restarted while this job was pending",
                     },
                 }
             )

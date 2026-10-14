@@ -858,5 +858,9 @@
   $("download-result").addEventListener("click", () => { if (!state.result) return; const url = URL.createObjectURL(new Blob([W.stringify(state.result, true)], {type: "application/json"})), a = node("a", {href: url, download: `graphmine-${state.record.id}-revision-${state.record.revision}.json`}); a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); });
   new ResizeObserver(() => { if (state.view === "results") { state.cy?.resize(); state.cy?.fit(undefined, 35); } }).observe($("network"));
   window.GraphMineWorkspace = {state, wire: W};
-  setMode("normal"); renderOutput(); runAction(connect);
+  setMode("normal"); renderOutput();
+  (window.GraphMineAccount?.ready || Promise.resolve(false)).then(enabled => {
+    if (enabled) { state.base = ""; state.token = ""; }
+    runAction(connect);
+  }).catch(error => notice(error.message, true));
 })();

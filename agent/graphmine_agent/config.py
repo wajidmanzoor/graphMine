@@ -72,6 +72,20 @@ class Settings:
     analytics_gpu_uuids: tuple[str, ...] = ()
     analytics_gpu_headroom_bytes: int = 512 * 1024 * 1024
     analytics_llm_reserve_bytes: int = 0
+    accounts_enabled: bool = True
+    account_cookie_secure: bool = True
+    account_session_seconds: int = 86400
+    max_accounts: int = 100
+    account_daily_tokens: int = 50000
+    server_daily_tokens: int = 1000000
+    account_daily_jobs: int = 10
+    server_daily_jobs: int = 100
+    max_model_calls: int = 2
+    account_pending_jobs: int = 8
+    account_running_jobs: int = 1
+    account_job_seconds: int = 300
+    account_storage_bytes: int = 512 * 1024 * 1024
+    account_upload_bytes: int = 64 * 1024 * 1024
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -106,6 +120,22 @@ class Settings:
         return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
+        for name in (
+            "account_session_seconds",
+            "max_accounts",
+            "account_daily_tokens",
+            "server_daily_tokens",
+            "account_daily_jobs",
+            "server_daily_jobs",
+            "max_model_calls",
+            "account_pending_jobs",
+            "account_running_jobs",
+            "account_job_seconds",
+            "account_storage_bytes",
+            "account_upload_bytes",
+        ):
+            if getattr(self, name) < 1:
+                raise ValueError(f"{name} must be positive")
         if bool(self.llm_planner_model) != bool(self.llm_analyst_model):
             raise ValueError(
                 "Configure both GRAPHMINE_LLM_PLANNER_MODEL and GRAPHMINE_LLM_ANALYST_MODEL"
@@ -199,6 +229,26 @@ class Settings:
         )
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
+            accounts_enabled=_boolean("GRAPHMINE_ACCOUNTS_ENABLED", True),
+            account_cookie_secure=_boolean("GRAPHMINE_ACCOUNT_COOKIE_SECURE", True),
+            account_session_seconds=_integer(
+                "GRAPHMINE_ACCOUNT_SESSION_SECONDS", 86400
+            ),
+            max_accounts=_integer("GRAPHMINE_MAX_ACCOUNTS", 100),
+            account_daily_tokens=_integer("GRAPHMINE_ACCOUNT_DAILY_TOKENS", 50000),
+            server_daily_tokens=_integer("GRAPHMINE_SERVER_DAILY_TOKENS", 1000000),
+            account_daily_jobs=_integer("GRAPHMINE_ACCOUNT_DAILY_JOBS", 10),
+            server_daily_jobs=_integer("GRAPHMINE_SERVER_DAILY_JOBS", 100),
+            max_model_calls=_integer("GRAPHMINE_MAX_MODEL_CALLS", 2),
+            account_pending_jobs=_integer("GRAPHMINE_ACCOUNT_PENDING_JOBS", 8),
+            account_running_jobs=_integer("GRAPHMINE_ACCOUNT_RUNNING_JOBS", 1),
+            account_job_seconds=_integer("GRAPHMINE_ACCOUNT_JOB_SECONDS", 300),
+            account_storage_bytes=_integer(
+                "GRAPHMINE_ACCOUNT_STORAGE_BYTES", 512 * 1024 * 1024
+            ),
+            account_upload_bytes=_integer(
+                "GRAPHMINE_ACCOUNT_UPLOAD_BYTES", 64 * 1024 * 1024
+            ),
             repository_root=root,
             data_root=data_root,
             graphmine_binary=Path(

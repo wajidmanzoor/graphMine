@@ -183,13 +183,24 @@ def constrain_plan_schema(
         constraints = contract.get("backend_constraints", {})
         applicable = constraints.get(selected_backend, {})
         if name in applicable.get("parameter_maximum", {}):
-            value_schema["maximum"] = min(value_schema.get("maximum", math.inf), applicable["parameter_maximum"][name])
+            value_schema["maximum"] = min(
+                value_schema.get("maximum", math.inf),
+                applicable["parameter_maximum"][name],
+            )
         if name in applicable.get("parameter_equals", {}):
             value_schema["enum"] = [applicable["parameter_equals"][name]]
         if name in applicable.get("forbids_true", []):
             value_schema["enum"] = [False]
-        if selected_backend == "auto" and constraints and all(name in c.get("parameter_maximum", {}) for c in constraints.values()):
-            value_schema["maximum"] = max(c["parameter_maximum"][name] for c in constraints.values())
+        if (
+            selected_backend == "auto"
+            and constraints
+            and all(
+                name in c.get("parameter_maximum", {}) for c in constraints.values()
+            )
+        ):
+            value_schema["maximum"] = max(
+                c["parameter_maximum"][name] for c in constraints.values()
+            )
         parameters[name] = {"anyOf": [value_schema, {"type": "null"}]}
     properties["parameters"] = {
         "type": "object",
@@ -419,7 +430,14 @@ class OpenAICompatibleModel:
             )
         started = time.monotonic()
         try:
-            response = await self._route_client.post("/route", json=request)
+            from .accounts import model_post
+
+            response = await model_post(
+                self._route_client,
+                "/route",
+                json=request,
+                max_tokens=self.settings.llm_route_max_tokens,
+            )
             response.raise_for_status()
             data = response.json()
             self._check_route_identity(
@@ -555,7 +573,11 @@ class OpenAICompatibleModel:
         for attempt in range(2):
             started = time.monotonic()
             try:
-                response = await self._client.post("/chat/completions", json=request)
+                from .accounts import model_post
+
+                response = await model_post(
+                    self._client, "/chat/completions", json=request
+                )
                 if self.history:
                     self.history.current(
                         "llm.response",

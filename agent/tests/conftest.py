@@ -69,6 +69,7 @@ def settings(tmp_path: Path, fake_binary: Path) -> Settings:
     base = Settings.from_env(REPOSITORY_ROOT)
     return replace(
         base,
+        accounts_enabled=False,
         data_root=tmp_path / "data",
         graphmine_binary=fake_binary,
         api_token="test-secret",

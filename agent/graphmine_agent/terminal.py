@@ -85,7 +85,9 @@ async def agent_client(
             raise ClientError(
                 "Another local CLI uses this data directory. Use --base-url for a running server or choose a different --data-dir."
             ) from error
-        configured = replace(settings, data_root=root)
+        # This is an in-process operator CLI with its own locked store. Remote
+        # clients above still authenticate against the server's account policy.
+        configured = replace(settings, data_root=root, accounts_enabled=False)
         app = create_app(configured)
         async with (
             app.router.lifespan_context(app),

@@ -1024,6 +1024,9 @@
     renderResult();
   } else {
     window.addEventListener("hashchange", routeLocation);
-    loadDomains().then(() => {if(window.location.hash) routeLocation();});
+    (window.GraphMineAccount?.ready || Promise.resolve(false)).then(enabled => {
+      if (enabled) { state.base = ""; state.token = ""; }
+      return loadDomains();
+    }).then(() => {if(window.location.hash) routeLocation();}).catch(error => toast(error.message, true));
   }
 })();

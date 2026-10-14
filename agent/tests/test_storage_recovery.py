@@ -81,7 +81,7 @@ async def test_failed_start_closes_model_resources(settings, monkeypatch):
     runtime = api.build_runtime(settings)
     close = AsyncMock(wraps=runtime.agent.close)
     monkeypatch.setattr(runtime.agent, "close", close)
-    monkeypatch.setattr(api, "build_runtime", lambda configured: runtime)
+    monkeypatch.setattr(api, "build_runtime", lambda configured, **_options: runtime)
     monkeypatch.setattr(runtime.runner, "probe", no_space)
     app = create_app(settings)
     with pytest.raises(OSError, match="Injected"):

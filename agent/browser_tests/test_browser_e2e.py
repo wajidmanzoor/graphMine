@@ -119,6 +119,7 @@ def test_complete_browser_upload_chat_result_and_followup(
     environment = dict(os.environ)
     environment.update(
         {
+            "GRAPHMINE_ACCOUNTS_ENABLED": "false",
             "GRAPHMINE_LLM_ENABLED": "false",
             "GRAPHMINE_AGENT_DATA_ROOT": str(tmp_path / "data"),
             "GRAPHMINE_BINARY": str(binary),

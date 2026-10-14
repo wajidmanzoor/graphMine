@@ -11,6 +11,7 @@ from .models import ResultRecord
 def render_report(result: ResultRecord) -> str:
     static = Path(__file__).parent / "static"
     html = (static / "index.html").read_text(encoding="utf-8")
+    html = html.replace('<script src="/account.js" defer></script>', "")
     # Escape '<' even in JSON data blocks: an uploaded '</script>' must never
     # terminate its data element or become executable markup.
     data = (

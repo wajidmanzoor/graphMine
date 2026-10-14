@@ -7,7 +7,7 @@ import json
 import os
 import signal
 import sqlite3
-from contextlib import closing, suppress
+from contextlib import closing, nullcontext, suppress
 from datetime import datetime, timezone
 from typing import Any, Literal
 from uuid import uuid4
@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .analytics_scheduler import AnalyticsScheduler, estimate_memory
 from .database import RecordNotFound
+from .identity import current_principal
 from .ownership import StoreLock
 
 
@@ -143,7 +144,9 @@ class AnalyticsService:
             ).fetchone()
         if row is None:
             raise RecordNotFound(f"Workflow {workflow_id} not found")
-        return json.loads(row[0])
+        record = json.loads(row[0])
+        self.database.get_session(record["session_id"])
+        return record
 
     def _save(self, record):
         record["updated_at"] = _now()
@@ -445,6 +448,10 @@ class AnalyticsService:
                 )
             if len(self.tasks) >= self.settings.max_pending_jobs:
                 raise AnalyticsError("Workflow queue is full", "queue_full", 429)
+            principal = current_principal.get()
+            admission = (
+                principal.accounts.admit_jobs(principal.user_id) if principal else None
+            )
             record.update(
                 status="queued",
                 approved_hash=expected_hash,
@@ -455,8 +462,17 @@ class AnalyticsService:
             record.pop("started_at", None)
             record.pop("finished_at", None)
             record.pop("error", None)
-            self._save(record)
-            task = asyncio.create_task(self._execute(workflow_id))
+            try:
+                self._save(record)
+                task = asyncio.create_task(self._execute(workflow_id))
+            except BaseException:
+                if admission:
+                    principal.accounts.abort_admission(admission)
+                raise
+            if admission:
+                task.add_done_callback(
+                    lambda _done: principal.accounts.release(admission)
+                )
             self.tasks[workflow_id] = task
             task.add_done_callback(
                 lambda done: (
@@ -491,9 +507,18 @@ class AnalyticsService:
                 else plan["device"]
             )
             memory = estimate_memory(plan, (directory / "inputs.json").stat().st_size)
-            async with self.scheduler.reserve(
-                policy, memory, timeout=self.settings.job_timeout_seconds
-            ) as lease:
+            principal = current_principal.get()
+            limit = (
+                principal.accounts.execution_slot(principal.user_id)
+                if principal
+                else nullcontext()
+            )
+            async with (
+                limit,
+                self.scheduler.reserve(
+                    policy, memory, timeout=self.settings.job_timeout_seconds
+                ) as lease,
+            ):
                 (directory / "result.json").unlink(missing_ok=True)
                 record.update(
                     status="running",

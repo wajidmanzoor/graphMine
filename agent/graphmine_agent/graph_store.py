@@ -14,6 +14,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 from .config import Settings
 from .database import Database
 from .graph_context import semantic_context
+from .identity import AccountError, current_principal
 from .models import FileRole, GraphMetadata, StoredFile, new_id
 from .native_ingestion import IngestionError, read_delimited_graph
 
@@ -79,6 +80,19 @@ class GraphStore:
         leave no file record or staged source directory behind.
         """
         self.database.get_session(session_id)
+        principal = current_principal.get()
+        upload_limit = self.settings.max_upload_bytes
+        if principal:
+            upload_limit = min(
+                upload_limit,
+                self.settings.account_upload_bytes,
+                principal.accounts.upload_remaining(principal.user_id),
+            )
+            if upload_limit <= 0:
+                raise AccountError(
+                    "Your upload storage allowance is full. Contact the administrator.",
+                    "storage_limit",
+                )
         file_id = new_id("file")
         safe_name = _safe_name(filename)
         digest = hashlib.sha256()
@@ -94,13 +108,11 @@ class GraphStore:
             source_directory.mkdir()
             source_path = source_directory / safe_name
             with source_path.open("xb") as destination:
-                while chunk := stream.read(
-                    min(1024 * 1024, self.settings.max_upload_bytes - size + 1)
-                ):
+                while chunk := stream.read(min(1024 * 1024, upload_limit - size + 1)):
                     size += len(chunk)
-                    if size > self.settings.max_upload_bytes:
+                    if size > upload_limit:
                         raise UploadError(
-                            f"upload exceeds {self.settings.max_upload_bytes} byte limit"
+                            f"upload exceeds {upload_limit} byte file/storage allowance"
                         )
                     destination.write(chunk)
                     digest.update(chunk)

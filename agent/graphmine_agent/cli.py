@@ -61,6 +61,9 @@ def parser() -> argparse.ArgumentParser:
         description="GraphMine's private-LAN agent and API service",
     )
     subcommands = result.add_subparsers(dest="command")
+    from .accounts_cli import add_accounts_parser
+
+    add_accounts_parser(subcommands)
     add_parser(subcommands)
     chat = subcommands.add_parser(
         "chat", help="converse with the agent; upload graphs and save feedback"
@@ -171,6 +174,10 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     arguments = parser().parse_args(argv)
     settings = Settings.from_env()
+    if arguments.command == "accounts":
+        from .accounts_cli import run_accounts
+
+        return run_accounts(arguments, settings)
     if arguments.command == "learning":
         from .learning.cli import run_learning
 
@@ -219,6 +226,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             host=getattr(arguments, "host", None) or settings.api_host,
             port=getattr(arguments, "port", None) or settings.api_port,
             reload=getattr(arguments, "reload", False),
+            limit_concurrency=256 if settings.accounts_enabled else None,
         )
         return 0
     if arguments.command == "check":
