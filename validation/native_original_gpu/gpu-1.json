@@ -1,0 +1,18 @@
+[
+  {
+    "suite": "bfs",
+    "backend": "gpu",
+    "gpu_device": 1,
+    "passed_requests": 4608,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  },
+  {
+    "suite": "triangles",
+    "backend": "wetric",
+    "gpu_device": 1,
+    "passed_requests": 2048,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  }
+]

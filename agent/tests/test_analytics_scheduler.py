@@ -6,7 +6,12 @@ import asyncio
 from dataclasses import replace
 
 import pytest
-from graphmine_agent.analytics_scheduler import MIB, AdmissionError, AnalyticsScheduler
+from graphmine_agent.analytics_scheduler import (
+    MIB,
+    AdmissionError,
+    AnalyticsScheduler,
+    execution_admission,
+)
 
 
 async def devices():
@@ -114,3 +119,70 @@ async def test_cpu_never_probes_cuda_and_auto_can_use_cpu(settings):
     with pytest.raises(AdmissionError, match="GPU"):
         async with service.reserve("gpu", 1024 * MIB, timeout=1):
             pytest.fail("Silently ran GPU-only work on CPU")
+
+
+def test_workflow_admission_uses_verified_backends_and_explicit_devices():
+    cards = [
+        {
+            "id": operation,
+            "execution": {"cpu": cpu, "gpu": bool(devices)},
+            "backends": [
+                {"device": "gpu", "verified": True, "verified_devices": devices},
+                {
+                    "device": "gpu",
+                    "verified": False,
+                    "verified_devices": ["unverified"],
+                },
+            ],
+        }
+        for operation, devices, cpu in (
+            ("count", ["GPU-A", "GPU-B"], True),
+            ("rank", ["GPU-B"], True),
+            ("lookup", [], True),
+            ("gpu-only", ["GPU-B"], False),
+        )
+    ]
+
+    def plan(*steps):
+        return {
+            "device": "auto",
+            "steps": [{"operation": op, "device": device} for op, device in steps],
+        }
+
+    assert execution_admission(plan(("count", "auto")), cards) == (
+        "auto",
+        {"GPU-A", "GPU-B"},
+    )
+    assert execution_admission(plan(("count", "cpu"), ("lookup", "auto")), cards) == (
+        "cpu",
+        set(),
+    )
+    assert execution_admission(plan(("count", "gpu"), ("rank", "gpu")), cards) == (
+        "gpu",
+        {"GPU-B"},
+    )
+    assert execution_admission(
+        plan(("count", "auto"), ("gpu-only", "auto")), cards
+    ) == ("gpu", {"GPU-B"})
+    assert execution_admission(plan(("lookup", "gpu")), cards) == ("gpu", set())
+
+
+@pytest.mark.asyncio
+async def test_auto_prefers_verified_gpu_and_falls_back_when_unavailable(settings):
+    service = scheduler(settings)
+    async with service.reserve(
+        "auto", 1024 * MIB, timeout=1, allowed_gpu_uuids={"GPU-B"}
+    ) as lease:
+        assert lease.device == "gpu" and lease.gpu_uuid == "GPU-B"
+    for allowed in (set(), {"GPU-unavailable"}):
+        async with service.reserve(
+            "auto", 1024 * MIB, timeout=1, allowed_gpu_uuids=allowed
+        ) as lease:
+            assert lease.device == "cpu"
+    async with service.reserve("auto", 15 * 1024 * MIB, timeout=1) as lease:
+        assert lease.device == "cpu"  # Neither GPU has enough free memory.
+    with pytest.raises(AdmissionError, match="GPU"):
+        async with service.reserve(
+            "gpu", 1024 * MIB, timeout=1, allowed_gpu_uuids=set()
+        ):
+            pytest.fail("Explicit GPU execution must not fall back to CPU")

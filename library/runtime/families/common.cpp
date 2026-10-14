@@ -112,6 +112,8 @@ std::string gpu_support_reason(const std::string& operation, const Graph& graph,
 std::string backend_support_reason(const std::string& operation, const std::string& backend,
                                    const Graph& graph, const json::object& args, Work& work) {
   if (backend == "cpp") return {};
+  if (original_extension_backend(operation, backend))
+    return original_extension_support(operation, backend, graph, args, work);
   if (operation == "random-walks") {
     const auto model = args.contains("walk_model") ? args.at("walk_model") : json::value("uniform");
     if (model == "node2vec")

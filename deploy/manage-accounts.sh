@@ -8,4 +8,5 @@ if [[ -f "${repo_dir}/agent/.env" ]]; then
 fi
 cd "${repo_dir}"
 umask 077
+export PYTHONPATH="${repo_dir}/agent${PYTHONPATH:+:${PYTHONPATH}}"
 exec "${repo_dir}/.venv/bin/graphmine-agent" accounts "$@"

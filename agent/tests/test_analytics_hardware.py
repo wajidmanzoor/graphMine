@@ -11,9 +11,127 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from graphmine_agent.analytics import AnalyticsService
+from graphmine_agent.analytics import AnalyticsService, WorkflowRequest
 from graphmine_agent.analytics_scheduler import MIB, AdmissionError, gpu_inventory
 from graphmine_agent.jobs import EventBus
+from graphmine_agent.models import FileRole
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "operation,parameters,available,device,quality",
+    [
+        ("triangle-counting", {}, True, "gpu", "exact"),
+        ("triangle-counting", {}, False, "cpu", "exact"),
+        (
+            "induced-subgraph",
+            {"mode": "induced", "vertices_or_seeds": [0, 1]},
+            True,
+            "cpu",
+            "exact",
+        ),
+        ("community-detection", {"solution_quality": "exact"}, True, "cpu", "exact"),
+        (
+            "community-detection",
+            {"solution_quality": "heuristic"},
+            True,
+            "gpu",
+            "heuristic",
+        ),
+        (
+            "community-detection",
+            {"solution_quality": "heuristic"},
+            False,
+            "cpu",
+            "heuristic",
+        ),
+    ],
+)
+async def test_auto_workflow_gpu_priority_and_quality_preserving_fallback(
+    settings,
+    database,
+    graph_store,
+    session,
+    triangle_graph,
+    monkeypatch,
+    operation,
+    parameters,
+    available,
+    device,
+    quality,
+):
+    configured = tuple(
+        filter(None, os.environ.get("GRAPHMINE_ANALYTICS_TEST_GPUS", "").split(","))
+    )
+    if not configured:
+        pytest.skip("Configure physical GPU UUIDs for the automatic execution test")
+    config = replace(
+        settings,
+        graph_gpu_uuid=None,
+        analytics_gpu_uuids=configured,
+        llm_enabled=False,
+        job_timeout_seconds=60,
+    )
+    service = AnalyticsService(config, database, graph_store, EventBus(database))
+    if not available:
+
+        async def no_devices():
+            return []
+
+        monkeypatch.setattr(service.scheduler, "probe", no_devices)
+    uploaded = graph_store.ingest(
+        session_id=session.id,
+        role=FileRole.graph,
+        filename="triangle.json",
+        content=triangle_graph,
+    )
+    service.open()
+    try:
+        record = await service.create(
+            session.id,
+            WorkflowRequest(
+                mode="normal",
+                inputs={"main": {"file_id": uploaded.id}},
+                plan={
+                    "version": 1,
+                    "device": "auto",
+                    "steps": [
+                        {
+                            "id": "answer",
+                            "operation": operation,
+                            "input": {"input": "main"},
+                            "parameters": parameters,
+                        }
+                    ],
+                },
+            ),
+        )
+        await asyncio.gather(*service.tasks.values())
+        final = service.get(record["id"])
+        assert final["status"] == "completed", final
+        result = service.result(record["id"])["steps"]["answer"]["result"]
+        assert result["backend"]["device"] == device
+        assert result["quality"] == quality
+        assert result["complete"]
+        if device == "gpu":
+            assert (
+                result["backend"]["hardware"]["uuid"] == final["allocation"]["gpu_uuid"]
+            )
+        if operation == "triangle-counting":
+            assert result["ports"]["count"]["value"] == 1
+        elif operation == "community-detection":
+            if device == "gpu":
+                assert final["allocation"]["device"] == "gpu"
+                assert result["backend"]["id"] in {
+                    "gleiden",
+                    "parallel-louvain",
+                    "parallel-leiden",
+                    "parallel-leiden-plus",
+                }
+        elif operation == "induced-subgraph":
+            assert "native CPU" in result["backend"]["selection_reason"]
+    finally:
+        await service.close()
 
 
 @pytest.mark.asyncio

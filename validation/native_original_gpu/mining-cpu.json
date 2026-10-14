@@ -1,0 +1,58 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 48,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  },
+  {
+    "suite": "maximal",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 4104,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  },
+  {
+    "suite": "maximum",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2052,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  },
+  {
+    "suite": "fixed",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 18468,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  },
+  {
+    "suite": "core",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 4104,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  },
+  {
+    "suite": "optimization",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 3078,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 161,
+    "failed": 0,
+    "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"
+  }
+]

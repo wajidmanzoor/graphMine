@@ -187,7 +187,8 @@ def build_record(build, source_root, directory, junit):
         "dependencies": dependencies,
         "workers": {
             str(p): sha(p)
-            for p in (build / "optimization-workers").glob("graphmine-worker-*")
+            for directory in (build / "optimization-workers", build.parent / "workers")
+            for p in directory.glob("graphmine-worker-*")
         },
         "profiles": profiles,
         "reports": reports,

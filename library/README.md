@@ -166,6 +166,13 @@ cmake -S library -B library/build \
   -DCMAKE_PREFIX_PATH=/path/to/kokkos/install
 ```
 
+For the shared runtime, build both Kokkos and KokkosKernels with
+`-DCMAKE_POSITION_INDEPENDENT_CODE=ON`. Enable
+`-DGRAPHMINE_BUILD_NATIVE_RUNTIME=ON` on the `library` build to expose the
+original adapters through the C ABI, Python binding and agent catalog.
+The runtime also supports the RAPIDS and optimization worker options documented
+in [the native migration guide](../docs/NATIVE_CORE_MIGRATION.md).
+
 If that optional dependency is absent, GraphMine still builds the rest of the
 library and marks those three backend choices unavailable. Each backend also
 has a `GRAPHMINE_ENABLE_*` CMake option for selective builds. Use

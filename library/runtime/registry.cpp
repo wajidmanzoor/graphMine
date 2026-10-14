@@ -1130,10 +1130,71 @@ const std::vector<Operation>& definitions() {
                {"k", parameter("integer", nullptr, false, true)}},
               {{"vertices", port("vertex_set")}}, original_mining_backends("maximum-clique")),
          minimum_vertex_cover}};
+    result.push_back({card("dynamic-triangle-counting", "triangle_counting_listing",
+                          "Update triangle counts after an edge batch",
+                          "Exact deletion-before-insertion batch on an undirected simple graph. "
+                          "Reject repeated updates, absent deletions and existing insertions; preserve "
+                          "external IDs. EDTC GPU counts are checked against bounded native materialization.",
+                          {{"updates", parameter("array", nullptr, true)},
+                           {"list_changed_instances", parameter("boolean", false)},
+                           {"result_limit", positive(nullptr, true)}},
+                          {{"count", port("scalar")}, {"deleted", port("vertex_groups")},
+                           {"inserted", port("vertex_groups")}}, {}), dynamic_triangles});
+    result.push_back({card("maximal-biclique-counting", "maximal_biclique_enumeration",
+                          "Count all maximal bicliques",
+                          "Count nonempty maximal bicliques with attributes.side=left|right on every "
+                          "vertex. Undirected simple projection. MBE-GPU count is checked against "
+                          "bounded native enumeration; no size filtering.", {},
+                          {{"count", port("scalar")}}, {}), maximal_biclique_count});
     const auto nested_schemas = json::parse(native_parameter_schemas_json).as_object();
     for (auto& definition : result) {
       auto& metadata = definition.metadata;
       const auto id = string(metadata.at("id"), "operation");
+      for (const auto& backend : original_extension_backends(id))
+        metadata.at("backends").as_array().push_back(backend);
+      auto& parameters = metadata.at("parameters").as_object();
+      if (id == "influence-maximization") {
+        parameters["solution_quality"] = choice("exact", {"exact", "heuristic"});
+        parameters["sample_count"] = positive(256);
+        parameters["random_seed"] = parameter("integer", 42);
+        metadata["description"] = "Exact native IC/LT optimization, or explicitly requested "
+            "SuperFuser independent-cascade heuristic with holdout spread estimation. "
+            "The heuristic does not certify optimality or an approximation guarantee.";
+        metadata["quality"] = "parameter_dependent";
+        metadata["gpu_limitations"] = json::array{"SuperFuser: solution_quality=heuristic, "
+            "independent_cascade, explicit probabilities, sample_count a multiple of 32 in [32,65536]"};
+      }
+      if (id == "personalized-pagerank") {
+        parameters["solution_quality"] = choice("numerical", {"numerical", "approximate"});
+        parameters["epsilon"] = real(.01, .01, .5);
+        parameters["random_seed"] = parameter("integer", 42);
+      }
+      if (id == "community-detection")
+        metadata["gpu_limitations"] = json::array{"Unweighted heuristic modularity; seed=0; "
+            "gLeiden resolution=1, parallel backends support positive resolution; no exact or CPM GPU profile"};
+      if (id == "quasi-cliques")
+        metadata["gpu_limitations"] = json::array{"cuQC: gamma in [0.5,1], minimum_size>=2, "
+            "maximal_only=true, no maximum_size; GPU memberships checked by bounded CPU enumeration"};
+      if (id == "maximal-bicliques")
+        metadata["gpu_limitations"] = json::array{"cuMBE: uncapped materialization; GPU memberships checked by bounded CPU enumeration"};
+      if (id == "motif-counting")
+        metadata["gpu_limitations"] = json::array{"Connected undirected 3/4-vertex motifs; "
+            "graphminer/dumato require induced=true; graphset requires induced=false; "
+            "GPU count with bounded CPU materialization"};
+      if (id == "subgraph-isomorphism")
+        metadata["gpu_limitations"] = json::array{"gMatch: simple undirected non-induced graphs, connected query <=16 vertices, "
+            "data <=32767 vertices; no predicates or result_limit; bounded CPU materialization"};
+      if (id == "temporal-motifs")
+        metadata["gpu_limitations"] = json::array{"Everest/Mayura: ordered A->B, B->C, A->C; "
+            "strict integer timestamps and integral duration; no temporal inducedness or predicates; "
+            "GPU count with bounded CPU materialization"};
+      if (id == "densest-subgraph")
+        metadata["gpu_limitations"] = json::array{"CDS: unweighted, minimum_vertices=1; exact objective checked by native CPU"};
+      if (id == "group-steiner-tree")
+        metadata["gpu_limitations"] = json::array{"GPU4GST: explicit nonnegative integer weights; "
+            "at most 16 groups including required singleton vertices; native optimum verification"};
+      if (id == "transitive-closure")
+        metadata["gpu_limitations"] = json::array{"GDlog: directed, at most 1024 vertices; GPU pairs checked by native reachability"};
       if (nested_schemas.contains(id)) {
         auto& parameters = metadata.at("parameters").as_object();
         for (const auto& schema : nested_schemas.at(id).as_object())
@@ -1223,8 +1284,13 @@ const std::vector<Operation>& definitions() {
                         "CPU admission checks"};
       }
       if (id == "personalized-pagerank")
+        metadata["quality"] = "parameter_dependent";
+      if (id == "personalized-pagerank")
         metadata["gpu_limitations"] =
-            json::array{"Custom uniform dangling redistribution uses the CPU profile"};
+            json::array{"Custom uniform dangling redistribution uses the CPU profile",
+                        "kPAR: solution_quality=approximate, one seed, restart_probability=0.2, "
+                        "unweighted outgoing directed edges, dangling mass to seeds; epsilon is a "
+                        "sampling parameter, no certified convergence tolerance; random_seed<=INT32_MAX"};
       if (id == "link-prediction")
         metadata["gpu_limitations"] = json::array{"Only scoring_measure=jaccard"};
       if (id == "single-source-shortest-paths" || id == "many-source-shortest-paths")

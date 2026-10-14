@@ -14,6 +14,24 @@ and explicit approval. Expert accepts an explicit JSON workflow and also
 requires review before execution. Editing increments the revision and
 invalidates prior approval. `/classic` retains the earlier application.
 
+**Automatic (GPU first)** prefers a permitted GPU with current execution
+evidence for the selected calculation. If no such GPU has capacity, or the
+algorithm does not support the input or requested parameters on GPU, execution
+falls back to a verified CPU implementation. CPU-only workflows do not reserve
+a GPU. Explicit **CPU only** and **GPU only** remain strict; GPU-only work fails
+when it cannot run on an admitted GPU. Each result records its actual backend
+and, when supplied by the native runtime, the CPU fallback reason.
+
+Compute device and solution quality are separate choices. Calculation settings,
+plan review, chat summaries and results distinguish exact algorithms (which
+establish the declared result or optimum) from heuristics (which do not guarantee
+a global optimum). Where supported, **Solution quality** is a visible setting;
+its declared default applies when omitted. GPU preference never changes this
+parameter or substitutes another objective. Approximate, numerical, stochastic
+and learned/statistical estimates retain their own labels. A complete collection
+does not imply an exact solution. The current native community-detection profile
+is CPU-only, with separate exact and heuristic solution-quality choices.
+
 The **Results** tab and each answer's **View results & visualizations** link
 open a separate page for graph exploration, tables and downloads. Chat remains
 visible during planning and execution. Routes such as
@@ -24,6 +42,12 @@ returns; the UI does not fabricate a live token stream or numerical findings.
 Each question has a request ID. If its HTTP reply is lost, the browser retrieves
 the saved planning outcome from authenticated events without repeating model
 generation. A saved plan retains its original input files and mode for recovery.
+The sidebar puts model reasoning first and keeps a history grouped by question.
+Understanding, operation selection, plan attempts, and validation outcomes appear
+below it, including failed validation and repairs. New planning events retain the
+proposed plan; older saved workflows supply their validated plan. A follow-up is
+shown immediately and stays visible until its matching request ID is acknowledged.
+The chat scroll follows new messages above any older plan panel.
 
 ## Library and application setup
 
@@ -36,6 +60,18 @@ export GRAPHMINE_NATIVE_LIBRARY=/absolute/build/libgraphmine_runtime.so
 export GRAPHMINE_NATIVE_BINARY=/absolute/build/graphmine-native
 export GRAPHMINE_ANALYTICS_PYTHON=/absolute/worker-environment/bin/python
 ```
+
+For subsequent launches, save these settings in the ignored `agent/.env` and
+start the application with `./deploy/start-agent.sh`. A branch switch does not
+rebuild native artifacts or update shell variables. Without explicit paths the
+agent expects `library/build/runtime/graphmine-native` and its adjacent
+`libgraphmine_runtime.so`; an older `library/build/graphmine` is not a substitute.
+Use a build matching this branch's native execution evidence.
+
+Domains and saved conversations load independently of native capability
+verification. Calculations become available after verification finishes; an
+unavailable runtime leaves conversation navigation available and shows an
+analysis status with a reconnect option.
 
 `GRAPHMINE_NATIVE_BINARY` needs native libcudf for CSV loading. JSON graph
 analysis can use a CPU-only runtime. `GRAPHMINE_NATIVE_LIBRARY` is loaded by the
@@ -168,6 +204,16 @@ uses the full uploaded input. Results retain original typed IDs and exact
 rational values. Pagination and export access saved full results. Incomplete
 collections are labeled and cannot feed steps requiring a complete collection;
 complete counts may coexist with an incomplete or unrequested enumeration.
+
+Community results open with all groups visible, stable group colors, and a layout
+that separates communities. The group selector, legend, and group rows filter the
+preview to that group's vertices and internal connections; **All groups** or
+**Clear selection** restores the overview. Preview limits remain explicit. Group
+membership comes from the saved partition, including the original typed IDs.
+The result names its solver: this branch's native local-vertex-move heuristic
+can produce a different partition from the classic GPU Leiden backend, even on
+the same graph at the same resolution. Display filtering does not recompute or
+change the returned communities.
 
 ## Reviewed examples
 

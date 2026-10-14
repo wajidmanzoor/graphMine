@@ -5,6 +5,9 @@
   const save = (key, value) => { try { localStorage.setItem(key, value); } catch { /* private browsing */ } };
   const state = {base: read("graphmine.apiBase"), token: read("graphmine.apiToken"), caps: null, session: null, files: [], kinds: {}, active: "", mode: "normal", operation: "", record: null, result: null, cy: null, graph: null, selected: new Set(), port: null, rows: [], filtered: [], page: 0, previews: new Map(), poll: null, epoch: 0, busy: false, domains: [], workflows: [], events: [], eventCursor: 0, eventPoll: null, legacyMessages: [], view: "domains", planning: false, pendingQuestion: null, summaries: new Map()};
   const PAGE = 30;
+  let connectionGeneration = 0;
+  let capabilitiesLoading = false;
+  let capabilitiesController = null;
   const descriptions = {normal: "Ask in your own words. GraphMine checks the plan and runs it for you.", interactive: "Discuss your question, review the plan, then approve the calculation.", expert: "Inspect and edit the workflow yourself before running it."};
   const friendly = {requested_k: "Minimum connections inside the core", k: "Group size (k)", source: "Starting point", source_vertex: "Starting point", sink: "Destination", target: "Destination", target_vertex: "Comparison point", sources: "Starting points", seeds: "Required starting points", seed_vertices: "Starting points", vertices_or_seeds: "Selected vertices or starting points", connectivity_mode: "Meaning of connected", weight_mode: "How to use connection weights", result_limit: "Maximum results to list", mode: "Result to return", radius: "Maximum connection steps", depth_limit: "Maximum connection steps", quality: "Solution quality", objective: "Objective to optimize"};
   const choiceNames = {enumerate: "List each result", count: "Count only", edge_weight: "Use edge weights", unweighted: "Treat each connection equally", weakly_connected: "Connected when direction is ignored", strongly_connected: "Every member can reach every other member", induced: "Connections within the selected vertices", ego: "Neighborhood around the selected vertices", exact: "Exact", heuristic: "Heuristic"};
@@ -38,6 +41,7 @@
   function clearResults(message = "Waiting for a completed calculation.") {
     if (state.record) state.summaries.delete(state.record.id);
     state.result = null; state.port = null; state.rows = []; state.selected.clear();
+    state.groups = []; state.groupMembership = new Map(); state.groupFilter = "";
     $("result-controls").hidden = true; $("download-result").disabled = true; $("raw-details").hidden = true;
     $("result-completeness").textContent = message; $("result-completeness").classList.remove("incomplete");
     renderOutput(); renderGraph(state.previews.get(state.active) || null);
@@ -53,7 +57,32 @@
   function card(id) { return state.caps?.operations.find(c => c.id === id); }
   const isTable = file => file.role === "attachment" && file.original_name.toLowerCase().endsWith(".csv");
   function methodName(id) { return card(id)?.title || id; }
-  function capable(c) { return c.execution[$("device").value === "gpu" ? "gpu" : "cpu"]; }
+  function capable(c) { const device = $("device").value; return device === "auto" ? c.execution.cpu || c.execution.gpu : c.execution[device]; }
+  const qualityDescriptions = {
+    exact: "Exact — establishes the declared result or optimum",
+    heuristic: "Heuristic — no guarantee of a global optimum",
+    approximate: "Approximate — uses the method's declared approximation guarantees",
+    numerical: "Numerical — subject to floating-point precision and convergence",
+    stochastic: "Stochastic — produces sampled results",
+    learned_estimate: "Learned estimate — predicted from the model",
+    statistical_estimate: "Statistical estimate — subject to sampling uncertainty",
+    parameter_dependent: "Quality depends on the selected parameters",
+    backend_dependent: "Quality depends on the selected backend; reported with the result",
+  };
+  function plannedQuality(selected, parameters = {}, bindings = {}) {
+    if (!selected) return "Quality will be shown when the calculation metadata loads";
+    const spec = selected.parameters?.solution_quality;
+    const requested = bindings.solution_quality ? null : parameters.solution_quality ?? spec?.default;
+    let profile = selected.quality;
+    if (["exact", "parameter_dependent"].includes(profile)) {
+      if (bindings.solution_quality) profile = "parameter_dependent";
+      else if (["exact", "heuristic", "approximate"].includes(requested)) profile = requested;
+    }
+    let label = qualityDescriptions[profile] || title(profile || "unspecified");
+    if (bindings.solution_quality) label += ". Solution quality is supplied by a workflow input";
+    else if (requested && requested !== profile) label += `. Requested solution quality: ${title(requested)}`;
+    return label;
+  }
   function setMode(mode) {
     state.mode = mode;
     document.querySelectorAll("[data-mode]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.mode === mode)));
@@ -63,16 +92,24 @@
     if (state.session) save(`graphmine.mode.${state.session.id}`, mode);
     if (mode === "expert" && !$("plan-editor").value) loadEditor();
   }
+  function updateControls() {
+    const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "data-upload", "new-session", "session-select", "active-input", "active-kind", "device"];
+    controls.forEach(id => $(id).disabled = state.busy);
+    document.querySelectorAll("[data-mode]").forEach(button => button.disabled = state.busy);
+    ["plan-question", "use-operation", "save-editor", "operation-select", "device", "approve-plan"].forEach(id => $(id).disabled = state.busy || !state.caps);
+    if (state.caps?.question_planner_enabled === false) $("plan-question").disabled = true;
+  }
+  function requireCapabilities() {
+    if (!state.caps) throw new Error(capabilitiesLoading ? "Calculations are still loading. Please try again shortly." : "Calculations are unavailable. Reconnect to try again.");
+  }
   async function runAction(fn) {
     if (state.busy) return;
     state.busy = true;
-    const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "data-upload", "new-session", "session-select", "active-input", "active-kind", "device"];
-    controls.forEach(id => $(id).disabled = true);
-    document.querySelectorAll("[data-mode]").forEach(button => button.disabled = true);
+    updateControls();
     try { await fn(); } catch (error) { notice(error.message, true); }
-    finally { state.busy = false; controls.forEach(id => $(id).disabled = false); document.querySelectorAll("[data-mode]").forEach(button => button.disabled = false); }
+    finally { state.busy = false; updateControls(); }
   }
-  const stageNames = {family: "Understanding your question", operation: "Choosing the calculation", plan: "Building a valid plan", retrieval: "Checking reviewed examples"};
+  const stageNames = {family: "Understanding your question", operation: "Choosing the calculation", plan: "Building a valid plan", validation: "Validating the plan", retrieval: "Checking reviewed examples"};
   function route(page = "chat", workflow = "") {
     return state.session ? `#workspace/${encodeURIComponent(state.session.id)}/${page}${workflow ? `/${encodeURIComponent(workflow)}` : ""}` : "#";
   }
@@ -138,7 +175,7 @@
   async function openSession(id) {
     clearTimeout(state.poll); clearTimeout(state.eventPoll); state.epoch++;
     state.session = null; state.files = []; state.kinds = {}; state.active = ""; state.record = null; state.previews.clear();
-    state.events = []; state.workflows = []; state.eventCursor = 0; state.legacyMessages = []; state.pendingQuestion = null; state.summaries.clear();
+    state.events = []; state.workflows = []; state.eventCursor = 0; state.legacyMessages = []; state.pendingQuestion = null; state.lastChatKey = null; state.summaries.clear();
     $("workflow-panel").hidden = true; $("plan-editor").value = "";
     notice(""); clearResults("Upload a graph in Chat to preview its connections here.");
     if (!id) { showPage("domains"); renderConversation(); return; }
@@ -174,6 +211,12 @@
   function appendOutcome(bubble, record) {
     const status = {completed: "Analysis complete", awaiting_review: "Ready for your review", ready: "Ready for your review", queued: "Your calculation is queued", running: "Your calculation is running", failed: "The calculation failed", interrupted: "The calculation was interrupted", cancelled: "The calculation was cancelled"}[record.status] || title(record.status);
     bubble.append(node("p", {class: "workflow-outcome"}, state.summaries.get(record.id) || `${status}. ${record.error?.message || ""}`));
+    for (const step of record.validation.plan.steps) {
+      const result = record.steps[step.id];
+      const quality = result?.quality ? qualityDescriptions[result.quality] || title(result.quality) : plannedQuality(card(step.operation), step.parameters, step.bindings);
+      const device = result?.backend?.device;
+      bubble.append(node("small", {class: "step-quality"}, `${methodName(step.operation)}: ${quality}${device ? ` · ${device.toUpperCase()}` : ""}.`));
+    }
     if (record.status === "completed") bubble.append(node("a", {class: "result-link", href: route("results", record.id)}, "View results & visualizations →"));
     else {
       const button = node("button", {class: "quiet", type: "button"}, ["ready", "awaiting_review"].includes(record.status) ? "Review this plan" : "Inspect this analysis");
@@ -182,7 +225,9 @@
     }
   }
   function renderConversation() {
-    const scroll = $("conversation-scroll"), atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90;
+    const scroll = $("conversation-scroll"), lastMessage = $("messages").lastElementChild;
+    const messageBottom = lastMessage?.getBoundingClientRect().bottom, viewport = scroll.getBoundingClientRect();
+    const atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90 || messageBottom >= viewport.top && messageBottom <= viewport.bottom + 90;
     const openDetails = new Set([...$("messages").querySelectorAll("details[open]")].map(el => el.dataset.turn));
     const container = $("messages"); container.replaceChildren();
     const domain = state.domains.find(row => row.id === state.session?.domain_id);
@@ -222,39 +267,78 @@
       const item = messageElement("assistant", record.validation.plan.steps.map(step => methodName(step.operation)).join(" → "), "Saved analysis");
       appendOutcome(item.bubble, record); container.append(item.article);
     }
-    if (state.pendingQuestion) container.append(messageElement("user", state.pendingQuestion.message, `${title(state.mode)} mode`).article);
+    if (state.pendingQuestion) {
+      const item = messageElement("user", state.pendingQuestion.message, `${title(state.pendingQuestion.mode)} mode`);
+      item.article.dataset.turn = state.pendingQuestion.id;
+      if (state.pendingQuestion.unconfirmed) item.bubble.append(node("small", {}, "Waiting to confirm this message with the server."));
+      container.append(item.article);
+    }
     if (state.planning || chats.at(-1)?.payload.role === "user") container.append(messageElement("assistant", "Working through your question… Follow the reasoning and activity alongside this conversation.", "GraphMine").article);
-    if (atBottom || state.pendingQuestion) requestAnimationFrame(() => { scroll.scrollTop = scroll.scrollHeight; });
+    const chatKey = state.pendingQuestion?.id || chats.at(-1)?.sequence;
+    const newMessage = chatKey !== state.lastChatKey;
+    state.lastChatKey = chatKey;
+    if (atBottom || newMessage) requestAnimationFrame(() => {
+      // The plan editor follows the messages in this scroll container. Scrolling
+      // to its bottom can put the newly sent question above the visible area.
+      const last = container.lastElementChild;
+      if (last && state.view === "chat") scroll.scrollTo({top: scroll.scrollTop + last.getBoundingClientRect().bottom - scroll.getBoundingClientRect().bottom + 16, behavior: "instant"});
+    });
   }
   function renderActivity() {
-    const latest = [...state.events].reverse().find(event => event.type === "workflow.chat" && event.payload.role === "user");
-    const turn = latest?.payload.turn_id;
-    const events = state.events.filter(event => event.payload.turn_id === turn);
-    $("activity-list").replaceChildren();
-    const stages = new Map();
-    for (const event of events) if (event.type === "workflow.planning") stages.set(event.payload.stage, event.payload);
-    for (const [stage, decision] of stages) {
-      const running = decision.status === "running";
-      const item = node("li", {class: `activity-step ${running ? "running" : "completed"}`});
-      item.append(node("span", {class: "activity-marker", "aria-hidden": "true"}, running ? "·" : "✓"));
-      const content = node("div"); content.append(node("strong", {}, stageNames[stage] || title(stage)), node("p", {}, decision.message || (running ? "The model is considering your question." : "Checked.")));
-      item.append(content); $("activity-list").append(item);
+    const open = new Set([...document.querySelectorAll('.reasoning-sidebar details[data-history][open]')].map(el => el.dataset.history));
+    const questions = state.events.filter(e => e.type === "workflow.chat" && e.payload.role === "user" && !e.payload.evaluation_id).map(e => e.payload);
+    if (state.pendingQuestion) questions.push({turn_id: state.pendingQuestion.id, message: state.pendingQuestion.message});
+    const latest = questions.at(-1)?.turn_id;
+    $("activity-list").replaceChildren(); $("model-reasoning").replaceChildren();
+    let count = 0, thinking = state.planning, outcome, workflow;
+    const workflowStatus = record => ({completed: "Analysis complete", awaiting_review: "Waiting for your approval", ready: "Waiting for your approval", queued: "Calculation queued", running: "Running the calculation"}[record.status] || title(record.status));
+    for (const [index, question] of questions.entries()) {
+      const events = state.events.filter(e => e.payload.turn_id === question.turn_id);
+      const answer = events.findLast(e => e.type === "workflow.chat" && e.payload.role === "assistant")?.payload;
+      const record = state.workflows.findLast(row => row.planning_turn_id === question.turn_id);
+      const heading = `Question ${index + 1}`;
+      const reasoning = node("section", {class: "reasoning-turn", "data-turn": question.turn_id});
+      reasoning.append(node("h3", {}, heading), node("p", {class: "turn-question"}, question.message));
+      const attempts = new Map();
+      for (const event of events.filter(e => e.type === "workflow.reasoning")) {
+        count++;
+        const stage = event.payload.stage, attempt = (attempts.get(stage) || 0) + 1; attempts.set(stage, attempt);
+        const key = `reasoning-${event.sequence}`, details = node("details", {class: "reasoning-record", "data-history": key}); details.open = open.has(key);
+        details.append(node("summary", {}, `${stageNames[stage] || title(stage)}${attempt > 1 ? ` · attempt ${attempt}` : ""}`), node("small", {}, event.payload.model || ""), node("pre", {}, event.payload.text));
+        reasoning.append(details);
+      }
+      if (!attempts.size) reasoning.append(node("p", {class: "muted"}, "Reasoning will appear when the model returns it."));
+      $("model-reasoning").append(reasoning);
+      const history = node("li", {class: "activity-turn", "data-turn": question.turn_id}), list = node("ol", {class: "activity-list"});
+      history.append(node("h3", {}, heading), node("p", {class: "turn-question"}, question.message), list);
+      // Pair each start with its completion, while retaining subsequent attempts.
+      const decisions = [];
+      for (const event of events.filter(e => e.type === "workflow.planning")) {
+        const decision = {...event.payload, sequence: event.sequence};
+        const previous = decisions.findLastIndex(row => row.stage === decision.stage && row.status === "running");
+        if (decision.status !== "running" && previous >= 0) decisions[previous] = decision;
+        else decisions.push(decision);
+      }
+      if (record && !decisions.some(row => row.stage === "validation")) decisions.push({stage: "validation", status: "passed", message: "Saved plan validated against its inputs.", plan: record.validation.plan, sequence: `saved-${record.id}`});
+      for (const decision of decisions) {
+        const running = decision.status === "running" && !answer, failed = ["failed", "needs_information", "unsupported", "wrong_family"].includes(decision.status) || decision.status === "running" && answer?.status === "failed";
+        const item = node("li", {class: `activity-step ${running ? "running" : failed ? "failed" : "completed"}`, "data-stage": decision.stage});
+        item.append(node("span", {class: "activity-marker", "aria-hidden": "true"}, running ? "·" : failed ? "!" : "✓"));
+        const content = node("div"); content.append(node("strong", {}, stageNames[decision.stage] || title(decision.stage)), node("p", {}, decision.message || (running ? "In progress…" : failed ? answer?.message || "This stage did not complete." : "Checked.")));
+        if (decision.plan) {
+          const key = `plan-${decision.sequence}`, details = node("details", {class: "reasoning-record", "data-history": key}); details.open = open.has(key);
+          details.append(node("summary", {}, "View plan"), node("pre", {}, W.stringify(decision.plan, true))); content.append(details);
+        }
+        item.append(content); list.append(item);
+      }
+      if (record) list.append(node("li", {class: "activity-outcome"}, workflowStatus(record)));
+      $("activity-list").append(history);
+      if (question.turn_id === latest) { outcome = answer; workflow = record; thinking ||= !answer && decisions.some(row => row.status === "running"); }
     }
-    const outcome = events.findLast(event => event.type === "workflow.chat" && event.payload.role === "assistant")?.payload;
-    const running = [...stages.values()].some(stage => stage.status === "running") && !outcome;
-    const workflow = state.workflows.findLast(record => record.planning_turn_id === turn) || state.record;
-    const status = running || state.planning ? "Thinking through your question…" : workflow ? ({completed: "Analysis complete", awaiting_review: "Waiting for your approval", ready: "Waiting for your approval", queued: "Calculation queued", running: "Running the calculation"}[workflow.status] || title(workflow.status)) : outcome?.status === "needs_information" ? "Waiting for your reply" : outcome?.status === "failed" ? "Planning failed" : "Ready for your question";
-    $("activity-status").textContent = status; $("chat-status").textContent = running || state.planning ? "Thinking…" : status;
-    const detailsOpen = new Set([...$("model-reasoning").querySelectorAll("details[open]")].map(e => e.dataset.sequence));
-    $("model-reasoning").replaceChildren();
-    const reasoning = events.filter(event => event.type === "workflow.reasoning");
-    $("reasoning-count").textContent = String(reasoning.length);
-    for (const event of reasoning) {
-      const details = node("details", {class: "reasoning-record", "data-sequence": event.sequence}); details.open = detailsOpen.has(String(event.sequence));
-      details.append(node("summary", {}, stageNames[event.payload.stage] || title(event.payload.stage)), node("small", {}, event.payload.model), node("pre", {}, event.payload.text));
-      $("model-reasoning").append(details);
-    }
-    if (!reasoning.length) $("model-reasoning").append(node("p", {class: "muted"}, running ? "Reasoning will appear after the model finishes each stage." : "No reasoning text returned for this question yet."));
+    const status = thinking ? "Thinking through your question…" : workflow ? workflowStatus(workflow) : outcome?.status === "needs_information" ? "Waiting for your reply" : outcome?.status === "failed" ? "Planning failed" : "Ready for your question";
+    $("activity-status").textContent = status; $("chat-status").textContent = thinking ? "Thinking…" : status;
+    $("reasoning-count").textContent = String(count);
+    if (!questions.length) $("model-reasoning").append(node("p", {class: "muted"}, "Reasoning and the history of every question will appear here."));
   }
   async function syncConversation() {
     if (!state.session) return;
@@ -264,7 +348,7 @@
     const fresh = events.filter(event => Number(event.sequence) > state.eventCursor);
     if (fresh.length) {
       state.events.push(...fresh); state.eventCursor = Number(fresh.at(-1).sequence);
-      if (state.pendingQuestion && fresh.some(e => e.type === "workflow.chat" && e.payload.role === "user" && e.sequence > state.pendingQuestion.after)) state.pendingQuestion = null;
+      if (state.pendingQuestion && fresh.some(e => e.type === "workflow.chat" && e.payload.role === "user" && e.payload.turn_id === state.pendingQuestion.id)) state.pendingQuestion = null;
       renderConversation(); renderActivity();
     }
   }
@@ -329,7 +413,7 @@
   }
   function renderOperations() {
     $("operation-select").replaceChildren(node("option", {value: ""}, "Choose a calculation"));
-    for (const selected of state.caps.operations.filter(capable)) $("operation-select").append(node("option", {value: selected.id}, selected.title));
+    for (const selected of (state.caps?.operations || []).filter(capable)) $("operation-select").append(node("option", {value: selected.id}, `${selected.title} · ${plannedQuality(selected).split(" — ")[0]}`));
     $("operation-select").value = state.operation;
     renderParameters();
   }
@@ -376,13 +460,18 @@
     const selected = card(state.operation);
     $("operation-parameters").replaceChildren();
     $("operation-description").textContent = selected?.description || "";
-    $("operation-quality").textContent = selected ? `Input: ${title(selected.input_kind)} · Method profile: ${title(selected.quality)}` : "";
+    const updateQuality = () => {
+      const choice = $("operation-parameters").querySelector('[data-parameter="solution_quality"]');
+      $("operation-quality").textContent = selected ? `Input: ${title(selected.input_kind)} · ${plannedQuality(selected, choice?.value ? {solution_quality: W.parse(choice.value)} : {})}.` : "";
+    };
+    updateQuality();
     if (!selected) return;
     const optional = node("details"), content = node("div");
     optional.append(node("summary", {}, "Method settings and optional outputs"), content);
     for (const [key, spec] of Object.entries(selected.parameters)) {
       const field = parameterControl(key, spec, spec.default, "parameter");
-      (spec.required ? $("operation-parameters") : content).append(field);
+      (spec.required || key === "solution_quality" ? $("operation-parameters") : content).append(field);
+      if (key === "solution_quality") field.addEventListener("change", updateQuality);
     }
     if (content.children.length) $("operation-parameters").append(optional);
   }
@@ -421,6 +510,7 @@
     $("plan-editor").value = W.stringify(plan, true);
   }
   async function submitPlan(plan, revise = false, turnId = null, inputFiles = null, requestedMode = null) {
+    requireCapabilities();
     await ensureSession();
     if (!state.active) throw new Error("Choose an input before saving the plan.");
     const body = {mode: requestedMode || state.mode, plan, inputs: revise && state.record ? state.record.input_files : inputFiles || refs()};
@@ -436,15 +526,15 @@
   async function askQuestion(event) {
     event.preventDefault();
     await runAction(async () => {
+      requireCapabilities();
       const message = $("question").value.trim();
       if (!message) throw new Error("Describe what you want to learn.");
       if (!state.active) throw new Error("Add your data first, then send your question.");
       await ensureSession();
-      const inputs = refs(), mode = state.mode, previous = state.record?.id || null;
-      state.pendingQuestion = {message, after: state.eventCursor}; state.planning = true;
+      const inputs = refs(), mode = state.mode, previous = state.record?.id || null, id = requestId();
+      state.pendingQuestion = {id, message, mode}; state.planning = true;
       $("question").value = ""; notice(""); renderConversation(); renderActivity();
       try {
-        const id = requestId();
         let response;
         try {
           response = await api(`/api/sessions/${state.session.id}/analytics/plan`, {method: "POST", body: W.stringify({message, mode, inputs, device: $("device").value, previous_workflow_id: previous, request_id: id})});
@@ -452,12 +542,17 @@
           if (!["TypeError", "NetworkError"].includes(error?.name)) throw error;
           response = await savedPlanningResponse(id, error);
         }
-        await syncConversation();
+        try { await syncConversation(); } catch { /* Polling will recover saved messages. */ }
         if (response.status === "ready" && response.plan) {
           $("plan-editor").value = W.stringify(response.plan, true);
           await submitPlan(response.plan, false, response.turn_id, inputs, mode);
         }
-      } finally { state.planning = false; state.pendingQuestion = null; await syncConversation(); renderConversation(); renderActivity(); }
+      } finally {
+        state.planning = false;
+        try { await syncConversation(); } catch { /* Keep the sent question visible until its own saved event arrives. */ }
+        if (state.pendingQuestion?.id === id) state.pendingQuestion.unconfirmed = true;
+        renderConversation(); renderActivity();
+      }
     });
   }
   async function loadSaved() {
@@ -486,7 +581,7 @@
     if (savedIndex >= 0) state.workflows[savedIndex] = record;
     renderActivity();
     $("workflow-status").textContent = title(record.status);
-    $("workflow-summary").textContent = `Revision ${record.revision} · ${title(record.mode)} mode · ${record.validation.plan.device === "auto" ? "Automatic device choice" : record.validation.plan.device.toUpperCase() + " only"}. ${record.error?.message || ""}`;
+    $("workflow-summary").textContent = `Revision ${record.revision} · ${title(record.mode)} mode · ${record.validation.plan.device === "auto" ? "GPU preferred, CPU fallback for each compatible calculation" : record.validation.plan.device.toUpperCase() + " only"}. ${record.error?.message || ""}`;
     $("plan-details").textContent = W.stringify({plan: record.validation.plan, input_fingerprints: record.validation.inputs, workflow_hash: record.validation.workflow_hash, approved_hash: record.approved_hash}, true);
     $("workflow-steps").replaceChildren();
     for (const id of record.validation.order) {
@@ -496,6 +591,9 @@
       const button = node("button", {}, methodName(step.operation));
       button.addEventListener("click", () => { if (state.result?.steps[id]?.result) { $("result-step").value = id; selectStep(); go("results", record.id); } });
       li.append(button, node("small", {}, `Step: ${id}`), node("small", {}, step.input.input ? `Input: ${step.input.input}` : `Input: ${step.input.step} / ${step.input.port}`));
+      const recorded = record.steps[id];
+      li.append(node("small", {class: "step-quality"}, recorded?.quality ? qualityDescriptions[recorded.quality] || title(recorded.quality) : plannedQuality(card(step.operation), step.parameters, step.bindings)));
+      li.append(node("small", {}, recorded?.backend?.device ? `Computed on ${recorded.backend.device.toUpperCase()}` : (step.device || record.validation.plan.device) === "auto" ? "Compute: GPU preferred, CPU fallback" : `Compute: ${(step.device || record.validation.plan.device).toUpperCase()}`));
       for (const [parameter, reference] of Object.entries(step.bindings)) li.append(node("small", {}, `${title(parameter)} ← ${reference.input || `${reference.step} / ${reference.port}`}`));
       if (record.steps[id]?.reused) li.append(node("small", {}, "Reused a matching verified result"));
       if (record.steps[id]?.error) li.append(node("small", {class: "step-error"}, record.steps[id].error.message));
@@ -503,9 +601,10 @@
       const dl = node("div");
       for (const [key, value] of Object.entries(step.parameters)) dl.append(node("small", {}, `${title(key)}: ${display(value)}`));
       details.append(dl); li.append(details); $("workflow-steps").append(li);
-      if (!["queued", "running"].includes(record.status)) {
+      const selected = card(step.operation);
+      if (selected && !["queued", "running"].includes(record.status)) {
         const edit = node("details", {class: "step-editor"}); edit.append(node("summary", {}, "Edit settings"));
-        const form = node("form", {"data-edit-step": id}), selected = card(step.operation);
+        const form = node("form", {"data-edit-step": id});
         for (const [key, value] of Object.entries(step.parameters)) form.append(parameterControl(key, selected.parameters[key], value, `edit-${id}`));
         form.append(node("button", {type: "submit", class: "secondary"}, record.mode === "normal" ? "Save and run changes" : "Save for review"));
         form.addEventListener("submit", event => { event.preventDefault(); runAction(async () => { const plan = W.parse(W.stringify(record.validation.plan)), edited = plan.steps.find(s => s.id === id); edited.parameters = parametersFrom(form, selected, step.parameters); edited.bindings = bindingsFrom(form, step.bindings); setMode(record.mode); await submitPlan(plan, true); }); });
@@ -591,12 +690,60 @@
     state.port = name === "__result" ? {type: "result", complete: result.complete, value: result.result} : result.ports[name];
     const port = state.port; state.rows = Array.isArray(port.value) ? port.value : [port.value]; state.page = 0; state.selected.clear(); $("table-search").value = "";
     $("result-completeness").classList.toggle("incomplete", !port.complete || !result.complete);
-    $("result-completeness").textContent = `${port.complete ? "This output collection is complete." : "This output is incomplete or count-only; it cannot supply a full downstream collection."} Method quality: ${title(result.quality)}. Computed on ${result.backend.device.toUpperCase()}.`;
+    $("result-completeness").textContent = `${port.complete ? "This output collection is complete." : "This output is incomplete or count-only; it cannot supply a full downstream collection."} ${qualityDescriptions[result.quality] || title(result.quality)}. Computed on ${result.backend.device.toUpperCase()}.`;
+    if (result.backend.selection_reason) $("result-completeness").textContent += ` Device selection: ${result.backend.selection_reason}.`;
+    if (result.diagnostics?.solver) {
+      const solver = {native_positive_gain_vertex_moves: "Local vertex moves (native CPU heuristic)", gleiden: "GPU Leiden"}[result.diagnostics.solver] || title(result.diagnostics.solver);
+      $("result-completeness").textContent += ` Method: ${solver}.`;
+    }
     if (!port.complete && result.diagnostics?.narrowing_hint) $("result-completeness").textContent += ` ${result.diagnostics.narrowing_hint}`;
     state.patternId = port.type === "pattern_collection" ? port.value[0]?.pattern_id || null : null;
     const graph = port.type === "graph" ? port.value : port.type === "pattern_collection" ? port.value[0]?.pattern || null : await graphForStep(stepId);
+    configureGroups(result);
     if (port.type === "vertex_positions") $("graph-layout").value = "computed";
+    else if (state.groups.length) $("graph-layout").value = "groups";
     renderGraph(graph); renderOutput();
+  }
+  function configureGroups(result) {
+    state.groups = []; state.groupMembership = new Map(); state.groupFilter = "";
+    const ports = Object.values(result.ports), partition = ports.find(p => p.type === "vertex_partition"), groups = ports.find(p => p.type === "vertex_groups");
+    const members = new Map();
+    const add = (id, vertex) => {
+      const key = W.idKey(id), vertexKey = W.idKey(vertex);
+      if (!members.has(key)) members.set(key, {key, id, label: `Group ${display(id)}`, vertices: new Set()});
+      members.get(key).vertices.add(vertexKey);
+      state.groupMembership.set(vertexKey, key);
+    };
+    if (partition) for (const row of partition.value) add(row.part, row.vertex);
+    else if (groups) {
+      // Overlapping collections (for example cliques) do not define a partition.
+      for (const [index, row] of groups.value.entries()) for (const vertex of row.vertices) {
+        if (state.groupMembership.has(W.idKey(vertex))) { state.groupMembership.clear(); return; }
+        add(row.group ?? index, vertex);
+      }
+    }
+    const colors = ["#4179b5", "#dd8050", "#499678", "#a765ab", "#c05a6e", "#8b8739", "#4998aa", "#8664bb", "#c69b35", "#73604d", "#cd75a0", "#5d7c4b", "#697dc9", "#ae5736", "#548d90", "#9d854b"];
+    state.groups = [...members.values()].map((group, index) => ({...group, color: colors[index % colors.length]}));
+  }
+  function filterGraphGroup(key) {
+    state.groupFilter = key; state.selected.clear(); renderGraph(state.graph); applySelection();
+  }
+  function graphPositions(vertices) {
+    const groups = state.groups || [], filtered = state.groupFilter;
+    const clusters = new Map();
+    for (const vertex of vertices) {
+      const key = state.groupMembership?.get(W.idKey(vertex.id)) || "ungrouped";
+      if (!clusters.has(key)) clusters.set(key, []);
+      clusters.get(key).push(vertex);
+    }
+    const columns = Math.ceil(Math.sqrt(clusters.size)), radius = Math.max(55, ...[...clusters.values()].map(rows => Math.sqrt(rows.length) * 19));
+    const positions = new Map();
+    [...clusters.values()].forEach((rows, cluster) => rows.forEach((vertex, index) => {
+      const angle = index * Math.PI * (3 - Math.sqrt(5)), distance = rows.length === 1 ? 0 : 19 * Math.sqrt(index + 1);
+      const grouped = $("graph-layout").value === "groups" && groups.length;
+      positions.set(W.idKey(vertex.id), grouped ? {x: (filtered ? 0 : cluster % columns * (radius * 2 + 65)) + Math.cos(angle) * distance, y: (filtered ? 0 : Math.floor(cluster / columns) * (radius * 2 + 65)) + Math.sin(angle) * distance} : {x: Math.cos(angle) * distance + cluster * 40, y: Math.sin(angle) * distance});
+    }));
+    return positions;
   }
   function renderGraph(data) {
     if (state.view !== "results") {
@@ -605,22 +752,37 @@
       return;
     }
     state.cy?.destroy(); state.cy = null; state.graph = data;
+    const groups = state.groups || [], filter = groups.find(group => group.key === state.groupFilter);
+    $("graph-group-label").hidden = !groups.length; $("group-legend").hidden = !groups.length;
+    $("graph-group").replaceChildren(node("option", {value: ""}, "All groups · full network")); $("group-legend").replaceChildren();
+    if (groups.length) {
+      const all = node("button", {"aria-pressed": String(!filter)}, `All ${groups.length} groups`); all.addEventListener("click", () => filterGraphGroup("")); $("group-legend").append(all);
+      for (const group of groups) {
+        $("graph-group").append(node("option", {value: group.key}, `${group.label} · ${group.vertices.size} vertices`));
+        const button = node("button", {"aria-pressed": String(group === filter), "data-group": group.key}), swatch = node("span", {class: "group-swatch", "aria-hidden": "true"}); swatch.style.backgroundColor = group.color;
+        button.append(swatch, node("span", {}, `${group.label} (${group.vertices.size})`)); button.addEventListener("click", () => filterGraphGroup(group.key)); $("group-legend").append(button);
+      }
+    }
+    $("graph-group").value = filter?.key || "";
+    $("graph-layout").querySelector('[value="groups"]').disabled = !groups.length;
+    if (!groups.length && $("graph-layout").value === "groups") $("graph-layout").value = "cose";
     $("graph-layout").querySelector('[value="computed"]').disabled = state.port?.type !== "vertex_positions";
     if (state.port?.type !== "vertex_positions" && $("graph-layout").value === "computed") $("graph-layout").value = "cose";
     $("network").replaceChildren(); $("preview-scope").textContent = ""; $("selection-detail").textContent = "Select a node or a result row to inspect it.";
     if (!data?.vertices || !window.cytoscape) return;
-    const vertices = data.vertices.slice(0, 500), keys = new Set(vertices.map(v => W.idKey(v.id)));
+    const vertices = data.vertices.filter(v => !filter || filter.vertices.has(W.idKey(v.id))).slice(0, 500), keys = new Set(vertices.map(v => W.idKey(v.id)));
     const edges = data.edges.filter(e => keys.has(W.idKey(e.source)) && keys.has(W.idKey(e.target))).slice(0, 2000);
-    const elements = vertices.map(v => ({data: {id: W.idKey(v.id), label: String(v.label || v.name || v.id), original: v, entity: v.id}}));
+    const positions = graphPositions(vertices), colors = new Map(groups.map(group => [group.key, group.color]));
+    const elements = vertices.map(v => ({position: positions.get(W.idKey(v.id)), data: {id: W.idKey(v.id), label: String(v.label || v.name || v.id), original: v, entity: v.id, color: colors.get(state.groupMembership?.get(W.idKey(v.id))) || "#73a991"}}));
     edges.forEach((e, index) => elements.push({data: {id: `edge:${index}`, source: W.idKey(e.source), target: W.idKey(e.target), original: e}}));
     const direction = data.graph?.directed ? "triangle" : "none";
     state.cy = window.cytoscape({container: $("network"), elements, minZoom: .08, maxZoom: 5, wheelSensitivity: .2, style: [
-      {selector: "node", style: {"background-color": "#73a991", "border-color": "#fff", "border-width": 2, width: 25, height: 25, label: "data(label)", "font-size": 10, color: "#284a42", "text-valign": "bottom", "text-margin-y": 5, "text-background-color": "#fdfefb", "text-background-opacity": .8, "text-background-padding": 2}},
+      {selector: "node", style: {"background-color": "data(color)", "border-color": "#fff", "border-width": 2, width: 25, height: 25, label: "data(label)", "font-size": 10, color: "#284a42", "text-valign": "bottom", "text-margin-y": 5, "text-background-color": "#fdfefb", "text-background-opacity": .8, "text-background-padding": 2}},
       {selector: "edge", style: {width: 1.4, "line-color": "#adc5b9", "target-arrow-color": "#91afa0", "target-arrow-shape": direction, "curve-style": "bezier", opacity: .8}},
-      {selector: "node.chosen", style: {"background-color": "#e3a465", "border-color": "#754e28", "border-width": 2}},
+      {selector: "node.chosen", style: {"border-color": "#223e34", "border-width": 4}},
       {selector: "node.faded", style: {opacity: .45}},
       {selector: "edge.faded", style: {opacity: .1}},
-    ], layout: layoutOptions()});
+    ], layout: layoutOptions(positions)});
     state.cy.on("tap", "node", event => {
       state.selected = new Set([event.target.id()]);
       $("selection-detail").textContent = W.stringify(event.target.data("original"), true);
@@ -628,7 +790,9 @@
     });
     state.cy.on("tap", "edge", event => { $("selection-detail").textContent = W.stringify(event.target.data("original"), true); });
     const n = data.vertex_count ?? data.vertices.length, m = data.edge_count ?? data.edges.length;
-    state.previewScope = `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. ${vertices.length < n || edges.length < m || data.vertices_truncated || data.edges_truncated ? "The preview is truncated. " : ""}`;
+    const truncated = data.vertices_truncated || data.edges_truncated || (filter ? vertices.length < filter.vertices.size || edges.length === 2000 && data.edges.length > 2000 : vertices.length < n || edges.length < m);
+    state.previewScope = filter ? `${filter.label}: ${vertices.length} of ${filter.vertices.size} vertices; ${edges.length} connections within this group. Full input: ${n} vertices; ${m} connections. ` : `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. `;
+    if (truncated) state.previewScope += "The preview is truncated. ";
     renderPreviewScope();
     applySelection();
   }
@@ -637,7 +801,11 @@
     const computed = $("graph-layout").value === "computed" && state.port?.type === "vertex_positions";
     $("preview-scope").textContent = state.previewScope + (state.port?.type === "pattern_collection" ? "Canonical pattern; vertex IDs are local to this pattern. " : "") + (computed ? `Computed coordinates${state.port.value[0]?.coordinates?.length === 3 ? " (XY projection of 3D)" : ""}; display scale is uniform.` : "Layout positions are for display only.");
   }
-  function layoutOptions() {
+  function layoutOptions(positions) {
+    if ($("graph-layout").value === "groups" && state.groups?.length) {
+      const grouped = positions || graphPositions(state.cy.nodes().map(n => n.data("original")));
+      return {name: "preset", positions: n => grouped.get(n.id()), animate: false, fit: true, padding: 35};
+    }
     if ($("graph-layout").value === "computed" && state.port?.type === "vertex_positions") {
       let scale = 1;
       for (const row of state.port.value) scale = Math.max(scale, Math.abs(row.coordinates[0]), Math.abs(row.coordinates[1]));
@@ -665,6 +833,10 @@
     if (state.port?.type === "pattern_collection") {
       state.patternId = row.pattern_id; state.selected.clear(); renderGraph(row.pattern); applySelection(); return;
     }
+    if (state.port?.type === "vertex_groups" && state.groups?.length) {
+      const key = W.idKey(row.group ?? state.rows.indexOf(row));
+      if (state.groups.some(group => group.key === key)) filterGraphGroup(key);
+    }
     const ids = rowVertices(row); if (!ids.length) return;
     state.selected = new Set(ids.map(W.idKey));
     const visible = ids.filter(id => state.cy?.getElementById(W.idKey(id)).length);
@@ -683,6 +855,9 @@
   }
   function renderOutput() {
     $("metrics").replaceChildren(); $("chart").replaceChildren();
+    if (state.groups?.length) {
+      const metric = node("div", {class: "metric"}); metric.append(node("strong", {}, String(state.groups.length)), node("span", {}, "Computed groups")); $("metrics").append(metric);
+    }
     if (["scalar", "rational_scalar"].includes(state.port?.type)) {
       const rational = state.port.type === "rational_scalar", value = rational ? state.port.value.display : state.port.value;
       const metric = node("div", {class: "metric"}); metric.append(node("strong", {}, `${rational && !state.port.value.display_is_exact ? "≈ " : ""}${display(value)}`), node("span", {}, $("result-port").selectedOptions[0]?.textContent || "Value"));
@@ -709,7 +884,9 @@
       if (!Number.isFinite(max)) $("chart").append(node("p", {class: "muted"}, "These values exceed the chart range. Exact values remain in the table."));
       else for (const item of visible) {
         const button = node("button", {class: "bar-row", "data-result-row": item.index, "aria-pressed": "false", title: `${item.label}: ${display(item.value)}`});
-        const track = node("span", {class: "bar-track", "aria-hidden": "true"}), fill = node("span", {class: "bar-fill"}); fill.style.display = "block"; fill.style.width = `${max ? Math.abs(Number(item.value)) / max * 100 : 0}%`; if (Number(item.value) < 0) fill.style.backgroundColor = "#c27b65"; track.append(fill);
+        const track = node("span", {class: "bar-track", "aria-hidden": "true"}), fill = node("span", {class: "bar-fill"}); fill.style.display = "block"; fill.style.width = `${max ? Math.abs(Number(item.value)) / max * 100 : 0}%`; if (Number(item.value) < 0) fill.style.backgroundColor = "#c27b65";
+        if (state.port.type === "vertex_groups") { const group = state.groups?.find(g => g.key === W.idKey(item.row.group ?? item.index)); if (group) fill.style.backgroundColor = group.color; }
+        track.append(fill);
         button.append(node("span", {class: "bar-label"}, item.label), track, node("span", {class: "bar-value"}, `${item.row.rounded ? "≈ " : ""}${display(item.value)}`));
         button.addEventListener("click", () => selectRow(item.row)); $("chart").append(button);
       }
@@ -751,16 +928,54 @@
     if (state.rows.some(row => row?.rounded && row?.exact_value)) $("table-scope").textContent += " Approximate displays use ≈. Exact numerators and denominators are preserved in the table and download.";
     applySelection();
   }
+  async function loadCapabilities(generation, signal) {
+    try {
+      const caps = await api("/api/analytics/capabilities", {signal});
+      if (generation !== connectionGeneration) return;
+      state.caps = caps;
+      const verified = caps.operations.filter(c => c.execution.cpu || c.execution.gpu).length;
+      $("verified-count").textContent = `${verified} verified calculations`;
+      $("connection-state").textContent = verified ? "Library ready" : "Verification needed";
+      const gpuAvailable = caps.device_configuration?.gpu_available ?? caps.device_configuration?.gpu_configured;
+      $("device").querySelector('[value="gpu"]').disabled = !gpuAvailable;
+      $("device-note").textContent = gpuAvailable ? "Automatic prefers a verified GPU algorithm compatible with your inputs and requested quality, then falls back to CPU." : "No permitted GPU is currently available. Automatic falls back to CPU.";
+      $("planner-note").textContent = caps.question_planner_enabled ? "Enter to send · Shift + Enter for a new line" : "Question planning is disabled. You can build a plan in Expert mode.";
+      renderOperations();
+      if (state.record) renderWorkflow();
+      if (state.session) renderConversation();
+    } catch (error) {
+      if (generation !== connectionGeneration) return;
+      console.error("Could not load analytics capabilities", error);
+      state.caps = null;
+      $("connection-state").textContent = "Analysis unavailable";
+      $("verified-count").textContent = "Calculations unavailable";
+      $("planner-note").textContent = "Calculations are unavailable. Reconnect to try again.";
+      notice("Analysis is unavailable. You can still choose a domain and open saved conversations. Reconnect to try again.", true);
+    } finally {
+      if (generation === connectionGeneration) { capabilitiesLoading = false; updateControls(); }
+    }
+  }
   async function connect() {
+    const generation = ++connectionGeneration;
+    capabilitiesController?.abort();
+    capabilitiesController = new AbortController();
+    state.caps = null; capabilitiesLoading = true; updateControls(); renderOperations();
     $("connection-state").textContent = "Connecting…";
-    [state.caps, state.domains] = await Promise.all([api("/api/analytics/capabilities"), api("/api/domains")]);
-    const cpu = state.caps.operations.filter(c => c.execution.cpu).length;
-    $("verified-count").textContent = `${cpu} verified calculations`;
-    $("connection-state").textContent = cpu ? "Library ready" : "Verification needed";
-    $("device").querySelector('[value="gpu"]').disabled = !state.caps.device_configuration?.gpu_configured;
-    $("device-note").textContent = state.caps.device_configuration?.gpu_configured ? "Automatic uses the available compute device for each calculation." : "This workspace uses the CPU library.";
-    if (!state.caps.question_planner_enabled) $("planner-note").textContent = "Question planning is disabled. You can build a plan in Expert mode.";
-    renderDomains(); renderOperations(); await loadSessions();
+    try {
+      state.domains = await api("/api/domains");
+    } catch (error) {
+      capabilitiesLoading = false;
+      $("connection-state").textContent = "Offline";
+      $("domain-grid").replaceChildren(node("p", {class: "muted"}, "Could not load domains. Check your connection settings and reconnect."));
+      throw error;
+    }
+    renderDomains();
+    $("connection-state").textContent = "Checking calculations…";
+    $("verified-count").textContent = "Checking available calculations…";
+    $("planner-note").textContent = "Calculations are loading. You can choose a domain and add data.";
+    // Native verification must not hold the domain picker or conversation navigation.
+    void loadCapabilities(generation, capabilitiesController.signal);
+    await loadSessions();
     // The initial connection runs inside runAction; allow restoring a saved route.
     const match = /^#workspace\/([^/]+)/.exec(location.hash);
     if (match) await openSession(decodeURIComponent(match[1]));
@@ -852,7 +1067,8 @@
   $("cancel-workflow").addEventListener("click", async () => { try { clearTimeout(state.poll); state.epoch++; state.record = await api(`/api/workflows/${state.record.id}`, {method: "DELETE"}); renderWorkflow(); await loadSaved(); await loadResults(); notice("Execution cancelled. Completed step artifacts remain saved."); } catch (error) { notice(error.message, true); } });
   $("result-step").addEventListener("change", () => runAction(selectStep)); $("result-port").addEventListener("change", () => runAction(selectPort));
   $("graph-layout").addEventListener("change", () => { state.cy?.layout(layoutOptions()).run(); renderPreviewScope(); }); $("fit-graph").addEventListener("click", () => state.cy?.fit(undefined, 35));
-  $("clear-selection").addEventListener("click", () => { state.selected.clear(); $("selection-detail").textContent = "Selection cleared."; applySelection(); });
+  $("graph-group").addEventListener("change", () => filterGraphGroup($("graph-group").value));
+  $("clear-selection").addEventListener("click", () => { if (state.groupFilter) filterGraphGroup(""); state.selected.clear(); $("selection-detail").textContent = "Selection cleared."; applySelection(); });
   $("table-search").addEventListener("input", filterRows);
   $("table-prev").addEventListener("click", () => { state.page--; renderTable(); }); $("table-next").addEventListener("click", () => { state.page++; renderTable(); });
   $("download-result").addEventListener("click", () => { if (!state.result) return; const url = URL.createObjectURL(new Blob([W.stringify(state.result, true)], {type: "application/json"})), a = node("a", {href: url, download: `graphmine-${state.record.id}-revision-${state.record.revision}.json`}); a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); });

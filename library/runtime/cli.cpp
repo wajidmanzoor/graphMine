@@ -1,12 +1,48 @@
 #include <boost/json.hpp>
+#include <cerrno>
+#include <cstdio>
+#include <fcntl.h>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <unistd.h>
 
 #include "graphmine/runtime.hpp"
 #include "internal.hpp"
 
 namespace {
+// Research kernels can print directly from C/CUDA, including during teardown.
+// Keep their diagnostics on stderr and reserve a separate fd for JSON output.
+class ProtocolOutput {
+ public:
+  ProtocolOutput() : descriptor_(dup(STDOUT_FILENO)) {
+    std::cout.flush();
+    std::fflush(stdout);
+    if (descriptor_ < 0) throw std::runtime_error("Cannot open protocol output");
+    if (fcntl(descriptor_, F_SETFD, FD_CLOEXEC) < 0 ||
+        dup2(STDERR_FILENO, STDOUT_FILENO) < 0) {
+      close(descriptor_);
+      throw std::runtime_error("Cannot redirect native diagnostics");
+    }
+  }
+  ~ProtocolOutput() { close(descriptor_); }
+  ProtocolOutput(const ProtocolOutput&) = delete;
+  ProtocolOutput& operator=(const ProtocolOutput&) = delete;
+  void emit(const std::string& value) const {
+    const auto line = value + '\n';
+    std::size_t offset = 0;
+    while (offset < line.size()) {
+      const auto count = write(descriptor_, line.data() + offset, line.size() - offset);
+      if (count < 0 && errno == EINTR) continue;
+      if (count <= 0) throw std::runtime_error("Cannot write protocol output");
+      offset += static_cast<std::size_t>(count);
+    }
+  }
+
+ private:
+  int descriptor_;
+};
+
 std::string read(const std::string& path) {
   std::ifstream file;
   if (path != "-") {
@@ -28,13 +64,14 @@ std::string read(const std::string& path) {
 int main(int argc, char** argv) {
   namespace json = boost::json;
   try {
+    ProtocolOutput protocol;
     json::object request;
     const std::string command = argc > 1 ? argv[1] : "";
     if ((command == "list" || command == "families" || command == "catalog") && argc == 2)
       request = {{"command", "catalog"}};
     else if (command == "request" && argc == 2) {
       const auto response = graphmine::runtime::request(read("-"));
-      std::cout << response << '\n';
+      protocol.emit(response);
       return json::parse(response).as_object().contains("error") ? 2 : 0;
     } else if ((command == "read-csv" || command == "read-graph") && argc >= 3) {
       request = {{"command", command == "read-csv" ? "read_csv" : "read_graph"}, {"path", argv[2]}};
@@ -83,15 +120,15 @@ int main(int argc, char** argv) {
           "true|false] [--id-type canonical|string] [--gpu-device N] [--max-rows N]");
     auto response = json::parse(graphmine::runtime::request(json::serialize(request))).as_object();
     if (response.contains("error")) {
-      std::cout << json::serialize(response) << '\n';
+      protocol.emit(json::serialize(response));
       return 2;
     }
     if (command == "list")
-      std::cout << json::serialize(response.at("operations")) << '\n';
+      protocol.emit(json::serialize(response.at("operations")));
     else if (command == "families")
-      std::cout << json::serialize(response.at("families")) << '\n';
+      protocol.emit(json::serialize(response.at("families")));
     else
-      std::cout << json::serialize(response) << '\n';
+      protocol.emit(json::serialize(response));
     return 0;
   } catch (const std::exception& error) {
     std::cerr << json::serialize(json::object{

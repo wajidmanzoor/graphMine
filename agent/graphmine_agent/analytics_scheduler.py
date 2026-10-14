@@ -81,6 +81,34 @@ def estimate_memory(plan, input_bytes):
     return 512 * MIB + input_bytes * 32 + output * 64
 
 
+def execution_admission(plan, cards):
+    """Prefer GPUs with evidence for this work; preserve explicit device choices.
+
+    Automatic steps may fall back to a verified CPU implementation. Steps that
+    require a GPU must all be supported on the worker's single leased device.
+    Input/parameter compatibility is checked by the native runtime at execution.
+    """
+    by_id = {card["id"]: card for card in cards}
+    preferred, required = set(), None
+    for step in plan["steps"]:
+        policy = step.get("device", plan["device"])
+        if policy == "cpu":
+            continue
+        card = by_id[step["operation"]]
+        devices = {
+            uuid
+            for backend in card["backends"]
+            if backend["device"] == "gpu" and backend.get("verified")
+            for uuid in backend.get("verified_devices", [])
+        }
+        preferred.update(devices)
+        if policy == "gpu" or not card["execution"]["cpu"]:
+            required = devices if required is None else required & devices
+    if required is not None:
+        return "gpu", required
+    return ("auto", preferred) if preferred else ("cpu", set())
+
+
 @dataclass(frozen=True)
 class Lease:
     id: str
@@ -125,7 +153,7 @@ class AnalyticsScheduler:
         return [lease.record() for lease in self.leases.values()]
 
     @asynccontextmanager
-    async def reserve(self, policy, requested, *, timeout):
+    async def reserve(self, policy, requested, *, timeout, allowed_gpu_uuids=None):
         if policy not in {"cpu", "gpu", "auto"} or requested <= 0:
             raise AdmissionError("Invalid resource request", "invalid_input")
         lease = None
@@ -133,9 +161,15 @@ class AnalyticsScheduler:
         try:
             while lease is None:
                 devices = self.eligible(await self.probe()) if policy != "cpu" else []
+                if allowed_gpu_uuids is not None:
+                    devices = [
+                        device
+                        for device in devices
+                        if device["uuid"] in allowed_gpu_uuids
+                    ]
                 if policy == "gpu" and not devices:
                     raise AdmissionError(
-                        "No configured GPU is available outside the LLM reservation",
+                        "No permitted GPU with the required execution evidence is available outside the LLM reservation",
                         "backend_unavailable",
                     )
                 async with self.condition:

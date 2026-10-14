@@ -15,9 +15,12 @@ evidence admission remain separate states.
 
 ## Current migration boundary
 
-The shared runtime has **80 operations covering all 70 formal problems**,
+The shared runtime has **82 operations covering all 70 formal problems**,
 including seven record-query utilities. Every operation has a C++ CPU profile;
-23 operations have a GPU profile admitted by current evidence. The
+36 operations expose 59 GPU operation/backend combinations in the complete
+build. These include all 38 original backend choices, cuGraph integrations and
+the maximum-clique reductions. Each combination requires matching execution
+evidence before the agent admits it. The
 [completion profiles](NATIVE_COMPLETION_PROFILES.md) describe the 52 operations
 added after the 26-problem checkpoint. GPU dispatch calls native libraries or
 isolated native CUDA workers:
@@ -29,12 +32,12 @@ isolated native CUDA workers:
 | Many-source shortest paths | traversal | libcugraph, bounded float64 costs |
 | Topological sort | traversal | CPU profile |
 | Spanning tree/forest | trees | libcugraph, minimum and maximum |
-| Connected components | connectivity | libcugraph, weak and strong |
+| Connected components | connectivity | libcugraph and ECL-SCC, weak and strong |
 | Biconnected edge blocks | connectivity | CPU profile |
 | PageRank | centrality | libcugraph |
 | Degree centrality | centrality | CPU profile |
 | Betweenness centrality | centrality | libcugraph and original TurboBC; unweighted paths |
-| Personalized PageRank | centrality | libcugraph; custom uniform dangling redistribution uses CPU |
+| Personalized PageRank | centrality | libcugraph; kPAR with explicit approximate quality, one seed and restart probability 0.2 |
 | Local link prediction | similarity | libcugraph Jaccard; eight CPU measures |
 | Maximum flow/minimum cut | flow | Original ECL-MaxFlow CUDA worker, integral capacities totaling at most 1e9 |
 | General weighted matching | matching | CPU weighted Blossom profile |
@@ -44,7 +47,7 @@ isolated native CUDA workers:
 | Maximum clique | cliques | Original CUDA-MS, GPUMaximumClique and Maximum-Clique-on-GPU witnesses; native optimality check |
 | Fixed-size cliques | cliques | Original GraphSet, repaired GAMMA and repaired KCGPU counts |
 | Core decomposition | cores | Native libcugraph and original KCoreGPU |
-| Truss decomposition | cores | Native libcugraph |
+| Truss decomposition | cores | Native libcugraph and AccTD |
 | Maximum independent set | independent_sets | Original maximum-clique kernels on the native complement, with optimality check |
 | Minimum vertex cover | independent_sets | Exact complement reduction using the same maximum-clique kernels |
 | Maximal independent set | independent_sets | Direct libcugraph C++ interface; independence and maximality checked in C++ |
@@ -52,6 +55,19 @@ isolated native CUDA workers:
 | Random walk generation | sampling | Native libcugraph uniform and weighted walks; weighted node2vec uses CPU |
 | Neighborhood sampling | sampling | CPU profile with exact weighted draws, typed fanouts and temporal cutoff |
 | Induced/ego subgraphs | subgraphs | Native libcugraph BFS for ego discovery; C++ preserves original records |
+| Community detection | communities | gLeiden, parallel Louvain, parallel Leiden and parallel Leiden Plus; unweighted heuristic modularity |
+| Quasi-cliques | dense_structures | cuQC; maximal sets, gamma in [0.5, 1], minimum size at least 2 |
+| Maximal bicliques | dense_structures | cuMBE; uncapped enumeration |
+| Maximal biclique counting | dense_structures | MBE-GPU; vertices declare attributes.side=left\|right |
+| Dynamic triangle counting | motifs | EDTC; batch deletions followed by insertions |
+| Motif counting | pattern_mining | GraphMiner, GraphSet and DuMato; supported connected undirected 3/4-vertex patterns |
+| Subgraph isomorphism | pattern_mining | gMatch; simple non-induced graphs without predicates or output caps |
+| Temporal motifs | pattern_mining | Everest and Mayura; strict ordered A→B, B→C, A→C events and integral timestamps |
+| Transitive closure | traversal | GDlog; directed reflexive reachability, at most 1024 vertices |
+| Butterfly counting | pattern_mining | GraphMiner and GAMMA; checked bipartite topology |
+| Densest subgraph | dense_structures | CDS; exact unweighted clique density, minimum_vertices=1 |
+| Group Steiner tree | optimization | GPU4GST; nonnegative integral edge weights and at most 16 groups including required vertices |
+| Influence maximization | centrality | SuperFuser; explicit heuristic independent cascade, no optimum guarantee |
 
 The original `Graph` and typed external IDs are reused. Existing native APIs
 remain available for compatibility. Original triangle, mining and centrality backends are included when building from the
@@ -96,6 +112,28 @@ Minimal external C and C++ consumers are in `library/examples/native_runtime`.
 To include the original CUDA backends, configure the `library` project;
 `GRAPHMINE_BUILD_NATIVE_RUNTIME=ON` adds the runtime to its existing targets.
 The original backend build options still control which GPU algorithms compile.
+For parallel Louvain/Leiden, both Kokkos and KokkosKernels must be built with
+`CMAKE_POSITION_INDEPENDENT_CODE=ON` before linking the shared runtime.
+The agent must load that runtime using `GRAPHMINE_NATIVE_LIBRARY`; a separate
+older build will continue to expose its older catalog.
+
+The original adapters enforce their supported parameter profiles. Where a
+kernel returns only counts or an objective, the runtime uses bounded C++
+verification and materialization to preserve its richer output contract. These
+paths retain CPU work and output limits; GPU availability does not imply that
+every stage is accelerated. Community modularity checks use sparse graph data.
+The Kokkos community backends use one GPU per process, matching the agent's
+isolated worker model. Direct native callers should use separate processes
+when assigning those backends to different GPUs.
+
+Run `tools/validate_native_runtime.py` for the existing native oracle suites,
+the completion tests on CPU with CUDA hidden, and
+`library/tests/test_native_original_gpu.py` on each GPU. The latter selects a
+GPU using `GRAPHMINE_EVIDENCE_DEVICE=gpu`, `GRAPHMINE_TEST_GPU`, and the runtime
+directory in `GRAPHMINE_NATIVE_CPU_BUILD`. Generate the gate with
+`tools/build_native_execution_evidence.py`, including each pytest JUnit report.
+Worker binaries from both `workers` and `runtime/optimization-workers` are
+hashed alongside sources, the shared library and its dependencies.
 
 For direct RAPIDS integration, enable `GRAPHMINE_NATIVE_CUGRAPH` and/or
 `GRAPHMINE_NATIVE_CUDF`. With the locally installed native distributions:

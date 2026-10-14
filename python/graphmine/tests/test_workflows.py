@@ -136,7 +136,7 @@ def test_derived_core_pagerank(case, n, edges):
 
 
 def test_cards_and_forward_references():
-    assert len(list_algorithms()) == 80
+    assert len(list_algorithms()) == 82
     assert all(c["output_ports"] for c in list_algorithms())
     plan = workflow()
     plan["steps"].reverse()
@@ -298,7 +298,10 @@ def test_resume_corruption_parameters_inputs_and_source_invalidation(monkeypatch
 def test_gpu_variant_and_edge_id_bindings_are_checked():
     plan = workflow()
     plan["device"] = "gpu"
-    with pytest.raises(GraphMineError, match="No compiled GPU profile"):
+    with pytest.raises(
+        GraphMineError,
+        match="No compiled GPU profile|Explicit induced selection uses native CPU",
+    ):
         validate_workflow(plan, inputs())
     plan = workflow()
     plan["steps"][1] = {

@@ -128,6 +128,16 @@ std::uint64_t original_k_clique_count(const MiningGraph&, std::uint32_t, const s
                                       Work&);
 std::vector<std::uint32_t> original_core_numbers(const MiningGraph&, int, Work&);
 std::vector<double> original_betweenness(const MiningGraph&, int, Work&);
+json::array original_extension_backends(const std::string& operation);
+bool original_extension_backend(const std::string& operation, const std::string& backend);
+std::string original_extension_support(const std::string&, const std::string&, const Graph&,
+                                       const json::object&, Work&);
+json::object original_extension_run(const std::string&, const Graph&, const json::object&,
+                                    const std::string&, int, Work&);
+std::vector<std::size_t> original_communities(const Graph&, const json::object&,
+                                             const std::string&, int, Work&);
+json::object dynamic_triangles(const Graph&, const json::object&, const std::string&, int, Work&);
+json::object maximal_biclique_count(const Graph&, const json::object&, const std::string&, int, Work&);
 
 json::object bfs(const Graph& graph, const json::object& args, const std::string& backend,
                  int device, Work& work);

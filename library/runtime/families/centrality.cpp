@@ -172,7 +172,8 @@ json::object personalized_pagerank(const Graph& graph, const json::object& args,
   fields(
       args,
       {"seed_vertices", "restart_probability", "direction_mode", "weight_mode", "dangling_policy",
-       "convergence_tolerance", "max_iterations", "exclude_seeds_from_output", "top_k"},
+       "convergence_tolerance", "max_iterations", "exclude_seeds_from_output", "top_k",
+       "solution_quality", "epsilon", "random_seed"},
       {"seed_vertices"});
   require(args.at("seed_vertices").is_array() && !args.at("seed_vertices").as_array().empty(),
           "seed_vertices must be a nonempty array");

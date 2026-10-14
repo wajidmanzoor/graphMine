@@ -1,0 +1,2 @@
+Validated 500 matching requests
+{"suite":"assignment","backend":"hungarian-cuda","gpu_device":0,"passed_requests":721,"failed":0,"implementation_sha256":"ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2"}

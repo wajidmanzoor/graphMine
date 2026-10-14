@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="98" time="930.404" timestamp="2026-10-12T23:04:42.308404-04:00" hostname="guoglambda01"><testcase classname="tests.test_analytics_planning" name="test_lookup_family_routes_nested_filters_through_real_preflight" time="15.249" /><testcase classname="tests.test_analytics_planning" name="test_planner_preserves_device_policy_through_native_validation[auto]" time="14.704" /><testcase classname="tests.test_analytics_planning" name="test_planner_preserves_device_policy_through_native_validation[cpu]" time="13.886" /><testcase classname="tests.test_analytics_planning" name="test_planner_preserves_device_policy_through_native_validation[gpu]" time="13.932" /><testcase classname="tests.test_analytics_planning" name="test_auto_routing_includes_verified_gpu_only_cards" time="13.818" /><testcase classname="tests.test_analytics_planning" name="test_auto_planning_preserves_explicit_solution_quality[exact]" time="13.871" /><testcase classname="tests.test_analytics_planning" name="test_auto_planning_preserves_explicit_solution_quality[heuristic]" time="13.845" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_operation_decisions_cannot_satisfy_schema[decision0]" time="0.005" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_operation_decisions_cannot_satisfy_schema[decision1]" time="0.005" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_operation_decisions_cannot_satisfy_schema[decision2]" time="0.005" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_operation_decisions_cannot_satisfy_schema[decision3]" time="0.004" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_operation_decisions_cannot_satisfy_schema[decision4]" time="0.004" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_operation_decisions_cannot_satisfy_schema[decision5]" time="0.005" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_keep_clarification_and_reroute_available[selected]" time="0.004" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_keep_clarification_and_reroute_available[reroute]" time="0.004" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_keep_clarification_and_reroute_available[needs_information]" time="0.004" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_keep_clarification_and_reroute_available[unsupported]" time="0.004" /><testcase classname="tests.test_analytics_planning" name="test_family_decisions_require_consistent_status_and_selection[decision0]" time="0.002" /><testcase classname="tests.test_analytics_planning" name="test_family_decisions_require_consistent_status_and_selection[decision1]" time="0.002" /><testcase classname="tests.test_analytics_planning" name="test_family_decisions_require_consistent_status_and_selection[decision2]" time="0.002" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[False-missing]" time="6.969" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[False-answer]" time="6.954" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[False-future]" time="6.955" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[True-missing]" time="13.861" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[True-answer]" time="13.845" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[True-future]" time="13.848" /><testcase classname="tests.test_analytics_planning" name="test_two_selection_stages_then_real_library_validation_and_execution" time="27.669" /><testcase classname="tests.test_analytics_planning" name="test_wrong_family_has_one_explicit_bounded_reroute" time="13.875" /><testcase classname="tests.test_analytics_planning" name="test_reroute_cannot_loop" time="6.967" /><testcase classname="tests.test_analytics_planning" name="test_ambiguity_or_unsupported_request_stops_before_operation_selection[needs_information]" time="6.947" /><testcase classname="tests.test_analytics_planning" name="test_ambiguity_or_unsupported_request_stops_before_operation_selection[unsupported]" time="6.956" /><testcase classname="tests.test_analytics_planning" name="test_user_selected_family_still_has_constrained_operation_stage" time="14.659" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[family]" time="7.025" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[outside_operation]" time="6.948" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[code]" time="7.133" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[wrong_device]" time="7.019" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[unknown_parameter]" time="7.127" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[omitted_objective]" time="7.289" /><testcase classname="tests.test_analytics_planning" name="test_repair_preserves_selected_operation_and_is_bounded[True]" time="20.983" /><testcase classname="tests.test_analytics_planning" name="test_repair_preserves_selected_operation_and_is_bounded[False]" time="20.689" /><testcase classname="tests.test_analytics_planning" name="test_all_current_profiles_have_one_family_and_valid_plan_schemas" time="28.166" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[None-None]" time="0.047" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[None-native-workflow-adapter]" time="0.043" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[0-None]" time="0.041" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[0-native-workflow-adapter]" time="0.039" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[1536-None]" time="0.040" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[1536-native-workflow-adapter]" time="0.040" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_executes_dependent_native_plan" time="6.993"><failure message="AssertionError: assert 'execution' not in {'description': 'Native deterministic selection of original vertex records by typed IDs and AND field predicates. Expl...ow collections are capped.', 'execution': {'cpu': True, 'gpu': False}, 'id': 'node-lookup', 'input_kind': 'graph', ...}">setup = (Settings(repository_root=PosixPath('/home/wajid/projects/graphDatabaseAgent/graphMine-repo'), data_root=PosixPath('/t...graph')}, device='cpu', family_id=None, previous_workflow_id=None, evaluation_id=None, mode='normal', request_id=None))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7af8fa35b4d0&gt;
+
+    @pytest.mark.asyncio
+    async def test_generation_transport_executes_dependent_native_plan(setup, monkeypatch):
+        settings, analytics, events, session, body = setup
+        planner = AnalyticsPlanner(replace(settings, llm_enabled=True), analytics, events)
+        wire = {
+            "status": "ready",
+            "message": "Count triangles among the selected vertices.",
+            "plan": {
+                "version": 1,
+                "device": "cpu",
+                "steps": [
+                    {
+                        "operation": "node-lookup",
+                        "input": {"source": "input", "input": "main"},
+                        "arguments": [{"name": "vertices", "value": {"literal": [0, 1]}}],
+                    },
+                    {
+                        "operation": "query-subgraph",
+                        "input": {"source": "input", "input": "main"},
+                        "arguments": [
+                            {
+                                "name": "vertices",
+                                "value": {
+                                    "binding": {
+                                        "source": "step",
+                                        "step_index": 0,
+                                        "port": "vertices",
+                                    }
+                                },
+                            }
+                        ],
+                    },
+                    {
+                        "operation": "triangle-counting",
+                        "input": {"source": "step", "step_index": 1, "port": "graph"},
+                        "arguments": [],
+                    },
+                ],
+            },
+        }
+        calls = []
+    
+        def reply(request):
+            content = json.loads(request.content)
+            payload = json.loads(content["messages"][1]["content"])
+            stage = payload["stage"]
+            calls.append(stage)
+            if stage == "family":
+                response = {**family(), "families": ["query", "patterns"]}
+            elif stage == "operation":
+                for card in payload["operations"]:
+                    assert "execution" not in card
+                    assert card["output_ports"]
+                    assert all("json_schema" not in p for p in card["parameters"].values())
+                response = operation("node-lookup", "query-subgraph", "triangle-counting")
+            else:
+                schema = content["response_format"]["json_schema"]["schema"]
+                jsonschema.validate(wire, schema)
+                response = wire
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(response),
+                                "reasoning": "Recorded test reasoning for " + stage,
+                            }
+                        }
+                    ]
+                },
+            )
+    
+        original = httpx.AsyncClient
+        monkeypatch.setattr(
+            "graphmine_agent.analytics_planning.httpx.AsyncClient",
+            lambda **kwargs: original(transport=httpx.MockTransport(reply), **kwargs),
+        )
+        decoded = decoded_plan(wire)
+        assert "arguments" in wire["plan"]["steps"][0]  # No mutation of model evidence.
+        assert decoded["plan"]["steps"][1]["parameters"] == {}
+        assert decoded["plan"]["steps"][1]["bindings"] == {
+            "vertices": {"step": "step_1", "port": "vertices"}
+        }
+&gt;       planned = await planner.plan(session, body)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+agent/tests/test_analytics_planning.py:619: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+agent/graphmine_agent/analytics_planning.py:608: in plan
+    response = await self._plan(session_id, body)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent/graphmine_agent/analytics_planning.py:807: in _plan
+    decision = await self._generate(
+agent/graphmine_agent/analytics_planning.py:546: in _generate
+    response = await client.post("/chat/completions", json=request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_transports/mock.py:34: in handle_async_request
+    response = self.handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+request = &lt;Request('POST', 'http://127.0.0.1:8001/v1/chat/completions')&gt;
+
+    def reply(request):
+        content = json.loads(request.content)
+        payload = json.loads(content["messages"][1]["content"])
+        stage = payload["stage"]
+        calls.append(stage)
+        if stage == "family":
+            response = {**family(), "families": ["query", "patterns"]}
+        elif stage == "operation":
+            for card in payload["operations"]:
+&gt;               assert "execution" not in card
+E               AssertionError: assert 'execution' not in {'description': 'Native deterministic selection of original vertex records by typed IDs and AND field predicates. Expl...ow collections are capped.', 'execution': {'cpu': True, 'gpu': False}, 'id': 'node-lookup', 'input_kind': 'graph', ...}
+
+agent/tests/test_analytics_planning.py:586: AssertionError</failure></testcase><testcase classname="tests.test_analytics_planning" name="test_domain_clarification_history_and_workflow_link_are_saved" time="41.436" /><testcase classname="tests.test_analytics_planning" name="test_generation_schema_prevents_self_forward_and_missing_references" time="11.343" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[two_sources]" time="7.023" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[duplicate_name]" time="6.914" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[unknown_name]" time="6.961" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[boolean_binding]" time="6.951" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[unknown_port]" time="6.917" /><testcase classname="tests.test_analytics_planning" name="test_reasoning_budget_preserves_room_for_the_json_plan[-1]" time="0.001" /><testcase classname="tests.test_analytics_planning" name="test_reasoning_budget_preserves_room_for_the_json_plan[3072]" time="0.001" /><testcase classname="tests.test_analytics_planning" name="test_reasoning_budget_preserves_room_for_the_json_plan[True]" time="0.001" /><testcase classname="tests.test_analytics_planning" name="test_disabled_planner_has_no_silent_semantic_fallback" time="6.930" /><testcase classname="tests.test_analytics_planning" name="test_followup_retains_reviewed_plan_context_without_automatic_execution" time="20.740" /><testcase classname="tests.test_analytics_planning" name="test_previous_plan_must_belong_to_current_workspace" time="13.811" /><testcase classname="tests.test_analytics_planning" name="test_graph_collection_context_and_pattern_selector_schema" time="20.733" /><testcase classname="tests.test_analytics_planning" name="test_malformed_collection_never_reaches_model[members0]" time="6.961" /><testcase classname="tests.test_analytics_planning" name="test_malformed_collection_never_reaches_model[members1]" time="6.946" /><testcase classname="tests.test_analytics_planning" name="test_malformed_collection_never_reaches_model[members2]" time="6.956" /><testcase classname="tests.test_analytics_scheduler" name="test_memory_leases_assign_two_devices_without_oversubscription" time="0.022" /><testcase classname="tests.test_analytics_scheduler" name="test_llm_exclusion_and_memory_reservation" time="0.001" /><testcase classname="tests.test_analytics_scheduler" name="test_cancelled_waiter_and_holder_release_memory" time="0.001" /><testcase classname="tests.test_analytics_scheduler" name="test_cpu_never_probes_cuda_and_auto_can_use_cpu" time="0.001" /><testcase classname="tests.test_analytics_scheduler" name="test_workflow_admission_uses_verified_backends_and_explicit_devices" time="0.000" /><testcase classname="tests.test_analytics_scheduler" name="test_auto_prefers_verified_gpu_and_falls_back_when_unavailable" time="0.001" /><testcase classname="tests.test_analytics_hardware" name="test_auto_workflow_gpu_priority_and_quality_preserving_fallback[triangle-counting-parameters0-True-gpu-exact]" time="21.065" /><testcase classname="tests.test_analytics_hardware" name="test_auto_workflow_gpu_priority_and_quality_preserving_fallback[triangle-counting-parameters1-False-cpu-exact]" time="20.680" /><testcase classname="tests.test_analytics_hardware" name="test_auto_workflow_gpu_priority_and_quality_preserving_fallback[induced-subgraph-parameters2-True-cpu-exact]" time="20.748" /><testcase classname="tests.test_analytics_hardware" name="test_auto_workflow_gpu_priority_and_quality_preserving_fallback[community-detection-parameters3-True-cpu-exact]" time="20.745" /><testcase classname="tests.test_analytics_hardware" name="test_auto_workflow_gpu_priority_and_quality_preserving_fallback[community-detection-parameters4-True-cpu-heuristic]" time="20.707" /><testcase classname="tests.test_analytics_hardware" name="test_physical_gpu_concurrency_reservation_and_cancelled_waiter" time="29.029" /><testcase classname="tests.test_analytics_workflows" name="test_live_modes_dependent_results_and_pagination[normal]" time="14.098" /><testcase classname="tests.test_analytics_workflows" name="test_live_modes_dependent_results_and_pagination[interactive]" time="14.028" /><testcase classname="tests.test_analytics_workflows" name="test_live_modes_dependent_results_and_pagination[expert]" time="14.035" /><testcase classname="tests.test_analytics_workflows" name="test_live_graph_collection_patterns_and_derived_graph" time="14.028" /><testcase classname="tests.test_analytics_workflows" name="test_live_graph_pair_fraction_witness_and_common_graph" time="20.914" /><testcase classname="tests.test_analytics_workflows" name="test_live_review_revision_and_cache_recovery" time="41.861" /><testcase classname="tests.test_analytics_workflows" name="test_live_capabilities_authorization_and_input_scope" time="13.894" /><testcase classname="tests.test_analytics_workflows" name="test_live_record_query_to_filtered_graph_to_count[normal]" time="14.003" /><testcase classname="tests.test_analytics_workflows" name="test_live_record_query_to_filtered_graph_to_count[interactive]" time="14.057" /><testcase classname="tests.test_analytics_workflows" name="test_live_record_query_to_filtered_graph_to_count[expert]" time="14.007" /><testcase classname="tests.test_analytics_workflows" name="test_query_input_rejected_before_any_worker_is_queued" time="6.964" /><testcase classname="tests.test_analytics_workflows" name="test_live_failed_step_recovery_reuses_only_valid_steps" time="27.953" /><testcase classname="tests.test_analytics_workflows" name="test_live_evidence_is_rechecked_at_execution" time="7.312" /><testcase classname="tests.test_analytics_workflows" name="test_live_cancel_endpoint" time="7.035" /><testcase classname="tests.test_analytics_workflows" name="test_live_configured_gpu_workflow[0]" time="21.188" /><testcase classname="tests.test_analytics_workflows" name="test_live_configured_gpu_workflow[1]" time="21.227" /><testcase classname="tests.test_analytics_workflows" name="test_process_group_cancellation_and_deadline[True]" time="0.053" /><testcase classname="tests.test_analytics_workflows" name="test_process_group_cancellation_and_deadline[False]" time="1.036" /><testcase classname="tests.test_analytics_workflows" name="test_ledger_restart_and_exclusive_ownership" time="0.039" /><testcase classname="tests.test_analytics_workflows" name="test_cpu_process_cannot_see_configured_gpu" time="0.050" /><testcase classname="tests.test_analytics_workflows" name="test_missing_worker_does_not_affect_application_start" time="0.075" /></testsuite></testsuites>

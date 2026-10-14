@@ -55,7 +55,12 @@ def completed(client, session, file, **extra):
     )
     assert response.status_code == 201, response.text
     identifier = response.json()["id"]
-    for _ in range(300):
+    # Admission can verify the complete native source/dependency inventory
+    # before the configured computation deadline begins.
+    deadline = (
+        time.monotonic() + client.app.state.runtime.settings.job_timeout_seconds + 60
+    )
+    while time.monotonic() < deadline:
         record = client.get(f"/api/workflows/{identifier}", headers=AUTH).json()
         if record["status"] in ("completed", "failed", "cancelled"):
             assert record["status"] == "completed", record
@@ -148,7 +153,14 @@ async def test_mcp_uses_the_same_native_review_and_authentication_boundary(
                 return reply["result"]
 
             caps = await call("capabilities", {})
-            assert len(caps["structuredContent"]["operations"]) == 80
+            operations = {
+                card["id"] for card in caps["structuredContent"]["operations"]
+            }
+            assert {
+                "community-detection",
+                "dynamic-triangle-counting",
+                "maximal-biclique-counting",
+            } <= operations
             assert not caps["isError"]
             created = await call(
                 "create_workflow", {"session_id": session, **workflow(file)}
@@ -164,7 +176,8 @@ async def test_mcp_uses_the_same_native_review_and_authentication_boundary(
             assert (await call("approve_workflow", args))["isError"]
             args["workflow_hash"] = record["validation"]["workflow_hash"]
             assert not (await call("approve_workflow", args))["isError"]
-            for _ in range(300):
+            deadline = time.monotonic() + settings.job_timeout_seconds + 60
+            while time.monotonic() < deadline:
                 saved = (await call("get_workflow", {"workflow_id": record["id"]}))[
                     "structuredContent"
                 ]

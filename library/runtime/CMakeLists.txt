@@ -156,6 +156,41 @@ if(GRAPHMINE_NATIVE_OPTIMIZATION)
     "${CMAKE_CURRENT_SOURCE_DIR}/../src/worker_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/../include/graphmine/problems/validated_expansion.hpp")
 endif()
+set(GRAPHMINE_RUNTIME_EXTENSION_TARGETS "")
+if(TARGET graphmine_community_detection)
+  foreach(problem IN ITEMS community_detection quasi_cliques maximal_bicliques graph_motifs
+                           subgraph_isomorphism temporal_motif_mining dynamic_triangle_counting
+                           repaired_algorithms validated_expansion)
+    list(APPEND GRAPHMINE_RUNTIME_EXTENSION_TARGETS graphmine_${problem})
+  endforeach()
+  # The runtime now executes these adapters and their research kernels. Include
+  # their source/build recipes in the evidence identity, including stubs.
+  file(GLOB_RECURSE extension_inputs CONFIGURE_DEPENDS
+       "${CMAKE_CURRENT_SOURCE_DIR}/../src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/../src/*.hpp"
+       "${CMAKE_CURRENT_SOURCE_DIR}/../src/*.cu" "${CMAKE_CURRENT_SOURCE_DIR}/../src/*.cuh"
+       "${CMAKE_CURRENT_SOURCE_DIR}/../src/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/../src/*.c"
+       "${CMAKE_CURRENT_SOURCE_DIR}/../include/graphmine/*.hpp"
+       "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/*.cmake"
+       "${CMAKE_CURRENT_SOURCE_DIR}/../tools/prepare_*workers.py")
+  list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS ${extension_inputs}
+       "${CMAKE_CURRENT_SOURCE_DIR}/../CMakeLists.txt")
+  foreach(root IN ITEMS GLEIDEN PGGC CUQC CUMBE EDTC G2MINER_MOTIF GRAPHSET_MOTIF
+                        DUMATO_MOTIF GMATCH EVEREST MAYURA)
+    if(GRAPHMINE_${root}_ROOT)
+      file(GLOB_RECURSE extension_upstream CONFIGURE_DEPENDS
+           "${GRAPHMINE_${root}_ROOT}/*.h" "${GRAPHMINE_${root}_ROOT}/*.hpp"
+           "${GRAPHMINE_${root}_ROOT}/*.cuh" "${GRAPHMINE_${root}_ROOT}/*.cu"
+           "${GRAPHMINE_${root}_ROOT}/*.c" "${GRAPHMINE_${root}_ROOT}/*.cpp")
+      list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS ${extension_upstream})
+    endif()
+  endforeach()
+  foreach(profile IN ITEMS GLEIDEN PGGC CUQC CUMBE GRAPHMINER_MOTIF GRAPHSET_MOTIF DUMATO_MOTIF
+                           GMATCH EVEREST MAYURA EDTC EXPANSION_WORKERS REPAIRED_WORKERS)
+    if(GRAPHMINE_HAS_${profile})
+      set(GRAPHMINE_RUNTIME_MINING_GPU ON)
+    endif()
+  endforeach()
+endif()
 list(REMOVE_DUPLICATES GRAPHMINE_RUNTIME_HASH_INPUTS)
 list(SORT GRAPHMINE_RUNTIME_HASH_INPUTS)
 set(GRAPHMINE_NATIVE_SOURCE_DIGEST "")
@@ -169,7 +204,7 @@ string(SHA256 GRAPHMINE_NATIVE_SOURCE_SHA256 "${GRAPHMINE_NATIVE_SOURCE_DIGEST}"
 configure_file(catalog_data.hpp.in generated/catalog_data.hpp @ONLY)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/native-source-hashes.txt" "${GRAPHMINE_NATIVE_SOURCE_DIGEST}")
 
-add_library(graphmine_runtime SHARED runtime.cpp registry.cpp validation.cpp representation_cache.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp original_optimization.cpp
+add_library(graphmine_runtime SHARED runtime.cpp registry.cpp validation.cpp representation_cache.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp original_optimization.cpp original_extensions.cpp
             families/traversal.cpp families/patterns.cpp families/common.cpp
             families/weighted_paths.cpp families/connectivity.cpp families/centrality.cpp
             families/similarity.cpp families/cliques.cpp families/structure.cpp families/centrality_measures.cpp families/matching.cpp families/flow.cpp families/coloring.cpp families/subgraphs.cpp families/sampling.cpp
@@ -193,6 +228,10 @@ target_include_directories(graphmine_runtime PUBLIC
   PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/generated"
           "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
 target_link_libraries(graphmine_runtime PRIVATE ${GRAPHMINE_RUNTIME_CORE} OpenSSL::Crypto "${GRAPHMINE_NATIVE_LAPACK}" ICU::uc)
+if(GRAPHMINE_RUNTIME_EXTENSION_TARGETS)
+  target_link_libraries(graphmine_runtime PRIVATE ${GRAPHMINE_RUNTIME_EXTENSION_TARGETS})
+  target_compile_definitions(graphmine_runtime PRIVATE GRAPHMINE_NATIVE_ORIGINAL_EXTENSIONS=1)
+endif()
 set_target_properties(graphmine_runtime PROPERTIES VERSION 2.0.0 SOVERSION 1 EXPORT_NAME runtime)
 if(GRAPHMINE_NATIVE_CUGRAPH OR GRAPHMINE_NATIVE_CUDF OR GRAPHMINE_HAS_TOT OR GRAPHMINE_HAS_WETRIC OR GRAPHMINE_RUNTIME_MINING_GPU OR GRAPHMINE_NATIVE_OPTIMIZATION)
   find_package(CUDAToolkit REQUIRED)
@@ -263,8 +302,10 @@ if(GRAPHMINE_NATIVE_CUGRAPH OR GRAPHMINE_NATIVE_CUDF)
       endif()
     endforeach()
   endforeach()
-  target_link_libraries(graphmine_runtime PRIVATE "-Wl,--no-as-needed"
-      ${GRAPHMINE_RAPIDS_DIRECT_DEPENDENCIES} "-Wl,--as-needed")
+  # Kokkos's nvcc link wrapper moves linker options ahead of library operands.
+  # A paired --as-needed would then drop these direct dependencies again.
+  target_link_options(graphmine_runtime PRIVATE "LINKER:--no-as-needed")
+  target_link_libraries(graphmine_runtime PRIVATE ${GRAPHMINE_RAPIDS_DIRECT_DEPENDENCIES})
   foreach(directory IN LISTS GRAPHMINE_RAPIDS_LIBRARY_DIRS)
     target_link_options(graphmine_runtime PUBLIC "LINKER:-rpath-link,${directory}")
   endforeach()

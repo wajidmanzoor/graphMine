@@ -144,7 +144,9 @@ json::object execute(const json::object& request) {
     throw Failure("backend_unavailable", "Selected CUDA device is unavailable");
   std::optional<DeviceScope> device_scope;
   if (backend != "cpp") device_scope.emplace(device);
-  auto result = graph ? operation_handler(operation)(*graph, parameters, backend, device, work)
+  auto result = graph ? (original_extension_backend(operation, backend)
+                            ? original_extension_run(operation, *graph, parameters, backend, device, work)
+                            : operation_handler(operation)(*graph, parameters, backend, device, work))
                       : input_operation_handler(operation)(request.at("graph"), parameters, work);
   work.tick(0);
   const auto& fingerprint = work.input_fingerprint;

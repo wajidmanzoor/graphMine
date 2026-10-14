@@ -17,6 +17,7 @@ COMPLETION_MODULES = {
     "test_native_record_queries.py",
     "test_native_application_contracts.py",
     "test_native_table_projection.py",
+    "test_native_original_gpu.py",
 }
 
 
@@ -64,6 +65,7 @@ def native_completion_evidence(request):
     unchanged, same_binary = before == snapshot(), binary == sha(library)
     report = getattr(request.config.option, "xmlpath", None)
     if report:
+        Path(report).parent.mkdir(parents=True, exist_ok=True)
         Path(str(report) + ".native.metadata.json").write_text(
             json.dumps(
                 {
@@ -72,7 +74,8 @@ def native_completion_evidence(request):
                     "source_files": before,
                     "sources_unchanged_during_run": unchanged,
                     "build_unchanged_during_run": same_binary,
-                    "device": "cpu",
+                    "device": os.environ.get("GRAPHMINE_EVIDENCE_DEVICE", "cpu"),
+                    "gpu_hardware": getattr(request.session, "native_gpu_hardware", None),
                     "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
                     "collected_test_count": len(request.session.items),
                     "observed_operations": request.session.native_observed_operations,

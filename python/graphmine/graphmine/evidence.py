@@ -22,6 +22,53 @@ def sha(path):
         return hashlib.file_digest(handle, "sha256").hexdigest()
 
 
+class _FileHashes:
+    """Reuse hashes within one admission check, never across requests.
+
+    Many oracle reports share the same source inventory. A stat change forces
+    rehashing even within the check, including replacement or same-size edits.
+    """
+
+    def __init__(self):
+        self.values = {}
+        self.paths = {}
+
+    @staticmethod
+    def identity(path):
+        info = path.stat()
+        return (
+            info.st_dev,
+            info.st_ino,
+            info.st_size,
+            info.st_mtime_ns,
+            info.st_ctime_ns,
+        )
+
+    def __call__(self, path):
+        path = Path(path)
+        before = self.identity(path)
+        previous = self.values.get(path)
+        if previous is not None and previous[0] == before:
+            return previous[1]
+        digest = sha(path)
+        if self.identity(path) != before:
+            raise ValueError(f"Evidence file changed during hashing: {path}")
+        self.values[path] = before, digest
+        return digest
+
+    def repository_path(self, root, name):
+        candidate = root / name
+        before = self.identity(candidate)
+        previous = self.paths.get(candidate)
+        if previous is not None and previous[0] == before:
+            return previous[1]
+        resolved = _path(root, name)
+        if self.identity(candidate) != before:
+            raise ValueError(f"Evidence path changed during validation: {name}")
+        self.paths[candidate] = before, resolved
+        return resolved
+
+
 def profile_hash(card):
     return hashlib.sha256(
         json.dumps(card, sort_keys=True, separators=(",", ":")).encode()
@@ -35,19 +82,25 @@ def _path(root, name):
     return path
 
 
-def _check_hashes(root, files):
+def _check_hashes(root, files, hash_file=None):
+    hash_file = hash_file or sha
     if not files:
         raise ValueError("Empty evidence file inventory")
     for name, digest in files.items():
-        if sha(_path(root, name)) != digest:
+        path = (
+            hash_file.repository_path(root, name)
+            if isinstance(hash_file, _FileHashes)
+            else _path(root, name)
+        )
+        if hash_file(path) != digest:
             raise ValueError(f"Evidence file changed: {name}")
 
 
-def verify_report(root, report, implementation, binary):
+def verify_report(root, report, implementation, binary, hash_file=None):
     try:
         if not {report["report"], report["metadata"]} <= set(report["artifacts"]):
             raise ValueError("Report and metadata both need artifact hashes")
-        _check_hashes(root, report["artifacts"])
+        _check_hashes(root, report["artifacts"], hash_file)
         metadata = json.loads(_path(root, report["metadata"]).read_text())
         if metadata["implementation_sha256"] != implementation:
             raise ValueError("Report was produced by a different native implementation")
@@ -58,7 +111,7 @@ def verify_report(root, report, implementation, binary):
             or not metadata["build_unchanged_during_run"]
         ):
             raise ValueError("Sources or build changed during verification")
-        _check_hashes(root, metadata["source_files"])
+        _check_hashes(root, metadata["source_files"], hash_file)
         path = _path(root, report["report"])
         if report["format"] == "junit":
             document = ET.parse(path).getroot()
@@ -120,12 +173,13 @@ def verify_report(root, report, implementation, binary):
         }
 
 
-def _verify_build(root, build, library, catalog):
+def _verify_build(root, build, library, catalog, hash_file=None):
+    hash_file = hash_file or sha
     if build["implementation_sha256"] != catalog["implementation_sha256"]:
         raise ValueError("Native implementation differs from verified build")
-    if sha(library.path) != build["binary_sha256"]:
+    if hash_file(library.path) != build["binary_sha256"]:
         raise ValueError("Native binary differs from verified build")
-    _check_hashes(root, build["sources"])
+    _check_hashes(root, build["sources"], hash_file)
     runtime_files = {
         str(path.relative_to(root))
         for path in (root / "library/runtime").rglob("*")
@@ -142,11 +196,11 @@ def _verify_build(root, build, library, catalog):
     if dependencies != set(build["dependencies"]):
         raise ValueError("Native dependency inventory changed")
     for name, digest in build["dependencies"].items():
-        if sha(name) != digest:
+        if hash_file(name) != digest:
             raise ValueError(f"Native dependency changed: {name}")
     # Isolated research workers are part of a backend, not optional evidence.
     for name, digest in build.get("workers", {}).items():
-        if sha(name) != digest:
+        if hash_file(name) != digest:
             raise ValueError(f"Native worker changed: {name}")
 
 
@@ -161,11 +215,12 @@ def capabilities(repository_root):
     except (OSError, ValueError):
         inventory = {}
     reports, profiles, reasons = [], {}, []
+    hash_file = _FileHashes()
     for build in inventory.get("builds", []):
         if build.get("implementation_sha256") != catalog["implementation_sha256"]:
             continue
         try:
-            _verify_build(root, build, library, catalog)
+            _verify_build(root, build, library, catalog, hash_file)
             profiles = build["profiles"]
             reports = [
                 verify_report(
@@ -173,6 +228,7 @@ def capabilities(repository_root):
                     report,
                     catalog["implementation_sha256"],
                     build["binary_sha256"],
+                    hash_file,
                 )
                 for report in build["reports"]
             ]
@@ -250,8 +306,13 @@ def require_workflow_evidence(checked, caps):
     cards = {card["id"]: card for card in caps["operations"]}
     for step in checked["plan"]["steps"]:
         card = cards[step["operation"]]
-        device = "gpu" if step["device"] == "gpu" else "cpu"
-        if not card["execution"][device]:
+        device = step["device"]
+        available = (
+            any(card["execution"].values())
+            if device == "auto"
+            else card["execution"][device]
+        )
+        if not available:
             raise GraphMineError(
                 f"Current native {device} correctness evidence is missing or stale for {step['operation']}"
             )

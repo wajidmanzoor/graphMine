@@ -1127,7 +1127,15 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
         payload["domain"]["id"] == "fraud_detection"
         for payload in authored_model_transport[2][start:]
     )
-    browser.find_element(By.CSS_SELECTOR, "#model-reasoning-panel > summary").click()
+    assert browser.find_element(By.ID, "model-reasoning-panel").get_attribute("open")
+    assert (
+        len(
+            browser.find_elements(
+                By.CSS_SELECTOR, '#activity-list [data-stage="validation"].completed'
+            )
+        )
+        == 1
+    )
     browser.find_element(By.CSS_SELECTOR, "#model-reasoning details > summary").click()
     assert "Authored reasoning" in browser.find_element(By.ID, "model-reasoning").text
     capture(browser, "domain-chat-reasoning.png")

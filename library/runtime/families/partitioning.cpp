@@ -31,8 +31,8 @@ json::object assignment_output(const Graph& graph, const std::vector<std::size_t
                 true, quality);
 }
 }  // namespace
-json::object community_detection(const Graph& graph, const json::object& args, const std::string&,
-                                 int, Work& work) {
+json::object community_detection(const Graph& graph, const json::object& args, const std::string& backend,
+                                 int device, Work& work) {
   using namespace family_util;
   fields(args, {"quality_function", "resolution", "weight_mode", "solution_quality", "seed"});
   require(!graph.directed(), "Community detection requires undirected input");
@@ -55,9 +55,22 @@ json::object community_detection(const Graph& graph, const json::object& args, c
   }
   std::vector<std::size_t> selected(n);
   std::iota(selected.begin(), selected.end(), 0);
+  if (backend != "cpp") selected = original_communities(graph, args, backend, device, work);
   Exact best = 0;
   bool optimal = n == 0 || total == 0;
-  if (total > 0) {
+  if (total > 0 && backend != "cpp") {
+    // Certify a GPU partition in O(V+E), without the CPU search's dense
+    // pair-objective matrix or a global-optimum claim.
+    std::map<std::size_t, Exact> volume, internal;
+    for (VertexIndex v = 0; v < n; ++v) { work.tick(); volume[selected[v]] += degrees[v]; }
+    for (const auto& edge : normalized) {
+      work.tick();
+      if (selected[edge.u] == selected[edge.v]) internal[selected[edge.u]] += edge.weight;
+    }
+    for (const auto& [part, degree] : volume)
+      best += internal[part] / total - resolution * degree * degree / (4 * total * total);
+    optimal = false;
+  } else if (total > 0) {
     work.tick(n * n);
     std::vector<std::vector<Exact>> pair(n, std::vector<Exact>(n, 0));
     for (const auto& edge : normalized) pair[edge.u][edge.v] = edge.weight;
@@ -150,7 +163,7 @@ json::object community_detection(const Graph& graph, const json::object& args, c
                                        {"community", row.as_object().at("part")}});
   result.at("result").as_object()["community_by_vertex"] = communities;
   result["diagnostics"] = json::object{
-      {"solver", optimal ? "native_exact_partition_search" : "native_positive_gain_vertex_moves"},
+      {"solver", backend != "cpp" ? backend : optimal ? "native_exact_partition_search" : "native_positive_gain_vertex_moves"},
       {"arithmetic", "exact rational"}};
   return result;
 }

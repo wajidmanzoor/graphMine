@@ -123,6 +123,98 @@ def proposal(op="triangle-counting", parameters=None):
     }
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("device", ["auto", "cpu", "gpu"])
+async def test_planner_preserves_device_policy_through_native_validation(setup, device):
+    settings, analytics, events, session, body = setup
+    body.device = device
+    proposed = proposal()
+    proposed["plan"]["device"] = device
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[family(), operation("triangle-counting"), proposed],
+    )
+    result = await planner.plan(session, body)
+    assert result["status"] == "ready"
+    assert result["plan"]["device"] == device
+    assert result["plan"]["steps"][0]["device"] == device
+    assert all(payload["device_policy"] == device for _, payload, _ in planner.calls)
+
+
+@pytest.mark.asyncio
+async def test_auto_routing_includes_verified_gpu_only_cards(setup, monkeypatch):
+    settings, analytics, events, session, body = setup
+    body.device = "auto"
+    caps = await analytics.capabilities()
+    triangle = next(c for c in caps["operations"] if c["id"] == "triangle-counting")
+    triangle["execution"] = {"cpu": False, "gpu": True}
+
+    async def capabilities():
+        return caps
+
+    monkeypatch.setattr(analytics, "capabilities", capabilities)
+    proposed = proposal()
+    proposed["plan"]["device"] = "auto"
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[family(), operation("triangle-counting"), proposed],
+    )
+    assert (await planner.plan(session, body))["status"] == "ready"
+    assert "triangle-counting" in {c["id"] for c in planner.calls[1][1]["operations"]}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("quality", ["exact", "heuristic"])
+async def test_auto_planning_preserves_explicit_solution_quality(setup, quality):
+    settings, analytics, events, session, body = setup
+    body.device = "auto"
+    body.message = f"Find communities using an {quality} solution."
+    proposed = proposal("community-detection", {"solution_quality": quality})
+    proposed["plan"]["device"] = "auto"
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[family("groups"), operation("community-detection"), proposed],
+    )
+    result = await planner.plan(session, body)
+    assert result["status"] == "ready"
+    assert result["plan"]["steps"][0]["parameters"]["solution_quality"] == quality
+
+
+@pytest.mark.asyncio
+async def test_restored_gpu_community_profiles_reach_the_planner(setup):
+    settings, analytics, events, session, body = setup
+    body.device = "gpu"
+    body.message = "Find communities on the GPU using heuristic modularity."
+    proposed = proposal("community-detection", {"solution_quality": "heuristic"})
+    proposed["plan"]["device"] = "gpu"
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[family("groups"), operation("community-detection"), proposed],
+    )
+    result = await planner.plan(session, body)
+    assert result["status"] == "ready"
+    assert result["plan"]["steps"][0]["device"] == "gpu"
+    card = next(
+        row
+        for row in planner.calls[-1][1]["operations"]
+        if row["id"] == "community-detection"
+    )
+    assert {
+        "gleiden",
+        "parallel-louvain",
+        "parallel-leiden",
+        "parallel-leiden-plus",
+    } <= set(card["verified_backends"])
+
+
 @pytest.mark.parametrize(
     "decision",
     [
@@ -191,6 +283,16 @@ async def test_invalid_step_references_receive_one_bounded_repair(
     assert result["status"] == ("ready" if repair else "needs_information")
     assert "not an earlier step" in planner.calls[-1][1]["validation_error"]["message"]
     assert len(planner.calls) == 4
+    validations = [row for row in result["trace"] if row["stage"] == "validation"]
+    assert [row["status"] for row in validations] == [
+        "running",
+        "failed",
+        "running",
+        "passed" if repair else "failed",
+    ]
+    assert "not an earlier step" in validations[1]["message"]
+    plans = [row["plan"] for row in result["trace"] if row["stage"] == "plan"]
+    assert plans == [invalid["plan"], (valid if repair else invalid)["plan"]]
     assert analytics.list(session) == []
 
 
@@ -215,6 +317,8 @@ async def test_two_selection_stages_then_real_library_validation_and_execution(s
         "family",
         "operation",
         "plan",
+        "validation",
+        "validation",
     ]
     analytics.open()
     try:

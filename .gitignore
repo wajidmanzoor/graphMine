@@ -8,6 +8,11 @@
 .venv-vllm/
 .venv-training/
 .venv-analytics/
+# Shared runtime links used by isolated worktree deployments.
+/.venv
+/.venv-analytics
+/agent/visualization/node_modules
+/library/repaired-workers
 .cuda-compat-13-0/
 __pycache__/
 *.py[cod]

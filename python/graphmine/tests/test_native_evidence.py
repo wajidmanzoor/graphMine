@@ -4,7 +4,14 @@ import json
 from copy import deepcopy
 
 import pytest
-from graphmine.evidence import capabilities, profile_hash, sha
+from graphmine.evidence import (
+    _FileHashes,
+    capabilities,
+    profile_hash,
+    require_workflow_evidence,
+    sha,
+)
+from graphmine.exceptions import GraphMineError
 
 
 @pytest.fixture
@@ -99,6 +106,66 @@ def test_synthetic_native_gate_requires_every_artifact(gate):
     assert card["verified_backends"] == ["cpp"]
     (root / "synthetic-report.xml").write_text("changed")
     assert not capabilities(root)["operations"][0]["execution"]["cpu"]
+
+
+def test_admission_reuses_source_hashes_only_within_one_request(gate, monkeypatch):
+    root, _, _, _ = gate
+    source = root / "library/runtime/synthetic.cpp"
+    observed = []
+
+    def counted(path):
+        observed.append(path)
+        return sha(path)
+
+    monkeypatch.setattr("graphmine.evidence.sha", counted)
+    assert capabilities(root)["operations"][0]["execution"]["cpu"]
+    assert observed.count(source) == 1  # Shared by the build and its oracle report.
+    source.write_text("// changed since the last request\n")
+    assert not capabilities(root)["operations"][0]["execution"]["cpu"]
+
+
+def test_hash_reuse_detects_edits_and_replacement(tmp_path):
+    source = tmp_path / "source"
+    source.write_text("before")
+    hashes = _FileHashes()
+    before = hashes(source)
+    assert hashes(source) == before
+    source.write_text("after!")
+    after = hashes(source)
+    assert after != before
+    replacement = tmp_path / "replacement"
+    replacement.write_text("before")
+    replacement.replace(source)
+    assert hashes(source) == before
+
+
+def test_cached_repository_path_rejects_redirection_outside_root(tmp_path):
+    root = tmp_path / "repository"
+    root.mkdir()
+    source = root / "source"
+    source.write_text("verified content")
+    hashes = _FileHashes()
+    assert hashes.repository_path(root, "source") == source
+    external = tmp_path / "external"
+    external.write_text("verified content")
+    source.unlink()
+    source.symlink_to(external)
+    with pytest.raises(ValueError, match="outside the repository"):
+        hashes.repository_path(root, "source")
+
+
+@pytest.mark.parametrize(
+    "cpu,gpu", [(True, True), (True, False), (False, True), (False, False)]
+)
+@pytest.mark.parametrize("device", ["auto", "cpu", "gpu"])
+def test_workflow_evidence_allows_auto_on_either_verified_device(cpu, gpu, device):
+    checked = {"plan": {"steps": [{"operation": "synthetic", "device": device}]}}
+    caps = {"operations": [{"id": "synthetic", "execution": {"cpu": cpu, "gpu": gpu}}]}
+    if (cpu or gpu) if device == "auto" else {"cpu": cpu, "gpu": gpu}[device]:
+        require_workflow_evidence(checked, caps)
+    else:
+        with pytest.raises(GraphMineError, match="evidence is missing or stale"):
+            require_workflow_evidence(checked, caps)
 
 
 @pytest.mark.parametrize(

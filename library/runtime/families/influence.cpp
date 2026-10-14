@@ -6,7 +6,7 @@ namespace graphmine::runtime {
 json::object influence_maximization(const Graph& graph, const json::object& args,
                                     const std::string&, int, Work& work) {
   using namespace family_util;
-  fields(args, {"diffusion_model", "seed_set_size", "vertex_thresholds"},
+  fields(args, {"diffusion_model", "seed_set_size", "vertex_thresholds", "solution_quality", "sample_count", "random_seed"},
          {"diffusion_model", "seed_set_size"});
   require(graph.directed(), "Influence maximization requires directed input");
   const auto model = choice(args, "diffusion_model", "independent_cascade",

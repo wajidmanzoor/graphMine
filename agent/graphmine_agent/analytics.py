@@ -14,7 +14,11 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .analytics_scheduler import AnalyticsScheduler, estimate_memory
+from .analytics_scheduler import (
+    AnalyticsScheduler,
+    estimate_memory,
+    execution_admission,
+)
 from .database import RecordNotFound
 from .identity import current_principal
 from .ownership import StoreLock
@@ -345,11 +349,13 @@ class AnalyticsService:
         result = await self._call({"command": "capabilities"})
         result["task_families"] = family_catalog(result["operations"])
         result["question_planner_enabled"] = self.settings.llm_enabled
+        devices = self.scheduler.eligible(await self.scheduler.probe())
         result["device_configuration"] = {
             "cpu": True,
             "gpu_configured": bool(
                 self.settings.graph_gpu_uuid or self.settings.analytics_gpu_uuids
             ),
+            "gpu_available": bool(devices),
             "active_allocations": self.scheduler.snapshot(),
         }
         return result
@@ -501,11 +507,12 @@ class AnalyticsService:
         directory = self._directory(record)
         try:
             plan = record["validation"]["plan"]
-            policy = (
-                "gpu"
-                if any(step["device"] == "gpu" for step in plan["steps"])
-                else plan["device"]
-            )
+            policy, allowed_gpu_uuids = "cpu", set()
+            if any(step["device"] != "cpu" for step in plan["steps"]):
+                caps = await self._call({"command": "capabilities"})
+                policy, allowed_gpu_uuids = execution_admission(
+                    plan, caps["operations"]
+                )
             memory = estimate_memory(plan, (directory / "inputs.json").stat().st_size)
             principal = current_principal.get()
             limit = (
@@ -516,7 +523,10 @@ class AnalyticsService:
             async with (
                 limit,
                 self.scheduler.reserve(
-                    policy, memory, timeout=self.settings.job_timeout_seconds
+                    policy,
+                    memory,
+                    timeout=self.settings.job_timeout_seconds,
+                    allowed_gpu_uuids=allowed_gpu_uuids,
                 ) as lease,
             ):
                 (directory / "result.json").unlink(missing_ok=True)

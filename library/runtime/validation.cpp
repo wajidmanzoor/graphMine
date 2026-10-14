@@ -176,6 +176,19 @@ json::object validate_request(const json::object& request) {
       if (policy == "gpu") {
         const auto reason = gpu_support_reason(operation, *graph, parameters);
         if (!reason.empty()) throw Failure("unsupported_input", reason);
+        if (!boolean(request, "partial_parameters", false)) {
+          bool supported = false;
+          std::string rejection;
+          for (const auto& entry : card.at("backends").as_array()) {
+            const auto& backend = entry.as_object();
+            if (backend.at("device") != "gpu" || !backend.at("compiled").as_bool()) continue;
+            const auto why = backend_support_reason(operation, string(backend.at("id"), "backend"),
+                                                     *graph, parameters, work);
+            if (why.empty()) { supported = true; break; }
+            rejection = why;
+          }
+          if (!supported) throw Failure("unsupported_input", rejection.empty() ? "No compatible GPU input profile" : rejection);
+        }
       }
       if (!boolean(request, "partial_parameters", false))
         validate_query_parameters(operation, *graph, parameters, work);

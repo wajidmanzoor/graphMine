@@ -46,6 +46,7 @@ def snapshot(build):
         )
     ]
     files += sorted((build / "optimization-workers").glob("graphmine-worker-*"))
+    files += sorted((build.parent / "workers").glob("graphmine-worker-*"))
     files += sorted((build / "optimization-generated").glob("*.cu"))
     return {str(path.resolve()): sha(path) for path in files}
 
