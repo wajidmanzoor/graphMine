@@ -74,6 +74,9 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         runtime = app.state.runtime
         alice = runtime.accounts.create_user("alice", PASSWORD, admin=True)["id"]
         runtime.accounts.create_user("bob", PASSWORD)
+        runtime.accounts.settle_tokens(
+            runtime.accounts.reserve_tokens(alice, 14000), 12500
+        )
         with identity_scope(Principal(alice, "alice", runtime.accounts)):
             runtime.database.create_session(
                 SessionRecord(domain_id="general", title="Alice private research")
@@ -111,7 +114,23 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         )
         driver.save_screenshot(str(tmp_path / "login.png"))
         sign_in("alice")
+        wait.until(
+            lambda d: d.find_element(By.CSS_SELECTOR, ".account-name").text == "alice"
+        )
+        driver.find_element(By.ID, "account-settings-button").click()
         wait.until(lambda d: "50,000" in d.find_element(By.ID, "account-quota").text)
+        meter = driver.find_element(By.CSS_SELECTOR, "#account-quota progress")
+        assert meter.get_attribute("value") == "12500"
+        assert meter.get_attribute("max") == "50000"
+        assert "37,500" in driver.find_element(By.ID, "account-quota").text
+        driver.save_screenshot(str(tmp_path / "usage.png"))
+        driver.set_window_size(390, 844)
+        assert driver.execute_script(
+            "return document.querySelector('.account-settings-dialog').scrollWidth <= document.querySelector('.account-settings-dialog').clientWidth"
+        )
+        driver.save_screenshot(str(tmp_path / "usage-mobile.png"))
+        driver.set_window_size(1400, 1000)
+        driver.find_element(By.ID, "account-close-settings").click()
         wait.until(
             lambda d: (
                 "Alice private research"
@@ -131,12 +150,17 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
             lambda d: d.find_element(By.CSS_SELECTOR, ".account-name").text == "alice"
         )
 
+        driver.find_element(By.ID, "account-settings-button").click()
         driver.find_element(By.ID, "account-manage-users").click()
         wait.until(
             lambda d: "alice" in d.find_element(By.ID, "account-admin-users").text
         )
+        driver.find_element(By.ID, "account-create-toggle").click()
         driver.find_element(By.ID, "account-new-username").send_keys("carol")
         driver.find_element(By.ID, "account-new-password").send_keys(PASSWORD)
+        limit = driver.find_element(By.ID, "account-new-limit")
+        limit.clear()
+        limit.send_keys("25000")
         driver.find_element(By.ID, "account-create-user").click()
         wait.until(
             lambda d: "carol" in d.find_element(By.ID, "account-admin-users").text
@@ -145,8 +169,48 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
             driver.find_element(By.ID, "account-new-password").get_attribute("value")
             == ""
         )
+        carol = next(
+            user
+            for user in runtime.accounts.list_users()
+            if user["username"] == "carol"
+        )
+        assert carol["quota"]["token_limit"] == 25000
+        runtime.accounts.settle_tokens(
+            runtime.accounts.reserve_tokens(carol["id"], 1400), 900
+        )
+        driver.find_element(By.ID, "account-refresh-users").click()
+        wait.until(
+            lambda d: (
+                "900 of 25,000" in d.find_element(By.ID, "account-user-detail").text
+            )
+        )
+        limit = driver.find_element(By.ID, "account-user-token-limit")
+        limit.clear()
+        limit.send_keys("30000")
+        driver.find_element(By.ID, "account-save-limit").click()
+        wait.until(
+            lambda d: (
+                "limit updated" in d.find_element(By.ID, "account-admin-message").text
+            )
+        )
+        assert runtime.accounts.usage(carol["id"])["tokens_remaining"] == 29100
         driver.save_screenshot(str(tmp_path / "administrator.png"))
-        driver.find_element(By.CSS_SELECTOR, ".account-admin > button").click()
+        driver.set_window_size(390, 844)
+        assert driver.execute_script(
+            "return document.querySelector('.account-settings-content').scrollWidth <= document.querySelector('.account-settings-content').clientWidth"
+        )
+        driver.save_screenshot(str(tmp_path / "administrator-mobile.png"))
+        driver.set_window_size(1400, 1000)
+        driver.find_element(By.ID, "account-reset-tokens").click()
+        wait.until(
+            lambda d: (
+                "Token usage reset"
+                in d.find_element(By.ID, "account-admin-message").text
+            )
+        )
+        assert runtime.accounts.usage(carol["id"])["tokens_used"] == 0
+        assert runtime.accounts.usage(carol["id"])["server_tokens_used"] == 13400
+        driver.find_element(By.ID, "account-tab-profile").click()
 
         driver.find_element(By.ID, "account-sign-out").click()
         wait.until(
@@ -156,7 +220,9 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         wait.until(
             lambda d: d.find_element(By.CSS_SELECTOR, ".account-name").text == "bob"
         )
+        driver.find_element(By.ID, "account-settings-button").click()
         assert not driver.find_element(By.ID, "account-manage-users").is_displayed()
+        driver.find_element(By.ID, "account-close-settings").click()
         wait.until(
             lambda d: (
                 "Verification needed" in d.find_element(By.ID, "connection-state").text
@@ -176,6 +242,40 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
             lambda d: d.find_element(By.CSS_SELECTOR, ".account-name").text == "bob"
         )
         assert not driver.find_element(By.ID, "settings-button").is_displayed()
+        driver.find_element(By.ID, "account-settings-button").click()
+        assert driver.find_element(
+            By.CSS_SELECTOR, "#account-quota progress"
+        ).is_displayed()
+        driver.find_element(By.ID, "account-tab-profile").click()
+        assert (
+            driver.find_element(By.ID, "account-profile-username").get_attribute(
+                "value"
+            )
+            == "bob"
+        )
+        driver.find_element(By.ID, "account-current-password").send_keys(PASSWORD)
+        driver.find_element(By.ID, "account-change-password").send_keys(
+            PASSWORD + "-new"
+        )
+        driver.find_element(By.ID, "account-confirm-password").send_keys(
+            PASSWORD + "-new"
+        )
+        driver.find_element(By.ID, "account-save-password").click()
+        wait.until(
+            lambda d: d.find_element(By.CSS_SELECTOR, ".account-dialog").is_displayed()
+        )
+        wait.until(
+            lambda d: "Password changed" in d.find_element(By.ID, "account-error").text
+        )
+        sign_in("bob", PASSWORD + "-new")
+        wait.until(
+            lambda d: (
+                not d.find_element(By.CSS_SELECTOR, ".account-dialog").is_displayed()
+                and d.find_element(By.CSS_SELECTOR, ".account-name").text == "bob"
+            )
+        )
+        driver.find_element(By.ID, "account-settings-button").click()
+        driver.find_element(By.ID, "account-tab-profile").click()
         driver.find_element(By.ID, "account-sign-out").click()
         wait.until(
             lambda d: d.find_element(By.CSS_SELECTOR, ".account-dialog").is_displayed()

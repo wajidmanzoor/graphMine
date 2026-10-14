@@ -231,6 +231,16 @@ class AccountPassword(BaseModel):
 
 class AccountCreate(AccountPassword):
     username: str = Field(min_length=3, max_length=64)
+    daily_token_limit: int | None = Field(default=None, ge=0, strict=True)
+
+
+class AccountTokenLimit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    daily_token_limit: int | None = Field(ge=0, strict=True)
+
+
+class AccountPasswordChange(AccountPassword):
+    current_password: str = Field(min_length=1, max_length=128)
 
 
 def public_user(principal):
@@ -340,13 +350,48 @@ def register_account_routes(app):
         response.headers["Cache-Control"] = "no-store"
         return administrator().accounts.list_users()
 
+    @router.post("/password", status_code=204)
+    async def change_password(body: AccountPasswordChange, response: Response):
+        principal = current_principal.get()
+        if principal is None:
+            raise AccountError("Please sign in.", "unauthorized", 401)
+        await password_operation(
+            principal.accounts.change_password,
+            principal.user_id,
+            body.current_password,
+            body.password,
+        )
+        response.delete_cookie(
+            COOKIE,
+            path="/",
+            secure=principal.accounts.settings.account_cookie_secure,
+            httponly=True,
+            samesite="strict",
+        )
+        response.headers["Cache-Control"] = "no-store"
+
     @router.post("/admin/users", status_code=201)
     async def create_user(body: AccountCreate, response: Response):
         principal = administrator()
         response.headers["Cache-Control"] = "no-store"
         return await password_operation(
-            principal.accounts.create_user, body.username, body.password
+            principal.accounts.create_user,
+            body.username,
+            body.password,
+            body.daily_token_limit,
         )
+
+    @router.post("/admin/users/{username}/token-limit")
+    async def token_limit(username: str, body: AccountTokenLimit, response: Response):
+        principal = administrator()
+        response.headers["Cache-Control"] = "no-store"
+        return principal.accounts.set_token_limit(username, body.daily_token_limit)
+
+    @router.post("/admin/users/{username}/reset-tokens")
+    async def reset_tokens(username: str, response: Response):
+        principal = administrator()
+        response.headers["Cache-Control"] = "no-store"
+        return principal.accounts.reset_tokens(username)
 
     @router.post("/admin/users/{username}/reset-password", status_code=204)
     async def reset_password(username: str, body: AccountPassword, response: Response):

@@ -21,9 +21,17 @@ deploy/manage-accounts.sh disable bob
 deploy/manage-accounts.sh enable bob
 ```
 
-The `--admin` flag creates an administrator. After signing in, that account sees
-**Manage users**, where you can create ordinary accounts, reset their passwords,
-and disable or re-enable access. Ordinary users cannot use those controls or
+The `--admin` flag creates an administrator. After signing in, open **Settings**
+in the top bar. **Usage** shows a token progress bar, tokens used and remaining,
+the automatic reset time, and remaining graph jobs. **Account** shows your
+username and lets you change your password by entering your current password.
+Changing a password signs out all devices and preserves usage.
+
+Administrators also see **Settings → Manage users**, where you can create ordinary
+accounts with a username, password and daily token allowance. Select a user to
+see their usage, edit their allowance, reset token usage, reset their password,
+or disable and re-enable access. Search helps find accounts in a larger list.
+Ordinary users cannot use those controls or
 their API endpoints. Only the local CLI can create another administrator.
 Administrators have the same usage limits and workspace privacy rules as other
 accounts; the administrator role grants account management, not automatic access
@@ -80,6 +88,19 @@ promise every one of 100 accounts all 50,000 tokens each day. Accounts can brows
 saved work after their AI allowance runs out. Expert calculations consume the
 graph-job budget even when they do not call the model.
 
+Each account can have its own token limit, stored in the database. Existing
+accounts and accounts created without an override use the configured default.
+An administrator can set a whole-number limit from 0 to the shared server limit;
+0 pauses new AI requests while saved work remains accessible. Saving a new limit
+preserves spent tokens and takes effect on the next request. Lowering a limit
+below current usage leaves no tokens remaining; requests already running finish.
+
+**Reset token usage** clears only the selected user's spent tokens. It preserves
+their scheduled 24-hour reset, graph-job usage, and shared server usage. Resetting
+is refused while that user has an active AI request; retry after it finishes.
+An individual reset cannot bypass an exhausted server allowance. The Usage tab
+shows the shared server allowance to administrators as a separate progress bar.
+
 These are starting limits, not a 100-concurrent-user capacity measurement. Graph
 algorithms have very different costs. Monitor CPU, GPU memory, execution time
 and disk use before raising them. The file allowance counts raw stored uploads,
@@ -102,8 +123,8 @@ Counters are stored in SQLite and reservations are atomic. Concurrent requests,
 restarting the API, signing out and resetting a password do not restore tokens.
 Each account has consecutive 24-hour windows anchored at account creation;
 the server has its own shared window. Rollover happens automatically on the next
-request, with no cron job. The header shows tokens remaining and the reset time
-in its tooltip; `/api/auth/me` includes usage and exact reset timestamps.
+request, with no cron job. **Settings → Usage** shows the token bar and reset time;
+`/api/auth/me` includes usage and exact reset timestamps.
 Pending jobs are marked interrupted after a server restart and can be resubmitted;
 their previous daily charges remain. Stale concurrency reservations are released
 without resetting the daily budgets.

@@ -94,6 +94,8 @@ class Accounts:
                 db.execute(
                     "ALTER TABLE accounts ADD COLUMN role TEXT NOT NULL DEFAULT 'user'"
                 )
+            if "daily_token_limit" not in columns:
+                db.execute("ALTER TABLE accounts ADD COLUMN daily_token_limit INTEGER")
 
     @staticmethod
     def username(value):
@@ -104,8 +106,18 @@ class Accounts:
             )
         return value
 
-    def create_user(self, username, password, *, admin=False):
+    def _validate_token_limit(self, limit):
+        if limit is not None and (
+            type(limit) is not int
+            or not 0 <= limit <= self.settings.server_daily_tokens
+        ):
+            raise ValueError(
+                f"Daily token limit must be a whole number from 0 to {self.settings.server_daily_tokens:,}."
+            )
+
+    def create_user(self, username, password, daily_token_limit=None, *, admin=False):
         username = self.username(username)
+        self._validate_token_limit(daily_token_limit)
         if not 12 <= len(password) <= 128:
             raise ValueError("Use a password of 12–128 characters.")
         encoded, now, user_id = (
@@ -127,8 +139,15 @@ class Accounts:
                     "Account limit reached; increase GRAPHMINE_MAX_ACCOUNTS deliberately."
                 )
             db.execute(
-                "INSERT INTO accounts(id,username,password_hash,created_at,disabled,role) VALUES (?,?,?,?,0,?)",
-                (user_id, username, encoded, now, "admin" if admin else "user"),
+                "INSERT INTO accounts(id,username,password_hash,created_at,disabled,role,daily_token_limit) VALUES (?,?,?,?,0,?,?)",
+                (
+                    user_id,
+                    username,
+                    encoded,
+                    now,
+                    "admin" if admin else "user",
+                    daily_token_limit,
+                ),
             )
             db.execute(
                 "INSERT INTO quota_buckets(scope,started_at) VALUES (?,?)",
@@ -142,12 +161,87 @@ class Accounts:
 
     def list_users(self):
         with self.database._connect() as db:
-            return [
-                dict(row)
-                for row in db.execute(
-                    "SELECT id,username,created_at,disabled,role FROM accounts ORDER BY username"
+            db.execute("BEGIN IMMEDIATE")
+            now = self.clock()
+            rows = db.execute(
+                "SELECT id,username,created_at,disabled,role,daily_token_limit FROM accounts ORDER BY username"
+            ).fetchall()
+            return [dict(row, quota=self._usage(db, row["id"], now)) for row in rows]
+
+    def set_token_limit(self, username, limit):
+        self._validate_token_limit(limit)
+        with self.database._connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            user = db.execute(
+                "SELECT id FROM accounts WHERE username=?", (self.username(username),)
+            ).fetchone()
+            if user is None:
+                raise ValueError("Unknown username.")
+            db.execute(
+                "UPDATE accounts SET daily_token_limit=? WHERE id=?", (limit, user[0])
+            )
+            return self._usage(db, user[0], self.clock())
+
+    def reset_tokens(self, username):
+        """Clear this user's tokens; retain their reset schedule and shared charges."""
+        with self.database._connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            user = db.execute(
+                "SELECT id FROM accounts WHERE username=?", (self.username(username),)
+            ).fetchone()
+            if user is None:
+                raise ValueError("Unknown username.")
+            now = self.clock()
+            if db.execute(
+                "SELECT 1 FROM account_leases WHERE user_id=? AND kind='model' AND expires_at>?",
+                (user[0], now),
+            ).fetchone():
+                raise AccountError(
+                    "Wait for this user's current AI request to finish before resetting tokens.",
+                    "tokens_in_use",
+                    409,
                 )
-            ]
+            self._bucket(db, user[0], now)
+            # A late settlement of an expired request must not refund new usage.
+            # Its server period is retained so shared accounting remains correct.
+            db.execute(
+                "UPDATE account_leases SET user_period=NULL WHERE user_id=? AND kind='model'",
+                (user[0],),
+            )
+            db.execute("UPDATE quota_buckets SET tokens=0 WHERE scope=?", (user[0],))
+            return self._usage(db, user[0], now)
+
+    def change_password(self, user_id, current_password, new_password):
+        if not 12 <= len(new_password) <= 128:
+            raise ValueError("Use a password of 12–128 characters.")
+        self._login_attempt("password:" + user_id, "password:" + user_id)
+        with self.database._connect() as db:
+            user = db.execute(
+                "SELECT * FROM accounts WHERE id=?", (user_id,)
+            ).fetchone()
+        if (
+            not user
+            or user["disabled"]
+            or not password_matches(current_password, user["password_hash"])
+        ):
+            raise AccountError(
+                "Your current password is incorrect.", "invalid_current_password", 400
+            )
+        encoded = password_hash(new_password)
+        with self.database._connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            changed = db.execute(
+                "UPDATE accounts SET password_hash=? WHERE id=? AND password_hash=? AND disabled=0",
+                (encoded, user_id, user["password_hash"]),
+            ).rowcount
+            if not changed:
+                raise AccountError(
+                    "Your account changed. Please sign in again.", "unauthorized", 401
+                )
+            db.execute("DELETE FROM account_sessions WHERE user_id=?", (user_id,))
+            db.execute(
+                "DELETE FROM login_attempts WHERE key=?", ("name:password:" + user_id,)
+            )
 
     def reset_password(self, username, password):
         if not 12 <= len(password) <= 128:
@@ -333,20 +427,33 @@ class Accounts:
     def usage(self, user_id):
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            user = self._bucket(db, user_id, self.clock())
-            server = self._bucket(db, "server", self.clock())
+            return self._usage(db, user_id, self.clock())
+
+    def _token_limit(self, db, user_id):
+        row = db.execute(
+            "SELECT daily_token_limit FROM accounts WHERE id=?", (user_id,)
+        ).fetchone()
+        return (
+            row[0] if row and row[0] is not None else self.settings.account_daily_tokens
+        )
+
+    def _usage(self, db, user_id, now):
+        user = self._bucket(db, user_id, now)
+        server = self._bucket(db, "server", now)
+        limit = self._token_limit(db, user_id)
         return {
             "tokens_used": user["tokens"],
-            "token_limit": self.settings.account_daily_tokens,
-            "tokens_remaining": max(
-                0, self.settings.account_daily_tokens - user["tokens"]
-            ),
+            "token_limit": limit,
+            "default_token_limit": self.settings.account_daily_tokens,
+            "tokens_remaining": max(0, limit - user["tokens"]),
             "jobs_used": user["jobs"],
             "job_limit": self.settings.account_daily_jobs,
             "resets_at": _stamp(user["started_at"] + DAY),
             "server_tokens_remaining": max(
                 0, self.settings.server_daily_tokens - server["tokens"]
             ),
+            "server_token_limit": self.settings.server_daily_tokens,
+            "server_tokens_used": server["tokens"],
             "server_resets_at": _stamp(server["started_at"] + DAY),
             "window_seconds": DAY,
         }
@@ -384,7 +491,12 @@ class Accounts:
         now = self.clock()
         periods = []
         for scope, limit in (
-            (user_id, getattr(self.settings, "account_daily_" + field)),
+            (
+                user_id,
+                self._token_limit(db, user_id)
+                if field == "tokens"
+                else self.settings.account_daily_jobs,
+            ),
             ("server", getattr(self.settings, "server_daily_" + field)),
         ):
             bucket = self._bucket(db, scope, now)

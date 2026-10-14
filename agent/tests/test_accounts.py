@@ -768,3 +768,155 @@ def test_only_admin_can_manage_users_and_password_policy_is_preserved(account_se
         )
         sid = client.post("/api/sessions", headers=alice, json={}).json()["id"]
         assert client.get(f"/api/sessions/{sid}", headers=admin).status_code == 404
+
+
+def test_custom_token_limits_persist_and_are_enforced(account_settings):
+    now = [1000000.0]
+    settings = replace(
+        account_settings, account_daily_tokens=1000, server_daily_tokens=5000
+    )
+    accounts, database = store(settings, now)
+    alice = accounts.create_user("alice", PASSWORD, 600)["id"]
+    bob = accounts.create_user("bob", PASSWORD)["id"]
+    lease = accounts.reserve_tokens(alice, 500)
+    accounts.settle_tokens(lease, 400)
+    with pytest.raises(AccountError, match="allowance"):
+        accounts.reserve_tokens(alice, 201)
+    accounts.set_token_limit("alice", 300)
+    assert accounts.usage(alice)["tokens_remaining"] == 0
+    accounts.set_token_limit("alice", 900)
+    assert accounts.usage(alice)["tokens_used"] == 400
+    assert accounts.usage(bob)["token_limit"] == 1000
+    restarted = Accounts(settings, Database(database.path), clock=lambda: now[0])
+    assert restarted.usage(alice)["token_limit"] == 900
+    now[0] += DAY
+    assert restarted.usage(alice)["tokens_remaining"] == 900
+    restarted.set_token_limit("alice", 0)
+    with pytest.raises(AccountError):
+        restarted.reserve_tokens(alice, 1)
+    restarted.set_token_limit("alice", None)
+    assert restarted.usage(alice)["token_limit"] == 1000
+
+
+def test_manual_token_reset_keeps_server_jobs_schedule_and_inflight_accounting(
+    account_settings,
+):
+    now = [1000000.0]
+    accounts, _ = store(account_settings, now)
+    user = accounts.create_user("alice", PASSWORD)["id"]
+    accounts.release(accounts.admit_jobs(user))
+    lease = accounts.reserve_tokens(user, 500)
+    with pytest.raises(AccountError) as busy:
+        accounts.reset_tokens("alice")
+    assert busy.value.code == "tokens_in_use"
+    before = accounts.usage(user)
+    now[0] += 241
+    reset = accounts.reset_tokens("alice")
+    assert reset["tokens_used"] == 0
+    assert reset["jobs_used"] == 1
+    assert reset["resets_at"] == before["resets_at"]
+    assert reset["server_tokens_remaining"] == before["server_tokens_remaining"]
+    accounts.settle_tokens(lease, 200)
+    after = accounts.usage(user)
+    assert after["tokens_used"] == 0
+    assert after["server_tokens_used"] == 200
+    lease = accounts.reserve_tokens(user, 400)
+    accounts.settle_tokens(lease, 300)
+    accounts.reset_tokens("alice")
+    assert accounts.usage(user)["server_tokens_used"] == 500
+
+
+def test_admin_quota_api_and_validation(account_settings):
+    with TestClient(create_app(account_settings)) as client:
+        accounts = client.app.state.runtime.accounts
+        accounts.create_user("owner", PASSWORD, admin=True)
+        accounts.create_user("alice", PASSWORD)
+        admin, alice = login(client, "owner"), login(client)
+        base = "/api/auth/admin/users"
+        response = client.post(
+            base,
+            headers=admin,
+            json={
+                "username": "bob",
+                "password": PASSWORD,
+                "daily_token_limit": 12345,
+            },
+        )
+        assert response.status_code == 201, response.text
+        bob = response.json()["id"]
+        assert accounts.usage(bob)["token_limit"] == 12345
+        accounts.settle_tokens(accounts.reserve_tokens(bob, 1000), 750)
+        for operation, body in (
+            ("token-limit", {"daily_token_limit": 20000}),
+            ("reset-tokens", {}),
+        ):
+            assert (
+                client.post(
+                    f"{base}/bob/{operation}", headers=alice, json=body
+                ).status_code
+                == 403
+            )
+        for invalid in (
+            -1,
+            True,
+            1.5,
+            "1000",
+            account_settings.server_daily_tokens + 1,
+        ):
+            assert client.post(
+                f"{base}/bob/token-limit",
+                headers=admin,
+                json={"daily_token_limit": invalid},
+            ).status_code in {400, 422}
+        updated = client.post(
+            f"{base}/bob/token-limit", headers=admin, json={"daily_token_limit": 30000}
+        )
+        assert updated.status_code == 200
+        assert updated.json()["tokens_remaining"] == 29250
+        reset = client.post(f"{base}/bob/reset-tokens", headers=admin)
+        assert reset.status_code == 200
+        assert reset.json()["tokens_used"] == 0
+        assert reset.json()["server_tokens_used"] == 750
+        rows = client.get(base, headers=admin).json()
+        row = next(row for row in rows if row["username"] == "bob")
+        assert row["quota"]["token_limit"] == 30000
+        assert all("password_hash" not in row for row in rows)
+
+
+def test_change_own_password_requires_current_password_and_revokes_logins(
+    account_settings,
+):
+    with TestClient(create_app(account_settings)) as client:
+        accounts = client.app.state.runtime.accounts
+        user = accounts.create_user("alice", PASSWORD)["id"]
+        first, second = login(client), login(client)
+        accounts.settle_tokens(accounts.reserve_tokens(user, 500), 250)
+        endpoint = "/api/auth/password"
+        wrong = client.post(
+            endpoint,
+            headers=first,
+            json={"current_password": "wrong", "password": PASSWORD + "-new"},
+        )
+        assert wrong.status_code == 400
+        assert client.get("/api/auth/me", headers=first).status_code == 200
+        assert (
+            client.post(
+                endpoint,
+                headers=first,
+                json={"current_password": PASSWORD, "password": "too-short"},
+            ).status_code
+            == 422
+        )
+        changed = client.post(
+            endpoint,
+            headers=first,
+            json={"current_password": PASSWORD, "password": PASSWORD + "-new"},
+        )
+        assert changed.status_code == 204
+        assert client.get("/api/auth/me", headers=first).status_code == 401
+        assert client.get("/api/auth/me", headers=second).status_code == 401
+        fresh = login(client, password=PASSWORD + "-new")
+        assert (
+            client.get("/api/auth/me", headers=fresh).json()["quota"]["tokens_used"]
+            == 250
+        )
