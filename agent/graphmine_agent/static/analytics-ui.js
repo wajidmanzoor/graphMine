@@ -28,12 +28,17 @@
     $("notice").textContent = message; $("notice").className = `notice${error ? " error" : ""}`; $("notice").hidden = !message;
     if (message && !error) state.noticeTimer = setTimeout(() => { $("notice").hidden = true; }, 5500);
   }
-  async function api(path, options = {}) {
+  async function api(path, options = {}, busyRetries = 0) {
     const headers = state.token ? {Authorization: `Bearer ${state.token}`} : {};
     if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
     const response = await fetch(state.base + path, {...options, headers: {...headers, ...options.headers}});
     const text = await response.text();
     let result; try { result = W.parse(text); } catch { throw new Error("The server did not return a readable response."); }
+    if (busyRetries > 0 && response.status === 429 && result.error?.code === "concurrency_limit") {
+      const delay = Math.max(1, Number(response.headers.get("Retry-After")) || 1);
+      await new Promise(resolve => setTimeout(resolve, delay * 1000));
+      return api(path, options, busyRetries - 1);
+    }
     if (!response.ok) throw new Error(result.error?.message || result.detail?.message || (typeof result.detail === "string" ? result.detail : `Request failed (${response.status}).`));
     return result;
   }
@@ -41,7 +46,7 @@
   function clearResults(message = "Waiting for a completed calculation.") {
     if (state.record) state.summaries.delete(state.record.id);
     state.result = null; state.port = null; state.rows = []; state.selected.clear();
-    state.groups = []; state.groupMembership = new Map(); state.groupFilter = "";
+    state.groups = []; state.groupMembership = new Map(); state.groupFilter = ""; state.groupsOverlap = false; state.groupNoun = "group";
     $("result-controls").hidden = true; $("download-result").disabled = true; $("raw-details").hidden = true;
     $("result-completeness").textContent = message; $("result-completeness").classList.remove("incomplete");
     renderOutput(); renderGraph(state.previews.get(state.active) || null);
@@ -402,7 +407,8 @@
     renderFiles(); await previewActive(); notice("Your data is ready. Ask a question to begin.");
   }
   async function preview(fileId) {
-    if (!state.previews.has(fileId)) state.previews.set(fileId, await api(`/api/files/${fileId}/graph-preview?vertex_limit=500&edge_limit=2000`));
+    // Startup verification can briefly occupy this account's read slot.
+    if (!state.previews.has(fileId)) state.previews.set(fileId, await api(`/api/files/${fileId}/graph-preview?vertex_limit=500&edge_limit=2000`, {}, 2));
     return state.previews.get(fileId);
   }
   async function previewActive() {
@@ -701,29 +707,33 @@
     const graph = port.type === "graph" ? port.value : port.type === "pattern_collection" ? port.value[0]?.pattern || null : await graphForStep(stepId);
     configureGroups(result);
     if (port.type === "vertex_positions") $("graph-layout").value = "computed";
-    else if (state.groups.length) $("graph-layout").value = "groups";
+    else if (state.groups.length && !state.groupsOverlap) $("graph-layout").value = "groups";
     renderGraph(graph); renderOutput();
   }
   function configureGroups(result) {
-    state.groups = []; state.groupMembership = new Map(); state.groupFilter = "";
+    state.groups = []; state.groupMembership = new Map(); state.groupFilter = ""; state.groupsOverlap = false;
+    state.groupNoun = ["maximal-cliques", "maximum-clique", "k-cliques"].includes(result.operation) ? "clique" : "group";
     const ports = Object.values(result.ports), partition = ports.find(p => p.type === "vertex_partition"), groups = ports.find(p => p.type === "vertex_groups");
     const members = new Map();
     const add = (id, vertex) => {
       const key = W.idKey(id), vertexKey = W.idKey(vertex);
-      if (!members.has(key)) members.set(key, {key, id, label: `Group ${display(id)}`, vertices: new Set()});
+      if (!members.has(key)) members.set(key, {key, id, label: groupLabel(id, members.size), vertices: new Set()});
       members.get(key).vertices.add(vertexKey);
+      if (state.groupMembership.has(vertexKey) && state.groupMembership.get(vertexKey) !== key) state.groupsOverlap = true;
       state.groupMembership.set(vertexKey, key);
     };
     if (partition) for (const row of partition.value) add(row.part, row.vertex);
     else if (groups) {
-      // Overlapping collections (for example cliques) do not define a partition.
-      for (const [index, row] of groups.value.entries()) for (const vertex of row.vertices) {
-        if (state.groupMembership.has(W.idKey(vertex))) { state.groupMembership.clear(); return; }
-        add(row.group ?? index, vertex);
-      }
+      for (const [index, row] of groups.value.entries()) for (const vertex of row.vertices) add(row.group ?? index, vertex);
     }
+    // Keep every collection filter, but do not assign shared vertices to one
+    // arbitrary group for overview colors or a partition layout.
+    if (state.groupsOverlap) state.groupMembership.clear();
     const colors = ["#4179b5", "#dd8050", "#499678", "#a765ab", "#c05a6e", "#8b8739", "#4998aa", "#8664bb", "#c69b35", "#73604d", "#cd75a0", "#5d7c4b", "#697dc9", "#ae5736", "#548d90", "#9d854b"];
     state.groups = [...members.values()].map((group, index) => ({...group, color: colors[index % colors.length]}));
+  }
+  function groupLabel(id, index) {
+    return state.groupNoun === "clique" ? `Clique ${index + 1}` : `Group ${display(id)}`;
   }
   function filterGraphGroup(key) {
     state.groupFilter = key; state.selected.clear(); renderGraph(state.graph); applySelection();
@@ -752,28 +762,35 @@
       return;
     }
     state.cy?.destroy(); state.cy = null; state.graph = data;
-    const groups = state.groups || [], filter = groups.find(group => group.key === state.groupFilter);
-    $("graph-group-label").hidden = !groups.length; $("group-legend").hidden = !groups.length;
-    $("graph-group").replaceChildren(node("option", {value: ""}, "All groups · full network")); $("group-legend").replaceChildren();
+    const groups = state.groups || [], filter = groups.find(group => group.key === state.groupFilter), noun = state.groupNoun || "group";
+    $("graph-group-label").hidden = !groups.length; $("group-legend").hidden = !groups.length || state.groupsOverlap;
+    $("graph-group-caption").textContent = `Show ${noun}`;
+    $("graph-group-hint").hidden = !groups.length;
+    $("graph-group-hint").textContent = `${groups.length} returned ${noun}${groups.length === 1 ? "" : "s"}. Choose a ${noun} or a result row to see only its vertices and internal connections.${state.groupsOverlap ? ` These ${noun}s share vertices.` : ""}`;
+    $("graph-group").replaceChildren(node("option", {value: ""}, "Full network")); $("group-legend").replaceChildren();
     if (groups.length) {
-      const all = node("button", {"aria-pressed": String(!filter)}, `All ${groups.length} groups`); all.addEventListener("click", () => filterGraphGroup("")); $("group-legend").append(all);
+      const all = node("button", {"aria-pressed": String(!filter)}, `All ${groups.length} ${noun}s`); all.addEventListener("click", () => filterGraphGroup("")); $("group-legend").append(all);
       for (const group of groups) {
         $("graph-group").append(node("option", {value: group.key}, `${group.label} · ${group.vertices.size} vertices`));
-        const button = node("button", {"aria-pressed": String(group === filter), "data-group": group.key}), swatch = node("span", {class: "group-swatch", "aria-hidden": "true"}); swatch.style.backgroundColor = group.color;
-        button.append(swatch, node("span", {}, `${group.label} (${group.vertices.size})`)); button.addEventListener("click", () => filterGraphGroup(group.key)); $("group-legend").append(button);
+        if (!state.groupsOverlap) {
+          const button = node("button", {"aria-pressed": String(group === filter), "data-group": group.key}), swatch = node("span", {class: "group-swatch", "aria-hidden": "true"}); swatch.style.backgroundColor = group.color;
+          button.append(swatch, node("span", {}, `${group.label} (${group.vertices.size})`)); button.addEventListener("click", () => filterGraphGroup(group.key)); $("group-legend").append(button);
+        }
       }
     }
+    $("group-legend").setAttribute("aria-label", `${title(noun)} colors and filters`);
     $("graph-group").value = filter?.key || "";
-    $("graph-layout").querySelector('[value="groups"]').disabled = !groups.length;
-    if (!groups.length && $("graph-layout").value === "groups") $("graph-layout").value = "cose";
+    $("graph-layout").querySelector('[value="groups"]').textContent = noun === "clique" ? "By clique" : "By group";
+    $("graph-layout").querySelector('[value="groups"]').disabled = !groups.length || state.groupsOverlap;
+    if ((!groups.length || state.groupsOverlap) && $("graph-layout").value === "groups") $("graph-layout").value = "cose";
     $("graph-layout").querySelector('[value="computed"]').disabled = state.port?.type !== "vertex_positions";
     if (state.port?.type !== "vertex_positions" && $("graph-layout").value === "computed") $("graph-layout").value = "cose";
-    $("network").replaceChildren(); $("preview-scope").textContent = ""; $("selection-detail").textContent = "Select a node or a result row to inspect it.";
+    $("network").replaceChildren(); $("preview-scope").textContent = ""; $("selection-detail").textContent = filter ? `Showing ${filter.label.toLowerCase()}. Select a node to inspect it.` : "Select a node or a result row to inspect it.";
     if (!data?.vertices || !window.cytoscape) return;
     const vertices = data.vertices.filter(v => !filter || filter.vertices.has(W.idKey(v.id))).slice(0, 500), keys = new Set(vertices.map(v => W.idKey(v.id)));
     const edges = data.edges.filter(e => keys.has(W.idKey(e.source)) && keys.has(W.idKey(e.target))).slice(0, 2000);
     const positions = graphPositions(vertices), colors = new Map(groups.map(group => [group.key, group.color]));
-    const elements = vertices.map(v => ({position: positions.get(W.idKey(v.id)), data: {id: W.idKey(v.id), label: String(v.label || v.name || v.id), original: v, entity: v.id, color: colors.get(state.groupMembership?.get(W.idKey(v.id))) || "#73a991"}}));
+    const elements = vertices.map(v => ({position: positions.get(W.idKey(v.id)), data: {id: W.idKey(v.id), label: String(v.label || v.name || v.id), original: v, entity: v.id, color: filter?.color || colors.get(state.groupMembership?.get(W.idKey(v.id))) || "#73a991"}}));
     edges.forEach((e, index) => elements.push({data: {id: `edge:${index}`, source: W.idKey(e.source), target: W.idKey(e.target), original: e}}));
     const direction = data.graph?.directed ? "triangle" : "none";
     state.cy = window.cytoscape({container: $("network"), elements, minZoom: .08, maxZoom: 5, wheelSensitivity: .2, style: [
@@ -791,7 +808,7 @@
     state.cy.on("tap", "edge", event => { $("selection-detail").textContent = W.stringify(event.target.data("original"), true); });
     const n = data.vertex_count ?? data.vertices.length, m = data.edge_count ?? data.edges.length;
     const truncated = data.vertices_truncated || data.edges_truncated || (filter ? vertices.length < filter.vertices.size || edges.length === 2000 && data.edges.length > 2000 : vertices.length < n || edges.length < m);
-    state.previewScope = filter ? `${filter.label}: ${vertices.length} of ${filter.vertices.size} vertices; ${edges.length} connections within this group. Full input: ${n} vertices; ${m} connections. ` : `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. `;
+    state.previewScope = filter ? `${filter.label}: ${vertices.length} of ${filter.vertices.size} vertices; ${edges.length} connections within this ${noun}. Full input: ${n} vertices; ${m} connections. ` : `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. `;
     if (truncated) state.previewScope += "The preview is truncated. ";
     renderPreviewScope();
     applySelection();
@@ -817,6 +834,7 @@
   function rowVertices(row) {
     if (!state.port) return [];
     if (state.port.type === "pattern_collection") return [];
+    if (state.port.type === "graph") return row?.vertices?.map(vertex => vertex.id) || [];
     if (state.port.type === "vertex_set") return [row];
     if (state.port.type === "edge_ids") {
       const edge = state.graph?.edges?.find(e => W.idKey(e.id) === W.idKey(row));
@@ -849,14 +867,15 @@
       state.cy.edges().forEach(e => e.toggleClass("faded", state.selected.size > 0 && !(state.selected.has(e.source().id()) || state.selected.has(e.target().id()))));
     }
     document.querySelectorAll("[data-result-row]").forEach(el => {
-      const row = state.rows[Number(el.dataset.resultRow)], ids = rowVertices(row), active = state.port?.type === "pattern_collection" ? row.pattern_id === state.patternId : ids.length > 0 && ids.every(id => state.selected.has(W.idKey(id)));
+      const index = Number(el.dataset.resultRow), row = state.rows[index], ids = rowVertices(row);
+      const active = state.port?.type === "pattern_collection" ? row.pattern_id === state.patternId : state.port?.type === "vertex_groups" && state.groupFilter ? W.idKey(row.group ?? index) === state.groupFilter : ids.length > 0 && ids.every(id => state.selected.has(W.idKey(id)));
       el.setAttribute(el.tagName === "TR" ? "aria-selected" : "aria-pressed", String(active));
     });
   }
   function renderOutput() {
     $("metrics").replaceChildren(); $("chart").replaceChildren();
     if (state.groups?.length) {
-      const metric = node("div", {class: "metric"}); metric.append(node("strong", {}, String(state.groups.length)), node("span", {}, "Computed groups")); $("metrics").append(metric);
+      const metric = node("div", {class: "metric"}); metric.append(node("strong", {}, String(state.groups.length)), node("span", {}, state.groupNoun === "clique" ? "Returned cliques" : "Computed groups")); $("metrics").append(metric);
     }
     if (["scalar", "rational_scalar"].includes(state.port?.type)) {
       const rational = state.port.type === "rational_scalar", value = rational ? state.port.value.display : state.port.value;
@@ -868,7 +887,7 @@
     if (state.port?.type === "vertex_scores") {
       const field = state.port.score_field || "score";
       chartRows = state.rows.map((row, index) => ({index, row, label: W.idLabel(row.vertex), value: row[field]})).filter(x => typeof x.value === "number" || typeof x.value === "bigint");
-    } else if (state.port?.type === "vertex_groups") chartRows = state.rows.map((row, index) => ({index, row, label: `Group ${row.group ?? index + 1}`, value: row.vertices.length}));
+    } else if (state.port?.type === "vertex_groups") chartRows = state.rows.map((row, index) => ({index, row, label: groupLabel(row.group ?? index, index), value: row.vertices.length}));
     if (chartRows.length) {
       chartRows.sort((a, b) => {
         const field = state.port.exact_score_field, x = field && a.row[field], y = field && b.row[field];
@@ -879,7 +898,7 @@
         return a.value > b.value ? -1 : a.value < b.value ? 1 : a.index - b.index;
       });
       const visible = chartRows.slice(0, 20), max = Math.max(...visible.map(r => Math.abs(Number(r.value))), 0);
-      $("chart").append(node("p", {class: "chart-heading"}, `${state.port.type === "vertex_groups" ? "Members in each returned group" : title(state.port.score_field || "score")} · highest ${visible.length} of ${chartRows.length} scored rows`));
+      $("chart").append(node("p", {class: "chart-heading"}, state.port.type === "vertex_groups" ? `Largest ${visible.length} of ${chartRows.length} returned ${state.groupNoun}s · number of vertices` : `${title(state.port.score_field || "score")} · highest ${visible.length} of ${chartRows.length} scored rows`));
       if (visible.some(row => row.value < 0)) $("chart").append(node("p", {class: "muted"}, "Bar length shows magnitude; negative values are orange. Labels retain the sign."));
       if (!Number.isFinite(max)) $("chart").append(node("p", {class: "muted"}, "These values exceed the chart range. Exact values remain in the table."));
       else for (const item of visible) {
@@ -901,6 +920,7 @@
       if (!query) return true;
       const row = state.rows[i];
       if (scoped) return row && typeof row === "object" && Object.hasOwn(row, scoped[1]) && W.stringify(row[scoped[1]]) === W.stringify(expected);
+      if (state.port?.type === "vertex_groups" && state.groupNoun === "clique" && groupLabel(row.group ?? i, i).toLocaleLowerCase().includes(query)) return true;
       return W.stringify(row).toLocaleLowerCase().includes(query);
     });
     state.page = 0; renderTable();
@@ -909,12 +929,13 @@
     const head = $("result-table").querySelector("thead"), body = $("result-table").querySelector("tbody"); head.replaceChildren(); body.replaceChildren();
     const indices = state.filtered.slice(state.page * PAGE, (state.page + 1) * PAGE), objectRows = state.rows.some(r => r !== null && typeof r === "object" && !Array.isArray(r));
     const keys = objectRows ? [...new Set(state.rows.flatMap(r => r && typeof r === "object" && !Array.isArray(r) ? Object.keys(r) : ["value"]))] : ["value"];
-    const tr = node("tr"); keys.forEach(key => tr.append(node("th", {scope: "col"}, title(key)))); head.append(tr);
+    const cliques = state.port?.type === "vertex_groups" && state.groupNoun === "clique";
+    const tr = node("tr"); keys.forEach(key => tr.append(node("th", {scope: "col"}, cliques && key === "group" ? "Clique" : title(key)))); head.append(tr);
     indices.forEach(index => {
       const row = state.rows[index], record = objectRows && row && typeof row === "object" && !Array.isArray(row) ? row : {value: row};
       const tr = node("tr", {"data-result-row": index, "aria-selected": "false"});
       keys.forEach((key, position) => {
-        const value = record[key] ?? null, text = state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : ["vertex", "source", "target", state.port?.vertex_field].includes(key) && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value ? "≈ " : ""}${display(value)}`, td = node("td", {title: text});
+        const value = record[key] ?? null, text = cliques && key === "group" ? groupLabel(value, index) : state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : ["vertex", "source", "target", state.port?.vertex_field].includes(key) && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value ? "≈ " : ""}${display(value)}`, td = node("td", {title: text});
         if (position === 0 && (rowVertices(row).length || state.port?.type === "pattern_collection")) { const button = node("button", {}, state.port?.type === "pattern_collection" ? `View pattern ${index + 1}` : text); button.addEventListener("click", () => selectRow(row)); td.append(button); } else td.textContent = text;
         tr.append(td);
       }); body.append(tr);

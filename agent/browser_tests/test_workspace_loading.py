@@ -81,6 +81,8 @@ def loading_server():
         workflows=[],
         results={},
         graph=None,
+        preview_failures=[],
+        preview_calls=0,
         plan_handler=None,
     )
 
@@ -100,8 +102,10 @@ def loading_server():
 
         def do_GET(self):
             path = self.path.split("?", 1)[0]
-            if path == "/api/analytics/capabilities":
-                response = state.responses[state.calls]
+            if path == "/api/auth/config":
+                self.respond({"enabled": False})
+            elif path == "/api/analytics/capabilities":
+                response = state.responses[min(state.calls, len(state.responses) - 1)]
                 state.calls += 1
                 response.started.set()
                 response.release.wait(20)
@@ -153,7 +157,12 @@ def loading_server():
                     [event for event in state.events if event["sequence"] > after]
                 )
             elif path.endswith("/graph-preview"):
-                self.respond(state.graph)
+                state.preview_calls += 1
+                if state.preview_failures:
+                    code = state.preview_failures.pop(0)
+                    self.respond({"error": {"code": code, "message": code}}, 429)
+                else:
+                    self.respond(state.graph)
             else:
                 file = STATIC / ("analytics.html" if path == "/" else path.lstrip("/"))
                 if file.is_file() and file.resolve().is_relative_to(STATIC):
