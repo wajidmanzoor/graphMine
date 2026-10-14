@@ -224,6 +224,30 @@ class LoginRequest(BaseModel):
     issue_token: bool = False
 
 
+class AccountPassword(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    password: str = Field(min_length=12, max_length=128)
+
+
+class AccountCreate(AccountPassword):
+    username: str = Field(min_length=3, max_length=64)
+
+
+def public_user(principal):
+    return {
+        "id": principal.user_id,
+        "username": principal.username,
+        "role": "admin" if principal.is_admin else "user",
+    }
+
+
+def administrator():
+    principal = current_principal.get()
+    if principal is None or not principal.is_admin:
+        raise AccountError("Administrator access is required.", "admin_required", 403)
+    return principal
+
+
 def register_account_routes(app):
     router = APIRouter(prefix="/api/auth")
     login_slots = asyncio.Semaphore(2)
@@ -264,7 +288,7 @@ def register_account_routes(app):
         )
         response.headers["Cache-Control"] = "no-store"
         result = {
-            "user": {"id": principal.user_id, "username": principal.username},
+            "user": public_user(principal),
             "quota": runtime.accounts.usage(principal.user_id),
         }
         if body.issue_token:
@@ -282,7 +306,7 @@ def register_account_routes(app):
             raise AccountError("Please sign in.", "unauthorized", 401)
         response.headers["Cache-Control"] = "no-store"
         return {
-            "user": {"id": principal.user_id, "username": principal.username},
+            "user": public_user(principal),
             "quota": principal.accounts.usage(principal.user_id),
         }
 
@@ -299,6 +323,54 @@ def register_account_routes(app):
             httponly=True,
             samesite="strict",
         )
+        response.headers["Cache-Control"] = "no-store"
+
+    async def password_operation(operation, *args):
+        if login_slots.locked():
+            raise AccountError(
+                "Account management is busy. Please try again shortly.",
+                "login_busy",
+                retry_after=2,
+            )
+        async with login_slots:
+            return await run_in_threadpool(operation, *args)
+
+    @router.get("/admin/users")
+    async def users(response: Response):
+        response.headers["Cache-Control"] = "no-store"
+        return administrator().accounts.list_users()
+
+    @router.post("/admin/users", status_code=201)
+    async def create_user(body: AccountCreate, response: Response):
+        principal = administrator()
+        response.headers["Cache-Control"] = "no-store"
+        return await password_operation(
+            principal.accounts.create_user, body.username, body.password
+        )
+
+    @router.post("/admin/users/{username}/reset-password", status_code=204)
+    async def reset_password(username: str, body: AccountPassword, response: Response):
+        principal = administrator()
+        await password_operation(
+            principal.accounts.reset_password, username, body.password
+        )
+        response.headers["Cache-Control"] = "no-store"
+
+    @router.post("/admin/users/{username}/disable", status_code=204)
+    async def disable_user(username: str, response: Response):
+        principal = administrator()
+        if principal.accounts.username(username) == principal.username:
+            raise AccountError(
+                "You cannot disable your own administrator account.",
+                "self_disable",
+                403,
+            )
+        principal.accounts.disable(username)
+        response.headers["Cache-Control"] = "no-store"
+
+    @router.post("/admin/users/{username}/enable", status_code=204)
+    async def enable_user(username: str, response: Response):
+        administrator().accounts.enable(username)
         response.headers["Cache-Control"] = "no-store"
 
     app.include_router(router)

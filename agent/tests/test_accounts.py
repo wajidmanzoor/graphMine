@@ -694,3 +694,77 @@ def test_https_login_uses_secure_cookie(account_settings):
         assert response.status_code == 200
         assert "; Secure" in response.headers["set-cookie"]
         assert client.get("/api/auth/me").status_code == 200
+
+
+def test_only_admin_can_manage_users_and_password_policy_is_preserved(account_settings):
+    with TestClient(create_app(account_settings)) as client:
+        accounts = client.app.state.runtime.accounts
+        accounts.create_user("owner", PASSWORD, admin=True)
+        accounts.create_user("alice", PASSWORD)
+        admin, alice = login(client, "owner"), login(client)
+        assert (
+            client.get("/api/auth/me", headers=admin).json()["user"]["role"] == "admin"
+        )
+        endpoint = "/api/auth/admin/users"
+        assert client.get(endpoint).status_code == 401
+        assert client.get(endpoint, headers=alice).status_code == 403
+        assert (
+            client.post(
+                endpoint, headers=alice, json={"username": "bob", "password": PASSWORD}
+            ).status_code
+            == 403
+        )
+        for operation in ("disable", "enable", "reset-password"):
+            assert (
+                client.post(
+                    f"{endpoint}/owner/{operation}",
+                    headers=alice,
+                    json={"password": PASSWORD},
+                ).status_code
+                == 403
+            )
+        assert (
+            client.post(
+                endpoint,
+                headers=admin,
+                json={"username": "short", "password": "Eight!42"},
+            ).status_code
+            == 422
+        )
+        assert (
+            client.post(
+                endpoint,
+                headers=admin,
+                json={"username": "another", "password": PASSWORD, "role": "admin"},
+            ).status_code
+            == 422
+        )
+        created = client.post(
+            endpoint, headers=admin, json={"username": "bob", "password": PASSWORD}
+        )
+        assert created.status_code == 201, created.text
+        assert created.json()["role"] == "user"
+        rows = client.get(endpoint, headers=admin).json()
+        assert {row["username"] for row in rows} == {"alice", "bob", "owner"}
+        assert all("password_hash" not in row for row in rows)
+        bob = login(client, "bob")
+        assert (
+            client.post(
+                f"{endpoint}/bob/reset-password",
+                headers=admin,
+                json={"password": PASSWORD + "-new"},
+            ).status_code
+            == 204
+        )
+        assert client.get("/api/auth/me", headers=bob).status_code == 401
+        bob = login(client, "bob", PASSWORD + "-new")
+        assert client.post(f"{endpoint}/bob/disable", headers=admin).status_code == 204
+        assert client.get("/api/auth/me", headers=bob).status_code == 401
+        assert client.post(f"{endpoint}/bob/enable", headers=admin).status_code == 204
+        bob = login(client, "bob", PASSWORD + "-new")
+        assert client.get("/api/auth/me", headers=bob).status_code == 200
+        assert (
+            client.post(f"{endpoint}/owner/disable", headers=admin).status_code == 403
+        )
+        sid = client.post("/api/sessions", headers=alice, json={}).json()["id"]
+        assert client.get(f"/api/sessions/{sid}", headers=admin).status_code == 404

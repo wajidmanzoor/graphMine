@@ -12,6 +12,7 @@ class Principal:
     username: str
     accounts: Any
     session_hash: str | None = None
+    is_admin: bool = False
 
 
 current_principal: ContextVar[Principal | None] = ContextVar(

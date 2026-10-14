@@ -72,7 +72,7 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
             time.sleep(0.05)
         assert server.started
         runtime = app.state.runtime
-        alice = runtime.accounts.create_user("alice", PASSWORD)["id"]
+        alice = runtime.accounts.create_user("alice", PASSWORD, admin=True)["id"]
         runtime.accounts.create_user("bob", PASSWORD)
         with identity_scope(Principal(alice, "alice", runtime.accounts)):
             runtime.database.create_session(
@@ -131,6 +131,23 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
             lambda d: d.find_element(By.CSS_SELECTOR, ".account-name").text == "alice"
         )
 
+        driver.find_element(By.ID, "account-manage-users").click()
+        wait.until(
+            lambda d: "alice" in d.find_element(By.ID, "account-admin-users").text
+        )
+        driver.find_element(By.ID, "account-new-username").send_keys("carol")
+        driver.find_element(By.ID, "account-new-password").send_keys(PASSWORD)
+        driver.find_element(By.ID, "account-create-user").click()
+        wait.until(
+            lambda d: "carol" in d.find_element(By.ID, "account-admin-users").text
+        )
+        assert (
+            driver.find_element(By.ID, "account-new-password").get_attribute("value")
+            == ""
+        )
+        driver.save_screenshot(str(tmp_path / "administrator.png"))
+        driver.find_element(By.CSS_SELECTOR, ".account-admin > button").click()
+
         driver.find_element(By.ID, "account-sign-out").click()
         wait.until(
             lambda d: d.find_element(By.CSS_SELECTOR, ".account-dialog").is_displayed()
@@ -139,6 +156,7 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         wait.until(
             lambda d: d.find_element(By.CSS_SELECTOR, ".account-name").text == "bob"
         )
+        assert not driver.find_element(By.ID, "account-manage-users").is_displayed()
         wait.until(
             lambda d: (
                 "Verification needed" in d.find_element(By.ID, "connection-state").text

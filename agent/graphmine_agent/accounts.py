@@ -89,6 +89,11 @@ class Accounts:
                     key TEXT PRIMARY KEY, started_at REAL NOT NULL, attempts INTEGER NOT NULL
                 );
             """)
+            columns = {row[1] for row in db.execute("PRAGMA table_info(accounts)")}
+            if "role" not in columns:
+                db.execute(
+                    "ALTER TABLE accounts ADD COLUMN role TEXT NOT NULL DEFAULT 'user'"
+                )
 
     @staticmethod
     def username(value):
@@ -99,7 +104,7 @@ class Accounts:
             )
         return value
 
-    def create_user(self, username, password):
+    def create_user(self, username, password, *, admin=False):
         username = self.username(username)
         if not 12 <= len(password) <= 128:
             raise ValueError("Use a password of 12–128 characters.")
@@ -122,21 +127,25 @@ class Accounts:
                     "Account limit reached; increase GRAPHMINE_MAX_ACCOUNTS deliberately."
                 )
             db.execute(
-                "INSERT INTO accounts VALUES (?,?,?,?,0)",
-                (user_id, username, encoded, now),
+                "INSERT INTO accounts(id,username,password_hash,created_at,disabled,role) VALUES (?,?,?,?,0,?)",
+                (user_id, username, encoded, now, "admin" if admin else "user"),
             )
             db.execute(
                 "INSERT INTO quota_buckets(scope,started_at) VALUES (?,?)",
                 (user_id, now),
             )
-        return {"id": user_id, "username": username}
+        return {
+            "id": user_id,
+            "username": username,
+            "role": "admin" if admin else "user",
+        }
 
     def list_users(self):
         with self.database._connect() as db:
             return [
                 dict(row)
                 for row in db.execute(
-                    "SELECT id,username,created_at,disabled FROM accounts ORDER BY username"
+                    "SELECT id,username,created_at,disabled,role FROM accounts ORDER BY username"
                 )
             ]
 
@@ -179,6 +188,14 @@ class Accounts:
             return db.execute(
                 "UPDATE sessions SET owner_id=? WHERE owner_id IS NULL", (row[0],)
             ).rowcount
+
+    def enable(self, username):
+        with self.database._connect() as db:
+            if not db.execute(
+                "UPDATE accounts SET disabled=0 WHERE username=?",
+                (self.username(username),),
+            ).rowcount:
+                raise ValueError("Unknown username.")
 
     def _login_attempt(self, username, address):
         now = self.clock()
@@ -236,7 +253,9 @@ class Accounts:
                 (digest, user["id"], now + self.settings.account_session_seconds, now),
             )
             db.execute("DELETE FROM login_attempts WHERE key=?", ("name:" + username,))
-        return token, Principal(user["id"], username, self, digest)
+        return token, Principal(
+            user["id"], username, self, digest, current["role"] == "admin"
+        )
 
     def authenticate(self, token):
         if not token or len(token) > 256:
@@ -244,22 +263,28 @@ class Accounts:
         digest = hashlib.sha256(token.encode()).hexdigest()
         with self.database._connect() as db:
             row = db.execute(
-                "SELECT a.id,a.username FROM accounts a JOIN account_sessions s ON s.user_id=a.id WHERE s.token_hash=? AND s.expires_at>? AND a.disabled=0",
+                "SELECT a.id,a.username,a.role FROM accounts a JOIN account_sessions s ON s.user_id=a.id WHERE s.token_hash=? AND s.expires_at>? AND a.disabled=0",
                 (digest, self.clock()),
             ).fetchone()
-        return Principal(row["id"], row["username"], self, digest) if row else None
+        return (
+            Principal(row["id"], row["username"], self, digest, row["role"] == "admin")
+            if row
+            else None
+        )
 
     def session_principal(self, session_id):
         with self.database._connect() as db:
             row = db.execute(
-                "SELECT a.id,a.username FROM sessions s JOIN accounts a ON a.id=s.owner_id WHERE s.id=? AND a.disabled=0",
+                "SELECT a.id,a.username,a.role FROM sessions s JOIN accounts a ON a.id=s.owner_id WHERE s.id=? AND a.disabled=0",
                 (session_id,),
             ).fetchone()
         if row is None:
             raise AccountError(
                 "This job has no active account owner.", "account_unavailable", 403
             )
-        return Principal(row["id"], row["username"], self)
+        return Principal(
+            row["id"], row["username"], self, is_admin=row["role"] == "admin"
+        )
 
     def logout(self, principal):
         with self.database._connect() as db:

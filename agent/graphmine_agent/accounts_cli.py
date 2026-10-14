@@ -19,9 +19,15 @@ def add_accounts_parser(subcommands):
         help="the same persistent data root used by the server",
     )
     actions = parser.add_subparsers(dest="account_action", required=True)
-    for name in ("create", "reset-password", "disable", "adopt-legacy"):
+    for name in ("create", "reset-password", "disable", "enable", "adopt-legacy"):
         action = actions.add_parser(name)
         action.add_argument("username")
+        if name == "create":
+            action.add_argument(
+                "--admin",
+                action="store_true",
+                help="allow this account to manage users",
+            )
     actions.add_parser("list")
 
 
@@ -36,7 +42,11 @@ def run_accounts(arguments, settings):
             if password != getpass.getpass("Confirm password: "):
                 raise ValueError("Passwords do not match.")
             if action == "create":
-                result = accounts.create_user(arguments.username, password)
+                result = accounts.create_user(
+                    arguments.username,
+                    password,
+                    admin=getattr(arguments, "admin", False),
+                )
             else:
                 accounts.reset_password(arguments.username, password)
                 result = {
@@ -47,6 +57,9 @@ def run_accounts(arguments, settings):
         elif action == "disable":
             accounts.disable(arguments.username)
             result = {"username": arguments.username, "disabled": True}
+        elif action == "enable":
+            accounts.enable(arguments.username)
+            result = {"username": arguments.username, "disabled": False}
         elif action == "adopt-legacy":
             result = {
                 "username": arguments.username,

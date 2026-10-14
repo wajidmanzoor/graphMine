@@ -1,8 +1,8 @@
 # Accounts and daily limits
 
 Account login is enabled by default for both `/` and `/classic`. You create the
-usernames and passwords on the server; there is **no registration endpoint or
-public signup form**. Each account sees only its own conversations, uploads,
+usernames and passwords through an administrator login or the server console;
+there is **no public registration endpoint or signup form**. Each account sees only its own conversations, uploads,
 jobs, results, workflow examples, history downloads and event streams.
 
 ## Create accounts yourself
@@ -12,12 +12,22 @@ Run these commands from the installed repository, after setting up the existing
 the same persistent database as `deploy/start-agent.sh`.
 
 ```bash
+deploy/manage-accounts.sh create wajid --admin
 deploy/manage-accounts.sh create alice
 deploy/manage-accounts.sh create bob
 deploy/manage-accounts.sh list
 deploy/manage-accounts.sh reset-password alice
 deploy/manage-accounts.sh disable bob
+deploy/manage-accounts.sh enable bob
 ```
+
+The `--admin` flag creates an administrator. After signing in, that account sees
+**Manage users**, where you can create ordinary accounts, reset their passwords,
+and disable or re-enable access. Ordinary users cannot use those controls or
+their API endpoints. Only the local CLI can create another administrator.
+Administrators have the same usage limits and workspace privacy rules as other
+accounts; the administrator role grants account management, not automatic access
+to everyone else's research. The browser prevents you from disabling yourself.
 
 `create` and `reset-password` prompt twice for a password without displaying it.
 Passwords must be 12–128 characters. Usernames are case-insensitive, 3–64

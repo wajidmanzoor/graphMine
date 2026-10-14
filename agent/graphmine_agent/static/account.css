@@ -11,4 +11,10 @@
 .account-name { font-weight: 700; }
 #account-quota { color: #465d68; }
 .account-bar [hidden], #connection-button[hidden], #settings-button[hidden] { display: none; }
+.account-admin { width: min(560px, calc(100vw - 32px)); max-height: 85vh; overflow-y: auto; }
+.account-admin form { margin: 20px 0; padding-top: 12px; border-top: 1px solid #d7e0e5; }
+.account-admin h3 { margin: 8px 0; }
+.account-admin select { width: 100%; padding: 10px; font: inherit; }
+.account-user-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #edf1f3; }
+#account-admin-message { min-height: 1.4em; }
 @media (max-width: 640px) { .account-bar { justify-content: flex-end; gap: 5px 10px; } #account-quota { flex-basis: 100%; order: 3; text-align: right; } .account-dialog { padding: 22px; } }
