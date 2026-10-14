@@ -19,6 +19,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from functools import lru_cache
 
+import httpx
+
 from .identity import AccountError, Principal, current_principal
 
 DAY = 86400
@@ -503,10 +505,27 @@ class Accounts:
             if bucket[field] + amount > limit:
                 label = "Your" if scope == user_id else "The server's shared"
                 reset = bucket["started_at"] + DAY
+                remaining = max(0, limit - bucket[field])
+                message = f"{label} 24-hour {field} allowance has insufficient capacity. It resets at {_stamp(reset)}."
+                details = None
+                if field == "tokens":
+                    message = (
+                        f"This AI request needs room for up to {amount:,} tokens "
+                        f"(input plus maximum output). {label} 24-hour allowance "
+                        f"has {remaining:,} tokens remaining. It resets at {_stamp(reset)}."
+                    )
+                    details = {
+                        "required_tokens": amount,
+                        "remaining_tokens": remaining,
+                        "token_limit": limit,
+                        "scope": "user" if scope == user_id else "server",
+                        "resets_at": _stamp(reset),
+                    }
                 raise AccountError(
-                    f"{label} 24-hour {field} allowance has insufficient capacity. It resets at {_stamp(reset)}.",
+                    message,
                     "daily_" + field + "_limit",
                     retry_after=math.ceil(reset - now),
+                    details=details,
                 )
             periods.append(bucket["started_at"])
         # Values are from the fixed internal field names tokens/jobs, never input.
@@ -517,12 +536,22 @@ class Accounts:
             )
         return periods
 
-    def reserve_tokens(self, user_id, amount):
+    def reserve_tokens(self, user_id, amount, *, lease=None):
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            lease = self._slot(
-                db, user_id, "model", self.settings.max_model_calls, 1, 240
-            )
+            if lease is None:
+                lease = self._slot(
+                    db, user_id, "model", self.settings.max_model_calls, 1, 240
+                )
+            elif not db.execute(
+                "SELECT 1 FROM account_leases WHERE id=? AND user_id=? AND kind='model' AND amount=0 AND expires_at>?",
+                (lease, user_id, self.clock()),
+            ).fetchone():
+                raise AccountError(
+                    "The model request slot expired. Please retry.",
+                    "concurrency_limit",
+                    retry_after=1,
+                )
             user_period, server_period = self._charge(db, user_id, "tokens", amount)
             db.execute(
                 "UPDATE account_leases SET amount=?,user_period=?,server_period=? WHERE id=?",
@@ -610,21 +639,84 @@ class Accounts:
                 self.release(lease)
 
 
+async def _prompt_tokens(client, path, payload):
+    """Count the rendered chat with the configured model's own tokenizer.
+
+    vLLM's /tokenize does no inference. It applies the chat template, including
+    the generation prefix and thinking settings. JSON output schemas constrain
+    decoding; their serialized bytes are not the model's input-token count.
+    Other transports retain the conservative estimate if counting is unavailable.
+    """
+    fallback = len(json_module.dumps(payload, ensure_ascii=False).encode()) + 1024
+    if (
+        path.rstrip("/") != "/chat/completions"
+        or not isinstance(payload.get("model"), str)
+        or not isinstance(payload.get("messages"), list)
+        or not isinstance(getattr(client, "base_url", None), httpx.URL)
+    ):
+        return fallback, "conservative_estimate"
+    request = {
+        key: payload[key]
+        for key in (
+            "model",
+            "messages",
+            "tools",
+            "add_generation_prompt",
+            "continue_final_message",
+            "add_special_tokens",
+            "chat_template",
+        )
+        if key in payload
+    }
+    template = dict(payload.get("chat_template_kwargs") or {})
+    if payload.get("reasoning_effort") is not None:
+        template["reasoning_effort"] = payload["reasoning_effort"]
+        template.setdefault("enable_thinking", payload["reasoning_effort"] != "none")
+    if "documents" in payload:
+        template["documents"] = payload["documents"]
+    if template:
+        request["chat_template_kwargs"] = template
+    base = client.base_url.path.rstrip("/").removesuffix("/v1")
+    url = client.base_url.copy_with(path=base + "/tokenize", query=None, fragment=None)
+    try:
+        response = await client.post(url, json=request, timeout=10.0)
+        if response.is_success:
+            count = response.json().get("count")
+            if type(count) is int and 0 <= count <= 10_000_000:
+                return count, "model_tokenizer"
+    except (httpx.HTTPError, ValueError, TypeError, AttributeError):
+        pass
+    return fallback, "conservative_estimate"
+
+
 async def model_post(client, path, *, json, max_tokens=None):
     """Meter every real transport attempt, including repair calls and retries."""
     principal = current_principal.get()
     if principal is None:
         return await client.post(path, json=json)
-    # UTF-8 bytes plus template headroom is deliberately conservative. Settle
-    # against prompt + completion usage (including cached/reasoning tokens).
+    # Count before inference, then reserve the actual prompt plus maximum output.
+    # The model slot bounds both tokenization and inference across all users.
     output = max_tokens or json.get(
         "max_completion_tokens", json.get("max_tokens", 3072)
     )
-    encoded = json_module.dumps(json, ensure_ascii=False).encode()
-    reserved = len(encoded) + 1024 + output
-    lease = principal.accounts.reserve_tokens(principal.user_id, reserved)
+    lease = principal.accounts.acquire(
+        principal.user_id, "model", principal.accounts.settings.max_model_calls, ttl=240
+    )
+    reserved = False
     used = None
     try:
+        prompt, method = await _prompt_tokens(client, path, json)
+        try:
+            principal.accounts.reserve_tokens(
+                principal.user_id, prompt + output, lease=lease
+            )
+        except AccountError as error:
+            if error.details is not None:
+                error.details.update(
+                    prompt_tokens=prompt, max_output_tokens=output, count_method=method
+                )
+            raise
+        reserved = True
         async with asyncio.timeout(180):
             response = await client.post(path, json=json)
         if response.is_success:
@@ -647,4 +739,7 @@ async def model_post(client, path, *, json, max_tokens=None):
                 pass
         return response
     finally:
-        principal.accounts.settle_tokens(lease, used)
+        if reserved:
+            principal.accounts.settle_tokens(lease, used)
+        else:
+            principal.accounts.release(lease)

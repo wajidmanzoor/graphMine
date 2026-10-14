@@ -30,7 +30,10 @@ def identity_scope(principal):
 
 
 class AccountError(Exception):
-    def __init__(self, message, code="account_error", status=429, retry_after=0):
+    def __init__(
+        self, message, code="account_error", status=429, retry_after=0, details=None
+    ):
         super().__init__(message)
         self.code, self.status = code, status
         self.retry_after = max(0, int(retry_after))
+        self.details = details

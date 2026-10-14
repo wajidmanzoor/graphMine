@@ -111,13 +111,21 @@ also retain its configured context length, sequence and GPU memory limits.
 ## How the 24-hour token allowance works
 
 Input and generated tokens both count, including routing, planning,
-interpretation and repair/retry requests in either workspace. The API reserves a
-conservative amount before every model request: serialized UTF-8 request bytes,
-template headroom, and the maximum completion allowance. A successful response
+interpretation and repair/retry requests in either workspace. Before each chat
+request, the API asks the configured model server's `/tokenize` endpoint to count
+the rendered prompt with the same chat and thinking settings. It reserves those
+input tokens plus the maximum completion allowance, rather than treating the
+request's JSON bytes (including its output schema) as tokens. Token counting does
+not run inference and shares the same concurrency limit as model calls.
+Transports without a compatible tokenizer retain the conservative byte estimate
+and template headroom. A successful response
 with valid usage settles the reservation to the reported token count. Errors,
 timeouts, cancellations or missing usage retain the reservation because actual
-work cannot be established. Thus a long prompt can be rejected even if some
-tokens remain; model servers that omit usage exhaust budgets sooner.
+work cannot be established. A long prompt can still be rejected when its input
+plus maximum output exceeds the remaining allowance. The error reports the
+required reservation, remaining tokens, reset time, and whether the user or
+shared server limit was reached. A job can make several model calls; each is
+counted separately. Model servers that omit usage exhaust budgets sooner.
 
 Counters are stored in SQLite and reservations are atomic. Concurrent requests,
 restarting the API, signing out and resetting a password do not restore tokens.

@@ -1,7 +1,9 @@
 import asyncio
 import hashlib
+import json
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import httpx
@@ -403,6 +405,10 @@ def test_quota_http_errors_do_not_invoke_model(account_settings):
         response = client.post("/api/test-model", headers=login(client))
         assert response.status_code == 429
         assert response.json()["error"]["code"] == "daily_tokens_limit"
+        details = response.json()["error"]["details"]
+        assert details["remaining_tokens"] == 100
+        assert details["required_tokens"] > 100
+        assert details["count_method"] == "conservative_estimate"
         assert int(response.headers["Retry-After"]) > 0
         transport.post.assert_not_called()
 
@@ -920,3 +926,199 @@ def test_change_own_password_requires_current_password_and_revokes_logins(
             client.get("/api/auth/me", headers=fresh).json()["quota"]["tokens_used"]
             == 250
         )
+
+
+@pytest.mark.asyncio
+async def test_large_schema_uses_tokenizer_not_request_bytes(account_settings):
+    accounts, _ = store(account_settings)
+    accounts.settle_tokens(accounts.reserve_tokens("alice", 8000), 7814)
+    payload = {
+        "model": "graphmine-planner-v2",
+        "messages": [
+            {"role": "user", "content": "Find groups of closely related characters."}
+        ],
+        "max_completion_tokens": 3072,
+        "reasoning_effort": "none",
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {"schema": {"description": "schema metadata " * 8000}},
+        },
+    }
+    paths = []
+
+    def respond(request):
+        paths.append(request.url.path)
+        body = json.loads(request.content)
+        if request.url.path == "/tokenize":
+            assert body["messages"] == payload["messages"]
+            assert body["chat_template_kwargs"] == {
+                "reasoning_effort": "none",
+                "enable_thinking": False,
+            }
+            assert "response_format" not in body
+            assert accounts.usage("alice")["tokens_used"] == 7814
+            return httpx.Response(200, json={"count": 8192})
+        assert body == payload
+        assert accounts.usage("alice")["tokens_used"] == 7814 + 8192 + 3072
+        return httpx.Response(
+            200, json={"usage": {"prompt_tokens": 8192, "completion_tokens": 8}}
+        )
+
+    async with httpx.AsyncClient(
+        base_url="http://model.test/v1", transport=httpx.MockTransport(respond)
+    ) as client:
+        with identity_scope(Principal("alice", "alice", accounts)):
+            await model_post(client, "/chat/completions", json=payload)
+    assert paths == ["/tokenize", "/v1/chat/completions"]
+    assert accounts.usage("alice")["tokens_used"] == 16014
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("scope", ["user", "server"])
+async def test_exact_count_still_enforces_limits_and_explains_required_tokens(
+    account_settings, scope
+):
+    settings = replace(
+        account_settings,
+        account_daily_tokens=1000 if scope == "user" else 5000,
+        server_daily_tokens=1000,
+    )
+    accounts, database = store(settings)
+    paths = []
+
+    def respond(request):
+        paths.append(request.url.path)
+        assert request.url.path == "/tokenize"
+        return httpx.Response(200, json={"count": 1200})
+
+    async with httpx.AsyncClient(
+        base_url="http://model.test/v1", transport=httpx.MockTransport(respond)
+    ) as client:
+        with (
+            identity_scope(Principal("alice", "alice", accounts)),
+            pytest.raises(AccountError) as failure,
+        ):
+            await model_post(
+                client,
+                "/chat/completions",
+                json={"model": "test", "messages": [], "max_completion_tokens": 100},
+            )
+    assert paths == ["/tokenize"]
+    assert "1,300" in str(failure.value) and "1,000" in str(failure.value)
+    assert failure.value.details["required_tokens"] == 1300
+    assert failure.value.details["remaining_tokens"] == 1000
+    assert failure.value.details["scope"] == scope
+    assert failure.value.details["count_method"] == "model_tokenizer"
+    assert accounts.usage("alice")["tokens_used"] == 0
+    with database._connect() as db:
+        assert (
+            db.execute(
+                "SELECT count(*) FROM account_leases WHERE kind='model'"
+            ).fetchone()[0]
+            == 0
+        )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "tokenizer_reply", [None, {"count": True}, {"count": -1}, {"count": "10"}]
+)
+async def test_unsupported_or_invalid_tokenizer_keeps_conservative_reservation(
+    account_settings, tokenizer_reply
+):
+    accounts, _ = store(account_settings)
+    payload = {
+        "model": "test",
+        "messages": [{"role": "user", "content": "hello"}],
+        "max_completion_tokens": 100,
+    }
+    fallback = len(json.dumps(payload, ensure_ascii=False).encode()) + 1024 + 100
+
+    def respond(request):
+        if request.url.path == "/tokenize":
+            return httpx.Response(
+                200 if tokenizer_reply is not None else 404, json=tokenizer_reply
+            )
+        assert accounts.usage("alice")["tokens_used"] == fallback
+        return httpx.Response(200, json={"choices": []})
+
+    async with httpx.AsyncClient(
+        base_url="http://model.test/v1", transport=httpx.MockTransport(respond)
+    ) as client:
+        with identity_scope(Principal("alice", "alice", accounts)):
+            await model_post(client, "/chat/completions", json=payload)
+    assert accounts.usage("alice")["tokens_used"] == fallback
+
+
+@pytest.mark.asyncio
+async def test_tokenizer_cancellation_releases_slot_without_charging(account_settings):
+    accounts, database = store(account_settings)
+
+    async def respond(request):
+        assert request.url.path == "/prefix/tokenize"
+        body = json.loads(request.content)
+        assert body["chat_template_kwargs"] == {
+            "reasoning_effort": "high",
+            "enable_thinking": False,
+        }
+        raise asyncio.CancelledError
+
+    async with httpx.AsyncClient(
+        base_url="http://model.test/prefix/v1", transport=httpx.MockTransport(respond)
+    ) as client:
+        with (
+            identity_scope(Principal("alice", "alice", accounts)),
+            pytest.raises(asyncio.CancelledError),
+        ):
+            await model_post(
+                client,
+                "/chat/completions",
+                json={
+                    "model": "test",
+                    "messages": [],
+                    "reasoning_effort": "high",
+                    "chat_template_kwargs": {"enable_thinking": False},
+                },
+            )
+    assert accounts.usage("alice")["tokens_used"] == 0
+    with database._connect() as db:
+        assert (
+            db.execute(
+                "SELECT count(*) FROM account_leases WHERE kind='model'"
+            ).fetchone()[0]
+            == 0
+        )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("quota_error", [True, False])
+async def test_planning_history_keeps_quota_explanation_but_hides_internal_errors(
+    account_settings, quota_error
+):
+    from graphmine_agent.analytics_planning import AnalyticsPlanner, PlanningRequest
+    from graphmine_agent.jobs import EventBus
+
+    database = Database(account_settings.database_path)
+    session = database.create_session(SessionRecord(domain_id="general"))
+    planner = AnalyticsPlanner(
+        account_settings, SimpleNamespace(database=database), EventBus(database)
+    )
+    explanation = "This request needs 6,204 tokens, but only 1,000 remain."
+    error = (
+        AccountError(explanation, "daily_tokens_limit")
+        if quota_error
+        else RuntimeError("private internal path")
+    )
+    planner._plan = AsyncMock(side_effect=error)
+    with pytest.raises(type(error)):
+        await planner.plan(
+            session.id,
+            PlanningRequest(
+                message="Find groups", inputs={"main": {"file_id": "placeholder"}}
+            ),
+        )
+    saved = database.events(session.id)[-1].payload
+    assert saved["status"] == "failed"
+    assert saved["message"] == (
+        explanation if quota_error else "Planning failed. Please try again."
+    )

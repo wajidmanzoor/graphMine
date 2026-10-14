@@ -19,7 +19,13 @@ COOKIE = "graphmine_session"
 def account_response(error):
     return JSONResponse(
         status_code=error.status,
-        content={"error": {"code": error.code, "message": str(error)}},
+        content={
+            "error": {
+                "code": error.code,
+                "message": str(error),
+                **({"details": error.details} if error.details is not None else {}),
+            }
+        },
         headers={
             "Cache-Control": "no-store",
             **({"Retry-After": str(error.retry_after)} if error.retry_after else {}),

@@ -14,6 +14,7 @@ import jsonschema
 from pydantic import BaseModel, ConfigDict, Field
 
 from .analytics import AnalyticsError, InputReference
+from .identity import AccountError
 
 # Presentation/routing groups over the library's mathematical modules. Every
 # executable operation must belong to exactly one group; nothing is guessed.
@@ -631,7 +632,7 @@ class AnalyticsPlanner:
                     "role": "assistant",
                     "status": "failed",
                     "message": str(exc)
-                    if isinstance(exc, AnalyticsError)
+                    if isinstance(exc, (AnalyticsError, AccountError))
                     else "Planning failed. Please try again.",
                     "evaluation_id": body.evaluation_id,
                 },
