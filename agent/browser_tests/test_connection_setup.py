@@ -19,6 +19,7 @@ def open_connections(browser):
             "return GraphMineWorkspace.state.session && !GraphMineWorkspace.state.busy"
         )
     )
+    driver.find_element(By.ID, "toggle-data").click()
     driver.find_element(By.ID, "open-connectors").click()
     wait.until(lambda d: d.find_element(By.ID, "connector-dialog").is_displayed())
     driver.find_element(By.ID, "add-connection").click()

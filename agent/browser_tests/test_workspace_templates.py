@@ -44,6 +44,7 @@ def test_template_parameter_edit_and_review(loading_browser, loading_server):
 
     server.post_handler = post
     open_saved(browser, server)
+    browser.find_element(By.ID, "toggle-data").click()
     browser.find_element(By.ID, "open-templates").click()
     wait_for(browser, "document.querySelector('#templates-dialog')?.open")
     Select(browser.find_element(By.ID, "template-choice")).select_by_value("recipe")
@@ -93,6 +94,7 @@ def test_csv_preview_requires_explicit_import(
 
     server.post_handler = post
     open_saved(browser, server)
+    browser.find_element(By.ID, "toggle-data").click()
     browser.find_element(By.ID, "data-upload").send_keys(str(path))
     wait_for(browser, "document.querySelector('#confirm-import')?.disabled === false")
     assert not any(route.endswith("/files") for _, route, _ in server.requests)

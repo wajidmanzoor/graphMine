@@ -60,6 +60,7 @@ def test_gpu_first_picker_and_quality_are_independent(
     browser.get(server.url + "/#workspace/saved-session/chat")
     wait_for(browser, "GraphMineWorkspace.state.caps && !GraphMineWorkspace.state.busy")
     browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
+    browser.find_element(By.ID, "toggle-data").click()
     browser.execute_script(
         "document.getElementById('operation-form').closest('details').open = true"
     )

@@ -171,6 +171,7 @@ def test_all_questions_reasoning_retries_and_validation_survive_reload(
                 browser,
                 "GraphMineWorkspace.state.result && !GraphMineWorkspace.state.busy",
             )
+        browser.find_element(By.ID, "toggle-activity").click()
         assert browser.find_element(By.ID, "reasoning-count").text == "7"
         assert (
             len(
@@ -808,6 +809,7 @@ def test_conversation_can_be_renamed_and_deleted(loading_browser, loading_server
     browser.execute_script(
         "window.prompt = () => 'Renamed study'; window.confirm = () => true;"
     )
+    browser.find_element(By.ID, "toggle-data").click()
     browser.find_element(By.CSS_SELECTOR, ".sidebar-disclosure > summary").click()
     browser.find_element(By.ID, "rename-session").click()
     wait_for(browser, "!GraphMineWorkspace.state.busy")

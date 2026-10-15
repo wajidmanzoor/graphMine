@@ -93,6 +93,8 @@ def loading_server():
         post_handler=None,
         event_times=[],
         requests=[],
+        domains=[{"id": "general", "name": "General", "description": "Explore a network"}],
+        sessions=[SESSION],
         group_graph=None,
         group_requests=[],
         port_requests=[],
@@ -131,17 +133,9 @@ def loading_server():
                 )
                 response.finished.set()
             elif path == "/api/domains":
-                self.respond(
-                    [
-                        {
-                            "id": "general",
-                            "name": "General",
-                            "description": "Explore a network",
-                        }
-                    ]
-                )
+                self.respond(state.domains)
             elif path == "/api/sessions":
-                self.respond([SESSION])
+                self.respond(state.sessions)
             elif path == "/api/datasets":
                 self.respond(state.datasets)
             elif path == "/api/workflow-templates":
@@ -265,6 +259,7 @@ def loading_browser():
         pytest.skip("Firefox and geckodriver are required for the browser gate")
     options = Options()
     options.add_argument("-headless")
+    options.enable_bidi = True
     options.binary_location = str(root / "firefox")
     driver = webdriver.Firefox(
         options=options, service=Service(executable_path=str(root / "geckodriver"))

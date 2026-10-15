@@ -1,14 +1,19 @@
 # Native analysis workspace
 
-The browser at `/` shows saved conversations first, followed by the domain
-picker for a new chat. The selected domain is saved with the conversation and supplies
+The browser at `/` keeps searchable conversation history in a collapsible left
+sidebar and a domain picker in the main area. **Explore all domains** reveals
+the remaining starting points. The selected domain is saved with the conversation and supplies
 vocabulary to the planner. Questions, clarification replies, planning decisions
 and model-returned reasoning are saved as authenticated workspace events.
 Follow-ups receive bounded conversation context; evaluation requests exclude it.
 The task-family picker is removed from the UI; the planner's routing call sees
 operations grouped by family.
 
-Chat provides three modes over the same validated workflow API.
+The workspace keeps Kashmiri flag green and yellow as its brand colors: green
+for primary actions and focus indicators, with yellow highlights for navigation,
+the selected mode and conversation accents.
+
+The message composer provides three modes over the same validated workflow API.
 Normal runs a validated plan immediately. Interactive saves it for inspection
 and explicit approval. Expert accepts an explicit JSON workflow and also
 requires review before execution. Editing increments the revision and
@@ -42,7 +47,8 @@ runs and the full text is kept when it finishes; the UI never fabricates numeric
 Each question has a request ID. If its HTTP reply is lost, the browser retrieves
 the saved planning outcome from authenticated events without repeating model
 generation. A saved plan retains its original input files and mode for recovery.
-The sidebar shows one timeline per question: its stages, then a collapsible copy of the model's reasoning for that question.
+**Activity** in the conversation header opens a drawer with one timeline per
+question: its stages, then a collapsible copy of the model's reasoning for that question.
 Understanding, operation selection, plan attempts, and validation outcomes appear
 below it, including failed validation and repairs. New planning events retain the
 proposed plan; older saved workflows supply their validated plan. A follow-up is
@@ -72,9 +78,14 @@ mode, so the user reviews the changed plan before execution. When no smaller
 graph is available, the narrowing dialog offers an upload. Known vertex and
 edge counts exclude replacements that are larger in either dimension.
 
-Conversation management and saved analyses are collapsed in the data sidebar.
-On phones, **Data & chats** opens the sidebar from the conversation header;
-the composer stays ahead of data controls and activity in page order.
+**Data & tools** in the conversation header, or **+** in the composer, opens
+uploads, the dataset library, compute settings, conversation management and
+saved analyses. New conversations offer sample data and editable question
+suggestions. The data and activity drawers close with Escape or their close
+button and return keyboard focus to the control that opened them.
+On phones, the sidebar button opens conversation history while the composer
+stays at the bottom of the chat viewport. Desktop sidebar visibility is saved
+in the browser; Ctrl/Cmd+K focuses conversation search.
 
 Before an expensive run (an exact search on more than 5,000 connections, or one
 similar to past runs that took over two minutes), even Normal mode shows the

@@ -118,7 +118,7 @@
     if (mode === "expert" && !$("plan-editor").value) loadEditor();
   }
   function updateControls() {
-    const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "data-upload", "new-session", "session-select", "active-input", "active-kind", "device"];
+    const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "welcome-sample", "data-upload", "new-session", "nav-new-chat", "session-select", "active-input", "active-kind", "device"];
     controls.forEach(id => $(id).disabled = state.busy);
     document.querySelectorAll("[data-mode]").forEach(button => button.disabled = state.busy);
     ["plan-question", "use-operation", "save-editor", "operation-select", "device", "approve-plan"].forEach(id => $(id).disabled = state.busy || !state.caps);
@@ -140,6 +140,7 @@
   }
   function showPage(page) {
     state.view = page;
+    window.GraphMineShell.setView(page);
     $("domain-view").hidden = page !== "domains";
     $("workspace-view").hidden = page !== "chat";
     $("results-view").hidden = page !== "results";
@@ -171,7 +172,7 @@
     const glyphs = ["◇", "↗", "◎", "⌘", "◈", "⟷", "◉", "✧"];
     $("domain-grid").replaceChildren();
     state.domains.forEach((domain, index) => {
-      const button = node("button", {class: "domain-card", "data-domain": domain.id});
+      const button = node("button", {class: "domain-card", "data-domain": domain.id, hidden: index >= 6});
       button.append(node("span", {class: "domain-icon", "aria-hidden": "true"}, glyphs[index % glyphs.length]), node("strong", {}, domain.name), node("span", {}, domain.description));
       button.addEventListener("click", () => runAction(async () => {
         const session = await api("/api/sessions", {method: "POST", body: W.stringify({domain_id: domain.id, title: $("session-name").value.trim() || `${domain.name} conversation`})});
@@ -179,6 +180,9 @@
       }));
       $("domain-grid").append(button);
     });
+    $("show-all-domains").hidden = state.domains.length <= 6;
+    $("show-all-domains").textContent = "Explore all domains ↓";
+    $("show-all-domains").setAttribute("aria-expanded", "false");
   }
   async function loadSessions() {
     state.sessions = await api("/api/sessions?limit=100");
@@ -193,7 +197,7 @@
       const name = session.title || "Untitled conversation";
       if (!session.archived || session.id === state.session?.id) $("session-select").append(node("option", {value: session.id}, name));
       if (session.archived && !archived || query && !name.toLowerCase().includes(query)) continue;
-      const link = node("a", {class: "recent-session", href: `#workspace/${encodeURIComponent(session.id)}/chat`});
+      const link = node("a", {class: "recent-session", href: `#workspace/${encodeURIComponent(session.id)}/chat`, "aria-current": session.id === state.session?.id ? "page" : "false", title: name});
       const domain = state.domains.find(row => row.id === session.domain_id);
       link.append(node("strong", {}, name + (session.archived ? " (archived)" : "")), node("span", {}, domain?.name || session.domain_id), node("span", {"aria-hidden": "true"}, "→"));
       $("recent-sessions").append(link);
@@ -293,9 +297,6 @@
     const atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90 || messageBottom >= viewport.top && messageBottom <= viewport.bottom + 90;
     const openDetails = new Set([...$("messages").querySelectorAll("details[open]")].map(el => el.dataset.turn));
     const container = $("messages"); container.replaceChildren();
-    const domain = state.domains.find(row => row.id === state.session?.domain_id);
-    const greeting = messageElement("assistant", `Let's explore ${domain ? domain.name.toLowerCase() : "your network"}. Upload your data and ask a question in your own words. I'll explain the plan and help you work through the findings.`, "GraphMine");
-    container.append(greeting.article);
     for (const row of state.legacyMessages) if (row.message) container.append(messageElement(row.role === "user" ? "user" : "assistant", row.message).article);
     const chats = state.events.filter(event => event.type === "workflow.chat" && !event.payload.evaluation_id);
     for (const event of chats) {
@@ -359,7 +360,10 @@
       if (state.pendingQuestion.unconfirmed) item.bubble.append(node("small", {}, "Waiting to confirm this message with the server."));
       container.append(item.article);
     }
-    if (state.planning || chats.at(-1)?.payload.role === "user") container.append(messageElement("assistant", "Working through your question… Follow the reasoning and activity alongside this conversation.", "GraphMine").article);
+    if (state.planning || chats.at(-1)?.payload.role === "user") container.append(messageElement("assistant", "Working through your question… Open Activity to follow the progress.", "GraphMine").article);
+    $("chat-welcome").hidden = Boolean(container.children.length);
+    $("chat-content").classList.toggle("is-empty", !container.children.length);
+    window.GraphMineShell.resizeComposer();
     const chatKey = state.pendingQuestion?.id || chats.at(-1)?.sequence;
     const newMessage = chatKey !== state.lastChatKey;
     state.lastChatKey = chatKey;
@@ -496,6 +500,9 @@
     $("input-aliases").replaceChildren();
     for (const [alias, value] of Object.entries(refs())) $("input-aliases").append(node("span", {}, `${alias}: ${value.kind}`));
     const f = activeFile();
+    $("welcome-heading").textContent = f ? "Your data. New perspectives." : "Follow your curiosity.";
+    $("chat-welcome").querySelector(":scope > p").textContent = f ? `${f.original_name} is ready. What would you like to explore?` : "Add your data, then ask a question. We’ll work through the connections together.";
+    $("welcome-data-label").textContent = f ? "Manage your data" : "Add your data";
     $("active-kind-label").hidden = f?.role !== "attachment";
     $("active-kind").value = state.kinds[state.active] || "graph";
     $("data-summary").textContent = f ? (state.kinds[f.id] === "graph" ? `${f.original_name} · ${f.metadata?.vertex_count ?? "?"} vertices · ${f.metadata?.edge_count ?? "?"} connections. The calculation uses the full input.` : `${f.original_name} · ${title(state.kinds[f.id] || "input")}. The calculation uses the full input.`) : "Your analysis uses the full uploaded input.";
@@ -576,6 +583,7 @@
     let path = `/api/sessions/${state.session.id}/workflows`;
     if (revise && state.record) { path = `/api/workflows/${state.record.id}/revise`; body.expected_revision = state.record.revision; }
     const result = await api(path, {method: "POST", body: W.stringify(body)});
+    setDataOpen(false);
     state.record = result; setMode(result.mode); if (result.input_files.main) { state.active = result.input_files.main.file_id; renderFiles(); } clearResults(result.status === "queued" ? "The calculation is queued; no new result has been produced." : "This plan is awaiting execution; no new result has been produced."); renderWorkflow(); await loadSaved();
     if (state.view === "chat") $("workflow-panel").scrollIntoView({behavior: "smooth", block: "nearest"});
     notice(result.status === "queued" ? "The validated workflow is queued." : "Your plan is ready to review. Execution has not started.");
@@ -787,8 +795,7 @@
     $("workflow-heading").textContent = running ? "Your analysis is running" : record.status === "completed" ? "Analysis complete" : "Review the steps";
   }
   function setDataOpen(open) {
-    $("data-sidebar").classList.toggle("mobile-open", open);
-    $("toggle-data").setAttribute("aria-expanded", String(open));
+    window.GraphMineShell.setPanel("data", open);
   }
   function renderNarrowInputs() {
     const recovery = state.recovery, alias = $("narrow-alias").value;
@@ -1341,10 +1348,16 @@
   $("close-connection").addEventListener("click", () => $("connection-dialog").close());
   $("connection-form").addEventListener("submit", event => { event.preventDefault(); state.base = $("api-base").value.trim().replace(/\/$/, ""); state.token = $("api-token").value.trim(); save("graphmine.apiBase", state.base); save("graphmine.apiToken", state.token); $("connection-dialog").close(); runAction(() => connect(true)); });
   $("new-session").addEventListener("click", () => { location.hash = ""; });
+  $("nav-new-chat").addEventListener("click", () => { if (!state.busy) { location.hash = ""; window.GraphMineShell.setView("domains"); } });
+  $("show-all-domains").addEventListener("click", () => {
+    const expanded = $("show-all-domains").getAttribute("aria-expanded") !== "true";
+    $("show-all-domains").setAttribute("aria-expanded", String(expanded));
+    $("show-all-domains").textContent = expanded ? "Show fewer domains ↑" : "Explore all domains ↓";
+    $("domain-grid").querySelectorAll(".domain-card").forEach((button, index) => { button.hidden = !expanded && index >= 6; });
+  });
   $("toggle-data").addEventListener("click", () => {
     const open = $("toggle-data").getAttribute("aria-expanded") !== "true";
     setDataOpen(open);
-    if (open) $("data-sidebar").scrollIntoView({block: "start", behavior: "smooth"});
   });
   $("adjust-parameters").addEventListener("click", () => {
     const editors = [...$("workflow-steps").querySelectorAll("[data-parameter-editor]")];

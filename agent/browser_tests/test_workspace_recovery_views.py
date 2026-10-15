@@ -122,14 +122,15 @@ def test_mobile_conversation_has_explicit_data_navigation(
     assert browser.find_element(By.ID, "data-sidebar").is_displayed()
 
 
-def test_home_prioritizes_saved_conversations(loading_browser, loading_server):
+def test_home_keeps_saved_conversations_in_the_sidebar(loading_browser, loading_server):
     browser, server = loading_browser, loading_server
     server.responses[0].release.set()
     browser.get(server.url)
     wait_for(browser, "document.querySelector('#recent-sessions a') !== null")
     assert browser.execute_script("""
-        return document.getElementById('recent-section').getBoundingClientRect().bottom
-            <= document.getElementById('domain-heading').getBoundingClientRect().top;
+        const history = document.getElementById('recent-section').getBoundingClientRect();
+        const home = document.getElementById('domain-view').getBoundingClientRect();
+        return history.right <= home.left && history.top >= 0 && history.bottom <= innerHeight;
     """)
     browser.find_element(By.CSS_SELECTOR, "#recent-sessions a").click()
     wait_for(browser, "GraphMineWorkspace.state.session?.id === 'saved-session'")

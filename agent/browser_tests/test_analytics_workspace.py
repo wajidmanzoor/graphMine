@@ -282,6 +282,9 @@ def typed_graph():
 
 
 def chat(browser):
+    for selector in ["#data-sidebar", "#activity-sidebar"]:
+        if browser.find_element(By.CSS_SELECTOR, selector).is_displayed():
+            browser.find_element(By.CSS_SELECTOR, selector + " [data-close-panel]").click()
     if not browser.find_element(By.ID, "workspace-view").is_displayed():
         browser.find_element(By.ID, "chat-page-link").click()
         WebDriverWait(browser, 15).until(
@@ -291,6 +294,7 @@ def chat(browser):
 
 def manual(browser):
     chat(browser)
+    browser.find_element(By.ID, "toggle-data").click()
     tools = browser.find_element(By.ID, "manual-tools")
     if not tools.get_attribute("open"):
         tools.find_element(By.TAG_NAME, "summary").click()
@@ -299,13 +303,16 @@ def manual(browser):
 
 def choose_device(browser, value):
     chat(browser)
+    browser.find_element(By.ID, "toggle-data").click()
     if not browser.find_element(By.ID, "device").is_displayed():
         browser.find_element(By.CSS_SELECTOR, ".advanced-data summary").click()
     Select(browser.find_element(By.ID, "device")).select_by_value(value)
+    browser.find_element(By.CSS_SELECTOR, "#data-sidebar [data-close-panel]").click()
 
 
 def upload(browser, tmp_path, graph=None, kind="graph"):
     chat(browser)
+    browser.find_element(By.ID, "toggle-data").click()
     before = browser.execute_script(
         "return window.GraphMineWorkspace.state.files.length"
     )
@@ -341,6 +348,7 @@ def status(browser, expected):
 
 def done(browser):
     status(browser, "completed")
+    chat(browser)
     WebDriverWait(browser, 15).until(
         lambda d: d.execute_script("return !!window.GraphMineWorkspace.state.port")
     )
@@ -672,7 +680,7 @@ def test_normal_mode_paging_outside_preview_and_fixed_renderers(browser, tmp_pat
         "return Array.from(document.scripts).map(s=>s.src).every(s=>!s.includes('vega'))"
     )
     chat(browser)
-    browser.find_element(By.ID, "new-session").click()
+    browser.find_element(By.ID, "nav-new-chat").click()
     WebDriverWait(browser, 10).until(
         lambda d: d.execute_script(
             "return window.GraphMineWorkspace.state.session===null"
@@ -1064,6 +1072,7 @@ def test_question_uses_routing_then_plan_then_real_calculation(
     done(browser)
     assert authored_model_transport[1][start:] == ["route", "plan"]
     chat(browser)
+    browser.find_element(By.ID, "toggle-activity").click()
     assert (
         "Understanding your question"
         in browser.find_element(By.ID, "activity-list").text
@@ -1072,6 +1081,7 @@ def test_question_uses_routing_then_plan_then_real_calculation(
         "How many three-way connections" in browser.find_element(By.ID, "messages").text
     )
     assert browser.find_element(By.ID, "reasoning-count").text == "2"
+    browser.find_element(By.CSS_SELECTOR, "#activity-sidebar [data-close-panel]").click()
     browser.find_element(By.ID, "results-page-link").click()
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.port.value") == 1
@@ -1087,11 +1097,12 @@ def test_question_uses_routing_then_plan_then_real_calculation(
 def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
     browser, tmp_path, authored_model_transport
 ):
-    browser.find_element(By.ID, "new-session").click()
+    browser.find_element(By.ID, "nav-new-chat").click()
     WebDriverWait(browser, 10).until(
         lambda d: d.find_element(By.ID, "domain-view").is_displayed()
     )
     assert not browser.find_element(By.ID, "workspace-view").is_displayed()
+    browser.find_element(By.CSS_SELECTOR, ".conversation-options summary").click()
     browser.find_element(By.ID, "session-name").send_keys("Account network review")
     browser.find_element(By.CSS_SELECTOR, '[data-domain="fraud_detection"]').click()
     WebDriverWait(browser, 15).until(
@@ -1099,9 +1110,10 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
             "return window.GraphMineWorkspace.state.session?.domain_id === 'fraud_detection' && !window.GraphMineWorkspace.state.busy"
         )
     )
-    assert "Fraud" in browser.find_element(By.ID, "active-domain").text
+    assert "fraud" in browser.find_element(By.ID, "chat-domain-label").text.lower()
     assert not browser.find_elements(By.CSS_SELECTOR, "[data-family], #family-cards")
     upload(browser, tmp_path)
+    chat(browser)
     start = len(authored_model_transport[2])
     question = "Count triangles in these accounts."
     # Lose the response after the real server has accepted and planned the turn.
@@ -1119,6 +1131,7 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
     """)
     browser.find_element(By.ID, "question").send_keys(question, Keys.ENTER)
     status(browser, "completed")
+    browser.find_element(By.ID, "toggle-activity").click()
     WebDriverWait(browser, 15).until(
         lambda d: d.find_element(By.ID, "reasoning-count").text == "2"
     )
@@ -1156,6 +1169,7 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
     ).click()
     assert "Authored reasoning" in browser.find_element(By.ID, "activity-list").text
     capture(browser, "domain-chat-reasoning.png")
+    browser.find_element(By.CSS_SELECTOR, "#activity-sidebar [data-close-panel]").click()
     link = browser.find_element(By.CSS_SELECTOR, "#messages .result-link")
     link.click()
     WebDriverWait(browser, 15).until(
@@ -1179,7 +1193,9 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
         lambda d: d.find_element(By.ID, "workspace-view").is_displayed()
     )
     assert question in browser.find_element(By.ID, "messages").text
+    browser.find_element(By.ID, "toggle-activity").click()
     assert browser.find_element(By.ID, "reasoning-count").text == "2"
+    browser.find_element(By.CSS_SELECTOR, "#activity-sidebar [data-close-panel]").click()
     assert (
         browser.execute_script(
             "return window.GraphMineWorkspace.state.session.domain_id"
@@ -1199,6 +1215,7 @@ def test_explicit_example_review_does_not_approve_a_successful_run_automatically
     browser, tmp_path
 ):
     upload(browser, tmp_path)
+    chat(browser)
     browser.find_element(By.ID, "question").send_keys("Count triangles in this graph")
     browser.find_element(By.ID, "plan-question").click()
     done(browser)
@@ -1221,6 +1238,7 @@ def test_explicit_example_review_does_not_approve_a_successful_run_automatically
 def test_native_csv_projection_preserves_ids_and_computes_in_browser(browser, tmp_path):
     table = tmp_path / "transfers.csv"
     table.write_text("sender,recipient,capacity\n001,002,4\n001,002,5\n002,003,2\n")
+    browser.find_element(By.ID, "toggle-data").click()
     browser.find_element(By.ID, "open-projection").click()
     browser.find_element(By.ID, "table-upload").send_keys(str(table))
     WebDriverWait(browser, 30).until(

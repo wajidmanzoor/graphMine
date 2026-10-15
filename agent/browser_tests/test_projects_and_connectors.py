@@ -157,6 +157,7 @@ def test_project_publish_annotations_views_and_link_revocation(collaboration_bro
             "return GraphMineWorkspace.state.active && !GraphMineWorkspace.state.busy"
         )
     )
+    driver.find_element(By.ID, "toggle-data").click()
     driver.find_element(By.ID, "share-project-input").click()
     wait.until(lambda d: d.find_element(By.ID, "publish-project").is_displayed())
     driver.find_element(By.CSS_SELECTOR, "#publish-project .primary").click()
@@ -225,6 +226,7 @@ def test_connector_preview_save_and_use_flow(collaboration_browser):
             "return GraphMineWorkspace.state.session && !GraphMineWorkspace.state.busy"
         )
     )
+    driver.find_element(By.ID, "toggle-data").click()
     driver.find_element(By.ID, "open-connectors").click()
     wait.until(lambda d: d.find_element(By.ID, "connector-dialog").is_displayed())
     driver.find_element(By.ID, "preview-connector").click()

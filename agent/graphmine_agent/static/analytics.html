@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/analytics.css">
   <link rel="stylesheet" href="/analytics-chat.css">
+  <link rel="stylesheet" href="/analytics-shell.css">
   <script src="/vendor/cytoscape.min.js" defer></script>
   <script src="/account.js" defer></script>
   <script src="/analytics-wire.js" defer></script>
@@ -21,24 +22,51 @@
   <script src="/analytics-projects.js" defer></script>
   <script src="/analytics-connection-settings.js" defer></script>
   <script src="/analytics-connectors.js" defer></script>
+  <script src="/analytics-shell.js" defer></script>
   <script src="/analytics-ui.js" defer></script>
 </head>
-<body>
+<body class="workspace-app" data-page="domains">
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="icon-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></symbol>
+    <symbol id="icon-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="icon-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></symbol>
+    <symbol id="icon-activity" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></symbol>
+    <symbol id="icon-graph" viewBox="0 0 24 24"><path d="m7 8 4 8m2-10 4 3M7 7l6-2m-1 13 6-6"/><circle cx="5" cy="6" r="3"/><circle cx="15" cy="4" r="2"/><circle cx="19" cy="11" r="3"/><circle cx="12" cy="19" r="3"/></symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></symbol>
+  </defs></svg>
   <a class="skip-link" href="#chat-content">Skip to conversation</a>
+  <aside id="app-sidebar" class="app-sidebar" aria-label="Main navigation">
+    <div class="sidebar-brand"><a class="brand" href="#" aria-label="GraphMine home"><svg class="logo-icon" aria-hidden="true"><use href="#icon-graph"/></svg><span>GraphMine</span></a><button id="collapse-sidebar" class="icon-button" type="button" aria-label="Collapse sidebar" aria-controls="app-sidebar"><svg class="ui-icon" aria-hidden="true"><use href="#icon-panel"/></svg></button></div>
+    <nav class="sidebar-navigation" aria-label="Workspace"><button id="nav-new-chat" class="nav-item new-chat" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"/></svg><span>New conversation</span></button><a id="nav-projects" class="nav-item" href="/projects.html" hidden><svg class="ui-icon" aria-hidden="true"><use href="#icon-folder"/></svg><span>Projects</span></a></nav>
+    <section id="recent-section" class="recent-section" hidden>
+      <div class="section-heading"><h2>Conversations</h2><button id="refresh-sessions" class="quiet" type="button" aria-label="Refresh conversations">↻</button></div>
+      <div class="session-filters"><label class="history-search"><svg class="ui-icon" aria-hidden="true"><use href="#icon-search"/></svg><input id="session-search" type="search" placeholder="Search conversations" aria-label="Search conversations"></label><details class="history-options"><summary>History options</summary><label class="check"><input id="show-archived" type="checkbox"> Show archived</label></details></div>
+      <div id="recent-sessions" class="recent-sessions"></div>
+    </section>
+    <p class="sidebar-empty">A good question is a great start.<br>Your conversations will appear here.</p>
+    <div class="sidebar-footer"><svg class="ui-icon" aria-hidden="true"><use href="#icon-graph"/></svg><div><strong>Your research workspace</strong><span>Explore. Ask. Discover.</span></div></div>
+  </aside>
   <header class="app-header">
-    <a class="brand" href="#" aria-label="GraphMine home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Graph<span>Mine</span></span></a>
+    <div class="header-leading"><button id="toggle-sidebar" class="icon-button" type="button" aria-label="Open sidebar" aria-expanded="true" aria-controls="app-sidebar"><svg class="ui-icon" aria-hidden="true"><use href="#icon-panel"/></svg></button><span class="header-label">Workspace</span></div>
     <nav id="workspace-nav" class="workspace-nav" aria-label="Workspace pages" hidden><a id="chat-page-link" href="#">Chat</a><a id="results-page-link" href="#">Results <span id="result-count">0</span></a></nav>
-    <div class="header-actions"><span id="connection-state" role="status">Connecting…</span><button id="connection-button" class="quiet">Connection</button></div>
+    <div class="header-actions"><span id="connection-state" role="status">Connecting…</span><button id="connection-button" class="quiet" aria-label="Connection settings"><svg class="ui-icon" aria-hidden="true"><use href="#icon-settings"/></svg><span>Settings</span></button></div>
   </header>
   <div id="notice" class="notice" role="status" hidden></div>
   <section id="domain-view" class="domain-view" aria-labelledby="domain-heading">
-    <section id="recent-section" class="recent-section" hidden><div class="section-heading"><h2>Continue a conversation</h2><button id="refresh-sessions" class="quiet">Refresh</button></div><div class="session-filters"><input id="session-search" type="search" placeholder="Search conversations" aria-label="Search conversations"><label class="inline"><input id="show-archived" type="checkbox"> Show archived</label></div><div id="recent-sessions" class="recent-sessions"></div></section>
-    <div class="hero"><p class="eyebrow">GraphMine · Your research workspace</p><h1 id="domain-heading">What kind of network<br>are you exploring?</h1><p>Choose your domain, bring your data, and start a conversation. Follow how your analysis is built, then explore the results in their own space.</p></div>
-    <label class="session-title">Conversation name <span class="muted">(optional)</span><input id="session-name" maxlength="200" placeholder="e.g. Team connections — October"></label>
+    <div class="hero"><span class="hero-mark"><svg aria-hidden="true"><use href="#icon-graph"/></svg></span><p class="eyebrow">A fresh perspective on your data</p><h1 id="domain-heading" tabindex="-1">What will you discover?</h1><p>Every network has a story. Let’s find yours.<br>Choose a starting point and explore it together.</p></div>
+    <div class="domain-grid-heading"><h2>Start with your world</h2><span>You can start a new conversation anytime</span></div>
     <div id="domain-grid" class="domain-grid" aria-live="polite"><p class="muted">Loading domains…</p></div>
+    <div class="domain-more"><button id="show-all-domains" class="quiet" type="button" aria-expanded="false" aria-controls="domain-grid" hidden>Explore all domains <span aria-hidden="true">↓</span></button></div>
+    <details class="conversation-options"><summary>Name this conversation <span>Optional</span></summary><label class="session-title" for="session-name">Conversation name<input id="session-name" maxlength="200" placeholder="e.g. Team connections — October"></label></details>
+    <p class="home-footnote">Bring your data. Ask in your own words. Explore the connections.</p>
   </section>
   <div id="workspace-view" class="chat-workspace" hidden>
-    <aside id="data-sidebar" class="data-sidebar" aria-label="Conversation and data">
+    <aside id="data-sidebar" class="data-sidebar workspace-drawer" aria-label="Conversation and data" tabindex="-1" hidden>
+      <div class="drawer-heading"><div><p class="eyebrow">Conversation workspace</p><h2>Data &amp; tools</h2></div><button class="icon-button" type="button" data-close-panel aria-label="Close data panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button></div>
       <div class="domain-context"><p class="eyebrow">Your domain</p><h2 id="active-domain"></h2><p id="active-domain-description" class="muted"></p><button id="new-session" class="quiet">Change domain / new chat</button></div>
       <details class="sidebar-disclosure"><summary>Manage conversations</summary><label>Saved conversations<select id="session-select"><option value="">New conversation</option></select></label><div id="session-actions" class="session-actions" hidden><button id="rename-session" class="quiet" type="button">Rename</button><button id="archive-session" class="quiet" type="button">Archive</button><button id="delete-session" class="quiet danger" type="button">Delete</button></div></details>
       <div class="data-section">
@@ -63,9 +91,9 @@
       <p class="sidebar-note">Your conversations, data and results are saved automatically.</p>
     </aside>
     <main id="chat-content" class="chat-column" tabindex="-1">
-      <div class="chat-heading"><div><p class="eyebrow" id="chat-domain-label">Your conversation</p><h1 id="workspace-title">New conversation</h1></div><button id="toggle-data" class="quiet" type="button" aria-expanded="false" aria-controls="data-sidebar">Data &amp; chats</button><span id="chat-status" class="pill">Ready</span></div>
-      <section class="mode-panel" aria-label="Analysis mode"><div class="mode-switch" role="group" aria-label="Choose an analysis mode"><button data-mode="normal" aria-pressed="true">Normal</button><button data-mode="interactive" aria-pressed="false">Interactive</button><button data-mode="expert" aria-pressed="false">Expert</button></div><p id="mode-description"></p></section>
+      <div class="chat-heading"><div><p class="eyebrow" id="chat-domain-label">Your conversation</p><h1 id="workspace-title">New conversation</h1></div><div class="chat-heading-actions"><span id="chat-status" class="pill">Ready</span><button id="toggle-data" class="quiet" type="button" aria-label="Data and tools" aria-expanded="false" aria-controls="data-sidebar"><svg class="ui-icon" aria-hidden="true"><use href="#icon-data"/></svg><span>Data &amp; tools</span></button><button id="toggle-activity" class="quiet" type="button" aria-label="Activity and reasoning" aria-expanded="false" aria-controls="activity-sidebar"><svg class="ui-icon" aria-hidden="true"><use href="#icon-activity"/></svg><span>Activity</span></button></div></div>
       <div id="conversation-scroll" class="conversation-scroll">
+        <section id="chat-welcome" class="chat-welcome" aria-labelledby="welcome-heading"><span class="hero-mark"><svg aria-hidden="true"><use href="#icon-graph"/></svg></span><h2 id="welcome-heading">Follow your curiosity.</h2><p>Add your data, then ask a question.<br>We’ll work through the connections together.</p><div class="welcome-actions"><button id="welcome-data" class="secondary" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"/></svg><span id="welcome-data-label">Add your data</span></button><button id="welcome-sample" class="quiet" type="button">Try an example <span aria-hidden="true">↗</span></button></div><div class="prompt-suggestions" aria-label="Example questions"><button type="button" data-prompt="Give me an overview of this network and its connections."><span aria-hidden="true">◎</span>Understand my network</button><button type="button" data-prompt="Which nodes are the most connected in this network?"><span aria-hidden="true">↗</span>Find key connections</button><button type="button" data-prompt="Find communities in this network and explain what they have in common."><span aria-hidden="true">◇</span>Discover communities</button></div></section>
         <div id="messages" class="chat-messages" role="log" aria-label="Conversation" aria-live="polite"></div>
       <section id="expert-panel" class="panel" hidden aria-labelledby="expert-heading">
         <div class="section-heading"><div><p class="eyebrow">Explicit plan</p><h2 id="expert-heading">Workflow editor</h2></div><button id="load-editor" class="quiet">Load current plan</button></div>
@@ -81,10 +109,10 @@
         <button id="review-example" class="quiet" hidden>Review as a reusable example</button>
       </section>
       </div>
-      <form id="question-form" class="chat-composer"><p id="selection-chip" class="selection-chip" hidden><span id="selection-label"></span><button id="clear-question-selection" type="button" class="quiet" aria-label="Stop asking about this selection">Clear</button></p><label class="visually-hidden" for="question">Message GraphMine</label><textarea id="question" rows="2" maxlength="20000" placeholder="Ask a question about your network…" required></textarea><div class="composer-actions"><p id="planner-note">Enter to send · Shift + Enter for a new line</p><button id="plan-question" class="primary" type="submit">Send <span aria-hidden="true">→</span></button></div></form>
+      <div class="composer-area"><form id="question-form" class="chat-composer"><p id="selection-chip" class="selection-chip" hidden><span id="selection-label"></span><button id="clear-question-selection" type="button" class="quiet" aria-label="Stop asking about this selection">Clear</button></p><label class="visually-hidden" for="question">Message GraphMine</label><textarea id="question" rows="2" maxlength="20000" placeholder="Ask anything about your network…" required></textarea><div class="composer-actions"><div class="composer-tools"><button id="composer-data" class="icon-button" type="button" aria-label="Add data or open tools" aria-controls="data-sidebar" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"/></svg></button><section class="mode-panel" aria-label="Analysis mode"><div class="mode-switch" role="group" aria-label="Choose an analysis mode"><button data-mode="normal" aria-pressed="true" title="GraphMine checks the plan and runs it for you">Normal</button><button data-mode="interactive" aria-pressed="false" title="Review and approve the calculation before it runs">Interactive</button><button data-mode="expert" aria-pressed="false" title="Inspect and edit the workflow yourself">Expert</button></div></section></div><button id="plan-question" class="primary send-button" type="submit" aria-label="Send message" title="Send message"><svg class="ui-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div></form><div class="composer-caption"><p id="mode-description"></p><p id="planner-note">Enter to send · Shift + Enter for a new line</p></div></div>
     </main>
-    <aside class="reasoning-sidebar" aria-label="Model reasoning and activity">
-      <h2>Understanding, planning &amp; validation <span id="reasoning-count" class="reasoning-count" title="Reasoning records in this conversation">0</span></h2><div id="activity-status" role="status">Ready for your question</div><ol id="activity-list" class="activity-list"></ol>
+    <aside id="activity-sidebar" class="reasoning-sidebar workspace-drawer" aria-label="Model reasoning and activity" tabindex="-1" hidden>
+      <div class="drawer-heading"><div><p class="eyebrow">Behind your answer</p><h2>Activity <span id="reasoning-count" class="reasoning-count" title="Reasoning records in this conversation">0</span></h2></div><button class="icon-button" type="button" data-close-panel aria-label="Close activity panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button></div><p class="muted">Follow the understanding, planning, and validation of your question.</p><div id="activity-status" role="status">Ready for your question</div><ol id="activity-list" class="activity-list"></ol>
     </aside>
   </div>
   <main id="results-view" class="analytics-results" hidden tabindex="-1"><div class="results-toolbar"><div><p class="eyebrow">Explore your findings</p><h1>Results & visualizations</h1><p id="results-session-title" class="muted"></p></div><button id="back-to-chat" class="secondary">← Back to chat</button></div><label class="result-picker">Saved analysis<select id="result-select"><option value="">No completed analyses yet</option></select></label>
@@ -100,6 +128,7 @@
         <details id="raw-details" hidden><summary>Recorded result and provenance</summary><pre id="raw-result"></pre></details>
       </section>
   </main>
+  <div id="panel-backdrop" class="panel-backdrop" hidden></div>
   <dialog id="narrow-dialog" aria-labelledby="narrow-heading"><form id="narrow-form">
     <div class="section-heading"><h2 id="narrow-heading">Use a smaller input</h2><button type="button" class="quiet" data-close="narrow-dialog">Close</button></div>
     <p>Choose a smaller graph for this analysis. The revised plan will wait for your review before it runs.</p>
