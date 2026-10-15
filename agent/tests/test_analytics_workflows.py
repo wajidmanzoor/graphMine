@@ -11,6 +11,7 @@ import stat
 import sys
 import textwrap
 import time
+from datetime import datetime, timedelta, timezone
 from dataclasses import replace
 from pathlib import Path
 
@@ -555,6 +556,274 @@ def test_query_input_rejected_before_any_worker_is_queued(settings, triangle_gra
 
 def _service(settings, database, graph_store):
     return AnalyticsService(settings, database, graph_store, EventBus(database))
+
+
+async def test_plan_preview_flags_large_exact_searches_and_slow_past_runs(
+    settings, database, graph_store, monkeypatch
+):
+    service = _service(settings, database, graph_store)
+
+    async def capabilities():
+        return {
+            "operations": [
+                {
+                    "id": "maximal-cliques",
+                    "title": "Maximal cliques",
+                    "quality": "exact",
+                    "family": "cliques",
+                },
+                {
+                    "id": "pagerank",
+                    "title": "PageRank",
+                    "quality": "numerical",
+                    "family": "centrality",
+                },
+            ]
+        }
+
+    monkeypatch.setattr(service, "capabilities", capabilities)
+
+    def record(workflow_id, operation, **extra):
+        steps = [{"id": "core", "operation": operation, "device": "cpu"}]
+        return {
+            "id": workflow_id,
+            "session_id": "s",
+            "revision": 1,
+            "validation": {"plan": {"steps": steps}},
+            **extra,
+        }
+
+    def graph(edges):
+        data = {
+            "vertices": [{"id": i} for i in range(100)],
+            "edges": [
+                {"source": i % 100, "target": (i + 1) % 100} for i in range(edges)
+            ],
+        }
+        return {"main": {"kind": "graph", "data": data}}
+
+    cliques, large = record("new-cliques", "maximal-cliques"), graph(6000)
+    service._write(service._directory(cliques) / "inputs.json", large)
+    preview = await service._preview(cliques, large)
+    assert preview["steps"][0]["search"] and preview["expensive"]
+    assert "exact search on 6,000 connections" in preview["reasons"][0]
+    assert preview["inputs"]["main"] == {"vertices": 100, "edges": 6000}
+    rank, small = record("new-rank", "pagerank"), graph(10)
+    service._write(service._directory(rank) / "inputs.json", small)
+    assert not (await service._preview(rank, small))["expensive"]
+    earlier = record(
+        "earlier-rank",
+        "pagerank",
+        status="completed",
+        started_at="2026-10-14T10:00:00+00:00",
+        finished_at="2026-10-14T10:05:00+00:00",
+    )
+    service._write(service._directory(earlier) / "inputs.json", small)
+    service._save(earlier)
+    preview = await service._preview(rank, small)
+    assert preview["past_runs"] == {"count": 1, "median_seconds": 300.0}
+    assert "took about 5 minutes" in preview["reasons"][0]
+
+
+def test_group_graph_reads_members_from_the_full_input(
+    settings, database, graph_store, session, monkeypatch
+):
+    service = _service(settings, database, graph_store)
+    record = {
+        "id": "groups",
+        "session_id": session.id,
+        "revision": 1,
+        "status": "completed",
+        "validation": {"plan": {"steps": [{"id": "core", "input": {"input": "main"}}]}},
+    }
+    service._save(record)
+    vertices = [{"id": i, "label": f"v{i}"} for i in range(3000)]
+    edges = [{"source": 2900, "target": 2901}, {"source": 2901, "target": 5}]
+    service._write(
+        service._directory(record) / "inputs.json",
+        {
+            "main": {
+                "kind": "graph",
+                "data": {"graph": {}, "vertices": vertices, "edges": edges},
+            }
+        },
+    )
+    groups = {"type": "vertex_groups", "value": [{"vertices": [2900, 2901]}]}
+    monkeypatch.setattr(
+        service, "_saved", lambda *_a, **_k: {"result": {"ports": {"cliques": groups}}}
+    )
+    graph = service.group_graph("groups", "core", "cliques", 0)
+    # Both members lie beyond a 500-vertex preview; only their own edge is kept.
+    assert [v["id"] for v in graph["vertices"]] == [2900, 2901]
+    assert graph["edges"] == [edges[0]] and not graph["vertices_truncated"]
+
+
+def test_long_outputs_are_summarized_and_paged_with_search_and_sort(
+    settings, database, graph_store, session
+):
+    service = _service(settings, database, graph_store)
+    record = {
+        "id": "big",
+        "session_id": session.id,
+        "revision": 1,
+        "status": "completed",
+    }
+    service._save(record)
+    rows = [{"vertex": f"v{i}", "score": i % 7} for i in range(5000)]
+    saved = {
+        "steps": {
+            "rank": {
+                "status": "completed",
+                "result": {
+                    "ports": {"scores": {"type": "vertex_scores", "value": rows}}
+                },
+            }
+        }
+    }
+    service._write(service._directory(record) / "result.json", saved)
+    service._write(
+        service._directory(record) / "step-rank.json", saved["steps"]["rank"]
+    )
+    record["steps"] = {"rank": {"status": "completed"}}
+    record["validation"] = {"plan": {"steps": [{"id": "rank"}]}}
+    service._save(record)
+    summary = service.result_summary("big", limit=100)
+    port = summary["steps"]["rank"]["result"]["ports"]["scores"]
+    assert len(port["value"]) == 100 and port["value_truncated"]
+    assert port["total_items"] == 5000
+    # The cached full result is untouched by summaries.
+    assert (
+        len(
+            service.result("big")["steps"]["rank"]["result"]["ports"]["scores"]["value"]
+        )
+        == 5000
+    )
+    page = service.port_page("big", "rank", "scores", 0, 3, search="v49")
+    assert page["matched_items"] == 111 and page["total_items"] == 5000
+    assert [row["vertex"] for row in page["items"]] == ["v49", "v490", "v491"]
+    exact = service.port_page("big", "rank", "scores", 0, 5, search='vertex:"v4999"')
+    assert exact["items"] == [rows[4999]] and exact["positions"] == [4999]
+    ranked = service.port_page(
+        "big", "rank", "scores", 0, 2, sort="score", descending=True
+    )
+    assert [row["score"] for row in ranked["items"]] == [6, 6]
+
+
+async def test_health_and_metrics_describe_the_engine_people_use(
+    settings, database, graph_store, monkeypatch
+):
+    service = _service(settings, database, graph_store)
+
+    async def capabilities(refresh=False):
+        return {
+            "operations": [
+                {"id": "a", "execution": {"cpu": True, "gpu": False}},
+                {"id": "b", "execution": {"cpu": False, "gpu": False}},
+            ]
+        }
+
+    monkeypatch.setattr(service, "_native_capabilities", capabilities)
+    # Health reads the shared verification; it never waits for a worker.
+    service.capability_cache = (
+        service._capability_key(),
+        time.monotonic() + 300,
+        await capabilities(),
+    )
+    now = datetime.now(timezone.utc)
+    at = lambda minutes: (now - timedelta(minutes=minutes)).isoformat()  # noqa: E731
+    for workflow_id, status, approved, started, finished in [
+        ("ok", "completed", at(30), at(29), at(20)),
+        ("bad", "failed", at(15), at(10), at(9)),
+        ("waiting", "queued", at(2), None, None),
+    ]:
+        service._save(
+            {
+                "id": workflow_id,
+                "session_id": "s",
+                "status": status,
+                "approved_at": approved,
+                **({"started_at": started} if started else {}),
+                **({"finished_at": finished} if finished else {}),
+                **({"error": {"code": "resource_limit"}} if status == "failed" else {}),
+            }
+        )
+    health = await service.health()
+    assert health["native"] == {
+        "status": "ok",
+        "admitted_operations": 1,
+        "operations": 2,
+    }
+    assert health["workflows"]["queued"] == 1
+    assert health["workflows"]["oldest_queued_seconds"] >= 119
+    assert health["workflows"]["failed_24h"] == 1
+    assert health["workflows"]["recent_failures"][0]["code"] == "resource_limit"
+    metrics = service.metrics(
+        [
+            {"stage": "family", "seconds": 4.0, "outcome": "ok"},
+            {"stage": "family", "seconds": 20.0, "outcome": "ok"},
+            {"stage": "plan", "seconds": 30.0, "outcome": "planner_truncated"},
+        ]
+    )
+    assert metrics["planning_seconds"]["family"]["count"] == 2
+    assert metrics["planning_outcomes"] == {"ok": 2, "planner_truncated": 1}
+    assert metrics["failure_rate_24h"] == 0.5
+    assert metrics["queue_seconds"]["count"] == 2
+    assert metrics["run_seconds"]["p95"] == 540.0
+
+
+def test_queue_position_counts_only_earlier_pending_work(
+    settings, database, graph_store
+):
+    service = _service(settings, database, graph_store)
+    for workflow_id, status, approved in [
+        ("done", "completed", "0"),
+        ("running", "running", "1"),
+        ("first", "queued", "2"),
+        ("second", "queued", "3"),
+    ]:
+        service._save(
+            {
+                "id": workflow_id,
+                "session_id": "s",
+                "status": status,
+                "approved_at": approved,
+            }
+        )
+    assert service.queue_position({"status": "queued", "approved_at": "2"}) == 2
+    assert service.queue_position({"status": "queued", "approved_at": "3"}) == 3
+    assert service.queue_position({"status": "running", "approved_at": "1"}) is None
+
+
+async def test_capabilities_share_one_verification_until_evidence_changes(
+    settings, database, graph_store, monkeypatch
+):
+    service = _service(settings, database, graph_store)
+    calls, release = [], asyncio.Event()
+
+    async def call(request, **_):
+        calls.append(request["command"])
+        await release.wait()
+        return {"operations": []}
+
+    async def probe():
+        return []
+
+    monkeypatch.setattr(service, "_call", call)
+    monkeypatch.setattr(service.scheduler, "probe", probe)
+    viewers = [asyncio.create_task(service.capabilities()) for _ in range(4)]
+    await asyncio.sleep(0)
+    viewers[0].cancel()  # A disconnected viewer cannot cancel the shared check.
+    release.set()
+    first, *_ = await asyncio.gather(*viewers[1:])
+    assert calls == ["capabilities"]
+    first["operations"].append("caller-owned copy")
+    assert (await service.capabilities())["operations"] == []
+    assert calls == ["capabilities"]
+    await service.capabilities(refresh=True)
+    assert len(calls) == 2
+    monkeypatch.setattr(service, "_capability_key", lambda: ("rebuilt",))
+    await service.capabilities()
+    assert len(calls) == 3
 
 
 def test_live_failed_step_recovery_reuses_only_valid_steps(settings, triangle_graph):

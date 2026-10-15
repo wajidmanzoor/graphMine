@@ -39,7 +39,7 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
     if not firefox or not gecko:
         pytest.skip("Firefox and geckodriver are required")
 
-    async def capabilities(_self):
+    async def capabilities(_self, refresh=False):
         return {
             "operations": [],
             "question_planner_enabled": False,
@@ -225,7 +225,8 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         driver.find_element(By.ID, "account-close-settings").click()
         wait.until(
             lambda d: (
-                "Verification needed" in d.find_element(By.ID, "connection-state").text
+                "Calculations unavailable"
+                in d.find_element(By.ID, "connection-state").text
             )
         )
         assert "Alice private research" not in driver.find_element(

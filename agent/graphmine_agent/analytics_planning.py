@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
+import time
 from contextvars import ContextVar
 from copy import deepcopy
 from typing import Literal
@@ -14,7 +16,22 @@ import jsonschema
 from pydantic import BaseModel, ConfigDict, Field
 
 from .analytics import AnalyticsError, InputReference
+from .analytics_context import matched_entities, resolve_selection, summarize_result
+from .database import RecordNotFound
 from .identity import AccountError
+
+_logger = logging.getLogger(__name__)
+
+# Bound on one question's whole planning attempt, including reroute and repair.
+PLANNING_DEADLINE_SECONDS = 360
+# Failures that asking again can fix; quota and validation failures cannot.
+RETRYABLE_PLANNING = {
+    "interrupted",
+    "planner_timeout",
+    "planner_unavailable",
+    "planning_failed",
+    "concurrency_limit",
+}
 
 # Presentation/routing groups over the library's mathematical modules. Every
 # executable operation must belong to exactly one group; nothing is guessed.
@@ -118,6 +135,40 @@ def family_catalog(cards):
     return rows
 
 
+class _ReasoningStream:
+    """Saves reasoning in pieces while a stage runs; the full text follows it."""
+
+    def __init__(self, events, context, stage, interval=1.5):
+        self.events, self.context, self.stage = events, context, stage
+        self.interval, self.pending, self.sent = interval, [], time.monotonic()
+
+    async def add(self, text):
+        self.pending.append(text)
+        if time.monotonic() - self.sent >= self.interval:
+            await self.flush()
+
+    async def flush(self):
+        if not self.pending:
+            return
+        text, self.pending, self.sent = "".join(self.pending), [], time.monotonic()
+        await self.events.publish(
+            self.context["session_id"],
+            "workflow.reasoning.delta",
+            {"turn_id": self.context["turn_id"], "stage": self.stage, "text": text},
+        )
+
+
+class PlanningSelection(BaseModel):
+    """What the user is looking at in a saved result, such as one clique."""
+
+    model_config = ConfigDict(extra="forbid")
+    workflow_id: str = Field(min_length=1, max_length=64)
+    step: str = Field(min_length=1, max_length=200)
+    port: str = Field(min_length=1, max_length=200)
+    index: int | None = Field(default=None, ge=0)
+    label: str | None = Field(default=None, max_length=200)
+
+
 class PlanningRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     message: str = Field(min_length=1, max_length=20000)
@@ -128,6 +179,7 @@ class PlanningRequest(BaseModel):
     evaluation_id: str | None = Field(default=None, min_length=1, max_length=200)
     mode: Literal["normal", "interactive", "expert"] = "normal"
     request_id: UUID | None = None
+    selection: PlanningSelection | None = None
 
 
 def _object(properties, required=None):
@@ -136,6 +188,15 @@ def _object(properties, required=None):
         "properties": properties,
         "required": list(properties) if required is None else required,
         "additionalProperties": False,
+    }
+
+
+def _choices(status):
+    """Short replies a person can click when the planner asks a question."""
+    return {
+        "type": "array",
+        "items": {"type": "string", "minLength": 1, "maxLength": 120},
+        "maxItems": 4 if status == "needs_information" else 0,
     }
 
 
@@ -153,7 +214,9 @@ def family_schema(families):
                         "uniqueItems": True,
                     },
                     "message": {"type": "string", "maxLength": 1000},
-                }
+                    "choices": _choices(status),
+                },
+                ["status", "families", "message"],
             )
             for status in ("selected", "needs_information", "unsupported")
         ]
@@ -183,7 +246,9 @@ def operation_schema(cards, families):
                         "uniqueItems": True,
                     },
                     "message": {"type": "string", "maxLength": 1000},
-                }
+                    "choices": _choices(status),
+                },
+                ["status", "operations", "reroute_families", "message"],
             )
             for status in ("selected", "reroute", "needs_information", "unsupported")
         ]
@@ -280,7 +345,9 @@ def plan_schema(cards, aliases, device):
             "status": {"enum": ["ready", "needs_information", "unsupported"]},
             "message": {"type": "string", "maxLength": 1200},
             "plan": {"anyOf": [plan, {"type": "null"}]},
-        }
+            "choices": _choices("needs_information"),
+        },
+        ["status", "message", "plan"],
     )
 
 
@@ -490,9 +557,9 @@ class AnalyticsPlanner:
                 ],
             }
         stage_instructions = {
-            "family": "CURRENT STAGE: classify the user question into task families. Choose all matching family IDs, then give a one-sentence explanation and return status selected when at least one family covers the task. Basic lookup, filtering and aggregation are supported by query. A pipeline may need multiple families. Operation selection and parameters come later.",
-            "operation": "CURRENT STAGE: select exact operations from these cards. Decide status first: selected requires a nonempty operations list and no reroute; reroute requires nonempty reroute_families and no operations; needs_information or unsupported require both lists empty. The explanation must agree with this decision. Include operations needed for each stated dependency. Use reroute when another task family contains a required operation. Do not ask about optional output formatting or parameters that can use a documented default. Ask only when the mathematical objective itself is ambiguous, such as maximum versus maximal or different meanings of importance.",
-            "plan": "CURRENT STAGE: construct the requested workflow using the supplied cards and actual input metadata/samples. Steps are ordered and have no generated IDs. Refer to an earlier step by its zero-based step_index: 0 is the first step, 1 the second. The first step must use an input alias. A reference must point to an existing earlier step and a port declared by that step's operation. Each step uses an arguments array: exactly one entry per supplied parameter, with either value.literal or value.binding. Omit optional defaults. Historical plans may use named step IDs and parameters/bindings; translate their references by position into this format. For record predicates, nested attributes use field paths such as attributes.amount, never the bare attribute name. Use explicit values from the question; IDs matching sampled IDs are already identified. A named attribute and a supplied value define a filter even when the value has no matches. Return complete records when records are requested without a field list. Follow the graph's declared direction unless the question changes it. Within k hops means at most k. An induced graph keeps exactly the selected vertices and their connecting edges. Optional output choices may use documented defaults; ask only for genuinely missing required inputs or unresolved mathematical choices. Do not ask the user to repeat information already supplied.",
+            "family": "CURRENT STAGE: classify the user question into task families. Choose all matching family IDs, then give a one-sentence explanation and return status selected when at least one family covers the task. Basic lookup, filtering and aggregation are supported by query. A pipeline may need multiple families. Operation selection and parameters come later. If you must ask, also give up to four short choices, each a complete reply in the person's own words.",
+            "operation": "CURRENT STAGE: select exact operations from these cards. Decide status first: selected requires a nonempty operations list and no reroute; reroute requires nonempty reroute_families and no operations; needs_information or unsupported require both lists empty. The explanation must agree with this decision. Include operations needed for each stated dependency. Use reroute when another task family contains a required operation. Do not ask about optional output formatting or parameters that can use a documented default. Ask only when the mathematical objective itself is ambiguous, such as maximum versus maximal or different meanings of importance. When you ask, also give up to four short choices, each a complete reply in the person's own words.",
+            "plan": "CURRENT STAGE: construct the requested workflow using the supplied cards and actual input metadata/samples. Steps are ordered and have no generated IDs. Refer to an earlier step by its zero-based step_index: 0 is the first step, 1 the second. The first step must use an input alias. A reference must point to an existing earlier step and a port declared by that step's operation. Each step uses an arguments array: exactly one entry per supplied parameter, with either value.literal or value.binding. Omit optional defaults. Historical plans may use named step IDs and parameters/bindings; translate their references by position into this format. For record predicates, nested attributes use field paths such as attributes.amount, never the bare attribute name. Use explicit values from the question; IDs matching sampled IDs are already identified. A named attribute and a supplied value define a filter even when the value has no matches. Return complete records when records are requested without a field list. Follow the graph's declared direction unless the question changes it. Within k hops means at most k. An induced graph keeps exactly the selected vertices and their connecting edges. Optional output choices may use documented defaults; ask only for genuinely missing required inputs or unresolved mathematical choices. Do not ask the user to repeat information already supplied. When you ask, also give up to four short choices, each a complete reply in the person's own words.",
         }
         request = {
             "model": self.settings.analytics_planner_model or self.settings.llm_model,
@@ -535,18 +602,33 @@ class AnalyticsPlanner:
                 "workflow.planning",
                 {"turn_id": context["turn_id"], "stage": stage, "status": "running"},
             )
+        started, report = time.monotonic(), {"stage": stage, "model": request["model"]}
         try:
             async with httpx.AsyncClient(
                 base_url=self.settings.llm_base_url,
                 headers={"Authorization": f"Bearer {self.settings.llm_api_key}"},
                 timeout=httpx.Timeout(120, connect=5),
             ) as client:
-                from .accounts import model_post
+                from .accounts import model_post, model_stream
 
-                response = await model_post(client, "/chat/completions", json=request)
-                response.raise_for_status()
-                message = response.json()["choices"][0]["message"]
-                data = json.loads(message["content"])
+                if context:
+                    live = _ReasoningStream(self.events, context, stage)
+                    body = await model_stream(
+                        client, "/chat/completions", json=request, on_reasoning=live.add
+                    )
+                    await live.flush()
+                else:
+                    response = await model_post(
+                        client, "/chat/completions", json=request
+                    )
+                    response.raise_for_status()
+                    body = response.json()
+                choice = body["choices"][0]
+                message = choice["message"]
+                report.update(
+                    finish_reason=choice.get("finish_reason"), usage=body.get("usage")
+                )
+                # Saved before parsing, so a cut-off answer keeps its reasoning.
                 reasoning = message.get("reasoning") or message.get("reasoning_content")
                 if context and isinstance(reasoning, str) and reasoning.strip():
                     await self.events.publish(
@@ -559,24 +641,59 @@ class AnalyticsPlanner:
                             "text": reasoning[:40000],
                         },
                     )
+                if choice.get("finish_reason") == "length":
+                    raise AnalyticsError(
+                        "The planner ran out of room before finishing its decision. Try a shorter or more specific question.",
+                        "planner_truncated",
+                        503,
+                    )
+                data = json.loads(message["content"])
             jsonschema.Draft202012Validator(generation_schema).validate(data)
             if stage == "plan":
                 data = decoded_plan(data)
             jsonschema.Draft202012Validator(schema).validate(data)
+            report["outcome"] = "ok"
             return data
+        except (AnalyticsError, AccountError) as exc:
+            report["outcome"] = exc.code
+            raise
+        except (httpx.TimeoutException, TimeoutError) as exc:
+            report["outcome"] = "planner_timeout"
+            raise AnalyticsError(
+                "The planner did not answer in time. Please try again.",
+                "planner_timeout",
+                504,
+            ) from exc
+        except httpx.HTTPError as exc:
+            report["outcome"] = "planner_unavailable"
+            raise AnalyticsError(
+                "The question planner is unavailable right now. Please try again shortly, or use Expert mode.",
+                "planner_unavailable",
+                503,
+            ) from exc
         except (
-            httpx.HTTPError,
             ValueError,
             TypeError,
             KeyError,
             IndexError,
             jsonschema.ValidationError,
         ) as exc:
+            report.update(outcome="planner_invalid_output", error=type(exc).__name__)
             raise AnalyticsError(
                 "The question planner could not return a valid decision. Try a more specific question or use Expert mode.",
-                "planner_unavailable",
+                "planner_invalid_output",
                 503,
             ) from exc
+        finally:
+            report.setdefault("outcome", "interrupted")
+            report["seconds"] = round(time.monotonic() - started, 2)
+            _logger.info("planner stage %s", json.dumps(report, default=str))
+            if context:
+                await self.events.publish(
+                    context["session_id"],
+                    "workflow.diagnostics",
+                    {"turn_id": context["turn_id"], **report},
+                )
 
     async def plan(self, session_id, body):
         self.analytics.database.get_session(session_id)
@@ -602,6 +719,15 @@ class AnalyticsPlanner:
                     "message": body.message,
                     "mode": body.mode,
                     "evaluation_id": body.evaluation_id,
+                    # Saved so a failed question can be retried as it was asked.
+                    "inputs": {
+                        key: ref.model_dump() for key, ref in body.inputs.items()
+                    },
+                    "device": body.device,
+                    "previous_workflow_id": body.previous_workflow_id,
+                    "selection": body.selection.model_dump()
+                    if body.selection
+                    else None,
                 },
             )
             self.analytics.database.touch_session(session_id)
@@ -614,6 +740,9 @@ class AnalyticsPlanner:
                     "role": "assistant",
                     "message": response["message"],
                     "status": response["status"],
+                    "choices": response.get("choices", [])
+                    if response["status"] == "needs_information"
+                    else [],
                     "evaluation_id": body.evaluation_id,
                     "plan": response.get("plan"),
                     "inputs": {
@@ -623,23 +752,50 @@ class AnalyticsPlanner:
                 },
             )
             return {**response, "turn_id": turn_id}
-        except Exception as exc:
-            await self.events.publish(
+        except asyncio.CancelledError:
+            # A request time limit, disconnect or shutdown cancels planning;
+            # the question must not stay "running" in the conversation.
+            await self._publish_failure(
                 session_id,
-                "workflow.chat",
-                {
-                    "turn_id": turn_id,
-                    "role": "assistant",
-                    "status": "failed",
-                    "message": str(exc)
-                    if isinstance(exc, (AnalyticsError, AccountError))
-                    else "Planning failed. Please try again.",
-                    "evaluation_id": body.evaluation_id,
-                },
+                turn_id,
+                body,
+                "interrupted",
+                "Planning was interrupted before it finished. Please try again.",
+            )
+            raise
+        except Exception as exc:
+            known = isinstance(exc, (AnalyticsError, AccountError))
+            await self._publish_failure(
+                session_id,
+                turn_id,
+                body,
+                exc.code if known else "planning_failed",
+                str(exc) if known else "Planning failed. Please try again.",
             )
             raise
         finally:
             self.conversation.reset(token)
+
+    async def _publish_failure(self, session_id, turn_id, body, code, message):
+        await self.events.publish(
+            session_id,
+            "workflow.chat",
+            {
+                "turn_id": turn_id,
+                "role": "assistant",
+                "status": "failed",
+                "code": code,
+                "retryable": code in RETRYABLE_PLANNING,
+                "message": message,
+                "evaluation_id": body.evaluation_id,
+            },
+        )
+
+    def _saved_result(self, workflow_id):
+        try:
+            return self.analytics.result(workflow_id)
+        except (AnalyticsError, RecordNotFound):
+            return None  # Not run yet: the plan alone is the context.
 
     async def _plan(self, session_id, body):
         session = self.analytics.database.get_session(session_id)
@@ -754,6 +910,33 @@ class AnalyticsPlanner:
                 )
             payload["previous_plan"] = previous["validation"]["plan"]
             payload["previous_input_files"] = previous["input_files"]
+            results_for_routing = self._saved_result(previous["id"])
+            if results_for_routing:
+                payload["previous_results"] = summarize_result(results_for_routing)
+        if body.selection:
+            if (
+                self.analytics.get(body.selection.workflow_id)["session_id"]
+                != session_id
+            ):
+                raise AnalyticsError("The selected result belongs to another workspace")
+            results = self._saved_result(body.selection.workflow_id)
+            selected = results and resolve_selection(results, body.selection)
+            if selected:
+                payload["current_selection"] = selected
+        entities = matched_entities(body.message, inputs)
+        if entities:
+            payload["matched_entities"] = entities
+        # Routing needs to know what earlier results and the selection are;
+        # only the plan stage needs their member lists.
+        routing = dict(payload)
+        if "previous_results" in payload:
+            routing["previous_results"] = summarize_result(results_for_routing, 1500)
+        if "current_selection" in payload:
+            routing["current_selection"] = {
+                key: value
+                for key, value in payload["current_selection"].items()
+                if key not in ("vertices", "item")
+            }
         trace = []
 
         async def remember(stage, decision):
@@ -768,17 +951,32 @@ class AnalyticsPlanner:
             )
 
         try:
-            async with asyncio.timeout(360):
+            async with asyncio.timeout(PLANNING_DEADLINE_SECONDS):
+                # A follow-up starts from the earlier analysis' families; the
+                # operation stage can still reroute, so one model call is saved.
+                previous_ops = {
+                    step.get("operation")
+                    for step in payload.get("previous_plan", {}).get("steps", [])
+                }
+                carried = [
+                    f["id"] for f in families if previous_ops & set(f["operations"])
+                ]
                 if body.family_id:
                     choice = {
                         "status": "selected",
                         "families": [body.family_id],
                         "message": "Task family selected by the user.",
                     }
+                elif carried:
+                    choice = {
+                        "status": "selected",
+                        "families": carried,
+                        "message": "Follow-up: starting from the task families of the previous analysis.",
+                    }
                 else:
                     choice = await self._generate(
                         "family",
-                        {**payload, "families": family_summaries},
+                        {**routing, "families": family_summaries},
                         family_schema(families),
                     )
                 jsonschema.Draft202012Validator(family_schema(families)).validate(
@@ -791,6 +989,7 @@ class AnalyticsPlanner:
                         if choice["status"] != "selected"
                         else "needs_information",
                         "message": choice["message"],
+                        "choices": choice.get("choices", []),
                         "trace": trace,
                         "plan": None,
                     }
@@ -807,7 +1006,7 @@ class AnalyticsPlanner:
                     decision = await self._generate(
                         "operation",
                         {
-                            **payload,
+                            **routing,
                             "selected_families": selected_families,
                             "families": family_summaries,
                             "operations": shortlist,
@@ -832,6 +1031,7 @@ class AnalyticsPlanner:
                             if decision["status"] in ("reroute", "selected")
                             else decision["status"],
                             "message": decision["message"],
+                            "choices": decision.get("choices", []),
                             "trace": trace,
                             "plan": None,
                         }
@@ -878,6 +1078,7 @@ class AnalyticsPlanner:
                     "operations": selected_cards,
                     "selection_rationale": decision["message"],
                     "reviewed_examples": examples,
+                    "context_rules": "previous_results summarizes the earlier analysis, and current_selection is the item the user is looking at; 'this group' or 'the selected clique' means current_selection. To reuse an earlier group, repeat the earlier step in this plan and bind its port with the given binding_selection, or pass the listed vertex IDs as a literal vertex array. matched_entities are vertices from the full input whose ID or name appears in the question; use their exact id values.",
                     "binding_rules": "Graph ports and pattern_graph selections are graph inputs. Each canonical pattern has its own vertex namespace. Vertex selections retain their graph namespace. Every selected objective must be represented. Each argument has exactly one value: literal or binding. Never repeat an argument name. Omit optional literals unless needed; the native core supplies their declared defaults.",
                 }
                 for attempt in range(2):

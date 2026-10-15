@@ -25,12 +25,12 @@
     <div class="hero"><p class="eyebrow">GraphMine · Your research workspace</p><h1 id="domain-heading">What kind of network<br>are you exploring?</h1><p>Choose your domain, bring your data, and start a conversation. Follow how your analysis is built, then explore the results in their own space.</p></div>
     <label class="session-title">Conversation name <span class="muted">(optional)</span><input id="session-name" maxlength="200" placeholder="e.g. Team connections — October"></label>
     <div id="domain-grid" class="domain-grid" aria-live="polite"><p class="muted">Loading domains…</p></div>
-    <section class="recent-section"><div class="section-heading"><h2>Continue a conversation</h2><button id="refresh-sessions" class="quiet">Refresh</button></div><div id="recent-sessions" class="recent-sessions"></div></section>
+    <section class="recent-section"><div class="section-heading"><h2>Continue a conversation</h2><button id="refresh-sessions" class="quiet">Refresh</button></div><div class="session-filters"><input id="session-search" type="search" placeholder="Search conversations" aria-label="Search conversations"><label class="inline"><input id="show-archived" type="checkbox"> Show archived</label></div><div id="recent-sessions" class="recent-sessions"></div></section>
   </section>
   <div id="workspace-view" class="chat-workspace" hidden>
-    <aside class="data-sidebar" aria-label="Conversation and data">
+    <aside id="data-sidebar" class="data-sidebar" aria-label="Conversation and data">
       <div class="domain-context"><p class="eyebrow">Your domain</p><h2 id="active-domain"></h2><p id="active-domain-description" class="muted"></p><button id="new-session" class="quiet">Change domain / new chat</button></div>
-      <label>Saved conversations<select id="session-select"><option value="">New conversation</option></select></label>
+      <label>Saved conversations<select id="session-select"><option value="">New conversation</option></select></label><div id="session-actions" class="session-actions" hidden><button id="rename-session" class="quiet" type="button">Rename</button><button id="archive-session" class="quiet" type="button">Archive</button><button id="delete-session" class="quiet danger" type="button">Delete</button></div>
       <div class="data-section">
         <p class="eyebrow">Your data</p>
         <label class="upload-zone"><span class="upload-symbol" aria-hidden="true">↑</span><strong>Drop or choose files</strong><input id="data-upload" type="file" accept=".json,.csv,.txt"><span>Graph JSON or relationship CSV</span></label>
@@ -40,7 +40,7 @@
           <label>CSV from column<input id="csv-source" placeholder="source (automatic)"></label><label>CSV to column<input id="csv-target" placeholder="target (automatic)"></label>
         </details>
         <button id="sample-data" class="secondary full-width">Try example team data</button><button id="open-projection" class="quiet full-width">Build a graph from tables</button>
-        <label>Active input<select id="active-input"><option value="">Upload data to begin</option></select></label>
+        <label>Active input<select id="active-input"><option value="">Upload data to begin</option></select></label><button id="remove-input" class="quiet danger" type="button" hidden>Remove this file</button>
         <label id="active-kind-label" hidden>Input kind<select id="active-kind"><option value="graph">Graph</option><option value="graph_collection">Collection of graphs</option><option value="feature_vectors">Feature vectors</option><option value="hypergraph">Hypergraph</option></select></label>
         <p id="data-summary" class="muted">Your analysis uses the full uploaded input.</p>
         <details class="advanced-data"><summary>Compute settings</summary><label>Compute on<select id="device"><option value="auto">Automatic (GPU first)</option><option value="cpu">CPU only</option><option value="gpu">GPU only</option></select></label><p id="device-note" class="muted"></p><div id="input-aliases" class="alias-list"></div><p id="verified-count" class="muted"></p></details>
@@ -69,11 +69,10 @@
         <button id="review-example" class="quiet" hidden>Review as a reusable example</button>
       </section>
       </div>
-      <form id="question-form" class="chat-composer"><label class="visually-hidden" for="question">Message GraphMine</label><textarea id="question" rows="2" maxlength="20000" placeholder="Ask a question about your network…" required></textarea><div class="composer-actions"><p id="planner-note">Enter to send · Shift + Enter for a new line</p><button id="plan-question" class="primary" type="submit">Send <span aria-hidden="true">→</span></button></div></form>
+      <form id="question-form" class="chat-composer"><p id="selection-chip" class="selection-chip" hidden><span id="selection-label"></span><button id="clear-question-selection" type="button" class="quiet" aria-label="Stop asking about this selection">Clear</button></p><label class="visually-hidden" for="question">Message GraphMine</label><textarea id="question" rows="2" maxlength="20000" placeholder="Ask a question about your network…" required></textarea><div class="composer-actions"><p id="planner-note">Enter to send · Shift + Enter for a new line</p><button id="plan-question" class="primary" type="submit">Send <span aria-hidden="true">→</span></button></div></form>
     </main>
     <aside class="reasoning-sidebar" aria-label="Model reasoning and activity">
-      <details id="model-reasoning-panel" class="model-reasoning-panel" open><summary>Model reasoning <span id="reasoning-count">0</span></summary><p>Reasoning returned by the model for every question in this conversation.</p><div id="model-reasoning"><p class="muted">Reasoning will appear when the model returns it.</p></div></details>
-      <h2>Understanding, planning & validation</h2><div id="activity-status" role="status">Ready for your question</div><ol id="activity-list" class="activity-list"></ol>
+      <h2>Understanding, planning &amp; validation <span id="reasoning-count" class="reasoning-count" title="Reasoning records in this conversation">0</span></h2><div id="activity-status" role="status">Ready for your question</div><ol id="activity-list" class="activity-list"></ol>
     </aside>
   </div>
   <main id="results-view" class="analytics-results" hidden tabindex="-1"><div class="results-toolbar"><div><p class="eyebrow">Explore your findings</p><h1>Results & visualizations</h1><p id="results-session-title" class="muted"></p></div><button id="back-to-chat" class="secondary">← Back to chat</button></div><label class="result-picker">Saved analysis<select id="result-select"><option value="">No completed analyses yet</option></select></label>

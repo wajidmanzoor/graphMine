@@ -153,3 +153,31 @@ body { background: #fff; }
   .analytics-results .results-toolbar { flex-wrap: wrap; gap: 15px; }
   .analytics-results #network { height: 340px; }
 }
+.chat-bubble .answer-lead { margin-top: 12px; font-weight: 600; }
+.chat-bubble .answer-facts { margin: 8px 0 0; padding-left: 18px; line-height: 1.6; }
+.chat-bubble .answer-facts li + li { margin-top: 4px; }
+.selection-chip { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: #f2f8f5; font-size: 12px; }
+.selection-chip[hidden] { display: none; }
+.selection-chip button { padding: 2px 8px; font-size: 11px; }
+.reasoning-record.live summary { color: var(--accent-dark); }
+.chat-bubble .reply-choices { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.workflow-preview { margin: 10px 0; }
+.workflow-preview .preview-warning { padding: 10px 12px; border: 1px solid #e3c27a; border-radius: 8px; background: #fdf7e8; }
+.workflow-preview .preview-warning p { margin: 4px 0 0; }
+.workflow-preview .preview-steps { margin: 8px 0 4px; padding-left: 18px; }
+.session-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; }
+.session-actions[hidden] { display: none; }
+.session-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 12px; }
+.session-filters input[type="search"] { flex: 1 1 220px; }
+button.danger { color: #a63d32; }
+/* Opaque, so content scrolled under the sticky header never shows through. */
+.app-header { background: #fff; }
+@media (max-width: 760px) {
+  /* Phones: the conversation first, then data and settings, then activity. */
+  .chat-column { order: 1; }
+  .data-sidebar { order: 2; max-height: none; overflow: visible; border-top: 1px solid var(--line); }
+  .reasoning-sidebar { order: 3; }
+}
+.turn-reasoning { margin: 8px 0 0 22px; }
+.turn-reasoning > summary { cursor: pointer; font-size: 12px; color: var(--accent-dark); }
+.reasoning-count { margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: #e7f1ec; font-size: 11px; font-weight: 600; }

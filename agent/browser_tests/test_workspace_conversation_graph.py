@@ -1,6 +1,7 @@
 """Browser regressions for conversation races, partitions and overlapping cliques."""
 
 import threading
+import time
 from copy import deepcopy
 
 import pytest
@@ -172,9 +173,7 @@ def test_all_questions_reasoning_retries_and_validation_survive_reload(
         assert browser.find_element(By.ID, "reasoning-count").text == "7"
         assert (
             len(
-                browser.find_elements(
-                    By.CSS_SELECTOR, "#model-reasoning .reasoning-turn"
-                )
+                browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-turn")
             )
             == 2
         )
@@ -199,15 +198,23 @@ def test_all_questions_reasoning_retries_and_validation_survive_reload(
         assert (
             browser.find_element(By.ID, "chat-status").text == "Waiting for your reply"
         )
+        # Each question's reasoning sits inside that question's own timeline.
         assert browser.execute_script(
-            "return document.getElementById('model-reasoning-panel').compareDocumentPosition(document.getElementById('activity-list')) & Node.DOCUMENT_POSITION_FOLLOWING"
+            "return document.querySelectorAll('#activity-list .activity-turn > .turn-reasoning').length === 2"
         )
         assert_latest_user_visible(browser)
+    for turn in ("first", "second"):
+        browser.find_element(
+            By.CSS_SELECTOR,
+            f'.activity-turn[data-turn="{turn}"] .turn-reasoning > summary',
+        ).click()
     browser.find_element(
-        By.CSS_SELECTOR, '#model-reasoning [data-turn="first"] details summary'
+        By.CSS_SELECTOR,
+        '[data-turn="first"] .turn-reasoning .reasoning-record > summary',
     ).click()
-    assert "Reasoning for first" in browser.find_element(By.ID, "model-reasoning").text
-    assert "attempt 2" in browser.find_element(By.ID, "model-reasoning").text
+    activity = browser.find_element(By.ID, "activity-list").text
+    assert "Reasoning for first" in activity
+    assert "attempt 2" in activity
 
 
 def test_delayed_old_events_cannot_hide_new_followup(loading_browser, loading_server):
@@ -299,6 +306,96 @@ def test_delayed_old_events_cannot_hide_new_followup(loading_browser, loading_se
         == 1
     )
     assert_latest_user_visible(browser)
+
+
+def test_interrupted_question_retries_with_its_original_inputs(
+    loading_browser, loading_server
+):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    inputs = {"main": {"file_id": "network", "kind": "graph"}}
+    event(
+        server,
+        "chat",
+        "lost",
+        role="user",
+        message="Find the communities",
+        mode="interactive",
+        inputs=inputs,
+        device="cpu",
+        previous_workflow_id=None,
+    )
+    event(server, "planning", "lost", stage="family", status="running")
+    event(
+        server,
+        "chat",
+        "lost",
+        role="assistant",
+        status="failed",
+        code="interrupted",
+        retryable=True,
+        message="Planning was interrupted by a server restart. Please try again.",
+    )
+    request = {}
+
+    def plan(body):
+        request.update(body)
+        event(
+            server,
+            "chat",
+            body["request_id"],
+            role="user",
+            **{key: body[key] for key in ("message", "mode")},
+        )
+        event(
+            server,
+            "chat",
+            body["request_id"],
+            role="assistant",
+            status="needs_information",
+            message="Which groups should I compare?",
+        )
+        return {
+            "turn_id": body["request_id"],
+            "status": "needs_information",
+            "message": "Which groups should I compare?",
+            "plan": None,
+        }
+
+    server.plan_handler = plan
+    open_saved(browser, server)
+    browser.find_element(By.CSS_SELECTOR, '[data-retry="lost"]').click()
+    wait_for(
+        browser,
+        "!document.querySelector('[data-retry]') && !GraphMineWorkspace.state.busy",
+    )
+    assert request["message"] == "Find the communities"
+    assert request["inputs"] == inputs
+    assert (request["mode"], request["device"]) == ("interactive", "cpu")
+    assert request["request_id"] != "lost"
+
+
+def test_conversation_polling_slows_when_idle_and_stops_when_signed_out(
+    loading_browser, loading_server
+):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    open_saved(browser, server)
+    start = len(server.event_times)
+    deadline = time.monotonic() + 15
+    while len(server.event_times) < start + 4 and time.monotonic() < deadline:
+        time.sleep(0.2)
+    times = server.event_times[start : start + 4]
+    gaps = [later - earlier for earlier, later in zip(times, times[1:])]
+    # Fixed polling would repeat every 1.4 seconds.
+    assert len(gaps) == 3 and gaps[-1] > 2.5, gaps
+    server.events_status = 401
+    deadline = time.monotonic() + 15
+    while server.event_times[-1] < times[-1] + 0.1 and time.monotonic() < deadline:
+        time.sleep(0.2)
+    stopped = len(server.event_times)
+    time.sleep(12)  # Longer than the slowest polling interval.
+    assert len(server.event_times) == stopped
 
 
 def test_community_overview_filter_and_reset_preserve_typed_ids(
@@ -565,3 +662,257 @@ def test_clique_preview_retries_busy_requests_only(
     else:
         assert server.preview_calls == 1
         assert browser.find_element(By.ID, "notice").text == "quota_exceeded"
+
+
+def test_finished_analysis_answers_in_chat_with_computed_facts(
+    loading_browser, loading_server
+):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    saved_turn(server, "first", "Find the communities")
+    statements = {
+        "f1": "Community detection found 2 groups.",
+        "f2": "The largest has 3 members: Vertex 1, Vertex 2, Vertex 3.",
+    }
+    event(
+        server,
+        "answer",
+        "first",
+        workflow_id="saved-analysis",
+        revision=1,
+        lead="Two communities split the network.",
+        fact_ids=["f2", "f1"],
+        facts=[{"id": key, "statement": text} for key, text in statements.items()],
+        source="model",
+    )
+    open_saved(browser, server)
+    bubble = '.chat-message.assistant[data-turn="first"]'
+    lead = browser.find_element(By.CSS_SELECTOR, f"{bubble} .answer-lead")
+    assert lead.text == "Two communities split the network."
+    facts = browser.find_elements(By.CSS_SELECTOR, f"{bubble} .answer-facts li")
+    assert [fact.text for fact in facts] == [statements["f2"], statements["f1"]]
+
+
+def test_question_about_a_selected_clique_sends_its_position(
+    loading_browser, loading_server
+):
+    browser, server = loading_browser, loading_server
+    saved_cliques(server)
+    request = {}
+
+    def plan(body):
+        request.update(body)
+        for role, message in (
+            ("user", body["message"]),
+            ("assistant", "Which measure?"),
+        ):
+            event(
+                server,
+                "chat",
+                body["request_id"],
+                role=role,
+                message=message,
+                mode="normal",
+                status="needs_information",
+            )
+        return {
+            "turn_id": body["request_id"],
+            "status": "needs_information",
+            "message": "Which measure?",
+            "plan": None,
+        }
+
+    server.plan_handler = plan
+    open_saved(browser, server, "results/saved-analysis")
+    wait_for(browser, "GraphMineWorkspace.state.cy?.nodes().length === 6")
+    Select(browser.find_element(By.ID, "graph-group")).select_by_index(2)
+    browser.find_element(By.ID, "back-to-chat").click()
+    chip = browser.find_element(By.ID, "selection-chip")
+    assert chip.is_displayed() and "Asking about Clique 2" in chip.text
+    browser.find_element(By.ID, "question").send_keys("Who is central here?")
+    browser.find_element(By.ID, "plan-question").click()
+    wait_for(browser, "!GraphMineWorkspace.state.busy")
+    assert request["selection"] == {
+        "workflow_id": "saved-analysis",
+        "step": "core",
+        "port": "groups",
+        "index": 1,
+        "label": "Clique 2",
+    }
+    browser.find_element(By.ID, "clear-question-selection").click()
+    assert not chip.is_displayed()
+
+
+def test_reasoning_streams_while_a_stage_runs(loading_browser, loading_server):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    event(server, "chat", "live", role="user", message="Find hubs", mode="normal")
+    event(server, "planning", "live", stage="family", status="running")
+    event(server, "reasoning.delta", "live", stage="family", text="Hubs suggest ")
+    event(server, "reasoning.delta", "live", stage="family", text="centrality.")
+    open_saved(browser, server)
+    live = '#activity-list [data-live="family"] pre'
+    wait_for(
+        browser,
+        f"document.querySelector('{live}')?.textContent === 'Hubs suggest centrality.'",
+    )
+    event(
+        server,
+        "reasoning",
+        "live",
+        stage="family",
+        model="Authored test model",
+        text="Hubs suggest centrality. Done.",
+    )
+    wait_for(browser, "!document.querySelector('[data-live]')")
+
+
+def test_clarification_choices_are_sent_as_replies(loading_browser, loading_server):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    event(server, "chat", "ask", role="user", message="Find groups", mode="normal")
+    event(
+        server,
+        "chat",
+        "ask",
+        role="assistant",
+        status="needs_information",
+        message="Which kind of group?",
+        choices=["The single largest clique", "Every maximal clique"],
+    )
+    request = {}
+
+    def plan(body):
+        request.update(body)
+        return {
+            "turn_id": body["request_id"],
+            "status": "unsupported",
+            "message": "Recorded",
+            "plan": None,
+        }
+
+    server.plan_handler = plan
+    open_saved(browser, server)
+    browser.find_element(
+        By.CSS_SELECTOR, '[data-choice="Every maximal clique"]'
+    ).click()
+    wait_for(browser, "!GraphMineWorkspace.state.busy")
+    assert request["message"] == "Every maximal clique"
+
+
+def test_conversation_can_be_renamed_and_deleted(loading_browser, loading_server):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    open_saved(browser, server)
+    browser.execute_script(
+        "window.prompt = () => 'Renamed study'; window.confirm = () => true;"
+    )
+    browser.find_element(By.ID, "rename-session").click()
+    wait_for(browser, "!GraphMineWorkspace.state.busy")
+    assert ("PATCH", "/api/sessions/saved-session", {"title": "Renamed study"}) in (
+        server.requests
+    )
+    browser.find_element(By.ID, "delete-session").click()
+    wait_for(browser, "!GraphMineWorkspace.state.busy")
+    assert ("DELETE", "/api/sessions/saved-session", None) in server.requests
+
+
+def test_selected_group_is_loaded_from_the_full_graph(loading_browser, loading_server):
+    browser, server = loading_browser, loading_server
+    saved_cliques(server)
+    full = deepcopy(server.graph)
+    # The bounded preview misses vertex 5, a member of Clique 4.
+    server.graph["vertices"] = [v for v in full["vertices"] if v["id"] != 5]
+    server.graph["edges"] = [
+        e for e in full["edges"] if 5 not in (e["source"], e["target"])
+    ]
+    server.group_graph = {
+        "graph": full["graph"],
+        "vertex_count": 2,
+        "edge_count": 1,
+        "vertices": [v for v in full["vertices"] if v["id"] in (4, 5)],
+        "edges": [e for e in full["edges"] if {e["source"], e["target"]} == {4, 5}],
+    }
+    open_saved(browser, server, "results/saved-analysis")
+    wait_for(browser, "GraphMineWorkspace.state.cy?.nodes().length === 5")
+    Select(browser.find_element(By.ID, "graph-group")).select_by_index(4)
+    wait_for(browser, "GraphMineWorkspace.state.cy?.nodes().length === 2")
+    assert server.group_requests[-1].endswith("/groups/3/graph")
+    assert (
+        browser.execute_script("return GraphMineWorkspace.state.cy.edges().length") == 1
+    )
+
+
+def test_scores_size_nodes_and_paths_highlight_their_connections(
+    loading_browser, loading_server
+):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    result = server.results["saved-analysis"]["steps"]["core"]["result"]
+    result["operation"] = "pagerank"
+    result["ports"] = {
+        "scores": {
+            "type": "vertex_scores",
+            "complete": True,
+            "value": [
+                {"vertex": 1, "score": 0.1},
+                {"vertex": 2, "score": 0.5},
+                {"vertex": 3, "score": 0.9},
+            ],
+        },
+        "paths": {
+            "type": "path_set",
+            "complete": True,
+            "value": [{"vertices": [1, 2, 3], "edges": [0, 1]}],
+        },
+    }
+    open_saved(browser, server, "results/saved-analysis")
+    Select(browser.find_element(By.ID, "result-port")).select_by_value("scores")
+    wait_for(browser, "GraphMineWorkspace.state.cy?.nodes().length === 6")
+    sizes = dict(
+        browser.execute_script(
+            "return GraphMineWorkspace.state.cy.nodes().map(n => [String(n.data('entity')) + typeof n.data('entity'), n.data('size')])"
+        )
+    )
+    assert sizes["3number"] > sizes["2number"] > sizes["1number"]
+    assert sizes["4number"] == 25  # Unscored vertices keep the default size.
+    assert "Node size shows score" in browser.find_element(By.ID, "preview-scope").text
+    Select(browser.find_element(By.ID, "result-port")).select_by_value("paths")
+    wait_for(browser, "GraphMineWorkspace.state.port?.type === 'path_set'")
+    browser.find_element(
+        By.CSS_SELECTOR, '#result-table [data-result-row="0"] button'
+    ).click()
+    chosen = browser.execute_script(
+        "return GraphMineWorkspace.state.cy.edges('.chosen').map(e => e.data('original').id)"
+    )
+    assert sorted(chosen) == [0, 1]
+
+
+def test_long_outputs_page_and_search_on_the_server(loading_browser, loading_server):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    result = server.results["saved-analysis"]["steps"]["core"]["result"]
+    rows = [{"vertex": i, "score": i / 10} for i in (1, 2, 3)]
+    result["ports"] = {
+        "scores": {
+            "type": "vertex_scores",
+            "complete": True,
+            "value": rows,
+            "value_truncated": True,
+            "total_items": 5000,
+        }
+    }
+    server.port_page = {"items": [rows[1]], "matched_items": 12, "total_items": 5000}
+    open_saved(browser, server, "results/saved-analysis")
+    Select(browser.find_element(By.ID, "result-port")).select_by_value("scores")
+    wait_for(
+        browser,
+        "document.getElementById('table-count').textContent === '12 of 5,000 rows'",
+    )
+    browser.find_element(By.ID, "table-search").send_keys("vertex:2")
+    deadline = time.monotonic() + 5
+    while not any("search=vertex%3A2" in path for path in server.port_requests):
+        assert time.monotonic() < deadline, server.port_requests
+        time.sleep(0.1)
+    assert "offset=0" in server.port_requests[-1]
+    assert "searches all 5,000" in browser.find_element(By.ID, "table-scope").text

@@ -22,8 +22,16 @@ from .models import (
     utc_now,
 )
 
+# 1: sessions carry owner_id and accounts keep workspaces private. Code that
+# predates a schema version must not open it, or it would ignore its protections.
+SCHEMA_VERSION = 1
+
 
 class RecordNotFound(KeyError):
+    pass
+
+
+class SchemaVersionError(RuntimeError):
     pass
 
 
@@ -59,6 +67,13 @@ class Database:
 
     def _initialize(self) -> None:
         with self._lock, self._connect() as connection:
+            stored = connection.execute("PRAGMA user_version").fetchone()[0]
+            if stored > SCHEMA_VERSION:
+                raise SchemaVersionError(
+                    f"{self.path} was written by a newer GraphMine (data schema "
+                    f"{stored}; this version supports {SCHEMA_VERSION}). Run the newer "
+                    "version, or give this one its own GRAPHMINE_AGENT_DATA_ROOT."
+                )
             connection.executescript(
                 """
                 CREATE TABLE IF NOT EXISTS sessions (
@@ -129,6 +144,7 @@ class Database:
             connection.execute(
                 "CREATE INDEX IF NOT EXISTS sessions_owner ON sessions(owner_id)"
             )
+            connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
 
     @staticmethod
     def _json(model: Any) -> str:
@@ -183,6 +199,59 @@ class Database:
         with self._lock, self._connect() as connection:
             updated = self._touch_session(connection, session_id)
         self.history.snapshot(session_id, "session.json", updated)
+
+    def update_session(self, session_id: str, changes: dict[str, Any]) -> SessionRecord:
+        session = self.get_session(session_id)
+        updated = session.model_copy(update={**changes, "updated_at": utc_now()})
+        with self._lock, self._connect() as connection:
+            connection.execute(
+                "UPDATE sessions SET payload=?,updated_at=? WHERE id=?",
+                (self._json(updated), updated.updated_at.isoformat(), session_id),
+            )
+        self.history.snapshot(session_id, "session.json", updated)
+        return updated
+
+    def delete_session(self, session_id: str) -> list[str]:
+        """Delete a conversation's records; returns its job IDs for file cleanup."""
+        self.get_session(session_id)
+        with self._lock, self._connect() as connection:
+            jobs = [
+                row["id"]
+                for row in connection.execute(
+                    "SELECT id FROM jobs WHERE session_id=?", (session_id,)
+                )
+            ]
+            # Files, jobs, results, messages, events and feedback cascade.
+            connection.execute("DELETE FROM sessions WHERE id=?", (session_id,))
+        return jobs
+
+    def recent_payloads(self, event_type: str, since, limit: int = 5000) -> list[dict]:
+        """Server-wide event payloads of one type, for aggregate metrics only."""
+        with self._connect() as connection:
+            return [
+                json.loads(row["payload"])
+                for row in connection.execute(
+                    "SELECT payload FROM events WHERE type=? AND created_at>=? "
+                    "ORDER BY sequence DESC LIMIT ?",
+                    (event_type, since.isoformat(), limit),
+                )
+            ]
+
+    def inactive_sessions(self, before) -> list[str]:
+        """Conversations whose last activity is older than the given time."""
+        with self._connect() as connection:
+            return [
+                row["id"]
+                for row in connection.execute(
+                    "SELECT id FROM sessions WHERE updated_at<?", (before.isoformat(),)
+                )
+            ]
+
+    def delete_file(self, file_id: str) -> StoredFile:
+        record = self.get_file(file_id)
+        with self._lock, self._connect() as connection:
+            connection.execute("DELETE FROM files WHERE id=?", (file_id,))
+        return record
 
     def _touch_session(
         self, connection: sqlite3.Connection, session_id: str
@@ -518,6 +587,46 @@ class Database:
                 ),
             )
         return event.model_copy(update={"sequence": int(cursor.lastrowid)})
+
+    def close_unanswered_planning(self) -> int:
+        """Answer questions whose planning a restart interrupted.
+
+        Called at startup, before any request can be planning.
+        """
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT u.session_id,
+                       json_extract(u.payload,'$.turn_id') AS turn_id,
+                       json_extract(u.payload,'$.evaluation_id') AS evaluation_id
+                FROM events u
+                WHERE u.type='workflow.chat'
+                  AND json_extract(u.payload,'$.role')='user'
+                  AND NOT EXISTS (
+                    SELECT 1 FROM events a
+                    WHERE a.session_id=u.session_id AND a.type='workflow.chat'
+                      AND json_extract(a.payload,'$.role')='assistant'
+                      AND json_extract(a.payload,'$.turn_id')
+                        =json_extract(u.payload,'$.turn_id'))
+                """
+            ).fetchall()
+        for row in rows:
+            self.add_event(
+                ConversationEvent(
+                    session_id=row["session_id"],
+                    type="workflow.chat",
+                    payload={
+                        "turn_id": row["turn_id"],
+                        "role": "assistant",
+                        "status": "failed",
+                        "code": "interrupted",
+                        "retryable": True,
+                        "message": "Planning was interrupted by a server restart. Please try again.",
+                        "evaluation_id": row["evaluation_id"],
+                    },
+                )
+            )
+        return len(rows)
 
     def events(self, session_id: str, after: int = 0) -> list[ConversationEvent]:
         self.get_session(session_id)

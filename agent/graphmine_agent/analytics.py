@@ -3,12 +3,19 @@
 from __future__ import annotations
 
 import asyncio
+import copy
 import json
+import logging
+import math
 import os
+import re
+import shutil
 import signal
 import sqlite3
+import time
 from contextlib import closing, nullcontext, suppress
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, Literal
 from uuid import uuid4
 
@@ -57,8 +64,75 @@ class WorkflowApproval(BaseModel):
     expected_revision: int = Field(ge=1)
 
 
+_logger = logging.getLogger(__name__)
+
+# Displayed capabilities may lag evidence edits by this long; execution always
+# re-verifies evidence before admitting a workflow.
+CAPABILITY_CACHE_SECONDS = 300
+# Exact searches whose work can grow quickly with graph size.
+SEARCH_FAMILIES = {
+    "cliques",
+    "community",
+    "comparison",
+    "dense_structures",
+    "independent_sets",
+    "optimization",
+    "partitioning",
+    "pattern_mining",
+    "topology",
+}
+LARGE_SEARCH_EDGES = 5000
+RESULT_CACHE_ENTRIES = 8
+# Longer outputs reach the browser in pages instead of all at once.
+SUMMARY_ITEMS = 2000
+SLOW_RUN_SECONDS = 120
+
+
 def _now():
     return datetime.now(timezone.utc).isoformat()
+
+
+def _seconds(start, end):
+    return (datetime.fromisoformat(end) - datetime.fromisoformat(start)).total_seconds()
+
+
+def _percentiles(values):
+    if not values:
+        return None
+    values = sorted(values)
+
+    def pick(q):  # Nearest-rank percentile.
+        return round(values[max(0, math.ceil(q * len(values)) - 1)], 2)
+
+    return {"count": len(values), "p50": pick(0.5), "p95": pick(0.95)}
+
+
+def _matches(row, search):
+    """Same rules as the results table: "field:value" is exact, text is a substring."""
+    scoped = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*):(.*)", search.strip(), re.DOTALL)
+    if scoped:
+        try:
+            expected = json.loads(scoped.group(2).strip())
+        except ValueError:
+            expected = scoped.group(2).strip()
+        return (
+            isinstance(row, dict)
+            and scoped.group(1) in row
+            and _key(row[scoped.group(1)]) == _key(expected)
+        )
+    return search.strip().casefold() in json.dumps(row, ensure_ascii=False).casefold()
+
+
+def _sort_key(value):
+    return (
+        (0, value)
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+        else (1, _key(value))
+    )
+
+
+def _key(value):
+    return json.dumps(value, sort_keys=True)
 
 
 def _json(value):
@@ -83,8 +157,12 @@ class AnalyticsService:
         self.path = self.root / "workflows.sqlite3"
         self.owner = StoreLock(self.path)
         self.tasks = {}
+        self.answer_tasks = set()
+        self.result_cache = {}
         self.edit_lock = asyncio.Lock()
         self.scheduler = AnalyticsScheduler(settings)
+        self.capability_cache = None
+        self.capability_task = None
         self.closed = False
         self.opened = False
         with closing(sqlite3.connect(self.path)) as db, db:
@@ -116,7 +194,7 @@ class AnalyticsService:
         self.closed = True
         if not self.opened:
             return
-        tasks = list(self.tasks.values())
+        tasks = list(self.tasks.values()) + list(self.answer_tasks)
         for task in tasks:
             task.cancel()
         if tasks:
@@ -343,11 +421,47 @@ class AnalyticsService:
             await self._stop_process(process)
             await asyncio.gather(*tasks, return_exceptions=True)
 
-    async def capabilities(self):
+    def _capability_key(self):
+        paths = [
+            self.settings.repository_root / "catalog/native_execution_evidence.json",
+            self.settings.native_runtime_library,
+            self.settings.native_runtime_binary,
+            os.environ.get("GRAPHMINE_NATIVE_LIBRARY"),
+        ]
+        key = []
+        for path in paths:
+            try:
+                info = Path(path).stat() if path else None
+            except OSError:
+                info = None
+            key.append(info and (str(path), info.st_mtime_ns, info.st_size))
+        return tuple(key)
+
+    async def _load_capabilities(self, key):
         from .analytics_planning import family_catalog
 
         result = await self._call({"command": "capabilities"})
         result["task_families"] = family_catalog(result["operations"])
+        self.capability_cache = (
+            key,
+            time.monotonic() + CAPABILITY_CACHE_SECONDS,
+            result,
+        )
+        return result
+
+    async def _native_capabilities(self, refresh=False):
+        """One shared verification serves every viewer until evidence changes."""
+        key = self._capability_key()
+        cached = self.capability_cache
+        if not refresh and cached and cached[0] == key and time.monotonic() < cached[1]:
+            return cached[2]
+        if self.capability_task is None or self.capability_task.done():
+            self.capability_task = asyncio.create_task(self._load_capabilities(key))
+        # A disconnected viewer must not cancel the verification others await.
+        return await asyncio.shield(self.capability_task)
+
+    async def capabilities(self, refresh=False):
+        result = copy.deepcopy(await self._native_capabilities(refresh))
         result["question_planner_enabled"] = self.settings.llm_enabled
         devices = self.scheduler.eligible(await self.scheduler.probe())
         result["device_configuration"] = {
@@ -388,12 +502,241 @@ class AnalyticsService:
             "steps": {},
         }
         self._write(self._directory(record) / "inputs.json", inputs)
+        record["preview"] = await self._preview(record, inputs)
+        if body.mode == "normal" and (record["preview"] or {}).get("expensive"):
+            # Explain an expensive run and wait for approval, even in Normal mode.
+            record["status"] = "awaiting_review"
         self._save(record)
-        if body.mode == "normal":
+        if body.mode == "normal" and record["status"] == "ready":
             return await self.start(
                 record["id"], checked["workflow_hash"], record["revision"]
             )
         return record
+
+    async def _preview(self, record, inputs):
+        """What will run, its guarantees, the input size and likely cost.
+
+        Only an explanation: a validated plan still runs if this cannot be built.
+        """
+        try:
+            return await self._build_preview(record, inputs)
+        except Exception:
+            _logger.exception("Could not explain workflow %s", record["id"])
+            return None
+
+    async def _build_preview(self, record, inputs):
+        caps = await self.capabilities()
+        cards = {card["id"]: card for card in caps["operations"]}
+        sizes = {
+            alias: {
+                "vertices": len(descriptor["data"].get("vertices", [])),
+                "edges": len(descriptor["data"].get("edges", [])),
+            }
+            for alias, descriptor in inputs.items()
+            if isinstance(descriptor.get("data"), dict)
+        }
+        steps = [
+            {
+                "id": step["id"],
+                "operation": step["operation"],
+                "title": cards.get(step["operation"], {}).get(
+                    "title", step["operation"]
+                ),
+                "quality": cards.get(step["operation"], {}).get("quality"),
+                "device": step.get("device"),
+                "search": cards.get(step["operation"], {}).get("family")
+                in SEARCH_FAMILIES,
+            }
+            for step in record["validation"]["plan"]["steps"]
+        ]
+        input_bytes = (self._directory(record) / "inputs.json").stat().st_size
+        edges = max((size["edges"] for size in sizes.values()), default=0)
+        past = self._past_runtime(record, input_bytes)
+        reasons = []
+        if edges > LARGE_SEARCH_EDGES and any(step["search"] for step in steps):
+            reasons.append(
+                f"It runs an exact search on {edges:,} connections. This kind of "
+                "search can take a long time, or stop at its search limit, on large graphs."
+            )
+        if past and past["median_seconds"] > SLOW_RUN_SECONDS:
+            reasons.append(
+                f"Similar runs on this server took about "
+                f"{max(1, round(past['median_seconds'] / 60))} minutes."
+            )
+        return {
+            "steps": steps,
+            "inputs": sizes,
+            "memory_bytes": estimate_memory(record["validation"]["plan"], input_bytes),
+            "past_runs": past,
+            "expensive": bool(reasons),
+            "reasons": reasons,
+        }
+
+    def _past_runtime(self, record, input_bytes):
+        """Median time of completed runs with the same steps and similar input size."""
+        operations = sorted(
+            s["operation"] for s in record["validation"]["plan"]["steps"]
+        )
+        seconds = []
+        for other in self._all():
+            if (
+                other["status"] != "completed"
+                or not other.get("started_at")
+                or not other.get("finished_at")
+                or sorted(
+                    s.get("operation")
+                    for s in other.get("validation", {})
+                    .get("plan", {})
+                    .get("steps", [])
+                )
+                != operations
+            ):
+                continue
+            try:
+                size = (self._directory(other) / "inputs.json").stat().st_size
+            except OSError:
+                continue
+            if input_bytes / 2 <= size <= input_bytes * 2:
+                seconds.append(
+                    (
+                        datetime.fromisoformat(other["finished_at"])
+                        - datetime.fromisoformat(other["started_at"])
+                    ).total_seconds()
+                )
+        if not seconds:
+            return None
+        seconds.sort()
+        return {"count": len(seconds), "median_seconds": seconds[len(seconds) // 2]}
+
+    def active_inputs(self, session_id):
+        """Uploaded files that queued or running workflows still read."""
+        return {
+            reference["file_id"]
+            for record in self._all(session_id)
+            if record["status"] in ("queued", "running")
+            for reference in record.get("input_files", {}).values()
+        }
+
+    def delete_session(self, session_id):
+        """Remove a conversation's workflows, results and reviewed examples."""
+        records = self._all(session_id)
+        if any(record["status"] in ("queued", "running") for record in records):
+            raise AnalyticsError(
+                "Cancel the running analysis before deleting this conversation.",
+                "state_conflict",
+                409,
+            )
+        with closing(sqlite3.connect(self.path)) as db, db:
+            db.execute("DELETE FROM workflows WHERE session_id=?", (session_id,))
+            db.execute(
+                "DELETE FROM reviewed_examples WHERE session_id=?", (session_id,)
+            )
+        for record in records:
+            shutil.rmtree(self.root / record["id"], ignore_errors=True)
+
+    async def health(self):
+        """Is the engine people use able to run work, and is work failing?"""
+        # Health answers at once: it reads the shared verification and only
+        # starts a refresh in the background, never waiting for a worker.
+        cached, task = self.capability_cache, self.capability_task
+        if (not cached or time.monotonic() >= cached[1]) and (
+            task is None or task.done()
+        ):
+            refresh = asyncio.create_task(
+                self._load_capabilities(self._capability_key())
+            )
+            refresh.add_done_callback(lambda done: done.cancelled() or done.exception())
+            self.capability_task = refresh
+        if (
+            task is not None
+            and task.done()
+            and not task.cancelled()
+            and task.exception()
+        ):
+            native = {"status": "error", "error": str(task.exception())[:300]}
+            native["admitted_operations"] = 0
+        elif cached:
+            operations = cached[2]["operations"]
+            admitted = sum(1 for c in operations if any(c["execution"].values()))
+            native = {
+                "status": "ok" if admitted else "unverified",
+                "admitted_operations": admitted,
+                "operations": len(operations),
+            }
+        else:
+            native = {"status": "checking", "admitted_operations": 0}
+        now = datetime.now(UTC)
+        since = (now - timedelta(days=1)).isoformat()
+        records = self._all()
+        finished = [r for r in records if (r.get("finished_at") or "") >= since]
+        failed = [r for r in finished if r["status"] == "failed"]
+        queued = [r.get("approved_at") for r in records if r["status"] == "queued"]
+        oldest = min((at for at in queued if at), default=None)
+        return {
+            "native": native,
+            "scheduler": {"active_allocations": self.scheduler.snapshot()},
+            "workflows": {
+                "running": sum(r["status"] == "running" for r in records),
+                "queued": len(queued),
+                "oldest_queued_seconds": round(
+                    (now - datetime.fromisoformat(oldest)).total_seconds()
+                )
+                if oldest
+                else None,
+                "finished_24h": len(finished),
+                "failed_24h": len(failed),
+                "recent_failures": [
+                    {
+                        "code": (r.get("error") or {}).get("code"),
+                        "at": r.get("finished_at"),
+                    }
+                    for r in failed[-5:]
+                ],
+            },
+        }
+
+    def metrics(self, diagnostics):
+        """Planning and execution timings over the last day, from saved records."""
+        stages, outcomes = {}, {}
+        for report in diagnostics:
+            if isinstance(report.get("seconds"), (int, float)):
+                stages.setdefault(report.get("stage"), []).append(report["seconds"])
+            outcome = report.get("outcome", "unknown")
+            outcomes[outcome] = outcomes.get(outcome, 0) + 1
+        since = (datetime.now(UTC) - timedelta(days=1)).isoformat()
+        queue, run, failed, finished = [], [], 0, 0
+        for record in self._all():
+            if (record.get("finished_at") or "") < since:
+                continue
+            finished += 1
+            failed += record["status"] == "failed"
+            approved, started = record.get("approved_at"), record.get("started_at")
+            if approved and started:
+                queue.append(_seconds(approved, started))
+            if started:
+                run.append(_seconds(started, record["finished_at"]))
+        return {
+            "planning_seconds": {stage: _percentiles(v) for stage, v in stages.items()},
+            "planning_outcomes": outcomes,
+            "queue_seconds": _percentiles(queue),
+            "run_seconds": _percentiles(run),
+            "workflows_finished_24h": finished,
+            "failure_rate_24h": round(failed / finished, 3) if finished else None,
+            "reserved_memory_bytes": sum(
+                lease["reserved_bytes"] for lease in self.scheduler.snapshot()
+            ),
+        }
+
+    def queue_position(self, record):
+        """Place in line across all users; reveals only a count."""
+        if record["status"] != "queued":
+            return None
+        mine = record.get("approved_at") or ""
+        return 1 + sum(
+            other["status"] in ("queued", "running")
+            and (other.get("approved_at") or "") < mine
+            for other in self._all()
+        )
 
     async def revise(self, workflow_id, body):
         async with self.edit_lock:
@@ -427,6 +770,7 @@ class AnalyticsService:
             for field in ("approved_at", "started_at", "finished_at"):
                 record.pop(field, None)
             self._write(self._directory(record) / "inputs.json", inputs)
+            record["preview"] = await self._preview(record, inputs)
             self._save(record)
         if body.mode == "normal":
             return await self.start(
@@ -470,7 +814,7 @@ class AnalyticsService:
             record.pop("error", None)
             try:
                 self._save(record)
-                task = asyncio.create_task(self._execute(workflow_id))
+                task = asyncio.create_task(self._execute(workflow_id, admission))
             except BaseException:
                 if admission:
                     principal.accounts.abort_admission(admission)
@@ -502,7 +846,7 @@ class AnalyticsService:
                     cache[path.stem[5:]] = saved
         return cache
 
-    async def _execute(self, workflow_id):
+    async def _execute(self, workflow_id, admission=None):
         record = self.get(workflow_id)
         directory = self._directory(record)
         try:
@@ -516,7 +860,7 @@ class AnalyticsService:
             memory = estimate_memory(plan, (directory / "inputs.json").stat().st_size)
             principal = current_principal.get()
             limit = (
-                principal.accounts.execution_slot(principal.user_id)
+                principal.accounts.execution_slot(principal.user_id, admission)
                 if principal
                 else nullcontext()
             )
@@ -624,6 +968,79 @@ class AnalyticsService:
                     "complete": record.get("complete", False),
                 },
             )
+            if record["status"] == "completed" and not self.closed:
+                # Separate task: answering must not hold the job's slot.
+                task = asyncio.create_task(self._answer(record))
+                self.answer_tasks.add(task)
+                task.add_done_callback(self.answer_tasks.discard)
+
+    def _question(self, record):
+        turn = record.get("planning_turn_id")
+        for event in self.database.events(record["session_id"]):
+            if (
+                turn
+                and event.type == "workflow.chat"
+                and event.payload.get("turn_id") == turn
+                and event.payload.get("role") == "user"
+            ):
+                return event.payload.get("message")
+        return None
+
+    def _labels(self, record):
+        try:
+            inputs = json.loads((self._directory(record) / "inputs.json").read_text())
+        except (OSError, ValueError):
+            return {}
+        labels = {}
+        for descriptor in inputs.values():
+            data = descriptor.get("data") if isinstance(descriptor, dict) else None
+            for vertex in (data or {}).get("vertices", []):
+                if isinstance(vertex, dict) and vertex.get("label") is not None:
+                    labels[json.dumps(vertex.get("id"), sort_keys=True)] = str(
+                        vertex["label"]
+                    )
+        return labels
+
+    async def _answer(self, record):
+        """Publish a chat answer built from the result's facts.
+
+        A model chooses and introduces facts when available; the facts alone are
+        the answer otherwise. A finished workflow never fails because of this.
+        """
+        from .analytics_answers import build_facts, compose
+
+        try:
+            caps = await self.capabilities()
+            titles = {card["id"]: card["title"] for card in caps["operations"]}
+            facts = build_facts(self.result(record["id"]), titles, self._labels(record))
+            if not facts:
+                return
+            choice = {"lead": "", "fact_ids": [fact["id"] for fact in facts[:4]]}
+            source = "facts"
+            question = self._question(record)
+            if question and self.settings.llm_enabled:
+                try:
+                    choice = await compose(self.settings, question, facts)
+                    source = "model"
+                except Exception as exc:  # noqa: BLE001 - the facts still answer
+                    _logger.info("answer composition skipped: %s", exc)
+            await self.events.publish(
+                record["session_id"],
+                "workflow.answer",
+                {
+                    "workflow_id": record["id"],
+                    "revision": record["revision"],
+                    "turn_id": record.get("planning_turn_id"),
+                    "lead": choice["lead"],
+                    "fact_ids": choice["fact_ids"],
+                    "facts": facts,
+                    "source": source,
+                },
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception:  # Never turn a finished workflow into an error.
+            _logger.exception("Could not build the chat answer for %s", record["id"])
 
     async def cancel(self, workflow_id):
         record = self.get(workflow_id)
@@ -639,6 +1056,11 @@ class AnalyticsService:
         return record
 
     def result(self, workflow_id, *, step=None):
+        """A caller-owned copy of a saved result."""
+        return copy.deepcopy(self._saved(workflow_id, step=step))
+
+    def _saved(self, workflow_id, *, step=None):
+        """The shared, cached parse of a saved result; callers must not modify it."""
         record = self.get(workflow_id)
         if step is not None and step not in {
             s["id"] for s in record["validation"]["plan"]["steps"]
@@ -662,19 +1084,136 @@ class AnalyticsService:
         )
         if not path.is_file():
             raise RecordNotFound("No saved result for this workflow revision")
-        return json.loads(path.read_text())
+        return self._read_result(path)
 
-    def port_page(self, workflow_id, step, port, offset, limit):
-        saved = self.result(workflow_id, step=step)
+    def _read_result(self, path):
+        """Parse a saved result once; files never change after they are written."""
+        info = path.stat()
+        key = (str(path), info.st_mtime_ns, info.st_size)
+        cached = self.result_cache.pop(key, None)
+        if cached is None:
+            cached = json.loads(path.read_text())
+        self.result_cache[key] = cached  # Most recently used last.
+        while len(self.result_cache) > RESULT_CACHE_ENTRIES:
+            self.result_cache.pop(next(iter(self.result_cache)))
+        return cached
+
+    def result_summary(self, workflow_id, limit=SUMMARY_ITEMS):
+        """The result with long outputs cut to their first items; pages hold the rest."""
+        saved = self._saved(workflow_id)
+        steps = {}
+        for name, step in saved.get("steps", {}).items():
+            result = step.get("result")
+            if not result:
+                steps[name] = step
+                continue
+            ports = {}
+            for port_name, port in (result.get("ports") or {}).items():
+                value = port.get("value")
+                ports[port_name] = (
+                    {
+                        **port,
+                        "value": value[:limit],
+                        "value_truncated": True,
+                        "total_items": len(value),
+                    }
+                    if isinstance(value, list) and len(value) > limit
+                    else port
+                )
+            steps[name] = {**step, "result": {**result, "ports": ports}}
+        return {**saved, "steps": steps}
+
+    def group_graph(
+        self, workflow_id, step, port, index, *, vertex_limit=2000, edge_limit=10000
+    ):
+        """One returned group with its connections, read from the full input graph.
+
+        Members come from the saved result, so a group is never limited to what a
+        bounded preview happened to include.
+        """
+        record = self.get(workflow_id)
+        saved = self._saved(workflow_id, step=step)
+        output = (saved.get("result", {}).get("ports") or {}).get(port)
+        if output is None:
+            raise RecordNotFound("No such output port")
+        groups = output.get("value")
+        if output.get("type") != "vertex_groups" or not 0 <= index < len(groups):
+            raise AnalyticsError(
+                "This output has no group at that position", "invalid_selection"
+            )
+        members = groups[index].get("vertices", [])
+        plan = record["validation"]["plan"]
+        steps, current, alias = {s["id"]: s for s in plan["steps"]}, step, None
+        for _ in range(len(steps)):  # Derived graphs keep their input's vertex IDs.
+            source = steps.get(current, {}).get("input", {})
+            if "input" in source:
+                alias = source["input"]
+                break
+            current = source.get("step")
+        inputs = json.loads((self._directory(record) / "inputs.json").read_text())
+        graph = (inputs.get(alias) or {}).get("data")
+        if not isinstance(graph, dict) or not isinstance(graph.get("vertices"), list):
+            raise AnalyticsError(
+                "The group's input graph is not available", "result_unavailable", 409
+            )
+        wanted = {_key(vertex) for vertex in members}
+        vertices = [v for v in graph["vertices"] if _key(v.get("id")) in wanted]
+        shown = {_key(v["id"]) for v in vertices[:vertex_limit]}
+        edges = [
+            edge
+            for edge in graph.get("edges", [])
+            if _key(edge.get("source")) in shown and _key(edge.get("target")) in shown
+        ]
+        return {
+            "graph": graph.get("graph", {}),
+            "vertex_count": len(members),
+            "edge_count": len(edges),
+            "vertices": vertices[:vertex_limit],
+            "edges": edges[:edge_limit],
+            "vertices_truncated": len(vertices) > vertex_limit,
+            "edges_truncated": len(edges) > edge_limit,
+            "group": {"step": step, "port": port, "index": index},
+        }
+
+    def port_page(
+        self,
+        workflow_id,
+        step,
+        port,
+        offset,
+        limit,
+        search=None,
+        sort=None,
+        descending=False,
+    ):
+        saved = self._saved(workflow_id, step=step)
         value = saved.get("result", {}).get("ports", {}).get(port)
         if value is None:
             raise RecordNotFound("No such output port")
         rows = value["value"] if isinstance(value["value"], list) else [value["value"]]
+        total = len(rows)
+        positions = list(range(total))
+        if search:
+            positions = [i for i in positions if _matches(rows[i], search)]
+        if sort:
+            # Rows without the field sort last in either direction.
+            present = [
+                i
+                for i in positions
+                if isinstance(rows[i], dict) and rows[i].get(sort) is not None
+            ]
+            chosen_set = set(present)
+            missing = [i for i in positions if i not in chosen_set]
+            present.sort(key=lambda i: _sort_key(rows[i][sort]), reverse=descending)
+            positions = present + missing
+        chosen = positions[offset : offset + limit]
         return {
             **{k: v for k, v in value.items() if k != "value"},
             "offset": offset,
             "limit": limit,
-            "total_items": len(rows),
-            "has_more": offset + limit < len(rows),
-            "items": rows[offset : offset + limit],
+            "total_items": total,
+            "matched_items": len(positions),
+            "has_more": offset + limit < len(positions),
+            "items": [rows[i] for i in chosen],
+            "positions": chosen,
         }

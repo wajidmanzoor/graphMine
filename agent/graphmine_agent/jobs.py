@@ -332,7 +332,9 @@ class JobManager:
         try:
             principal = self.accounts.session_principal(job.session_id)
             with identity_scope(principal):
-                async with self.accounts.execution_slot(principal.user_id):
+                async with self.accounts.execution_slot(
+                    principal.user_id, self._quota_jobs.get(job.id)
+                ):
                     await self._execute_unlimited(job)
         except AccountError as error:
             await self._fail_job(job, error)

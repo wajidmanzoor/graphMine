@@ -61,6 +61,8 @@ class Settings:
     llm_planner_model: str | None = None
     llm_analyst_model: str | None = None
     analytics_planner_model: str | None = None
+    # Writes the chat answer from computed facts; defaults to GRAPHMINE_LLM_MODEL.
+    analytics_answer_model: str | None = None
     analytics_reasoning_effort: str = "medium"
     analytics_thinking_token_budget: int | None = None
     allow_shared_gpu: bool = False
@@ -82,10 +84,20 @@ class Settings:
     server_daily_jobs: int = 100
     max_model_calls: int = 2
     account_pending_jobs: int = 8
-    account_running_jobs: int = 1
+    account_running_jobs: int = 4
     account_job_seconds: int = 300
+    account_queue_seconds: int = 900
+    # Delete conversations after this many days without activity; 0 keeps them.
+    retention_days: int = 0
+    # Online snapshots every backup_hours into this directory, keeping backup_keep.
+    backup_directory: Path | None = None
+    backup_hours: int = 24
+    backup_keep: int = 7
     account_storage_bytes: int = 512 * 1024 * 1024
     account_upload_bytes: int = 64 * 1024 * 1024
+    # Serve HTTPS directly when no reverse proxy terminates TLS.
+    tls_certfile: Path | None = None
+    tls_keyfile: Path | None = None
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -131,6 +143,7 @@ class Settings:
             "account_pending_jobs",
             "account_running_jobs",
             "account_job_seconds",
+            "account_queue_seconds",
             "account_storage_bytes",
             "account_upload_bytes",
         ):
@@ -154,6 +167,20 @@ class Settings:
         ):
             raise ValueError(
                 "Expanded adapter routing requires GRAPHMINE_ROUTER_BASE_URL"
+            )
+        if self.backup_hours < 1 or self.backup_keep < 1:
+            raise ValueError(
+                "GRAPHMINE_BACKUP_HOURS and GRAPHMINE_BACKUP_KEEP must be positive"
+            )
+        if self.backup_directory and self.backup_directory.is_relative_to(
+            self.data_root.resolve()
+        ):
+            raise ValueError("GRAPHMINE_BACKUP_DIR must be outside the data directory")
+        if self.retention_days < 0:
+            raise ValueError("GRAPHMINE_RETENTION_DAYS cannot be negative")
+        if (self.tls_certfile is None) != (self.tls_keyfile is None):
+            raise ValueError(
+                "Configure both GRAPHMINE_TLS_CERTFILE and GRAPHMINE_TLS_KEYFILE"
             )
         if not 1 <= self.api_port <= 65_535:
             raise ValueError("GRAPHMINE_API_PORT must be between 1 and 65535")
@@ -241,14 +268,31 @@ class Settings:
             server_daily_jobs=_integer("GRAPHMINE_SERVER_DAILY_JOBS", 100),
             max_model_calls=_integer("GRAPHMINE_MAX_MODEL_CALLS", 2),
             account_pending_jobs=_integer("GRAPHMINE_ACCOUNT_PENDING_JOBS", 8),
-            account_running_jobs=_integer("GRAPHMINE_ACCOUNT_RUNNING_JOBS", 1),
+            account_running_jobs=_integer("GRAPHMINE_ACCOUNT_RUNNING_JOBS", 4),
             account_job_seconds=_integer("GRAPHMINE_ACCOUNT_JOB_SECONDS", 300),
+            account_queue_seconds=_integer("GRAPHMINE_ACCOUNT_QUEUE_SECONDS", 900),
+            retention_days=_integer("GRAPHMINE_RETENTION_DAYS", 0),
+            backup_directory=Path(os.environ["GRAPHMINE_BACKUP_DIR"])
+            .expanduser()
+            .resolve()
+            if os.getenv("GRAPHMINE_BACKUP_DIR")
+            else None,
+            backup_hours=_integer("GRAPHMINE_BACKUP_HOURS", 24),
+            backup_keep=_integer("GRAPHMINE_BACKUP_KEEP", 7),
             account_storage_bytes=_integer(
                 "GRAPHMINE_ACCOUNT_STORAGE_BYTES", 512 * 1024 * 1024
             ),
             account_upload_bytes=_integer(
                 "GRAPHMINE_ACCOUNT_UPLOAD_BYTES", 64 * 1024 * 1024
             ),
+            tls_certfile=Path(os.environ["GRAPHMINE_TLS_CERTFILE"])
+            .expanduser()
+            .resolve()
+            if os.getenv("GRAPHMINE_TLS_CERTFILE")
+            else None,
+            tls_keyfile=Path(os.environ["GRAPHMINE_TLS_KEYFILE"]).expanduser().resolve()
+            if os.getenv("GRAPHMINE_TLS_KEYFILE")
+            else None,
             repository_root=root,
             data_root=data_root,
             graphmine_binary=Path(
@@ -325,6 +369,10 @@ class Settings:
             analytics_reasoning_effort=os.getenv(
                 "GRAPHMINE_ANALYTICS_REASONING_EFFORT", "medium"
             ),
+            analytics_answer_model=os.getenv(
+                "GRAPHMINE_ANALYTICS_ANSWER_MODEL", ""
+            ).strip()
+            or None,
             analytics_thinking_token_budget=_integer(
                 "GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET", 0
             )

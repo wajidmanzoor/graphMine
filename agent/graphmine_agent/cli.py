@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -113,6 +114,17 @@ def parser() -> argparse.ArgumentParser:
     subcommands.add_parser(
         "check", help="validate contracts and probe the GraphMine CLI"
     )
+    backup = subcommands.add_parser(
+        "backup", help="snapshot accounts, conversations and results while running"
+    )
+    backup.add_argument("destination", type=Path, help="a new directory to create")
+    verify = subcommands.add_parser("verify-backup", help="check a snapshot's hashes")
+    verify.add_argument("snapshot", type=Path)
+    restore = subcommands.add_parser(
+        "restore-backup", help="restore a snapshot into a new data directory"
+    )
+    restore.add_argument("snapshot", type=Path)
+    restore.add_argument("destination", type=Path)
     schemas = subcommands.add_parser("export-schemas", help="write public JSON Schemas")
     schemas.add_argument("destination", nargs="?", type=Path)
     evaluation = subcommands.add_parser(
@@ -221,13 +233,41 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         return chat_main(settings, arguments)
     if arguments.command in {None, "serve"}:
+        host = getattr(arguments, "host", None) or settings.api_host
+        if (
+            settings.accounts_enabled
+            and not settings.account_cookie_secure
+            and host not in {"127.0.0.1", "localhost", "::1"}
+        ):
+            print(
+                f"Warning: passwords and login cookies travel unencrypted on {host}. "
+                "Serve HTTPS (GRAPHMINE_TLS_CERTFILE/GRAPHMINE_TLS_KEYFILE or a "
+                "reverse proxy) and set GRAPHMINE_ACCOUNT_COOKIE_SECURE=true.",
+                file=sys.stderr,
+            )
         uvicorn.run(
             create_app(settings),
-            host=getattr(arguments, "host", None) or settings.api_host,
+            host=host,
             port=getattr(arguments, "port", None) or settings.api_port,
             reload=getattr(arguments, "reload", False),
             limit_concurrency=256 if settings.accounts_enabled else None,
+            ssl_certfile=settings.tls_certfile,
+            ssl_keyfile=settings.tls_keyfile,
         )
+        return 0
+    if arguments.command in {"backup", "verify-backup", "restore-backup"}:
+        from .backup import online_snapshot, restore_snapshot, verify_snapshot
+
+        if arguments.command == "backup":
+            report = online_snapshot(settings.data_root, arguments.destination)
+        elif arguments.command == "verify-backup":
+            report = verify_snapshot(arguments.snapshot)
+        else:
+            report = restore_snapshot(arguments.snapshot, arguments.destination)
+        summary = {
+            key: report[key] for key in ("created_at", "database") if key in report
+        }
+        print(json.dumps(summary or report, indent=2, default=str))
         return 0
     if arguments.command == "check":
         runtime = build_runtime(settings)

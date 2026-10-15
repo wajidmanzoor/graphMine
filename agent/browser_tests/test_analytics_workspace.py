@@ -238,7 +238,10 @@ def browser(server, tmp_path):
     driver.refresh()
     try:
         WebDriverWait(driver, 40).until(
-            lambda d: "Library ready" in d.find_element(By.ID, "connection-state").text
+            lambda d: (
+                d.find_element(By.ID, "connection-state").get_attribute("data-state")
+                == "ready"
+            )
         )
         capture(driver, "domain-selection.png")
         driver.find_element(By.CSS_SELECTOR, '[data-domain="general"]').click()
@@ -1127,7 +1130,6 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
         payload["domain"]["id"] == "fraud_detection"
         for payload in authored_model_transport[2][start:]
     )
-    assert browser.find_element(By.ID, "model-reasoning-panel").get_attribute("open")
     assert (
         len(
             browser.find_elements(
@@ -1136,8 +1138,13 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
         )
         == 1
     )
-    browser.find_element(By.CSS_SELECTOR, "#model-reasoning details > summary").click()
-    assert "Authored reasoning" in browser.find_element(By.ID, "model-reasoning").text
+    browser.find_element(
+        By.CSS_SELECTOR, "#activity-list .turn-reasoning > summary"
+    ).click()
+    browser.find_element(
+        By.CSS_SELECTOR, "#activity-list .turn-reasoning .reasoning-record > summary"
+    ).click()
+    assert "Authored reasoning" in browser.find_element(By.ID, "activity-list").text
     capture(browser, "domain-chat-reasoning.png")
     link = browser.find_element(By.CSS_SELECTOR, "#messages .result-link")
     link.click()

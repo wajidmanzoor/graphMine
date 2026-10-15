@@ -11,9 +11,14 @@ from pydantic import BaseModel, ConfigDict, Field
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import Headers
 
+from .analytics_planning import PLANNING_DEADLINE_SECONDS
 from .identity import AccountError, current_principal, identity_scope
 
 COOKIE = "graphmine_session"
+# Request limits only backstop the work: the planner reports its own timeout
+# to the conversation, so its limit must outlast the planner deadline.
+REQUEST_SECONDS = 300
+PLANNING_REQUEST_SECONDS = PLANNING_DEADLINE_SECONDS + 60
 
 
 def account_response(error):
@@ -155,32 +160,36 @@ class AccountMiddleware:
                         )
                 return message
 
-            costly = (
-                not public
-                and path != "/api/auth/logout"
-                and (
-                    method == "POST"
-                    or path.endswith(
-                        (
-                            "/history/archive",
-                            "/graph-preview",
-                            "/analytics/capabilities",
-                        )
-                    )
-                )
-            )
+            # Separate slots per kind of work: a long planning request must not
+            # block previews, uploads or approvals. Capabilities are cached and
+            # shared server-wide, so they need no slot.
+            kind = per_user = None
+            limit = REQUEST_SECONDS
+            if not public and path != "/api/auth/logout":
+                if path.endswith("/graph-preview") or (
+                    method == "GET" and path.endswith("/graph") and "/groups/" in path
+                ):
+                    kind, per_user = "preview", 2
+                elif method == "POST" and path.endswith(
+                    ("/plan", "/chat", "/interpret")
+                ):
+                    kind, per_user = "planning", 1
+                    limit = PLANNING_REQUEST_SECONDS
+                elif method == "POST" or path.endswith("/history/archive"):
+                    kind, per_user = "request", 1
+            costly = kind is not None
             if websocket:
                 lease = runtime.accounts.acquire(
                     principal.user_id, "websocket", 200, 2, 3630
                 )
             elif costly:
                 lease = runtime.accounts.acquire(
-                    principal.user_id, "request", 8, ttl=330
+                    principal.user_id, kind, 8, per_user, ttl=limit + 30
                 )
             with identity_scope(principal):
                 # Polls, cancellation and logout remain usable during expensive work.
                 if costly or websocket:
-                    async with asyncio.timeout(3600 if websocket else 300):
+                    async with asyncio.timeout(3600 if websocket else limit):
                         await self.app(scope, bounded_receive, tracked_send)
                 else:
                     await self.app(scope, bounded_receive, tracked_send)

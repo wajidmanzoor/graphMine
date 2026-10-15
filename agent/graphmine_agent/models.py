@@ -60,8 +60,16 @@ class SessionRecord(StrictModel):
     title: str | None = None
     domain_id: str = "general"
     participant_id: str | None = Field(default=None, max_length=80)
+    archived: bool = False
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
+
+
+class SessionUpdate(StrictModel):
+    """Rename or archive a conversation; omitted fields stay unchanged."""
+
+    title: str | None = Field(default=None, max_length=200)
+    archived: bool | None = None
 
 
 class SessionCreate(StrictModel):

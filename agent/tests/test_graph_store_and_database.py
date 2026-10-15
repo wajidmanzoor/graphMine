@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import sqlite3
 from pathlib import Path
 
 import pytest
-from graphmine_agent.database import Database
+from graphmine_agent.database import SCHEMA_VERSION, Database, SchemaVersionError
 from graphmine_agent.graph_store import GraphStore, UploadError
 from graphmine_agent.models import (
     ConversationEvent,
@@ -157,3 +158,15 @@ def test_event_replay_is_ordered_and_respects_cursor(
         "job.running"
     ]
     assert second.sequence and first.sequence and second.sequence > first.sequence
+
+
+def test_data_written_by_a_newer_schema_is_never_opened(tmp_path: Path) -> None:
+    path = tmp_path / "agent.sqlite3"
+    Database(path)
+    with sqlite3.connect(path) as connection:
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == (
+            SCHEMA_VERSION
+        )
+        connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION + 1}")
+    with pytest.raises(SchemaVersionError, match="GRAPHMINE_AGENT_DATA_ROOT"):
+        Database(path)

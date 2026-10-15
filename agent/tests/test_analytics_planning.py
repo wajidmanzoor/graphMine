@@ -15,6 +15,7 @@ from graphmine_agent.analytics import AnalyticsError, AnalyticsService, Workflow
 from graphmine_agent.analytics_planning import (
     AnalyticsPlanner,
     PlanningRequest,
+    PlanningSelection,
     decoded_plan,
     family_catalog,
     family_schema,
@@ -23,7 +24,7 @@ from graphmine_agent.analytics_planning import (
     plan_schema,
 )
 from graphmine_agent.jobs import EventBus
-from graphmine_agent.models import FileRole, SessionRecord
+from graphmine_agent.models import ConversationEvent, FileRole, SessionRecord
 
 
 class ReplayPlanner(AnalyticsPlanner):
@@ -36,6 +37,169 @@ class ReplayPlanner(AnalyticsPlanner):
         self.calls.append((stage, deepcopy(payload), deepcopy(schema)))
         assert self.responses, "Unexpected extra model call"
         return deepcopy(self.responses.pop(0))
+
+
+class StalledPlanner(AnalyticsPlanner):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.started = asyncio.Event()
+
+    async def _generate(self, stage, payload, schema):
+        self.started.set()
+        await asyncio.Event().wait()
+
+
+async def test_cancelled_planning_answers_the_question_for_retry(setup):
+    settings, analytics, events, session, body = setup
+    planner = StalledPlanner(settings, analytics, events)
+    task = asyncio.create_task(planner.plan(session, body))
+    await asyncio.wait_for(planner.started.wait(), 120)
+    task.cancel()  # As a request time limit, disconnect or shutdown would.
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    asked, answer = [
+        event.payload
+        for event in analytics.database.events(session)
+        if event.type == "workflow.chat"
+    ]
+    assert asked["inputs"] == {k: v.model_dump() for k, v in body.inputs.items()}
+    assert asked["device"] == body.device
+    assert answer["turn_id"] == asked["turn_id"]
+    assert answer["status"] == "failed" and answer["code"] == "interrupted"
+    assert answer["retryable"]
+    assert analytics.database.close_unanswered_planning() == 0
+
+
+async def test_follow_up_sees_earlier_results_selection_and_named_entities(
+    setup, monkeypatch
+):
+    settings, analytics, events, session, body = setup
+    earlier = {
+        "order": ["core"],
+        "steps": {
+            "core": {
+                "status": "completed",
+                "result": {
+                    "operation": "maximal-cliques",
+                    "ports": {
+                        "cliques": {
+                            "type": "vertex_groups",
+                            "value": [
+                                {"group": 0, "vertices": [0, 1]},
+                                {"group": 1, "vertices": [0, 1, 2]},
+                            ],
+                        }
+                    },
+                },
+            }
+        },
+    }
+    original = analytics.get
+    monkeypatch.setattr(
+        analytics,
+        "get",
+        lambda wid: (
+            {
+                "id": wid,
+                "session_id": session,
+                "validation": {"plan": {"steps": []}},
+                "input_files": {},
+            }
+            if wid == "earlier"
+            else original(wid)
+        ),
+    )
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[family(), operation("triangle-counting"), proposal()],
+    )
+    monkeypatch.setattr(planner, "_saved_result", lambda wid: earlier)
+    body.message = "Count the triangles around vertex 2 in this clique."
+    body.previous_workflow_id = "earlier"
+    body.selection = PlanningSelection(
+        workflow_id="earlier", step="core", port="cliques", index=1, label="Clique 2"
+    )
+    await planner.plan(session, body)
+    (_, routed, _), _, (_, planned, _) = planner.calls
+    assert planned["current_selection"]["vertices"] == [0, 1, 2]
+    assert planned["current_selection"]["binding_selection"]["index"] == 1
+    assert "vertices" not in routed["current_selection"]
+    largest = planned["previous_results"][0]["ports"]["cliques"]["largest"][0]
+    assert largest == {"index": 1, "group": 1, "size": 3}
+    assert [row["id"] for row in planned["matched_entities"]] == [2]
+    assert "context_rules" in planned
+
+
+async def test_follow_up_skips_family_selection(setup, monkeypatch):
+    settings, analytics, events, session, body = setup
+    original = analytics.get
+    earlier = {
+        "id": "earlier",
+        "session_id": session,
+        "validation": {"plan": {"steps": [{"operation": "triangle-counting"}]}},
+        "input_files": {},
+    }
+    monkeypatch.setattr(
+        analytics, "get", lambda wid: earlier if wid == "earlier" else original(wid)
+    )
+    planner = ReplayPlanner(
+        settings,
+        analytics,
+        events,
+        responses=[operation("triangle-counting"), proposal()],
+    )
+    monkeypatch.setattr(planner, "_saved_result", lambda wid: None)
+    body.previous_workflow_id = "earlier"
+    result = await planner.plan(session, body)
+    assert result["status"] == "ready"
+    assert [stage for stage, _, _ in planner.calls] == ["operation", "plan"]
+    assert result["trace"][0]["message"].startswith("Follow-up")
+
+
+async def test_clarifying_questions_offer_clickable_choices(setup):
+    settings, analytics, events, session, body = setup
+    asking = {
+        "status": "needs_information",
+        "families": [],
+        "message": "Which kind of group do you mean?",
+        "choices": ["The single largest clique", "Every maximal clique"],
+    }
+    planner = ReplayPlanner(settings, analytics, events, responses=[asking])
+    result = await planner.plan(session, body)
+    assert result["choices"] == asking["choices"]
+    reply = [
+        event.payload
+        for event in analytics.database.events(session)
+        if event.type == "workflow.chat" and event.payload["role"] == "assistant"
+    ][-1]
+    assert reply["choices"] == asking["choices"]
+    families = [{"id": "patterns"}]
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(
+            {**family(), "choices": ["Not a question"]}, family_schema(families)
+        )
+
+
+def test_restart_answers_questions_left_planning(database, session):
+    def chat(turn, role):
+        database.add_event(
+            ConversationEvent(
+                session_id=session.id,
+                type="workflow.chat",
+                payload={"turn_id": turn, "role": role, "message": "Find groups"},
+            )
+        )
+
+    chat("lost", "user")
+    chat("answered", "user")
+    chat("answered", "assistant")
+    assert database.close_unanswered_planning() == 1
+    answer = database.events(session.id)[-1].payload
+    assert answer["turn_id"] == "lost" and answer["status"] == "failed"
+    assert answer["code"] == "interrupted" and answer["retryable"]
+    assert database.close_unanswered_planning() == 0
 
 
 @pytest.mark.asyncio
@@ -499,6 +663,69 @@ async def test_all_current_profiles_have_one_family_and_valid_plan_schemas(setup
         family_catalog([{**caps["operations"][0], "family": "unregistered_family"}])
 
 
+@pytest.mark.parametrize(
+    "reply, code",
+    [
+        (
+            httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "finish_reason": "length",
+                            "message": {
+                                "content": '{"status": "sel',
+                                "reasoning": "Long",
+                            },
+                        }
+                    ],
+                    "usage": {"prompt_tokens": 900, "completion_tokens": 3072},
+                },
+            ),
+            "planner_truncated",
+        ),
+        (httpx.ReadTimeout("slow"), "planner_timeout"),
+        (httpx.Response(502, json={}), "planner_unavailable"),
+    ],
+)
+async def test_planner_failures_are_classified_and_recorded(
+    setup, monkeypatch, reply, code
+):
+    settings, analytics, events, session, _body = setup
+    planner = AnalyticsPlanner(
+        replace(settings, llm_enabled=True, llm_base_url="http://planner.test/v1"),
+        analytics,
+        events,
+    )
+
+    def respond(_request):
+        if isinstance(reply, Exception):
+            raise reply
+        return reply
+
+    original = httpx.AsyncClient
+    monkeypatch.setattr(
+        "graphmine_agent.analytics_planning.httpx.AsyncClient",
+        lambda **kwargs: original(transport=httpx.MockTransport(respond), **kwargs),
+    )
+    planner.conversation.set({"session_id": session, "turn_id": "turn"})
+    with pytest.raises(AnalyticsError) as caught:
+        await planner._generate(
+            "family",
+            {"families": [{"id": "patterns"}]},
+            family_schema([{"id": "patterns"}]),
+        )
+    assert caught.value.code == code
+    saved = analytics.database.events(session)
+    report = next(e.payload for e in saved if e.type == "workflow.diagnostics")
+    assert report["stage"] == "family" and report["outcome"] == code
+    assert report["seconds"] >= 0
+    if code == "planner_truncated":
+        assert report["finish_reason"] == "length"
+        assert report["usage"]["completion_tokens"] == 3072
+        assert any(e.type == "workflow.reasoning" for e in saved)
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("native_model", [None, "native-workflow-adapter"])
 @pytest.mark.parametrize("thinking_budget", [None, 0, 1536])
@@ -946,14 +1173,15 @@ async def test_followup_retains_reviewed_plan_context_without_automatic_executio
         settings,
         analytics,
         events,
+        # A follow-up starts from the earlier families, so no family stage runs.
         responses=[
-            family(),
             operation("triangle-counting"),
             proposal(parameters={"mode": "enumerate"}),
         ],
     )
     response = await planner.plan(session, body)
     assert response["status"] == "ready"
+    assert [stage for stage, _, _ in planner.calls] == ["operation", "plan"]
     for _, payload, _ in planner.calls:
         assert payload["previous_plan"] == initial["validation"]["plan"]
         assert payload["previous_input_files"] == initial["input_files"]

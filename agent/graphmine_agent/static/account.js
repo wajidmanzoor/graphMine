@@ -3,7 +3,7 @@
   const nativeFetch = window.fetch.bind(window);
   const account = window.GraphMineAccount = {enabled: false, ready: null};
   if (document.getElementById("graphmine-report")) { account.ready = Promise.resolve(false); return; }
-  let dialog, error, username, password, settings, accountName, manageUsers, usagePanel, profileName, profileRole, resolveLogin;
+  let dialog, error, username, password, settings, accountName, manageUsers, usagePanel, profileName, profileRole, resolveLogin, expired = false;
   let authenticated = false, refreshTimer, identity, adminData = [], selectedUser;
   const tabs = new Map(), panels = new Map();
   const make = (tag, attrs = {}, text) => {
@@ -26,7 +26,7 @@
     const response = await nativeFetch(path, {...options, credentials: "same-origin", headers: {"Content-Type": "application/json", "X-GraphMine-Request": "1", ...options.headers}});
     const body = response.status === 204 ? {} : await response.json();
     if (!response.ok) {
-      if (response.status === 401 && authenticated && path !== "/api/auth/login") showLogin("Your session expired. Please sign in again.");
+      if (response.status === 401 && authenticated && path !== "/api/auth/login") expire();
       throw new Error(body.error?.message || (response.status === 422 ? "Check the fields and try again." : "The request could not be completed. Please try again."));
     }
     return body;
@@ -69,12 +69,23 @@
     const q = data.quota;
     const card = make("section", {class: "account-card account-usage-card"});
     card.append(make("p", {class: "account-eyebrow"}, "YOUR AI ALLOWANCE"), tokenMeter(q, {id: "account-quota"}), hint("Input and generated tokens count toward your daily allowance."));
+    // Tokens are abstract; recent questions give a practical sense of what is left.
+    if (q.questions_left !== null && q.questions_left !== undefined) card.append(make("p", {class: "account-questions-left"}, `About ${q.questions_left.toLocaleString()} more questions today, at your recent average of ${q.average_question_tokens.toLocaleString()} tokens per question.`));
+    if (q.tokens_reserved) card.append(hint(`${q.tokens_reserved.toLocaleString()} of the used tokens are reserved for a request in progress; the unused part returns when it finishes.`));
+    if (q.recent_questions?.length) {
+      const list = make("ul", {class: "account-recent"});
+      for (const turn of q.recent_questions) list.append(make("li", {}, `${turn.tokens.toLocaleString()} tokens · ${new Date(turn.at).toLocaleString([], {month: "short", day: "numeric", hour: "numeric", minute: "2-digit"})}`));
+      card.append(make("h4", {}, "Recent questions"), list);
+    }
+    if (data.user.role !== "admin") card.append(hint(`Every account draws on a shared server pool of ${q.server_token_limit.toLocaleString()} tokens per day. If the pool runs out first, everyone waits for its reset.`));
     const details = make("div", {class: "account-stat-grid"});
     const jobs = make("section", {class: "account-card"});
     jobs.append(make("h3", {}, "Graph jobs"), make("strong", {class: "account-stat"}, `${Math.max(0, q.job_limit - q.jobs_used)} / ${q.job_limit}`), hint("Jobs remaining in this 24-hour period."));
     const reset = make("section", {class: "account-card"});
     reset.append(make("h3", {}, "Automatic reset"), make("strong", {}, new Date(q.resets_at).toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})), hint("Your allowance renews every 24 hours. Signing out does not reset usage."));
-    details.append(jobs, reset);
+    const storage = make("section", {class: "account-card"}), mib = bytes => `${(bytes / 2 ** 20).toLocaleString([], {maximumFractionDigits: 1})} MiB`;
+    if (q.storage) storage.append(make("h3", {}, "Storage"), make("strong", {class: "account-stat"}, `${mib(q.storage.used)} / ${mib(q.storage.limit)}`), hint(`Uploads ${mib(q.storage.uploads)}, saved analyses ${mib(q.storage.results)}. Delete conversations or files you no longer need to free space.`));
+    details.append(jobs, reset, ...(q.storage ? [storage] : []));
     usagePanel.replaceChildren(make("h3", {class: "account-section-title"}, "Usage"), hint("See what you have used and when your allowance renews."), card, details);
     if (data.user.role === "admin") {
       const server = make("section", {class: "account-card account-server-usage"});
@@ -293,8 +304,13 @@
     (document.querySelector(".header-actions") || document.querySelector(".app-header") || document.body).append(bar);
     for (const id of ["connection-button", "settings-button"]) { const old = document.getElementById(id); if (old) old.hidden = true; }
   }
+  // Signing in again reloads the page, so nothing needs to resume polling.
+  function expire() {
+    expired = true;
+    showLogin("Your session expired. Please sign in again.");
+  }
   async function refreshUsage() {
-    if (!account.enabled || !authenticated) return;
+    if (!account.enabled || !authenticated || expired) return;
     try { renderUsage(await request("/api/auth/me")); } catch (_) { /* Request handles session expiry; a later refresh retries network failures. */ }
   }
   window.fetch = async (input, options = {}) => {
@@ -303,7 +319,7 @@
     const headers = new Headers(options.headers || (input instanceof Request ? input.headers : undefined));
     headers.delete("Authorization"); headers.delete("X-GraphMine-Token"); headers.set("X-GraphMine-Request", "1");
     const response = await nativeFetch(input, {...options, headers, credentials: "same-origin"});
-    if (response.status === 401) showLogin("Your session expired. Please sign in again.");
+    if (response.status === 401) expire();
     if ((options.method || (input instanceof Request ? input.method : "GET")) !== "GET" || response.status === 429) {
       clearTimeout(refreshTimer); refreshTimer = setTimeout(refreshUsage, 200);
     }

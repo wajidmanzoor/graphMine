@@ -1,19 +1,28 @@
 import asyncio
 import hashlib
 import json
+import sqlite3
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import nullcontext
 from dataclasses import replace
+from pathlib import Path
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import httpx
 import pytest
 from fastapi.testclient import TestClient
+from graphmine_agent import account_api
 from graphmine_agent.accounts import DAY, Accounts, model_post
-from graphmine_agent.api import create_app
+from graphmine_agent.analytics_planning import (
+    PLANNING_DEADLINE_SECONDS,
+    AnalyticsPlanner,
+)
+from graphmine_agent.api import create_app, enforce_retention
 from graphmine_agent.database import Database
 from graphmine_agent.identity import AccountError, Principal, identity_scope
-from graphmine_agent.models import SessionRecord
+from graphmine_agent.models import ConversationEvent, SessionRecord
 from starlette.websockets import WebSocketDisconnect
 
 PASSWORD = "long-test-password-42"
@@ -270,6 +279,29 @@ def test_atomic_shared_budget_and_concurrency_across_connections(account_setting
     other.release(other.acquire("alice", "request", 8))
 
 
+def test_usage_reports_recent_questions_and_reserved_tokens(account_settings):
+    accounts, database = store(account_settings)
+    user = accounts.create_user("alice", PASSWORD)["id"]
+    with identity_scope(Principal(user, "alice", accounts)):
+        session = database.create_session(SessionRecord(domain_id="general"))
+    for turn, tokens in (("t1", 3000), ("t1", 1000), ("t2", 6000)):
+        database.add_event(
+            ConversationEvent(
+                session_id=session.id,
+                type="workflow.diagnostics",
+                payload={"turn_id": turn, "usage": {"total_tokens": tokens}},
+            )
+        )
+    lease = accounts.reserve_tokens(user, 2500)
+    usage = accounts.usage(user)
+    assert usage["tokens_reserved"] == 2500
+    assert sorted(turn["tokens"] for turn in usage["recent_questions"]) == [4000, 6000]
+    assert usage["average_question_tokens"] == 5000
+    assert usage["questions_left"] == (50000 - 2500) // 5000
+    accounts.settle_tokens(lease, 100)
+    assert accounts.usage(user)["tokens_reserved"] == 0
+
+
 def test_settlement_cannot_refund_next_days_allowance(account_settings):
     now = [1000000.0]
     accounts, _ = store(account_settings, now)
@@ -335,8 +367,42 @@ async def test_exhausted_quota_never_calls_model_and_cancellation_is_charged(
 
 
 @pytest.mark.asyncio
+async def test_server_side_model_failures_are_refunded(account_settings):
+    accounts, _ = store(account_settings)
+    request = {"messages": [], "max_completion_tokens": 1000}
+
+    async def call(client):
+        with identity_scope(Principal("alice", "alice", accounts)):
+            return await model_post(client, "/chat/completions", json=request)
+
+    def unreachable(_request):
+        raise httpx.ConnectError("refused")
+
+    for handler in (unreachable, lambda _request: httpx.Response(503, json={})):
+        async with httpx.AsyncClient(
+            transport=httpx.MockTransport(handler), base_url="http://model.test"
+        ) as client:
+            with (
+                pytest.raises(httpx.ConnectError)
+                if handler is unreachable
+                else (nullcontext())
+            ):
+                await call(client)
+        assert accounts.usage("alice")["tokens_used"] == 0
+    # A timeout charges the counted input, not the unused output allowance.
+    client = AsyncMock()
+    client.post.side_effect = httpx.ReadTimeout("slow")
+    with pytest.raises(httpx.ReadTimeout):
+        await call(client)
+    estimate = len(json.dumps(request, ensure_ascii=False).encode()) + 1024
+    assert accounts.usage("alice")["tokens_used"] == estimate
+
+
+@pytest.mark.asyncio
 async def test_graph_jobs_are_bounded_independently_of_ai_tokens(account_settings):
-    accounts, _ = store(replace(account_settings, account_daily_jobs=1))
+    accounts, _ = store(
+        replace(account_settings, account_daily_jobs=1, account_running_jobs=1)
+    )
     lease = accounts.admit_jobs("alice")
     with pytest.raises(AccountError) as failure:
         accounts.admit_jobs("alice")
@@ -388,6 +454,264 @@ def test_request_and_per_account_storage_limits(account_settings, triangle_graph
             == 413
         )
         assert len(client.get(f"/api/sessions/{sid}/files", headers=auth).json()) == 1
+
+
+def test_planning_does_not_block_previews_uploads_or_capabilities(
+    account_settings, triangle_graph
+):
+    with TestClient(create_app(account_settings)) as client:
+        runtime = client.app.state.runtime
+        user = runtime.accounts.create_user("alice", PASSWORD)["id"]
+        runtime.analytics.capabilities = AsyncMock(return_value={"operations": []})
+        auth = login(client)
+        sid = client.post(
+            "/api/sessions", json={"domain_id": "general"}, headers=auth
+        ).json()["id"]
+        files = f"/api/sessions/{sid}/files"
+        fid = client.post(
+            files, files={"file": ("graph.json", triangle_graph)}, headers=auth
+        ).json()["id"]
+        # A long planning request holds only the planning slot.
+        planning = runtime.accounts.acquire(user, "planning", 8)
+        preview = f"/api/files/{fid}/graph-preview"
+        assert client.get(preview, headers=auth).status_code == 200
+        assert client.get("/api/analytics/capabilities", headers=auth).json() == {
+            "operations": []
+        }
+        assert (
+            client.post(
+                files, files={"file": ("again.json", triangle_graph)}, headers=auth
+            ).status_code
+            == 201
+        )
+        second = client.post(
+            f"/api/sessions/{sid}/analytics/plan", json={}, headers=auth
+        )
+        assert second.status_code == 429
+        assert second.json()["error"]["code"] == "concurrency_limit"
+        runtime.accounts.release(planning)
+        # Previews still have a bounded per-account slot of their own.
+        held = [runtime.accounts.acquire(user, "preview", 8, 2) for _ in range(2)]
+        assert client.get(preview, headers=auth).status_code == 429
+        for lease in held:
+            runtime.accounts.release(lease)
+        assert client.get(preview, headers=auth).status_code == 200
+
+
+def test_planning_request_limit_outlasts_the_planner_deadline(
+    account_settings, monkeypatch
+):
+    assert account_api.PLANNING_REQUEST_SECONDS > PLANNING_DEADLINE_SECONDS
+    # Shortened limits keep the test fast; the ordering is what matters.
+
+    async def slow(*_args, **_kwargs):
+        await asyncio.sleep(0.2)
+        return {"status": "ready"}
+
+    monkeypatch.setattr(AnalyticsPlanner, "plan", slow)
+    with TestClient(create_app(account_settings)) as client:
+        runtime = client.app.state.runtime
+        runtime.accounts.create_user("alice", PASSWORD)
+        runtime.analytics.create = slow
+        auth = login(client)
+        sid = client.post(
+            "/api/sessions", json={"domain_id": "general"}, headers=auth
+        ).json()["id"]
+        # Tightened only after setup, so ordinary setup requests are unaffected.
+        monkeypatch.setattr(account_api, "REQUEST_SECONDS", 0.05)
+        monkeypatch.setattr(account_api, "PLANNING_REQUEST_SECONDS", 5)
+        planned = client.post(
+            f"/api/sessions/{sid}/analytics/plan",
+            json={"message": "Count triangles", "inputs": {"main": {"file_id": "f"}}},
+            headers=auth,
+        )
+        assert planned.status_code == 200, planned.text
+        ordinary = client.post(
+            f"/api/sessions/{sid}/workflows",
+            json={"mode": "expert", "plan": {}, "inputs": {"main": {"file_id": "f"}}},
+            headers=auth,
+        )
+        assert ordinary.json()["error"]["code"] == "request_time_limit"
+
+
+def test_conversations_can_be_renamed_archived_and_deleted(
+    account_settings, triangle_graph
+):
+    settings = replace(account_settings, account_storage_bytes=len(triangle_graph))
+    with TestClient(create_app(settings)) as client:
+        runtime = client.app.state.runtime
+        for username in ("alice", "bob"):
+            runtime.accounts.create_user(username, PASSWORD)
+        alice, bob = login(client), login(client, "bob")
+        sid = client.post(
+            "/api/sessions", json={"domain_id": "general"}, headers=alice
+        ).json()["id"]
+        files = f"/api/sessions/{sid}/files"
+        fid = client.post(
+            files, files={"file": ("graph.json", triangle_graph)}, headers=alice
+        ).json()["id"]
+        renamed = client.patch(
+            f"/api/sessions/{sid}",
+            json={"title": "Team groups", "archived": True},
+            headers=alice,
+        ).json()
+        assert (renamed["title"], renamed["archived"]) == ("Team groups", True)
+        assert (
+            client.patch(
+                f"/api/sessions/{sid}", json={"title": "x"}, headers=bob
+            ).status_code
+            == 404
+        )
+        assert client.delete(f"/api/sessions/{sid}", headers=bob).status_code == 404
+        # A file read by a running analysis cannot be removed.
+        runtime.analytics._save(
+            {
+                "id": "running-workflow",
+                "session_id": sid,
+                "status": "running",
+                "input_files": {"main": {"file_id": fid}},
+            }
+        )
+        assert client.delete(f"/api/files/{fid}", headers=alice).status_code == 409
+        assert client.delete(f"/api/sessions/{sid}", headers=alice).status_code == 409
+        runtime.analytics._save(
+            {
+                "id": "running-workflow",
+                "session_id": sid,
+                "status": "completed",
+                "input_files": {"main": {"file_id": fid}},
+            }
+        )
+        # Deleting a file frees the account's storage for a new upload.
+        assert client.delete(f"/api/files/{fid}", headers=alice).status_code == 204
+        assert client.get(files, headers=alice).json() == []
+        assert (
+            client.post(
+                files, files={"file": ("again.json", triangle_graph)}, headers=alice
+            ).status_code
+            == 201
+        )
+        folder = settings.data_root / "sessions" / sid
+        history = runtime.database.history.session_path(sid)
+        assert folder.exists()
+        assert client.delete(f"/api/sessions/{sid}", headers=alice).status_code == 204
+        assert client.get(f"/api/sessions/{sid}", headers=alice).status_code == 404
+        assert not folder.exists() and not history.exists()
+        assert runtime.analytics._all(sid) == []
+
+
+def test_saved_analyses_count_toward_storage(account_settings, triangle_graph):
+    settings = replace(account_settings, account_storage_bytes=len(triangle_graph) * 3)
+    with TestClient(create_app(settings)) as client:
+        runtime = client.app.state.runtime
+        user = runtime.accounts.create_user("alice", PASSWORD)["id"]
+        auth = login(client)
+        sid = client.post(
+            "/api/sessions", json={"domain_id": "general"}, headers=auth
+        ).json()["id"]
+        client.post(
+            f"/api/sessions/{sid}/files",
+            files={"file": ("graph.json", triangle_graph)},
+            headers=auth,
+        )
+        record = {"id": "w1", "session_id": sid, "revision": 1, "status": "completed"}
+        runtime.analytics._save(record)
+        runtime.analytics._write(
+            runtime.analytics._directory(record) / "result.json",
+            "x" * (len(triangle_graph) * 2),
+        )
+        storage = runtime.accounts.usage(user)["storage"]
+        assert storage["uploads"] == len(triangle_graph)
+        assert storage["results"] >= 2 * len(triangle_graph)
+        assert runtime.accounts.upload_remaining(user) == 0
+        refused = client.post(
+            f"/api/sessions/{sid}/files",
+            files={"file": ("again.json", triangle_graph)},
+            headers=auth,
+        )
+        assert refused.json()["error"]["code"] == "storage_limit"
+
+
+def test_retention_deletes_idle_conversations_but_not_running_work(account_settings):
+    with TestClient(create_app(replace(account_settings, retention_days=30))) as client:
+        runtime = client.app.state.runtime
+        idle, busy, fresh = (
+            runtime.database.create_session(SessionRecord(domain_id="general")).id
+            for _ in range(3)
+        )
+        old = (datetime.now(UTC) - timedelta(days=40)).isoformat()
+        with runtime.database._connect() as db:
+            db.execute(
+                "UPDATE sessions SET updated_at=? WHERE id IN (?,?)", (old, idle, busy)
+            )
+        runtime.analytics._save(
+            {"id": "busy-work", "session_id": busy, "revision": 1, "status": "running"}
+        )
+
+        async def one_sweep():
+            sweep = asyncio.create_task(enforce_retention(runtime, interval=3600))
+            await asyncio.sleep(0.2)
+            sweep.cancel()
+
+        asyncio.run(one_sweep())
+        remaining = {session.id for session in runtime.database.list_sessions()}
+        assert idle not in remaining
+        assert {busy, fresh} <= remaining
+
+
+def test_online_backup_restores_accounts_conversations_and_analyses(
+    account_settings, triangle_graph, tmp_path
+):
+    from graphmine_agent.backup import (
+        online_snapshot,
+        restore_snapshot,
+        rotate_snapshots,
+    )
+
+    with TestClient(create_app(account_settings)) as client:
+        runtime = client.app.state.runtime
+        runtime.accounts.create_user("alice", PASSWORD)
+        auth = login(client)
+        sid = client.post(
+            "/api/sessions", json={"domain_id": "general"}, headers=auth
+        ).json()["id"]
+        client.post(
+            f"/api/sessions/{sid}/files",
+            files={"file": ("graph.json", triangle_graph)},
+            headers=auth,
+        )
+        record = {"id": "kept", "session_id": sid, "revision": 1, "status": "completed"}
+        runtime.analytics._save(record)
+        runtime.analytics._write(
+            runtime.analytics._directory(record) / "result.json", {"steps": {}}
+        )
+        # Taken while the API is running and holds its store locks.
+        snapshot = tmp_path / "backups" / "graphmine-1"
+        snapshot.parent.mkdir()
+        manifest = online_snapshot(account_settings.data_root, snapshot)
+        assert (
+            manifest["database"]["sessions"] == 1 and manifest["database"]["files"] == 1
+        )
+    restored = restore_snapshot(snapshot, tmp_path / "restored")
+    data = Path(restored["data_root"])
+    store = Database(data / "agent.sqlite3")
+    assert [
+        row["username"]
+        for row in Accounts(
+            replace(account_settings, data_root=data), store
+        ).list_users()
+    ] == ["alice"]
+    assert [session.id for session in store.list_sessions()] == [sid]
+    with sqlite3.connect(data / "analytics/workflows.sqlite3") as ledger:
+        assert ledger.execute("SELECT id FROM workflows").fetchall() == [("kept",)]
+    assert (data / "analytics/kept/revision-1/result.json").is_file()
+    for name in ("graphmine-2", "graphmine-3"):
+        (snapshot.parent / name).mkdir()
+    rotate_snapshots(snapshot.parent, keep=2)
+    assert sorted(p.name for p in snapshot.parent.iterdir()) == [
+        "graphmine-2",
+        "graphmine-3",
+    ]
 
 
 def test_quota_http_errors_do_not_invoke_model(account_settings):
@@ -503,6 +827,94 @@ async def test_model_concurrency_and_job_timeout_release_capacity(account_settin
     assert failure.value.code == "job_time_limit"
     async with accounts.execution_slot("bob"):
         pass
+
+
+@pytest.mark.asyncio
+async def test_queue_wait_has_its_own_limit_and_unstarted_jobs_are_refunded(
+    account_settings,
+):
+    accounts, _ = store(
+        replace(
+            account_settings,
+            account_queue_seconds=1,
+            account_job_seconds=1,
+            account_running_jobs=1,
+        )
+    )
+    busy = accounts.acquire("bob", "execution", 1)
+    admission = accounts.admit_jobs("alice")
+    assert accounts.usage("alice")["jobs_used"] == 1
+    with pytest.raises(AccountError) as failure:
+        async with accounts.execution_slot("alice", admission):
+            pass
+    assert failure.value.code == "queue_time_limit"
+    assert accounts.usage("alice")["jobs_used"] == 0
+    # Cancelling a job that is still waiting is refunded too.
+    admission = accounts.admit_jobs("carol")
+
+    async def wait():
+        async with accounts.execution_slot("carol", admission):
+            pass
+
+    waiting = asyncio.create_task(wait())
+    await asyncio.sleep(0.3)
+    waiting.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await waiting
+    assert accounts.usage("carol")["jobs_used"] == 0
+    # Waiting longer than the run limit does not use the run allowance.
+    accounts = Accounts(
+        replace(
+            account_settings,
+            account_queue_seconds=5,
+            account_job_seconds=1,
+            account_running_jobs=1,
+        ),
+        accounts.database,
+    )
+    admission = accounts.admit_jobs("dave")
+    asyncio.get_running_loop().call_later(1.5, accounts.release, busy)
+    async with accounts.execution_slot("dave", admission):
+        pass
+    assert accounts.usage("dave")["jobs_used"] == 1
+
+
+@pytest.mark.asyncio
+async def test_slots_are_taken_in_arrival_order_without_head_of_line_blocking(
+    account_settings,
+):
+    accounts, _ = store(account_settings)
+    order = []
+
+    async def wait(user):
+        lease = await accounts.wait_slot(user, "execution", 1, 1, 60, 10)
+        order.append(user)
+        return lease
+
+    held = accounts.acquire("zoe", "execution", 1)
+    waiters = {user: asyncio.create_task(wait(user)) for user in ("ann", "ben", "cy")}
+    await asyncio.sleep(0.3)
+    assert order == []
+    for user in ("ann", "ben", "cy"):
+        accounts.release(held)
+        held = await asyncio.wait_for(waiters[user], 5)
+    assert order == ["ann", "ben", "cy"]
+    accounts.release(held)
+    # An account at its own limit does not hold up someone queued behind it.
+    mine = accounts.acquire("ann", "execution", 2)
+    first = asyncio.create_task(accounts.wait_slot("ann", "execution", 2, 1, 60, 10))
+    await asyncio.sleep(0.3)
+    second = await asyncio.wait_for(
+        accounts.wait_slot("ben", "execution", 2, 1, 60, 10), 5
+    )
+    assert not first.done()
+    accounts.release(second)
+    accounts.release(mine)
+    accounts.release(await asyncio.wait_for(first, 5))
+    busy = accounts.acquire("cy", "execution", 1)
+    with pytest.raises(TimeoutError):
+        await accounts.wait_slot("dee", "execution", 1, 1, 60, 0.5)
+    accounts.release(busy)
 
 
 def test_account_cli_prompts_for_password_and_uses_selected_store(
@@ -700,6 +1112,37 @@ def test_https_login_uses_secure_cookie(account_settings):
         assert response.status_code == 200
         assert "; Secure" in response.headers["set-cookie"]
         assert client.get("/api/auth/me").status_code == 200
+
+
+def test_serve_passes_tls_and_warns_about_unencrypted_logins(
+    account_settings, monkeypatch, tmp_path, capsys
+):
+    from graphmine_agent import cli
+
+    with pytest.raises(ValueError, match="GRAPHMINE_TLS_KEYFILE"):
+        replace(account_settings, tls_certfile=tmp_path / "graphmine.crt")
+    launched = []
+    monkeypatch.setattr(cli, "create_app", lambda settings: settings)
+    monkeypatch.setattr(
+        cli.uvicorn, "run", lambda app, **kwargs: launched.append(kwargs)
+    )
+    monkeypatch.setattr(
+        cli.Settings, "from_env", lambda: replace(account_settings, api_host="0.0.0.0")
+    )
+    assert cli.main(["serve"]) == 0
+    assert "travel unencrypted" in capsys.readouterr().err
+    secure = replace(
+        account_settings,
+        api_host="0.0.0.0",
+        account_cookie_secure=True,
+        tls_certfile=tmp_path / "graphmine.crt",
+        tls_keyfile=tmp_path / "graphmine.key",
+    )
+    monkeypatch.setattr(cli.Settings, "from_env", lambda: secure)
+    assert cli.main(["serve"]) == 0
+    assert "travel unencrypted" not in capsys.readouterr().err
+    assert launched[-1]["ssl_certfile"] == tmp_path / "graphmine.crt"
+    assert launched[-1]["ssl_keyfile"] == tmp_path / "graphmine.key"
 
 
 def test_only_admin_can_manage_users_and_password_policy_is_preserved(account_settings):

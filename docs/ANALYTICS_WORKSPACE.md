@@ -37,17 +37,44 @@ open a separate page for graph exploration, tables and downloads. Chat remains
 visible during planning and execution. Routes such as
 `#workspace/{session}/chat` and `#workspace/{session}/results/{workflow}` restore
 the selected conversation and result on refresh. Old `#workspace/{session}`
-links still open the conversation. Reasoning appears after each model stage
-returns; the UI does not fabricate a live token stream or numerical findings.
+links still open the conversation. Reasoning streams in while each model stage
+runs and the full text is kept when it finishes; the UI never fabricates numerical findings.
 Each question has a request ID. If its HTTP reply is lost, the browser retrieves
 the saved planning outcome from authenticated events without repeating model
 generation. A saved plan retains its original input files and mode for recovery.
-The sidebar puts model reasoning first and keeps a history grouped by question.
+The sidebar shows one timeline per question: its stages, then a collapsible copy of the model's reasoning for that question.
 Understanding, operation selection, plan attempts, and validation outcomes appear
 below it, including failed validation and repairs. New planning events retain the
 proposed plan; older saved workflows supply their validated plan. A follow-up is
 shown immediately and stays visible until its matching request ID is acknowledged.
 The chat scroll follows new messages above any older plan panel.
+
+## Answers, follow-ups and results
+
+When a calculation finishes, the chat answers with facts computed from the
+result: what was found, the main entities, and whether the method is exact or a
+heuristic and whether the output is complete. A model may choose and order these
+facts and add one lead sentence, but it cannot write numbers; if it is
+unavailable, the facts are shown on their own.
+
+Follow-up questions see a short summary of the previous result. On the results
+page, choosing a group or clique and returning to chat attaches it to the next
+question ("Asking about Clique 2"); the server reads its members from the saved
+result. When the planner needs more information it offers short replies to
+click. Interrupted or failed planning shows **Try again**, which resends the
+question with its original inputs.
+
+Before an expensive run (an exact search on more than 5,000 connections, or one
+similar to past runs that took over two minutes), even Normal mode shows the
+steps, guarantees, input size and memory estimate and waits for approval. Queued
+and running work shows elapsed time and place in line.
+
+A selected group is drawn from the full input graph rather than the bounded
+preview. Score outputs size nodes by score, and selecting a path highlights its
+own connections. Outputs longer than 2,000 rows arrive cut down for charts; the
+table then searches and pages through all rows on the server, and **Download
+full result** always downloads everything. Conversations can be renamed,
+archived, searched and deleted, and uploaded files removed.
 
 ## Library and application setup
 

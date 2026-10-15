@@ -5,12 +5,15 @@ import base64
 import binascii
 import hmac
 import json
+import logging
+import shutil
 import sqlite3
 import tempfile
 import zipfile
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -75,6 +78,7 @@ from .models import (
     ResultRecord,
     SessionCreate,
     SessionRecord,
+    SessionUpdate,
 )
 from .planning import PlanValidationError, PlanValidator
 from .reporting import render_report
@@ -95,6 +99,71 @@ class Runtime:
     upload_slots: asyncio.Semaphore
     analytics: AnalyticsService
     accounts: Accounts
+
+
+_logger = logging.getLogger(__name__)
+
+
+def _active_jobs(runtime, session_id):
+    return runtime.database.list_jobs(
+        session_id,
+        {JobStatus.queued, JobStatus.running, JobStatus.interpreting},
+    )
+
+
+def remove_session(runtime, session_id):
+    """Delete a conversation's records, uploads, results and history."""
+    runtime.database.get_session(session_id)
+    if _active_jobs(runtime, session_id):
+        raise AnalyticsError(
+            "Cancel the running analysis before deleting this conversation.",
+            "state_conflict",
+            409,
+        )
+    runtime.analytics.delete_session(session_id)
+    jobs = runtime.database.delete_session(session_id)
+    settings = runtime.settings
+    for path in (
+        settings.data_root / "sessions" / session_id,
+        runtime.database.history.session_path(session_id),
+        *(settings.workspaces_root / job for job in jobs),
+    ):
+        shutil.rmtree(path, ignore_errors=True)
+
+
+async def enforce_retention(runtime, *, interval=6 * 3600):
+    """Delete conversations with no activity for the configured number of days.
+
+    Conversations with running work are skipped and tried again next sweep.
+    """
+    while True:
+        cutoff = datetime.now(UTC) - timedelta(days=runtime.settings.retention_days)
+        for session_id in runtime.database.inactive_sessions(cutoff):
+            try:
+                remove_session(runtime, session_id)
+            except (AnalyticsError, RecordNotFound):
+                continue
+        await asyncio.sleep(interval)
+
+
+async def scheduled_backups(runtime):
+    """Online snapshots, each verified before older ones are rotated away."""
+    from .backup import online_snapshot, rotate_snapshots, verify_snapshot
+
+    settings = runtime.settings
+    settings.backup_directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    while True:
+        target = settings.backup_directory / (
+            "graphmine-" + datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+        )
+        try:
+            await run_in_threadpool(online_snapshot, settings.data_root, target)
+            await run_in_threadpool(verify_snapshot, target)
+            rotate_snapshots(settings.backup_directory, settings.backup_keep)
+            _logger.info("backup written to %s", target)
+        except Exception:  # A failed backup must never stop the service.
+            _logger.exception("scheduled backup failed")
+        await asyncio.sleep(settings.backup_hours * 3600)
 
 
 def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
@@ -218,16 +287,31 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         runtime = build_runtime(configured, serving=True)
         app.state.runtime = runtime
+        retention = backups = None
         try:
             runtime.runner.probe()
             await runtime.jobs.start()
             runtime.analytics.open()
+            runtime.database.close_unanswered_planning()
+            retention = (
+                asyncio.create_task(enforce_retention(runtime))
+                if configured.retention_days
+                else None
+            )
+            backups = (
+                asyncio.create_task(scheduled_backups(runtime))
+                if configured.backup_directory
+                else None
+            )
             if configured.accounts_enabled:
                 # Both store locks are held and interrupted jobs are now terminal.
                 with runtime.database._connect() as db:
                     db.execute("DELETE FROM account_leases WHERE kind != 'model'")
             yield
         finally:
+            for task in (retention, backups):
+                if task:
+                    task.cancel()
             try:
                 await runtime.analytics.close()
             finally:
@@ -389,6 +473,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         llm_available = await runtime.agent.model.available()
         worker = runtime.jobs.statistics()
         history = runtime.database.history.statistics()
+        analytics = await runtime.analytics.health()
         ready = (
             capability.binary_available
             and not capability.error
@@ -412,6 +497,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "graphmine": capability.model_dump(mode="json"),
             "worker": worker,
             "history": history,
+            # The default workspace's engine; "status" above keeps describing
+            # the classic runner, which the classic page waits for.
+            "analytics_status": "ready"
+            if analytics["native"]["admitted_operations"] > 0 and llm_available
+            else "degraded",
+            "analytics": analytics,
         }
 
     @router.get("/metrics")
@@ -422,6 +513,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "database": runtime.database.statistics(),
             "worker": runtime.jobs.statistics(),
             "history": runtime.database.history.statistics(),
+            "analytics": runtime.analytics.metrics(
+                runtime.database.recent_payloads(
+                    "workflow.diagnostics", datetime.now(UTC) - timedelta(days=1)
+                )
+            ),
         }
 
     @router.get("/domains", response_model=list[DomainProfile])
@@ -471,6 +567,43 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         request: Request, limit: int = Query(100, ge=1, le=500)
     ) -> list[SessionRecord]:
         return _runtime(request).database.list_sessions(limit)
+
+    @router.patch("/sessions/{session_id}", response_model=SessionRecord)
+    async def update_session(
+        session_id: str, body: SessionUpdate, request: Request
+    ) -> SessionRecord:
+        return _runtime(request).database.update_session(
+            session_id, body.model_dump(exclude_unset=True)
+        )
+
+    @router.delete("/sessions/{session_id}", status_code=204)
+    async def delete_session(session_id: str, request: Request) -> Response:
+        """Delete a conversation with its uploads, results and history."""
+        remove_session(_runtime(request), session_id)
+        return Response(status_code=204)
+
+    @router.delete("/files/{file_id}", status_code=204)
+    async def delete_file(file_id: str, request: Request) -> Response:
+        runtime = _runtime(request)
+        record = runtime.database.get_file(file_id)
+        if file_id in runtime.analytics.active_inputs(record.session_id) or (
+            _active_jobs(runtime, record.session_id)
+        ):
+            raise AnalyticsError(
+                "This file is used by an analysis that is still running.",
+                "state_conflict",
+                409,
+            )
+        runtime.database.delete_file(file_id)
+        shutil.rmtree(
+            runtime.settings.data_root
+            / "sessions"
+            / record.session_id
+            / "files"
+            / file_id,
+            ignore_errors=True,
+        )
+        return Response(status_code=204)
 
     @router.get("/sessions/{session_id}", response_model=SessionRecord)
     async def get_session(session_id: str, request: Request) -> SessionRecord:
@@ -630,8 +763,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         vertex_limit: int = Query(500, ge=1, le=2_000),
         edge_limit: int = Query(2_000, ge=1, le=10_000),
     ) -> dict[str, Any]:
-        return _runtime(request).graph_store.graph_preview(
-            file_id, vertex_limit=vertex_limit, edge_limit=edge_limit
+        # Parsing a large upload must not stall every other request.
+        return await run_in_threadpool(
+            _runtime(request).graph_store.graph_preview,
+            file_id,
+            vertex_limit=vertex_limit,
+            edge_limit=edge_limit,
         )
 
     @router.post("/sessions/{session_id}/plan", response_model=PlanningOutcome)
@@ -730,8 +867,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return runtime.database.events(session_id, after)
 
     @router.get("/analytics/capabilities")
-    async def analytics_capabilities(request: Request):
-        return await _runtime(request).analytics.capabilities()
+    async def analytics_capabilities(request: Request, refresh: bool = False):
+        return await _runtime(request).analytics.capabilities(refresh)
 
     @router.post("/sessions/{session_id}/workflows", status_code=201)
     async def create_workflow(session_id: str, body: WorkflowRequest, request: Request):
@@ -750,7 +887,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @router.get("/workflows/{workflow_id}")
     async def get_workflow(workflow_id: str, request: Request):
-        return _runtime(request).analytics.get(workflow_id)
+        analytics = _runtime(request).analytics
+        record = analytics.get(workflow_id)
+        return {**record, "queue_position": analytics.queue_position(record)}
 
     @router.post("/workflows/{workflow_id}/revise")
     async def revise_workflow(
@@ -769,12 +908,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return await _runtime(request).analytics.cancel(workflow_id)
 
     @router.get("/workflows/{workflow_id}/result")
-    async def workflow_result(workflow_id: str, request: Request):
-        return _runtime(request).analytics.result(workflow_id)
+    async def workflow_result(
+        workflow_id: str, request: Request, summary: bool = False
+    ):
+        analytics = _runtime(request).analytics
+        return await run_in_threadpool(
+            analytics.result_summary if summary else analytics.result, workflow_id
+        )
 
     @router.get("/workflows/{workflow_id}/steps/{step}/result")
     async def workflow_step_result(workflow_id: str, step: str, request: Request):
         return _runtime(request).analytics.result(workflow_id, step=step)
+
+    @router.get(
+        "/workflows/{workflow_id}/steps/{step}/ports/{port}/groups/{index}/graph"
+    )
+    async def group_graph(
+        workflow_id: str, step: str, port: str, index: int, request: Request
+    ):
+        return await run_in_threadpool(
+            _runtime(request).analytics.group_graph, workflow_id, step, port, index
+        )
 
     @router.get("/workflows/{workflow_id}/steps/{step}/ports/{port}")
     async def workflow_port(
@@ -784,9 +938,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         request: Request,
         offset: int = Query(0, ge=0),
         limit: int = Query(100, ge=1, le=1000),
+        search: str | None = Query(None, max_length=500),
+        sort: str | None = Query(None, max_length=200),
+        descending: bool = False,
     ):
-        return _runtime(request).analytics.port_page(
-            workflow_id, step, port, offset, limit
+        return await run_in_threadpool(
+            _runtime(request).analytics.port_page,
+            workflow_id,
+            step,
+            port,
+            offset,
+            limit,
+            search,
+            sort,
+            descending,
         )
 
     register_example_routes(router)

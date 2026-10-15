@@ -2,7 +2,8 @@
 
 No signup endpoint exists. Passwords use salted scrypt; bearer/cookie credentials
 are random and stored only as hashes. Quotas reserve before inference and settle
-from provider usage. Failed/unknown requests retain the conservative reservation.
+from provider usage. Server failures are refunded; timeouts and cancellations
+charge only the counted input; successful replies without usage keep the reservation.
 """
 
 from __future__ import annotations
@@ -14,8 +15,10 @@ import json as json_module
 import math
 import re
 import secrets
+import sqlite3
 import time
-from contextlib import asynccontextmanager
+from collections import defaultdict
+from contextlib import asynccontextmanager, closing, suppress
 from datetime import datetime, timezone
 from functools import lru_cache
 
@@ -24,6 +27,7 @@ import httpx
 from .identity import AccountError, Principal, current_principal
 
 DAY = 86400
+MODEL_QUEUE_SECONDS = 60
 SCRYPT_N, SCRYPT_R, SCRYPT_P = 32768, 8, 3
 
 
@@ -63,6 +67,8 @@ def _stamp(value):
 class Accounts:
     def __init__(self, settings, database, *, clock=time.time):
         self.settings, self.database, self.clock = settings, database, clock
+        # Process-local arrival order for each kind of slot; leases stay in SQLite.
+        self.waiting = defaultdict(list)
         database.path.chmod(0o600)
         with database._connect() as db:
             db.executescript("""
@@ -399,13 +405,49 @@ class Accounts:
                 is not None
             )
 
-    def upload_remaining(self, user_id):
+    def storage_usage(self, user_id):
+        """Raw uploads plus each conversation's saved analysis inputs and results."""
         with self.database._connect() as db:
-            used = db.execute(
+            uploads = db.execute(
                 "SELECT coalesce(sum(json_extract(f.payload,'$.size_bytes')),0) FROM files f JOIN sessions s ON s.id=f.session_id WHERE s.owner_id=?",
                 (user_id,),
             ).fetchone()[0]
-        return max(0, self.settings.account_storage_bytes - used)
+            sessions = [
+                row[0]
+                for row in db.execute(
+                    "SELECT id FROM sessions WHERE owner_id=?", (user_id,)
+                )
+            ]
+        results = 0
+        ledger = self.settings.data_root / "analytics" / "workflows.sqlite3"
+        if sessions and ledger.is_file():
+            workflows = []
+            with closing(sqlite3.connect(ledger)) as db:
+                for start in range(0, len(sessions), 500):
+                    chunk = sessions[start : start + 500]
+                    workflows += [
+                        row[0]
+                        for row in db.execute(
+                            "SELECT id FROM workflows WHERE session_id IN "
+                            f"({','.join('?' * len(chunk))})",
+                            chunk,
+                        )
+                    ]
+            for workflow in workflows:
+                for path in (ledger.parent / workflow).rglob("*"):
+                    with suppress(OSError):
+                        results += path.stat().st_size if path.is_file() else 0
+        return {
+            "uploads": uploads,
+            "results": results,
+            "used": uploads + results,
+            "limit": self.settings.account_storage_bytes,
+        }
+
+    def upload_remaining(self, user_id):
+        return max(
+            0, self.settings.account_storage_bytes - self.storage_usage(user_id)["used"]
+        )
 
     def _bucket(self, db, scope, now):
         db.execute(
@@ -429,7 +471,47 @@ class Accounts:
     def usage(self, user_id):
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            return self._usage(db, user_id, self.clock())
+            usage = self._usage(db, user_id, self.clock())
+            usage["tokens_reserved"] = db.execute(
+                "SELECT coalesce(sum(amount),0) FROM account_leases "
+                "WHERE kind='model' AND user_id=? AND expires_at>?",
+                (user_id, self.clock()),
+            ).fetchone()[0]
+        usage.update(self._recent_questions(user_id, usage["tokens_remaining"]))
+        usage["storage"] = self.storage_usage(user_id)
+        return usage
+
+    def _recent_questions(self, user_id, remaining, limit=5):
+        """Tokens per recent question, from the planner's per-stage records."""
+        with self.database._connect() as db:
+            rows = db.execute(
+                "SELECT e.payload, e.created_at FROM events e "
+                "JOIN sessions s ON s.id=e.session_id "
+                "WHERE s.owner_id=? AND e.type='workflow.diagnostics' "
+                "ORDER BY e.sequence DESC LIMIT 300",
+                (user_id,),
+            ).fetchall()
+        turns = {}
+        for row in rows:
+            report = json_module.loads(row["payload"])
+            usage = report.get("usage") or {}
+            tokens = usage.get("total_tokens") or (
+                (usage.get("prompt_tokens") or 0)
+                + (usage.get("completion_tokens") or 0)
+            )
+            turn = turns.setdefault(
+                report.get("turn_id"), {"tokens": 0, "at": row["created_at"]}
+            )
+            turn["tokens"] += tokens if isinstance(tokens, int) else 0
+        recent = [turn for turn in turns.values() if turn["tokens"]][:limit]
+        average = (
+            round(sum(t["tokens"] for t in recent) / len(recent)) if recent else None
+        )
+        return {
+            "recent_questions": recent,
+            "average_question_tokens": average,
+            "questions_left": remaining // average if average else None,
+        }
 
     def _token_limit(self, db, user_id):
         row = db.execute(
@@ -592,51 +674,108 @@ class Accounts:
             )
             return lease
 
-    def abort_admission(self, lease):
-        """Refund only when durable job creation itself failed, never after execution."""
+    def _refund_jobs(self, lease, count=None, *, close=False):
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             row = db.execute(
                 "SELECT * FROM account_leases WHERE id=? AND kind='job'", (lease,)
             ).fetchone()
             if row:
+                count = row["amount"] if count is None else min(count, row["amount"])
                 for scope, period in (
                     (row["user_id"], row["user_period"]),
                     ("server", row["server_period"]),
                 ):
                     db.execute(
                         "UPDATE quota_buckets SET jobs=max(0,jobs-?) WHERE scope=? AND started_at=?",
-                        (row["amount"], scope, period),
+                        (count, scope, period),
                     )
-                db.execute("DELETE FROM account_leases WHERE id=?", (lease,))
+                if close:
+                    db.execute("DELETE FROM account_leases WHERE id=?", (lease,))
+                else:
+                    db.execute(
+                        "UPDATE account_leases SET amount=amount-? WHERE id=?",
+                        (count, lease),
+                    )
+
+    def abort_admission(self, lease):
+        """Refund only when durable job creation itself failed, never after execution."""
+        self._refund_jobs(lease, close=True)
+
+    def refund_unstarted_job(self, lease):
+        """Return one daily job that never started; its pending slot stays held."""
+        self._refund_jobs(lease, 1)
+
+    def _users_at_limit(self, kind, per_user):
+        with self.database._connect() as db:
+            rows = db.execute(
+                "SELECT user_id FROM account_leases WHERE kind=? AND expires_at>? "
+                "GROUP BY user_id HAVING count(*)>=?",
+                (kind, self.clock(), per_user),
+            ).fetchall()
+        return {row[0] for row in rows}
+
+    async def wait_slot(self, user_id, kind, total, per_user, ttl, timeout):
+        """Take a slot in arrival order.
+
+        Someone already at their own limit does not hold up the people behind
+        them. Raises TimeoutError when no slot frees up in time.
+        """
+        ticket = (user_id, object())
+        waiting = self.waiting[kind]
+        waiting.append(ticket)
+        try:
+            async with asyncio.timeout(timeout):
+                while True:
+                    busy = self._users_at_limit(kind, per_user)
+                    if next((t for t in waiting if t[0] not in busy), None) is ticket:
+                        try:
+                            return self.acquire(user_id, kind, total, per_user, ttl)
+                        except AccountError as error:
+                            if error.code != "concurrency_limit":
+                                raise
+                    await asyncio.sleep(0.2)
+        finally:
+            waiting.remove(ticket)
 
     @asynccontextmanager
-    async def execution_slot(self, user_id):
+    async def execution_slot(self, user_id, admission=None):
+        """Wait in line for a slot, then run; waiting and running have separate limits.
+
+        A job that times out or is cancelled before it starts gets its daily job back.
+        """
         lease = None
         try:
+            lease = await self.wait_slot(
+                user_id,
+                "execution",
+                self.settings.account_running_jobs,
+                1,
+                self.settings.account_job_seconds + 30,
+                self.settings.account_queue_seconds,
+            )
+        except (TimeoutError, asyncio.CancelledError) as error:
+            if admission:
+                self.refund_unstarted_job(admission)
+            if isinstance(error, asyncio.CancelledError):
+                raise
+            raise AccountError(
+                "The server stayed busy, so your calculation did not start. "
+                "It was not counted against your daily jobs; please try again.",
+                "queue_time_limit",
+                429,
+            ) from error
+        try:
             async with asyncio.timeout(self.settings.account_job_seconds):
-                while lease is None:
-                    try:
-                        lease = self.acquire(
-                            user_id,
-                            "execution",
-                            self.settings.account_running_jobs,
-                            ttl=self.settings.account_job_seconds + 30,
-                        )
-                    except AccountError as error:
-                        if error.code != "concurrency_limit":
-                            raise
-                        await asyncio.sleep(0.2)
                 yield
         except TimeoutError as error:
             raise AccountError(
-                "The job exceeded its queue/execution time allowance.",
+                "The job exceeded its execution time allowance.",
                 "job_time_limit",
                 429,
             ) from error
         finally:
-            if lease:
-                self.release(lease)
+            self.release(lease)
 
 
 async def _prompt_tokens(client, path, payload):
@@ -689,57 +828,146 @@ async def _prompt_tokens(client, path, payload):
     return fallback, "conservative_estimate"
 
 
-async def model_post(client, path, *, json, max_tokens=None):
-    """Meter every real transport attempt, including repair calls and retries."""
+def _reported_usage(usage):
+    """Total tokens from provider usage, or None when it cannot be established."""
+    if not isinstance(usage, dict):
+        return None
+    prompt, completion = usage.get("prompt_tokens"), usage.get("completion_tokens")
+    if (
+        type(prompt) is not int
+        or type(completion) is not int
+        or min(prompt, completion) < 0
+    ):
+        return None
+    total = usage.get("total_tokens")
+    return (
+        max(prompt + completion, total) if type(total) is int else prompt + completion
+    )
+
+
+@asynccontextmanager
+async def _metered(client, path, payload, max_tokens):
+    """Reserve before inference; settle what the caller records in meter["used"].
+
+    The caller sets used=0 for a model-server error and the reported usage on
+    success. Unreachable servers are free; timeouts and cancellations charge only
+    the counted input; success without usage keeps the reservation.
+    """
     principal = current_principal.get()
     if principal is None:
-        return await client.post(path, json=json)
+        yield None
+        return
     # Count before inference, then reserve the actual prompt plus maximum output.
     # The model slot bounds both tokenization and inference across all users.
-    output = max_tokens or json.get(
-        "max_completion_tokens", json.get("max_tokens", 3072)
+    output = max_tokens or payload.get(
+        "max_completion_tokens", payload.get("max_tokens", 3072)
     )
-    lease = principal.accounts.acquire(
-        principal.user_id, "model", principal.accounts.settings.max_model_calls, ttl=240
-    )
-    reserved = False
-    used = None
     try:
-        prompt, method = await _prompt_tokens(client, path, json)
-        try:
-            principal.accounts.reserve_tokens(
-                principal.user_id, prompt + output, lease=lease
+        # Wait in line briefly rather than failing when every model slot is busy.
+        lease = await principal.accounts.wait_slot(
+            principal.user_id,
+            "model",
+            principal.accounts.settings.max_model_calls,
+            1,
+            240,
+            MODEL_QUEUE_SECONDS,
+        )
+    except TimeoutError as error:
+        raise AccountError(
+            "The language model is busy with other people's questions. Please try again shortly.",
+            "concurrency_limit",
+            retry_after=5,
+        ) from error
+    prompt = method = None
+    try:
+        prompt, method = await _prompt_tokens(client, path, payload)
+        principal.accounts.reserve_tokens(
+            principal.user_id, prompt + output, lease=lease
+        )
+    except AccountError as error:
+        principal.accounts.release(lease)
+        if error.details is not None:
+            error.details.update(
+                prompt_tokens=prompt, max_output_tokens=output, count_method=method
             )
-        except AccountError as error:
-            if error.details is not None:
-                error.details.update(
-                    prompt_tokens=prompt, max_output_tokens=output, count_method=method
-                )
-            raise
-        reserved = True
+        raise
+    except BaseException:
+        principal.accounts.release(lease)
+        raise
+    meter = {"used": None}
+    try:
+        yield meter
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        meter["used"] = 0  # The request never reached the model server.
+        raise
+    except BaseException:
+        # Timed out or cancelled: the model may have read the prompt, but the
+        # user received no output, so only the counted input is charged.
+        if meter["used"] is None:
+            meter["used"] = prompt
+        raise
+    finally:
+        principal.accounts.settle_tokens(lease, meter["used"])
+
+
+async def model_post(client, path, *, json, max_tokens=None):
+    """Meter every real transport attempt, including repair calls and retries."""
+    async with _metered(client, path, json, max_tokens) as meter:
         async with asyncio.timeout(180):
             response = await client.post(path, json=json)
-        if response.is_success:
-            try:
-                usage = response.json().get("usage", {})
-                prompt, completion = (
-                    usage.get("prompt_tokens"),
-                    usage.get("completion_tokens"),
-                )
-                if (
-                    type(prompt) is int
-                    and type(completion) is int
-                    and min(prompt, completion) >= 0
-                ):
-                    used = prompt + completion
-                    total = usage.get("total_tokens")
-                    if type(total) is int:
-                        used = max(used, total)
-            except (ValueError, AttributeError, TypeError):
-                pass
+        if meter is not None:
+            if not response.is_success:
+                meter["used"] = 0  # The model server rejected or failed the request.
+            else:
+                try:
+                    meter["used"] = _reported_usage(response.json().get("usage"))
+                except (ValueError, AttributeError, TypeError):
+                    pass
         return response
-    finally:
-        if reserved:
-            principal.accounts.settle_tokens(lease, used)
-        else:
-            principal.accounts.release(lease)
+
+
+async def model_stream(client, path, *, json, on_reasoning, max_tokens=None):
+    """Like model_post, but streams reasoning to on_reasoning as it is generated.
+
+    Returns a non-streamed chat-completion body. A server that answers with
+    plain JSON instead of an event stream is accepted unchanged.
+    """
+    request = {**json, "stream": True, "stream_options": {"include_usage": True}}
+    async with _metered(client, path, request, max_tokens) as meter:
+        async with asyncio.timeout(180):
+            async with client.stream("POST", path, json=request) as response:
+                if not response.is_success:
+                    if meter is not None:
+                        meter["used"] = 0
+                    await response.aread()
+                    response.raise_for_status()
+                if "text/event-stream" not in response.headers.get("content-type", ""):
+                    body = json_module.loads(await response.aread())
+                else:
+                    body = await _collect_stream(response, on_reasoning)
+        if meter is not None:
+            meter["used"] = _reported_usage(body.get("usage"))
+        return body
+
+
+async def _collect_stream(response, on_reasoning):
+    content, reasoning, finish, usage = [], [], None, None
+    async for line in response.aiter_lines():
+        if not line.startswith("data:"):
+            continue
+        data = line[5:].strip()
+        if data == "[DONE]":
+            break
+        chunk = json_module.loads(data)
+        usage = chunk.get("usage") or usage
+        for choice in chunk.get("choices") or []:
+            delta = choice.get("delta") or {}
+            text = delta.get("reasoning_content") or delta.get("reasoning")
+            if text:
+                reasoning.append(text)
+                await on_reasoning(text)
+            if delta.get("content"):
+                content.append(delta["content"])
+            finish = choice.get("finish_reason") or finish
+    message = {"content": "".join(content), "reasoning": "".join(reasoning)}
+    return {"choices": [{"message": message, "finish_reason": finish}], "usage": usage}

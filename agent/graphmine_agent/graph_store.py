@@ -90,7 +90,7 @@ class GraphStore:
             )
             if upload_limit <= 0:
                 raise AccountError(
-                    "Your upload storage allowance is full. Contact the administrator.",
+                    "Your storage allowance is full. Delete conversations or files you no longer need, or contact the administrator.",
                     "storage_limit",
                 )
         file_id = new_id("file")

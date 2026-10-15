@@ -68,22 +68,36 @@ and usage records.
 | Graph jobs across the server per 24 hours | 100 | `GRAPHMINE_SERVER_DAILY_JOBS` |
 | Simultaneous model requests across the server | 2 | `GRAPHMINE_MAX_MODEL_CALLS` |
 | Queued/running graph requests across the server | 8 | `GRAPHMINE_ACCOUNT_PENDING_JOBS` |
-| Simultaneous graph calculations across both UIs | 1 | `GRAPHMINE_ACCOUNT_RUNNING_JOBS` |
-| Execution slot wait plus execution time | 300 seconds | `GRAPHMINE_ACCOUNT_JOB_SECONDS` |
+| Simultaneous graph calculations across both UIs (one per account) | 4 | `GRAPHMINE_ACCOUNT_RUNNING_JOBS` |
+| Waiting for an execution slot | 900 seconds | `GRAPHMINE_ACCOUNT_QUEUE_SECONDS` |
+| Execution time once started | 300 seconds | `GRAPHMINE_ACCOUNT_JOB_SECONDS` |
 | One raw upload | 64 MiB | `GRAPHMINE_ACCOUNT_UPLOAD_BYTES` |
-| Raw uploaded files per account | 512 MiB | `GRAPHMINE_ACCOUNT_STORAGE_BYTES` |
+| Uploads plus saved analyses per account | 512 MiB | `GRAPHMINE_ACCOUNT_STORAGE_BYTES` |
+| Delete conversations idle for this many days (0 = keep) | 0 | `GRAPHMINE_RETENTION_DAYS` |
 | Login lifetime | 24 hours | `GRAPHMINE_ACCOUNT_SESSION_SECONDS` |
 
 Only one model call and one pending graph request per account are admitted at a
 time. A classic multi-step analysis shares one pending request slot but each
 step counts toward the daily job budget. Native workflows count as one job;
-their steps share the execution time allowance. Existing workflow validation,
+their steps share the execution time allowance. Waiting for a slot does not
+use that allowance. A job that times out or is cancelled before it starts is
+refunded to the daily job budget. Existing workflow validation,
 memory reservations, result-size and upload-parser limits still apply. Expensive
-API requests also have an eight-request server limit and one-request user limit;
-polling, cancellation and logout remain available. Rejected requests receive a
+API requests also have an eight-request server limit per kind of work. Each user
+may have one planning request, one other expensive request and two graph
+previews at a time, so a long planning request does not block previews,
+uploads or approvals. Planning requests may run for the planner's own
+360-second deadline plus a margin; other expensive requests stop after 300
+seconds. The calculation catalog is verified once and shared by all users for
+up to five minutes; reconnecting re-verifies it. Polling, cancellation and
+logout remain available. Rejected requests receive a
 clear error and, for quota/admission limits, HTTP 429 with `Retry-After`.
 
-The shared limits are first-come, first-served. The server budget does **not**
+The shared limits are first-come, first-served: calculations and model calls
+wait in arrival order, and an account already at its own limit does not hold up
+the people behind it. Model calls wait up to 60 seconds for a free slot before
+asking you to retry. Within the calculation limit, the GPU/CPU memory scheduler
+still admits only work that fits. The server budget does **not**
 promise every one of 100 accounts all 50,000 tokens each day. Accounts can browse
 saved work after their AI allowance runs out. Expert calculations consume the
 graph-job budget even when they do not call the model.
@@ -103,9 +117,10 @@ shows the shared server allowance to administrators as a separate progress bar.
 
 These are starting limits, not a 100-concurrent-user capacity measurement. Graph
 algorithms have very different costs. Monitor CPU, GPU memory, execution time
-and disk use before raising them. The file allowance counts raw stored uploads,
-including projected files; it does not cap normalized copies, generated results,
-history archives, model weights or all disk use. The existing model server must
+and disk use before raising them. The storage allowance counts raw uploads, including
+projected files, plus each conversation's saved analysis inputs and results. It
+does not cap history archives, model weights or all disk use. **Settings → Usage**
+shows both parts. Deleting a conversation or an uploaded file frees its space. The existing model server must
 also retain its configured context length, sequence and GPU memory limits.
 
 ## How the 24-hour token allowance works
@@ -119,9 +134,11 @@ request's JSON bytes (including its output schema) as tokens. Token counting doe
 not run inference and shares the same concurrency limit as model calls.
 Transports without a compatible tokenizer retain the conservative byte estimate
 and template headroom. A successful response
-with valid usage settles the reservation to the reported token count. Errors,
-timeouts, cancellations or missing usage retain the reservation because actual
-work cannot be established. A long prompt can still be rejected when its input
+with valid usage settles the reservation to the reported token count. If the
+request never reaches the model server, or that server returns an error, nothing
+is charged. A timeout or cancellation charges only the counted input tokens and
+refunds the unused output allowance. A successful reply without usage keeps the
+reservation, because the actual work cannot be established. A long prompt can still be rejected when its input
 plus maximum output exceeds the remaining allowance. The error reports the
 required reservation, remaining tokens, reset time, and whether the user or
 shared server limit was reached. A job can make several model calls; each is
@@ -152,6 +169,31 @@ changing settings. Login uses an HttpOnly, SameSite=Strict cookie. Passwords are
 stored as salted scrypt hashes, and API session tokens are stored only as hashes.
 Login attempts and simultaneous password checks are bounded. The browser does
 not store a password or account token in localStorage.
+
+### HTTPS on a LAN without a proxy
+
+The API can serve HTTPS itself. Give it a certificate and key, enable Secure
+cookies, list the HTTPS origin, and restart:
+
+```dotenv
+GRAPHMINE_TLS_CERTFILE=/path/to/graphmine.crt
+GRAPHMINE_TLS_KEYFILE=/path/to/graphmine.key
+GRAPHMINE_ACCOUNT_COOKIE_SECURE=true
+GRAPHMINE_ALLOWED_ORIGINS=https://GPU_SERVER_LAN_IP:18000
+```
+
+A certificate from your institution's internal CA avoids browser warnings. For a
+short pilot, a self-signed certificate works after each tester accepts it once:
+
+```bash
+openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+  -keyout graphmine.key -out graphmine.crt \
+  -subj "/CN=GPU_SERVER_LAN_IP" -addext "subjectAltName=IP:GPU_SERVER_LAN_IP"
+chmod 600 graphmine.key
+```
+
+When accounts are enabled, Secure cookies are off and the API listens on a
+non-loopback address, `serve` prints a warning that passwords travel unencrypted.
 
 Forward only the GraphMine web/API port through your proxy or tunnel. Keep the
 model endpoint, database files and native workers private. Run one API process
@@ -196,3 +238,36 @@ Use this only if that account should receive all previous shared workspace data.
 behavior, with shared visibility and no account quotas. Keep accounts enabled
 for a shared public deployment. Do not alternate between these modes on a
 multi-user data directory if users expect their work to remain private.
+
+## Conversation management and retention
+
+People can rename, archive and delete their own conversations, and remove an
+uploaded file. Deleting a conversation removes its uploads, saved analyses,
+reviewed examples and history snapshots; it is refused while an analysis in it
+is still running. Existing database backups keep their copies until they are
+rotated.
+
+`GRAPHMINE_RETENTION_DAYS` (default 0, off) deletes conversations whose last
+activity, such as a question or upload, is older than that many days. The sweep
+runs at startup and every six hours, and skips conversations with running work.
+
+## Backups
+
+Snapshots can be taken while the API runs. Each copies both databases with
+SQLite's online backup (accounts, quotas, conversations and the analysis
+ledger), then uploads, saved analyses and history. Model caches, exports and
+earlier backups are excluded. Every uploaded file is checked against its stored
+hash.
+
+```bash
+graphmine-agent backup /path/outside/data/graphmine-2026-10-15
+graphmine-agent verify-backup /path/outside/data/graphmine-2026-10-15
+graphmine-agent restore-backup /path/outside/data/graphmine-2026-10-15 /new/data-root
+```
+
+Set `GRAPHMINE_BACKUP_DIR` (outside the data directory) to take a snapshot at
+startup and every `GRAPHMINE_BACKUP_HOURS`, verify it, and keep the newest
+`GRAPHMINE_BACKUP_KEEP`. A restore always goes into a new directory; point
+`GRAPHMINE_AGENT_DATA_ROOT` at it to use it. Pending work in a restored copy is
+marked cancelled, never replayed. Backups contain password hashes and private
+research data, so keep the backup directory private.

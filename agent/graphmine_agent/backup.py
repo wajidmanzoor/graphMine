@@ -145,6 +145,71 @@ def snapshot_store(
             raise
 
 
+# User data for snapshots taken while the API runs. Model and download caches,
+# exports and earlier backups are deliberately left out.
+ONLINE_DIRECTORIES = ("sessions", "analytics", "history", "jobs")
+ONLINE_DATABASES = ("agent.sqlite3", "analytics/workflows.sqlite3")
+
+
+def online_snapshot(data_root: Path, destination: Path) -> dict:
+    """Snapshot a running store: live-consistent databases, then user files.
+
+    Databases are copied first with SQLite's online backup; uploads are written
+    before their rows, so every file the copied database refers to exists.
+    """
+    source, destination = data_root.resolve(), destination.resolve()
+    if any(destination.is_relative_to(source / name) for name in ONLINE_DIRECTORIES):
+        raise ValueError("Backup destination must be outside the copied directories")
+    destination.mkdir(mode=0o700)  # Deliberately refuse any existing path.
+    try:
+        for name in ONLINE_DATABASES:
+            origin = source / name
+            if origin.is_file():
+                target = destination / "data" / name
+                target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+                with (
+                    _readonly(origin) as live,
+                    closing(sqlite3.connect(target)) as copy,
+                ):
+                    live.backup(copy)
+                    copy.execute("PRAGMA journal_mode = DELETE")
+                target.chmod(0o600)
+        skip = {"workflows.sqlite3", "workflows.sqlite3-wal", "workflows.sqlite3-shm"}
+        for name in ONLINE_DIRECTORIES:
+            if (source / name).is_dir():
+                _copy_files(source / name, destination / "data" / name, skip=skip)
+        (destination / "data" / "history").mkdir(
+            parents=True, exist_ok=True, mode=0o700
+        )
+        manifest = {
+            "version": VERSION,
+            "mode": "online",
+            "created_at": utc_now().isoformat(),
+            "source_data_root": str(source),
+            "source_history_root": str(source / "history"),
+            "history_relative": "history",
+            "files": _inventory(destination),
+            "database": _audit(
+                destination / "data/agent.sqlite3", source, destination / "data"
+            ),
+            "scope": "Online snapshot of accounts, quotas, conversations, uploads, analyses and history. Model caches, exports, environment secrets and model weights are not included.",
+        }
+        HistoryStore.write(destination / "manifest.json", manifest)
+        return manifest
+    except BaseException:
+        shutil.rmtree(destination, ignore_errors=True)
+        raise
+
+
+def rotate_snapshots(directory: Path, keep: int) -> list[Path]:
+    """Remove all but the newest snapshots made by the scheduler."""
+    snapshots = sorted(directory.glob("graphmine-*"), key=lambda path: path.name)
+    removed = snapshots[:-keep] if keep > 0 else []
+    for path in removed:
+        shutil.rmtree(path, ignore_errors=True)
+    return removed
+
+
 def verify_snapshot(snapshot: Path) -> dict:
     snapshot = snapshot.resolve()
     manifest = json.loads((snapshot / "manifest.json").read_text())

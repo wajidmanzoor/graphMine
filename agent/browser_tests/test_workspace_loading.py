@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import mimetypes
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
@@ -84,6 +85,13 @@ def loading_server():
         preview_failures=[],
         preview_calls=0,
         plan_handler=None,
+        event_times=[],
+        requests=[],
+        group_graph=None,
+        group_requests=[],
+        port_requests=[],
+        port_page=None,
+        events_status=200,
     )
 
     class Handler(BaseHTTPRequestHandler):
@@ -139,6 +147,12 @@ def loading_server():
                 )
             elif path.endswith("/workflows"):
                 self.respond([WORKFLOW] if state.saved_analysis else state.workflows)
+            elif "/groups/" in path and path.endswith("/graph"):
+                state.group_requests.append(path)
+                self.respond(state.group_graph)
+            elif "/ports/" in path:
+                state.port_requests.append(self.path)
+                self.respond(state.port_page)
             elif path.startswith("/api/workflows/") and path.endswith("/result"):
                 self.respond(state.results[path.split("/")[-2]])
             elif path.startswith("/api/workflows/") and state.workflows:
@@ -152,6 +166,12 @@ def loading_server():
             elif path == "/api/workflows/saved-analysis":
                 self.respond(WORKFLOW)
             elif path.endswith("/events"):
+                state.event_times.append(time.monotonic())
+                if state.events_status != 200:
+                    self.respond(
+                        {"error": {"code": "unauthorized"}}, state.events_status
+                    )
+                    return
                 after = int(parse_qs(urlsplit(self.path).query).get("after", [0])[0])
                 self.respond(
                     [event for event in state.events if event["sequence"] > after]
@@ -179,6 +199,17 @@ def loading_server():
                 self.respond(state.plan_handler(json.loads(body)))
             else:
                 self.respond(SESSION, 201)
+
+        def do_PATCH(self):
+            body = json.loads(
+                self.rfile.read(int(self.headers.get("Content-Length", 0)))
+            )
+            state.requests.append(("PATCH", self.path, body))
+            self.respond({**SESSION, **body})
+
+        def do_DELETE(self):
+            state.requests.append(("DELETE", self.path, None))
+            self.send(b"", "application/json", 204)
 
         def log_message(self, *args):
             pass
@@ -265,7 +296,7 @@ def test_domains_and_new_conversation_do_not_wait_for_capabilities(
     server.responses[0].release.set()
     wait_for(
         browser,
-        "document.getElementById('connection-state').textContent === 'Library ready'",
+        "document.getElementById('connection-state').dataset.state === 'ready'",
     )
     assert browser.find_element(By.ID, "plan-question").is_enabled()
     assert browser.find_element(By.ID, "use-operation").is_enabled()
@@ -291,7 +322,7 @@ def test_capability_failure_preserves_navigation_and_can_reconnect(
     reconnect(browser)
     wait_for(
         browser,
-        "document.getElementById('connection-state').textContent === 'Library ready' && !GraphMineWorkspace.state.busy",
+        "document.getElementById('connection-state').dataset.state === 'ready' && !GraphMineWorkspace.state.busy",
     )
     assert browser.find_element(By.ID, "plan-question").is_enabled()
 
@@ -329,9 +360,12 @@ def test_old_capability_failure_cannot_overwrite_reconnected_state(
     reconnect(browser)
     wait_for(
         browser,
-        "document.getElementById('connection-state').textContent === 'Library ready'",
+        "document.getElementById('connection-state').dataset.state === 'ready'",
     )
     server.responses[0].release.set()
     assert server.responses[0].finished.wait(1)
-    assert browser.find_element(By.ID, "connection-state").text == "Library ready"
+    assert (
+        browser.find_element(By.ID, "connection-state").get_attribute("data-state")
+        == "ready"
+    )
     assert browser.find_element(By.ID, "notice").get_attribute("hidden")
