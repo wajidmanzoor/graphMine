@@ -23,6 +23,7 @@
   <script src="/analytics-connection-settings.js" defer></script>
   <script src="/analytics-connectors.js" defer></script>
   <script src="/analytics-shell.js" defer></script>
+  <script src="/analytics-commands.js" defer></script>
   <script src="/analytics-ui.js" defer></script>
 </head>
 <body class="workspace-app" data-page="domains">
@@ -93,6 +94,13 @@
         <form id="operation-form"><label>Calculation<select id="operation-select"><option value="">Choose a calculation</option></select></label><p id="operation-description" class="muted"></p><p id="operation-quality" class="muted"></p><div id="operation-parameters" class="parameter-grid"></div><button id="use-operation" type="submit" class="secondary full-width">Build analysis</button></form>
       </details>
       <details class="data-section sidebar-disclosure"><summary>Saved analyses</summary><div id="saved-workflows" class="saved-list"></div></details>
+      <details class="data-section sidebar-disclosure"><summary>Commands &amp; feedback</summary><div class="conversation-tools">
+        <button id="conversation-help" class="quiet" type="button">Commands &amp; help</button>
+        <button id="conversation-feedback" class="quiet" type="button">Leave feedback</button>
+        <button id="conversation-export" class="quiet" type="button">Download session archive</button>
+        <button id="conversation-export-feedback" class="quiet" type="button">Export feedback for review</button>
+        <small id="conversation-feedback-count">0 saved annotations</small>
+      </div></details>
       <p class="sidebar-note">Your conversations, data and results are saved automatically.</p>
     </aside>
     <main id="chat-content" class="chat-column" tabindex="-1">
@@ -114,7 +122,7 @@
         <button id="review-example" class="quiet" hidden>Review as a reusable example</button>
       </section>
       </div>
-      <div class="composer-area"><form id="question-form" class="chat-composer"><p id="selection-chip" class="selection-chip" hidden><span id="selection-label"></span><button id="clear-question-selection" type="button" class="quiet" aria-label="Stop asking about this selection">Clear</button></p><label class="visually-hidden" for="question">Message GraphMine</label><textarea id="question" rows="2" maxlength="20000" placeholder="Ask anything about your network…" required></textarea><div class="composer-actions"><div class="composer-tools"><button id="composer-data" class="icon-button" type="button" aria-label="Add data or open tools" aria-controls="data-sidebar" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"/></svg></button><section class="mode-panel" aria-label="Analysis mode"><div class="mode-switch" role="group" aria-label="Choose an analysis mode"><button data-mode="normal" aria-pressed="true" title="GraphMine checks the plan and runs it for you">Normal</button><button data-mode="interactive" aria-pressed="false" title="Review and approve the calculation before it runs">Interactive</button><button data-mode="expert" aria-pressed="false" title="Inspect and edit the workflow yourself">Expert</button></div></section></div><button id="plan-question" class="primary send-button" type="submit" aria-label="Send message" title="Send message"><svg class="ui-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div></form><div class="composer-caption"><p id="mode-description"></p><p id="planner-note">Enter to send · Shift + Enter for a new line</p></div></div>
+      <div class="composer-area"><form id="question-form" class="chat-composer"><div id="command-menu" class="command-menu" hidden><p class="command-menu-heading">Commands <span>Saved locally · No model calls</span></p><ul id="command-options" role="listbox" aria-label="Local commands"></ul><p class="command-menu-hint">↑ ↓ to navigate · Enter or Tab to select · Esc to close</p></div><p id="selection-chip" class="selection-chip" hidden><span id="selection-label"></span><button id="clear-question-selection" type="button" class="quiet" aria-label="Stop asking about this selection">Clear</button></p><label class="visually-hidden" for="question">Message GraphMine</label><textarea id="question" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="command-options" aria-expanded="false" rows="2" maxlength="20000" placeholder="Ask about your network, or type / for commands…" required></textarea><div class="composer-actions"><div class="composer-tools"><button id="composer-data" class="icon-button" type="button" aria-label="Add data or open tools" aria-controls="data-sidebar" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"/></svg></button><button id="composer-commands" class="icon-button" type="button" aria-label="Show slash commands" title="Type / for commands">/</button><section class="mode-panel" aria-label="Analysis mode"><div class="mode-switch" role="group" aria-label="Choose an analysis mode"><button data-mode="normal" aria-pressed="true" title="GraphMine checks the plan and runs it for you">Normal</button><button data-mode="interactive" aria-pressed="false" title="Review and approve the calculation before it runs">Interactive</button><button data-mode="expert" aria-pressed="false" title="Inspect and edit the workflow yourself">Expert</button></div></section></div><button id="plan-question" class="primary send-button" type="submit" aria-label="Send message" title="Send message"><svg class="ui-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div></form><div class="composer-caption"><p id="mode-description"></p><p id="planner-note">Type / for commands · Enter to send</p></div></div>
     </main>
     <aside id="activity-sidebar" class="reasoning-sidebar workspace-drawer" aria-label="Model reasoning and activity" tabindex="-1" hidden>
       <div class="drawer-heading"><div><p class="eyebrow">Behind your answer</p><h2>Activity <span id="reasoning-count" class="reasoning-count" title="Reasoning records in this conversation">0</span></h2></div><button class="icon-button" type="button" data-close-panel aria-label="Close activity panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button></div><p class="muted">Follow the understanding, planning, and validation of your question.</p><div id="activity-status" role="status">Ready for your question</div><ol id="activity-list" class="activity-list"></ol>
@@ -134,6 +142,16 @@
       </section>
   </main>
   <div id="panel-backdrop" class="panel-backdrop" hidden></div>
+  <dialog id="conversation-feedback-dialog" aria-labelledby="conversation-feedback-heading"><form id="conversation-feedback-form">
+    <div class="section-heading"><h2 id="conversation-feedback-heading">Leave feedback</h2><button id="close-conversation-feedback" type="button" class="quiet">Close</button></div>
+    <p id="conversation-feedback-target" class="muted"></p>
+    <label>Type<select id="conversation-feedback-kind"><option value="feedback">Something could be better</option><option value="correction">Corrected answer</option><option value="rating">Rating</option><option value="note">Research note</option></select></label>
+    <label>Your note<textarea id="conversation-feedback-note" rows="3" maxlength="20000" required placeholder="What worked, or what could be better?"></textarea></label>
+    <label>Expected answer<textarea id="conversation-feedback-expected" rows="3" maxlength="20000" placeholder="A correction or the answer you expected (optional)"></textarea></label>
+    <label>Rating<select id="conversation-feedback-rating"><option value="">Not rated</option><option value="1">1 — Not useful</option><option value="2">2 — Needs major changes</option><option value="3">3 — Partly useful</option><option value="4">4 — Useful with small changes</option><option value="5">5 — Useful and correct</option></select></label>
+    <p class="muted">Saved locally for review. Feedback does not call the model or train it automatically.</p>
+    <button id="save-conversation-feedback" type="submit" class="primary">Save feedback</button>
+  </form></dialog>
   <dialog id="narrow-dialog" aria-labelledby="narrow-heading"><form id="narrow-form">
     <div class="section-heading"><h2 id="narrow-heading">Use a smaller input</h2><button type="button" class="quiet" data-close="narrow-dialog">Close</button></div>
     <p>Choose a smaller graph for this analysis. The revised plan will wait for your review before it runs.</p>

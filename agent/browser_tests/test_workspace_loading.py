@@ -84,6 +84,8 @@ def loading_server():
         templates=[],
         workflow_history=[],
         events=[],
+        messages=[],
+        feedback_count=0,
         workflows=[],
         results={},
         graph=None,
@@ -147,10 +149,14 @@ def loading_server():
                     {
                         "session": SESSION,
                         "files": state.files,
-                        "messages": [],
+                        "messages": state.messages,
+                        "feedback_count": state.feedback_count,
                         "events": state.events,
                     }
                 )
+            elif path.endswith(("/history/archive", "/feedback/export")):
+                state.requests.append(("GET", path, None))
+                self.send(b"test download", "application/octet-stream")
             elif path.endswith("/workflows"):
                 self.respond([WORKFLOW] if state.saved_analysis else state.workflows)
             elif "/groups/" in path and path.endswith("/graph"):

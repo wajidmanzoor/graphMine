@@ -93,7 +93,8 @@
     }
     if (event.key !== "Tab" || !currentPanel) return;
     const panel = panels[currentPanel];
-    const focusable = [...panel.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]')].filter(element => element.getClientRects().length);
+    const closedSections = [...panel.querySelectorAll("details:not([open])")];
+    const focusable = [...panel.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]')].filter(element => element.getClientRects().length && !closedSections.some(details => details.contains(element) && details.querySelector(":scope > summary") !== element));
     const first = focusable[0], last = focusable.at(-1);
     if (!first) { event.preventDefault(); panel.focus(); return; }
     if (event.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) { event.preventDefault(); last.focus(); }

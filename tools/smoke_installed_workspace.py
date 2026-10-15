@@ -94,6 +94,7 @@ def check(repository, output):
 
             for name in (
                 "analytics-ui",
+                "analytics-commands",
                 "analytics-controls",
                 "analytics-library",
                 "analytics-import",
@@ -115,6 +116,22 @@ def check(repository, output):
                 ]
                 for title in ("Original", "Reused")
             ]
+            quota = request("GET", "/api/auth/me").json()["quota"]
+            for message in ("/help", "/note Installed command check", "/status"):
+                response = request(
+                    "POST",
+                    f"/api/sessions/{sessions[0]}/chat",
+                    json={"message": message},
+                ).json()
+                assert response["command"] == message.split()[0][1:]
+            assert (
+                request("GET", "/api/auth/me").json()["quota"]["tokens_used"]
+                == quota["tokens_used"]
+            )
+            assert (
+                len(request("GET", f"/api/sessions/{sessions[0]}/feedback").json()) == 1
+            )
+            report["checks"]["local_commands_without_data_or_model_tokens"] = True
             csv = b"source,target\n0,1\n1,2\n0,2\n"
             preview = request(
                 "POST",

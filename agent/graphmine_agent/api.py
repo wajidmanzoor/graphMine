@@ -683,7 +683,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @router.get("/sessions/{session_id}/history/archive")
     async def history_archive(session_id: str, request: Request) -> StreamingResponse:
-        database = _runtime(request).database
+        runtime = _runtime(request)
+        database = runtime.database
         database.get_session(session_id)
         history = database.history
         history.snapshot(
@@ -692,6 +693,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             database.conversation_transcript(session_id),
         )
         history.snapshot(session_id, "session.json", database.get_session(session_id))
+        history.snapshot(
+            session_id, "analytics/events.json", database.events(session_id)
+        )
+        workflows = runtime.analytics.list(session_id)
+        history.snapshot(session_id, "analytics/workflows.json", workflows)
+        # The workspace stores native analysis evidence outside classic history.
+        # Authorize each workflow through the session before streaming its files.
+        directories = [runtime.analytics.root / row["id"] for row in workflows]
 
         def chunks():
             with tempfile.TemporaryFile() as archive:
@@ -704,6 +713,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                             history.session_path(session_id) / relative,
                             f"{session_id}/{relative}",
                         )
+                    for directory in directories:
+                        for path in sorted(directory.rglob("*")):
+                            if path.is_file() and path.resolve().is_relative_to(
+                                directory.resolve()
+                            ):
+                                bundle.write(
+                                    path,
+                                    f"{session_id}/analytics/{directory.name}/{path.relative_to(directory)}",
+                                )
                 archive.seek(0)
                 while chunk := archive.read(1024 * 1024):
                     yield chunk

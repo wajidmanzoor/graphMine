@@ -285,3 +285,28 @@ body[data-overlay] { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .workspace-app *, .workspace-app *::before, .workspace-app *::after { scroll-behavior: auto !important; transition: none !important; }
 }
+
+/* Commands use the same flag green and amber as the conversation shell. */
+.chat-composer { position: relative; }
+.command-menu { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 20; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 32px #01411c1c; overflow: hidden; }
+.command-menu-heading, .command-menu-hint { margin: 0; padding: 10px 14px; font-size: 11px; color: var(--accent-dark); }
+.command-menu-heading { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; border-bottom: 1px solid var(--line); }
+.command-menu-heading span, .command-menu-hint { font-size: 10px; font-weight: 400; color: #756f63; }
+#command-options { list-style: none; margin: 0; padding: 5px; max-height: min(370px, 38dvh); overflow-y: auto; overscroll-behavior: contain; }
+#command-options [role="option"] { padding: 8px 10px; border-radius: 8px; cursor: pointer; line-height: 1.5; }
+#command-options [role="option"]:hover { background: var(--yellow-pale); }
+#command-options [aria-selected="true"] { background: var(--green-pale); box-shadow: inset 3px 0 var(--yellow); }
+.command-title { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12px; }
+.command-title strong { color: var(--accent-dark); }
+.command-title > span, .command-description { font-size: 11px; color: #756f63; }
+.command-description { display: block; }
+.command-menu-hint { border-top: 1px solid var(--line); }
+#composer-commands { font-size: 15px; line-height: 1; font-weight: 600; color: var(--accent); }
+.conversation-tools { display: grid; gap: 8px; margin-top: 12px; }
+.conversation-tools button { text-align: left; }
+.conversation-tools small { color: #756f63; font-size: 11px; }
+.answer-feedback, .command-download { margin-top: 10px; font-size: 11px; }
+.local-command .chat-bubble > p { white-space: pre-wrap; }
+#conversation-feedback-dialog { width: min(520px, calc(100vw - 24px)); max-height: 90dvh; overflow-y: auto; }
+#conversation-feedback-dialog label { display: grid; gap: 6px; margin-top: 12px; }
+@media (max-width: 380px) { .composer-tools { gap: 3px; } .mode-switch button { padding-inline: 4px; } .command-menu-heading span { max-width: 150px; text-align: right; } }

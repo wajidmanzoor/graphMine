@@ -194,6 +194,7 @@ def test_static_ui_and_openapi_are_bundled(settings: Settings) -> None:
         for path, content_type in (
             ("/analytics-shell.css", "text/css"),
             ("/analytics-shell.js", "javascript"),
+            ("/analytics-commands.js", "javascript"),
         ):
             assert f'"{path}"' in page.text
             asset = client.get(path)

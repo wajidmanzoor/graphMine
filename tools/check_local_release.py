@@ -27,6 +27,8 @@ BACKEND = [
     "test_csv_import",
     "test_workflow_templates",
     "test_exports_and_activity",
+    "test_pilot_feedback",
+    "test_workspace_commands",
     "test_analytics_workflows",
     "test_analytics_planning",
     "test_analytics_group_views",
@@ -50,6 +52,7 @@ BROWSER = [
     "test_workspace_expert",
     "test_workspace_device_quality",
     "test_workspace_shell",
+    "test_workspace_commands",
     "test_accounts_browser",
     "test_analytics_workspace",
 ]

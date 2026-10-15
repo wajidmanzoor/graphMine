@@ -5,6 +5,7 @@
   const save = (key, value) => { try { localStorage.setItem(key, value); } catch { /* private browsing */ } };
   const state = {base: read("graphmine.apiBase"), token: read("graphmine.apiToken"), caps: null, session: null, files: [], kinds: {}, active: "", mode: "normal", operation: "", record: null, result: null, cy: null, graph: null, selected: new Set(), port: null, rows: [], filtered: [], page: 0, previews: new Map(), poll: null, epoch: 0, busy: false, domains: [], workflows: [], events: [], eventCursor: 0, eventPoll: null, legacyMessages: [], view: "domains", planning: false, pendingQuestion: null, summaries: new Map()};
   const PAGE = 30;
+  let commands;
   let connectionGeneration = 0;
   let capabilitiesLoading = false;
   let capabilitiesController = null;
@@ -122,7 +123,8 @@
     controls.forEach(id => $(id).disabled = state.busy);
     document.querySelectorAll("[data-mode]").forEach(button => button.disabled = state.busy);
     ["plan-question", "use-operation", "save-editor", "operation-select", "device", "approve-plan"].forEach(id => $(id).disabled = state.busy || !state.caps);
-    if (state.caps?.question_planner_enabled === false) $("plan-question").disabled = true;
+    $("plan-question").disabled = state.busy || (!commands?.isCommand($("question").value) && (!state.caps || state.caps.question_planner_enabled === false));
+    commands?.update();
   }
   function requireCapabilities() {
     if (!state.caps) throw new Error(capabilitiesLoading ? "Calculations are still loading. Please try again shortly." : "Calculations are unavailable. Reconnect to try again.");
@@ -229,6 +231,7 @@
     renderSessions();
     state.files = workspace.files.filter(f => ["graph", "query_graph", "motif", "attachment"].includes(f.role));
     state.legacyMessages = workspace.messages;
+    state.feedbackCount = workspace.feedback_count || 0;
     state.events = workspace.events;
     state.eventCursor = Math.max(0, ...state.events.map(event => Number(event.sequence)));
     const domain = state.domains.find(row => row.id === state.session.domain_id);
@@ -297,7 +300,13 @@
     const atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90 || messageBottom >= viewport.top && messageBottom <= viewport.bottom + 90;
     const openDetails = new Set([...$("messages").querySelectorAll("details[open]")].map(el => el.dataset.turn));
     const container = $("messages"); container.replaceChildren();
-    for (const row of state.legacyMessages) if (row.message) container.append(messageElement(row.role === "user" ? "user" : "assistant", row.message).article);
+    const ordered = [];
+    for (const row of state.legacyMessages) if (row.message && row.kind !== "workflow.chat") {
+      const item = messageElement(row.role === "user" ? "user" : "assistant", row.message, row.kind?.startsWith("feedback_command") ? "Local command" : undefined);
+      item.article.dataset.turn = row.turn_id || "";
+      commands?.decorate(item, row);
+      ordered.push({article: item.article, time: row.created_at || ""});
+    }
     const chats = state.events.filter(event => event.type === "workflow.chat" && !event.payload.evaluation_id);
     for (const event of chats) {
       const row = event.payload, item = messageElement(row.role, row.message, row.role === "user" ? `${title(row.mode || "normal")} mode` : "GraphMine");
@@ -348,8 +357,10 @@
           item.bubble.append(choices);
         }
       }
-      container.append(item.article);
+      commands?.decorate(item, row);
+      ordered.push({article: item.article, time: event.created_at || ""});
     }
+    ordered.sort((a, b) => a.time.localeCompare(b.time)).forEach(item => container.append(item.article));
     for (const record of state.workflows.filter(record => !record.planning_turn_id)) {
       const item = messageElement("assistant", record.validation.plan.steps.map(step => methodName(step.operation)).join(" → "), "Saved analysis");
       appendOutcome(item.bubble, record); container.append(item.article);
@@ -364,7 +375,7 @@
     $("chat-welcome").hidden = Boolean(container.children.length);
     $("chat-content").classList.toggle("is-empty", !container.children.length);
     window.GraphMineShell.resizeComposer();
-    const chatKey = state.pendingQuestion?.id || chats.at(-1)?.sequence;
+    const chatKey = state.pendingQuestion?.id || ordered.at(-1)?.time || chats.at(-1)?.sequence;
     const newMessage = chatKey !== state.lastChatKey;
     state.lastChatKey = chatKey;
     if (atBottom || newMessage) requestAnimationFrame(() => {
@@ -592,9 +603,10 @@
   async function askQuestion(event) {
     event.preventDefault();
     await runAction(async () => {
-      requireCapabilities();
       const message = $("question").value.trim();
       if (!message) throw new Error("Describe what you want to learn.");
+      if (commands.isCommand(message)) { await commands.send(message); return; }
+      requireCapabilities();
       if (!state.active) throw new Error("Add your data first, then send your question.");
       await ensureSession();
       $("question").value = "";
@@ -1300,7 +1312,7 @@
       const gpuAvailable = caps.device_configuration?.gpu_available ?? caps.device_configuration?.gpu_configured;
       $("device").querySelector('[value="gpu"]').disabled = !gpuAvailable;
       $("device-note").textContent = gpuAvailable ? "Automatic prefers a verified GPU algorithm compatible with your inputs and requested quality, then falls back to CPU." : "No permitted GPU is currently available. Automatic falls back to CPU.";
-      $("planner-note").textContent = caps.question_planner_enabled ? "Enter to send · Shift + Enter for a new line" : "Question planning is disabled. You can build a plan in Expert mode.";
+      $("planner-note").textContent = caps.question_planner_enabled ? "Type / for commands · Enter to send" : "Question planning is disabled. You can build a plan in Expert mode.";
       renderOperations();
       if (state.record) renderWorkflow();
       if (state.session) renderConversation();
@@ -1489,8 +1501,9 @@
   $("device").addEventListener("change", () => { if (state.operation && !capable(card(state.operation))) state.operation = ""; renderOperations(); });
   $("operation-select").addEventListener("change", () => { state.operation = $("operation-select").value; renderParameters(); });
   $("operation-form").addEventListener("submit", event => { event.preventDefault(); runAction(() => submitPlan(planFromOperation())); });
+  commands = window.GraphMineCommands({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls});
   $("question-form").addEventListener("submit", askQuestion);
-  $("question").addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); if (!state.busy) $("question-form").requestSubmit(); } });
+  $("question").addEventListener("keydown", event => { if (!event.defaultPrevented && event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); if (!state.busy) $("question-form").requestSubmit(); } });
   $("load-editor").addEventListener("click", () => { try { loadEditor(); } catch (error) { notice(error.message, true); } });
   $("edit-plan").addEventListener("click", () => { setMode("expert"); loadEditor(); $("expert-panel").scrollIntoView({block: "start", behavior: "smooth"}); $("plan-editor").focus(); });
   $("save-editor").addEventListener("click", () => runAction(() => submitPlan(W.parse($("plan-editor").value), Boolean(state.record))));

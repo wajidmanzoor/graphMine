@@ -979,6 +979,13 @@ class AnalyticsPlanner:
                     "turn_id": turn_id,
                     "role": "user",
                     "message": body.message,
+                    "deployment": {
+                        "version": self.settings.deployment_version,
+                        "planner_model": self.settings.analytics_planner_model
+                        or self.settings.llm_model,
+                        "answer_model": self.settings.analytics_answer_model
+                        or self.settings.llm_model,
+                    },
                     "mode": body.mode,
                     "evaluation_id": body.evaluation_id,
                     # Saved so a failed question can be retried as it was asked.

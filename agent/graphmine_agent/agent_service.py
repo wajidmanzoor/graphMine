@@ -1174,7 +1174,7 @@ class AgentService:
         self.database.get_session(session_id)
         history = self.database.history
         is_command = command_name(request.message) is not None
-        previous = history.last_chat(session_id) if is_command else None
+        previous = self.database.last_feedback_turn(session_id) if is_command else None
         kind = "feedback_command" if is_command else "chat"
         with history.scope(session_id, kind, request) as turn_id:
             if is_command:

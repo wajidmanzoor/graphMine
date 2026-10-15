@@ -630,7 +630,34 @@ class Database:
                         "plan": payload.get("plan"),
                     }
                 )
-        return legacy + current
+        analytics = [
+            {
+                **event.payload,
+                "id": f"event_{event.sequence}",
+                "kind": "workflow.chat",
+                "created_at": event.created_at.isoformat(),
+            }
+            for event in self.events(session_id)
+            if event.type == "workflow.chat" and not event.payload.get("evaluation_id")
+        ]
+        return sorted(legacy + current + analytics, key=lambda row: row["created_at"])
+
+    def last_feedback_turn(self, session_id: str) -> dict[str, Any] | None:
+        """Local commands never become the target of the next annotation."""
+        self.get_session(session_id)
+        previous = self.history.last_chat(session_id)
+        for event in self.events(session_id):
+            if event.type != "workflow.chat" or event.payload.get("evaluation_id"):
+                continue
+            timestamp = event.created_at.isoformat()
+            if previous is None or timestamp >= previous["timestamp"]:
+                previous = {
+                    "type": event.type,
+                    "turn_id": event.payload.get("turn_id"),
+                    "timestamp": timestamp,
+                    "data": event.payload,
+                }
+        return previous
 
     def add_event(self, event: ConversationEvent) -> ConversationEvent:
         with self._lock, self._connect() as connection:
@@ -772,14 +799,47 @@ class Database:
                 raise ValueError("feedback job must belong to this session")
             if not values["turn_id"]:
                 values["turn_id"] = job.turn_id
+        if not values["turn_id"]:
+            previous = self.last_feedback_turn(session_id)
+            values["turn_id"] = previous.get("turn_id") if previous else None
+        analysis_events = [
+            event
+            for event in self.events(session_id)
+            if not event.payload.get("evaluation_id")
+        ]
         if values["turn_id"]:
             identifier = self.history.identifier(values["turn_id"])
             if not (
                 self.history.session_path(session_id) / "turns" / f"{identifier}.json"
-            ).is_file():
+            ).is_file() and not any(
+                event.type == "workflow.chat"
+                and event.payload.get("turn_id") == identifier
+                for event in analysis_events
+            ):
                 raise ValueError("feedback turn must belong to this session")
         context = self.history.feedback_context(session_id, values["turn_id"])
         context["transcript"] = self.conversation_transcript(session_id)
+        turn_events = (
+            [
+                event
+                for event in analysis_events
+                if event.payload.get("turn_id") == values["turn_id"]
+            ]
+            if values["turn_id"]
+            else []
+        )
+        if turn_events:
+            context["analysis_events"] = [
+                event.model_dump(mode="json") for event in turn_events
+            ]
+            context["deployment"] = next(
+                (
+                    event.payload["deployment"]
+                    for event in turn_events
+                    if event.payload.get("deployment")
+                ),
+                context["deployment"],
+            )
         context["session"] = self.get_session(session_id).model_dump(mode="json")
         context["files"] = [
             {
