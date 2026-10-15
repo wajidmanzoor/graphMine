@@ -1464,7 +1464,7 @@
     $("projection-feedback").textContent = "Building your graph…";
     const result = await api(`/api/sessions/${state.session.id}/projections`, {method: "POST", body: W.stringify({tables: state.tableSources, projection})});
     state.files.push(result.file); state.kinds[result.file.id] = "graph"; state.active = result.file.id; clearResults(); renderFiles(); await previewActive();
-    $("projection-dialog").close(); notice(`Graph ready: ${result.provenance.retained_rows} source records produced ${result.provenance.edge_count} connections. Construction settings are saved with the graph.`);
+    $("projection-dialog").close(); setDataOpen(false); notice(`Graph ready: ${result.provenance.retained_rows} source records produced ${result.provenance.edge_count} connections. Construction settings are saved with the graph.`);
   }); });
   $("review-example").addEventListener("click", () => runAction(async () => {
     state.exampleReview = await api(`/api/workflows/${state.record.id}/example-review`);
