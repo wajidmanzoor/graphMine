@@ -190,9 +190,15 @@ def test_static_ui_and_openapi_are_bundled(settings: Settings) -> None:
     with TestClient(create_app(settings)) as client:
         page = client.get("/")
         assert page.status_code == 200
-        assert "What kind of network are you exploring?" in page.text.replace(
-            "<br>", " "
-        )
+        assert 'id="domain-heading"' in page.text
+        for path, content_type in (
+            ("/analytics-shell.css", "text/css"),
+            ("/analytics-shell.js", "javascript"),
+        ):
+            assert f'"{path}"' in page.text
+            asset = client.get(path)
+            assert asset.status_code == 200
+            assert content_type in asset.headers["content-type"]
         schema = client.get("/openapi.json").json()
         assert schema["info"]["version"] == "1.0.0"
         assert "/api/sessions/{session_id}/chat" in schema["paths"]

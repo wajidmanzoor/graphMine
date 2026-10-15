@@ -49,6 +49,7 @@ BROWSER = [
     "test_workspace_templates",
     "test_workspace_expert",
     "test_workspace_device_quality",
+    "test_workspace_shell",
     "test_accounts_browser",
     "test_analytics_workspace",
 ]
