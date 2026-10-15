@@ -58,10 +58,6 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
     else if (event.key === "Enter" || event.key === "Tab") select(active);
     else { active = (active + (event.key === "ArrowDown" ? 1 : -1) + matches.length) % matches.length; highlight(); }
   });
-  $("composer-commands").addEventListener("click", () => {
-    if (!input.value.trim()) input.value = "/";
-    input.focus(); suggest(); updateControls();
-  });
   function update() {
     const count = state.feedbackCount || 0;
     $("conversation-feedback-count").textContent = `${count} saved annotation${count === 1 ? "" : "s"}`;

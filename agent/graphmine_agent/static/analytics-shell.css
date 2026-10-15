@@ -301,7 +301,6 @@ body[data-overlay] { overflow: hidden; }
 .command-title > span, .command-description { font-size: 11px; color: #756f63; }
 .command-description { display: block; }
 .command-menu-hint { border-top: 1px solid var(--line); }
-#composer-commands { font-size: 15px; line-height: 1; font-weight: 600; color: var(--accent); }
 .conversation-tools { display: grid; gap: 8px; margin-top: 12px; }
 .conversation-tools button { text-align: left; }
 .conversation-tools small { color: #756f63; font-size: 11px; }
