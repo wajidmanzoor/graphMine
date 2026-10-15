@@ -11,6 +11,16 @@
   <script src="/vendor/cytoscape.min.js" defer></script>
   <script src="/account.js" defer></script>
   <script src="/analytics-wire.js" defer></script>
+  <script src="/analytics-library.js" defer></script>
+  <script src="/analytics-import.js" defer></script>
+  <script src="/analytics-templates.js" defer></script>
+  <script src="/analytics-outputs.js" defer></script>
+  <script src="/analytics-explorer.js" defer></script>
+  <script src="/analytics-editor.js" defer></script>
+  <script src="/analytics-controls.js" defer></script>
+  <script src="/analytics-projects.js" defer></script>
+  <script src="/analytics-connection-settings.js" defer></script>
+  <script src="/analytics-connectors.js" defer></script>
   <script src="/analytics-ui.js" defer></script>
 </head>
 <body>
@@ -22,15 +32,15 @@
   </header>
   <div id="notice" class="notice" role="status" hidden></div>
   <section id="domain-view" class="domain-view" aria-labelledby="domain-heading">
+    <section id="recent-section" class="recent-section" hidden><div class="section-heading"><h2>Continue a conversation</h2><button id="refresh-sessions" class="quiet">Refresh</button></div><div class="session-filters"><input id="session-search" type="search" placeholder="Search conversations" aria-label="Search conversations"><label class="inline"><input id="show-archived" type="checkbox"> Show archived</label></div><div id="recent-sessions" class="recent-sessions"></div></section>
     <div class="hero"><p class="eyebrow">GraphMine · Your research workspace</p><h1 id="domain-heading">What kind of network<br>are you exploring?</h1><p>Choose your domain, bring your data, and start a conversation. Follow how your analysis is built, then explore the results in their own space.</p></div>
     <label class="session-title">Conversation name <span class="muted">(optional)</span><input id="session-name" maxlength="200" placeholder="e.g. Team connections — October"></label>
     <div id="domain-grid" class="domain-grid" aria-live="polite"><p class="muted">Loading domains…</p></div>
-    <section class="recent-section"><div class="section-heading"><h2>Continue a conversation</h2><button id="refresh-sessions" class="quiet">Refresh</button></div><div class="session-filters"><input id="session-search" type="search" placeholder="Search conversations" aria-label="Search conversations"><label class="inline"><input id="show-archived" type="checkbox"> Show archived</label></div><div id="recent-sessions" class="recent-sessions"></div></section>
   </section>
   <div id="workspace-view" class="chat-workspace" hidden>
     <aside id="data-sidebar" class="data-sidebar" aria-label="Conversation and data">
       <div class="domain-context"><p class="eyebrow">Your domain</p><h2 id="active-domain"></h2><p id="active-domain-description" class="muted"></p><button id="new-session" class="quiet">Change domain / new chat</button></div>
-      <label>Saved conversations<select id="session-select"><option value="">New conversation</option></select></label><div id="session-actions" class="session-actions" hidden><button id="rename-session" class="quiet" type="button">Rename</button><button id="archive-session" class="quiet" type="button">Archive</button><button id="delete-session" class="quiet danger" type="button">Delete</button></div>
+      <details class="sidebar-disclosure"><summary>Manage conversations</summary><label>Saved conversations<select id="session-select"><option value="">New conversation</option></select></label><div id="session-actions" class="session-actions" hidden><button id="rename-session" class="quiet" type="button">Rename</button><button id="archive-session" class="quiet" type="button">Archive</button><button id="delete-session" class="quiet danger" type="button">Delete</button></div></details>
       <div class="data-section">
         <p class="eyebrow">Your data</p>
         <label class="upload-zone"><span class="upload-symbol" aria-hidden="true">↑</span><strong>Drop or choose files</strong><input id="data-upload" type="file" accept=".json,.csv,.txt"><span>Graph JSON or relationship CSV</span></label>
@@ -43,16 +53,17 @@
         <label>Active input<select id="active-input"><option value="">Upload data to begin</option></select></label><button id="remove-input" class="quiet danger" type="button" hidden>Remove this file</button>
         <label id="active-kind-label" hidden>Input kind<select id="active-kind"><option value="graph">Graph</option><option value="graph_collection">Collection of graphs</option><option value="feature_vectors">Feature vectors</option><option value="hypergraph">Hypergraph</option></select></label>
         <p id="data-summary" class="muted">Your analysis uses the full uploaded input.</p>
+        <button id="open-datasets" class="secondary full-width">Dataset library</button><button id="save-dataset-input" class="quiet full-width">Save this input for reuse</button>
         <details class="advanced-data"><summary>Compute settings</summary><label>Compute on<select id="device"><option value="auto">Automatic (GPU first)</option><option value="cpu">CPU only</option><option value="gpu">GPU only</option></select></label><p id="device-note" class="muted"></p><div id="input-aliases" class="alias-list"></div><p id="verified-count" class="muted"></p></details>
       </div>
       <details id="manual-tools" class="data-section"><summary>Advanced calculation</summary>
         <form id="operation-form"><label>Calculation<select id="operation-select"><option value="">Choose a calculation</option></select></label><p id="operation-description" class="muted"></p><p id="operation-quality" class="muted"></p><div id="operation-parameters" class="parameter-grid"></div><button id="use-operation" type="submit" class="secondary full-width">Build analysis</button></form>
       </details>
-      <div class="data-section"><h3>Saved analyses</h3><div id="saved-workflows" class="saved-list"></div></div>
+      <details class="data-section sidebar-disclosure"><summary>Saved analyses</summary><div id="saved-workflows" class="saved-list"></div></details>
       <p class="sidebar-note">Your conversations, data and results are saved automatically.</p>
     </aside>
     <main id="chat-content" class="chat-column" tabindex="-1">
-      <div class="chat-heading"><div><p class="eyebrow" id="chat-domain-label">Your conversation</p><h1 id="workspace-title">New conversation</h1></div><span id="chat-status" class="pill">Ready</span></div>
+      <div class="chat-heading"><div><p class="eyebrow" id="chat-domain-label">Your conversation</p><h1 id="workspace-title">New conversation</h1></div><button id="toggle-data" class="quiet" type="button" aria-expanded="false" aria-controls="data-sidebar">Data &amp; chats</button><span id="chat-status" class="pill">Ready</span></div>
       <section class="mode-panel" aria-label="Analysis mode"><div class="mode-switch" role="group" aria-label="Choose an analysis mode"><button data-mode="normal" aria-pressed="true">Normal</button><button data-mode="interactive" aria-pressed="false">Interactive</button><button data-mode="expert" aria-pressed="false">Expert</button></div><p id="mode-description"></p></section>
       <div id="conversation-scroll" class="conversation-scroll">
         <div id="messages" class="chat-messages" role="log" aria-label="Conversation" aria-live="polite"></div>
@@ -64,6 +75,7 @@
       <section id="workflow-panel" class="panel" hidden aria-labelledby="workflow-heading">
         <div class="section-heading"><div><p class="eyebrow">3 · Your analysis</p><h2 id="workflow-heading">Review the steps</h2></div><span id="workflow-status" class="pill"></span></div>
         <p id="workflow-summary" class="muted"></p><ol id="workflow-steps" class="workflow-steps"></ol>
+        <div id="recovery-actions" class="recovery-actions" hidden><p id="recovery-hint"></p><div class="form-actions"><button id="adjust-parameters" type="button" class="secondary">Adjust parameters</button><button id="narrow-input" type="button" class="secondary">Narrow input</button></div></div>
         <div id="review-actions" class="form-actions"><button id="approve-plan" class="primary">Approve and run</button><button id="edit-plan" class="secondary">Edit plan</button><button id="cancel-workflow" class="secondary danger" hidden>Cancel execution</button></div>
         <details><summary>Plan and execution details</summary><pre id="plan-details"></pre></details>
         <button id="review-example" class="quiet" hidden>Review as a reusable example</button>
@@ -78,15 +90,25 @@
   <main id="results-view" class="analytics-results" hidden tabindex="-1"><div class="results-toolbar"><div><p class="eyebrow">Explore your findings</p><h1>Results & visualizations</h1><p id="results-session-title" class="muted"></p></div><button id="back-to-chat" class="secondary">← Back to chat</button></div><label class="result-picker">Saved analysis<select id="result-select"><option value="">No completed analyses yet</option></select></label>
       <section id="evidence-panel" class="panel" aria-labelledby="evidence-heading">
         <div class="section-heading"><div><p class="eyebrow">Explore the evidence</p><h2 id="evidence-heading">Connections & results</h2></div><button id="download-result" class="secondary" disabled>Download full result</button></div>
+        <details id="result-actions-panel"><summary>Save, compare &amp; export</summary><div id="result-actions" class="form-actions"></div></details>
         <p id="result-completeness" class="completeness">Upload a graph to preview its connections.</p>
         <div id="result-controls" class="result-controls" hidden><label>Step<select id="result-step"></select></label><label>Output<select id="result-port"></select></label></div>
         <div class="evidence-grid">
-          <div class="graph-card"><div class="graph-tools"><label>View layout<select id="graph-layout"><option value="cose">Spread connections</option><option value="groups" disabled>By group</option><option value="circle">Circle</option><option value="grid">Grid</option><option value="computed" disabled>Computed coordinates</option></select></label><label id="graph-group-label" hidden><span id="graph-group-caption">Show group</span><select id="graph-group" aria-describedby="graph-group-hint"><option value="">Full network</option></select></label><button id="fit-graph" class="quiet">Fit graph</button><button id="clear-selection" class="quiet">Clear selection</button></div><p id="graph-group-hint" class="muted" hidden></p><div id="network" role="img" aria-label="Network preview; choose a result row to highlight its entities"></div><div id="group-legend" class="group-legend" aria-label="Group colors and filters" hidden></div><p id="preview-scope" class="muted"></p><div id="selection-detail" role="status" class="selection-detail">Select a node or a result row to inspect it.</div></div>
-          <div class="result-card"><div id="metrics" class="metrics"></div><div id="chart" class="fixed-chart"></div><div class="table-toolbar"><label>Find in this output<input id="table-search" type="search" placeholder="Value or vertex:501"></label><span id="table-count" class="muted"></span></div><div class="table-scroll" tabindex="0" role="region" aria-label="Result rows"><table id="result-table"><caption class="visually-hidden">Computed output values</caption><thead></thead><tbody></tbody></table></div><div class="pagination"><button id="table-prev" class="secondary">Previous</button><span id="table-page"></span><button id="table-next" class="secondary">Next</button></div><p id="table-scope" class="muted">Computed values will appear after an analysis.</p></div>
+          <div class="graph-card"><div class="graph-tools"><label>View layout<select id="graph-layout"><option value="cose">Spread connections</option><option value="groups" disabled>By group</option><option value="circle">Circle</option><option value="grid">Grid</option><option value="computed" disabled>Computed coordinates</option></select></label><label id="graph-group-label" hidden><span id="graph-group-caption">Show group</span><select id="graph-group" aria-describedby="graph-group-hint"><option value="">Full network</option></select></label><button id="fit-graph" class="quiet">Fit graph</button><button id="clear-selection" class="quiet">Clear selection</button></div><p id="graph-group-hint" class="muted" hidden></p><label id="overlap-control" class="check" hidden><input id="highlight-overlap" type="checkbox"> Highlight shared members</label><p id="group-summary" class="muted" hidden></p><label id="flow-control" class="check" hidden><input id="flow-direction" type="checkbox" checked> Show computed flow direction</label><div id="network" role="img" aria-label="Network preview; choose a result row to highlight its entities"></div><div id="group-legend" class="group-legend" aria-label="Group colors and filters" hidden></div><p id="preview-scope" class="muted"></p><div id="selection-detail" role="status" class="selection-detail">Select a node or a result row to inspect it.</div></div>
+          <div class="result-card"><div id="metrics" class="metrics"></div><div id="chart" class="fixed-chart"></div><div id="group-filters" class="group-filters" hidden><label>Minimum size<input id="group-min-size" type="number" min="0" step="1" placeholder="Any"></label><label>Maximum size<input id="group-max-size" type="number" min="0" step="1" placeholder="Any"></label><label>Contains member ID<input id="group-member" type="search" placeholder='42 or "Alice"'></label><button id="clear-group-filters" type="button" class="quiet">Clear filters</button><p id="group-filter-status" class="muted" role="status"></p></div><div class="table-toolbar"><label>Find in this output<input id="table-search" type="search" placeholder="Value or vertex:501"></label><span id="table-count" class="muted"></span></div><div class="table-scroll" tabindex="0" role="region" aria-label="Result rows"><table id="result-table"><caption class="visually-hidden">Computed output values</caption><thead></thead><tbody></tbody></table></div><div class="pagination"><button id="table-prev" class="secondary">Previous</button><span id="table-page"></span><button id="table-next" class="secondary">Next</button></div><p id="table-scope" class="muted">Computed values will appear after an analysis.</p></div>
         </div>
         <details id="raw-details" hidden><summary>Recorded result and provenance</summary><pre id="raw-result"></pre></details>
       </section>
   </main>
+  <dialog id="narrow-dialog" aria-labelledby="narrow-heading"><form id="narrow-form">
+    <div class="section-heading"><h2 id="narrow-heading">Use a smaller input</h2><button type="button" class="quiet" data-close="narrow-dialog">Close</button></div>
+    <p>Choose a smaller graph for this analysis. The revised plan will wait for your review before it runs.</p>
+    <label>Input to replace<select id="narrow-alias"></select></label>
+    <label>Replacement graph<select id="narrow-file" required></select></label>
+    <p id="narrow-feedback" class="muted" role="status"></p>
+    <label>Upload a smaller graph<input id="narrow-upload" type="file" accept=".json,.csv,.txt"></label>
+    <button id="save-narrow-input" type="submit" class="primary">Save for review</button>
+  </form></dialog>
   <dialog id="connection-dialog"><form id="connection-form" method="dialog"><div class="section-heading"><h2>Connect to GraphMine</h2><button value="cancel" type="button" id="close-connection" class="quiet" aria-label="Close connection settings">Close</button></div><label>API base URL<input id="api-base" placeholder="Same server"></label><label>API token<input id="api-token" type="password" autocomplete="off"></label><p class="muted">Connection settings stay in this browser.</p><button type="submit" class="primary">Save and connect</button></form></dialog>
   <dialog id="example-dialog" aria-labelledby="example-heading"><form id="example-form">
     <div class="section-heading"><h2 id="example-heading">Review this example</h2><button type="button" class="quiet" data-close="example-dialog">Close</button></div>

@@ -3,6 +3,7 @@
 import threading
 import time
 from copy import deepcopy
+from itertools import pairwise
 
 import pytest
 import test_workspace_loading as loading_fixtures
@@ -386,7 +387,7 @@ def test_conversation_polling_slows_when_idle_and_stops_when_signed_out(
     while len(server.event_times) < start + 4 and time.monotonic() < deadline:
         time.sleep(0.2)
     times = server.event_times[start : start + 4]
-    gaps = [later - earlier for earlier, later in zip(times, times[1:])]
+    gaps = [later - earlier for earlier, later in pairwise(times)]
     # Fixed polling would repeat every 1.4 seconds.
     assert len(gaps) == 3 and gaps[-1] > 2.5, gaps
     server.events_status = 401
@@ -807,6 +808,7 @@ def test_conversation_can_be_renamed_and_deleted(loading_browser, loading_server
     browser.execute_script(
         "window.prompt = () => 'Renamed study'; window.confirm = () => true;"
     )
+    browser.find_element(By.CSS_SELECTOR, ".sidebar-disclosure > summary").click()
     browser.find_element(By.ID, "rename-session").click()
     wait_for(browser, "!GraphMineWorkspace.state.busy")
     assert ("PATCH", "/api/sessions/saved-session", {"title": "Renamed study"}) in (
@@ -916,3 +918,178 @@ def test_long_outputs_page_and_search_on_the_server(loading_browser, loading_ser
         time.sleep(0.1)
     assert "offset=0" in server.port_requests[-1]
     assert "searches all 5,000" in browser.find_element(By.ID, "table-scope").text
+
+
+def test_display_request_opens_the_largest_clique_without_a_calculation(
+    loading_browser, loading_server
+):
+    browser, server = loading_browser, loading_server
+    saved_cliques(server)
+    view = {
+        "kind": "show_group",
+        "workflow_id": "saved-analysis",
+        "step": "core",
+        "port": "groups",
+        "noun": "clique",
+        "group_key": 0,
+        "label": "Clique 1",
+        "size": 3,
+    }
+    message = "Showing Clique 1 (3 vertices) on the results page."
+
+    def plan(body):
+        turn = body["request_id"]
+        event(server, "chat", turn, role="user", message=body["message"], mode="normal")
+        event(
+            server,
+            "chat",
+            turn,
+            role="assistant",
+            status="view",
+            message=message,
+            view=view,
+        )
+        return {
+            "turn_id": turn,
+            "status": "view",
+            "message": message,
+            "view": view,
+            "plan": None,
+        }
+
+    server.plan_handler = plan
+    open_saved(browser, server)
+    browser.find_element(By.ID, "question").send_keys("Show me the biggest clique")
+    browser.find_element(By.ID, "plan-question").click()
+    wait_for(
+        browser,
+        "GraphMineWorkspace.state.view === 'results' && GraphMineWorkspace.state.groupFilter === 'i:0' && !GraphMineWorkspace.state.busy",
+    )
+    assert browser.current_url.endswith(
+        "#workspace/saved-session/results/saved-analysis"
+    )
+    assert Select(
+        browser.find_element(By.ID, "graph-group")
+    ).first_selected_option.text.startswith("Clique 1")
+    assert len(server.workflows) == 1  # Nothing new was planned or run.
+    # The reply keeps a way back to the same view.
+    browser.find_element(By.ID, "back-to-chat").click()
+    browser.execute_script("GraphMineWorkspace.state.groupFilter = '';")
+    browser.find_element(By.CSS_SELECTOR, ".chat-message.assistant [data-view]").click()
+    wait_for(
+        browser,
+        "GraphMineWorkspace.state.view === 'results' && GraphMineWorkspace.state.groupFilter === 'i:0'",
+    )
+
+
+@pytest.mark.parametrize(
+    "view, check",
+    [
+        (
+            {"kind": "layout", "layout": "circle"},
+            "document.getElementById('graph-layout').value === 'circle'",
+        ),
+        (
+            {"kind": "highlight", "vertices": [4, 5]},
+            "GraphMineWorkspace.state.selected.has('i:4') && GraphMineWorkspace.state.selected.has('i:5') && GraphMineWorkspace.state.cy?.getElementById('i:4').hasClass('chosen')",
+        ),
+        (
+            {"kind": "search", "text": "Vertex 4"},
+            "document.getElementById('table-search').value === 'Vertex 4'",
+        ),
+        (
+            {"kind": "show_group", "group_key": None, "step": "core", "port": "groups"},
+            "GraphMineWorkspace.state.groupFilter === ''",
+        ),
+    ],
+)
+def test_saved_display_changes_are_carried_out_on_the_results_page(
+    loading_browser, loading_server, view, check
+):
+    browser, server = loading_browser, loading_server
+    saved_cliques(server)
+    event(server, "chat", "show", role="user", message="Change the view", mode="normal")
+    event(
+        server,
+        "chat",
+        "show",
+        role="assistant",
+        status="view",
+        message="Changing the view.",
+        view={**view, "workflow_id": "saved-analysis"},
+    )
+    open_saved(browser, server)
+    browser.find_element(By.CSS_SELECTOR, '[data-view="show"]').click()
+    wait_for(browser, f"GraphMineWorkspace.state.view === 'results' && ({check})")
+
+
+def test_answers_from_saved_facts_list_each_computed_statement(
+    loading_browser, loading_server
+):
+    browser, server = loading_browser, loading_server
+    saved_cliques(server)
+    facts = [
+        {"id": "f2", "statement": "Sizes of the largest cliques: 3, 3, 2, 2."},
+        {"id": "f1", "statement": "Maximal cliques found 4 cliques."},
+    ]
+    event(
+        server, "chat", "why", role="user", message="How big are they?", mode="normal"
+    )
+    event(
+        server,
+        "chat",
+        "why",
+        role="assistant",
+        status="answered",
+        message="These are the clique sizes.",
+        answer={"workflow_id": "saved-analysis", "facts": facts},
+    )
+    open_saved(browser, server)
+    bubble = '.chat-message.assistant[data-turn="why"]'
+    items = browser.find_elements(By.CSS_SELECTOR, f"{bubble} .answer-facts li")
+    assert [item.text for item in items] == [fact["statement"] for fact in facts]
+    assert (
+        "These are the clique sizes."
+        in browser.find_element(By.CSS_SELECTOR, bubble).text
+    )
+
+
+def test_suggested_follow_ups_are_asked_about_their_analysis(
+    loading_browser, loading_server
+):
+    browser, server = loading_browser, loading_server
+    saved_network(server)
+    saved_turn(server, "first", "Find the communities")
+    suggestions = ["Show the largest community", "Which vertices link the two groups?"]
+    event(
+        server,
+        "answer",
+        "first",
+        workflow_id="saved-analysis",
+        revision=1,
+        lead="",
+        fact_ids=["f1"],
+        facts=[{"id": "f1", "statement": "Community detection found 2 groups."}],
+        suggestions=suggestions,
+        source="model",
+    )
+    request = {}
+
+    def plan(body):
+        request.update(body)
+        return {
+            "turn_id": body["request_id"],
+            "status": "unsupported",
+            "message": "Recorded",
+            "plan": None,
+        }
+
+    server.plan_handler = plan
+    open_saved(browser, server)
+    chips = browser.find_elements(By.CSS_SELECTOR, "[data-suggestion]")
+    assert [chip.text for chip in chips] == suggestions
+    chips[1].click()
+    wait_for(browser, "!GraphMineWorkspace.state.busy")
+    assert request["message"] == suggestions[1]
+    assert request["previous_workflow_id"] == "saved-analysis"
+    assert request["inputs"] == {"main": {"file_id": "network", "kind": "graph"}}

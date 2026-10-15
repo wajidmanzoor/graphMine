@@ -6,6 +6,8 @@ import json
 import mimetypes
 import threading
 import time
+from email.parser import BytesParser
+from email.policy import default
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
@@ -78,6 +80,9 @@ def loading_server():
         calls=0,
         saved_analysis=False,
         files=[],
+        datasets=[],
+        templates=[],
+        workflow_history=[],
         events=[],
         workflows=[],
         results={},
@@ -85,6 +90,7 @@ def loading_server():
         preview_failures=[],
         preview_calls=0,
         plan_handler=None,
+        post_handler=None,
         event_times=[],
         requests=[],
         group_graph=None,
@@ -136,6 +142,12 @@ def loading_server():
                 )
             elif path == "/api/sessions":
                 self.respond([SESSION])
+            elif path == "/api/datasets":
+                self.respond(state.datasets)
+            elif path == "/api/workflow-templates":
+                self.respond(state.templates)
+            elif path == "/api/workflow-history":
+                self.respond(state.workflow_history)
             elif path.endswith("/workspace"):
                 self.respond(
                     {
@@ -197,6 +209,24 @@ def loading_server():
             body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
             if self.path.endswith("/analytics/plan") and state.plan_handler:
                 self.respond(state.plan_handler(json.loads(body)))
+            elif state.post_handler:
+                if "multipart/form-data" in self.headers.get("Content-Type", ""):
+                    message = BytesParser(policy=default).parsebytes(
+                        (
+                            "Content-Type: " + self.headers["Content-Type"] + "\r\n\r\n"
+                        ).encode()
+                        + body
+                    )
+                    payload = {
+                        part.get_param(
+                            "name", header="content-disposition"
+                        ): part.get_payload(decode=True).decode()
+                        for part in message.iter_parts()
+                    }
+                else:
+                    payload = json.loads(body or b"{}")
+                state.requests.append(("POST", self.path, payload))
+                self.respond(state.post_handler(self.path, payload))
             else:
                 self.respond(SESSION, 201)
 

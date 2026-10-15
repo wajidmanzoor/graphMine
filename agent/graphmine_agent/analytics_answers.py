@@ -30,6 +30,37 @@ SYSTEM = (
 )
 
 
+def suggested_questions(saved):
+    """Follow-ups based on saved outputs, without another model call."""
+    ports = [
+        port
+        for step in saved.get("steps", {}).values()
+        for port in (step.get("result") or {}).get("ports", {}).values()
+    ]
+    kinds = {port.get("type") for port in ports}
+    if "vertex_groups" in kinds:
+        questions = ["How many groups were found?", "Show the largest group."]
+    elif kinds & {"vertex_scores", "edge_scores"}:
+        questions = [
+            "Which entities have the highest scores?",
+            "What do these scores mean?",
+        ]
+    elif "path_set" in kinds:
+        questions = ["Explain the returned paths."]
+    elif "graph" in kinds:
+        questions = ["How many vertices and connections are in the result?"]
+    elif "vertex_partition" in kinds:
+        questions = ["How large are the groups in this partition?"]
+    else:
+        questions = ["Explain this result."]
+    questions.append(
+        "Is this result complete?"
+        if any(port.get("complete") is not True for port in ports)
+        else "What guarantees does this calculation provide?"
+    )
+    return questions[:3]
+
+
 def _number(value):
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return str(value)

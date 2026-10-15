@@ -68,7 +68,7 @@ def tools():
             "POST",
             "/api/sessions/{session_id}/analytics/plan",
             PlanningRequest,
-            "Choose a family, then operations, and validate a proposed workflow. Does not execute it.",
+            "Route a question to operations, a display change of a saved result, or an answer from its facts, and validate a proposed workflow. Does not execute it.",
         ),
         (
             "create_workflow",

@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "graphmine-agent"
 version = "1.0.0"
 description = "Private-LAN agent, job service, and interactive UI for GraphMine"
-readme = "README.md"
+readme = {text = "GraphMine provides a private graph-analysis workspace, authenticated API and durable native workflows. The application requires the repository catalog and matching verified native artifacts. See docs/ANALYTICS_WORKSPACE.md in the source checkout for installation and operation.", content-type = "text/plain"}
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.115,<1",

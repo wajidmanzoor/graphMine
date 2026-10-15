@@ -98,6 +98,8 @@ class Settings:
     # Serve HTTPS directly when no reverse proxy terminates TLS.
     tls_certfile: Path | None = None
     tls_keyfile: Path | None = None
+    connectors_file: Path | None = None
+    connector_allowed_origins: tuple[str, ...] = ()
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -256,6 +258,18 @@ class Settings:
         )
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
+            connector_allowed_origins=tuple(
+                origin.strip().rstrip("/")
+                for origin in os.getenv(
+                    "GRAPHMINE_CONNECTOR_ALLOWED_ORIGINS", ""
+                ).split(",")
+                if origin.strip()
+            ),
+            connectors_file=Path(os.environ["GRAPHMINE_CONNECTORS_FILE"])
+            .expanduser()
+            .resolve()
+            if os.getenv("GRAPHMINE_CONNECTORS_FILE")
+            else None,
             accounts_enabled=_boolean("GRAPHMINE_ACCOUNTS_ENABLED", True),
             account_cookie_secure=_boolean("GRAPHMINE_ACCOUNT_COOKIE_SECURE", True),
             account_session_seconds=_integer(
@@ -334,7 +348,8 @@ class Settings:
             allow_shared_gpu=_boolean("GRAPHMINE_ALLOW_SHARED_GPU", False),
             analytics_python=Path(os.environ["GRAPHMINE_ANALYTICS_PYTHON"])
             .expanduser()
-            .resolve()
+            # Resolving bin/python's symlink loses its virtual environment.
+            .absolute()
             if os.getenv("GRAPHMINE_ANALYTICS_PYTHON")
             else None,
             analytics_max_input_bytes=_integer(

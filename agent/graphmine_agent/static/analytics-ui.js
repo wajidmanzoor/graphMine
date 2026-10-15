@@ -13,6 +13,7 @@
   const choiceNames = {enumerate: "List each result", count: "Count only", edge_weight: "Use edge weights", unweighted: "Treat each connection equally", weakly_connected: "Connected when direction is ignored", strongly_connected: "Every member can reach every other member", induced: "Connections within the selected vertices", ego: "Neighborhood around the selected vertices", exact: "Exact", heuristic: "Heuristic"};
   const title = value => friendly[value] || String(value).replaceAll("_", " ").replace(/^./, c => c.toUpperCase());
   const display = value => value === null ? "—" : typeof value === "object" ? W.stringify(value) : typeof value === "string" ? value : String(value);
+  const {parameterControl, parametersFrom, bindingsFrom} = window.GraphMineControls({state, W, node, refs, title, choiceNames});
   function node(tag, attributes = {}, text) {
     const element = document.createElement(tag);
     for (const [key, value] of Object.entries(attributes)) {
@@ -25,14 +26,22 @@
   }
   function notice(message, error = false) {
     clearTimeout(state.noticeTimer);
+    const dialog = document.querySelector("dialog[open]");
+    if (dialog && error && message) {
+      let feedback = dialog.querySelector(".dialog-notice");
+      if (!feedback) { feedback = node("p", {class: "dialog-notice", role: "alert"}); dialog.prepend(feedback); }
+      feedback.textContent = message; feedback.scrollIntoView({block: "nearest"});
+    }
     $("notice").textContent = message; $("notice").className = `notice${error ? " error" : ""}`; $("notice").hidden = !message;
     if (message && !error) state.noticeTimer = setTimeout(() => { $("notice").hidden = true; }, 5500);
   }
   async function api(path, options = {}, busyRetries = 0) {
+    const {asBlob, ...requestOptions} = options;
     const headers = state.token ? {Authorization: `Bearer ${state.token}`} : {};
     if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
-    const response = await fetch(state.base + path, {...options, headers: {...headers, ...options.headers}});
+    const response = await fetch(state.base + path, {...requestOptions, headers: {...headers, ...options.headers}});
     if (response.status === 204) return null;
+    if (response.ok && asBlob) return response.blob();
     const text = await response.text();
     let result; try { result = W.parse(text); } catch { throw new Error("The server did not return a readable response."); }
     if (busyRetries > 0 && response.status === 429 && result.error?.code === "concurrency_limit") {
@@ -51,7 +60,10 @@
   function clearResults(message = "Waiting for a completed calculation.") {
     if (state.record) state.summaries.delete(state.record.id);
     state.result = null; state.port = null; state.rows = []; state.selected.clear();
+    state.flowRows = null; state.remote = null; state.pageRows = []; state.pagePositions = []; state.page = 0; clearTimeout(state.remoteTimer);
     state.groups = []; state.groupMembership = new Map(); state.groupFilter = ""; state.groupsOverlap = false; state.groupNoun = "group";
+    state.groupMemberships = new Map(); state.groupSummary = null; state.groupsTruncated = false;
+    state.fullMemberships = new Map(); state.membershipRequest = null; state.groupPort = null;
     $("result-controls").hidden = true; $("download-result").disabled = true; $("raw-details").hidden = true;
     $("result-completeness").textContent = message; $("result-completeness").classList.remove("incomplete");
     renderOutput(); renderGraph(state.previews.get(state.active) || null);
@@ -122,7 +134,7 @@
     try { await fn(); } catch (error) { notice(error.message, true); }
     finally { state.busy = false; updateControls(); }
   }
-  const stageNames = {family: "Understanding your question", operation: "Choosing the calculation", plan: "Building a valid plan", validation: "Validating the plan", retrieval: "Checking reviewed examples"};
+  const stageNames = {route: "Understanding your question", family: "Understanding your question", operation: "Choosing the calculation", plan: "Building a valid plan", validation: "Validating the plan", retrieval: "Checking reviewed examples"};
   function route(page = "chat", workflow = "") {
     return state.session ? `#workspace/${encodeURIComponent(state.session.id)}/${page}${workflow ? `/${encodeURIComponent(workflow)}` : ""}` : "#";
   }
@@ -174,6 +186,7 @@
   }
   function renderSessions() {
     const query = $("session-search").value.trim().toLowerCase(), archived = $("show-archived").checked;
+    $("recent-section").hidden = !state.sessions?.length;
     $("session-select").replaceChildren(node("option", {value: ""}, "New conversation"));
     $("recent-sessions").replaceChildren();
     for (const session of state.sessions || []) {
@@ -185,6 +198,7 @@
       link.append(node("strong", {}, name + (session.archived ? " (archived)" : "")), node("span", {}, domain?.name || session.domain_id), node("span", {"aria-hidden": "true"}, "→"));
       $("recent-sessions").append(link);
     }
+    if (state.sessions?.length && !$("recent-sessions").children.length) $("recent-sessions").append(node("p", {class: "muted"}, "No conversations match these filters."));
     $("session-select").value = state.session?.id || "";
     $("session-actions").hidden = !state.session;
     $("archive-session").textContent = state.session?.archived ? "Unarchive" : "Archive";
@@ -203,6 +217,7 @@
     state.session = null; state.files = []; state.kinds = {}; state.active = ""; state.record = null; state.previews.clear();
     state.events = []; state.workflows = []; state.eventCursor = 0; state.legacyMessages = []; state.pendingQuestion = null; state.lastChatKey = null; state.summaries.clear();
     $("workflow-panel").hidden = true; $("plan-editor").value = "";
+    setDataOpen(false);
     notice(""); clearResults("Upload a graph in Chat to preview its connections here.");
     if (!id) { showPage("domains"); renderConversation(); renderSessions(); return; }
     const workspace = await api(`/api/sessions/${encodeURIComponent(id)}/workspace`);
@@ -219,7 +234,10 @@
     $("workspace-title").textContent = state.session.title || "New conversation";
     $("results-session-title").textContent = state.session.title || "Your conversation";
     try { state.kinds = W.parse(read(`graphmine.inputKinds.${id}`) || "{}"); } catch { state.kinds = {}; }
-    for (const file of state.files) if (file.role !== "attachment") state.kinds[file.id] = "graph";
+    for (const file of state.files) {
+      if (file.provenance?.kind) state.kinds[file.id] = file.provenance.kind;
+      else if (file.role !== "attachment") state.kinds[file.id] = "graph";
+    }
     state.active = state.files.find(file => !isTable(file))?.id || "";
     setMode(read(`graphmine.mode.${id}`) || "normal");
     showPage("chat"); renderFiles(); await loadSaved();
@@ -244,6 +262,16 @@
       const facts = new Map(answer.facts.map(fact => [fact.id, fact.statement])), list = node("ul", {class: "answer-facts"});
       for (const id of answer.fact_ids) if (facts.has(id)) list.append(node("li", {}, facts.get(id)));
       bubble.append(list);
+      // Follow-up questions about this result, offered while it is the latest one.
+      if (answer.suggestions?.length && record.id === state.workflows.at(-1)?.id) {
+        const choices = node("div", {class: "reply-choices", "aria-label": "Suggested next questions"});
+        for (const text of answer.suggestions) {
+          const button = node("button", {class: "quiet", type: "button", "data-suggestion": text}, text);
+          button.addEventListener("click", () => askAbout(record, text));
+          choices.append(button);
+        }
+        bubble.append(choices);
+      }
     } else bubble.append(node("p", {class: "workflow-outcome"}, state.summaries.get(record.id) || `${status}${timing ? ` · ${timing}` : ""}. ${record.error?.message || ""}`));
     for (const step of record.validation.plan.steps) {
       const result = record.steps[step.id];
@@ -287,6 +315,17 @@
           details.append(node("summary", {}, "Model reasoning"));
           for (const event of reasoning) { const stage = node("details", {class: "reasoning-record"}); stage.append(node("summary", {}, stageNames[event.payload.stage] || title(event.payload.stage)), node("pre", {}, event.payload.text)); details.append(stage); }
           item.bubble.append(details);
+        }
+        // An answer from the saved result's facts; every statement was computed.
+        if (row.answer?.facts?.length) {
+          const list = node("ul", {class: "answer-facts"});
+          for (const fact of row.answer.facts) list.append(node("li", {}, fact.statement));
+          item.bubble.append(list);
+        }
+        if (row.view) {
+          const button = node("button", {class: "quiet", type: "button", "data-view": row.turn_id}, "Show this view");
+          button.addEventListener("click", () => runAction(() => applyView(row.view)));
+          item.bubble.append(button);
         }
         const record = state.workflows.findLast(record => record.planning_turn_id === row.turn_id);
         if (record) appendOutcome(item.bubble, record);
@@ -465,10 +504,17 @@
   }
   async function upload(file, kind = $("upload-kind").value) {
     await ensureSession();
+    const sessionId = state.session.id;
+    let options = {directed: $("csv-directed").checked, source_column: $("csv-source").value.trim(), target_column: $("csv-target").value.trim()};
+    if (kind === "graph" && /\.(csv|txt)$/i.test(file.name)) {
+      options = await window.GraphMineImport({file, options, sessionId, api, W, node});
+      if (!options) return;
+      if (state.session?.id !== sessionId) throw new Error("The conversation changed. Choose the file again.");
+    }
     const form = new FormData(); form.append("file", file); form.append("role", kind === "graph" ? "graph" : "attachment");
-    form.append("directed", String($("csv-directed").checked));
-    if ($("csv-source").value.trim()) form.append("source_column", $("csv-source").value.trim());
-    if ($("csv-target").value.trim()) form.append("target_column", $("csv-target").value.trim());
+    form.append("directed", String(options.directed));
+    if (options.source_column) form.append("source_column", options.source_column);
+    if (options.target_column) form.append("target_column", options.target_column);
     const result = await api(`/api/sessions/${state.session.id}/files`, {method: "POST", body: form});
     state.files.push(result); state.kinds[result.id] = kind; state.active = result.id;
     renderFiles(); await previewActive(); notice("Your data is ready. Ask a question to begin.");
@@ -490,49 +536,11 @@
     $("operation-select").value = state.operation;
     renderParameters();
   }
-  function parameterControl(key, spec, value, prefix) {
-    const label = node("label", {}, title(key)), id = `${prefix}-${key}`;
-    let input;
-    if (spec.choices) {
-      input = node("select", {id, "data-parameter": key});
-      if (spec.required) input.append(node("option", {value: ""}, "Choose…"));
-      else if (spec.nullable) input.append(node("option", {value: "null"}, "Not specified"));
-      spec.choices.forEach(choice => input.append(node("option", {value: W.stringify(choice)}, choiceNames[choice] || title(choice))));
-      input.value = value === undefined ? (spec.required ? "" : W.stringify(spec.choices[0])) : W.stringify(value);
-    } else if (spec.kind === "boolean") {
-      input = node("select", {id, "data-parameter": key});
-      input.append(node("option", {value: "true"}, "Yes"), node("option", {value: "false"}, "No")); input.value = String(value ?? false);
-    } else if (["array", "object"].includes(spec.kind)) {
-      input = node("textarea", {id, "data-parameter": key, rows: "2", spellcheck: "false", placeholder: spec.kind === "array" ? '["Alice", "Bob"]' : "{}"});
-      input.value = value === undefined || value === null ? "" : W.stringify(value);
-    } else {
-      input = node("input", {id, "data-parameter": key, type: "text", spellcheck: "false"});
-      input.value = value === undefined || value === null ? "" : spec.kind === "vertex_id" ? W.stringify(value) : String(value);
-      if (["integer", "number"].includes(spec.kind)) input.setAttribute("inputmode", "decimal");
-      if (spec.kind === "vertex_id") {
-        input.placeholder = '"Alice" or 42';
-        const list = node("datalist", {id: `${id}-choices`});
-        for (const v of (state.previews.get(state.active)?.vertices || [])) list.append(node("option", {value: W.stringify(v.id)}, v.label || W.idLabel(v.id)));
-        input.setAttribute("list", list.id); label.append(list);
-      }
-    }
-    if (spec.required) input.setAttribute("aria-required", "true");
-    label.append(input);
-    if (["query_graph", "other_graph"].includes(key)) {
-      const binding = node("select", {"data-binding-parameter": key, "aria-label": `${title(key)} input source`});
-      binding.append(node("option", {value: ""}, "Enter canonical graph JSON above"));
-      for (const [alias, source] of Object.entries(refs())) if (source.kind === "graph") binding.append(node("option", {value: alias}, `Use uploaded graph: ${alias}`));
-      binding.addEventListener("change", () => input.disabled = Boolean(binding.value));
-      label.append(binding);
-    }
-    if (spec.description || spec.required) label.append(node("span", {class: "parameter-hint"}, `${spec.required ? "Required. " : ""}${spec.description || ""}`));
-    if (spec.nullable && !spec.choices) label.append(node("span", {class: "parameter-hint"}, "Leave empty to use the default or no limit."));
-    return label;
-  }
   function renderParameters() {
     const selected = card(state.operation);
     $("operation-parameters").replaceChildren();
     $("operation-description").textContent = selected?.description || "";
+    window.GraphMineOutputs?.operationLimits?.(selected, state.caps?.application_limits);
     const updateQuality = () => {
       const choice = $("operation-parameters").querySelector('[data-parameter="solution_quality"]');
       $("operation-quality").textContent = selected ? `Input: ${title(selected.input_kind)} · ${plannedQuality(selected, choice?.value ? {solution_quality: W.parse(choice.value)} : {})}.` : "";
@@ -547,29 +555,6 @@
       if (key === "solution_quality") field.addEventListener("change", updateQuality);
     }
     if (content.children.length) $("operation-parameters").append(optional);
-  }
-  function parametersFrom(container, selected, defaults = {}) {
-    const parameters = {...defaults};
-    for (const input of container.querySelectorAll("[data-parameter]")) {
-      const key = input.dataset.parameter, spec = selected.parameters[key], raw = input.value.trim();
-      if (input.disabled) { delete parameters[key]; continue; }
-      if (!raw) {
-        if (spec.required) throw new Error(`Choose ${title(key).toLowerCase()} before continuing.`);
-        parameters[key] = spec.default;
-        continue;
-      }
-      try { parameters[key] = spec.kind === "string" && !spec.choices ? input.value : W.parse(raw); }
-      catch { throw new Error(`${title(key)} needs a valid ${spec.kind === "vertex_id" ? 'ID (a quoted name or integer)' : spec.kind} value.`); }
-    }
-    return parameters;
-  }
-  function bindingsFrom(container, defaults = {}) {
-    const bindings = {...defaults};
-    for (const input of container.querySelectorAll("[data-binding-parameter]")) {
-      const key = input.dataset.bindingParameter;
-      if (input.value) bindings[key] = {input: input.value}; else delete bindings[key];
-    }
-    return bindings;
   }
   function planFromOperation() {
     const selected = card(state.operation);
@@ -586,7 +571,7 @@
     requireCapabilities();
     await ensureSession();
     if (!state.active) throw new Error("Choose an input before saving the plan.");
-    const body = {mode: requestedMode || state.mode, plan, inputs: revise && state.record ? state.record.input_files : inputFiles || refs()};
+    const body = {mode: requestedMode || state.mode, plan, inputs: inputFiles || (revise && state.record ? state.record.input_files : refs())};
     if (turnId) body.planning_turn_id = turnId;
     let path = `/api/sessions/${state.session.id}/workflows`;
     if (revise && state.record) { path = `/api/workflows/${state.record.id}/revise`; body.expected_revision = state.record.revision; }
@@ -617,6 +602,18 @@
       await sendQuestion({message: text, inputs: refs(), mode: state.mode, previous: state.record?.id || null, device: $("device").value, selection: currentSelection()});
     });
   }
+  // A suggested follow-up is asked about the analysis it was suggested for.
+  function askAbout(record, text) {
+    runAction(async () => {
+      requireCapabilities();
+      await ensureSession();
+      const saved = Object.entries(record.input_files || {});
+      const kept = saved.length && saved.every(([, ref]) => state.files.some(file => file.id === ref.file_id));
+      if (!kept && !state.active) throw new Error("Add your data first, then send your question.");
+      const inputs = kept ? Object.fromEntries(saved.map(([alias, ref]) => [alias, {file_id: ref.file_id, kind: ref.kind}])) : refs();
+      await sendQuestion({message: text, inputs, mode: state.mode, previous: record.id, device: $("device").value});
+    });
+  }
   // Resend a failed question as it was asked, while its saved inputs still exist.
   function retryQuestion(turnId) {
     const asked = state.events.find(e => e.type === "workflow.chat" && e.payload.role === "user" && e.payload.turn_id === turnId)?.payload;
@@ -632,9 +629,9 @@
   // reads its members from the saved result; only the position is sent.
   function currentSelection() {
     if (!state.record || !state.result || state.port?.type !== "vertex_groups" || !state.groupFilter) return null;
-    const index = state.port.value.findIndex((row, position) => W.idKey(row.group ?? position) === state.groupFilter);
-    if (index < 0) return null;
-    return {workflow_id: state.record.id, step: $("result-step").value, port: $("result-port").value, index, label: state.groups.find(group => group.key === state.groupFilter)?.label || null};
+    const group = state.groups.find(group => group.key === state.groupFilter);
+    if (!Number.isInteger(group?.index)) return null;
+    return {workflow_id: state.record.id, step: $("result-step").value, port: $("result-port").value, index: group.index, label: group.label};
   }
   function renderSelectionChip() {
     const selection = currentSelection();
@@ -657,13 +654,32 @@
       if (response.status === "ready" && response.plan) {
         $("plan-editor").value = W.stringify(response.plan, true);
         await submitPlan(response.plan, false, response.turn_id, inputs, mode);
-      }
+      } else if (response.status === "view") await applyView(response.view);
     } finally {
       state.planning = false;
       try { await syncConversation(); } catch { /* Keep the sent question visible until its own saved event arrives. */ }
       if (state.pendingQuestion?.id === id) state.pendingQuestion.unconfirmed = true;
       renderConversation(); renderActivity();
     }
+  }
+  // A display change chosen from the question. The server checked it against the
+  // saved result; it only changes what this page shows and computes nothing.
+  async function applyView(view) {
+    if (!view?.workflow_id || !state.workflows.some(row => row.id === view.workflow_id)) return;
+    if (state.record?.id !== view.workflow_id || !state.result) await openWorkflow(view.workflow_id);
+    if (!state.result) return;
+    go("results", view.workflow_id);
+    if (view.step && state.result.steps[view.step]?.result && $("result-step").value !== view.step) { $("result-step").value = view.step; await selectStep(); }
+    if (view.port && $("result-port").value !== view.port && state.result.steps[$("result-step").value]?.result?.ports[view.port]) { $("result-port").value = view.port; await selectPort(); }
+    if (view.kind === "show_group") filterGraphGroup(view.group_key === null ? "" : W.idKey(view.group_key));
+    else if (view.kind === "layout") {
+      if ($("graph-layout").querySelector(`[value="${view.layout}"]`)?.disabled) return;
+      $("graph-layout").value = view.layout; state.cy?.layout(layoutOptions()).run(); renderPreviewScope();
+    } else if (view.kind === "highlight") {
+      state.selected = new Set(view.vertices.map(W.idKey)); state.selectedEdges = null;
+      $("selection-detail").textContent = `${view.vertices.length} highlighted: ${view.vertices.map(W.idLabel).join(", ")}`;
+      applySelection();
+    } else if (view.kind === "search") { $("table-search").value = view.text; filterRows(); }
   }
   async function loadSaved() {
     $("saved-workflows").replaceChildren();
@@ -713,9 +729,10 @@
   }
   function renderWorkflow() {
     const record = state.record; if (!record) return;
+    const recovering = ["failed", "cancelled", "interrupted"].includes(record.status) || record.status === "completed" && record.complete === false;
     $("results-page-link").href = route("results", record.id);
     $("workflow-panel").hidden = false;
-    $("workflow-panel").dataset.review = String(record.mode !== "normal" || ["ready", "awaiting_review", "failed", "interrupted"].includes(record.status));
+    $("workflow-panel").dataset.review = String(record.mode !== "normal" || ["ready", "awaiting_review"].includes(record.status) || recovering);
     const savedIndex = state.workflows.findIndex(row => row.id === record.id);
     if (savedIndex >= 0) state.workflows[savedIndex] = record;
     renderActivity();
@@ -723,6 +740,10 @@
     $("workflow-status").textContent = `${title(record.status)}${timing ? ` · ${timing}` : ""}`;
     $("workflow-summary").textContent = `Revision ${record.revision} · ${title(record.mode)} mode · ${record.validation.plan.device === "auto" ? "GPU preferred, CPU fallback for each compatible calculation" : record.validation.plan.device.toUpperCase() + " only"}. ${record.error?.message || ""}`;
     renderPreview(record);
+    $("recovery-actions").hidden = !recovering;
+    $("recovery-hint").textContent = record.status === "completed" ? "This analysis returned incomplete results. Adjust its settings or choose a smaller input, then review the revised plan." : "Adjust the settings or choose a smaller input before trying again. Changes are saved for review.";
+    $("narrow-input").disabled = !Object.values(record.input_files).some(input => input.kind === "graph");
+    $("adjust-parameters").disabled = !record.validation.plan.steps.some(step => card(step.operation));
     $("plan-details").textContent = W.stringify({plan: record.validation.plan, input_fingerprints: record.validation.inputs, workflow_hash: record.validation.workflow_hash, approved_hash: record.approved_hash}, true);
     $("workflow-steps").replaceChildren();
     for (const id of record.validation.order) {
@@ -744,11 +765,16 @@
       details.append(dl); li.append(details); $("workflow-steps").append(li);
       const selected = card(step.operation);
       if (selected && !["queued", "running"].includes(record.status)) {
-        const edit = node("details", {class: "step-editor"}); edit.append(node("summary", {}, "Edit settings"));
+        const edit = node("details", {class: "step-editor", "data-parameter-editor": id}); edit.append(node("summary", {}, "Edit settings"));
         const form = node("form", {"data-edit-step": id});
-        for (const [key, value] of Object.entries(step.parameters)) form.append(parameterControl(key, selected.parameters[key], value, `edit-${id}`));
-        form.append(node("button", {type: "submit", class: "secondary"}, record.mode === "normal" ? "Save and run changes" : "Save for review"));
-        form.addEventListener("submit", event => { event.preventDefault(); runAction(async () => { const plan = W.parse(W.stringify(record.validation.plan)), edited = plan.steps.find(s => s.id === id); edited.parameters = parametersFrom(form, selected, step.parameters); edited.bindings = bindingsFrom(form, step.bindings); setMode(record.mode); await submitPlan(plan, true); }); });
+        for (const [key, spec] of Object.entries(selected.parameters)) {
+          // Bound parameters keep their saved source; editing unrelated settings
+          // must not replace a dependency with a literal default.
+          if (step.bindings[key]) continue;
+          form.append(parameterControl(key, spec, Object.hasOwn(step.parameters, key) ? step.parameters[key] : spec.default, `edit-${id}`));
+        }
+        form.append(node("button", {type: "submit", class: "secondary"}, record.mode === "normal" && !recovering ? "Save and run changes" : "Save for review"));
+        form.addEventListener("submit", event => { event.preventDefault(); runAction(async () => { const plan = W.parse(W.stringify(record.validation.plan)), edited = plan.steps.find(s => s.id === id); edited.parameters = parametersFrom(form, selected, step.parameters); edited.bindings = bindingsFrom(form, step.bindings); await submitPlan(plan, true, null, null, recovering ? "interactive" : record.mode); }); });
         edit.append(form); li.append(edit);
       }
     }
@@ -759,6 +785,24 @@
     $("edit-plan").disabled = running;
     $("review-example").hidden = record.status !== "completed" || !record.complete || Boolean(record.evaluation_id);
     $("workflow-heading").textContent = running ? "Your analysis is running" : record.status === "completed" ? "Analysis complete" : "Review the steps";
+  }
+  function setDataOpen(open) {
+    $("data-sidebar").classList.toggle("mobile-open", open);
+    $("toggle-data").setAttribute("aria-expanded", String(open));
+  }
+  function renderNarrowInputs() {
+    const recovery = state.recovery, alias = $("narrow-alias").value;
+    const original = state.files.find(file => file.id === recovery?.inputs[alias]?.file_id);
+    const size = file => `${file.metadata?.vertex_count ?? "?"} vertices, ${file.metadata?.edge_count ?? "?"} connections`;
+    $("narrow-file").replaceChildren(node("option", {value: ""}, "Choose a smaller graph"));
+    for (const file of state.files) {
+      if (file.id === recovery?.inputs[alias]?.file_id || (state.kinds[file.id] || (file.role === "graph" ? "graph" : null)) !== "graph") continue;
+      const before = original?.metadata, after = file.metadata;
+      if (before && after && Number.isFinite(before.vertex_count) && Number.isFinite(before.edge_count) && Number.isFinite(after.vertex_count) && Number.isFinite(after.edge_count) && !(after.vertex_count <= before.vertex_count && after.edge_count <= before.edge_count && (after.vertex_count < before.vertex_count || after.edge_count < before.edge_count))) continue;
+      $("narrow-file").append(node("option", {value: file.id}, `${file.original_name} · ${size(file)}`));
+    }
+    $("narrow-feedback").textContent = `${original ? `Current input: ${original.original_name} · ${size(original)}. ` : ""}${$("narrow-file").options.length === 1 ? "Upload a graph with fewer vertices or connections to continue." : "The server will validate the calculation against the replacement graph."}`;
+    $("save-narrow-input").disabled = $("narrow-file").options.length === 1;
   }
   async function openWorkflow(id) {
     clearTimeout(state.poll); state.record = await api(`/api/workflows/${id}`); setMode(state.record.mode);
@@ -833,6 +877,10 @@
     const stepId = $("result-step").value, result = state.result?.steps[stepId]?.result;
     if (!result) return;
     const name = $("result-port").value;
+    state.flowRows = result.operation === "max-flow-min-cut" && Array.isArray(result.result?.flows) ? result.result.flows : null;
+    for (const id of ["group-min-size", "group-max-size", "group-member"]) $(id).value = "";
+    $("group-filter-status").textContent = "";
+    $("highlight-overlap").checked = false;
     state.port = name === "__result" ? {type: "result", complete: result.complete, value: result.result} : result.ports[name];
     const port = state.port; state.rows = Array.isArray(port.value) ? port.value : [port.value]; state.page = 0; state.selected.clear(); $("table-search").value = "";
     // Long outputs arrive cut down; the table then searches and pages on the server.
@@ -853,21 +901,26 @@
     renderGraph(graph); renderOutput();
   }
   function configureGroups(result) {
-    state.groups = []; state.groupMembership = new Map(); state.groupFilter = ""; state.groupsOverlap = false; state.groupGraph = null;
+    state.groups = []; state.groupMembership = new Map(); state.groupMemberships = new Map(); state.groupFilter = ""; state.groupsOverlap = false; state.groupGraph = null;
+    state.fullMemberships = new Map(); state.membershipRequest = null;
+    state.groupPort = Object.entries(result.ports).find(([, port]) => port.type === "vertex_groups")?.[0];
     state.groupNoun = ["maximal-cliques", "maximum-clique", "k-cliques"].includes(result.operation) ? "clique" : "group";
     const ports = Object.values(result.ports), partition = ports.find(p => p.type === "vertex_partition"), groups = ports.find(p => p.type === "vertex_groups");
     const members = new Map();
-    const add = (id, vertex) => {
+    state.groupSummary = groups?.group_summary;
+    state.groupsTruncated = Boolean((groups || partition)?.value_truncated);
+    state.groupsOverlap = Boolean(state.groupSummary?.shared_members) || Boolean(groups?.value_truncated && !state.groupSummary);
+    const add = (id, vertex, index) => {
       const key = W.idKey(id), vertexKey = W.idKey(vertex);
-      if (!members.has(key)) members.set(key, {key, id, label: groupLabel(id, members.size), vertices: new Set()});
+      if (!members.has(key)) members.set(key, {key, id, index, label: groupLabel(id, members.size), vertices: new Set()});
       members.get(key).vertices.add(vertexKey);
-      if (state.groupMembership.has(vertexKey) && state.groupMembership.get(vertexKey) !== key) state.groupsOverlap = true;
+      if (!state.groupMemberships.has(vertexKey)) state.groupMemberships.set(vertexKey, new Set());
+      state.groupMemberships.get(vertexKey).add(key);
+      if (state.groupMemberships.get(vertexKey).size > 1) state.groupsOverlap = true;
       state.groupMembership.set(vertexKey, key);
     };
-    if (partition) for (const row of partition.value) add(row.part, row.vertex);
-    else if (groups) {
-      for (const [index, row] of groups.value.entries()) for (const vertex of row.vertices) add(row.group ?? index, vertex);
-    }
+    if (groups) for (const [index, row] of groups.value.entries()) for (const vertex of row.vertices) add(row.group ?? index, vertex, index);
+    else if (partition) for (const row of partition.value) add(row.part, row.vertex);
     // Keep every collection filter, but do not assign shared vertices to one
     // arbitrary group for overview colors or a partition layout.
     if (state.groupsOverlap) state.groupMembership.clear();
@@ -887,13 +940,13 @@
     if (!group || !state.record || state.port?.type !== "vertex_groups" || state.groupGraph?.key === key) return;
     const shown = (state.graph?.vertices || []).filter(vertex => group.vertices.has(W.idKey(vertex.id))).length;
     if (shown >= group.vertices.size) return;
-    const index = state.port.value.findIndex((row, position) => W.idKey(row.group ?? position) === key);
-    if (index < 0) return;
-    const epoch = state.epoch, path = [state.record.id, "steps", $("result-step").value, "ports", $("result-port").value].map(encodeURIComponent).join("/");
+    const index = group.index;
+    if (!Number.isInteger(index)) return;
+    const epoch = state.epoch, port = state.port, path = [state.record.id, "steps", $("result-step").value, "ports", $("result-port").value].map(encodeURIComponent).join("/");
     try {
       const data = await api(`/api/workflows/${path}/groups/${index}/graph`, {}, 2);
       // Without a usable graph the preview stays, labelled as truncated.
-      if (epoch !== state.epoch || state.groupFilter !== key || !Array.isArray(data?.vertices)) return;
+      if (epoch !== state.epoch || state.port !== port || state.groupFilter !== key || !Array.isArray(data?.vertices)) return;
       state.groupGraph = {key, data}; renderGraph(state.graph); applySelection();
     } catch (error) { notice(`Could not load the full ${state.groupNoun}: ${error.message}`, true); }
   }
@@ -922,10 +975,21 @@
     }
     state.cy?.destroy(); state.cy = null; state.graph = data;
     const groups = state.groups || [], filter = groups.find(group => group.key === state.groupFilter), noun = state.groupNoun || "group";
+    $("flow-control").hidden = !state.flowRows;
+    const flowMode = Boolean(state.flowRows && $("flow-direction").checked);
+    const flows = flowMode ? state.flowRows.filter(row => {
+      if (row.flow_exact?.numerator !== undefined) return BigInt(row.flow_exact.numerator) > 0n;
+      return row.flow > 0;
+    }) : null;
     $("graph-group-label").hidden = !groups.length; $("group-legend").hidden = !groups.length || state.groupsOverlap;
     $("graph-group-caption").textContent = `Show ${noun}`;
     $("graph-group-hint").hidden = !groups.length;
-    $("graph-group-hint").textContent = `${groups.length} returned ${noun}${groups.length === 1 ? "" : "s"}. Choose a ${noun} or a result row to see only its vertices and internal connections.${state.groupsOverlap ? ` These ${noun}s share vertices.` : ""}`;
+    $("graph-group-hint").textContent = `${groups.length} ${state.groupsTruncated ? "loaded" : "returned"} ${noun}${groups.length === 1 ? "" : "s"}. Choose a ${noun} or a result row to see only its vertices and internal connections.${state.groupsOverlap ? ` These ${noun}s share vertices.` : ""}`;
+    $("overlap-control").hidden = !state.groupsOverlap;
+    $("group-summary").hidden = !groups.length;
+    const counts = [...(state.groupMemberships?.values() || [])], sizes = groups.map(group => group.vertices.size);
+    const summary = state.groupSummary || {groups: groups.length, unique_members: counts.length, shared_members: counts.filter(keys => keys.size > 1).length, smallest: sizes.reduce((a, b) => Math.min(a, b), Infinity), largest: sizes.reduce((a, b) => Math.max(a, b), 0)};
+    $("group-summary").textContent = groups.length ? `${state.groupsTruncated && !state.groupSummary ? "Loaded groups: " : ""}${summary.groups} ${noun}s · ${summary.unique_members} distinct members · sizes ${summary.smallest}–${summary.largest} · ${summary.shared_members} shared members. Shared members belong to more than one group in the full retained output.${state.groupsTruncated ? " Group colors use loaded groups; search the table to find other members." : ""}` : "";
     $("graph-group").replaceChildren(node("option", {value: ""}, "Full network")); $("group-legend").replaceChildren();
     if (groups.length) {
       const all = node("button", {"aria-pressed": String(!filter)}, `All ${groups.length} ${noun}s`); all.addEventListener("click", () => filterGraphGroup("")); $("group-legend").append(all);
@@ -946,9 +1010,10 @@
     if (state.port?.type !== "vertex_positions" && $("graph-layout").value === "computed") $("graph-layout").value = "cose";
     $("network").replaceChildren(); $("preview-scope").textContent = ""; $("selection-detail").textContent = filter ? `Showing ${filter.label.toLowerCase()}. Select a node to inspect it.` : "Select a node or a result row to inspect it.";
     const source = filter && state.groupGraph?.key === filter.key ? state.groupGraph.data : data;
+    window.GraphMineExplorer?.clearTime?.();
     if (!source?.vertices || !window.cytoscape) return;
     const vertices = source.vertices.filter(v => !filter || filter.vertices.has(W.idKey(v.id))).slice(0, 500), keys = new Set(vertices.map(v => W.idKey(v.id)));
-    const edges = source.edges.filter(e => keys.has(W.idKey(e.source)) && keys.has(W.idKey(e.target))).slice(0, 2000);
+    const edges = (flows || source.edges).filter(e => keys.has(W.idKey(e.source)) && keys.has(W.idKey(e.target))).slice(0, 2000);
     const positions = graphPositions(vertices), colors = new Map(groups.map(group => [group.key, group.color]));
     // Score results: node size grows with the score (min to max).
     const field = state.port?.type === "vertex_scores" ? state.port.score_field || "score" : null, scores = new Map();
@@ -957,11 +1022,12 @@
     const size = key => scores.has(key) && high > low ? 16 + 30 * (scores.get(key) - low) / (high - low) : 25;
     const elements = vertices.map(v => ({position: positions.get(W.idKey(v.id)), data: {id: W.idKey(v.id), size: size(W.idKey(v.id)), label: String(v.label || v.name || v.id), original: v, entity: v.id, color: filter?.color || colors.get(state.groupMembership?.get(W.idKey(v.id))) || "#73a991"}}));
     edges.forEach((e, index) => elements.push({data: {id: `edge:${index}`, source: W.idKey(e.source), target: W.idKey(e.target), original: e}}));
-    const direction = data.graph?.directed ? "triangle" : "none";
+    const direction = flowMode || source.graph?.directed ? "triangle" : "none";
     state.cy = window.cytoscape({container: $("network"), elements, minZoom: .08, maxZoom: 5, wheelSensitivity: .2, style: [
       {selector: "node", style: {"background-color": "data(color)", "border-color": "#fff", "border-width": 2, width: "data(size)", height: "data(size)", label: "data(label)", "font-size": 10, color: "#284a42", "text-valign": "bottom", "text-margin-y": 5, "text-background-color": "#fdfefb", "text-background-opacity": .8, "text-background-padding": 2}},
-      {selector: "edge", style: {width: 1.4, "line-color": "#adc5b9", "target-arrow-color": "#91afa0", "target-arrow-shape": direction, "curve-style": "bezier", opacity: .8}},
+      {selector: "edge", style: {width: flowMode ? 3 : 1.4, "line-color": flowMode ? "#4179b5" : "#adc5b9", "target-arrow-color": flowMode ? "#4179b5" : "#91afa0", "target-arrow-shape": direction, "curve-style": "bezier", opacity: .8}},
       {selector: "node.chosen", style: {"border-color": "#223e34", "border-width": 4}},
+      {selector: "node.shared-member", style: {"border-color": "#a34496", "border-width": 5, "border-style": "double"}},
       {selector: "edge.chosen", style: {width: 4, "line-color": "#223e34", "target-arrow-color": "#223e34", opacity: 1}},
       {selector: "node.faded", style: {opacity: .45}},
       {selector: "edge.faded", style: {opacity: .1}},
@@ -972,13 +1038,15 @@
       applySelection();
     });
     state.cy.on("tap", "edge", event => { $("selection-detail").textContent = W.stringify(event.target.data("original"), true); });
-    const n = data.vertex_count ?? data.vertices.length, m = data.edge_count ?? data.edges.length;
+    const n = data.vertex_count ?? data.vertices.length, m = flows ? flows.length : data.edge_count ?? data.edges.length;
     const truncated = data.vertices_truncated || data.edges_truncated || (filter ? vertices.length < filter.vertices.size || edges.length === 2000 && data.edges.length > 2000 : vertices.length < n || edges.length < m);
     state.previewScope = filter ? `${filter.label}: ${vertices.length} of ${filter.vertices.size} vertices; ${edges.length} connections within this ${noun}. Full input: ${n} vertices; ${m} connections. ` : `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. `;
     if (truncated) state.previewScope += "The preview is truncated. ";
     if (scores.size) state.previewScope += `Node size shows ${title(field).toLowerCase()}. `;
+    if (flowMode) state.previewScope += "Arrows show positive computed flow, including directions on undirected inputs. Click a connection for its recorded flow and capacity. ";
     renderPreviewScope();
     applySelection();
+    window.GraphMineExplorer?.timeView?.();
   }
   function renderPreviewScope() {
     if (!state.graph) return;
@@ -1014,12 +1082,23 @@
     if (row.source !== undefined && row.target !== undefined) return [row.source, row.target];
     return [];
   }
-  function selectRow(row) {
+  function selectRow(row, position) {
     if (state.port?.type === "pattern_collection") {
       state.patternId = row.pattern_id; state.selected.clear(); renderGraph(row.pattern); applySelection(); return;
     }
-    if (state.port?.type === "vertex_groups" && state.groups?.length) {
-      const key = W.idKey(row.group ?? state.rows.indexOf(row));
+    if (state.port?.type === "vertex_groups") {
+      const index = position ?? state.rows.indexOf(row), key = W.idKey(row.group ?? index);
+      if (!state.groups.some(group => group.key === key) && index >= 0) {
+        const vertices = new Set(row.vertices.map(W.idKey));
+        state.groups.push({key, id: row.group ?? index, index, label: groupLabel(row.group ?? index, index), vertices, color: "#73a991"});
+        for (const vertex of vertices) {
+          if (!state.groupMemberships.has(vertex)) state.groupMemberships.set(vertex, new Set());
+          state.groupMemberships.get(vertex).add(key);
+          if (state.groupMemberships.get(vertex).size > 1) state.groupsOverlap = true;
+          state.groupMembership.set(vertex, key);
+        }
+        if (state.groupsOverlap) state.groupMembership.clear();
+      }
       if (state.groups.some(group => group.key === key)) filterGraphGroup(key);
     }
     const ids = rowVertices(row); if (!ids.length) return;
@@ -1030,9 +1109,37 @@
     $("selection-detail").textContent = `${ids.length} selected: ${ids.map(W.idLabel).join(", ")}${visible.length < ids.length ? `\n${ids.length - visible.length} selected entities are outside this graph preview.` : ""}`;
     applySelection();
   }
+  async function loadFullMemberships() {
+    if (!$("highlight-overlap").checked || !state.groupsTruncated || !state.groupPort || !state.cy || state.membershipRequest) return;
+    const counts = state.fullMemberships, vertices = state.cy.nodes().map(n => n.data("entity")).filter(id => !counts.has(W.idKey(id)));
+    if (!vertices.length) return;
+    const pending = {}, epoch = state.epoch;
+    state.membershipRequest = pending;
+    const path = [state.record.id, "steps", $("result-step").value, "ports", state.groupPort, "memberships"].map(encodeURIComponent).join("/");
+    try {
+      const response = await api(`/api/workflows/${path}`, {method: "POST", body: W.stringify({vertices})}, 2);
+      if (epoch !== state.epoch || counts !== state.fullMemberships) return;
+      if (!Array.isArray(response?.memberships)) throw new Error("Membership counts were not returned.");
+      const returned = new Map(response.memberships.map(row => [W.idKey(row.vertex), row.groups]));
+      if (vertices.some(id => !Number.isInteger(returned.get(W.idKey(id))))) throw new Error("Membership counts were incomplete.");
+      for (const id of vertices) counts.set(W.idKey(id), returned.get(W.idKey(id)));
+      applySelection();
+    } catch (error) {
+      if (epoch !== state.epoch || counts !== state.fullMemberships) return;
+      $("highlight-overlap").checked = false; applySelection();
+      notice(`Could not check shared members: ${error.message}`, true);
+    } finally {
+      if (state.membershipRequest === pending) {
+        state.membershipRequest = null;
+        // The visible graph may have changed while this request was in flight.
+        void loadFullMemberships();
+      }
+    }
+  }
   function applySelection() {
     if (state.cy) {
-      state.cy.nodes().forEach(n => { n.toggleClass("chosen", state.selected.has(n.id())); n.toggleClass("faded", state.selected.size > 0 && !state.selected.has(n.id())); });
+      state.cy.nodes().forEach(n => { n.toggleClass("chosen", state.selected.has(n.id())); n.toggleClass("faded", state.selected.size > 0 && !state.selected.has(n.id())); n.toggleClass("shared-member", $("highlight-overlap").checked && (state.groupsTruncated ? state.fullMemberships?.get(n.id()) || 0 : state.groupMemberships?.get(n.id())?.size || 0) > 1); });
+      void loadFullMemberships();
       const path = state.selected.size > 0 && state.selectedEdges;
       state.cy.edges().forEach(e => {
         const onPath = Boolean(path) && path.has(W.idKey(e.data("original")?.id));
@@ -1041,15 +1148,18 @@
       });
     }
     document.querySelectorAll("[data-result-row]").forEach(el => {
-      const index = Number(el.dataset.resultRow), row = tableRows()[index], ids = rowVertices(row);
-      const active = state.port?.type === "pattern_collection" ? row.pattern_id === state.patternId : state.port?.type === "vertex_groups" && state.groupFilter ? W.idKey(row.group ?? index) === state.groupFilter : ids.length > 0 && ids.every(id => state.selected.has(W.idKey(id)));
+      const index = Number(el.dataset.resultRow), remoteRow = state.remote && el.tagName === "TR", row = (remoteRow ? state.pageRows : state.rows)[index], ids = rowVertices(row);
+      const position = remoteRow ? state.pagePositions?.[index] ?? index : index;
+      const active = state.port?.type === "pattern_collection" ? row?.pattern_id === state.patternId : state.port?.type === "vertex_groups" && state.groupFilter ? W.idKey(row?.group ?? position) === state.groupFilter : ids.length > 0 && ids.every(id => state.selected.has(W.idKey(id)));
       el.setAttribute(el.tagName === "TR" ? "aria-selected" : "aria-pressed", String(active));
     });
   }
   function renderOutput() {
     $("metrics").replaceChildren(); $("chart").replaceChildren();
+    $("group-filters").hidden = state.port?.type !== "vertex_groups";
     if (state.groups?.length) {
-      const metric = node("div", {class: "metric"}); metric.append(node("strong", {}, String(state.groups.length)), node("span", {}, state.groupNoun === "clique" ? "Returned cliques" : "Computed groups")); $("metrics").append(metric);
+      const count = state.groupSummary?.groups ?? (state.port?.type === "vertex_groups" ? state.port.total_items : null) ?? state.groups.length;
+      const metric = node("div", {class: "metric"}); metric.append(node("strong", {}, String(count)), node("span", {}, state.groupNoun === "clique" ? "Returned cliques" : "Computed groups")); $("metrics").append(metric);
     }
     if (["scalar", "rational_scalar"].includes(state.port?.type)) {
       const rational = state.port.type === "rational_scalar", value = rational ? state.port.value.display : state.port.value;
@@ -1072,7 +1182,7 @@
         return a.value > b.value ? -1 : a.value < b.value ? 1 : a.index - b.index;
       });
       const visible = chartRows.slice(0, 20), max = Math.max(...visible.map(r => Math.abs(Number(r.value))), 0);
-      $("chart").append(node("p", {class: "chart-heading"}, state.port.type === "vertex_groups" ? `Largest ${visible.length} of ${chartRows.length} returned ${state.groupNoun}s · number of vertices` : `${title(state.port.score_field || "score")} · highest ${visible.length} of ${chartRows.length} scored rows`));
+      $("chart").append(node("p", {class: "chart-heading"}, state.port.type === "vertex_groups" ? `Largest ${visible.length} of ${chartRows.length} ${state.port.value_truncated ? "loaded" : "returned"} ${state.groupNoun}s · number of vertices` : `${title(state.port.score_field || "score")} · highest ${visible.length} of ${chartRows.length} scored rows`));
       if (visible.some(row => row.value < 0)) $("chart").append(node("p", {class: "muted"}, "Bar length shows magnitude; negative values are orange. Labels retain the sign."));
       if (!Number.isFinite(max)) $("chart").append(node("p", {class: "muted"}, "These values exceed the chart range. Exact values remain in the table."));
       else for (const item of visible) {
@@ -1081,22 +1191,50 @@
         if (state.port.type === "vertex_groups") { const group = state.groups?.find(g => g.key === W.idKey(item.row.group ?? item.index)); if (group) fill.style.backgroundColor = group.color; }
         track.append(fill);
         button.append(node("span", {class: "bar-label"}, item.label), track, node("span", {class: "bar-value", title: display(item.value)}, `${item.row.rounded || compact(item.value) !== display(item.value) ? "≈ " : ""}${compact(item.value)}`));
-        button.addEventListener("click", () => selectRow(item.row)); $("chart").append(button);
+        button.addEventListener("click", () => selectRow(item.row, item.index)); $("chart").append(button);
       }
     }
+    window.GraphMineExplorer?.embedding?.();
     filterRows();
   }
   async function loadRemotePage() {
     const remote = state.remote, epoch = state.epoch, search = $("table-search").value.trim();
+    const request = state.remoteRequest = (state.remoteRequest || 0) + 1;
+    const filters = groupFilters();
+    if (!filters) return;
+    const query = new URLSearchParams({offset: state.page * PAGE, limit: PAGE});
+    if (search) query.set("search", search);
+    for (const [key, value] of Object.entries(filters)) if (value !== null) query.set(key, value);
     const path = [state.record.id, "steps", remote.step, "ports", remote.port].map(encodeURIComponent).join("/");
-    const page = await api(`/api/workflows/${path}?offset=${state.page * PAGE}&limit=${PAGE}${search ? `&search=${encodeURIComponent(search)}` : ""}`);
-    if (epoch !== state.epoch || remote !== state.remote || search !== $("table-search").value.trim()) return;
-    state.pageRows = page.items; remote.matched = page.matched_items;
+    const page = await api(`/api/workflows/${path}?${query}`);
+    if (epoch !== state.epoch || remote !== state.remote || request !== state.remoteRequest) return;
+    state.pageRows = page.items; state.pagePositions = page.positions || page.items.map((_, i) => page.offset + i); remote.matched = page.matched_items;
     state.filtered = page.items.map((_, index) => index); renderTable();
   }
+  function groupFilters() {
+    if (state.port?.type !== "vertex_groups") return {};
+    const min = $("group-min-size"), max = $("group-max-size"), member = $("group-member").value.trim();
+    const minSize = min.value === "" ? null : Number(min.value), maxSize = max.value === "" ? null : Number(max.value);
+    let error = "";
+    if (!min.validity.valid || !max.validity.valid || [minSize, maxSize].some(n => n !== null && (!Number.isSafeInteger(n) || n < 0))) error = "Sizes must be nonnegative whole numbers.";
+    else if (minSize !== null && maxSize !== null && minSize > maxSize) error = "Minimum size must not exceed maximum size.";
+    let entity = member;
+    if (member) {
+      try { entity = W.parse(member); } catch { /* A plain text ID is also allowed. */ }
+      if (!["string", "bigint"].includes(typeof entity) && !(typeof entity === "number" && Number.isInteger(entity))) error = "A member ID must be an integer or text.";
+    }
+    $("group-filter-status").textContent = error || "Filters apply to the retained groups in this table. Use quotes for text IDs, such as \"42\".";
+    return error ? null : {min_size: minSize, max_size: maxSize, member: member ? W.stringify(entity) : null};
+  }
   function filterRows() {
+    state.remoteRequest = (state.remoteRequest || 0) + 1;
+    const filters = groupFilters();
+    if (!filters) { clearTimeout(state.remoteTimer); state.filtered = []; if (state.remote) state.remote.matched = 0; renderTable(); return; }
     if (state.remote) {
       state.page = 0; clearTimeout(state.remoteTimer);
+      state.pageRows = []; state.pagePositions = []; state.filtered = []; renderTable();
+      $("table-count").textContent = "Loading rows…";
+      $("table-prev").disabled = true; $("table-next").disabled = true;
       state.remoteTimer = setTimeout(() => loadRemotePage().catch(error => notice(error.message, true)), 250);
       return;
     }
@@ -1104,8 +1242,12 @@
     let expected;
     if (scoped) { try { expected = W.parse(scoped[2].trim()); } catch { expected = scoped[2].trim(); } }
     state.filtered = state.rows.map((_, index) => index).filter(i => {
-      if (!query) return true;
       const row = state.rows[i];
+      if (state.port?.type === "vertex_groups") {
+        const members = new Set(row.vertices.map(W.idKey));
+        if (filters.min_size !== null && members.size < filters.min_size || filters.max_size !== null && members.size > filters.max_size || filters.member !== null && !members.has(W.idKey(W.parse(filters.member)))) return false;
+      }
+      if (!query) return true;
       if (scoped) return row && typeof row === "object" && Object.hasOwn(row, scoped[1]) && W.stringify(row[scoped[1]]) === W.stringify(expected);
       if (state.port?.type === "vertex_groups" && state.groupNoun === "clique" && groupLabel(row.group ?? i, i).toLocaleLowerCase().includes(query)) return true;
       return W.stringify(row).toLocaleLowerCase().includes(query);
@@ -1123,8 +1265,8 @@
       const row = rows[index], record = objectRows && row && typeof row === "object" && !Array.isArray(row) ? row : {value: row};
       const tr = node("tr", {"data-result-row": index, "aria-selected": "false"});
       keys.forEach((key, position) => {
-        const value = record[key] ?? null, text = cliques && key === "group" ? groupLabel(value, index) : state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : ["vertex", "source", "target", state.port?.vertex_field].includes(key) && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value ? "≈ " : ""}${display(value)}`, td = node("td", {title: text});
-        if (position === 0 && (rowVertices(row).length || state.port?.type === "pattern_collection")) { const button = node("button", {}, state.port?.type === "pattern_collection" ? `View pattern ${index + 1}` : text); button.addEventListener("click", () => selectRow(row)); td.append(button); } else td.textContent = text;
+        const value = record[key] ?? null, text = cliques && key === "group" ? groupLabel(value, state.remote ? state.pagePositions?.[index] ?? index : index) : state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : ["vertex", "source", "target", state.port?.vertex_field].includes(key) && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value ? "≈ " : ""}${display(value)}`, td = node("td", {title: text});
+        if (position === 0 && (rowVertices(row).length || state.port?.type === "pattern_collection")) { const button = node("button", {}, state.port?.type === "pattern_collection" ? `View pattern ${index + 1}` : text); button.addEventListener("click", () => selectRow(row, state.remote ? state.pagePositions?.[index] ?? index : index)); td.append(button); } else td.textContent = text;
         tr.append(td);
       }); body.append(tr);
     });
@@ -1199,6 +1341,45 @@
   $("close-connection").addEventListener("click", () => $("connection-dialog").close());
   $("connection-form").addEventListener("submit", event => { event.preventDefault(); state.base = $("api-base").value.trim().replace(/\/$/, ""); state.token = $("api-token").value.trim(); save("graphmine.apiBase", state.base); save("graphmine.apiToken", state.token); $("connection-dialog").close(); runAction(() => connect(true)); });
   $("new-session").addEventListener("click", () => { location.hash = ""; });
+  $("toggle-data").addEventListener("click", () => {
+    const open = $("toggle-data").getAttribute("aria-expanded") !== "true";
+    setDataOpen(open);
+    if (open) $("data-sidebar").scrollIntoView({block: "start", behavior: "smooth"});
+  });
+  $("adjust-parameters").addEventListener("click", () => {
+    const editors = [...$("workflow-steps").querySelectorAll("[data-parameter-editor]")];
+    editors.forEach(editor => editor.open = true);
+    const first = editors.find(editor => editor.querySelector("[data-parameter]"));
+    if (first) { first.scrollIntoView({block: "nearest"}); first.querySelector("[data-parameter]").focus(); }
+    else { setMode("expert"); loadEditor(); $("plan-editor").focus(); }
+  });
+  $("narrow-input").addEventListener("click", () => {
+    const record = state.record;
+    state.recovery = {id: record.id, revision: record.revision, inputs: W.parse(W.stringify(record.input_files))};
+    $("narrow-alias").replaceChildren();
+    for (const [alias, input] of Object.entries(record.input_files)) if (input.kind === "graph") $("narrow-alias").append(node("option", {value: alias}, `${alias} · ${state.files.find(file => file.id === input.file_id)?.original_name || "Saved graph"}`));
+    $("narrow-upload").value = "";
+    renderNarrowInputs(); $("narrow-dialog").showModal();
+  });
+  $("narrow-alias").addEventListener("change", renderNarrowInputs);
+  $("narrow-upload").addEventListener("change", () => runAction(async () => {
+    const file = $("narrow-upload").files[0];
+    if (!file) return;
+    try { await upload(file, "graph"); renderNarrowInputs(); $("narrow-file").value = state.active; }
+    catch (error) { $("narrow-feedback").textContent = error.message; }
+  }));
+  $("narrow-form").addEventListener("submit", event => {
+    event.preventDefault(); runAction(async () => {
+      try {
+        const recovery = state.recovery, file = $("narrow-file").value;
+        if (!recovery || recovery.id !== state.record?.id || recovery.revision !== state.record?.revision) throw new Error("This analysis changed. Close this dialog and open Narrow input again.");
+        if (!file) throw new Error("Choose a smaller graph first.");
+        const inputs = {...recovery.inputs, [$("narrow-alias").value]: {file_id: file, kind: "graph"}};
+        await submitPlan(state.record.validation.plan, true, null, inputs, "interactive");
+        $("narrow-dialog").close();
+      } catch (error) { $("narrow-feedback").textContent = error.message; }
+    });
+  });
   $("refresh-sessions").addEventListener("click", () => runAction(loadSessions));
   $("session-search").addEventListener("input", renderSessions);
   $("show-archived").addEventListener("change", renderSessions);
@@ -1308,11 +1489,25 @@
   $("clear-question-selection").addEventListener("click", () => { if (state.groupFilter) filterGraphGroup(""); renderSelectionChip(); });
   $("clear-selection").addEventListener("click", () => { if (state.groupFilter) filterGraphGroup(""); state.selected.clear(); $("selection-detail").textContent = "Selection cleared."; applySelection(); });
   $("table-search").addEventListener("input", filterRows);
+  for (const id of ["group-min-size", "group-max-size", "group-member"]) $(id).addEventListener("input", filterRows);
+  $("clear-group-filters").addEventListener("click", () => {
+    for (const id of ["group-min-size", "group-max-size", "group-member"]) $(id).value = "";
+    filterRows();
+  });
+  $("highlight-overlap").addEventListener("change", applySelection);
+  $("flow-direction").addEventListener("change", () => renderGraph(state.graph));
   const turnPage = step => { state.page += step; if (state.remote) loadRemotePage().catch(error => notice(error.message, true)); else renderTable(); };
   $("table-prev").addEventListener("click", () => turnPage(-1)); $("table-next").addEventListener("click", () => turnPage(1));
   $("download-result").addEventListener("click", () => runAction(async () => { if (!state.result) return; const full = state.result.partial_workflow ? state.result : await api(`/api/workflows/${encodeURIComponent(state.record.id)}/result`); const url = URL.createObjectURL(new Blob([W.stringify(full, true)], {type: "application/json"})), a = node("a", {href: url, download: `graphmine-${state.record.id}-revision-${state.record.revision}.json`}); a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }));
   new ResizeObserver(() => { if (state.view === "results") { state.cy?.resize(); state.cy?.fit(undefined, 35); } }).observe($("network"));
   window.GraphMineWorkspace = {state, wire: W};
+  window.GraphMineOutputs.install({state, api, W, node, runAction});
+  window.GraphMineExplorer.install({state, W, node, selectRow});
+  window.GraphMineEditor({state, W, node, card, refs, runAction, notice, parameterControl, parametersFrom, loadEditor, submitPlan});
+  window.GraphMineLibrary({state, api, W, node, notice, runAction, ensureSession, renderFiles, previewActive, questionSelection: currentSelection});
+  window.GraphMineProjects({state, api, W, node, runAction, notice, renderFiles, previewActive});
+  window.GraphMineConnectors({state, api, W, node, runAction, notice, renderFiles, previewActive});
+  window.GraphMineTemplates({state, api, W, node, runAction, notice, card, parameterControl, parametersFrom, onCreated: async record => { state.record = record; setMode("interactive"); clearResults(); renderWorkflow(); await loadSaved(); go("chat"); }});
   setMode("normal"); renderOutput();
   (window.GraphMineAccount?.ready || Promise.resolve(false)).then(enabled => {
     // Signed-in accounts use this server; there is no connection to configure.

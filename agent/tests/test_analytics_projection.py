@@ -11,12 +11,14 @@ from graphmine_agent.api import create_app
 AUTH = {"Authorization": "Bearer test-secret"}
 
 
-@pytest.mark.parametrize("gpu_index", [0, 1])
+@pytest.mark.parametrize("gpu_index", [None, 0, 1])
 def test_native_table_join_builds_a_scoped_reusable_input(settings, gpu_index):
-    devices = os.environ["GRAPHMINE_ANALYTICS_TEST_GPUS"].split(",")
+    devices = os.environ.get("GRAPHMINE_ANALYTICS_TEST_GPUS", "").split(",")
+    if gpu_index is not None and len(devices) != 2:
+        pytest.skip("Set GRAPHMINE_ANALYTICS_TEST_GPUS for GPU table-loading checks")
     settings = replace(
         settings,
-        graph_gpu_uuid=devices[gpu_index],
+        graph_gpu_uuid=devices[gpu_index] if gpu_index is not None else "",
         llm_gpu_uuid=None,
         job_timeout_seconds=30,
     )
@@ -74,13 +76,19 @@ def test_native_table_join_builds_a_scoped_reusable_input(settings, gpu_index):
             "time_window": {"start": 10, "end": 20},
             "duplicates": "sum",
         }
-        body = {"tables": {"events": events, "accounts": accounts}, "projection": spec}
+        body = {
+            "tables": {"events": events, "accounts": accounts},
+            "projection": spec,
+            "device": "gpu" if gpu_index is not None else "cpu",
+        }
         r = client.post(f"/api/sessions/{session}/projections", headers=AUTH, json=body)
         assert r.status_code == 201, r.text
         result = r.json()
         assert result["provenance"]["edge_count"] == 1
         assert result["provenance"]["outside_time_window"] == 1
-        assert result["allocation"]["gpu_uuid"] == devices[gpu_index]
+        assert result["allocation"]["gpu_uuid"] == (
+            devices[gpu_index] if gpu_index is not None else None
+        )
         assert client.app.state.runtime.analytics.scheduler.snapshot() == []
         file_id = result["file"]["id"]
         r = client.post(

@@ -11,6 +11,7 @@ import pytest
 from graphmine_agent.api import build_runtime
 from graphmine_agent.backup import restore_snapshot, snapshot_store, verify_snapshot
 from graphmine_agent.database import Database
+from graphmine_agent.datasets import DatasetLibrary, SaveDataset
 from graphmine_agent.history import HistoryStore
 from graphmine_agent.models import JobRecord, JobStatus
 from test_queue_capacity import setup_runtime, wait_for_status
@@ -160,5 +161,41 @@ async def test_backup_preserves_empty_history_directory(settings, tmp_path):
         restored = restore_snapshot(tmp_path / "backup", tmp_path / "staging")
         assert Path(restored["history_root"]).is_dir()
         assert restored["database"]["sessions"] == 0
+    finally:
+        await runtime.agent.close()
+
+
+async def test_backup_restores_saved_datasets_and_rejects_corrupt_content(
+    settings, triangle_graph, tmp_path
+):
+    runtime, plan = setup_runtime(settings, triangle_graph)
+    try:
+        library = DatasetLibrary(runtime)
+        version = library.save(
+            SaveDataset(name="Reusable triangle", file_id=plan.graph_id)
+        )
+        snapshot = tmp_path / "backup"
+        snapshot_store(settings.data_root, snapshot)
+        restored = restore_snapshot(snapshot, tmp_path / "restored")
+        with sqlite3.connect(Path(restored["data_root"]) / "agent.sqlite3") as db:
+            metadata, content = db.execute(
+                "SELECT metadata,content FROM dataset_versions WHERE id=?",
+                (version["id"],),
+            ).fetchone()
+            assert json.loads(metadata) == version
+            assert json.loads(content)["vertices"]
+        database = snapshot / "data/agent.sqlite3"
+        with sqlite3.connect(database) as db:
+            db.execute("UPDATE dataset_versions SET content=?", (b"{}",))
+        # Even when the file inventory matches, the embedded content must match
+        # its independently recorded dataset fingerprint and size.
+        manifest = json.loads((snapshot / "manifest.json").read_text())
+        manifest["files"]["data/agent.sqlite3"] = {
+            "sha256": HistoryStore.digest(database),
+            "size_bytes": database.stat().st_size,
+        }
+        (snapshot / "manifest.json").write_text(json.dumps(manifest))
+        with pytest.raises(ValueError, match="Saved dataset integrity"):
+            verify_snapshot(snapshot)
     finally:
         await runtime.agent.close()

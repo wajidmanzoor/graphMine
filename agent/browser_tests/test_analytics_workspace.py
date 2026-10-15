@@ -76,12 +76,18 @@ def authored_model_transport():
         def do_POST(self):
             body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             payload = json.loads(body["messages"][-1]["content"])
-            seen.append(payload["stage"])
-            payloads.append(payload)
-            if payload["stage"] == "family":
+            if "stage" in payload:
+                seen.append(payload["stage"])
+                payloads.append(payload)
+            if "facts" in payload:
                 result = {
-                    "status": "selected",
-                    "families": ["patterns"],
+                    "lead": "Here is the computed result.",
+                    "fact_ids": [f["id"] for f in payload["facts"][:6]],
+                }
+            elif payload["stage"] == "route":
+                result = {
+                    "intent": "calculate",
+                    "operations": ["triangle-counting"],
                     "message": "Count the requested shape.",
                 }
             elif payload["stage"] == "operation":
@@ -1045,7 +1051,7 @@ def test_force_layout_displays_computed_coordinates_with_explicit_projection(
     ).get_attribute("textContent")
 
 
-def test_question_uses_family_then_operation_then_real_calculation(
+def test_question_uses_routing_then_plan_then_real_calculation(
     browser, tmp_path, authored_model_transport
 ):
     upload(browser, tmp_path)
@@ -1056,15 +1062,16 @@ def test_question_uses_family_then_operation_then_real_calculation(
     )
     browser.find_element(By.ID, "plan-question").click()
     done(browser)
-    assert authored_model_transport[1][start:] == ["family", "operation", "plan"]
+    assert authored_model_transport[1][start:] == ["route", "plan"]
     chat(browser)
     assert (
-        "Choosing the calculation" in browser.find_element(By.ID, "activity-list").text
+        "Understanding your question"
+        in browser.find_element(By.ID, "activity-list").text
     )
     assert (
         "How many three-way connections" in browser.find_element(By.ID, "messages").text
     )
-    assert browser.find_element(By.ID, "reasoning-count").text == "3"
+    assert browser.find_element(By.ID, "reasoning-count").text == "2"
     browser.find_element(By.ID, "results-page-link").click()
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.port.value") == 1
@@ -1113,13 +1120,16 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
     browser.find_element(By.ID, "question").send_keys(question, Keys.ENTER)
     status(browser, "completed")
     WebDriverWait(browser, 15).until(
-        lambda d: d.find_element(By.ID, "reasoning-count").text == "3"
+        lambda d: d.find_element(By.ID, "reasoning-count").text == "2"
     )
     assert browser.find_element(By.ID, "workspace-view").is_displayed()
     assert not browser.find_element(By.ID, "results-view").is_displayed()
     assert question in browser.find_element(By.ID, "messages").text
-    assert "Count: 1" in browser.find_element(By.ID, "messages").text
-    assert len(authored_model_transport[2][start:]) == 3
+    assert any(
+        text in browser.find_element(By.ID, "messages").text
+        for text in ("Count: 1", "count is 1")
+    )
+    assert len(authored_model_transport[2][start:]) == 2
     assert (
         browser.execute_script(
             "return window.GraphMineWorkspace.state.workflows.length"
@@ -1169,7 +1179,7 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
         lambda d: d.find_element(By.ID, "workspace-view").is_displayed()
     )
     assert question in browser.find_element(By.ID, "messages").text
-    assert browser.find_element(By.ID, "reasoning-count").text == "3"
+    assert browser.find_element(By.ID, "reasoning-count").text == "2"
     assert (
         browser.execute_script(
             "return window.GraphMineWorkspace.state.session.domain_id"

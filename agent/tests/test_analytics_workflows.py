@@ -11,8 +11,8 @@ import stat
 import sys
 import textwrap
 import time
-from datetime import datetime, timedelta, timezone
 from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import graphmine_agent
@@ -730,7 +730,7 @@ async def test_health_and_metrics_describe_the_engine_people_use(
         await capabilities(),
     )
     now = datetime.now(timezone.utc)
-    at = lambda minutes: (now - timedelta(minutes=minutes)).isoformat()  # noqa: E731
+    at = lambda minutes: (now - timedelta(minutes=minutes)).isoformat()
     for workflow_id, status, approved, started, finished in [
         ("ok", "completed", at(30), at(29), at(20)),
         ("bad", "failed", at(15), at(10), at(9)),
@@ -1007,12 +1007,14 @@ async def test_process_group_cancellation_and_deadline(
 
 
 @pytest.mark.asyncio
-async def test_ledger_restart_and_exclusive_ownership(settings, database, graph_store):
+async def test_ledger_restart_and_exclusive_ownership(
+    settings, database, graph_store, session
+):
     owner = _service(settings, database, graph_store)
     owner.open()
     record = {
         "id": "synthetic-ledger-fixture",
-        "session_id": "synthetic",
+        "session_id": session.id,
         "status": "queued",
     }
     owner._save(record)

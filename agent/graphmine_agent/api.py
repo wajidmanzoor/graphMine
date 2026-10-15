@@ -44,20 +44,25 @@ from .agent_service import AgentService
 from .analytics import (
     AnalyticsError,
     AnalyticsService,
+    GroupMembershipRequest,
     WorkflowApproval,
     WorkflowRequest,
     WorkflowRevision,
 )
 from .analytics_examples import register_example_routes
+from .analytics_exports import register_export_routes
 from .analytics_planning import AnalyticsPlanner, PlanningRequest
 from .analytics_projection import register_projection_routes
 from .catalog import Catalog, CatalogError
 from .config import Settings
+from .connectors import register_connector_routes
 from .database import Database, QueueCapacityError, RecordNotFound
+from .datasets import register_dataset_routes
 from .execution import ExecutionError, GraphMineRunner
 from .graph_store import GraphStore, UploadError
 from .history import HistoryStore
 from .identity import AccountError, current_principal
+from .import_preview import register_import_routes
 from .jobs import EventBus, JobManager
 from .llm import LLMError
 from .models import (
@@ -81,8 +86,10 @@ from .models import (
     SessionUpdate,
 )
 from .planning import PlanValidationError, PlanValidator
+from .projects import register_project_routes
 from .reporting import render_report
 from .results import query_path
+from .workflow_templates import register_template_routes
 
 
 @dataclass(slots=True)
@@ -930,6 +937,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             _runtime(request).analytics.group_graph, workflow_id, step, port, index
         )
 
+    @router.post("/workflows/{workflow_id}/steps/{step}/ports/{port}/memberships")
+    async def workflow_memberships(
+        workflow_id: str,
+        step: str,
+        port: str,
+        body: GroupMembershipRequest,
+        request: Request,
+    ):
+        return await run_in_threadpool(
+            _runtime(request).analytics.group_memberships,
+            workflow_id,
+            step,
+            port,
+            body.vertices,
+        )
+
     @router.get("/workflows/{workflow_id}/steps/{step}/ports/{port}")
     async def workflow_port(
         workflow_id: str,
@@ -941,6 +964,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         search: str | None = Query(None, max_length=500),
         sort: str | None = Query(None, max_length=200),
         descending: bool = False,
+        min_size: int | None = Query(None, ge=0),
+        max_size: int | None = Query(None, ge=0),
+        member: str | None = Query(None, min_length=1, max_length=500),
     ):
         return await run_in_threadpool(
             _runtime(request).analytics.port_page,
@@ -952,10 +978,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             search,
             sort,
             descending,
+            min_size,
+            max_size,
+            member,
         )
 
     register_example_routes(router)
+    register_dataset_routes(router)
+    register_import_routes(router)
+    register_template_routes(router)
+    register_export_routes(router)
     register_projection_routes(router)
+    register_project_routes(router, app)
+    register_connector_routes(router)
     app.include_router(router)
 
     @app.websocket("/api/sessions/{session_id}/events/ws")

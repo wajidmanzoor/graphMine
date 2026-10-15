@@ -13,6 +13,7 @@ import shutil
 import signal
 import sqlite3
 import time
+from collections import Counter
 from contextlib import closing, nullcontext, suppress
 from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
@@ -27,6 +28,7 @@ from .analytics_scheduler import (
     execution_admission,
 )
 from .database import RecordNotFound
+from .evidence_cache import BOOTSTRAP
 from .identity import current_principal
 from .ownership import StoreLock
 
@@ -62,6 +64,11 @@ class WorkflowApproval(BaseModel):
     model_config = ConfigDict(extra="forbid")
     workflow_hash: str = Field(min_length=64, max_length=64)
     expected_revision: int = Field(ge=1)
+
+
+class GroupMembershipRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    vertices: list[int | str] = Field(min_length=1, max_length=500)
 
 
 _logger = logging.getLogger(__name__)
@@ -272,6 +279,13 @@ class AnalyticsService:
             result[alias] = {"kind": reference.kind, "data": data}
         return result
 
+    def _input_provenance(self, references):
+        return {
+            alias: {"file_id": file.id, "sha256": file.sha256, **file.provenance}
+            for alias, reference in references.items()
+            for file in [self.database.get_file(reference.file_id)]
+        }
+
     async def _stop_process(self, process):
         if process.returncode is None:
             with suppress(ProcessLookupError):
@@ -305,6 +319,12 @@ class AnalyticsService:
         env = os.environ.copy()
         env.update(
             GRAPHMINE_REPOSITORY_ROOT=str(self.settings.repository_root),
+            GRAPHMINE_EVIDENCE_CACHE_MODULE=str(
+                Path(__file__).with_name("evidence_cache.py")
+            ),
+            GRAPHMINE_EVIDENCE_HASH_CACHE=str(
+                self.root / "cache" / "evidence-hashes.json"
+            ),
             GRAPHMINE_WORKER_INPUT_BYTES=str(
                 self.settings.analytics_max_input_bytes + self.settings.max_result_bytes
             ),
@@ -333,8 +353,8 @@ class AnalyticsService:
             env["CUDA_VISIBLE_DEVICES"] = gpu or ""
         process = await asyncio.create_subprocess_exec(
             str(python),
-            "-m",
-            "graphmine.worker",
+            "-c",
+            BOOTSTRAP,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
@@ -462,6 +482,12 @@ class AnalyticsService:
 
     async def capabilities(self, refresh=False):
         result = copy.deepcopy(await self._native_capabilities(refresh))
+        result["application_limits"] = {
+            "input_bytes": self.settings.analytics_max_input_bytes,
+            "result_bytes": self.settings.max_result_bytes,
+            "run_timeout_seconds": self.settings.job_timeout_seconds,
+            "memory_admission": "Estimated separately for each validated workflow; execution waits for available capacity.",
+        }
         result["question_planner_enabled"] = self.settings.llm_enabled
         devices = self.scheduler.eligible(await self.scheduler.probe())
         result["device_configuration"] = {
@@ -498,6 +524,7 @@ class AnalyticsService:
             "created_at": _now(),
             "approved_hash": None,
             "input_files": {k: v.model_dump() for k, v in body.inputs.items()},
+            "input_provenance": self._input_provenance(body.inputs),
             "validation": checked,
             "steps": {},
         }
@@ -762,6 +789,7 @@ class AnalyticsService:
                 "status": "awaiting_review" if body.mode == "interactive" else "ready",
                 "approved_hash": None,
                 "input_files": {k: v.model_dump() for k, v in body.inputs.items()},
+                "input_provenance": self._input_provenance(body.inputs),
                 "validation": checked,
                 "steps": {},
             }
@@ -1007,12 +1035,13 @@ class AnalyticsService:
         A model chooses and introduces facts when available; the facts alone are
         the answer otherwise. A finished workflow never fails because of this.
         """
-        from .analytics_answers import build_facts, compose
+        from .analytics_answers import build_facts, compose, suggested_questions
 
         try:
             caps = await self.capabilities()
             titles = {card["id"]: card["title"] for card in caps["operations"]}
-            facts = build_facts(self.result(record["id"]), titles, self._labels(record))
+            saved = self.result(record["id"])
+            facts = build_facts(saved, titles, self._labels(record))
             if not facts:
                 return
             choice = {"lead": "", "fact_ids": [fact["id"] for fact in facts[:4]]}
@@ -1035,6 +1064,7 @@ class AnalyticsService:
                     "fact_ids": choice["fact_ids"],
                     "facts": facts,
                     "source": source,
+                    "suggestions": suggested_questions(saved),
                 },
             )
         except asyncio.CancelledError:
@@ -1120,6 +1150,22 @@ class AnalyticsService:
                     if isinstance(value, list) and len(value) > limit
                     else port
                 )
+                if port.get("type") == "vertex_groups" and isinstance(value, list):
+                    sizes, memberships = [], Counter()
+                    for row in value:
+                        members = {_key(vertex) for vertex in row.get("vertices", [])}
+                        sizes.append(len(members))
+                        memberships.update(members)
+                    ports[port_name] = {
+                        **ports[port_name],
+                        "group_summary": {
+                            "groups": len(value),
+                            "unique_members": len(memberships),
+                            "shared_members": sum(n > 1 for n in memberships.values()),
+                            "smallest": min(sizes, default=0),
+                            "largest": max(sizes, default=0),
+                        },
+                    }
             steps[name] = {**step, "result": {**result, "ports": ports}}
         return {**saved, "steps": steps}
 
@@ -1175,6 +1221,33 @@ class AnalyticsService:
             "group": {"step": step, "port": port, "index": index},
         }
 
+    def group_memberships(self, workflow_id, step, port, vertices):
+        """Membership counts across all retained groups for a bounded set of IDs."""
+        saved = self._saved(workflow_id, step=step)
+        output = saved.get("result", {}).get("ports", {}).get(port)
+        if output is None:
+            raise RecordNotFound("No such output port")
+        if output.get("type") != "vertex_groups":
+            raise AnalyticsError(
+                "Membership counts require a group output", "invalid_selection"
+            )
+        wanted = {_key(vertex): vertex for vertex in vertices}
+        counts = Counter()
+        groups = output["value"]
+        for group in groups:
+            counts.update(
+                {_key(vertex) for vertex in group.get("vertices", [])} & wanted.keys()
+            )
+        return {
+            "scope": "retained_groups",
+            "total_groups": len(groups),
+            "complete": output.get("complete", False),
+            "memberships": [
+                {"vertex": vertex, "groups": counts[key]}
+                for key, vertex in wanted.items()
+            ],
+        }
+
     def port_page(
         self,
         workflow_id,
@@ -1185,6 +1258,9 @@ class AnalyticsService:
         search=None,
         sort=None,
         descending=False,
+        min_size=None,
+        max_size=None,
+        member=None,
     ):
         saved = self._saved(workflow_id, step=step)
         value = saved.get("result", {}).get("ports", {}).get(port)
@@ -1193,6 +1269,36 @@ class AnalyticsService:
         rows = value["value"] if isinstance(value["value"], list) else [value["value"]]
         total = len(rows)
         positions = list(range(total))
+        if min_size is not None or max_size is not None or member is not None:
+            if value.get("type") != "vertex_groups":
+                raise AnalyticsError(
+                    "Group filters require a group output", "invalid_filter"
+                )
+            if min_size is not None and max_size is not None and min_size > max_size:
+                raise AnalyticsError(
+                    "Minimum size must not exceed maximum size", "invalid_filter"
+                )
+            member_key = None
+            if member is not None:
+                try:
+                    entity = json.loads(member)
+                except ValueError:
+                    entity = member
+                if type(entity) not in (int, str):
+                    raise AnalyticsError(
+                        "A member ID must be an integer or text", "invalid_filter"
+                    )
+                member_key = _key(entity)
+            matches = []
+            for i in positions:
+                members = {_key(vertex) for vertex in rows[i].get("vertices", [])}
+                if (
+                    (min_size is None or len(members) >= min_size)
+                    and (max_size is None or len(members) <= max_size)
+                    and (member_key is None or member_key in members)
+                ):
+                    matches.append(i)
+            positions = matches
         if search:
             positions = [i for i in positions if _matches(rows[i], search)]
         if sort:

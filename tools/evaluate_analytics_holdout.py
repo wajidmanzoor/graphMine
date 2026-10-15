@@ -570,8 +570,11 @@ async def evaluate(settings, suite, output):
                             "required_graph_dependency", {}
                         ).items()
                     )
+                    # A wrong family hint must not trap the planner: older traces
+                    # reroute; single-call routing selects outside the hint.
                     recovered = not case.get("require_reroute") or any(
-                        t["stage"] == "operation" and t.get("status") == "reroute"
+                        (t["stage"] == "operation" and t.get("status") == "reroute")
+                        or (t["stage"] == "route" and t.get("outside_preferred_family"))
                         for t in proposal["trace"]
                     )
                     row.update(

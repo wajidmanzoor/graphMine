@@ -43,8 +43,30 @@ class AccountMiddleware:
 
     def __init__(self, app):
         self.app = app
+        self.shared_slots = asyncio.Semaphore(2)
 
     async def __call__(self, scope, receive, send):
+        # Hold admission through the final response byte, including public
+        # downloads to slow clients. A shared snapshot can be much larger than
+        # a graph preview and must not allocate an unbounded set of responses.
+        if (
+            scope["type"] == "http"
+            and scope.get("path") == "/api/shared/read"
+            and scope.get("method") == "POST"
+        ):
+            if self.shared_slots.locked():
+                await account_response(
+                    AccountError(
+                        "Shared previews are busy. Retry shortly.", "busy", 429
+                    )
+                )(scope, receive, send)
+                return
+            async with self.shared_slots:
+                await self._call(scope, receive, send)
+            return
+        await self._call(scope, receive, send)
+
+    async def _call(self, scope, receive, send):
         if scope["type"] not in {"http", "websocket"} or not scope.get(
             "path", ""
         ).startswith("/api/"):
@@ -60,6 +82,7 @@ class AccountMiddleware:
         public = not websocket and (method, path) in {
             ("GET", "/api/auth/config"),
             ("POST", "/api/auth/login"),
+            ("POST", "/api/shared/read"),
         }
         lease = None
         response_started = False
@@ -130,7 +153,10 @@ class AccountMiddleware:
                 )
 
             maximum = 4096 if path == "/api/auth/login" else 128 * 1024
-            if path.endswith("/files") and method == "POST":
+            if (
+                path.endswith(("/files", "/files/preview"))
+                or path == "/api/connectors/sqlite"
+            ) and method == "POST":
                 maximum = (
                     min(
                         runtime.settings.max_upload_bytes,
@@ -166,8 +192,18 @@ class AccountMiddleware:
             kind = per_user = None
             limit = REQUEST_SECONDS
             if not public and path != "/api/auth/logout":
-                if path.endswith("/graph-preview") or (
-                    method == "GET" and path.endswith("/graph") and "/groups/" in path
+                if (
+                    path.endswith("/graph-preview")
+                    or (
+                        method == "GET"
+                        and path.endswith("/graph")
+                        and "/groups/" in path
+                    )
+                    or (
+                        method == "POST"
+                        and path.endswith("/memberships")
+                        and "/ports/" in path
+                    )
                 ):
                     kind, per_user = "preview", 2
                 elif method == "POST" and path.endswith(
@@ -175,7 +211,9 @@ class AccountMiddleware:
                 ):
                     kind, per_user = "planning", 1
                     limit = PLANNING_REQUEST_SECONDS
-                elif method == "POST" or path.endswith("/history/archive"):
+                elif method == "POST" or path.endswith(
+                    ("/history/archive", "/report", "/csv")
+                ):
                     kind, per_user = "request", 1
             costly = kind is not None
             if websocket:
@@ -359,6 +397,16 @@ def register_account_routes(app):
             )
         async with login_slots:
             return await run_in_threadpool(operation, *args)
+
+    @router.get("/admin/activity")
+    async def admin_activity(
+        response: Response, before: int | None = None, limit: int = 100
+    ):
+        principal = administrator()
+        if not 1 <= limit <= 200 or (before is not None and before < 1):
+            raise AccountError("Invalid activity page limits.", "invalid_request", 422)
+        response.headers["Cache-Control"] = "no-store"
+        return principal.accounts.activity(before, limit)
 
     @router.get("/admin/users")
     async def users(response: Response):

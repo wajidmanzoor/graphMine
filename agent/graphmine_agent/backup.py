@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import sqlite3
@@ -76,6 +77,35 @@ def _audit(database: Path, original: Path, data: Path) -> dict:
             raise ValueError("Backup SQLite integrity check failed")
         if connection.execute("PRAGMA foreign_key_check").fetchone():
             raise ValueError("Backup SQLite foreign key check failed")
+        if connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='user_connectors'"
+        ).fetchone():
+            for identifier, content, size, digest in connection.execute(
+                "SELECT id,content,size_bytes,sha256 FROM user_connectors"
+            ):
+                if (
+                    len(content) != size
+                    or hashlib.sha256(content).hexdigest() != digest
+                ):
+                    raise ValueError(
+                        f"Saved connection integrity mismatch: {identifier}"
+                    )
+        for table in ("dataset_versions", "project_items"):
+            if not connection.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)
+            ).fetchone():
+                continue
+            for identifier, metadata, content, size in connection.execute(
+                f"SELECT id,metadata,content,size_bytes FROM {table}"
+            ):
+                saved = json.loads(metadata)
+                if (
+                    saved["id"] != identifier
+                    or len(content) != size
+                    or saved["size_bytes"] != size
+                    or hashlib.sha256(content).hexdigest() != saved["sha256"]
+                ):
+                    raise ValueError(f"Saved dataset integrity mismatch: {identifier}")
         count = 0
         for (payload,) in connection.execute("SELECT payload FROM files"):
             record = StoredFile.model_validate_json(payload)

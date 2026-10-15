@@ -84,7 +84,7 @@
     const reset = make("section", {class: "account-card"});
     reset.append(make("h3", {}, "Automatic reset"), make("strong", {}, new Date(q.resets_at).toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})), hint("Your allowance renews every 24 hours. Signing out does not reset usage."));
     const storage = make("section", {class: "account-card"}), mib = bytes => `${(bytes / 2 ** 20).toLocaleString([], {maximumFractionDigits: 1})} MiB`;
-    if (q.storage) storage.append(make("h3", {}, "Storage"), make("strong", {class: "account-stat"}, `${mib(q.storage.used)} / ${mib(q.storage.limit)}`), hint(`Uploads ${mib(q.storage.uploads)}, saved analyses ${mib(q.storage.results)}. Delete conversations or files you no longer need to free space.`));
+    if (q.storage) storage.append(make("h3", {}, "Storage"), make("strong", {class: "account-stat"}, `${mib(q.storage.used)} / ${mib(q.storage.limit)}`), hint(`Uploads ${mib(q.storage.uploads)}, saved analyses ${mib(q.storage.results)}, dataset versions and templates ${mib((q.storage.datasets || 0) + (q.storage.templates || 0))}, project snapshots and notes ${mib(q.storage.shared || 0)}. Remove unused conversations, files or saved library/project items to free space.`));
     details.append(jobs, reset, ...(q.storage ? [storage] : []));
     usagePanel.replaceChildren(make("h3", {class: "account-section-title"}, "Usage"), hint("See what you have used and when your allowance renews."), card, details);
     if (data.user.role === "admin") {
@@ -162,6 +162,19 @@
     directory.append(sidebar, detail);
     const refresh = button("Refresh usage", "account-refresh-users");
     panel.append(heading, notice, create, directory, refresh);
+    const activity = make("details", {id: "account-activity"}), activityRows = make("div"), activityRefresh = button("Refresh activity", "account-refresh-activity"), activityMore = button("Older activity", "account-more-activity");
+    activity.append(make("summary", {}, "Administrator activity"), hint("Successful account and allowance changes. Passwords and login credentials are never included."), activityRefresh, activityRows, activityMore); panel.append(activity);
+    let activityCursor = null;
+    async function loadActivity(older = false) {
+      const rows = await request(`/api/auth/admin/activity?limit=50${older && activityCursor ? `&before=${activityCursor}` : ""}`);
+      if (!older) activityRows.replaceChildren();
+      for (const row of rows) activityRows.append(make("p", {}, `${new Date(row.at).toLocaleString()} · ${row.actor} · ${row.action.replaceAll(".", " ")} · ${row.target}${Object.keys(row.details).length ? ` · ${JSON.stringify(row.details)}` : ""}`));
+      activityCursor = rows.at(-1)?.sequence; activityMore.disabled = rows.length < 50;
+      if (!activityRows.children.length) activityRows.append(hint("No recorded activity."));
+    }
+    activityRefresh.onclick = () => action(activityRefresh, notice, () => loadActivity());
+    activityMore.onclick = () => action(activityMore, notice, () => loadActivity(true));
+    activity.addEventListener("toggle", () => { if (activity.open && !activityRows.children.length) action(activityRefresh, notice, () => loadActivity()); });
     function renderList() {
       users.replaceChildren();
       const matches = adminData.filter(user => user.username.includes(search.value.toLowerCase().trim()));

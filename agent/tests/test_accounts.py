@@ -5,8 +5,8 @@ import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import nullcontext
 from dataclasses import replace
-from pathlib import Path
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -496,6 +496,78 @@ def test_planning_does_not_block_previews_uploads_or_capabilities(
         for lease in held:
             runtime.accounts.release(lease)
         assert client.get(preview, headers=auth).status_code == 200
+
+
+def test_membership_lookup_uses_preview_slots_and_checks_result_ownership(
+    account_settings,
+):
+    with TestClient(create_app(account_settings)) as client:
+        runtime = client.app.state.runtime
+        user = runtime.accounts.create_user("alice", PASSWORD)["id"]
+        runtime.accounts.create_user("bob", PASSWORD)
+        auth = login(client)
+        session = client.post(
+            "/api/sessions", json={"domain_id": "general"}, headers=auth
+        ).json()
+        record = {
+            "id": "shared-groups",
+            "session_id": session["id"],
+            "revision": 1,
+            "status": "completed",
+            "steps": {"mine": {"status": "completed"}},
+            "validation": {"plan": {"steps": [{"id": "mine"}]}},
+        }
+        runtime.analytics._save(record)
+        runtime.analytics._write(
+            runtime.analytics._directory(record) / "step-mine.json",
+            {
+                "result": {
+                    "ports": {
+                        "groups": {
+                            "type": "vertex_groups",
+                            "complete": True,
+                            "value": [
+                                {"vertices": [1, 2]},
+                                {"vertices": [1, "2"]},
+                            ],
+                        }
+                    }
+                },
+            },
+        )
+        path = "/api/workflows/shared-groups/steps/mine/ports/groups/memberships"
+        held = [
+            runtime.accounts.acquire(user, kind, 8) for kind in ("planning", "request")
+        ]
+        try:
+            response = client.post(path, headers=auth, json={"vertices": [1, 2, "2"]})
+            assert response.status_code == 200, response.text
+            assert response.json()["memberships"] == [
+                {"vertex": 1, "groups": 2},
+                {"vertex": 2, "groups": 1},
+                {"vertex": "2", "groups": 1},
+            ]
+        finally:
+            for lease in held:
+                runtime.accounts.release(lease)
+        assert runtime.accounts.usage(user)["tokens_used"] == 0
+        assert runtime.accounts.usage(user)["jobs_used"] == 0
+        held = [runtime.accounts.acquire(user, "preview", 8, 2) for _ in range(2)]
+        try:
+            assert (
+                client.post(path, headers=auth, json={"vertices": [1]}).status_code
+                == 429
+            )
+        finally:
+            for lease in held:
+                runtime.accounts.release(lease)
+        assert client.post(path, json={"vertices": [1]}).status_code == 401
+        assert (
+            client.post(
+                path, headers=login(client, "bob"), json={"vertices": [1]}
+            ).status_code
+            == 404
+        )
 
 
 def test_planning_request_limit_outlasts_the_planner_deadline(

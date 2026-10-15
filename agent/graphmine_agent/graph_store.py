@@ -12,11 +12,12 @@ from typing import Any, BinaryIO
 from jsonschema import Draft202012Validator, FormatChecker
 
 from .config import Settings
+from .csv_ingestion import read_graph as read_csv_graph
 from .database import Database
 from .graph_context import semantic_context
 from .identity import AccountError, current_principal
 from .models import FileRole, GraphMetadata, StoredFile, new_id
-from .native_ingestion import IngestionError, read_delimited_graph
+from .native_ingestion import IngestionError
 
 
 class UploadError(ValueError):
@@ -48,6 +49,7 @@ class GraphStore:
         source_column: str | None = None,
         target_column: str | None = None,
         timestamp_unit: str | None = None,
+        provenance: dict[str, Any] | None = None,
     ) -> StoredFile:
         return self.ingest_stream(
             session_id=session_id,
@@ -59,6 +61,7 @@ class GraphStore:
             source_column=source_column,
             target_column=target_column,
             timestamp_unit=timestamp_unit,
+            provenance=provenance,
         )
 
     def ingest_stream(
@@ -73,6 +76,7 @@ class GraphStore:
         source_column: str | None = None,
         target_column: str | None = None,
         timestamp_unit: str | None = None,
+        provenance: dict[str, Any] | None = None,
     ) -> StoredFile:
         """Consume a caller-owned stream in bounded chunks; graphs remain in memory.
 
@@ -170,6 +174,7 @@ class GraphStore:
                 canonical_path=str(canonical_path) if canonical_path else None,
                 sha256=digest.hexdigest(),
                 size_bytes=size,
+                provenance=provenance or {},
                 metadata=metadata,
             )
             return self.database.add_file(record)
@@ -212,8 +217,7 @@ class GraphStore:
                 raise UploadError("canonical graph JSON must be an object")
             return value
         try:
-            return read_delimited_graph(
-                self.settings,
+            return read_csv_graph(
                 path,
                 directed=directed,
                 source_column=source_column,

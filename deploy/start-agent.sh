@@ -2,10 +2,15 @@
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-if [[ -f "${repo_dir}/agent/.env" ]]; then
+env_file="${GRAPHMINE_ENV_FILE:-${repo_dir}/agent/.env}"
+if [[ -n "${GRAPHMINE_ENV_FILE:-}" && ! -f "${env_file}" ]]; then
+  echo "Configured GRAPHMINE_ENV_FILE does not exist: ${env_file}" >&2
+  exit 1
+fi
+if [[ -f "${env_file}" ]]; then
   set -a
   # shellcheck disable=SC1091
-  source "${repo_dir}/agent/.env"
+  source "${env_file}"
   set +a
 fi
 

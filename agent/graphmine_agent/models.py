@@ -116,6 +116,7 @@ class StoredFile(StrictModel):
     canonical_path: str | None = None
     sha256: str
     size_bytes: int = Field(ge=0)
+    provenance: dict[str, Any] = Field(default_factory=dict)
     metadata: GraphMetadata | dict[str, Any] | None = None
     created_at: datetime = Field(default_factory=utc_now)
 
@@ -130,6 +131,7 @@ class FileInfo(StrictModel):
     media_type: str | None = None
     sha256: str
     size_bytes: int = Field(ge=0)
+    provenance: dict[str, Any] = Field(default_factory=dict)
     metadata: GraphMetadata | dict[str, Any] | None = None
     created_at: datetime
 

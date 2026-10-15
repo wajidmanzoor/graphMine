@@ -96,6 +96,11 @@ class Accounts:
                 CREATE TABLE IF NOT EXISTS login_attempts (
                     key TEXT PRIMARY KEY, started_at REAL NOT NULL, attempts INTEGER NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS admin_activity (
+                    sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+                    at TEXT NOT NULL, actor_id TEXT, actor TEXT NOT NULL,
+                    action TEXT NOT NULL, target TEXT NOT NULL, details TEXT NOT NULL
+                );
             """)
             columns = {row[1] for row in db.execute("PRAGMA table_info(accounts)")}
             if "role" not in columns:
@@ -104,6 +109,31 @@ class Accounts:
                 )
             if "daily_token_limit" not in columns:
                 db.execute("ALTER TABLE accounts ADD COLUMN daily_token_limit INTEGER")
+
+    def _audit(self, db, action, target, details=None):
+        """Commit a secret-free activity entry in the mutation's transaction."""
+        principal = current_principal.get()
+        db.execute(
+            "INSERT INTO admin_activity(at,actor_id,actor,action,target,details) VALUES (?,?,?,?,?,?)",
+            (
+                _stamp(self.clock()),
+                principal.user_id if principal else None,
+                principal.username if principal else "local administrator",
+                action,
+                self.username(target),
+                json_module.dumps(details or {}, separators=(",", ":")),
+            ),
+        )
+
+    def activity(self, before=None, limit=100):
+        with self.database._connect() as db:
+            rows = db.execute(
+                "SELECT * FROM admin_activity"
+                + (" WHERE sequence<?" if before else "")
+                + " ORDER BY sequence DESC LIMIT ?",
+                (before, limit) if before else (limit,),
+            ).fetchall()
+        return [dict(row, details=json_module.loads(row["details"])) for row in rows]
 
     @staticmethod
     def username(value):
@@ -161,6 +191,15 @@ class Accounts:
                 "INSERT INTO quota_buckets(scope,started_at) VALUES (?,?)",
                 (user_id, now),
             )
+            self._audit(
+                db,
+                "account.created",
+                username,
+                {
+                    "role": "admin" if admin else "user",
+                    "daily_token_limit": daily_token_limit,
+                },
+            )
         return {
             "id": user_id,
             "username": username,
@@ -187,6 +226,9 @@ class Accounts:
                 raise ValueError("Unknown username.")
             db.execute(
                 "UPDATE accounts SET daily_token_limit=? WHERE id=?", (limit, user[0])
+            )
+            self._audit(
+                db, "tokens.limit_changed", username, {"daily_token_limit": limit}
             )
             return self._usage(db, user[0], self.clock())
 
@@ -217,6 +259,7 @@ class Accounts:
                 (user[0],),
             )
             db.execute("UPDATE quota_buckets SET tokens=0 WHERE scope=?", (user[0],))
+            self._audit(db, "tokens.reset", username)
             return self._usage(db, user[0], now)
 
     def change_password(self, user_id, current_password, new_password):
@@ -250,6 +293,7 @@ class Accounts:
             db.execute(
                 "DELETE FROM login_attempts WHERE key=?", ("name:password:" + user_id,)
             )
+            self._audit(db, "password.changed", user["username"])
 
     def reset_password(self, username, password):
         if not 12 <= len(password) <= 128:
@@ -266,6 +310,7 @@ class Accounts:
                 "UPDATE accounts SET password_hash=? WHERE id=?", (encoded, row[0])
             )
             db.execute("DELETE FROM account_sessions WHERE user_id=?", (row[0],))
+            self._audit(db, "password.reset", username)
 
     def disable(self, username):
         with self.database._connect() as db:
@@ -277,6 +322,7 @@ class Accounts:
                 raise ValueError("Unknown username.")
             db.execute("UPDATE accounts SET disabled=1 WHERE id=?", (row[0],))
             db.execute("DELETE FROM account_sessions WHERE user_id=?", (row[0],))
+            self._audit(db, "account.disabled", username)
 
     def adopt_legacy(self, username):
         with self.database._connect() as db:
@@ -287,9 +333,11 @@ class Accounts:
             ).fetchone()
             if row is None:
                 raise ValueError("Unknown or disabled username.")
-            return db.execute(
+            count = db.execute(
                 "UPDATE sessions SET owner_id=? WHERE owner_id IS NULL", (row[0],)
             ).rowcount
+            self._audit(db, "conversations.adopted", username, {"count": count})
+            return count
 
     def enable(self, username):
         with self.database._connect() as db:
@@ -298,6 +346,7 @@ class Accounts:
                 (self.username(username),),
             ).rowcount:
                 raise ValueError("Unknown username.")
+            self._audit(db, "account.enabled", username)
 
     def _login_attempt(self, username, address):
         now = self.clock()
@@ -418,6 +467,30 @@ class Accounts:
                     "SELECT id FROM sessions WHERE owner_id=?", (user_id,)
                 )
             ]
+            datasets = db.execute(
+                "SELECT coalesce(sum(size_bytes+length(CAST(metadata AS BLOB))),0) FROM dataset_versions WHERE owner_id=?",
+                (user_id,),
+            ).fetchone()[0]
+            templates = db.execute(
+                "SELECT coalesce(sum(length(CAST(document AS BLOB))),0) FROM workflow_templates WHERE owner_id=?",
+                (user_id,),
+            ).fetchone()[0]
+            connections = db.execute(
+                "SELECT coalesce(sum(size_bytes+length(CAST(document AS BLOB))),0) FROM user_connectors WHERE owner_id=?",
+                (user_id,),
+            ).fetchone()[0]
+            shared = (
+                db.execute(
+                    "SELECT coalesce(sum(i.size_bytes+length(CAST(i.metadata AS BLOB))),0) "
+                    "FROM project_items i JOIN projects p ON p.id=i.project_id WHERE p.owner_id=?",
+                    (user_id,),
+                ).fetchone()[0]
+                + db.execute(
+                    "SELECT coalesce(sum(length(CAST(n.document AS BLOB))),0) FROM project_notes n "
+                    "JOIN project_items i ON i.id=n.item_id JOIN projects p ON p.id=i.project_id WHERE p.owner_id=?",
+                    (user_id,),
+                ).fetchone()[0]
+            )
         results = 0
         ledger = self.settings.data_root / "analytics" / "workflows.sqlite3"
         if sessions and ledger.is_file():
@@ -440,7 +513,11 @@ class Accounts:
         return {
             "uploads": uploads,
             "results": results,
-            "used": uploads + results,
+            "datasets": datasets,
+            "templates": templates,
+            "shared": shared,
+            "connections": connections,
+            "used": uploads + results + datasets + templates + shared + connections,
             "limit": self.settings.account_storage_bytes,
         }
 

@@ -1,5 +1,65 @@
 # Typed analytics workflows
 
+## Reuse, comparison and report APIs
+
+The application exposes private dataset versions through `GET/POST /api/datasets`
+and `DELETE /api/datasets/{version_id}`. Saving accepts either an owned `file_id`
+and input kind, or `workflow_id`, `expected_revision`, `step`, `port` and an
+optional `group_index`. A `dataset_id` appends a new version. Import with
+`POST /api/sessions/{session_id}/datasets/{version_id}/import`; the returned
+conversation-local file is an ordinary workflow input. Stored provenance is
+copied into each workflow's `input_provenance` and report manifest.
+
+`POST /api/sessions/{session_id}/files/preview` accepts a multipart CSV/edge list
+and optional `source_column`, `target_column` and `directed` fields. It validates
+the complete file on CPU and returns samples without storing an upload.
+`POST /api/sessions/{session_id}/projections` defaults to `device: "cpu"`:
+CSV tables are read with the bounded CPU parser and passed as inline tables to
+native construction. Explicit `device: "gpu"` retains the cuDF reader and GPU
+admission. Both paths preserve the projection contract and source provenance.
+
+`GET/POST /api/workflow-templates` lists or saves private validated plans.
+`POST /api/sessions/{session_id}/workflow-templates/{template_id}/use` accepts
+`inputs` and optional `parameters` keyed by step ID. It validates all bindings
+and always returns an unapproved Interactive workflow. Templates can be deleted
+without changing runs made from them.
+
+`GET /api/workflow-history` lists up to 200 recent owned analyses.
+`POST /api/workflows/compare` accepts two to six distinct `workflow_ids` and
+returns recorded settings, backends, completeness, exact scalar values and input
+fingerprint comparability. It reads saved artifacts only.
+
+`GET /api/workflows/{id}/steps/{step}/ports/{port}/csv` exports the whole retained
+port, independent of browser paging. `GET /api/workflows/{id}/report` returns a
+deterministic ZIP for that revision with JSON artifacts, full tables, an offline
+HTML summary and a hash manifest. Neither endpoint starts computation.
+
+Database schema 2 adds owner-scoped datasets, version counters and templates;
+schema 3 adds shared project snapshots and storage accounting. Older code refuses
+a newer schema. Rollback requires the matching pre-upgrade backup or compatible code.
+
+`GET/POST /api/projects` lists/creates projects. Owners manage membership through
+`POST /api/projects/{id}/members` (`username`, `role: editor|viewer`) and
+`DELETE /api/projects/{id}/members/{user_id}`. Publishing through
+`POST /api/projects/{id}/items` accepts `name` and one owned `file_id`,
+`version_id`, or `workflow_id` with `expected_revision`. It copies data without
+changing private session access.
+
+`GET /api/project-items/{id}` returns a snapshot and its notes. POST to
+`/annotations` adds `text`; POST to `/views` saves `name`, `layout`, typed
+`selected` IDs and `{vertex,x,y}` positions. POST to `/links` takes `days` (1–30)
+and returns a read-only URL. Owners revoke with `DELETE /api/project-links/{id}`.
+The unauthenticated `POST /api/shared/read` accepts a link `token` and returns
+only that snapshot. `POST /api/sessions/{sid}/project-items/{id}/import` creates
+an independent input copy after checking membership and session ownership.
+
+`GET /api/connectors` exposes authorized source identifiers, names and types.
+`POST /api/connectors/{id}/preview` reads a configured SQLite table or REST export.
+Its `sha256` is required as `expected_sha256` by
+`POST /api/connectors/{id}/import`, together with dataset `name` and optional
+existing `dataset_id`. Changed data returns 409. Browser requests cannot supply
+arbitrary paths, endpoints or credentials.
+
 The application can now execute the verified Python library through
 `/api/sessions/{session_id}/workflows`. Each step names a registered algorithm
 and its parameters. Dependencies connect declared output ports to declared
@@ -56,16 +116,34 @@ integer range through plans, tables, graph selection and exported results.
 
 ## Question planning
 
-`POST /api/sessions/{session_id}/analytics/plan` first selects a task family,
-then a shortlist of exact operations within that family, then a typed workflow.
-Each stage uses a constrained JSON schema. A wrong-family decision may reroute
-once. A rejected workflow may receive one contract-based repair while retaining
-the selected operations and device policy. Unresolved ambiguity returns a
-question rather than a guessed execution. Planning alone does not save or run
-a workflow; the selected execution mode governs the next API request.
+`POST /api/sessions/{session_id}/analytics/plan` makes one routing call, then,
+for a new calculation, builds a typed workflow. Routing sees a compact listing
+of every operation, grouped by task family, and returns one intent:
+
+- `calculate`: the exact operations to plan. The plan stage then sees their
+  full cards.
+- `view`: a display change of the saved result (show a group or clique, change
+  the layout, highlight named entities, open another output, search its rows or
+  open the results page). The response has `status: "view"` and a `view`
+  action the page carries out. Nothing is computed.
+- `explain`: the saved result's computed facts already answer the question.
+  The response has `status: "answered"` and the chosen fact statements in
+  `answer`. The model's lead sentence is dropped if it contains a digit.
+- `needs_information` or `unsupported`.
+
+`view` and `explain` exist only when the previous workflow has a saved result.
+Their schemas list only that result's outputs, group labels ("Clique 3",
+"Group 7", as on the page), available layouts, matched entities and fact IDs.
+The server writes the chat reply for a view from the checked action, not from
+the model. Each stage uses a constrained JSON schema. A rejected workflow may
+receive one contract-based repair while retaining the selected operations and
+device policy. Unresolved ambiguity returns a question rather than a guessed
+execution. Planning alone does not save or run a workflow; the selected
+execution mode governs the next API request.
 
 The request contains `message`, uploaded `inputs`, `device`, optionally
-`family_id`, and optionally `previous_workflow_id` for a follow-up. A previous
+`family_id` (a hint; routing may choose operations from other families), and
+optionally `previous_workflow_id` for a follow-up. A previous
 workflow must belong to the current session. Context includes its reviewed plan
 and bounded input metadata/samples; samples are identified as excerpts.
 
@@ -238,7 +316,36 @@ Port pagination reports `has_more` separately from collection `complete`.
 An API page can be partial while the saved collection is complete, and a fully
 read saved collection can itself be a truncated algorithm output.
 
+For `vertex_groups` ports, pagination also accepts inclusive `min_size` and
+`max_size` bounds and an exact `member` ID. Member IDs use JSON integers or
+strings (`member=42` differs from `member="42"`); plain non-JSON text is a string
+ID. Other JSON types, negative sizes, reversed size bounds and group filters on
+non-group ports are rejected. Filters combine with `search` and `sort` before
+paging. Response `positions` remain indices into the original saved collection,
+for subsequent group-graph and planner selection requests.
+
+`GET /api/workflows/{id}/result?summary=true` adds `group_summary` to group ports:
+`groups`, `unique_members`, `shared_members`, `smallest`, and `largest` describe
+the full retained collection even when `value` is shortened for the browser.
+The original saved result and completeness flags are unchanged.
+
+`POST /api/workflows/{id}/steps/{step}/ports/{port}/memberships` accepts
+`{"vertices": [1, "1"]}` with 1–500 integer or string IDs. It returns a bounded
+`memberships` list of `{vertex, groups}` counts across the full retained
+collection, plus `total_groups`, `complete` and `scope: "retained_groups"`.
+Duplicate IDs within one group count once. Missing IDs have count zero.
+Ownership is checked before loading the result. This display request uses the
+preview concurrency limit and consumes no model tokens or daily job allowance.
+
 ## Execution, limits and reuse
+
+Isolated workers cache evidence-file hashes under
+`analytics/cache/evidence-hashes.json` in their own data store. Reuse requires
+unchanged device, inode, size, modification time and change time. Each worker
+still validates native admission, sources, reports and dependencies. The cache
+is installed by the application bootstrap, without modifying the verified
+library sources. Invalid or unavailable cache storage falls back to hashing;
+cache files are private and replaced atomically.
 
 Workers use a separate process group. Cancellation and wall-clock deadlines
 terminate that group, including a native call or child process. CPU requests

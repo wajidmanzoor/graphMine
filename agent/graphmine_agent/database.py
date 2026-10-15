@@ -24,7 +24,11 @@ from .models import (
 
 # 1: sessions carry owner_id and accounts keep workspaces private. Code that
 # predates a schema version must not open it, or it would ignore its protections.
-SCHEMA_VERSION = 1
+# 2: durable, owner-scoped datasets survive conversation deletion and count
+# against storage. Older code must not bypass that accounting.
+# 3: explicitly shared project snapshots and their storage accounting.
+# 4: private saved connections and uploaded SQLite databases count toward storage.
+SCHEMA_VERSION = 4
 
 
 class RecordNotFound(KeyError):
@@ -134,6 +138,60 @@ class Database:
                   created_at TEXT NOT NULL
                 );
                 CREATE INDEX IF NOT EXISTS feedback_session_idx ON feedback(session_id);
+                CREATE TABLE IF NOT EXISTS dataset_versions (
+                  id TEXT PRIMARY KEY,
+                  dataset_id TEXT NOT NULL,
+                  version INTEGER NOT NULL,
+                  owner_id TEXT,
+                  metadata TEXT NOT NULL,
+                  content BLOB NOT NULL,
+                  size_bytes INTEGER NOT NULL,
+                  UNIQUE(dataset_id,version)
+                );
+                CREATE INDEX IF NOT EXISTS datasets_owner ON dataset_versions(owner_id);
+                CREATE TABLE IF NOT EXISTS workflow_templates (
+                  id TEXT PRIMARY KEY,
+                  owner_id TEXT,
+                  document TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS dataset_catalog (
+                  id TEXT PRIMARY KEY,
+                  owner_id TEXT,
+                  kind TEXT NOT NULL,
+                  last_version INTEGER NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS projects (
+                  id TEXT PRIMARY KEY, owner_id TEXT NOT NULL,
+                  name TEXT NOT NULL, created_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS project_members (
+                  project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+                  user_id TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('editor','viewer')),
+                  PRIMARY KEY(project_id,user_id)
+                );
+                CREATE TABLE IF NOT EXISTS project_items (
+                  id TEXT PRIMARY KEY,
+                  project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+                  metadata TEXT NOT NULL, content BLOB NOT NULL, size_bytes INTEGER NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS project_notes (
+                  id TEXT PRIMARY KEY,
+                  item_id TEXT NOT NULL REFERENCES project_items(id) ON DELETE CASCADE,
+                  author_id TEXT NOT NULL, kind TEXT NOT NULL, document TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS project_links (
+                  id TEXT PRIMARY KEY,
+                  item_id TEXT NOT NULL REFERENCES project_items(id) ON DELETE CASCADE,
+                  token_hash TEXT NOT NULL UNIQUE, expires_at REAL NOT NULL, created_at TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS project_items_project ON project_items(project_id);
+                CREATE INDEX IF NOT EXISTS project_notes_item ON project_notes(item_id);
+                CREATE TABLE IF NOT EXISTS user_connectors (
+                  id TEXT PRIMARY KEY, owner_id TEXT NOT NULL,
+                  document TEXT NOT NULL, content BLOB NOT NULL,
+                  size_bytes INTEGER NOT NULL, sha256 TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS user_connectors_owner ON user_connectors(owner_id);
                 """
             )
             columns = {
@@ -663,7 +721,8 @@ class Database:
                     "finished_at": utc_now(),
                     "error": {
                         "code": "server_restarted",
-                        "message": "the agent server restarted while this job was pending",
+                        "message": "the agent server restarted while this job was "
+                        + ("pending" if job.status == JobStatus.queued else "active"),
                     },
                 }
             )
