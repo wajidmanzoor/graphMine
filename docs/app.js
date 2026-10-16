@@ -3,13 +3,13 @@
 const state = {
   manifest: null,
   operations: [],
-  problemRecords: new Map(),
-  problemSpecs: new Map(),
+  problems: [],
+  families: [],
+  family: "",
+  problem: "",
   filter: "all",
   query: "",
-  manifestUrl: "",
 };
-
 const operationGrid = document.querySelector("#operation-grid");
 const catalogSummary = document.querySelector("#catalog-summary");
 const catalogError = document.querySelector("#catalog-error");
@@ -17,140 +17,312 @@ const operationSearch = document.querySelector("#operation-search");
 const operationDialog = document.querySelector("#operation-dialog");
 const dialogContent = document.querySelector("#dialog-content");
 const copyToast = document.querySelector("#copy-toast");
-
+const familySelect = document.querySelector("#family-select");
 const escapeHtml = (value) =>
-  String(value)
+  String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-
 const humanize = (value) =>
   String(value)
     .replaceAll("_", " ")
     .replaceAll("-", " ")
-    .replace(/\b\w/g, (character) => character.toUpperCase());
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+const displayValue = (value) =>
+  typeof value === "object" ? JSON.stringify(value) : String(value);
+const sourceLink = (path) =>
+  `https://github.com/wajidmanzoor/graphMine/blob/main/${path}`;
+const familyTitle = (family) =>
+  ({
+    community: "Overlapping communities",
+    communities: "Community detection",
+  })[family.id] || family.title;
+const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
+const qualityTitle = (value) =>
+  ({
+    parameter_dependent: "Quality depends on parameters",
+    backend_dependent: "Quality depends on backend",
+  })[value] || humanize(value);
 
-const operationTitle = (operation) => {
-  const titles = {
-    "maximal-cliques": "Maximal cliques",
-    "maximum-clique": "Maximum clique",
-    "k-cliques": "k-Cliques",
-    "quasi-cliques": "Quasi-cliques",
-    "k-core": "k-Core decomposition",
-    "maximal-bicliques": "Maximal bicliques",
-    "triangle-counting": "Triangle counting",
-    "dynamic-triangle-counting": "Dynamic triangle counting",
-    "graph-motifs": "Graph motifs",
-    "subgraph-isomorphism": "Subgraph isomorphism",
-    "temporal-motif-mining": "Temporal motif mining",
-    "community-detection": "Community detection",
-    "betweenness-centrality": "Betweenness centrality",
-  };
-  return titles[operation.id] || humanize(operation.id);
-};
-
-const categoryLabel = (category) => {
-  const labels = {
-    dense_structure_mining: "Dense structures",
-    pattern_and_motif_mining: "Patterns & motifs",
-    community_and_structural_analysis: "Graph analysis",
-  };
-  return labels[category] || humanize(category || "Graph mining");
-};
-
-function manifestCandidates() {
-  const raw =
-    "https://raw.githubusercontent.com/wajidmanzoor/graphMine/main/graphmine_catalog.json";
-  if (window.location.hostname.endsWith("github.io")) {
-    return [raw];
+function externalLink(url, label) {
+  try {
+    const parsed = new URL(url);
+    if (!["https:", "http:"].includes(parsed.protocol)) return "";
+    return `<a href="${escapeHtml(parsed.href)}" target="_blank" rel="noreferrer">${escapeHtml(label)} ↗</a>`;
+  } catch {
+    return "";
   }
-  return ["./graphmine_catalog.json", "../graphmine_catalog.json", raw];
 }
 
-async function loadManifest() {
-  let lastError;
-  for (const candidate of manifestCandidates()) {
-    try {
-      const response = await fetch(candidate, { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`${candidate} returned ${response.status}`);
-      }
-      const manifest = await response.json();
-      if (!Array.isArray(manifest.operations) || !Array.isArray(manifest.problems)) {
-        throw new Error(`${candidate} is not a GraphMine problem catalog`);
-      }
-      state.manifestUrl = candidate;
-      return manifest;
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw lastError || new Error("No catalog source was available");
+function problemOperations(problem) {
+  return state.operations.filter(
+    (op) =>
+      op.problem_id === problem.id &&
+      (state.filter === "all" ||
+        op.backends.some((b) => b.device === state.filter && b.compiled)),
+  );
 }
 
-function hydrateManifest(manifest) {
-  state.manifest = manifest;
-  state.operations = manifest.operations || [];
-  state.problemRecords = new Map(
-    (manifest.problems || []).map((entry) => [entry.spec.problem_id, entry]),
-  );
-  state.problemSpecs = new Map(
-    (manifest.problems || []).map((entry) => [
-      entry.spec.problem_id,
-      entry.spec,
-    ]),
-  );
+function problemMatches(problem) {
+  if (state.filter !== "all" && !problemOperations(problem).length)
+    return false;
+  if (!state.query) return true;
+  const family = state.families.find((f) => f.id === problem.family);
+  return JSON.stringify([
+    familyTitle(family),
+    problem,
+    ...problemOperations(problem),
+  ])
+    .toLowerCase()
+    .replaceAll(/[_-]+/g, " ")
+    .includes(state.query.replaceAll(/[_-]+/g, " "));
+}
 
-  const scope = manifest.scope || {};
-  const values = {
-    "research-problems": scope.library_supported_problem_count,
-    operations: scope.runnable_operation_count,
-    backends: scope.validated_backend_count,
-  };
-  Object.entries(values).forEach(([name, value]) => {
-    const element = document.querySelector(`[data-stat="${name}"]`);
-    if (element && value !== undefined) element.textContent = value;
-  });
+function familyCard(family, problems) {
+  const count = problems.reduce(
+    (sum, p) => sum + problemOperations(p).length,
+    0,
+  );
+  const names = problems
+    .slice(0, 3)
+    .map((p) => p.name)
+    .join(" · ");
+  return `<a class="family-card" href="#family/${family.id}" data-family="${family.id}">
+    <span class="family-card-top"><span class="family-symbol" aria-hidden="true">◈</span><span>${plural(problems.length, family.id === "query" ? "utility group" : "problem")}</span></span>
+    <h3>${escapeHtml(familyTitle(family))}</h3><p>${escapeHtml(names)}${problems.length > 3 ? "…" : ""}</p>
+    <span class="family-card-bottom">${plural(count, "algorithm operation")} <span aria-hidden="true">→</span></span>
+  </a>`;
+}
 
-  const manifestLink = document.querySelector("#manifest-link");
-  if (manifestLink) {
-    manifestLink.href = state.manifestUrl.startsWith("http")
-      ? state.manifestUrl
-      : "https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json";
+function operationCard(operation) {
+  const devices = [
+    ...new Set(
+      operation.backends
+        .filter((b) => b.compiled)
+        .map((b) => b.device.toUpperCase()),
+    ),
+  ];
+  return `<article class="operation-card" data-algorithm="${operation.id}">
+    <div class="operation-meta"><span class="category-pill">${escapeHtml(qualityTitle(operation.quality))}</span><span class="backend-count">${devices.join(" / ")}</span></div>
+    <h4>${escapeHtml(humanize(operation.id))}</h4><p class="operation-description">${escapeHtml(operation.title)}</p>
+    <div class="backend-list" aria-label="Implementation choices">${operation.backends.map((b) => `<span class="backend-chip">${escapeHtml(b.id)}${b.compiled ? "" : " · not compiled"}</span>`).join("")}</div>
+    <button class="operation-action" type="button" data-operation="${operation.id}">Algorithm details <span aria-hidden="true">→</span></button>
+  </article>`;
+}
+
+function problemCard(problem, index) {
+  const operations = problemOperations(problem);
+  const research = problem.research_algorithms || [];
+  const open =
+    state.problem === problem.id ||
+    !!state.query ||
+    (index === 0 && !!state.family && !state.problem);
+  return `<details class="problem-card" id="problem-${problem.id}" ${open ? "open" : ""}>
+    <summary><span><span class="problem-kind">${problem.contract ? "Problem" : "Workflow utility"}</span><strong>${escapeHtml(problem.name)}</strong></span><span class="problem-count">${plural(operations.length, "operation")}<span class="disclosure-arrow" aria-hidden="true">⌄</span></span></summary>
+    <div class="problem-body"><p class="problem-statement">${escapeHtml(problem.spec.problem_statement)}</p>
+      <div class="problem-links"><a href="#problem/${problem.id}">Link to this problem</a>${problem.contract ? externalLink(sourceLink(problem.contract), "Formal contract") : ""}</div>
+      <h4 class="algorithm-heading">Algorithms and implementations</h4>
+      <div class="operation-grid">${operations.map(operationCard).join("") || '<p class="catalog-empty">No implementation matches this filter.</p>'}</div>
+      ${research.length ? `<details class="research-references"><summary>${plural(research.length, "research algorithm reference")}</summary><p>Collected papers and source implementations. A research reference does not establish runtime availability; use the implementation profiles above.</p><ul>${research.map((a) => `<li><strong>${escapeHtml(a.title || a.paper_id)}</strong><span>${escapeHtml([a.year, a.venue].filter(Boolean).join(" · "))}</span><div>${externalLink(a.publication_url, "Paper")} ${externalLink(a.code_url, "Source code")}</div></li>`).join("")}</ul></details>` : ""}
+    </div>
+  </details>`;
+}
+
+function renderOperations() {
+  const groups = state.families
+    .filter((f) => !state.family || f.id === state.family)
+    .map((family) => ({
+      family,
+      problems: state.problems.filter(
+        (p) => p.family === family.id && problemMatches(p),
+      ),
+    }))
+    .filter((g) => g.problems.length);
+  const problems = groups.flatMap((g) => g.problems);
+  const count = problems.reduce(
+    (sum, p) => sum + problemOperations(p).length,
+    0,
+  );
+  const family = state.families.find((f) => f.id === state.family);
+  document.querySelector("#catalog-breadcrumb").innerHTML =
+    `<a href="#operations">All families</a>${family ? `<span aria-hidden="true">/</span><span>${escapeHtml(familyTitle(family))}</span>` : ""}`;
+  familySelect.value = state.family;
+  catalogSummary.textContent = `${plural(groups.length, "family").replace("familys", "families")} · ${plural(problems.filter((p) => p.contract).length, "formal problem")}${problems.some((p) => !p.contract) ? " + graph-record query utilities" : ""} · ${plural(count, "algorithm operation")}`;
+  if (!groups.length) {
+    operationGrid.innerHTML =
+      '<div class="catalog-empty"><strong>No matching problems or algorithms.</strong><p>Try another family, algorithm name, implementation or output.</p><button type="button" class="button button-secondary" data-clear-catalog>Clear filters</button></div>';
+    return;
   }
+  const overview = !state.family && !state.query && state.filter === "all";
+  operationGrid.className = overview ? "family-grid" : "family-results";
+  operationGrid.innerHTML = overview
+    ? groups.map((g) => familyCard(g.family, g.problems)).join("")
+    : groups
+        .map(
+          (g) =>
+            `<section class="family-section" aria-labelledby="family-title-${g.family.id}"><div class="family-section-heading"><p class="section-kicker">Problem family</p><h3 id="family-title-${g.family.id}">${escapeHtml(familyTitle(g.family))}</h3></div>${g.problems.map(problemCard).join("")}</section>`,
+        )
+        .join("");
+}
 
+function readCatalogLocation(scroll = false) {
+  if (!state.manifest) return;
+  const [kind, id] = location.hash.slice(1).split("/");
+  if (!["family", "problem", "operations"].includes(kind)) return;
+  const problem = kind === "problem" && state.problems.find((p) => p.id === id);
+  const family = state.families.find(
+    (f) => f.id === (problem ? problem.family : id),
+  );
+  state.family = family?.id || "";
+  state.problem = problem?.id || "";
+  if (problem || kind === "operations") {
+    state.query = "";
+    operationSearch.value = "";
+    state.filter = "all";
+    updateFilterButtons();
+  }
   renderOperations();
+  if (scroll)
+    requestAnimationFrame(() => {
+      const target = state.problem
+        ? document.getElementById(`problem-${state.problem}`)
+        : document.getElementById("operations");
+      target?.scrollIntoView({ behavior: "instant", block: "start" });
+    });
 }
 
-function searchableText(operation) {
-  const spec = state.problemSpecs.get(operation.research_problem_id) || {};
-  const problemRecord = state.problemRecords.get(operation.research_problem_id) || {};
-  return [
-    operation.id,
-    operation.cpp_class,
-    operation.cmake_component,
-    operation.research_problem_id,
-    spec.name,
-    spec.category,
-    spec.problem_statement,
-    ...(problemRecord.intent_signals || []),
-    ...(spec.problem_inputs || []).flatMap((input) => [
-      input.name,
-      input.description,
-      input.constraints,
-    ]),
-    ...(operation.backends || []),
-    ...(operation.parameters || []),
-    ...(operation.required_outputs || []),
-    ...Object.keys(operation.optional_output_flags || {}),
-    ...Object.values(operation.optional_output_flags || {}).flat(),
-    operation.validated_profile,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
+function parameterMarkup(parameters) {
+  return `<div class="dialog-table-wrap" tabindex="0" role="region" aria-label="Scrollable table"><table class="dialog-table"><thead><tr><th>Parameter</th><th>Type and limits</th><th>Default</th></tr></thead><tbody>${Object.entries(
+    parameters,
+  )
+    .map(
+      ([name, p]) =>
+        `<tr><th><code>${escapeHtml(name)}</code>${p.required ? "<small>Required</small>" : ""}</th><td>${escapeHtml(p.kind)}${p.nullable ? " or null" : ""}${p.choices ? `<br>${escapeHtml(p.choices.join(" · "))}` : ""}${p.minimum !== undefined ? `<br>Minimum: ${escapeHtml(p.minimum)}` : ""}${p.maximum !== undefined ? `<br>Maximum: ${escapeHtml(p.maximum)}` : ""}${p.json_schema ? `<details><summary>Value schema</summary><pre>${escapeHtml(JSON.stringify(p.json_schema, null, 2))}</pre></details>` : ""}</td><td>${Object.hasOwn(p, "default") ? `<code>${escapeHtml(displayValue(p.default))}</code>` : "—"}</td></tr>`,
+    )
+    .join("")}</tbody></table></div>`;
+}
+
+function openOperationDialog(operationId) {
+  const operation = state.operations.find((op) => op.id === operationId);
+  if (!operation) return;
+  const problem = state.problems.find((p) => p.id === operation.problem_id);
+  const family = state.families.find((f) => f.id === problem.family);
+  dialogContent.innerHTML = `<p class="dialog-kicker">${escapeHtml(familyTitle(family))} / ${escapeHtml(problem.name)}</p>
+    <h2 class="dialog-title" id="algorithm-dialog-title">${escapeHtml(humanize(operation.id))}</h2>
+    <p>${escapeHtml(operation.description)}</p>
+    <p class="dialog-class">Input: ${escapeHtml(humanize(operation.input_kind))} · ${escapeHtml(qualityTitle(operation.quality))}</p>
+    ${problem.contract ? problemContextMarkup(problem.spec, problem) : ""}
+    <div class="dialog-section"><h3>Implementation profiles</h3><div class="dialog-table-wrap" tabindex="0" role="region" aria-label="Scrollable table"><table class="dialog-table"><thead><tr><th>Implementation</th><th>Device</th><th>Documentation build</th></tr></thead><tbody>${operation.backends.map((b) => `<tr><th>${escapeHtml(b.id)}</th><td>${escapeHtml(b.device.toUpperCase())}</td><td>${b.compiled ? "Compiled" : "Not compiled"}${b.execution ? `<br>${escapeHtml(b.execution)}` : ""}</td></tr>`).join("")}</tbody></table></div>
+      <p class="profile-note">Availability depends on your build, inputs and hardware. Application execution also requires a matching validation report; a compiled backend alone does not establish admission.</p>
+      ${operation.gpu_limitations?.length ? `<h4>GPU profile limits</h4>${listMarkup(operation.gpu_limitations)}` : ""}
+    </div>
+    <div class="dialog-section"><h3>Native CLI</h3><p>Save the required parameters below in <code>PARAMETERS.json</code>; use <code>{}</code> when no parameters are needed.</p><div class="dialog-command">${escapeHtml(operation.command)}<button class="text-copy" type="button" data-copy-command="${operation.id}">Copy</button></div></div>
+    <div class="dialog-section"><h3>Parameters</h3>${Object.keys(operation.parameters).length ? parameterMarkup(operation.parameters) : "<p>No operation-specific parameters.</p>"}</div>
+    <div class="dialog-section"><h3>Outputs</h3><table class="dialog-table"><thead><tr><th>Port</th><th>Type</th></tr></thead><tbody>${Object.entries(
+      operation.output_ports,
+    )
+      .map(
+        ([key, value]) =>
+          `<tr><th><code>${escapeHtml(key)}</code></th><td>${escapeHtml(value.type)}</td></tr>`,
+      )
+      .join(
+        "",
+      )}</tbody></table><p>Output availability and completeness are checked at runtime.</p></div>
+    <div class="dialog-section">${externalLink(sourceLink("docs/NATIVE_CORE_MIGRATION.md"), "Native runtime guide")} · ${externalLink(sourceLink("catalog/native_execution_evidence.json"), "Execution evidence")}</div>`;
+  operationDialog.setAttribute("aria-labelledby", "algorithm-dialog-title");
+  document.body.classList.add("dialog-open");
+  operationDialog.showModal();
+}
+
+function updateFilterButtons() {
+  document.querySelectorAll("[data-filter]").forEach((button) => {
+    const active = button.dataset.filter === state.filter;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
+function initializeCatalogControls() {
+  document.addEventListener("click", (event) => {
+    if (
+      event.target.closest('a[href="#operations"]') &&
+      location.hash === "#operations"
+    ) {
+      readCatalogLocation();
+    }
+  });
+  operationSearch.addEventListener("input", (event) => {
+    state.query = event.target.value.trim().toLowerCase();
+    state.problem = "";
+    renderOperations();
+  });
+  familySelect.addEventListener("change", () => {
+    location.hash = familySelect.value
+      ? `family/${familySelect.value}`
+      : "operations";
+  });
+  document.querySelectorAll("[data-filter]").forEach((button) =>
+    button.addEventListener("click", () => {
+      state.filter = button.dataset.filter;
+      updateFilterButtons();
+      renderOperations();
+    }),
+  );
+  operationGrid.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-operation]");
+    if (button) openOperationDialog(button.dataset.operation);
+    if (event.target.closest("[data-clear-catalog]")) {
+      state.query = "";
+      operationSearch.value = "";
+      state.filter = "all";
+      state.family = "";
+      state.problem = "";
+      updateFilterButtons();
+      history.replaceState(null, "", "#operations");
+      renderOperations();
+    }
+  });
+  window.addEventListener("hashchange", () => readCatalogLocation(true));
+}
+
+async function initializeManifest() {
+  try {
+    const response = await fetch("./catalog.json", { cache: "no-cache" });
+    if (!response.ok) throw new Error(`Catalog returned ${response.status}`);
+    const manifest = await response.json();
+    if (manifest.schema_version !== "graphmine-docs-catalog-v1")
+      throw new Error("Unknown catalog format");
+    state.manifest = manifest;
+    state.families = manifest.families;
+    state.problems = manifest.problems;
+    state.operations = manifest.operations.map((op) => ({
+      ...op,
+      command: `graphmine-native run ${op.id} INPUT.json --parameters PARAMETERS.json --device cpu`,
+    }));
+    familySelect.innerHTML =
+      '<option value="">All families</option>' +
+      state.families
+        .map(
+          (f) =>
+            `<option value="${f.id}">${escapeHtml(familyTitle(f))}</option>`,
+        )
+        .join("");
+    document.querySelectorAll("[data-stat]").forEach((el) => {
+      const value = manifest.counts[el.dataset.stat];
+      if (value !== undefined) el.textContent = value;
+    });
+    renderOperations();
+    readCatalogLocation(true);
+    updateFilterButtons();
+    document.documentElement.dataset.catalogReady = "true";
+  } catch (error) {
+    console.error("GraphMine catalog loading failed", error);
+    catalogSummary.textContent = "The family catalog is unavailable.";
+    operationGrid.innerHTML = "";
+    catalogError.hidden = false;
+  }
 }
 
 function problemInputMarkup(inputs) {
@@ -158,7 +330,7 @@ function problemInputMarkup(inputs) {
     return '<p class="dialog-class">No problem-specific parameters.</p>';
   }
   return `
-    <div class="dialog-table-wrap">
+    <div class="dialog-table-wrap" tabindex="0" role="region" aria-label="Scrollable table">
       <table class="dialog-table dialog-input-table">
         <thead><tr><th>Input</th><th>Contract</th></tr></thead>
         <tbody>
@@ -185,8 +357,8 @@ function problemInputMarkup(inputs) {
 function problemContextMarkup(spec, problemRecord) {
   const requirements = Object.entries(spec.graph_input?.requirements || {});
   const semantics = Object.entries(spec.solution_semantics || {});
-  const sourceUrl = problemRecord.source
-    ? `https://github.com/wajidmanzoor/graphMine/blob/main/${problemRecord.source}`
+  const sourceUrl = problemRecord.contract
+    ? `https://github.com/wajidmanzoor/graphMine/blob/main/${problemRecord.contract}`
     : "https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json";
   return `
     <div class="dialog-problem-summary">
@@ -205,7 +377,7 @@ function problemContextMarkup(spec, problemRecord) {
           <tbody>${requirements
             .map(
               ([name, value]) =>
-                `<tr><th>${escapeHtml(humanize(name))}</th><td>${escapeHtml(value)}</td></tr>`,
+                `<tr><th>${escapeHtml(humanize(name))}</th><td>${escapeHtml(displayValue(value))}</td></tr>`,
             )
             .join("")}</tbody>
         </table>
@@ -216,7 +388,7 @@ function problemContextMarkup(spec, problemRecord) {
           <tbody>${semantics
             .map(
               ([name, value]) =>
-                `<tr><th>${escapeHtml(humanize(name))}</th><td>${escapeHtml(value)}</td></tr>`,
+                `<tr><th>${escapeHtml(humanize(name))}</th><td>${escapeHtml(displayValue(value))}</td></tr>`,
             )
             .join("")}</tbody>
         </table>
@@ -228,171 +400,11 @@ function problemContextMarkup(spec, problemRecord) {
     </details>`;
 }
 
-function filteredOperations() {
-  return state.operations.filter((operation) => {
-    const backendCount = (operation.backends || []).length;
-    const matchesFilter =
-      state.filter === "all" ||
-      (state.filter === "multiple" && backendCount > 1) ||
-      (state.filter === "single" && backendCount === 1);
-    const matchesQuery =
-      !state.query || searchableText(operation).includes(state.query);
-    return matchesFilter && matchesQuery;
-  });
-}
-
-function operationCard(operation) {
-  const spec = state.problemSpecs.get(operation.research_problem_id) || {};
-  const backends = (operation.backends || [])
-    .map((backend) => `<span class="backend-chip">${escapeHtml(backend)}</span>`)
-    .join("");
-  const count = (operation.backends || []).length;
-  return `
-    <article class="operation-card">
-      <div class="operation-meta">
-        <span class="category-pill">${escapeHtml(categoryLabel(spec.category))}</span>
-        <span class="backend-count">${count} ${count === 1 ? "backend" : "backends"}</span>
-      </div>
-      <h3>${escapeHtml(operationTitle(operation))}</h3>
-      <p class="operation-problem">${escapeHtml(spec.name || operation.research_problem_id)}</p>
-      <div class="backend-list" aria-label="Available backends">${backends}</div>
-      <div class="operation-command" title="${escapeHtml(operation.command)}">${escapeHtml(operation.command)}</div>
-      <button class="operation-action" type="button" data-operation="${escapeHtml(operation.id)}">
-        View contract
-        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" /></svg>
-      </button>
-    </article>`;
-}
-
-function renderOperations() {
-  const operations = filteredOperations();
-  const total = state.operations.length;
-  catalogSummary.textContent = `Showing ${operations.length} of ${total} runnable operations`;
-
-  if (operations.length === 0) {
-    operationGrid.innerHTML = `
-      <div class="catalog-empty">
-        <strong>No matching operations.</strong><br />
-        Try a different algorithm, backend, or output name.
-      </div>`;
-    return;
-  }
-
-  operationGrid.innerHTML = operations.map(operationCard).join("");
-}
-
 function listMarkup(items) {
   if (!items || items.length === 0) return '<p class="dialog-class">None</p>';
   return `<ul class="dialog-list">${items
     .map((item) => `<li><code>${escapeHtml(item)}</code></li>`)
     .join("")}</ul>`;
-}
-
-function optionalOutputRows(outputs) {
-  const entries = Object.entries(outputs || {});
-  if (entries.length === 0) return "";
-  return `
-    <div class="dialog-section">
-      <h3>Optional output flags</h3>
-      <table class="dialog-table">
-        <tbody>
-          ${entries
-            .map(([flag, fields]) => {
-              const value = Array.isArray(fields) ? fields.join(", ") : fields;
-              return `<tr><th>${escapeHtml(flag)}</th><td>${escapeHtml(value)}</td></tr>`;
-            })
-            .join("")}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-function constraintRows(constraints) {
-  const entries = Object.entries(constraints || {});
-  if (entries.length === 0) return "";
-  return `
-    <div class="dialog-section">
-      <h3>Backend-specific profiles</h3>
-      <table class="dialog-table">
-        <tbody>
-          ${entries
-            .map(
-              ([backend, profile]) =>
-                `<tr><th>${escapeHtml(backend)}</th><td>${escapeHtml(profile)}</td></tr>`,
-            )
-            .join("")}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-function openOperationDialog(operationId) {
-  const operation = state.operations.find((item) => item.id === operationId);
-  if (!operation) return;
-  const spec = state.problemSpecs.get(operation.research_problem_id) || {};
-  const problemRecord = state.problemRecords.get(operation.research_problem_id) || {};
-  const auxiliary = operation.required_auxiliary_inputs || [];
-  const profileNotes = [operation.validated_profile, operation.partition_rule].filter(Boolean);
-
-  dialogContent.innerHTML = `
-    <p class="dialog-kicker">${escapeHtml(categoryLabel(spec.category))}</p>
-    <h2 class="dialog-title">${escapeHtml(operationTitle(operation))}</h2>
-    <p class="dialog-class">${escapeHtml(operation.cpp_class)} · ${escapeHtml(operation.cmake_component)}</p>
-
-    ${problemContextMarkup(spec, problemRecord)}
-
-    <div class="dialog-section">
-      <h3>Validated backends</h3>
-      <div class="dialog-backends">
-        ${(operation.backends || [])
-          .map((backend) => `<span class="dialog-backend">${escapeHtml(backend)}</span>`)
-          .join("")}
-      </div>
-    </div>
-
-    <div class="dialog-section">
-      <h3>Run from the CLI</h3>
-      <div class="dialog-command">${escapeHtml(operation.command)}
-        <button class="icon-button" type="button" data-copy-command="${escapeHtml(operation.id)}" aria-label="Copy command">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9" height="9" rx="2" /><path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /></svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="dialog-section">
-      <h3>Parameters</h3>
-      ${listMarkup(operation.parameters)}
-    </div>
-
-    ${
-      auxiliary.length
-        ? `<div class="dialog-section"><h3>Auxiliary inputs</h3>${listMarkup(auxiliary)}</div>`
-        : ""
-    }
-
-    ${optionalOutputRows(operation.optional_output_flags)}
-
-    <div class="dialog-section">
-      <h3>Required output fields</h3>
-      ${listMarkup(operation.required_outputs)}
-    </div>
-
-    ${constraintRows(operation.backend_constraints)}
-
-    ${profileNotes
-      .map(
-        (note) =>
-          `<div class="dialog-section profile-note"><strong>Validated profile:</strong> ${escapeHtml(note)}</div>`,
-      )
-      .join("")}
-  `;
-
-  document.body.classList.add("dialog-open");
-  if (typeof operationDialog.showModal === "function") {
-    operationDialog.showModal();
-  } else {
-    operationDialog.setAttribute("open", "");
-  }
 }
 
 function closeOperationDialog() {
@@ -408,7 +420,10 @@ let toastTimer;
 function showCopyToast() {
   window.clearTimeout(toastTimer);
   copyToast.classList.add("visible");
-  toastTimer = window.setTimeout(() => copyToast.classList.remove("visible"), 1600);
+  toastTimer = window.setTimeout(
+    () => copyToast.classList.remove("visible"),
+    1600,
+  );
 }
 
 async function copyText(text) {
@@ -448,30 +463,10 @@ function initializeCopyActions() {
   });
 }
 
-function initializeCatalogControls() {
-  operationSearch?.addEventListener("input", (event) => {
-    state.query = event.target.value.trim().toLowerCase();
-    renderOperations();
-  });
-
-  document.querySelectorAll("[data-filter]").forEach((button) => {
-    button.addEventListener("click", () => {
-      state.filter = button.dataset.filter;
-      document.querySelectorAll("[data-filter]").forEach((candidate) => {
-        candidate.classList.toggle("active", candidate === button);
-      });
-      renderOperations();
-    });
-  });
-
-  operationGrid?.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-operation]");
-    if (button) openOperationDialog(button.dataset.operation);
-  });
-}
-
 function initializeDialog() {
-  document.querySelector("[data-dialog-close]")?.addEventListener("click", closeOperationDialog);
+  document
+    .querySelector("[data-dialog-close]")
+    ?.addEventListener("click", closeOperationDialog);
   operationDialog?.addEventListener("click", (event) => {
     if (event.target === operationDialog) closeOperationDialog();
   });
@@ -485,7 +480,8 @@ function initializeNavigation() {
   const menuToggle = document.querySelector("[data-menu-toggle]");
   const navigation = document.querySelector("[data-navigation]");
 
-  const updateHeader = () => header?.classList.toggle("scrolled", window.scrollY > 8);
+  const updateHeader = () =>
+    header?.classList.toggle("scrolled", window.scrollY > 8);
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
 
@@ -546,18 +542,6 @@ function initializeReveals() {
     { rootMargin: "0px 0px -8%", threshold: 0.08 },
   );
   elements.forEach((element) => observer.observe(element));
-}
-
-async function initializeManifest() {
-  try {
-    const manifest = await loadManifest();
-    hydrateManifest(manifest);
-  } catch (error) {
-    console.error("GraphMine catalog loading failed", error);
-    catalogSummary.textContent = "The operation catalog is unavailable.";
-    operationGrid.innerHTML = "";
-    catalogError.hidden = false;
-  }
 }
 
 document.querySelector("#current-year").textContent = new Date().getFullYear();

@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="GraphMine is a validated C++17/CUDA graph-mining library with 37 exact problem contracts, 24 runnable operations, and 38 registered backend choices."
+      content="Explore GraphMine by problem family, formal problem and algorithm. Compare native CPU and GPU implementations, execution profiles and research references."
     />
     <meta name="theme-color" content="#ffffff" />
     <meta property="og:title" content="GraphMine documentation" />
     <meta
       property="og:description"
-      content="Build once. Run validated GPU graph-mining algorithms through one typed library and one JSON CLI."
+      content="Problem families, formal contracts and native C++/CUDA algorithms in one searchable catalog."
     />
     <meta property="og:type" content="website" />
-    <title>GraphMine · Validated GPU graph mining</title>
+    <title>GraphMine · Problem families and algorithms</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b6b3a'/%3E%3Cpath d='M18 20 32 13l15 9-3 18-16 10-14-11z' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='18' cy='20' r='5' fill='%23ff8a24'/%3E%3Ccircle cx='47' cy='22' r='5' fill='%23ff8a24'/%3E%3Ccircle cx='28' cy='50' r='5' fill='%23fff'/%3E%3C/svg%3E"
@@ -28,11 +28,7 @@
     <header class="site-header" data-header>
       <div class="nav-shell">
         <a class="brand" href="#top" aria-label="GraphMine home">
-          <svg
-            class="brand-mark"
-            viewBox="0 0 48 48"
-            aria-hidden="true"
-          >
+          <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
             <path d="M12 14 25 8l12 8-3 17-13 8-12-10Z" />
             <path d="m12 14 12 12m13-10L24 26m-3 15 3-15" />
             <circle cx="12" cy="14" r="4" />
@@ -57,7 +53,7 @@
         <nav id="primary-navigation" class="primary-nav" data-navigation>
           <a href="#overview">Overview</a>
           <a href="#quickstart">Quickstart</a>
-          <a href="#operations">Algorithms</a>
+          <a href="#operations">Problem families</a>
           <a href="#graph-format">Graph format</a>
           <a href="#cpp-api">C++ API</a>
           <a href="#code-reference">Source docs</a>
@@ -85,17 +81,16 @@
         <div class="hero-copy reveal">
           <p class="eyebrow">
             <span class="eyebrow-dot"></span>
-            Research code, production-shaped interface
+            Native C++ and CUDA · One graph interface
           </p>
           <h1>
-            Validated GPU graph mining,
-            <span class="gradient-text">one clean interface.</span>
+            Start with a problem family.
+            <span class="gradient-text">Find the right algorithm.</span>
           </h1>
           <p class="hero-lede">
-            GraphMine preserves the original CUDA algorithm paths that passed
-            correctness validation, then wraps them in one canonical graph
-            model, typed C++ APIs, a problem-first catalog, and a build-once
-            JSON command line.
+            Explore formal graph problems, compare CPU and GPU implementation
+            profiles, and run them through the native C++/CUDA library. Each
+            algorithm keeps its inputs, guarantees and execution limits visible.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#quickstart">
@@ -105,27 +100,30 @@
               </svg>
             </a>
             <a class="button button-secondary" href="#operations">
-              Browse algorithms
+              Explore problem families
             </a>
           </div>
 
           <dl class="hero-stats" aria-label="GraphMine library statistics">
             <div>
-              <dt data-stat="research-problems">22</dt>
-              <dd>supported problems</dd>
+              <dt data-stat="families">—</dt>
+              <dd>problem families</dd>
             </div>
             <div>
-              <dt data-stat="operations">24</dt>
-              <dd>runnable operations</dd>
+              <dt data-stat="formal_problems">—</dt>
+              <dd>formal problems</dd>
             </div>
             <div>
-              <dt data-stat="backends">38</dt>
-              <dd>validated backends</dd>
+              <dt data-stat="operations">—</dt>
+              <dd>algorithm operations</dd>
             </div>
           </dl>
         </div>
 
-        <div class="hero-console reveal reveal-delay-1" aria-label="CLI example">
+        <div
+          class="hero-console reveal reveal-delay-1"
+          aria-label="CLI example"
+        >
           <div class="console-toolbar">
             <div class="console-dots" aria-hidden="true">
               <span></span><span></span><span></span>
@@ -139,26 +137,29 @@
             >
               <svg viewBox="0 0 20 20" aria-hidden="true">
                 <rect x="7" y="7" width="9" height="9" rx="2" />
-                <path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+                <path
+                  d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+                />
               </svg>
             </button>
           </div>
-          <pre id="hero-command"><code><span class="prompt">$</span> graphmine run maximal-cliques \
-    --graph graph.json \
-    --backend rdmce \
-    --minimum-clique-size 3 \
-    --include-total-count \
-    --pretty</code></pre>
+          <pre
+            id="hero-command"
+          ><code><span class="prompt">$</span> build/native/graphmine-native run \
+    triangle-counting graph.json \
+    --device cpu</code></pre>
           <div class="console-output" aria-hidden="true">
-            <span class="json-key">"ok"</span>: <span class="json-bool">true</span>,
-            <span class="json-key">"backend"</span>:
-            <span class="json-string">"rdmce"</span>,
-            <span class="json-key">"returned_count"</span>:
-            <span class="json-number">315</span>
+            <span class="json-key">"family"</span>:
+            <span class="json-string">"motifs"</span>,
+            <span class="json-key">"result"</span>: {
+            <span class="json-key">"count"</span>:
+            <span class="json-number">1</span> },
+            <span class="json-key">"quality"</span>:
+            <span class="json-string">"exact"</span>
           </div>
           <div class="console-status">
-            <span><i></i> validated backend</span>
-            <span>JSON in · JSON out</span>
+            <span><i></i> native CPU example</span>
+            <span>Using the triangle graph below</span>
           </div>
         </div>
       </section>
@@ -166,32 +167,42 @@
       <section class="proof-strip" aria-label="Library characteristics">
         <div class="section-shell proof-list">
           <span>
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>
-            Original algorithm paths
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="m4 10 4 4 8-9" />
+            </svg>
+            CPU and CUDA implementations
           </span>
           <span>
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="m4 10 4 4 8-9" />
+            </svg>
             Canonical external IDs
           </span>
           <span>
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="m4 10 4 4 8-9" />
+            </svg>
             Explicit backend selection
           </span>
           <span>
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>
-            Flag-controlled outputs
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="m4 10 4 4 8-9" />
+            </svg>
+            Explicit quality and completeness
           </span>
         </div>
       </section>
 
       <section id="overview" class="content-section section-shell">
         <div class="section-heading reveal">
-          <p class="section-kicker">One boundary, many algorithms</p>
-          <h2>Keep the research logic. Simplify everything around it.</h2>
+          <p class="section-kicker">How the catalog is organized</p>
+          <h2>Problem families → Problems → Algorithms</h2>
           <p>
-            Backend adapters handle dense IDs, CSR conversion, artifact input
-            layouts, GPU resources, and external-ID restoration. Applications
-            see the same high-level lifecycle for every problem.
+            Begin with a family of related questions. Choose the precise
+            problem, then compare its algorithms and CPU or GPU implementations.
+            The catalog includes
+            <span data-stat="formal_problems">all</span> formal contracts plus a
+            separate group of graph-record query utilities.
           </p>
         </div>
 
@@ -200,13 +211,14 @@
             <span class="step-number">01</span>
             <div class="step-icon step-icon-orange">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 4h10l4 4v12H5z" /><path d="M15 4v5h4M8 13h8M8 17h5" />
+                <path d="M5 4h10l4 4v12H5z" />
+                <path d="M15 4v5h4M8 13h8M8 17h5" />
               </svg>
             </div>
-            <h3>Canonical input</h3>
+            <h3>Problem family</h3>
             <p>
-              Supply vertices and edges once with stable integer or string IDs.
-              Labels, weights, timestamps, and attributes stay available.
+              A related area of graph analysis: cliques, centrality, traversal,
+              learning, flow, or another family in the catalog.
             </p>
           </article>
           <div class="pipeline-arrow" aria-hidden="true">
@@ -219,10 +231,11 @@
                 <path d="M4 7h16M7 4v6m10-6v6M5 14h5v5H5zm9 0h5v5h-5z" />
               </svg>
             </div>
-            <h3>Runtime dispatch</h3>
+            <h3>Formal problem</h3>
             <p>
-              Choose the problem and backend at runtime. Unsupported selections
-              return a precise status instead of silently changing algorithms.
+              The exact question and contract. Maximum clique, maximal clique
+              enumeration and k-clique counting are different problems in the
+              same family.
             </p>
           </article>
           <div class="pipeline-arrow" aria-hidden="true">
@@ -232,13 +245,15 @@
             <span class="step-number">03</span>
             <div class="step-icon step-icon-mixed">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m5 12 4 4L19 6" /><path d="M20 12v7H4V5h9" />
+                <path d="m5 12 4 4L19 6" />
+                <path d="M20 12v7H4V5h9" />
               </svg>
             </div>
-            <h3>Typed results</h3>
+            <h3>Algorithm and implementation</h3>
             <p>
-              Receive required outputs, requested optional fields, provenance,
-              timings, normalization warnings, and restored external IDs.
+              Choose an operation and implementation, such as RDMCE for maximal
+              cliques. Check its parameters, device support, guarantees and
+              profile limits.
             </p>
           </article>
         </div>
@@ -250,18 +265,27 @@
             <p class="section-kicker">Quickstart</p>
             <h2>Compile once. Query repeatedly.</h2>
             <p>
-              The default build links every enabled component into one runner.
-              Later requests only parse inputs, initialize the selected runtime,
-              and execute—there is no C++ or CUDA compilation in the query path.
+              Start with the native CPU runtime below. The CUDA build adds GPU
+              implementations through the same interface. See the
+              <a
+                href="https://github.com/wajidmanzoor/graphMine/blob/main/docs/NATIVE_CORE_MIGRATION.md"
+                >native build guide</a
+              >
+              for dependencies and GPU options. Queries use the compiled
+              library.
             </p>
             <div class="callout">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6 7 7m10 10 1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" />
+                <path
+                  d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6 7 7m10 10 1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"
+                />
                 <circle cx="12" cy="12" r="4" />
               </svg>
               <p>
-                <strong>Runtime truth:</strong> use <code>graphmine list</code>
-                to see which validated backends are compiled into your binary.
+                <strong>Check your build:</strong> use
+                <code>graphmine-native catalog</code>
+                to inspect its families, problems, algorithms and compiled
+                backends.
               </p>
             </div>
           </div>
@@ -270,33 +294,52 @@
             <article class="command-card">
               <header>
                 <span><b>1</b> Configure and build</span>
-                <button class="text-copy" type="button" data-copy-target="build-command">Copy</button>
+                <button
+                  class="text-copy"
+                  type="button"
+                  data-copy-target="build-command"
+                >
+                  Copy
+                </button>
               </header>
-              <pre id="build-command"><code>cmake -S library -B library/build \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DGRAPHMINE_BUILD_CLI=ON
-cmake --build library/build --parallel \
-  --target graphmine_cli</code></pre>
+              <pre
+                id="build-command"
+              ><code>cmake -S library/runtime -B build/native \
+  -DCMAKE_BUILD_TYPE=Release
+cmake --build build/native --parallel \
+  --target graphmine_native_cli</code></pre>
             </article>
 
             <article class="command-card">
               <header>
                 <span><b>2</b> Inspect this build</span>
-                <button class="text-copy" type="button" data-copy-target="list-command">Copy</button>
+                <button
+                  class="text-copy"
+                  type="button"
+                  data-copy-target="list-command"
+                >
+                  Copy
+                </button>
               </header>
-              <pre id="list-command"><code>library/build/graphmine list --pretty</code></pre>
+              <pre
+                id="list-command"
+              ><code>build/native/graphmine-native catalog</code></pre>
             </article>
 
             <article class="command-card">
               <header>
                 <span><b>3</b> Run an operation</span>
-                <button class="text-copy" type="button" data-copy-target="run-command">Copy</button>
+                <button
+                  class="text-copy"
+                  type="button"
+                  data-copy-target="run-command"
+                >
+                  Copy
+                </button>
               </header>
-              <pre id="run-command"><code>library/build/graphmine run triangle-counting \
-  --graph graph.json \
-  --backend tot \
-  --list-instances \
-  --pretty</code></pre>
+              <pre id="run-command"><code>build/native/graphmine-native run \
+  triangle-counting graph.json \
+  --device cpu</code></pre>
             </article>
           </div>
         </div>
@@ -305,59 +348,113 @@ cmake --build library/build --parallel \
       <section id="operations" class="content-section section-shell">
         <div class="section-heading section-heading-row reveal">
           <div>
-            <p class="section-kicker">Algorithm catalog</p>
-            <h2>Explore every validated operation.</h2>
+            <p class="section-kicker">Explore the catalog</p>
+            <h2>Choose a family. Find your problem.</h2>
             <p>
-              This catalog is rendered from a problem-first global JSON. It
-              embeds all 37 exact local problem contracts, then links the 22
-              supported problems to commands, parameters, outputs, validation
-              evidence, and backend choices. See the <a href="https://github.com/wajidmanzoor/graphMine/blob/main/docs/ALGORITHM_EXPANSION.md">new profiles and remaining blockers</a>.
+              Browse <span data-stat="families">the</span> families and
+              <span data-stat="operations">their</span> native algorithm
+              operations, with
+              <span data-stat="research_algorithms">collected</span> research
+              references under their formal problems. Open an algorithm for its
+              parameters, outputs and implementation limits.
             </p>
           </div>
           <a
             id="manifest-link"
             class="manifest-link"
-            href="https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json"
+            href="catalog.json"
             target="_blank"
             rel="noreferrer"
           >
-            View global JSON
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4h9v9M16 4 5 15" /></svg>
+            Download catalog JSON
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M7 4h9v9M16 4 5 15" />
+            </svg>
           </a>
         </div>
 
         <div class="catalog-toolbar reveal">
           <label class="search-field">
             <svg viewBox="0 0 20 20" aria-hidden="true">
-              <circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" />
+              <circle cx="8.5" cy="8.5" r="5.5" />
+              <path d="m13 13 4 4" />
             </svg>
-            <span class="sr-only">Search algorithms</span>
+            <span class="sr-only"
+              >Search families, problems and algorithms</span
+            >
             <input
               id="operation-search"
               type="search"
-              placeholder="Search algorithms, backends, or outputs…"
+              placeholder="Search families, problems, algorithms…"
               autocomplete="off"
             />
           </label>
-          <div class="filter-group" aria-label="Filter operations">
-            <button class="filter-button active" type="button" data-filter="all">All</button>
-            <button class="filter-button" type="button" data-filter="multiple">Multiple backends</button>
-            <button class="filter-button" type="button" data-filter="single">Single backend</button>
+          <label class="family-select-label"
+            ><span class="sr-only">Problem family</span
+            ><select id="family-select">
+              <option value="">All families</option>
+            </select></label
+          >
+          <div
+            class="filter-group"
+            role="group"
+            aria-label="Filter by execution device"
+          >
+            <button
+              class="filter-button active"
+              type="button"
+              data-filter="all"
+              aria-pressed="true"
+            >
+              All
+            </button>
+            <button
+              class="filter-button"
+              type="button"
+              data-filter="cpu"
+              aria-pressed="false"
+            >
+              CPU
+            </button>
+            <button
+              class="filter-button"
+              type="button"
+              data-filter="gpu"
+              aria-pressed="false"
+            >
+              GPU
+            </button>
           </div>
         </div>
 
+        <nav
+          id="catalog-breadcrumb"
+          class="catalog-breadcrumb"
+          aria-label="Catalog location"
+        >
+          <a href="#operations">All families</a>
+        </nav>
         <p id="catalog-summary" class="catalog-summary" aria-live="polite">
-          Loading problem and operation catalog…
+          Loading families, problems and algorithms…
         </p>
-        <div id="operation-grid" class="operation-grid" aria-live="polite"></div>
+        <div id="operation-grid" class="family-grid"></div>
+        <noscript
+          ><p>
+            This explorer needs JavaScript.
+            <a href="catalog.json">Download the complete catalog</a> to browse
+            its families, problems and algorithms.
+          </p></noscript
+        >
         <div id="catalog-error" class="catalog-error" hidden>
           <div class="step-icon step-icon-orange">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5m0 3v.01M4 20h16L12 4z" /></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 8v5m0 3v.01M4 20h16L12 4z" />
+            </svg>
           </div>
           <h3>The problem catalog could not be loaded.</h3>
           <p>
-            Serve the repository root locally or inspect the global JSON directly
-            on GitHub.
+            Reload the page or <a href="catalog.json">open the catalog JSON</a>.
+            For a local preview, serve this directory over HTTP.
           </p>
         </div>
       </section>
@@ -369,13 +466,17 @@ cmake --build library/build --parallel \
             <h2>One JSON graph format at every boundary.</h2>
             <p>
               All vertices—including isolated vertices—are declared explicitly.
-              Edges reference stable external IDs. Backend adapters normalize only
-              what the selected problem contract permits.
+              Edges reference stable external IDs. Backend adapters normalize
+              only what the selected problem contract permits.
             </p>
             <ul class="check-list">
               <li>Integer or nonempty string vertex and edge IDs</li>
-              <li>Directedness, self-loop, and parallel-edge policy declared</li>
-              <li>Optional labels, types, weights, timestamps, and attributes</li>
+              <li>
+                Directedness, self-loop, and parallel-edge policy declared
+              </li>
+              <li>
+                Optional labels, types, weights, timestamps, and attributes
+              </li>
               <li>Strict validation before backend execution</li>
             </ul>
             <div class="inline-actions">
@@ -384,7 +485,8 @@ cmake --build library/build --parallel \
                 href="https://github.com/wajidmanzoor/graphMine/blob/main/graphmine_catalog.json"
                 target="_blank"
                 rel="noreferrer"
-              >Read the contract</a>
+                >Read the contract</a
+              >
               <code>graphmine validate --graph graph.json</code>
             </div>
           </div>
@@ -393,7 +495,13 @@ cmake --build library/build --parallel \
             <header>
               <div><span></span><span></span><span></span></div>
               <strong>graph.json</strong>
-              <button class="text-copy" type="button" data-copy-target="graph-json">Copy</button>
+              <button
+                class="text-copy"
+                type="button"
+                data-copy-target="graph-json"
+              >
+                Copy
+              </button>
             </header>
             <pre id="graph-json"><code>{
   <span class="code-key">"graph"</span>: {
@@ -424,7 +532,9 @@ cmake --build library/build --parallel \
         </div>
         <div class="result-grid">
           <article class="result-card reveal">
-            <span class="result-label result-label-required">Always present</span>
+            <span class="result-label result-label-required"
+              >Always present</span
+            >
             <h3>Required problem output</h3>
             <p>
               Counts, cliques, assignments, scores, or decompositions defined by
@@ -432,7 +542,9 @@ cmake --build library/build --parallel \
             </p>
           </article>
           <article class="result-card reveal reveal-delay-1">
-            <span class="result-label result-label-optional">Flag controlled</span>
+            <span class="result-label result-label-optional"
+              >Flag controlled</span
+            >
             <h3>Optional materialization</h3>
             <p>
               Instances, rankings, per-vertex counts, edge cuts, and other large
@@ -443,8 +555,9 @@ cmake --build library/build --parallel \
             <span class="result-label result-label-meta">Every execution</span>
             <h3>Provenance and diagnostics</h3>
             <p>
-              Backend identity, pinned source commit, execution path, timings,
-              warnings, and structured failures travel with the result.
+              Backend identity, input and implementation fingerprints, quality,
+              completeness, timings and structured failures travel with the
+              result.
             </p>
           </article>
         </div>
@@ -454,58 +567,75 @@ cmake --build library/build --parallel \
         <div class="section-shell api-layout">
           <div class="api-copy reveal">
             <p class="section-kicker">Native C++ API</p>
-            <h2>The same lifecycle across every problem.</h2>
+            <h2>One native runtime for every family.</h2>
             <p>
-              Construct options, choose a backend, instantiate the algorithm,
-              call <code>supports()</code> when capability discovery is useful,
-              then call <code>run()</code> for a typed
-              <code>ExecutionResult&lt;T&gt;</code>.
+              Discover families, problems and operation contracts through
+              <code>graphmine::runtime::request()</code>. Send a run request
+              with its canonical input, parameters and device policy, then
+              inspect the structured result. C and Python bindings use the same
+              native core.
             </p>
             <div class="api-points">
-              <div><strong>01</strong><span>Configure typed options</span></div>
-              <div><strong>02</strong><span>Create the problem object</span></div>
-              <div><strong>03</strong><span>Run and inspect status</span></div>
+              <div>
+                <strong>01</strong
+                ><span>Discover the problem and operation contract</span>
+              </div>
+              <div>
+                <strong>02</strong
+                ><span>Supply inputs, parameters and a device</span>
+              </div>
+              <div>
+                <strong>03</strong
+                ><span>Inspect results, quality and provenance</span>
+              </div>
             </div>
           </div>
 
           <article class="code-window dark-code reveal reveal-delay-1">
             <header>
               <div><span></span><span></span><span></span></div>
-              <strong>maximal_cliques.cpp</strong>
-              <button class="text-copy text-copy-dark" type="button" data-copy-target="cpp-example">Copy</button>
+              <strong>catalog.cpp</strong>
+              <button
+                class="text-copy text-copy-dark"
+                type="button"
+                data-copy-target="cpp-example"
+              >
+                Copy
+              </button>
             </header>
-            <pre id="cpp-example"><code><span class="cpp-directive">#include</span> <span class="cpp-string">&lt;graphmine/graph.hpp&gt;</span>
-<span class="cpp-directive">#include</span> <span class="cpp-string">&lt;graphmine/problems/maximal_cliques.hpp&gt;</span>
+            <pre
+              id="cpp-example"
+            ><code><span class="cpp-directive">#include</span> <span class="cpp-string">&lt;graphmine/runtime.hpp&gt;</span>
+<span class="cpp-directive">#include</span> <span class="cpp-string">&lt;iostream&gt;</span>
 
-<span class="cpp-keyword">auto</span> graph = graphmine::Graph::from_edges(
-    <span class="cpp-string">"sample"</span>, {<span class="cpp-number">0</span>, <span class="cpp-number">1</span>, <span class="cpp-number">2</span>, <span class="cpp-number">3</span>},
-    {{<span class="cpp-number">0</span>, <span class="cpp-number">1</span>}, {<span class="cpp-number">0</span>, <span class="cpp-number">2</span>}, {<span class="cpp-number">1</span>, <span class="cpp-number">2</span>}, {<span class="cpp-number">2</span>, <span class="cpp-number">3</span>}});
-
-graphmine::MaximalCliqueOptions options;
-options.backend = graphmine::MaximalCliqueBackend::rdmce;
-options.minimum_clique_size = <span class="cpp-number">2</span>;
-options.optional_outputs =
-    graphmine::MaximalCliqueOptionalOutput::total_count;
-
-graphmine::MaximalCliques algorithm(options);
-<span class="cpp-keyword">auto</span> result = algorithm.run(graph);
-<span class="cpp-keyword">if</span> (!result.ok()) {
-  <span class="cpp-comment">// result.status().code() and .message()</span>
+<span class="cpp-keyword">int</span> main() {
+  <span class="cpp-comment">// Families, formal problems and algorithm profiles.</span>
+  <span class="cpp-keyword">const auto</span> catalog = graphmine::runtime::request(
+      <span class="cpp-string">R"({"command":"catalog"})"</span>);
+  std::cout &lt;&lt; catalog &lt;&lt; '\n';
 }</code></pre>
           </article>
         </div>
       </section>
 
-      <section id="code-reference" class="content-section code-reference-section">
+      <section
+        id="code-reference"
+        class="content-section code-reference-section"
+      >
         <div class="section-shell">
           <div class="section-heading">
             <p class="section-kicker">Low-level code reference</p>
             <h2>Go from public method to CUDA kernel.</h2>
             <p>
-              The high-level guide stays here. The generated source reference
-              adds every GraphMine class and function, backend adapters, and an
-              isolated function-by-function view of each validated research
-              artifact.
+              Read the
+              <a
+                href="https://github.com/wajidmanzoor/graphMine/blob/main/docs/NATIVE_CORE_MIGRATION.md"
+                >current native runtime guide</a
+              >
+              for its C++, C and Python interfaces. The generated references
+              below preserve the earlier typed library and research-source
+              documentation snapshot; they are not the current operation
+              inventory.
             </p>
           </div>
 
@@ -526,7 +656,10 @@ graphmine::MaximalCliques algorithm(options);
                 <li>Function, class, namespace, and file indexes</li>
                 <li>Call references and line-numbered source</li>
               </ul>
-              <a href="reference/library/">Open library code reference <span aria-hidden="true">→</span></a>
+              <a href="reference/library/"
+                >Open library code reference
+                <span aria-hidden="true">→</span></a
+              >
             </article>
 
             <article class="code-reference-card code-reference-card-research">
@@ -535,18 +668,27 @@ graphmine::MaximalCliques algorithm(options);
                 <strong>C · C++ · CUDA</strong>
               </div>
               <h3>Research implementations</h3>
-              <p><a href="https://github.com/wajidmanzoor/graphMine/blob/main/library/docs/repaired_algorithms.md">Nine repaired algorithms: supported profiles and agent integration</a></p>
+              <p>
+                <a
+                  href="https://github.com/wajidmanzoor/graphMine/blob/main/library/docs/repaired_algorithms.md"
+                  >Nine repaired algorithms: supported profiles and agent
+                  integration</a
+                >
+              </p>
               <p>
                 Choose a problem and paper, then search its original host
                 functions, device functions, kernels, structures, files, and
-                preserved upstream comments without symbol collisions. Repaired workers include pinned build and validation notes.
+                preserved upstream comments without symbol collisions. Repaired
+                workers include pinned build and validation notes.
               </p>
               <ul>
                 <li>One isolated reference per validated artifact</li>
                 <li>Paper, commit, source, and license provenance</li>
                 <li>Exact annotated implementation source</li>
               </ul>
-              <a href="reference/research/">Browse research code <span aria-hidden="true">→</span></a>
+              <a href="reference/research/"
+                >Browse research code <span aria-hidden="true">→</span></a
+              >
             </article>
           </div>
         </div>
@@ -562,13 +704,16 @@ graphmine::MaximalCliques algorithm(options);
           </p>
         </div>
         <div class="final-actions">
-          <a class="button button-primary" href="#quickstart">Build GraphMine</a>
+          <a class="button button-primary" href="#quickstart"
+            >Build GraphMine</a
+          >
           <a
             class="button button-secondary"
             href="https://github.com/wajidmanzoor/graphMine"
             target="_blank"
             rel="noreferrer"
-          >View on GitHub</a>
+            >View on GitHub</a
+          >
         </div>
       </section>
     </main>
@@ -587,23 +732,32 @@ graphmine::MaximalCliques algorithm(options);
           <span>Graph<span class="brand-accent">Mine</span></span>
         </a>
         <p>
-          A canonical interface for GPU graph-mining implementations that passed
-          repository correctness validation.
+          Graph problems, native CPU and CUDA implementations, and explicit
+          execution profiles in one catalog.
         </p>
         <div class="footer-links">
-          <a href="#operations">Algorithms</a>
+          <a href="#operations">Problem families</a>
           <a href="#graph-format">Input format</a>
           <a href="reference/">Code reference</a>
           <a href="https://github.com/wajidmanzoor/graphMine">Repository</a>
         </div>
-        <small>© <span id="current-year"></span> GraphMine research project.</small>
+        <small
+          >© <span id="current-year"></span> GraphMine research project.</small
+        >
       </div>
     </footer>
 
     <dialog id="operation-dialog" class="operation-dialog">
       <div class="dialog-shell">
-        <button class="dialog-close" type="button" data-dialog-close aria-label="Close operation details">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 4 12 12M16 4 4 16" /></svg>
+        <button
+          class="dialog-close"
+          type="button"
+          data-dialog-close
+          aria-label="Close algorithm details"
+        >
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="m4 4 12 12M16 4 4 16" />
+          </svg>
         </button>
         <div id="dialog-content"></div>
       </div>
