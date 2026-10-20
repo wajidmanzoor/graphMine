@@ -1,0 +1,34 @@
+.database-start { border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin: 20px 0; background: var(--paper); }
+.database-start strong { font-size: 18px; }
+.database-start p { color: var(--muted); margin: 8px 0 16px; }
+.database-dialog { width: min(1500px, 96vw); max-width: 96vw; max-height: 94vh; padding: 24px; }
+.database-dialog > select { width: min(420px, 100%); margin-bottom: 18px; }
+.database-grid { display: grid; grid-template-columns: minmax(160px, .6fr) minmax(320px, 1.5fr) minmax(280px, 1fr); gap: 20px; align-items: start; }
+.database-schema { max-height: 480px; overflow: auto; border-right: 1px solid var(--line); padding-right: 14px; font-size: 12px; }
+.database-schema h3 { font-size: 13px; }
+.database-schema p { overflow-wrap: anywhere; }
+.database-editor textarea { width: 100%; font: 13px/1.6 ui-monospace, monospace; padding: 12px; }
+.database-query-graph { height: 390px; border: 1px solid var(--line); border-radius: 12px; background: var(--canvas); }
+.database-row-preview { max-height: 180px; overflow: auto; font-size: 11px; }
+.database-context { margin: 8px 16px; border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 12px; }
+.database-context pre { max-height: 130px; overflow: auto; }
+.source-enrichment { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; }
+.source-enrichment > p, .attribute-styles { flex-basis: 100%; }
+.source-enrichment > details { flex-basis: 100%; max-width: 100%; overflow: auto; }
+.source-enrichment table { font-size: 11px; }
+.source-enrichment td, .source-enrichment th { max-width: 260px; padding: 6px; overflow-wrap: anywhere; }
+#result-item-index { width: 90px; }
+.attribute-styles { display: flex; gap: 10px; align-items: center; }
+.attribute-styles[hidden] { display: none; }
+.attribute-legend { display: flex; flex-wrap: wrap; flex-basis: 100%; gap: 8px 14px; font-size: 11px; }
+.attribute-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.result-focus { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 0; }
+.result-focus select { max-width: 280px; }
+.result-focus p { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 12px; }
+.result-building-block { padding: 14px; margin: 10px 0; border: 1px solid var(--line); border-radius: 10px; overflow: auto; }
+.result-building-block svg { min-width: 300px; width: 100%; max-height: 320px; }
+.result-building-block .path-step { display: inline-flex; padding: 6px 10px; margin: 3px; background: var(--soft); border-radius: 6px; }
+.result-building-block table { font-size: 11px; }
+.result-building-block td { padding: 6px; }
+@media (max-width: 1000px) { .database-grid { grid-template-columns: 1fr 2fr; } .database-query-graph { grid-column: 1 / -1; height: 280px; } }
+@media (max-width: 600px) { .database-grid { grid-template-columns: 1fr; } .database-schema { max-height: 150px; border-right: 0; } .database-dialog { padding: 14px; } }

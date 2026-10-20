@@ -100,6 +100,7 @@ class Settings:
     tls_keyfile: Path | None = None
     connectors_file: Path | None = None
     connector_allowed_origins: tuple[str, ...] = ()
+    database_sources_file: Path | None = None
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -258,6 +259,9 @@ class Settings:
         )
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
+            database_sources_file=Path(os.environ["GRAPHMINE_DATABASE_SOURCES_FILE"])
+            .expanduser().resolve()
+            if os.getenv("GRAPHMINE_DATABASE_SOURCES_FILE") else None,
             connector_allowed_origins=tuple(
                 origin.strip().rstrip("/")
                 for origin in os.getenv(

@@ -8,6 +8,7 @@
 .venv-vllm/
 .venv-training/
 .venv-analytics/
+.database-workspace/
 # Shared runtime links used by isolated worktree deployments.
 /.venv
 /.venv-analytics

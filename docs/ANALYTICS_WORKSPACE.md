@@ -1,5 +1,9 @@
 # Native analysis workspace
 
+The [database and Cypher workspace](DATABASE_CYPHER_WORKSPACE.md) adds local
+PostgreSQL → Neo4j → chat analysis, result-specific graph views, and SQL attribute
+and relationship lookups from those results.
+
 The browser at `/` keeps searchable conversation history in a collapsible left
 sidebar and a domain picker in the main area. **Explore all domains** reveals
 the remaining starting points. The selected domain is saved with the conversation and supplies

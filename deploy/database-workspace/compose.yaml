@@ -1,0 +1,34 @@
+name: graphmine-database-cypher
+services:
+  postgres:
+    image: postgres:16.15
+    environment:
+      POSTGRES_USER: graphmine_admin
+      POSTGRES_DB: graphmine_demo
+      POSTGRES_PASSWORD: ${GRAPHMINE_DEMO_SQL_PASSWORD:?Run init_demo.py first}
+      GRAPHMINE_DEMO_READER_PASSWORD: ${GRAPHMINE_DEMO_READER_PASSWORD:?Run init_demo.py first}
+    ports:
+      - "127.0.0.1:${GRAPHMINE_DEMO_SQL_PORT:-55432}:5432"
+    volumes:
+      - tabular:/var/lib/postgresql/data
+      - ./seed.sql:/docker-entrypoint-initdb.d/001-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U graphmine_admin -d graphmine_demo"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  neo4j:
+    image: neo4j:5.26.32-community
+    environment:
+      NEO4J_AUTH: neo4j/${GRAPHMINE_DEMO_NEO4J_PASSWORD:?Run init_demo.py first}
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 512m
+      NEO4J_server_memory_pagecache_size: 256m
+    ports:
+      - "127.0.0.1:${GRAPHMINE_DEMO_BOLT_PORT:-17687}:7687"
+      - "127.0.0.1:${GRAPHMINE_DEMO_NEO4J_HTTP_PORT:-17474}:7474"
+    volumes:
+      - graph:/data
+volumes:
+  tabular:
+  graph:

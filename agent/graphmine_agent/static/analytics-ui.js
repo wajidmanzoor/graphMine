@@ -6,6 +6,7 @@
   const state = {base: read("graphmine.apiBase"), token: read("graphmine.apiToken"), caps: null, session: null, files: [], kinds: {}, active: "", mode: "normal", operation: "", record: null, result: null, cy: null, graph: null, selected: new Set(), port: null, rows: [], filtered: [], page: 0, previews: new Map(), poll: null, epoch: 0, busy: false, domains: [], workflows: [], events: [], eventCursor: 0, eventPoll: null, legacyMessages: [], view: "domains", planning: false, pendingQuestion: null, summaries: new Map()};
   const PAGE = 30;
   let commands;
+  let resultViews, databaseWorkspace;
   let connectionGeneration = 0;
   let capabilitiesLoading = false;
   let capabilitiesController = null;
@@ -59,6 +60,7 @@
   }
   function activeFile() { return state.files.find(f => f.id === state.active); }
   function clearResults(message = "Waiting for a completed calculation.") {
+    resultViews?.clear();
     if (state.record) state.summaries.delete(state.record.id);
     state.result = null; state.port = null; state.rows = []; state.selected.clear();
     state.flowRows = null; state.remote = null; state.pageRows = []; state.pagePositions = []; state.page = 0; clearTimeout(state.remoteTimer);
@@ -504,6 +506,7 @@
     throw new Error("Your planning request is saved. Reopen this conversation to check its progress.");
   }
   function renderFiles() {
+    databaseWorkspace?.updateContext();
     $("active-input").replaceChildren(node("option", {value: ""}, "Choose an input"));
     state.files.filter(f => !isTable(f)).forEach(f => $("active-input").append(node("option", {value: f.id}, f.original_name)));
     $("active-input").value = state.active;
@@ -648,6 +651,7 @@
   // The group the user is looking at, so "this clique" has a meaning. The server
   // reads its members from the saved result; only the position is sent.
   function currentSelection() {
+    if (state.resultView) return resultViews.selection();
     if (!state.record || !state.result || state.port?.type !== "vertex_groups" || !state.groupFilter) return null;
     const group = state.groups.find(group => group.key === state.groupFilter);
     if (!Number.isInteger(group?.index)) return null;
@@ -841,7 +845,7 @@
         if (epoch !== state.epoch || state.record?.id !== id) return;
         state.record = record; renderWorkflow(); renderConversation();
         if (["queued", "running"].includes(record.status)) pollWorkflow();
-        else { await loadSaved(); await loadResults(); notice(record.status === "completed" ? "The computed results are ready." : record.error?.message || `Execution ${record.status}. Inspect the step status for details.`, record.status === "failed"); }
+        else { await loadSaved(); await loadResults(); if (record.status === "completed" && state.files.find(f => f.id === state.active)?.provenance?.source?.database_source) go("results", record.id); notice(record.status === "completed" ? "The computed results are ready." : record.error?.message || `Execution ${record.status}. Inspect the step status for details.`, record.status === "failed"); }
       } catch (error) { notice(error.message, true); }
     }, 600);
   }
@@ -889,10 +893,12 @@
     const preference = ["vertex_scores", "pattern_collection", "vertex_positions", "rational_scalar", "vertex_groups", "table", "graph"];
     const materialized = Object.entries(step.ports).filter(([,p]) => p.complete || !Array.isArray(p.value) || p.value.length);
     const choices = materialized.length ? materialized : Object.entries(step.ports);
-    $("result-port").value = preference.map(type => choices.find(([,p]) => p.type === type)?.[0]).find(Boolean) || choices[0]?.[0] || "__result";
+    const preferred = card(step.operation)?.visualization?.preferred_ports || [];
+    $("result-port").value = preferred.find(name => choices.some(([key]) => key === name)) || preference.map(type => choices.find(([,p]) => p.type === type)?.[0]).find(Boolean) || choices[0]?.[0] || "__result";
     await selectPort();
   }
   async function selectPort() {
+    resultViews?.clear();
     const stepId = $("result-step").value, result = state.result?.steps[stepId]?.result;
     if (!result) return;
     const name = $("result-port").value;
@@ -918,6 +924,8 @@
     if (port.type === "vertex_positions") $("graph-layout").value = "computed";
     else if (state.groups.length && !state.groupsOverlap) $("graph-layout").value = "groups";
     renderGraph(graph); renderOutput();
+    if (name !== "__result") await resultViews?.load();
+    resultViews?.renderBlocks();
   }
   function configureGroups(result) {
     state.groups = []; state.groupMembership = new Map(); state.groupMemberships = new Map(); state.groupFilter = ""; state.groupsOverlap = false; state.groupGraph = null;
@@ -938,8 +946,9 @@
       if (state.groupMemberships.get(vertexKey).size > 1) state.groupsOverlap = true;
       state.groupMembership.set(vertexKey, key);
     };
-    if (groups) for (const [index, row] of groups.value.entries()) for (const vertex of row.vertices) add(row.group ?? index, vertex, index);
-    else if (partition) for (const row of partition.value) add(row.part, row.vertex);
+    if (partition && state.port?.type === "vertex_partition") for (const [index, row] of partition.value.entries()) add(row.part, row.vertex, index);
+    else if (groups) for (const [index, row] of groups.value.entries()) for (const vertex of row.vertices) add(row.group ?? index, vertex, index);
+    else if (partition) for (const [index, row] of partition.value.entries()) add(row.part, row.vertex, index);
     // Keep every collection filter, but do not assign shared vertices to one
     // arbitrary group for overview colors or a partition layout.
     if (state.groupsOverlap) state.groupMembership.clear();
@@ -950,6 +959,11 @@
     return state.groupNoun === "clique" ? `Clique ${index + 1}` : `Group ${display(id)}`;
   }
   function filterGraphGroup(key) {
+    if (resultViews && state.resultView) {
+      const group = state.groups.find(g => g.key === key);
+      if (group && Number.isInteger(group.index)) { void resultViews.select(group.index); return; }
+      if (!key) { void resultViews.context(); return; }
+    }
     state.groupFilter = key; state.selected.clear(); renderGraph(state.graph); applySelection(); renderSelectionChip();
     void loadFullGroup(key);
   }
@@ -987,6 +1001,7 @@
     return positions;
   }
   function renderGraph(data) {
+    data = databaseWorkspace?.overlayGraph(data) || data;
     if (state.view !== "results") {
       state.cy?.destroy(); state.cy = null; state.graph = data;
       $("network").replaceChildren(); $("preview-scope").textContent = "";
@@ -1009,9 +1024,9 @@
     const counts = [...(state.groupMemberships?.values() || [])], sizes = groups.map(group => group.vertices.size);
     const summary = state.groupSummary || {groups: groups.length, unique_members: counts.length, shared_members: counts.filter(keys => keys.size > 1).length, smallest: sizes.reduce((a, b) => Math.min(a, b), Infinity), largest: sizes.reduce((a, b) => Math.max(a, b), 0)};
     $("group-summary").textContent = groups.length ? `${state.groupsTruncated && !state.groupSummary ? "Loaded groups: " : ""}${summary.groups} ${noun}s · ${summary.unique_members} distinct members · sizes ${summary.smallest}–${summary.largest} · ${summary.shared_members} shared members. Shared members belong to more than one group in the full retained output.${state.groupsTruncated ? " Group colors use loaded groups; search the table to find other members." : ""}` : "";
-    $("graph-group").replaceChildren(node("option", {value: ""}, "Full network")); $("group-legend").replaceChildren();
+    $("graph-group").replaceChildren(node("option", {value: ""}, state.resultView ? "Input context" : "Full network")); $("group-legend").replaceChildren();
     if (groups.length) {
-      const all = node("button", {"aria-pressed": String(!filter)}, `All ${groups.length} ${noun}s`); all.addEventListener("click", () => filterGraphGroup("")); $("group-legend").append(all);
+      const all = node("button", {"aria-pressed": String(!filter)}, state.resultView ? "Input context" : `All ${groups.length} ${noun}s`); all.addEventListener("click", () => filterGraphGroup("")); $("group-legend").append(all);
       for (const group of groups) {
         $("graph-group").append(node("option", {value: group.key}, `${group.label} · ${group.vertices.size} vertices`));
         if (!state.groupsOverlap) {
@@ -1053,19 +1068,22 @@
     ], layout: layoutOptions(positions)});
     state.cy.on("tap", "node", event => {
       state.selected = new Set([event.target.id()]);
+      state.selectedEdges = new Set();
       $("selection-detail").textContent = W.stringify(event.target.data("original"), true);
       applySelection();
     });
-    state.cy.on("tap", "edge", event => { $("selection-detail").textContent = W.stringify(event.target.data("original"), true); });
+    state.cy.on("tap", "edge", event => { const edge = event.target.data("original"); state.selectedEdges = new Set([W.idKey(edge.id)]); state.selected = new Set([W.idKey(edge.source), W.idKey(edge.target)]); $("selection-detail").textContent = W.stringify(edge, true); applySelection(); });
     const n = data.vertex_count ?? data.vertices.length, m = flows ? flows.length : data.edge_count ?? data.edges.length;
     const truncated = data.vertices_truncated || data.edges_truncated || (filter ? vertices.length < filter.vertices.size || edges.length === 2000 && data.edges.length > 2000 : vertices.length < n || edges.length < m);
     state.previewScope = filter ? `${filter.label}: ${vertices.length} of ${filter.vertices.size} vertices; ${edges.length} connections within this ${noun}. Full input: ${n} vertices; ${m} connections. ` : `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. `;
     if (truncated) state.previewScope += "The preview is truncated. ";
     if (scores.size) state.previewScope += `Node size shows ${title(field).toLowerCase()}. `;
-    if (flowMode) state.previewScope += "Arrows show positive computed flow, including directions on undirected inputs. Click a connection for its recorded flow and capacity. ";
+    if (flowMode) state.previewScope += state.resultView ? "Highlighted connections carry positive computed flow; the flow and cut details remain in the saved result. " : "Arrows show positive computed flow, including directions on undirected inputs. Click a connection for its recorded flow and capacity. ";
     renderPreviewScope();
     applySelection();
     window.GraphMineExplorer?.timeView?.();
+    resultViews?.decorate();
+    databaseWorkspace?.decorate();
   }
   function renderPreviewScope() {
     if (!state.graph) return;
@@ -1090,18 +1108,22 @@
     if (state.port.type === "pattern_collection") return [];
     if (state.port.type === "graph") return row?.vertices?.map(vertex => vertex.id) || [];
     if (state.port.type === "vertex_set") return [row];
+    const members = values => values.flatMap(v => v && typeof v === "object" ? v.data_vertex !== undefined ? [v.data_vertex] : [] : [v]);
+    if (Array.isArray(row) && ["vertex_mappings", "walk_sample"].includes(state.port.type)) return members(row);
     if (state.port.type === "edge_ids") {
       const edge = state.graph?.edges?.find(e => W.idKey(e.id) === W.idKey(row));
       return edge ? [edge.source, edge.target] : [];
     }
     if (!row || typeof row !== "object" || Array.isArray(row)) return [];
     if (state.port.vertex_field && row[state.port.vertex_field] !== undefined) return [row[state.port.vertex_field]];
-    if (Array.isArray(row.vertices)) return row.vertices;
+    if (Array.isArray(row.vertices)) return members(row.vertices);
+    if (Array.isArray(row.left) && Array.isArray(row.right)) return [...row.left, ...row.right];
     if (row.vertex !== undefined) return [row.vertex];
     if (row.source !== undefined && row.target !== undefined) return [row.source, row.target];
     return [];
   }
   function selectRow(row, position) {
+    if (resultViews && state.resultView) { void resultViews.select(position ?? state.rows.indexOf(row)); return; }
     if (state.port?.type === "pattern_collection") {
       state.patternId = row.pattern_id; state.selected.clear(); renderGraph(row.pattern); applySelection(); return;
     }
@@ -1189,7 +1211,7 @@
     let chartRows = [];
     if (state.port?.type === "vertex_scores") {
       const field = state.port.score_field || "score";
-      chartRows = state.rows.map((row, index) => ({index, row, label: W.idLabel(row.vertex), value: row[field]})).filter(x => typeof x.value === "number" || typeof x.value === "bigint");
+      chartRows = state.rows.map((row, index) => ({index, row, label: state.graph?.vertices?.find(v => W.idKey(v.id) === W.idKey(row.vertex))?.label || W.idLabel(row.vertex), value: row[field]})).filter(x => typeof x.value === "number" || typeof x.value === "bigint");
     } else if (state.port?.type === "vertex_groups") chartRows = state.rows.map((row, index) => ({index, row, label: groupLabel(row.group ?? index, index), value: row.vertices.length}));
     if (chartRows.length) {
       chartRows.sort((a, b) => {
@@ -1214,6 +1236,7 @@
       }
     }
     window.GraphMineExplorer?.embedding?.();
+    resultViews?.renderBlocks();
     filterRows();
   }
   async function loadRemotePage() {
@@ -1284,7 +1307,9 @@
       const row = rows[index], record = objectRows && row && typeof row === "object" && !Array.isArray(row) ? row : {value: row};
       const tr = node("tr", {"data-result-row": index, "aria-selected": "false"});
       keys.forEach((key, position) => {
-        const value = record[key] ?? null, text = cliques && key === "group" ? groupLabel(value, state.remote ? state.pagePositions?.[index] ?? index : index) : state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : ["vertex", "source", "target", state.port?.vertex_field].includes(key) && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value ? "≈ " : ""}${display(value)}`, td = node("td", {title: text});
+        const value = record[key] ?? null, isEntity = ["vertex", "source", "target", state.port?.vertex_field].includes(key) || key === "value" && state.port?.type === "vertex_set";
+        const label = isEntity && state.graph?.vertices?.find(v => W.idKey(v.id) === W.idKey(value))?.label;
+        const text = cliques && key === "group" ? groupLabel(value, state.remote ? state.pagePositions?.[index] ?? index : index) : state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : label ? String(label) : isEntity && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value ? "≈ " : ""}${display(value)}`, td = node("td", {title: label ? `${label} · ${W.idLabel(value)}` : text});
         if (position === 0 && (rowVertices(row).length || state.port?.type === "pattern_collection")) { const button = node("button", {}, state.port?.type === "pattern_collection" ? `View pattern ${index + 1}` : text); button.addEventListener("click", () => selectRow(row, state.remote ? state.pagePositions?.[index] ?? index : index)); td.append(button); } else td.textContent = text;
         tr.append(td);
       }); body.append(tr);
@@ -1296,7 +1321,7 @@
     $("table-prev").disabled = state.page === 0; $("table-next").disabled = state.page + 1 >= pages;
     $("table-scope").textContent = state.port ? `This table pages over the retained output. ${state.port.complete ? "The output collection is complete." : "The output collection is incomplete or count-only."} Search filters this table, not the computation.` : "Computed values will appear after an analysis.";
     if (state.rows.some(row => row?.rounded && row?.exact_value)) $("table-scope").textContent += " Approximate displays use ≈. Exact numerators and denominators are preserved in the table and download.";
-    if (state.remote) $("table-scope").textContent += ` Charts and the graph use the first ${state.rows.length.toLocaleString()} rows; this table searches all ${state.remote.total.toLocaleString()}.`;
+    if (state.remote) $("table-scope").textContent += ` This table searches all ${state.remote.total.toLocaleString()} retained rows. Charts use ${state.rows.length.toLocaleString()} loaded rows.${state.resultView ? " The focused graph resolves the full saved output before preview limits." : ""}`;
     applySelection();
   }
   async function loadCapabilities(generation, signal, refresh = false) {
@@ -1316,6 +1341,7 @@
       renderOperations();
       if (state.record) renderWorkflow();
       if (state.session) renderConversation();
+      if (state.result && !state.resultView) void resultViews?.load();
     } catch (error) {
       if (generation !== connectionGeneration) return;
       console.error("Could not load analytics capabilities", error);
@@ -1512,8 +1538,8 @@
   $("result-step").addEventListener("change", () => runAction(selectStep)); $("result-port").addEventListener("change", () => runAction(selectPort));
   $("graph-layout").addEventListener("change", () => { state.cy?.layout(layoutOptions()).run(); renderPreviewScope(); }); $("fit-graph").addEventListener("click", () => state.cy?.fit(undefined, 35));
   $("graph-group").addEventListener("change", () => filterGraphGroup($("graph-group").value));
-  $("clear-question-selection").addEventListener("click", () => { if (state.groupFilter) filterGraphGroup(""); renderSelectionChip(); });
-  $("clear-selection").addEventListener("click", () => { if (state.groupFilter) filterGraphGroup(""); state.selected.clear(); $("selection-detail").textContent = "Selection cleared."; applySelection(); });
+  $("clear-question-selection").addEventListener("click", () => { if (state.resultView) resultViews.clearSelection(); else if (state.groupFilter) filterGraphGroup(""); renderSelectionChip(); });
+  $("clear-selection").addEventListener("click", () => { if (state.resultView) resultViews.clearSelection(); else if (state.groupFilter) filterGraphGroup(""); state.selected.clear(); state.selectedEdges = null; $("selection-detail").textContent = "Selection cleared."; applySelection(); });
   $("table-search").addEventListener("input", filterRows);
   for (const id of ["group-min-size", "group-max-size", "group-member"]) $(id).addEventListener("input", filterRows);
   $("clear-group-filters").addEventListener("click", () => {
@@ -1527,6 +1553,8 @@
   $("download-result").addEventListener("click", () => runAction(async () => { if (!state.result) return; const full = state.result.partial_workflow ? state.result : await api(`/api/workflows/${encodeURIComponent(state.record.id)}/result`); const url = URL.createObjectURL(new Blob([W.stringify(full, true)], {type: "application/json"})), a = node("a", {href: url, download: `graphmine-${state.record.id}-revision-${state.record.revision}.json`}); a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }));
   new ResizeObserver(() => { if (state.view === "results") { state.cy?.resize(); state.cy?.fit(undefined, 35); } }).observe($("network"));
   window.GraphMineWorkspace = {state, wire: W};
+  resultViews = window.GraphMineResultViews({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice});
+  databaseWorkspace = window.GraphMineDatabaseWorkspace({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, renderGraph, previewActive});
   window.GraphMineOutputs.install({state, api, W, node, runAction});
   window.GraphMineExplorer.install({state, W, node, selectRow});
   window.GraphMineEditor({state, W, node, card, refs, runAction, notice, parameterControl, parametersFrom, loadEditor, submitPlan});

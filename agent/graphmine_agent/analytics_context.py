@@ -110,6 +110,7 @@ def resolve_selection(saved, selection, *, members=200):
     }
     value = port.get("value")
     if selection.index is None or not isinstance(value, list):
+        resolved["summary"] = summarize_port(port, members=members)
         return resolved
     if selection.index >= len(value):
         return None

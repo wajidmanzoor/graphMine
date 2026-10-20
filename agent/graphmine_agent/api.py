@@ -57,6 +57,9 @@ from .catalog import Catalog, CatalogError
 from .config import Settings
 from .connectors import register_connector_routes
 from .database import Database, QueueCapacityError, RecordNotFound
+from .database_enrichment import register_database_enrichment_routes
+from .database_queries import register_database_query_routes
+from .database_sync import register_database_sync_routes
 from .datasets import register_dataset_routes
 from .execution import ExecutionError, GraphMineRunner
 from .graph_store import GraphStore, UploadError
@@ -88,6 +91,7 @@ from .models import (
 from .planning import PlanValidationError, PlanValidator
 from .projects import register_project_routes
 from .reporting import render_report
+from .result_views import register_result_view_routes
 from .results import query_path
 from .workflow_templates import register_template_routes
 
@@ -1003,6 +1007,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     register_example_routes(router)
     register_dataset_routes(router)
+    register_database_query_routes(router)
+    register_database_sync_routes(router)
+    register_database_enrichment_routes(router)
+    register_result_view_routes(router)
     register_import_routes(router)
     register_template_routes(router)
     register_export_routes(router)

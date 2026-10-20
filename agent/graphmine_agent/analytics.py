@@ -482,6 +482,9 @@ class AnalyticsService:
 
     async def capabilities(self, refresh=False):
         result = copy.deepcopy(await self._native_capabilities(refresh))
+        from .result_views import profile
+        for operation in result["operations"]:
+            operation["visualization"] = profile(operation["id"])
         result["application_limits"] = {
             "input_bytes": self.settings.analytics_max_input_bytes,
             "result_bytes": self.settings.max_result_bytes,
@@ -1140,6 +1143,10 @@ class AnalyticsService:
             ports = {}
             for port_name, port in (result.get("ports") or {}).items():
                 value = port.get("value")
+                if port.get("type") in {"motif_instances", "graphlet_instances"} and isinstance(value, dict):
+                    from .result_views import view_items
+                    value = view_items(port)
+                    port = {**port, "value": value, "presentation_only": True}
                 ports[port_name] = (
                     {
                         **port,
@@ -1266,7 +1273,11 @@ class AnalyticsService:
         value = saved.get("result", {}).get("ports", {}).get(port)
         if value is None:
             raise RecordNotFound("No such output port")
-        rows = value["value"] if isinstance(value["value"], list) else [value["value"]]
+        if value.get("type") in {"motif_instances", "graphlet_instances"}:
+            from .result_views import view_items
+            rows = view_items(value)
+        else:
+            rows = value["value"] if isinstance(value["value"], list) else [value["value"]]
         total = len(rows)
         positions = list(range(total))
         if min_size is not None or max_size is not None or member is not None:
