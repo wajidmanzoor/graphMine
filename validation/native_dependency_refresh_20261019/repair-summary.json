@@ -1,0 +1,52 @@
+{
+  "cause": "The October 17 OpenSSL system update changed libcrypto.so.3; native dependency validation disabled all calculation profiles until tests were rerun.",
+  "changed_dependencies": {
+    "/usr/lib/x86_64-linux-gnu/libcrypto.so.3": {
+      "previous_sha256": "6a66c3ba6b3749aacc9497973fff00f6ba61c703ba7015d0d7ab3fd9510974b6",
+      "current_sha256": "6866ed711dab8927e1bf82bf1cd30e828bdfc34f3cc1e83b1c9eb01ce6c37d9a"
+    }
+  },
+  "implementation_sha256": "ae6b0391e68ae2561d16e124e6f2cce02eb815bdf7a8eb7ccdfb7c8b9caae1f2",
+  "native_binary_sha256": "4d61032d61197766d86b294936cec3f461b1bb17cffdb93087d7ea6b870621a8",
+  "evidence_sha256": "df888d4b98e76fee450813b7c5c108aad0f4a58065ab6ff0248146ed79493299",
+  "verified_reports": 49,
+  "passed_native_requests": 218841,
+  "passed_independent_tests": 228,
+  "hardware_limit": "mbe-gpu ran out of memory on GPU 0 while the language model was resident. Its passing GPU 1 evidence is retained; GPU 0 evidence covers only the other 33 passing tests. All 82 CPU calculations remain verified.",
+  "original_evidence_backup": "/home/wajid/projects/graphDatabaseAgent/graphmine-data/deployment/native-dependency-refresh-20261019/catalog.before.json",
+  "source_manifest": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/catalog/native_execution_evidence.json",
+  "deployed_manifest": "/home/wajid/projects/graphDatabaseAgent/graphmine-data/releases/main-3131c8bd-20261015T232425Z/catalog/native_execution_evidence.json",
+  "service_restart_required": false,
+  "live_verification": {
+    "release": "/home/wajid/projects/graphDatabaseAgent/graphmine-data/releases/main-3131c8bd-20261015T232425Z",
+    "service_pid": 3174079,
+    "checks": {
+      "authenticated_capabilities": {
+        "operations": 82,
+        "cpu": 82,
+        "gpu": 36,
+        "verification_issues": []
+      },
+      "health": {
+        "status": "ready",
+        "analytics_status": "ready"
+      },
+      "cpu_workflow": {
+        "triangle_count": 1,
+        "backend": "cpp"
+      },
+      "gpu_workflow": {
+        "triangle_count": 1,
+        "backend": "tot"
+      },
+      "browser": {
+        "connection_state": "ready",
+        "calculation_label": "82 verified calculations"
+      }
+    },
+    "passed": true,
+    "temporary_account_removed": true
+  },
+  "evidence_integrity_regression_passed": true,
+  "completed_at": "2026-10-19T17:10:58.067519+00:00"
+}
