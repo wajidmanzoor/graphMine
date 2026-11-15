@@ -153,6 +153,8 @@ def test_first_startup_creates_default_data_root(tmp_path, monkeypatch):
     from types import SimpleNamespace
     monkeypatch.setattr(studio_engine, "Engine", lambda _repo: SimpleNamespace(available=False, error="test fixture"))
     monkeypatch.setattr(studio, "ThreadingHTTPServer", lambda *_args: SimpleNamespace(serve_forever=lambda: None, server_close=lambda: None))
+    # This case exercises standalone defaults, without linked GraphMine accounts.
+    monkeypatch.delenv("GRAPHMINE_AGENT_DATA_ROOT", raising=False)
     repo = tmp_path / "fresh-repo"
     studio.main(["--repo", str(repo), "--workspace", str(tmp_path / "workspace")])
     assert (repo / ".graphmine-learning").is_dir()

@@ -96,6 +96,25 @@ Testing is private by default. For example, forward ports 18001 and 8878 over
 SSH and open the forwarded localhost URLs. The production Cloudflare routes
 continue to target ports 18000 and 8877; they are never redirected to test data.
 
+## Private environment sign-in
+
+Development and testing have separate accounts and initially contain no users.
+Create an administrator in each environment before signing into its private UI
+(the command prompts for a password). Dataset Studio accepts that environment's
+GraphMine accounts.
+
+```sh
+cd /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher
+GRAPHMINE_AGENT_DATA_ROOT=/data/labdata/wajid/graphmine_data/environments/devlopment/store \
+  .venv/bin/python -m graphmine_agent accounts create wajid --admin
+
+cd /home/wajid/projects/graphDatabaseAgent/graphMine-testing
+GRAPHMINE_AGENT_DATA_ROOT=/data/labdata/wajid/graphmine_data/environments/testing/store \
+  .venv/bin/python -m graphmine_agent accounts create wajid --admin
+```
+
+Production accounts and existing Studio sign-ins are preserved.
+
 ## Database changes and recovery
 
 Validate schema changes against disposable data before promotion. Code rollback
