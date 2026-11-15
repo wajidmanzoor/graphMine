@@ -52,6 +52,16 @@ command is:
 /home/wajid/projects/graphDatabaseAgent/graphmine-data/environments/gm-env status
 ```
 
+For the shorter commands below, define a shell alias:
+
+```sh
+alias gm-env=/home/wajid/projects/graphDatabaseAgent/graphmine-data/environments/gm-env
+```
+
+Each checkout also needs its locked Node dependencies in both `agent/frontend`
+and `agent/visualization` (`npm ci` in each directory). The visualization
+dependencies are needed by the running application as well as tests.
+
 The configuration selects exact code, Python, service, and storage paths.
 `deploy/environments.py` validates that writable paths, ports, and services do
 not overlap. A developer shell cannot override its GraphMine storage settings.
@@ -101,3 +111,16 @@ tests pass. Host environment files contain credentials and stay outside Git.
 The future Studio design that reads original captures and stores edits by
 reference is recorded in `latter plans.md`; this environment setup does not
 implement that separate feature.
+
+## Baseline validation limitations
+
+The initial full agent regression run identified eight existing failures in
+`agent/tests/test_native_uploads.py`, reproduced against the original deployed
+checkout. Those tests require the older native cuDF upload path; the current
+CSV upload path uses `csv_ingestion.py`. This environment change preserves the
+current behavior. Resolve that test/implementation mismatch separately; the
+full agent suite is not currently green.
+
+The deployment gate runs the controller, account, capture, backup/recovery,
+Studio exchange, Dataset Studio, chart compiler, and frontend checks. Hardware
+and disposable-database integration tests require their separate opt-in setup.
