@@ -31,6 +31,8 @@
     <div class="top-actions">
       <button class="btn primary" id="add-btn" title="Add a conversation (n)"><span aria-hidden="true">＋</span> Add</button>
       <button class="btn" id="export-btn" title="Export a new dataset version">Export</button>
+      <button class="btn" id="import-analytics-btn">Import analytics</button>
+      <input type="file" id="import-analytics-file" accept="application/json,.json" hidden aria-label="Import reviewed analytics exchange">
       <button class="icon-btn" id="theme-btn" title="Toggle light / dark" aria-label="Toggle theme"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13z" fill="currentColor" stroke="none"/></svg></button>
       <button class="icon-btn" id="help-btn" title="Keyboard shortcuts (?)" aria-label="Help">?</button>
       <div class="account">
@@ -223,10 +225,11 @@
       <div class="dialog-body">
         <p class="muted">The source dataset is never modified. The export contains <code>sft/&lt;model&gt;/&lt;split&gt;.jsonl</code>,
           <code>sft-index.jsonl</code>, <code>annotations.jsonl</code> (tags, review, notes), <code>needs-context.jsonl</code>,
-          <code>changes.jsonl</code> and a <code>manifest.json</code> with SHA-256 fingerprints. Unchanged rows are byte-identical to the source.</p>
+          <code>changes.jsonl</code> and a <code>manifest.json</code> with SHA-256 fingerprints. Unchanged message content is preserved.</p>
         <label class="block">Name<input name="name" id="export-name" pattern="[A-Za-z0-9._\-]{1,80}" required></label>
         <label class="check"><input type="checkbox" id="export-exclude-rejected" checked> Leave out examples reviewed as rejected</label>
-        <label class="check"><input type="checkbox" id="export-approved-only"> Approved examples only</label>
+        <label class="check"><input type="checkbox" id="export-approved-only" checked> Approved examples only</label>
+        <p class="muted">Analytics rows require a current review and unchanged execution evidence. Invalid rows are excluded. Exported authorship and review details are in annotations.jsonl.</p>
         <div id="export-summary" class="export-summary"></div>
         <div id="export-result"></div>
       </div>
@@ -278,6 +281,7 @@
   <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
+  <script src="analytics-wire.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

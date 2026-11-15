@@ -1,5 +1,11 @@
 "use strict";
 /* Dataset Studio front end — vanilla JS, no build step. */
+const J = window.AnalyticsWire ? {
+  parse: window.AnalyticsWire.parse,
+  stringify: (value, replacer, space) => value === undefined ? undefined : window.AnalyticsWire.stringify(value, Boolean(space)),
+} : JSON;
+const revisions = (ids) => Object.fromEntries(ids.map(id => [id, S.byId.get(id)?.revision]));
+let exportRevisions = {};
 
 // ------------------------------------------------------------------ utilities
 const $ = (s, el = document) => el.querySelector(s);
@@ -9,16 +15,19 @@ const norm = (s) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
 const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
 const plural = (n, w) => `${n.toLocaleString()} ${w}${n === 1 ? "" : "s"}`;
 const store = {
-  get(k, d) { try { const v = localStorage.getItem("dataset-studio:" + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem("dataset-studio:" + k, JSON.stringify(v)); } catch { /* storage unavailable */ } },
+  get(k, d) { try { const v = localStorage.getItem("dataset-studio:" + k); return v === null ? d : J.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("dataset-studio:" + k, J.stringify(v)); } catch { /* storage unavailable */ } },
 };
 
 async function api(path, body) {
-  const opt = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  if (body && path === "/api/update") body = {...body, expected_revision: S.byId.get(body.id)?.revision};
+  if (body && ["/api/bulk", "/api/revert"].includes(path)) body = {...body, expected_revisions: revisions(body.ids)};
+  if (body && path === "/api/update-many") body = {...body, patches: body.patches.map(p => ({...p, expected_revision: S.byId.get(p.id)?.revision}))};
+  const opt = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: J.stringify(body) };
   const res = await fetch(path, opt);
   // The session ended (signed out elsewhere, expired, or the account changed).
   if (res.status === 401) { location.replace("/login.html"); throw new Error("Signed out"); }
-  const data = await res.json().catch(() => ({ error: res.statusText }));
+  const data = await res.text().then(J.parse).catch(() => ({ error: res.statusText }));
   if (!res.ok) throw new Error(data.error || res.statusText);
   return data;
 }
@@ -49,8 +58,8 @@ const hideTip = () => (tip.hidden = true);
 
 // ------------------------------------------------------------------ constants
 // In the order GraphMine runs them in a chat; labels follow the agent's own progress messages.
-const STAGES = ["RouteDecision", "PlanDraft", "GroundedNarrative", "TurnDecision"];
-const STAGE_LABEL = { RouteDecision: "Understanding", PlanDraft: "Planning", GroundedNarrative: "Analyst answer", TurnDecision: "Follow-up check" };
+const STAGES = ["AnalyticsRoute", "AnalyticsPlan", "AnalyticsPlanNormalized", "AnalyticsAnswer", "RouteDecision", "PlanDraft", "GroundedNarrative", "TurnDecision"];
+const STAGE_LABEL = { AnalyticsRoute: "Analytics routing", AnalyticsPlan: "Analytics planning", AnalyticsPlanNormalized: "Reviewed workflow", AnalyticsAnswer: "Analytics answer", RouteDecision: "Understanding", PlanDraft: "Planning", GroundedNarrative: "Analyst answer", TurnDecision: "Follow-up check" };
 const STAGE_HELP = {
   RouteDecision: "RouteDecision (planner): which problem/operation answers the question, or what to ask the user",
   PlanDraft: "PlanDraft (planner): concrete plan with parameters, outputs and backend",
@@ -109,6 +118,9 @@ const opsOfProblem = (pid) => S.problems.get(pid)?.operation_ids || [];
 const backendsOf = (op) => S.operations.get(op)?.backends || [];
 function outcome(e) {
   const o = e.output || {};
+  if (e.schema === "AnalyticsRoute") return o.intent || "unknown";
+  if (e.schema === "AnalyticsAnswer") return "answer from saved facts";
+  if (["AnalyticsPlan", "AnalyticsPlanNormalized"].includes(e.schema)) return o.status || "unknown";
   if (e.schema === "PlanDraft") return o.status || "unknown";
   if (e.schema === "TurnDecision") return o.action || "unknown";
   if (e.schema === "RouteDecision") {
@@ -133,9 +145,9 @@ function prepare(e) {
   e._clarify = isClarify(e);
   e._outcome = outcome(e);
   e._issue = issueLevel(e);
-  e._outLen = JSON.stringify(e.output ?? "").length;
+  e._outLen = J.stringify(e.output ?? "").length;
   e._blob = [
-    e.id, ...e.prompts.map((p) => p.value), ...e.turns.map((t) => t.text), JSON.stringify(e.output ?? ""),
+    e.id, ...e.prompts.map((p) => p.value), ...e.turns.map((t) => t.text), J.stringify(e.output ?? ""),
     e.notes, ...e.labels, e.tags.problem_id, problemName(e.tags.problem_id), e.tags.operation_id, e.tags.backend, e.lineage,
   ].join("\n").toLowerCase();
   return e;
@@ -153,7 +165,8 @@ function prepare(e) {
 //   4 (branches) other first requests to the analyst
 //   5 (branches) follow-up messages: follow-up check → understanding → planning → answer
 // Rows remain separate training examples; this is a view.
-const STEP_STAGE = { TurnDecision: 0, RouteDecision: 1, PlanDraft: 2, GroundedNarrative: 3 };
+const STEP_STAGE = { TurnDecision: 0, RouteDecision: 1, PlanDraft: 2, GroundedNarrative: 3,
+  AnalyticsRoute: 1, AnalyticsPlan: 2, AnalyticsAnswer: 3 };
 const PHASE_SECTION = ["main", "main", "recovery", "main", "analyst", "followup", "other"];
 const isRecovery = (e) => e.variant === "recovery" || /-recovery-/.test(e.id);
 const isCustomChart = (e) => e.variant === "custom_chart" || /-custom-chart\b/.test(e.id);
@@ -175,6 +188,8 @@ function stepPhase(e) {
   if (isClarifyReply(e)) return 1;
   if (e.schema === "RouteDecision" || e.schema === "PlanDraft") return 0;
   if (e.schema === "GroundedNarrative") return isCustomChart(e) ? 4 : 3;
+  // A question captured in GraphMine: routing → planning → GraphMine runs → answer.
+  if (e.capture) return e.schema === "AnalyticsAnswer" ? 3 : 0;
   return 6;
 }
 
@@ -184,11 +199,22 @@ function stepPhase(e) {
 const PROGRESS = {
   needs_understanding: "Needs understanding", needs_planning: "Needs planning", ready_to_run: "Ready to run",
   needs_answer: "Needs analyst answer", waiting_reply: "Waiting for the user's reply", refused: "Refused",
-  complete: "Complete",
+  recorded: "Execution recorded", needs_execution: "Needs fresh execution", complete: "Complete",
 };
 const PROGRESS_ORDER = Object.keys(PROGRESS);
 const asksForInfo = (o) => (o?.ambiguity || []).length > 0 || (o?.missing_information || []).length > 0;
+// Where a captured question ended in GraphMine; nothing more can be added to it here.
+function captureProgress(c) {
+  if (c.live.some((e) => e.schema === "AnalyticsAnswer")) return "complete";
+  const route = c.live.find((e) => e.schema === "AnalyticsRoute")?.output || {};
+  const plan = c.live.find((e) => e.schema === "AnalyticsPlan")?.output || {};
+  if (route.intent === "needs_information" || plan.status === "needs_information") return "waiting_reply";
+  if (route.intent === "unsupported" || plan.status === "unsupported") return "refused";
+  return "recorded";
+}
 function progressOf(c) {
+  if (c.live.some((e) => e.capture)) return captureProgress(c);
+  if (c.live.some(e => e.analytics)) return c.live.some(e => e.issues.some(i => i.field === "evidence")) ? "needs_execution" : "recorded";
   const has = (schema) => S.dataset?.layout === "studio" || S.stagesPresent.has(schema);
   const live = c.live.filter((e) => e._section === "main" || e._section === "analyst");
   if (live.some((e) => e.schema === "GroundedNarrative")) return "complete";
@@ -275,6 +301,8 @@ const currentConv = () => S.convs.get(S.convKey);
 const filtersActive = () => !!S.query.trim() || Object.values(S.facetSel).some((s) => s?.size);
 
 // ------------------------------------------------------------------ facets & search
+const FEEDBACK_ORDER = ["correction", "low rating", "rating", "feedback", "note", "no feedback"];
+const FEEDBACK_LABEL = { correction: "Correction", rating: "Rating", feedback: "Feedback", note: "Note" };
 const FACETS = [
   { key: "adapter", label: "Model", get: (e) => [e.adapter], fmt: (v) => (v === "planner" ? "Planner" : v === "analyst" ? "Analyst" : v) },
   { key: "split", label: "Split", get: (e) => [e.split] },
@@ -292,6 +320,8 @@ const FACETS = [
   { key: "tagsrc", label: "Tag source", get: (e) => [Object.keys(e.manual_tags || {}).length ? "manual tags" : "auto tags"] },
   { key: "variant", label: "Variant", get: (e) => [e.variant || NONE], fmt: (v) => (v === NONE ? "—" : v.replace(/_/g, " ")) },
   { key: "lineage", label: "Graph source", get: (e) => [e.lineage || NONE], fmt: (v) => (v === NONE ? "—" : v), search: true },
+  // Only rows captured in GraphMine have one, so other datasets hide this facet.
+  { key: "feedback", label: "User feedback", get: (e) => (e.capture ? feedbackValues(e.capture.feedback) : []), order: FEEDBACK_ORDER },
 ];
 const FACET_BY_KEY = Object.fromEntries(FACETS.map((f) => [f.key, f]));
 const FIELD_ALIASES = {
@@ -621,7 +651,7 @@ function renderStatus() {
     `<span title="${esc(d.description || "")}"><b>${esc(d.name || d.path || "")}</b> <span class="muted">${esc(d.path || "")} (${esc(d.layout || "")})</span></span>`,
     `<span>${new Set(ex.map((e) => e.group)).size.toLocaleString()} conversations · ${ex.length.toLocaleString()} training rows (${train.toLocaleString()} train · ${(ex.length - train).toLocaleString()} validation)</span>`,
     `<span>${new Set(ex.map((e) => norm(e._q))).size.toLocaleString()} distinct questions</span>`,
-    `<span title="${esc(S.meta.strict_schema_error || "")}">Schema check: <b>${S.meta.strict_schema ? "strict (agent Pydantic models)" : "structural only"}</b></span>`,
+    `<span title="${esc(S.meta.strict_schema_error || "")}">Schema check: <b>${S.meta.strict_schema ? "strict (agent schemas)" : "agent unavailable; training export blocked"}</b></span>`,
     `<span>${changes ? `<b>${changes}</b> pending change${changes > 1 ? "s" : ""} (saved; written on export)` : "No changes"}</span>`,
   ].join('<span class="sep">|</span>');
   const pill = $("#changes-count");
@@ -666,7 +696,7 @@ function renderDetail() {
         ${inConv ? '<button class="btn small" data-act="to-conv" title="Back to the whole conversation (Esc)">← Conversation</button>'
           : '<button class="icon-btn only-mobile" data-act="back" aria-label="Back to list">←</button>'}
         ${stageChip(e.schema)}<span class="chip split ${e.split}">${esc(e.split)}</span>
-        <span class="chip">${e.adapter === "analyst" ? "Analyst" : "Planner"}</span>
+        <span class="chip">${e.adapter === "workflow" ? "Workflow" : e.adapter === "analyst" ? "Analyst" : "Planner"}</span>
         ${e.variant && !HIDDEN_VARIANTS.includes(e.variant) ? `<span class="chip" title="Variant">${esc(String(e.variant).replace(/_/g, " "))}</span>` : ""}${kindChip}
         <div class="detail-actions">
           <span class="muted" style="font-size:12px">${posText}</span>
@@ -706,7 +736,7 @@ function problemOptions(selected, auto) {
     cats.get(p.category).push(p);
   }
   let html = `<option value="">${auto ? `Auto: ${esc(problemName(auto))}` : "Auto: (none)"}</option>`;
-  for (const [cat, ps] of [...cats.entries()].sort()) {
+  for (const [cat, ps] of [...cats.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     html += `<optgroup label="${esc(categoryLabel(cat))}">` + ps.sort((a, b) => a.name.localeCompare(b.name)).map((p) =>
       `<option value="${esc(p.id)}"${p.id === selected ? " selected" : ""}>${esc(p.name)}${p.status !== "validated" ? " — no validated backend" : ""}</option>`).join("") + "</optgroup>";
   }
@@ -797,7 +827,7 @@ function conversationHtml(e) {
 
   return `
     ${issuesHtml(e.issues)}
-    ${tagCardHtml(e)}
+    ${evidenceHtml(e)}${tagCardHtml(e)}
     <div class="card"><div class="card-head">Conversation
         <span class="muted" style="font-weight:400">${e.turns.length ? `${e.turns.length} earlier turn${e.turns.length > 1 ? "s" : ""} (context, not trained; other steps share them, so edit them in the conversation view)` : "single turn"}</span></div>
       <div class="card-body thread">
@@ -806,7 +836,7 @@ function conversationHtml(e) {
           <div class="bubble-head">User · final message<span class="spacer"></span>${editingPrompts ? "" : '<button class="link-btn" data-act="edit-prompts">Edit (q)</button>'}</div>
           ${promptBody}</div></div>
         <div class="turn"><div class="avatar assistant">Q</div><div class="bubble target">
-          <div class="bubble-head"><span class="target-tag">TRAINING TARGET</span> Expected Qwen output · ${esc(e.schema || "")}
+          <div class="bubble-head"><span class="target-tag">TRAINING TARGET</span> Expected output · ${esc(e.schema || "")}
             <span class="spacer"></span>
             ${editingOutput ? "" : `<span class="seg"><button data-omode="tree" class="${S.outputMode === "tree" ? "on" : ""}">Tree</button><button data-omode="pretty" class="${S.outputMode === "pretty" ? "on" : ""}">JSON</button></span>
             <button class="link-btn" data-act="copy-output">copy</button><button class="btn small" data-act="edit-output">Edit (e)</button>`}</div>
@@ -816,11 +846,40 @@ function conversationHtml(e) {
 }
 
 // ---------- conversation view (all steps of one case in one thread)
+// ------------------------------------------------------------------ GraphMine conversations
+function feedbackValues(items) {
+  if (!items?.length) return ["no feedback"];
+  return [...new Set(items.map((f) => (f.category === "rating" && f.rating <= 2 ? "low rating" : f.category || "feedback")))];
+}
+// What the person asked, saw and said in GraphMine; the steps below are the model's part.
+function captureCardHtml(c) {
+  const cap = c.live.find((e) => e.capture)?.capture || {};
+  const asked = cap.asked_at ? new Date(cap.asked_at).toLocaleString() : "";
+  const ops = cap.workflow?.operations?.length ? cap.workflow.operations.join(" → ") : "";
+  const facts = (cap.answer?.facts || []).map((f) => `<li>${esc(f.statement || f.text || f.id)}</li>`).join("");
+  const feedback = (cap.feedback || []).map((f) => `<li class="feedback-item">
+      <span class="chip">${esc(FEEDBACK_LABEL[f.category] || f.category || "Feedback")}</span>
+      ${f.rating ? `<span class="stars" title="${f.rating} of 5">${"★".repeat(f.rating)}${"☆".repeat(5 - f.rating)}</span>` : ""}
+      <span>${esc(f.what_went_wrong)}</span>
+      ${f.expected_behavior ? `<div class="expected"><b>Expected:</b> ${esc(f.expected_behavior)}</div>` : ""}</li>`).join("");
+  return `<div class="card capture"><div class="card-head">From GraphMine <span class="muted" style="font-weight:400">· asked ${esc(asked)}${cap.conversation_deleted ? " · the conversation was later deleted in GraphMine" : ""}</span></div>
+    <div class="card-body">
+      <div class="replay-line">${cap.dataset?.name ? `<span class="tag-pill" title="Data the question ran on">⌗ ${esc(cap.dataset.name)}</span>` : ""}
+        ${ops ? `<span class="tag-pill" title="What GraphMine computed">${esc(ops)}${cap.workflow.status ? ` · ${esc(cap.workflow.status)}` : ""}</span>` : ""}</div>
+      ${cap.answer?.lead || facts ? `<div class="capture-answer"><div class="muted">The answer they saw</div>${cap.answer?.lead ? `<p>${esc(cap.answer.lead)}</p>` : ""}${facts ? `<ul>${facts}</ul>` : ""}</div>` : ""}
+      <div class="muted">Their feedback</div>
+      ${feedback ? `<ul class="feedback-list">${feedback}</ul>` : '<p class="muted" style="margin:4px 0">No feedback on this question.</p>'}
+      <p class="muted" style="margin:8px 0 0">Correct a step with <b>Edit output</b>: it is saved as that step's training target. The model input stays exactly what GraphMine sent, so editing a step holds back the steps after it, whose input came from it.</p>
+    </div></div>`;
+}
+
 function renderConvDetail(host) {
   const c = currentConv();
   const steps = convSteps(c);
   const pos = S.convOrder.indexOf(c.key);
   const teachers = [...new Set(steps.map((e) => e.teacher).filter(Boolean))];
+  // A question captured in GraphMine keeps exactly the steps GraphMine ran.
+  const captured = c.live.some((e) => e.capture);
   // Only steps written here can be discarded for good; anything else is soft-deleted.
   const allAdded = c.live.length && c.live.every((e) => e.kind === "new" || e.kind === "clone");
   const removeBtn = !c.live.length ? '<button class="btn small" data-act="conv-restore">Restore conversation</button>'
@@ -838,8 +897,8 @@ function renderConvDetail(host) {
           <span class="muted" style="font-size:12px">${pos >= 0 ? `${pos + 1} / ${S.convOrder.length}` : "hidden by filters"}</span>
           <button class="icon-btn" data-act="prev" title="Previous conversation (k)">↑</button>
           <button class="icon-btn" data-act="next" title="Next conversation (j)">↓</button>
-          <button class="btn small" data-act="duplicate" title="Copy every step into a new conversation, keeping their model context (c)">Duplicate</button>
-          <button class="btn small" data-act="add-to-conv" title="Add missing steps or follow-up messages">+ Add steps</button>
+          ${captured ? "" : `<button class="btn small" data-act="duplicate" title="Copy every step into a new conversation, keeping their model context (c)">Duplicate</button>
+          <button class="btn small" data-act="add-to-conv" title="Add missing steps or follow-up messages">+ Add steps</button>`}
           ${removeBtn}
         </div>
       </div>
@@ -855,6 +914,8 @@ function renderConvDetail(host) {
 // The replay card: which graph and domain the agent runs on, whether the model
 // inputs are current, and what the last build reported.
 function replayCardHtml(c) {
+  if (c.live.some((e) => e.capture)) return captureCardHtml(c);
+  if (c.live.some(e => e.analytics)) return '<div class="callout">Imported analytics workflows retain their original result evidence. Execute changed plans in the analytics workspace and import the newly reviewed version.</div>';
   const engine = S.meta?.engine || {};
   const sum = S.conversations[c.key];
   if (!engine.available) {
@@ -934,6 +995,18 @@ function convTagCardHtml(c, steps) {
     </div></div>`;
 }
 
+function evidenceHtml(e) {
+  const source = e.analytics?.example;
+  const proof = e.review_proof;
+  if (!source && !proof) return "";
+  return `<div class="card evidence-card"><div class="card-head">Review &amp; evidence</div><div class="card-body">
+    <p>Revision ${esc(e.revision)} · ${proof ? `Reviewed revision ${esc(proof.revision)} by ${esc(proof.by || "unknown")}` : "Awaiting local review"}</p>
+    ${source ? `<p>Source review: ${esc(source.source_review.authorship?.reviewer?.name || "unknown reviewer")} · workflow revision ${esc(source.evidence.expected_revision)}</p>
+      <p>Imported by ${esc(e.created_by || "unknown")} · normalized workflow input derived from the reviewed plan.</p>
+      <details><summary>Execution fingerprints</summary><dl class="kv"><dt>Workflow</dt><dd><code>${esc(source.evidence.workflow_hash)}</code></dd><dt>Result</dt><dd><code>${esc(source.evidence.result_sha256)}</code></dd><dt>Implementation</dt><dd><code>${esc(source.evidence.implementation_sha256)}</code></dd></dl></details>` : ""}
+  </div></div>`;
+}
+
 function reviewMini(e) {
   return `<span class="review-mini" role="group" aria-label="Review this step">${REVIEW_ORDER.map((r, i) =>
     `<button data-sreview="${r}" class="${e.review === r ? "on" : ""}" title="${REVIEW[r].label} (${i + 1} when focused)" aria-pressed="${e.review === r}">${reviewIcon(r)}</button>`).join("")}</span>`;
@@ -971,7 +1044,7 @@ function stepHtml(e, n) {
     <div class="avatar assistant">Q</div>
     <div class="bubble target">
       <div class="bubble-head"><span class="step-no" title="Step ${n}">${n}</span>${stageChip(e.schema)}
-        <span class="muted">${e.adapter === "analyst" ? "analyst" : "planner"} model</span>${variant}${kindChip}
+        <span class="muted">${e.adapter === "workflow" ? "normalized workflow" : e.adapter === "analyst" ? "analyst model" : "planner model"}</span>${variant}${kindChip}
         <span class="tag-pill" title="Expected outcome">${esc(e._outcome.replace(/_/g, " "))}</span>
         <span class="spacer"></span>${issueBadge(e)}${reviewMini(e)}</div>
       ${issuesHtml(shownIssues)}
@@ -1015,6 +1088,7 @@ function contextTurnsHtml(e, c, texts) {
 }
 
 function convThreadHtml(c, steps) {
+  if (steps.some(e => e.analytics)) return '<div class="card"><div class="card-body thread">' + steps.map((e, i) => stepUserBubble(e, c, "Reviewed question") + evidenceHtml(e) + stepHtml(e, i + 1)).join("") + '</div></div>';
   const ed = S.editing;
   const editingQ = ed?.kind === "convq" && ed.key === c.key;
   const usesQ = steps.filter((e) => e.prompts.some((p) => p.value === c.question) || e.turns.some((t) => t.text === c.question)).length;
@@ -1103,6 +1177,11 @@ function derivedClarification(output) {
   return output?.explanation || "";
 }
 function nextStepHtml(c, plan, runDivider) {
+  if (c.live.some((e) => e.capture)) {
+    const end = { waiting_reply: "GraphMine asked the person for more information here; their reply, if any, is the next question.",
+      refused: "GraphMine could not compute this request, so the question ends with this step." }[c.progress];
+    return end ? `<div class="next-step done"><span class="muted">${esc(end)}</span></div>` : "";
+  }
   if (c.progress === "complete") {
     return c.live.some((e) => e._section === "followup") ? ""
       : `<div class="next-step done"><span class="muted">Complete. A follow-up message would continue it as an alternative branch.</span> <button class="btn small" data-act="add-to-conv">+ Add follow-up</button></div>`;
@@ -1129,7 +1208,7 @@ function nextStepHtml(c, plan, runDivider) {
       : input ? "The model input is below; write the expected output against it." : sum?.replayable ? "Rebuild the conversation to see this step's model input." : "";
   return `${schema === "GroundedNarrative" ? runDivider("") : ""}<div class="next-step" id="next-step">
     <div class="ns-head"><b>Next: ${reply ? "the user's reply" : esc(STAGE_LABEL[schema])}</b> ${stageChip(schema)}<span class="muted">${intro}</span></div>
-    ${facts.length ? `<details class="ns-facts" open><summary>${plural(facts.length, "computed fact")}</summary><ul class="fact-list">${facts.map((f) => `<li><code>${esc(f.id)}</code><span>${esc(f.statement || JSON.stringify(f.value))}</span></li>`).join("")}</ul></details>` : ""}
+    ${facts.length ? `<details class="ns-facts" open><summary>${plural(facts.length, "computed fact")}</summary><ul class="fact-list">${facts.map((f) => `<li><code>${esc(f.id)}</code><span>${esc(f.statement || J.stringify(f.value))}</span></li>`).join("")}</ul></details>` : ""}
     ${input ? `<details class="ns-input"><summary>Model input (${(input.messages.at(-1).content.length).toLocaleString()} chars)</summary><div class="json-tree" data-next-input></div></details>` : ""}
     ${ed ? `${reply ? `<label class="block">User · reply<textarea id="next-reply" rows="2">${esc(ed.reply || "")}</textarea></label>` : ""}
       <div class="label-row"><span>${esc(STAGE_LABEL[schema])} · expected output (JSON)</span><button class="link-btn" data-act="next-template">Load template</button></div>
@@ -1147,7 +1226,7 @@ function initNextEditor() {
   const schema = NEXT_SCHEMA[c?.progress];
   const input = (ctx?.next || []).find((n) => n.branch === "main" && n.schema === schema && n.messages);
   if (host && input) host.closest("details").addEventListener("toggle", () => {
-    if (!host.innerHTML) { try { host.innerHTML = jsonTree(JSON.parse(input.messages.at(-1).content)); } catch { host.textContent = input.messages.at(-1).content; } }
+    if (!host.innerHTML) { try { host.innerHTML = jsonTree(J.parse(input.messages.at(-1).content)); } catch { host.textContent = input.messages.at(-1).content; } }
   }, { once: true });
   const ta = $("#next-editor");
   if (!ta) return;
@@ -1155,7 +1234,7 @@ function initNextEditor() {
     const ed = S.editing;
     if (ed?.kind !== "next") return;
     let output;
-    try { output = JSON.parse(ta.value); } catch (err) { $("#next-state").innerHTML = `<span class="ic critical">✕</span> Invalid JSON: ${esc(err.message)}`; return; }
+    try { output = J.parse(ta.value); } catch (err) { $("#next-state").innerHTML = `<span class="ic critical">✕</span> Invalid JSON: ${esc(err.message)}`; return; }
     try {
       const { issues } = await api("/api/validate", { schema: ed.schema, output, prompts: [{ value: c.question }], tags: c.tagged.tags });
       const shown = issues.filter((i) => i.field !== "context" && i.field !== "split" && i.field !== "prompts");
@@ -1173,7 +1252,7 @@ async function saveNextStep() {
   const ed = S.editing;
   const c = S.convs.get(ed.key);
   let output;
-  try { output = JSON.parse($("#next-editor").value); } catch { return toast("The output is not valid JSON", true); }
+  try { output = J.parse($("#next-editor").value); } catch { return toast("The output is not valid JSON", true); }
   if (ed.errors && !confirm("This output fails validation. Save it anyway?")) return;
   const main = c.live.filter((e) => e._section === "main");
   const replyStep = main.find((e) => e._phase === 1);
@@ -1207,13 +1286,13 @@ async function saveNextStep() {
 // JSON tree & highlighting
 function jsonLeaf(v) {
   if (v === null) return '<span class="jz">null</span>';
-  if (typeof v === "string") return `<span class="js">${esc(JSON.stringify(v))}</span>`;
+  if (typeof v === "string") return `<span class="js">${esc(J.stringify(v))}</span>`;
   if (typeof v === "number") return `<span class="jn">${v}</span>`;
   if (typeof v === "boolean") return `<span class="jb">${v}</span>`;
   return esc(String(v));
 }
 function jsonTree(v, key = null, depth = 0) {
-  const k = key !== null ? `<span class="jk">${esc(JSON.stringify(key))}</span><span class="jp">: </span>` : "";
+  const k = key !== null ? `<span class="jk">${esc(J.stringify(key))}</span><span class="jp">: </span>` : "";
   if (v && typeof v === "object") {
     const isArr = Array.isArray(v);
     const entries = isArr ? v.map((x, i) => [i, x]) : Object.entries(v);
@@ -1226,7 +1305,7 @@ function jsonTree(v, key = null, depth = 0) {
   return `<div class="jt-leaf">${k}${jsonLeaf(v)}</div>`;
 }
 function highlightJson(v) {
-  const s = esc(JSON.stringify(v, null, 2));
+  const s = esc(J.stringify(v, null, 2));
   return s.replace(/(&quot;(?:\\.|[^&\\]|&(?!quot;))*?&quot;)(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g, (m, str, colon, bool) => {
     if (str) return colon ? `<span class="jk">${str}</span>${colon}` : `<span class="js">${str}</span>`;
     if (bool) return `<span class="jb">${m}</span>`;
@@ -1248,7 +1327,7 @@ async function loadContext(e, body) {
 function kvHtml(pairs) {
   const rows = pairs.filter(([, v]) => v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && !v.length) && !(typeof v === "object" && !Array.isArray(v) && !Object.keys(v).length));
   if (!rows.length) return "";
-  return `<dl class="kv">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${typeof v === "object" ? `<code>${esc(JSON.stringify(v))}</code>` : esc(String(v))}</dd>`).join("")}</dl>`;
+  return `<dl class="kv">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${typeof v === "object" ? `<code>${esc(J.stringify(v))}</code>` : esc(String(v))}</dd>`).join("")}</dl>`;
 }
 function contextHtml(ctx, e) {
   if (!ctx.available) {
@@ -1281,10 +1360,10 @@ function contextHtml(ctx, e) {
   if (kv1 || kv2) parts.push(`<div class="card"><div class="card-head">Planner inputs</div><div class="card-body">${kv1}${kv2 ? `<div style="height:8px"></div>${kv2}` : ""}</div></div>`);
   const ans = p.answer;
   if (ans) {
-    const facts = (ans.facts || []).map((f) => `<li><code>${esc(f.id || "")}</code><span>${esc(f.statement || JSON.stringify(f))}</span></li>`).join("");
+    const facts = (ans.facts || []).map((f) => `<li><code>${esc(f.id || "")}</code><span>${esc(f.statement || J.stringify(f))}</span></li>`).join("");
     parts.push(`<div class="card"><div class="card-head">Computed facts the analyst may cite <span class="muted" style="font-weight:400">${(ans.facts || []).length}</span></div>
       <div class="card-body"><ul class="fact-list">${facts || "<li>—</li>"}</ul>
-      ${(ans.limitations || []).length ? `<div class="prompt-label" style="margin-top:10px">Limitations</div><ul>${ans.limitations.map((l) => `<li>${esc(typeof l === "string" ? l : JSON.stringify(l))}</li>`).join("")}</ul>` : ""}</div></div>`);
+      ${(ans.limitations || []).length ? `<div class="prompt-label" style="margin-top:10px">Limitations</div><ul>${ans.limitations.map((l) => `<li>${esc(typeof l === "string" ? l : J.stringify(l))}</li>`).join("")}</ul>` : ""}</div></div>`);
     const ds = p.analysis_context?.datasets || {};
     if (Object.keys(ds).length) parts.push(`<div class="card"><div class="card-head">Chart datasets</div><div class="card-body">${kvHtml(Object.entries(ds).map(([k, v]) => [k, Object.keys(v.columns || {}).join(", ")]))}</div></div>`);
   }
@@ -1339,7 +1418,7 @@ async function loadDiff(e, body) {
     const tb = original.turns.map((t) => `${t.role}${t.status ? ` [${t.status}]` : ""}: ${t.text}`).join("\n");
     const ta = e.turns.map((t) => `${t.role}${t.status ? ` [${t.status}]` : ""}: ${t.text}`).join("\n");
     if (tb !== ta) parts.push(`<div class="card"><div class="card-head">Earlier turns</div><div class="card-body">${diffHtml(tb, ta)}</div></div>`);
-    if (JSON.stringify(original.output) !== JSON.stringify(e.output)) parts.push(`<div class="card"><div class="card-head">Expected output</div><div class="card-body">${diffHtml(JSON.stringify(original.output, null, 2), JSON.stringify(e.output, null, 2))}</div></div>`);
+    if (J.stringify(original.output) !== J.stringify(e.output)) parts.push(`<div class="card"><div class="card-head">Expected output</div><div class="card-body">${diffHtml(J.stringify(original.output, null, 2), J.stringify(e.output, null, 2))}</div></div>`);
     if (original.split !== e.split) parts.push(`<div class="card"><div class="card-head">Split</div><div class="card-body">${esc(original.split)} → <b>${esc(e.split)}</b></div></div>`);
     body.innerHTML = parts.join("") || '<div class="muted">Content is identical to the original; only tags, review, labels or notes changed.</div>';
   } catch (err) { fail(err); }
@@ -1372,7 +1451,7 @@ function startEdit(kind, id = S.currentId, extra = null) {
   const same = S.editing && S.editing.kind === kind && (kind === "convq" || kind === "ctx" ? S.editing.key === e.group && S.editing.old === extra : S.editing.id === id);
   if (S.editing && !same && !confirm("Discard unsaved edits?")) return;
   if (S.tab !== "conversation") S.tab = "conversation";
-  if (kind === "output") S.editing = { kind, id, text: JSON.stringify(e.output, null, 2) };
+  if (kind === "output") S.editing = { kind, id, text: J.stringify(e.output, null, 2) };
   if (kind === "prompts") S.editing = { kind, id, draft: Object.fromEntries(e.prompts.map((p) => [p.path, p.value])) };
   if (kind === "ctx") S.editing = { kind, key: e.group, old: extra, text: extra };
   if (kind === "convq") S.editing = { kind, key: e.group, text: S.convs.get(e.group).question };
@@ -1424,7 +1503,7 @@ function initOutputEditor() {
   const onInput = () => {
     S.editing.text = ta.value;
     try {
-      const obj = JSON.parse(ta.value);
+      const obj = J.parse(ta.value);
       S.editing.parseError = null;
       S.editing.issues = null;
       validateDraft(e.id, obj, e.schema);
@@ -1450,7 +1529,7 @@ function initOutputEditor() {
 async function saveOutput() {
   const ed = S.editing;
   let obj;
-  try { obj = JSON.parse(ed.text); } catch { return toast("Fix the JSON first", true); }
+  try { obj = J.parse(ed.text); } catch { return toast("Fix the JSON first", true); }
   if (ed.issues?.some((i) => i.level === "error") && !confirm("This output fails validation and would train Qwen on an invalid target. Save anyway?")) return;
   const before = S.byId.get(ed.id);
   const oldAsk = before?.schema === "RouteDecision" && before._phase === 0 && asksForInfo(before.output) ? derivedClarification(before.output) : null;
@@ -1819,7 +1898,7 @@ function renderCoverage() {
   }
   const extra = [...new Set(base.map((e) => e.tags.problem_id || NONE))].filter((p) => !S.problems.has(p));
   let rows = "";
-  for (const [cat, ps] of [...cats.entries()].sort()) {
+  for (const [cat, ps] of [...cats.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     rows += `<tr class="cat"><th colspan="${stagesPresent.length + 2}">${esc(categoryLabel(cat))}</th></tr>`;
     for (const p of ps.sort((a, b) => a.name.localeCompare(b.name))) rows += heatRow(p.id, p.name, p.status !== "validated");
   }
@@ -2008,7 +2087,7 @@ async function loadNextTemplate() {
   const c = S.convs.get(ed.key);
   try {
     const t = await findTemplate(ed.schema, ed.schema === "RouteDecision" ? "supported" : ed.schema === "PlanDraft" ? "ready" : "any", c.tagged.tags.operation_id);
-    $("#next-editor").value = ed.text = JSON.stringify(t.output, null, 2);
+    $("#next-editor").value = ed.text = J.stringify(t.output, null, 2);
     $("#next-editor").dispatchEvent(new Event("input"));
     toast(`Template copied from ${t.source}`);
   } catch { toast(`No dataset has a ${STAGE_LABEL[ed.schema]} example to copy from`, true); }
@@ -2074,7 +2153,7 @@ function renderBuilder() {
     <div class="cb-body"><div class="cb-title">${stageChip(bSchema(id))}${title ? `<span class="muted">${esc(title)}</span>` : ""}<span class="spacer"></span>
         ${extra}<button type="button" class="link-btn" data-btpl="${id}">Load template</button></div>
       ${hint ? `<div class="cb-hint">${esc(hint)}</div>` : ""}
-      <textarea class="mono" rows="5" spellcheck="false" data-bjson="${id}" placeholder="Expected Qwen output (JSON). Leave empty to skip this step.">${esc(bGet(id))}</textarea>
+      <textarea class="mono" rows="5" spellcheck="false" data-bjson="${id}" placeholder="Expected output (JSON). Leave empty to skip this step.">${esc(bGet(id))}</textarea>
       <div data-bissues="${id}">${issuesHtml(B.issues[id])}</div></div></div>`;
   const tagSelect = (key, label, html) => `<label>${label}<select data-btag="${key}">${html}</select></label>`;
   const parts = [`<div class="callout">Fill in the steps in the order the chat happens; a Qwen step left empty is skipped.
@@ -2101,7 +2180,7 @@ function renderBuilder() {
     if (B.clarify) {
       t.push(json("askRoute", "asks for more information", "supported: false, with the open question in ambiguity or missing_information."));
       let shown = "";
-      try { shown = B.askRoute.trim() ? derivedClarification(JSON.parse(B.askRoute)) : ""; } catch { shown = ""; }
+      try { shown = B.askRoute.trim() ? derivedClarification(J.parse(B.askRoute)) : ""; } catch { shown = ""; }
       t.push(`<div class="cb-step"><div class="avatar assistant">G</div><div class="cb-body"><div class="cb-title">GraphMine · clarification question shown to the user <span class="muted">(derived from the Understanding output above)</span></div>
         <div class="cb-quote">${shown ? esc(shown) : '<span class="muted">Appears once the Understanding output asks something.</span>'}</div></div></div>`);
       t.push(text("reply", "U", "User · reply to the clarification question", "The clarified request"));
@@ -2110,7 +2189,7 @@ function renderBuilder() {
   const canPreview = !conv && engineOn() && B.graph?.pick && !B.clarify;
   if (B.show.route) {
     t.push(json("route", "", "", canPreview ? '<button type="button" class="link-btn" data-bact="preview">Show model input</button>' : ""));
-    if (B.preview) t.push(`<details class="ns-input cb-preview" open><summary>Understanding · model input the agent sends for this question</summary><div class="json-tree">${jsonTree(JSON.parse(B.preview.at(-1).content))}</div></details>`);
+    if (B.preview) t.push(`<details class="ns-input cb-preview" open><summary>Understanding · model input the agent sends for this question</summary><div class="json-tree">${jsonTree(J.parse(B.preview.at(-1).content))}</div></details>`);
   }
   if (B.show.plan) t.push(json("plan"));
   if (B.show.answer) {
@@ -2145,7 +2224,7 @@ function builderSteps() {
     const raw = bGet(id).trim();
     if (!raw) return undefined;
     filled.push(id);
-    try { return JSON.parse(raw); } catch { problems.push(`${STAGE_LABEL[bSchema(id)]}: the output is not valid JSON.`); return undefined; }
+    try { return J.parse(raw); } catch { problems.push(`${STAGE_LABEL[bSchema(id)]}: the output is not valid JSON.`); return undefined; }
   };
   const planner = (schema, message, turns, output) => ({ adapter: "planner", schema, split: B.split, tags, turns, output,
     prompt_fields: [{ path: "message", label: "User question", value: message }] });
@@ -2210,7 +2289,7 @@ async function validateBuilderField(id) {
   let issues = [];
   if (raw) {
     let output;
-    try { output = JSON.parse(raw); } catch (err) { issues = [{ level: "error", message: "Invalid JSON: " + err.message }]; }
+    try { output = J.parse(raw); } catch (err) { issues = [{ level: "error", message: "Invalid JSON: " + err.message }]; }
     if (!issues.length) {
       try {
         const r = await api("/api/validate", { schema: bSchema(id), output, prompts: [{ value: B.question || B.mainQ || "x" }], tags: B.tags });
@@ -2231,7 +2310,7 @@ async function builderTemplate(id) {
   try {
     const t = await findTemplate(schema, WANT_FOR[id.replace(FU_ID, "$2")] || "any", B.tags.operation_id);
     if (!B) return;
-    bSet(id, JSON.stringify(t.output, null, 2));
+    bSet(id, J.stringify(t.output, null, 2));
     const area = $(`[data-bjson="${id}"]`);
     if (area) area.value = bGet(id);
     bValidate(id);
@@ -2437,6 +2516,7 @@ async function usersAction(ev) {
 
 // ------------------------------------------------------------------ export dialog
 function openExport() {
+  exportRevisions = revisions(S.examples.map(e => e.id));
   const live = S.examples.filter((e) => !e.deleted);
   const c = (f) => live.filter(f).length;
   const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "").replace(/^(\d{8})(\d{4})$/, "$1-$2");
@@ -2448,7 +2528,7 @@ function openExport() {
   $("#export-summary").innerHTML = `${plural(new Set(live.map((e) => e.group)).size, "conversation")}, ${plural(live.length, "step")} (each step is its own row) · ${c((e) => e.kind === "edited")} edited · ${c((e) => e.kind === "annotated")} annotated only · ${c((e) => e.kind === "clone")} duplicated
     · ${written} written here: ${c(replayed)} with current model input (training rows), ${written - c(replayed)} without (needs-context.jsonl)
     · ${S.examples.filter((e) => e.deleted).length} deleted · ${c((e) => e.review === "approved")} approved · ${c((e) => e.review === "rejected")} rejected
-    ${c((e) => e._issue === "error") ? `<br><span class="status-badge"><span class="ic critical">✕</span>${c((e) => e._issue === "error")} examples have validation errors and would be exported as they are.</span>` : ""}`;
+    ${c((e) => e._issue === "error") ? `<br><span class="status-badge"><span class="ic critical">✕</span>${c((e) => e._issue === "error")} examples have validation errors and will be excluded from training export.</span>` : ""}`;
   $("#export-dialog").showModal();
 }
 async function submitExport(ev) {
@@ -2456,10 +2536,10 @@ async function submitExport(ev) {
   const btn = $("#export-submit");
   btn.disabled = true;
   try {
-    const r = await api("/api/export", { name: $("#export-name").value, exclude_rejected: $("#export-exclude-rejected").checked, approved_only: $("#export-approved-only").checked });
+    const r = await api("/api/export", { name: $("#export-name").value, expected_revisions: exportRevisions, exclude_rejected: $("#export-exclude-rejected").checked, approved_only: $("#export-approved-only").checked });
     const files = Object.entries(r.counts).filter(([k]) => k.startsWith("sft/")).map(([k, v]) => `${k}: ${v}`);
     if (r.counts.needs_context) files.push(`needs-context.jsonl: ${r.counts.needs_context} (written here, no current model input)`);
-    for (const [k, label] of [["skipped_rejected", "rejected, left out"], ["skipped_not_approved", "not approved, left out"], ["skipped_deleted", "deleted"]]) {
+    for (const [k, label] of [["skipped_invalid", "invalid, excluded"], ["skipped_stale_review", "stale review, excluded"], ["skipped_rejected", "rejected, left out"], ["skipped_not_approved", "not approved, left out"], ["skipped_deleted", "deleted"]]) {
       if (r.counts[k]) files.push(`${r.counts[k]} ${label}`);
     }
     $("#export-result").innerHTML = `<div class="callout"><b>Exported.</b><br><code>${esc(r.path)}</code><br>${esc(files.join(" · ") || "Nothing to write")}
@@ -2531,6 +2611,18 @@ function bind() {
   $$(".views button").forEach((b) => b.addEventListener("click", () => setView(b.dataset.view)));
   $("#add-btn").addEventListener("click", () => openAdd());
   $("#export-btn").addEventListener("click", openExport);
+  $("#import-analytics-btn").addEventListener("click", () => $("#import-analytics-file").click());
+  $("#import-analytics-file").addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      if (!window.AnalyticsWire) throw new Error("Start Studio with the current GraphMine repository to preserve exact identifiers");
+      if (file.size > 4 * 1024 * 1024) throw new Error("Studio exchange files must be at most 4 MiB");
+      const result = await api("/api/import-analytics", {content: await file.text()});
+      await loadExamples(); select(result.example.id, {rowView: true, scroll: true});
+      toast(result.reused ? "This workflow is already imported" : "Workflow imported. Review its evidence before export.");
+    } catch (error) { fail(error); } finally { event.target.value = ""; }
+  });
   $("#theme-btn").addEventListener("click", toggleTheme);
   $("#help-btn").addEventListener("click", () => $("#help-dialog").showModal());
   $("#clear-filters").addEventListener("click", clearFilters);
@@ -2637,7 +2729,7 @@ function bind() {
       switch (sact.dataset.sact) {
         case "edit": startEdit("output", id); break;
         case "edit-prompt": focusStep(id); startEdit("prompts", id); break;
-        case "copy": copyText(JSON.stringify(se.output, null, 2), "Output JSON copied"); break;
+        case "copy": copyText(J.stringify(se.output, null, 2), "Output JSON copied"); break;
         case "restore": update(id, { deleted: false }, "Step restored"); break;
         case "delete": update(id, { deleted: true }, "Step deleted (restorable until export)"); break;
         case "discard": if (confirm("Discard this step? It was written here, so this cannot be undone.")) revert([id], "Step discarded"); break;
@@ -2706,7 +2798,7 @@ function bind() {
       case "revert": if (confirm("Revert all edits to this example?")) revert([e.id], "Reverted to original"); break;
       case "discard": if (confirm("Discard this added example?")) revert([e.id], "Discarded"); break;
       case "copy-id": copyText(e.id, "ID copied"); break;
-      case "copy-output": copyText(JSON.stringify(e.output, null, 2), "Output JSON copied"); break;
+      case "copy-output": copyText(J.stringify(e.output, null, 2), "Output JSON copied"); break;
       case "reset-tags": update(e.id, { tags: { problem_id: null, operation_id: null, backend: null } }, "Tags reset to auto"); break;
       case "edit-output": startEdit("output"); break;
       case "edit-prompts": startEdit("prompts"); break;
@@ -2716,7 +2808,7 @@ function bind() {
       case "save-ctx": saveConvText(S.editing.old, $("#ctx-editor").value).catch(() => {}); break;
       case "format-json": {
         const ta = $("#output-editor");
-        try { ta.value = JSON.stringify(JSON.parse(ta.value), null, 2); ta.dispatchEvent(new Event("input")); } catch { toast("Cannot format invalid JSON", true); }
+        try { ta.value = J.stringify(J.parse(ta.value), null, 2); ta.dispatchEvent(new Event("input")); } catch { toast("Cannot format invalid JSON", true); }
         break;
       }
     }

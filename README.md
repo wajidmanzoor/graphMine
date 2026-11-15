@@ -11,9 +11,12 @@ A local web app for the GraphMine fine-tuning datasets. It does two jobs:
   real GraphMine agent, so every step you write gets the exact model input
   production would send and exports as a real training row.
 
-Planner steps are `RouteDecision` (**Understanding**), `PlanDraft`
+Legacy planner steps are `RouteDecision` (**Understanding**), `PlanDraft`
 (**Planning**) and `TurnDecision` (**Follow-up check**); analyst steps are
-`GroundedNarrative` (**Analyst answer**). The labels are the agent's own.
+`GroundedNarrative` (**Analyst answer**). Current analytics contracts are
+`AnalyticsRoute`, `AnalyticsPlan`, `AnalyticsPlanNormalized`, and
+`AnalyticsAnswer`; validation uses the selected repository's production schema
+builders with the example's operation, input and fact context.
 
 There is no build step and no CDN: a standard-library Python server and three
 static files.
@@ -28,19 +31,71 @@ cd dataset-studio
 ./run.sh --host 0.0.0.0           # reachable from other machines
 ```
 
-`run.sh` uses `../graphMine-repo/.venv/bin/python` when it exists. With that
+`run.sh` uses `../graphMine-database-cypher/.venv/bin/python` when it exists. With that
 interpreter the studio imports the agent, which it needs for two things:
 
 - **Strict validation.** Edited outputs are checked against the agent's
   Pydantic models and re-serialized exactly as training targets are. Without
-  the agent, only catalog and structural checks run.
+  the agent, browsing remains available, but unavailable or unknown schemas
+  cannot be approved or exported as training rows.
 - **Replay.** Writing conversations step by step needs the agent and the
   GraphMine binary (`library/build/graphmine`). The server prints whether
   replay is on, and the studio says so where it matters.
 
-Options: `--repo` (default `../graphMine-repo`), `--data-root` (default
+Options: `--repo` (default `../graphMine-database-cypher`), `--data-root` (default
 `<repo>/.graphmine-learning`), `--workspace` (default `./workspace`), `--host`
 (default `127.0.0.1`), `--port` (default `8877`).
+The default data root is created on first startup. An explicitly supplied
+`--data-root` must already exist.
+
+## Reviewed analytics workflow handoff
+
+1. In the analytics workspace, complete a workflow, open **Review this example**,
+   review its question, plan and result, and select **Download this reviewed
+   workflow for Dataset Studio** before saving.
+2. In Studio, open or create an authorized dataset and select **Import analytics**.
+   Choose the downloaded JSON file (at most 4 MiB). Reimporting the same exchange
+   returns its existing row.
+3. Inspect **Review & evidence**, including the source reviewer, workflow revision,
+   result hash and implementation hash. Approve the imported row locally, then
+   export a new dataset version.
+
+The handoff exports `AnalyticsPlanNormalized` rows under `sft/workflow/`. These
+contain the normalized named-step workflow and a prompt derived from the reviewed
+question and contracts. They are not a capture of the planner's original model
+request or its positional `AnalyticsPlan` response format. Keep this adapter
+separate when preparing model training. The legacy replay engine does not execute
+these rows; changed plans must be executed and reviewed in the analytics workspace.
+
+Exports preserve the full bounded result, original review, input fingerprints,
+source attribution, local author/editor, reviewed revision and content hash in
+`annotations.jsonl`, with per-file hashes in `manifest.json`. Unknown historical
+authors remain unknown. Portable hashes verify integrity; they do not authenticate
+an external file's claimed author, prove that an imported result was executed,
+or check whether the upstream review was revoked after download. Local review
+remains required. The HTTP export checks owner access, revision, review status,
+result and implementation before downloading. It never runs a model or calculation.
+
+Every example save, bulk edit, revert and export supplies the revisions shown in the UI.
+A stale request returns HTTP 409 without writing. Content edits clear approval;
+notes alone retain a matching review. Edits to analytics questions, plans or
+context also invalidate their execution evidence. Invalid rows and stale reviews
+are excluded from training export. Approved-only export is enabled by default;
+analytics rows always require a current local approval. The export dialog retains
+its opening revision snapshot, so changes from another tab require reopening it.
+
+Run the isolated integration checks (requires the current checkout's test tools
+and local Firefox/geckodriver for browser cases):
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 ../graphMine-database-cypher/.venv/bin/python -m pytest -q tests
+```
+
+These checks use temporary datasets and controlled saved evidence. They do not
+exercise native or GPU execution or call a model. `GRAPHMINE_REPO` can select an
+older checkout for legacy work; current analytics integration requires the new
+`graphmine_agent.analytics_studio` module. The shared lossless JSON browser helper
+is served from the selected repository.
 
 ## Sign-in, users and access
 
@@ -84,6 +139,44 @@ How it is kept safe:
   a reverse proxy).
 - **Leaks:** templates and the case-graph library only draw from datasets the
   person may open.
+
+## Your GraphMine conversations
+
+GraphMine saves every question its users ask: the exact messages each model
+call received, the raw response, the plan, the result, the answer and every
+note, rating or correction (`graphmine_agent/capture.py`). Point the studio at
+GraphMine's data root and each GraphMine user can review their own questions here:
+
+```bash
+GRAPHMINE_AGENT_DATA_ROOT=/data/labdata/wajid/graphmine_data/store ./run.sh
+# For the rest of the group, over the network: HTTPS is required, GraphMine's certificate works
+GRAPHMINE_AGENT_DATA_ROOT=... ./run.sh --host 0.0.0.0 --tls-certfile graphmine.crt --tls-keyfile graphmine.key
+```
+
+- **Sign in** with the GraphMine username and password. The studio checks them
+  against GraphMine's account store read-only, on every sign-in, so a changed
+  password or disabled account applies here too. A GraphMine password never
+  signs in to a studio account of the same name; a studio account is linked
+  only when both passwords match.
+- **Only you** can open **My GraphMine conversations**. There is no admin
+  override: admins cannot see, be granted or set a password for someone
+  else's captured conversations.
+- **One conversation per question**, in the order GraphMine ran it:
+  Analytics routing → Analytics planning → GraphMine runs → Analytics answer.
+  The **From GraphMine** card shows the data it ran on, what was computed, the
+  answer the person saw and their feedback. Filter by **User feedback**
+  (corrections, low ratings) to review the questions that went wrong first.
+- **Each step is one training row**: the system and user messages exactly as
+  GraphMine sent them, and the model's raw output (for plans, the positional
+  format the model emits) as the target. **Edit output** changes only the target.
+  An edit is checked against the contract GraphMine held the model to, so a
+  plan naming an unknown operation or missing argument cannot be approved.
+- **Edits flow forward.** A step's input came from the steps before it, so
+  editing an earlier step holds back the later ones from training export.
+  Delete them, or revert the edit.
+- **New questions appear** on your next request. Captures are append-only, so
+  your reviews and edits are kept; the studio copies them into its workspace
+  (`workspace/graphmine-captures/`, owner-only) and keeps edits in the journal.
 
 ## Conversations
 
@@ -260,14 +353,14 @@ move it back to restore it.
 
 | File | Contents |
 | --- | --- |
-| `sft/<planner\|analyst>/<split>.jsonl` | Standard chat `messages` rows. Unchanged rows are byte-identical to the source. Edited outputs use the canonical serialization (`model_dump_json` in strict mode), and question edits also update exact copies inside the hidden payload. Steps written here, once their conversation's build is current, are the replayed messages plus the output. |
+| `sft/<planner\|analyst\|workflow>/<split>.jsonl` | Standard chat `messages` rows. Unchanged message content is preserved. Edited legacy outputs use canonical serialization, and question edits also update exact copies inside the hidden payload. Steps written here, once their conversation's build is current, are the replayed messages plus the output. Normalized analytics workflows use the separate `workflow` adapter. |
 | `sft-index.jsonl` | Row identity, file, row number, `row_sha256`, source graph, `conversation`, `origin` (original / annotated / edited / clone / studio-replay) and the source row's hash |
-| `annotations.jsonl` | Tags, review state, labels and notes for every exported step |
+| `annotations.jsonl` | Tags, review state, labels, notes, authorship, reviewed content/revision, analytics execution evidence and prior Studio attribution retained across export/import cycles |
 | `needs-context.jsonl` | Steps written here without a current model input, with the `reason` (not built, not reached by the last build, changed after it) and their `conversation` |
 | `changes.jsonl` | The full edit journal |
 | `manifest.json` | Base dataset, options, counts, warnings, and SHA-256 plus size of every file |
 
-Options: leave out rejected steps (default) and approved-only. Deleted steps
+Options: leave out rejected steps and approved-only (both enabled by default). Deleted steps
 are never exported. The export dialog shows beforehand how many written steps
 become training rows.
 

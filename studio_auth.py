@@ -25,6 +25,8 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from studio_captures import dataset_key, key_owner
+
 ROLES = ("admin", "user")
 USERNAME = re.compile(r"[a-z0-9][a-z0-9._-]{1,31}")
 MIN_PASSWORD = 8
@@ -73,7 +75,9 @@ class Forbidden(PermissionError):
 
 
 class Auth:
-    def __init__(self, folder: Path):
+    def __init__(self, folder: Path, graphmine=None):
+        # GraphMine accounts may sign in; each sees only its own conversations.
+        self.graphmine = graphmine
         self.folder = folder
         self.users_path = folder / "users.json"
         self.sessions_path = folder / "sessions.json"
@@ -124,7 +128,13 @@ class Auth:
         user = self.users[username]
         return {"username": username, "role": user["role"], "datasets": sorted(user.get("datasets", [])),
                 "disabled": bool(user.get("disabled")), "created_at": user.get("created_at"),
-                "created_by": user.get("created_by"), "last_login": user.get("last_login")}
+                "created_by": user.get("created_by"), "last_login": user.get("last_login"),
+                "graphmine": (user.get("graphmine") or {}).get("username")}
+
+    @staticmethod
+    def _graphmine_only(user: dict) -> bool:
+        """Signs in with the GraphMine password; no studio password exists."""
+        return bool(user.get("graphmine")) and not user.get("password")
 
     def list_users(self) -> list[dict]:
         with self.lock:
@@ -159,8 +169,12 @@ class Auth:
                     raise AuthError(f"Role must be one of {', '.join(ROLES)}")
                 user["role"] = role
             if datasets is not None:
-                user["datasets"] = sorted(set(datasets))
+                user["datasets"] = sorted(k for k in set(datasets) if key_owner(k) is None)
             if password:
+                if self._graphmine_only(user):
+                    # A studio password would let someone else sign in to this
+                    # person's GraphMine conversations.
+                    raise AuthError("This account signs in with its GraphMine password; change it in GraphMine")
                 user["password"] = hash_password(self._check_password(password))
                 self._end_sessions_of(username)
             if disabled is not None:
@@ -182,6 +196,8 @@ class Auth:
 
     def change_password(self, username: str, current: str, new: str) -> None:
         with self.lock:
+            if self._graphmine_only(self.users[username]):
+                raise AuthError("This account signs in with its GraphMine password; change it in GraphMine")
             if not verify_password(current or "", self.users[username]["password"]):
                 raise AuthError("The current password is not right")
             self.users[username]["password"] = hash_password(self._check_password(new))
@@ -191,6 +207,8 @@ class Auth:
         """Give a user access to a dataset (admins already see all)."""
         with self.lock:
             user = self.users.get(username)
+            if key_owner(key) is not None:
+                return
             if user and user["role"] != "admin" and key not in user.get("datasets", []):
                 user["datasets"] = sorted(set(user.get("datasets", [])) | {key})
                 self._save_users()
@@ -214,6 +232,11 @@ class Auth:
         user = self.users.get(username)
         if not user or user.get("disabled"):
             return False
+        if key_owner(key) is not None:
+            # Captured conversations: their own account only, admins included.
+            link = user.get("graphmine") or {}
+            return (bool(link.get("id")) and dataset_key(link["id"]) == key
+                    and bool(self.graphmine) and self.graphmine.active(link["id"]))
         return user["role"] == "admin" or key in user.get("datasets", [])
 
     def visible(self, username: str, datasets: list[dict]) -> list[dict]:
@@ -233,12 +256,30 @@ class Auth:
                 wait = int(LOCK_SECONDS - (time.time() - recent[-1]))
                 raise AuthError(f"Too many wrong passwords. Try again in {wait // 60 + 1} minutes.")
             user = self.users.get(name)
-            # Verify even for unknown names so timing does not reveal which names exist.
-            ok = verify_password(password or "", user["password"] if user else _DUMMY_HASH)
-            if not user or not ok or user.get("disabled"):
+            account = None
+            if user and user.get("password"):
+                ok = verify_password(password or "", user["password"])
+                # A studio account links to the GraphMine account of the same
+                # name only when that account's password matches as well.
+                if ok and self.graphmine and not user.get("graphmine"):
+                    account = self.graphmine.verify(name, password)
+            elif self.graphmine:
+                account = self.graphmine.verify(name, password)
+                linked = (user or {}).get("graphmine") or {}
+                ok = account is not None and (user is None or linked.get("id") == account["id"])
+            else:
+                # Verify even for unknown names so timing does not reveal which names exist.
+                verify_password(password or "", _DUMMY_HASH)
+                ok = False
+            if not ok or (user and user.get("disabled")):
                 self._failures[name] = recent + [time.time()]
                 raise AuthError("Wrong username or password")
             self._failures.pop(name, None)
+            if user is None:
+                user = self.users[name] = {"role": "user", "password": None, "datasets": [],
+                                           "created_at": _iso(_now()), "created_by": "GraphMine sign-in"}
+            if account:
+                user["graphmine"] = {"id": account["id"], "username": account["username"]}
             token = secrets.token_urlsafe(32)
             now = _now()
             self.sessions[self._token_id(token)] = {"username": name, "created_at": _iso(now),

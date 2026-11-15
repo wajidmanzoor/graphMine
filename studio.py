@@ -30,6 +30,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from studio_auth import Auth, AuthError, Forbidden
+from studio_captures import GraphMineAccounts, SchemaCache, check_output, dataset_key, key_owner, materialize
+from studio_reviews import Reviews, content_of
 
 APP_DIR = Path(__file__).resolve().parent
 STATIC_DIR = APP_DIR / "static"
@@ -37,16 +39,19 @@ NAMES_FILE = APP_DIR / "dataset-names.json"
 # New empty datasets live under <data root>/studio-datasets/<folder>/, marked by this file.
 STUDIO_DIR = "studio-datasets"
 STUDIO_MARKER = "studio-dataset.json"
-DEFAULT_REPO = APP_DIR.parent / "graphMine-repo"
+DEFAULT_REPO = APP_DIR.parent / "graphMine-database-cypher"
 SKIP_DIRS = {"training-model-cache", "bin", "sft", "__pycache__", "cache"}
 REVIEW_STATES = ("unreviewed", "approved", "needs_fix", "rejected")
-SCHEMAS = ("RouteDecision", "PlanDraft", "TurnDecision", "GroundedNarrative")
+LEGACY_SCHEMAS = ("RouteDecision", "PlanDraft", "TurnDecision", "GroundedNarrative")
+ANALYTICS_SCHEMAS = ("AnalyticsRoute", "AnalyticsPlan", "AnalyticsPlanNormalized", "AnalyticsAnswer")
+SCHEMAS = LEGACY_SCHEMAS + ANALYTICS_SCHEMAS
 PROMPT_LABELS = {
+    "question": "User question",
     "message": "User question",
     "user_message": "Request to the analyst",
     "answer.question": "Original user question",
 }
-INDEX_VERSION = 3
+INDEX_VERSION = 5
 
 
 def utc_now() -> str:
@@ -112,6 +117,8 @@ def replace_strings(value, old: str, new: str):
 
 class Schemas:
     def __init__(self, agent_src: Path | None):
+        self.agent_src = agent_src
+        self.analytics_check = None
         self.models = {}
         self.error = None
         if agent_src and agent_src.is_dir() and str(agent_src) not in sys.path:
@@ -119,7 +126,9 @@ class Schemas:
         try:
             from graphmine_agent import models  # type: ignore
 
-            self.models = {name: getattr(models, name) for name in SCHEMAS}
+            self.models = {name: getattr(models, name) for name in LEGACY_SCHEMAS if hasattr(models, name)}
+            from graphmine_agent.analytics_studio import validate_target
+            self.analytics_check = validate_target
         except Exception as error:  # noqa: BLE001 - optional dependency
             self.error = f"{type(error).__name__}: {error}"
 
@@ -127,11 +136,18 @@ class Schemas:
     def strict(self) -> bool:
         return bool(self.models)
 
-    def check(self, schema: str, output) -> tuple[str | None, str | None]:
+    def check(self, schema: str, output, context=None) -> tuple[str | None, str | None]:
         """Return (canonical_json, error)."""
+        if schema in ANALYTICS_SCHEMAS:
+            if not self.analytics_check or not context:
+                return None, "Current analytics schemas require the current agent and operation/fact context"
+            try:
+                return self.analytics_check(schema, output, context), None
+            except Exception as error:
+                return None, str(error)[:1200]
         model = self.models.get(schema)
         if model is None:
-            return None, None
+            return None, "Unknown or unavailable output schema"
         try:
             obj = model.model_validate(output)
         except Exception as error:  # pydantic.ValidationError
@@ -309,7 +325,7 @@ def parse_turn(role: str, content: str) -> dict:
 
 def prompt_fields(payload: dict) -> list[dict]:
     fields = []
-    for path in ("answer.question", "user_message", "message"):
+    for path in ("answer.question", "user_message", "message", "question"):
         value = get_path(payload, path)
         if isinstance(value, str):
             fields.append({"path": path, "label": PROMPT_LABELS[path], "value": value})
@@ -379,6 +395,8 @@ def _base_record(*, rid, adapter, split, file, row, offset, row_obj) -> dict:
 
 def _index_reusable(ds: Path) -> list[dict]:
     index = [json.loads(line) for line in (ds / "sft-index.jsonl").open()]
+    annotations_path = ds / "annotations.jsonl"
+    annotations = {a["id"]: a for a in (json.loads(line) for line in annotations_path.read_text().splitlines())} if annotations_path.is_file() else {}
     by_file = defaultdict(dict)
     for item in index:
         by_file[item["file"]][item["row"]] = item
@@ -437,9 +455,9 @@ def _index_reusable(ds: Path) -> list[dict]:
             t = teacher.get(item["id"], {})
             c = cases.get(t.get("case_id") or "", {})
             rec.update(
-                schema=t.get("schema") or infer_schema(rec["output"]),
+                schema=item.get("schema") or t.get("schema") or infer_schema(rec["output"]),
                 variant=t.get("variant"),
-                group=t.get("case_id") or digest(norm_text(_primary(rec))),
+                group=t.get("case_id") or item.get("group") or digest(norm_text(_primary(rec))),
                 lineage=c.get("lineage") or item.get("source"),
                 case_tags=c.get("case_tags", []),
                 expected_status=c.get("expected_status"),
@@ -452,7 +470,17 @@ def _index_reusable(ds: Path) -> list[dict]:
             )
             if rec["row_sha256"] != item.get("row_sha256"):
                 rec["integrity"] = "row hash differs from sft-index"
+            if item.get("capture"):
+                rec["capture"] = item["capture"]
+            annotation = annotations.get(rec["id"], {})
+            rec["analytics"] = annotation.get("analytics")
+            rec["source_authorship"] = annotation.get("source_authorship") or {"created_by": annotation.get("created_by"), "updated_by": annotation.get("updated_by")}
+            rec["source_studio"] = {k: annotation.get(k) for k in ("revision", "review_proof", "created_by", "created_at", "updated_by", "updated_at", "source_studio")} if annotation else None
             out.append(rec)
+    if any(item.get("capture") for item in index):
+        # Captured questions list their steps in the order GraphMine ran them.
+        position = {item["id"]: number for number, item in enumerate(index)}
+        out.sort(key=lambda rec: position.get(rec["id"], len(position)))
     return out
 
 
@@ -714,9 +742,15 @@ class Studio:
     Each dataset someone opens gets one Store, shared by everyone who has it
     open, so people working on the same dataset see each other's changes."""
 
-    def __init__(self, data_root: Path, workspace: Path, catalog: Catalog, schemas: Schemas, engine=None):
+    def __init__(self, data_root: Path, workspace: Path, catalog: Catalog, schemas: Schemas, engine=None,
+                 graphmine: GraphMineAccounts | None = None):
         self.data_root = data_root.resolve()
         self.workspace = workspace
+        self.graphmine = graphmine
+        self.schema_cache = SchemaCache()
+        # Each GraphMine account's conversations, listed only for that account.
+        self._captures: dict[str, dict] = {}
+        self._capture_states: dict[str, list] = {}
         self.catalog = catalog
         self.schemas = schemas
         self.engine = engine
@@ -747,7 +781,7 @@ class Studio:
 
     def refresh_datasets(self) -> None:
         with self.lock:
-            datasets = discover(self.data_root)
+            datasets = list(self._captures.values()) + discover(self.data_root)
             name_datasets(datasets, NAMES_FILE)
             for d in datasets:
                 if d["layout"] == "studio":
@@ -761,6 +795,38 @@ class Studio:
                     del self.stores[key]
                 else:
                     store.current = fresh
+
+    def sync_captures(self, link: dict | None) -> str | None:
+        """Bring one person's GraphMine conversations up to date; returns its dataset key.
+
+        A changed capture replaces the open Store, so the next request indexes
+        the new questions; edits live in the journal and are kept."""
+        if not (self.graphmine and link and link.get("id")):
+            return None
+        key = dataset_key(link["id"])
+        folder = self.workspace / "graphmine-captures" / key
+        with self.lock:
+            # Copies, journal, index and exports of someone's questions: owner-only.
+            for directory in (folder.parent, self.workspace / key):
+                directory.mkdir(parents=True, exist_ok=True)
+                directory.chmod(0o700)
+            state = materialize(self.graphmine, link["id"], folder, owner_name=link.get("username"))
+            info = {
+                "key": key, "path": str(folder), "layout": "reusable", "rows": state["rows"],
+                "modified": state["synced_at"], "name": "My GraphMine conversations", "group": "GraphMine",
+                "description": f"{state['questions']} question(s) you asked in GraphMine, with the exact model "
+                               "inputs and your feedback. Only you can open this dataset.",
+                "capture_owner": link.get("username"),
+            }
+            previous = self._capture_states.get(key)
+            if previous is not None and previous != state["fingerprint"]:
+                self.stores.pop(key, None)
+            self._capture_states[key] = state["fingerprint"]
+            self._captures[key] = info
+            self.datasets = [info] + [d for d in self.datasets if d["key"] != key]
+            if key in self.stores:
+                self.stores[key].current = info
+        return key
 
     def _adopt_workspace_journal(self, info: dict) -> None:
         """Older studio versions kept a created dataset's journal in the workspace."""
@@ -925,7 +991,7 @@ class Studio:
             return [g for g in self._library if g["_dataset_key"] in allowed]
 
 
-class Store:
+class Store(Reviews):
     """One open dataset: its base rows, the journal overlay and the replay files."""
 
     def __init__(self, studio: "Studio", info: dict):
@@ -951,6 +1017,12 @@ class Store:
         home.mkdir(parents=True, exist_ok=True)
         self.journal_path = home / "journal.jsonl"
         self.overlay, seen = read_journal(self.journal_path)
+        self._revisions = {}
+        if self.journal_path.is_file():
+            for line in self.journal_path.read_text().splitlines():
+                if line.strip():
+                    entry = json.loads(line)
+                    self._revisions[entry["id"]] = self._revisions.get(entry["id"], 0) + 1
         self.order += [rid for rid in seen if rid not in self.base]
         self._recompute_issues()
 
@@ -1014,6 +1086,13 @@ class Store:
             settings[group] = entry
             self._write_settings(settings)
             self._contexts.pop(group, None)
+            for ex in self._group_rows(group):
+                if ex["review"] == "approved":
+                    state = dict(self.overlay.get(ex["id"]) or {})
+                    state.update(review="unreviewed")
+                    state.pop("review_proof", None)
+                    self._write("context-changed", ex["id"], state)
+            self._recompute_issues()
             return entry
 
     def _graph_input(self, settings: dict, group: str) -> tuple[dict, dict]:
@@ -1112,6 +1191,9 @@ class Store:
 
     def conversation_summary(self, group: str, rows: list[dict] | None = None) -> dict:
         """What the studio knows about replaying this conversation."""
+        if any(r["schema"] in ANALYTICS_SCHEMAS for r in (rows if rows is not None else self._group_rows(group))):
+            return {"group": group, "replayable": False, "settings": None, "built": False, "fresh": False,
+                    "analytics": True, "notes": ["Analytics examples retain imported execution evidence. Re-execute changed plans in the analytics workspace."]}
         settings = self.conversation_settings(group)
         engine_ok = bool(self.engine and self.engine.available)
         out = {"group": group, "replayable": bool(settings) and engine_ok, "settings": settings,
@@ -1138,6 +1220,7 @@ class Store:
             groups[ex["group"]].append(ex)
         wanted = set(self._studio_settings()) | {g for g in groups if self._context(g)}
         out = {g: self.conversation_summary(g, groups.get(g, [])) for g in wanted if g in groups}
+        out.update({g: self.conversation_summary(g, rows) for g, rows in groups.items() if any(r["schema"] in ANALYTICS_SCHEMAS for r in rows)})
         if self.current and self.current["layout"] == "reusable":
             # Every case can be replayed; report that cheaply without fingerprints.
             cases = self._case_map()
@@ -1155,6 +1238,8 @@ class Store:
             rows = [r for r in self._group_rows(group) if not r["deleted"]]
             if not rows:
                 raise KeyError(f"conversation {group}")
+            if any(r["schema"] in ANALYTICS_SCHEMAS for r in rows):
+                raise ValueError("Execute analytics plans in the analytics workspace and import their reviewed evidence")
             settings = self.conversation_settings(group)
             if not settings:
                 raise ValueError("Choose a graph and domain for this conversation first")
@@ -1270,7 +1355,7 @@ class Store:
             for r in rows:
                 if r["kind"] == "new":
                     state = {k: v for k, v in self.overlay[r["id"]].items()
-                             if k in ("adapter", "schema", "split", "prompt_fields", "prompts", "turns", "output", "tags")}
+                             if k in ("adapter", "schema", "split", "prompt_fields", "prompts", "turns", "output", "tags", "analytics", "source_authorship")}
                 else:
                     state = {"clone_of": r.get("clone_of") or r["id"], "split": r["split"], "turns": r["turns"],
                              "prompts": {p["path"]: p["value"] for p in r["prompts"]}, "output": r["output"]}
@@ -1302,9 +1387,9 @@ class Store:
     def ids(self) -> list[str]:
         return [i for i in self.order if i in self.base or i in self.overlay]
 
-    def effective(self, rid: str) -> dict:
+    def effective(self, rid: str, *, state_override=None) -> dict:
         base = self.base.get(rid)
-        state = self.overlay.get(rid)
+        state = state_override if state_override is not None else self.overlay.get(rid)
         if base is None and state is None:
             raise KeyError(rid)
         if base is None:
@@ -1365,8 +1450,17 @@ class Store:
             "notes": state.get("notes", ""),
             "deleted": bool(state.get("deleted")),
             "changed": changed,
-            "needs_context": kind == "new",
+            "needs_context": kind == "new" and not state.get("analytics"),
             "updated_at": state.get("updated_at"),
+            "updated_by": state.get("updated_by"),
+            "created_by": state.get("created_by"),
+            "created_at": state.get("created_at"),
+            "revision": self._revisions.get(rid, 0),
+            "review_proof": state.get("review_proof"),
+            "source_authorship": state.get("source_authorship") or base.get("source_authorship"),
+            "source_studio": state.get("source_studio") or base.get("source_studio"),
+            "analytics": state.get("analytics") or base.get("analytics"),
+            "capture": base.get("capture"),
             "integrity": base.get("integrity"),
             "issues": self._issues.get(rid, []),
         }
@@ -1377,10 +1471,10 @@ class Store:
             return [self.effective(i) for i in self.ids()]
 
     # ---------------- validation ----------------
-    def _strict(self, schema, output):
-        key = (schema, json.dumps(output, sort_keys=True, ensure_ascii=False))
+    def _strict(self, schema, output, context=None):
+        key = (schema, json.dumps([output, context], sort_keys=True, ensure_ascii=False))
         if key not in self._strict_cache:
-            self._strict_cache[key] = self.schemas.check(schema, output)
+            self._strict_cache[key] = self.schemas.check(schema, output, context)
         return self._strict_cache[key]
 
     def validate(self, ex: dict, context: dict | None = None) -> list[dict]:
@@ -1394,12 +1488,20 @@ class Store:
         if not isinstance(output, dict):
             add("error", "output", "Expected output must be a JSON object.")
         else:
-            if self.schemas.strict and schema in SCHEMAS:
-                _, error = self._strict(schema, output)
+            if schema in SCHEMAS and ex.get("capture"):
+                error = self._capture_error(ex)
+                if error:
+                    add("error", "output", f"GraphMine would reject this {schema} output: {error}")
+            elif schema in SCHEMAS:
+                analytics_context = ((ex.get("analytics") or {}).get("example") or {}).get("context")
+                _, error = self._strict(schema, output, analytics_context)
                 if error:
                     add("error", "output", f"Does not match the agent's {schema} schema: {error}")
             elif schema not in SCHEMAS:
-                add("warning", "schema", "Unknown output schema; strict validation skipped.")
+                add("error", "schema", "Unknown output schema; training export requires a supported schema.")
+            evidence_error = self._analytics_error(ex)
+            if evidence_error:
+                add("error", "evidence", evidence_error)
             op = output.get("operation_id")
             problem = output.get("problem_id")
             if op and op not in self.catalog.operations:
@@ -1466,8 +1568,17 @@ class Store:
                     problem = narrative_problem(self.engine.m, None, output, payload)
                     if problem and not any(i["message"].endswith(problem) for i in issues):
                         add("error", "output", f"The agent would reject this answer: {problem}")
+        capture = ex.get("capture")
+        if capture and context and not ex.get("deleted"):
+            earliest = (context.get("capture_edits") or {}).get(ex["group"])
+            if earliest is not None and earliest < capture["stage_index"]:
+                add("error", "context", "An earlier step of this question was edited, so this step's model input no "
+                                        "longer matches it and it is left out of training export. Delete this step "
+                                        "or revert the earlier edit.")
         if ex.get("integrity"):
             add("warning", "integrity", ex["integrity"])
+        if ex.get("review") == "approved" and not self._review_current(ex):
+            add("warning", "review", "Approval has no matching content revision; review this example again before training export")
         if context and not ex.get("deleted"):
             lineage_splits = context["lineage_splits"].get(ex.get("lineage"))
             if lineage_splits and len(lineage_splits) > 1:
@@ -1477,6 +1588,17 @@ class Store:
             if q and qsplits and len(qsplits) > 1:
                 add("info", "split", "This question text also appears in another split (usually on a different graph source).")
         return issues
+
+    def _capture_error(self, ex: dict) -> str | None:
+        schemas = ex["capture"].get("schemas") or {}
+        key = ("capture", ex["capture"]["stage"], json.dumps([ex["output"], schemas], sort_keys=True, ensure_ascii=False))
+        if key not in self._strict_cache:
+            folder = self.data_root / self.current["path"]
+            cache = self.studio.schema_cache
+            self._strict_cache[key] = check_output(
+                ex["capture"]["stage"], ex["output"],
+                cache.get(folder, schemas.get("target_schema")), cache.get(folder, schemas.get("output_schema")))
+        return self._strict_cache[key]
 
     def _recompute_issues(self) -> None:
         exs = [self.effective(i) for i in self.ids()]
@@ -1489,19 +1611,34 @@ class Store:
                 lineage_splits[ex["lineage"]].add(ex["split"])
             if ex["prompts"]:
                 question_splits[norm_text(ex["prompts"][0]["value"])].add(ex["split"])
+        # A captured step's input came from the steps before it in its question.
+        capture_edits = {}
+        for ex in exs:
+            capture = ex.get("capture")
+            base = self.base.get(ex["id"]) or {}
+            if capture and not ex["deleted"] and ex["kind"] == "edited" and ex["output"] != base.get("output"):
+                capture_edits[ex["group"]] = min(capture_edits.get(ex["group"], 99), capture["stage_index"])
         context = {"lineage_splits": lineage_splits, "question_splits": question_splits,
-                   "replay": self._freshness()}
+                   "replay": self._freshness(), "capture_edits": capture_edits}
         self._issues = {ex["id"]: self.validate(ex, context) for ex in exs}
 
 
     # ---------------- mutations ----------------
     def _write(self, op: str, rid: str, state: dict | None) -> None:
         by = getattr(ACTOR, "name", None)
+        old = self.effective(rid) if rid in self.base or rid in self.overlay else None
         if state is not None:
-            state = {**state, "updated_at": utc_now(), "updated_by": by}
+            state = {**state, "updated_at": utc_now(), "updated_by": by,
+                     "created_at": (old or {}).get("created_at") or utc_now(),
+                     "created_by": (old or {}).get("created_by") or (by if old is None else None)}
+            current = self.effective(rid, state_override=state)
+            if state.get("review") == "approved" and not self._review_current(current):
+                state["review"] = "unreviewed"
+                state.pop("review_proof", None)
         entry = {"ts": utc_now(), "op": op, "id": rid, "by": by, "state": state}
         with self.journal_path.open("a") as stream:
             stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        self._revisions[rid] = self._revisions.get(rid, 0) + 1
         if state is None:
             self.overlay.pop(rid, None)
         else:
@@ -1524,6 +1661,12 @@ class Store:
             if key in ("schema", "adapter", "prompt_fields") and not is_new:
                 raise ValueError(f"{key} can only be changed on a new example without model context")
             value = patch[key]
+            if key == "adapter" and value not in ("planner", "analyst", "workflow"):
+                raise ValueError("adapter must be planner, analyst or workflow")
+            if key == "schema" and value not in SCHEMAS:
+                raise ValueError("Choose a supported output schema")
+            if key in ("schema", "adapter", "prompt_fields") and state.get("analytics"):
+                raise ValueError("Imported analytics schema and input fields are immutable")
             if key == "review" and value not in REVIEW_STATES:
                 raise ValueError(f"review must be one of {REVIEW_STATES}")
             if key == "split" and value not in ("train", "validation", "test"):
@@ -1564,10 +1707,11 @@ class Store:
                 state.pop("labels", None)
             if not state.get("deleted"):
                 state.pop("deleted", None)
-        return state
+        return self._prepare_review(rid, state, patch)
 
-    def update(self, rid: str, patch: dict) -> dict:
+    def update(self, rid: str, patch: dict, expected_revision=None) -> dict:
         with self.lock:
+            self._check_revisions([rid], {rid: expected_revision})
             if rid not in self.base and rid not in self.overlay:
                 raise KeyError(rid)
             before = dict(self._issues)
@@ -1582,6 +1726,9 @@ class Store:
     def update_many(self, patches: list[dict]) -> dict:
         """Apply a different patch to each example (e.g. one question edit across a conversation)."""
         with self.lock:
+            if len({item["id"] for item in patches}) != len(patches):
+                raise ValueError("Duplicate example in update batch")
+            self._check_revisions([item["id"] for item in patches], {item["id"]: item.get("expected_revision") for item in patches})
             for item in patches:
                 if item["id"] not in self.base and item["id"] not in self.overlay:
                     raise KeyError(item["id"])
@@ -1596,9 +1743,10 @@ class Store:
             ids = [rid for rid, _ in states]
             return {"examples": [self.effective(i) for i in ids], "issues": self._changed_issue_map(before)}
 
-    def bulk(self, ids: list[str], patch: dict) -> dict:
+    def bulk(self, ids: list[str], patch: dict, expected_revisions=None) -> dict:
         with self.lock:
-            before = dict(self._issues)
+            self._check_revisions(ids, expected_revisions)
+            patches = []
             for rid in ids:
                 state = dict(self.overlay.get(rid) or {})
                 p = dict(patch)
@@ -1607,13 +1755,8 @@ class Store:
                     current |= set(p.pop("labels_add", []) or [])
                     current -= set(p.pop("labels_remove", []) or [])
                     p["labels"] = sorted(current)
-                new_state = self._normalize_patch(rid, p)
-                if rid in self.base and not new_state:
-                    self._write("revert", rid, None)
-                else:
-                    self._write("bulk", rid, new_state)
-            self._recompute_issues()
-            return {"examples": [self.effective(i) for i in ids], "issues": self._changed_issue_map(before)}
+                patches.append({"id": rid, "patch": p, "expected_revision": expected_revisions[rid]})
+            return self.update_many(patches)
 
     @staticmethod
     def _new_state(draft: dict) -> dict:
@@ -1638,7 +1781,7 @@ class Store:
         }
         if draft.get("group"):
             state["group"] = str(draft["group"])
-        for key in ("tags", "labels", "review", "notes"):
+        for key in ("tags", "labels", "notes"):
             if draft.get(key):
                 state[key] = draft[key]
         return state
@@ -1664,8 +1807,9 @@ class Store:
             return {"group": group, "examples": [self.effective(i) for i in ids],
                     "issues": self._changed_issue_map(before)}
 
-    def revert(self, ids: list[str]) -> dict:
+    def revert(self, ids: list[str], expected_revisions=None) -> dict:
         with self.lock:
+            self._check_revisions(ids, expected_revisions)
             before = dict(self._issues)
             for rid in ids:
                 if rid in self.overlay:
@@ -1697,6 +1841,9 @@ class Store:
 
     # ---------------- context ----------------
     def raw_row(self, rid: str) -> dict | None:
+        state = self.overlay.get(rid) or self.base.get(rid) or {}
+        if state.get("analytics"):
+            return {"messages": state["analytics"]["example"]["messages"]}
         base = self.base.get(rid)
         if base is None:
             state = self.overlay.get(rid) or {}
@@ -1743,10 +1890,11 @@ class Store:
         }
 
     # ---------------- export ----------------
-    def export(self, name: str, *, exclude_rejected: bool = True, approved_only: bool = False) -> dict:
-        if not re.fullmatch(r"[A-Za-z0-9._-]{1,80}", name or ""):
+    def export(self, name: str, *, exclude_rejected: bool = True, approved_only: bool = True, expected_revisions=None) -> dict:
+        if name in {".", ".."} or not re.fullmatch(r"[A-Za-z0-9._-]{1,80}", name or ""):
             raise ValueError("Export name may use letters, digits, dot, dash and underscore only")
         with self.lock:
+            self._check_revisions(self.ids(), expected_revisions)
             dest = self.home(self.current) / "exports" / name
             if dest.exists():
                 raise ValueError(f"Export {name!r} already exists")
@@ -1784,7 +1932,18 @@ class Store:
                         "schema": ex["schema"], "tags": ex["tags"], "auto_tags": ex["auto_tags"],
                         "manual_tags": ex["manual_tags"], "labels": ex["labels"], "review": ex["review"],
                         "notes": ex["notes"], "lineage": ex["lineage"],
+                        **{k: ex.get(k) for k in ("revision", "review_proof", "created_by", "created_at", "updated_by", "updated_at", "source_authorship", "source_studio", "analytics")},
                     })
+                    if ex["review"] == "approved" and not self._review_current(ex):
+                        counts["skipped_stale_review"] += 1
+                        continue
+                    if errors:
+                        counts["skipped_invalid"] += 1
+                        warnings.append(f"{rid}: excluded from training: {errors[0]['message'][:200]}")
+                        continue
+                    if ex.get("analytics") and not self._review_current(ex):
+                        counts["skipped_not_approved"] += 1
+                        continue
                     captured = None
                     if ex["needs_context"]:
                         replay = freshness.get(ex["group"])
@@ -1801,9 +1960,9 @@ class Store:
                             })
                             counts["needs_context"] += 1
                             continue
-                    if errors:
-                        warnings.append(f"{rid}: exported with {len(errors)} validation error(s): {errors[0]['message'][:200]}")
-                    if captured is not None:
+                    if ex.get("analytics"):
+                        messages, replaced = ex["analytics"]["example"]["messages"], 0
+                    elif captured is not None:
                         messages, replaced = self._captured_row(ex, captured), 0
                     else:
                         messages, replaced = self._messages_for(ex)
@@ -1814,6 +1973,8 @@ class Store:
                     emit(fname, row)
                     index_rows.append({
                         "id": rid, "file": fname, "row": counts[fname], "row_sha256": digest(row),
+                        "schema": ex["schema"], "revision": ex["revision"],
+                        "review_proof": ex["review_proof"],
                         "source": ex["lineage"], "conversation": ex["group"],
                         "origin": "studio-replay" if captured is not None else ex["kind"],
                         "base_row_sha256": (self.base.get(rid) or self.base.get(ex.get("clone_of") or "") or {}).get("row_sha256"),
@@ -1834,15 +1995,16 @@ class Store:
             src = self.data_root / self.current["path"]
             src_manifest = src / "manifest.json"
             manifest = {
-                "schema_version": "graphmine-dataset-studio-export-v1",
+                "schema_version": "graphmine-dataset-studio-export-v2",
                 "created_at": utc_now(),
+                "exported_by": getattr(ACTOR, "name", None),
                 "base_dataset": str(src),
                 "base_manifest_sha256": file_sha256(src_manifest) if src_manifest.is_file() else None,
                 "strict_schema_validation": self.schemas.strict,
                 "options": {"exclude_rejected": exclude_rejected, "approved_only": approved_only},
                 "counts": dict(counts),
                 "warnings": warnings,
-                "human_review_note": "Review states and tags come from Dataset Studio annotations; teacher targets remain unreviewed unless marked approved.",
+                "human_review_note": "Approval is bound to content hashes and reviewed revisions. Analytics training rows require unchanged execution evidence and local review. Portable hashes establish integrity, not an identity signature or a fresh execution.",
                 "files": {},
             }
             for path in sorted(dest.rglob("*")):
@@ -1913,11 +2075,14 @@ class NotSignedIn(PermissionError):
 
 
 COOKIE = "studio_session"
+LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 
 
 class Handler(BaseHTTPRequestHandler):
     studio: Studio = None  # type: ignore[assignment]
     auth: Auth = None  # type: ignore[assignment]
+    # Served over HTTPS: the session cookie is then sent only over HTTPS.
+    secure = False
     server_version = "GraphMineDatasetStudio/3.0"
 
     def log_message(self, fmt, *args):  # quieter console
@@ -1964,6 +2129,7 @@ class Handler(BaseHTTPRequestHandler):
         return jar[COOKIE].value if COOKIE in jar else None
 
     def _resolve_session(self) -> None:
+        self._synced_for = None
         self.session = self.auth.session(self._token())
         self.user = self.session["username"] if self.session else None
         ACTOR.name = self.user
@@ -1971,6 +2137,10 @@ class Handler(BaseHTTPRequestHandler):
     def _require_user(self) -> str:
         if not self.user:
             raise NotSignedIn("Sign in to continue")
+        if getattr(self, "_synced_for", None) != self.user:
+            # New questions asked in GraphMine appear on the next request.
+            self._synced_for = self.user
+            self.studio.sync_captures((self.auth.users.get(self.user) or {}).get("graphmine"))
         return self.user
 
     def _require_admin(self) -> str:
@@ -2013,7 +2183,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _me(self) -> dict:
         me = self.auth.public(self.user)
-        return {"username": me["username"], "role": me["role"]}
+        return {"username": me["username"], "role": me["role"], "graphmine": me["graphmine"]}
 
     @staticmethod
     def _with_summaries(store: Store, result: dict) -> dict:
@@ -2104,6 +2274,8 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == "/api/login":
                 token = self.auth.login(body.get("username", ""), body.get("password", ""))
                 cookie = f"{COOKIE}={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age={7 * 24 * 3600}"
+                if self.secure:
+                    cookie += "; Secure"
                 ACTOR.name = body.get("username", "").strip().lower()
                 return self._json({"ok": True}, headers={"Set-Cookie": cookie})
             if url.path == "/api/logout":
@@ -2156,9 +2328,11 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(st.template(body.get("schema"), body.get("want") or "any",
                                               body.get("operation") or None, store, self._allowed()))
             if url.path == "/api/update":
-                return self._json(self._with_summaries(store, store.update(body["id"], body.get("patch") or {})))
+                return self._json(self._with_summaries(store, store.update(body["id"], body.get("patch") or {}, body.get("expected_revision"))))
             if url.path == "/api/bulk":
-                return self._json(self._with_summaries(store, store.bulk(body["ids"], body.get("patch") or {})))
+                return self._json(self._with_summaries(store, store.bulk(body["ids"], body.get("patch") or {}, body.get("expected_revisions"))))
+            if url.path == "/api/import-analytics":
+                return self._json(self._with_summaries(store, store.import_analytics(body.get("content"))))
             if url.path == "/api/update-many":
                 return self._json(self._with_summaries(store, store.update_many(body["patches"])))
             if url.path == "/api/create-conversation":
@@ -2183,7 +2357,7 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == "/api/revert":
                 with store.lock:
                     groups = {store.effective(i)["group"] for i in body["ids"] if i in store.base or i in store.overlay}
-                    result = store.revert(body["ids"])
+                    result = store.revert(body["ids"], body.get("expected_revisions"))
                     result["conversations"] = {g: store.conversation_summary(g) for g in groups}
                     return self._json(result)
             if url.path == "/api/validate":
@@ -2203,7 +2377,8 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == "/api/export":
                 return self._json(store.export(body.get("name", ""),
                                                exclude_rejected=bool(body.get("exclude_rejected", True)),
-                                               approved_only=bool(body.get("approved_only", False))))
+                                               approved_only=bool(body.get("approved_only", True)),
+                                               expected_revisions=body.get("expected_revisions")))
             return self._error("Unknown endpoint", HTTPStatus.NOT_FOUND)
         except NotSignedIn as error:
             return self._error(str(error), HTTPStatus.UNAUTHORIZED)
@@ -2223,6 +2398,10 @@ class Handler(BaseHTTPRequestHandler):
             ACTOR.name = None
 
     def _static(self, path: str):
+        if path == "/analytics-wire.js" and self.studio.schemas.agent_src:
+            wire = self.studio.schemas.agent_src / "graphmine_agent" / "static" / "analytics-wire.js"
+            if wire.is_file():
+                return self._send(HTTPStatus.OK, wire.read_bytes(), "application/javascript; charset=utf-8")
         if path in ("", "/"):
             path = "/index.html"
         target = (STATIC_DIR / path.lstrip("/")).resolve()
@@ -2292,10 +2471,17 @@ def main(argv=None):
                         help="Where sign-ins, edits to pipeline datasets and their exports are kept")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8877)
+    parser.add_argument("--tls-certfile", type=Path, default=None, help="Serve HTTPS with this certificate (PEM)")
+    parser.add_argument("--tls-keyfile", type=Path, default=None, help="The certificate's private key (PEM)")
+    parser.add_argument("--graphmine-data", type=Path, default=os.environ.get("GRAPHMINE_AGENT_DATA_ROOT") or None,
+                        help="GraphMine's data root: its accounts sign in here and see their own conversations "
+                             "(default: $GRAPHMINE_AGENT_DATA_ROOT)")
     args = parser.parse_args(argv)
 
     repo = args.repo.resolve()
     data_root = (args.data_root or repo / ".graphmine-learning").resolve()
+    if args.data_root is None:
+        data_root.mkdir(parents=True, exist_ok=True)
     if not data_root.is_dir():
         parser.error(f"data root not found: {data_root}")
     workspace = args.workspace.resolve()
@@ -2303,16 +2489,33 @@ def main(argv=None):
     catalog = Catalog(repo)
     from studio_engine import Engine
     engine = Engine(repo)
-    Handler.studio = Studio(data_root, workspace, catalog, schemas, engine)
-    Handler.auth = Auth(workspace / "auth")
+    graphmine = GraphMineAccounts(Path(args.graphmine_data)) if args.graphmine_data else None
+    if graphmine and not graphmine.available:
+        parser.error(f"GraphMine accounts not found: {graphmine.database}")
+    if (args.tls_certfile is None) != (args.tls_keyfile is None):
+        parser.error("Pass both --tls-certfile and --tls-keyfile")
+    if graphmine and args.host not in LOOPBACK and not args.tls_certfile:
+        # People type their GraphMine password here; it must not cross the network in clear text.
+        parser.error("GraphMine sign-in on a network address needs HTTPS: pass --tls-certfile and --tls-keyfile "
+                     "(GraphMine's own certificate works), or keep --host 127.0.0.1 behind an SSH tunnel")
+    Handler.studio = Studio(data_root, workspace, catalog, schemas, engine, graphmine=graphmine)
+    Handler.auth = Auth(workspace / "auth", graphmine=graphmine)
     server = ThreadingHTTPServer((args.host, args.port), Handler)
+    Handler.secure = bool(args.tls_certfile)
+    if args.tls_certfile:
+        import ssl
+
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(args.tls_certfile, args.tls_keyfile)
+        server.socket = context.wrap_socket(server.socket, server_side=True)
     print(f"[studio] strict schema validation: {'on' if schemas.strict else 'off (' + str(schemas.error) + ')'}", flush=True)
     print(f"[studio] replay engine: {'on' if engine.available else 'off (' + str(engine.error) + ')'}", flush=True)
     print(f"[studio] {len(Handler.studio.datasets)} dataset(s) under {data_root}", flush=True)
+    print(f"[studio] GraphMine sign-in: {'on, conversations from ' + str(graphmine.captures) if graphmine else 'off (pass --graphmine-data)'}", flush=True)
     if not Handler.auth.has_users:
         print("[studio] No sign-ins yet. Create the first admin with: ./run.sh users add NAME --admin", flush=True)
     shown = "localhost" if args.host in ("0.0.0.0", "::") else args.host
-    print(f"[studio] sign in at http://{shown}:{args.port}/", flush=True)
+    print(f"[studio] sign in at {'https' if args.tls_certfile else 'http'}://{shown}:{args.port}/", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
