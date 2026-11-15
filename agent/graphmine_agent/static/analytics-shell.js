@@ -19,9 +19,29 @@
     triggers[currentPanel].forEach(button => button.setAttribute("aria-expanded", "false"));
     backdrop.hidden = true;
     delete document.body.dataset.overlay;
+    delete document.body.dataset.panel;
     currentPanel = null;
+    resizeComposer();
     if (restoreFocus && returnFocus?.isConnected && returnFocus.getClientRects().length) returnFocus.focus();
     returnFocus = null;
+  }
+
+  function syncPanelLayout() {
+    if (!currentPanel) return;
+    const panel = panels[currentPanel];
+    const modal = mobile.matches || currentPanel === "navigation";
+    panel.classList.toggle("mobile-open", modal);
+    backdrop.hidden = !modal;
+    if (modal) {
+      panel.setAttribute("role", "dialog");
+      panel.setAttribute("aria-modal", "true");
+      document.body.dataset.overlay = currentPanel;
+      if (!panel.contains(document.activeElement)) (panel.querySelector("[data-close-panel], #collapse-sidebar") || panel).focus();
+    } else {
+      panel.removeAttribute("role");
+      panel.removeAttribute("aria-modal");
+      delete document.body.dataset.overlay;
+    }
   }
 
   function setPanel(name, open, trigger = document.activeElement) {
@@ -31,12 +51,10 @@
     returnFocus = trigger;
     const panel = panels[name];
     panel.hidden = false;
-    panel.setAttribute("role", "dialog");
-    panel.setAttribute("aria-modal", "true");
-    panel.classList.add("mobile-open");
     triggers[name].forEach(button => button.setAttribute("aria-expanded", "true"));
-    document.body.dataset.overlay = name;
-    backdrop.hidden = false;
+    document.body.dataset.panel = name;
+    syncPanelLayout();
+    resizeComposer();
     (panel.querySelector("[data-close-panel], #collapse-sidebar") || panel).focus();
   }
 
@@ -46,6 +64,8 @@
     sidebar.hidden = mobile.matches || collapsed;
     $("toggle-sidebar").setAttribute("aria-expanded", String(!sidebar.hidden));
     $("toggle-sidebar").setAttribute("aria-label", "Open sidebar");
+    syncPanelLayout();
+    resizeComposer();
   }
   function toggleSidebar() {
     if (mobile.matches) { setPanel("navigation", currentPanel !== "navigation"); return; }
@@ -91,7 +111,7 @@
       $("session-search").focus();
       return;
     }
-    if (event.key !== "Tab" || !currentPanel) return;
+    if (event.key !== "Tab" || !currentPanel || backdrop.hidden) return;
     const panel = panels[currentPanel];
     const closedSections = [...panel.querySelectorAll("details:not([open])")];
     const focusable = [...panel.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]')].filter(element => element.getClientRects().length && !closedSections.some(details => details.contains(element) && details.querySelector(":scope > summary") !== element));

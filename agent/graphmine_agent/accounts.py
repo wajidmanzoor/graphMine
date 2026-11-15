@@ -353,7 +353,17 @@ class Accounts:
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             db.execute("DELETE FROM login_attempts WHERE started_at<=?", (now - 900,))
-            for key, limit in (("name:" + username, 10), ("ip:" + address, 200)):
+            limits = (("name:" + username, 10), ("ip:" + address, 200))
+            if db.execute(
+                "SELECT 1 FROM accounts WHERE username=? AND role='admin' AND disabled=0",
+                (username,),
+            ).fetchone():
+                # Clear older username lockouts when an administrator signs in.
+                db.execute(
+                    "DELETE FROM login_attempts WHERE key=?", ("name:" + username,)
+                )
+                limits = (("ip:" + address, 200),)
+            for key, limit in limits:
                 row = db.execute(
                     "SELECT * FROM login_attempts WHERE key=?", (key,)
                 ).fetchone()

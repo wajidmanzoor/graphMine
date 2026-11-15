@@ -167,8 +167,11 @@ For an HTTPS domain, including a Cloudflare Tunnel, keep
 `GRAPHMINE_ALLOWED_ORIGINS=https://your-domain.example` and restart the API after
 changing settings. Login uses an HttpOnly, SameSite=Strict cookie. Passwords are
 stored as salted scrypt hashes, and API session tokens are stored only as hashes.
-Login attempts and simultaneous password checks are bounded. The browser does
-not store a password or account token in localStorage.
+Ordinary and unknown usernames allow ten login attempts per 15-minute window.
+Enabled administrators are exempt from that username limit, including existing
+username lockouts. All accounts share a limit of 200 attempts per IP address per
+15 minutes, and simultaneous password checks are bounded. The browser does not
+store a password or account token in localStorage.
 
 ### HTTPS on a LAN without a proxy
 

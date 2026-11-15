@@ -233,6 +233,69 @@ def test_login_rate_limit_and_account_cap(account_settings):
     assert failure.value.code == "login_rate_limit" and failure.value.retry_after > 0
 
 
+def test_admin_login_ignores_username_lockout_after_password_reset(account_settings):
+    now = [1000000.0]
+    accounts, db = store(account_settings, now)
+    accounts.create_user("owner", PASSWORD, admin=True)
+    with db._connect() as connection:
+        connection.execute(
+            "INSERT INTO login_attempts VALUES (?,?,?)", ("name:owner", now[0], 10)
+        )
+    accounts.reset_password("owner", PASSWORD + "-new")
+    for _ in range(12):
+        with pytest.raises(AccountError) as failure:
+            accounts.login(" OWNER ", "wrong-password", "test")
+        assert failure.value.code == "invalid_credentials"
+    with db._connect() as connection:
+        assert connection.execute(
+            "SELECT 1 FROM login_attempts WHERE key='name:owner'"
+        ).fetchone() is None
+    token, principal = accounts.login(" OWNER ", PASSWORD + "-new", "test")
+    assert principal.is_admin
+    assert accounts.authenticate(token).username == "owner"
+
+
+def test_admin_login_still_obeys_shared_ip_limit(account_settings):
+    now = [1000000.0]
+    accounts, db = store(account_settings, now)
+    accounts.create_user("owner", PASSWORD, admin=True)
+    with db._connect() as connection:
+        connection.execute(
+            "INSERT INTO login_attempts VALUES (?,?,?)", ("ip:test", now[0], 199)
+        )
+    with pytest.raises(AccountError) as failure:
+        accounts.login("owner", "wrong-password", "test")
+    assert failure.value.code == "invalid_credentials"
+    with pytest.raises(AccountError) as failure:
+        accounts.login("owner", PASSWORD, "test")
+    assert failure.value.code == "login_rate_limit"
+    assert failure.value.retry_after == 900
+    now[0] += 901
+    _, principal = accounts.login("owner", PASSWORD, "test")
+    assert principal.is_admin
+
+
+def test_unknown_username_still_has_login_limit(account_settings):
+    now = [1000000.0]
+    accounts, db = store(account_settings, now)
+    with db._connect() as connection:
+        connection.execute(
+            "INSERT INTO login_attempts VALUES (?,?,?)", ("name:missing", now[0], 10)
+        )
+    with pytest.raises(AccountError) as failure:
+        accounts.login("missing", PASSWORD, "test")
+    assert failure.value.code == "login_rate_limit"
+
+
+def test_disabled_admin_cannot_sign_in(account_settings):
+    accounts, _ = store(account_settings)
+    accounts.create_user("owner", PASSWORD, admin=True)
+    accounts.disable("owner")
+    with pytest.raises(AccountError) as failure:
+        accounts.login("owner", PASSWORD, "test")
+    assert failure.value.code == "invalid_credentials"
+
+
 def test_quota_persists_and_resets_after_24_hours(account_settings):
     now = [1000000.0]
     accounts, db = store(account_settings, now)

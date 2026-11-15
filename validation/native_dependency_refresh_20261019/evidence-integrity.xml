@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="8.594" timestamp="2026-10-19T13:09:58.297311-04:00" hostname="guoglambda01"><testcase classname="tests.test_evidence_cache" name="test_native_workers_reuse_hashes_but_reject_changed_sources" time="8.569" /></testsuite></testsuites>
