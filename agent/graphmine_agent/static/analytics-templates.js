@@ -8,7 +8,7 @@ window.GraphMineTemplates = ({state, api, W, node, runAction, notice, card, para
     header.append(node("h2", {}, title), close); dialog.append(header); document.body.append(dialog); return dialog;
   }
   const open = node("button", {id: "open-templates", type: "button", class: "secondary full-width"}, "Workflow templates");
-  $("open-datasets").after(open);
+  $("manual-tools").before(open);
   const save = node("button", {id: "save-workflow-template", type: "button", class: "quiet"}, "Save as template");
   $("review-example").after(save);
   save.onclick = () => runAction(async () => {

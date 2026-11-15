@@ -58,6 +58,8 @@ def test_dataset_snapshot_and_import(loading_browser, loading_server, result):
         browser.find_element(By.ID, "save-dataset-result").click()
     else:
         browser.find_element(By.ID, "toggle-data").click()
+        wait_for(browser, "document.querySelector('#database-workspace')?.isConnected")
+        browser.find_element(By.ID, "source-files-tab").click()
         browser.find_element(By.ID, "save-dataset-input").click()
     wait_for(browser, "document.querySelector('#dataset-dialog').open")
     name = browser.find_element(By.ID, "dataset-name")

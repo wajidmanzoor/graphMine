@@ -471,8 +471,27 @@ class Accounts:
                 "SELECT coalesce(sum(size_bytes+length(CAST(metadata AS BLOB))),0) FROM dataset_versions WHERE owner_id=?",
                 (user_id,),
             ).fetchone()[0]
+            previews = db.execute(
+                "SELECT coalesce(sum(size_bytes),0) FROM query_preview_blobs WHERE owner_id=?",
+                (user_id,),
+            ).fetchone()[0] + db.execute(
+                "SELECT coalesce(sum(length(CAST(metadata AS BLOB))),0) FROM query_previews WHERE owner_id=?",
+                (user_id,),
+            ).fetchone()[0]
             templates = db.execute(
                 "SELECT coalesce(sum(length(CAST(document AS BLOB))),0) FROM workflow_templates WHERE owner_id=?",
+                (user_id,),
+            ).fetchone()[0]
+            queries = db.execute(
+                "SELECT coalesce(sum(length(CAST(document AS BLOB))),0) FROM query_library WHERE owner_id=?",
+                (user_id,),
+            ).fetchone()[0]
+            database_jobs = db.execute(
+                "SELECT coalesce(sum(max(reserved_bytes,length(CAST(document AS BLOB)))),0) FROM database_jobs WHERE owner_id=?",
+                (user_id,),
+            ).fetchone()[0]
+            exploration = db.execute(
+                "SELECT coalesce(sum(length(CAST(e.document AS BLOB))),0) FROM session_exploration e JOIN sessions s ON s.id=e.session_id WHERE s.owner_id=?",
                 (user_id,),
             ).fetchone()[0]
             connections = db.execute(
@@ -506,8 +525,12 @@ class Accounts:
                             chunk,
                         )
                     ]
+            from .result_index import is_workflow_index
+
             for workflow in workflows:
                 for path in (ledger.parent / workflow).rglob("*"):
+                    if is_workflow_index(path):
+                        continue
                     with suppress(OSError):
                         results += path.stat().st_size if path.is_file() else 0
         return {
@@ -517,7 +540,11 @@ class Accounts:
             "templates": templates,
             "shared": shared,
             "connections": connections,
-            "used": uploads + results + datasets + templates + shared + connections,
+            "previews": previews,
+            "queries": queries,
+            "database_jobs": database_jobs,
+            "exploration": exploration,
+            "used": uploads + results + datasets + templates + shared + connections + previews + queries + database_jobs + exploration,
             "limit": self.settings.account_storage_bytes,
         }
 

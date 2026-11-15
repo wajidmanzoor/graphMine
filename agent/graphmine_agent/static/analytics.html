@@ -10,23 +10,48 @@
   <link rel="stylesheet" href="/analytics-chat.css">
   <link rel="stylesheet" href="/analytics-shell.css">
   <link rel="stylesheet" href="/analytics-database.css">
-  <script src="/vendor/cytoscape.min.js" defer></script>
+  <link rel="stylesheet" href="/analytics-accessibility.css">
+  <link rel="stylesheet" href="/analytics-home.css">
+  <link rel="stylesheet" href="/analytics-result-context.css">
+  <script src="/analytics-graph-library.js" defer></script>
+  <script src="/analytics-release.js" defer></script>
   <script src="/account.js" defer></script>
   <script src="/analytics-wire.js" defer></script>
+  <script src="/analytics-async.js" defer></script>
+  <script src="/analytics-transport.js" defer></script>
+  <script src="/analytics-client.js" defer></script>
+  <script src="/analytics-navigation.js" defer></script>
+  <script src="/analytics-polling.js" defer></script>
+  <script src="/analytics-rendering.js" defer></script>
+  <script src="/analytics-incremental.js" defer></script>
+  <script src="/analytics-query-table.js" defer></script>
   <script src="/analytics-library.js" defer></script>
   <script src="/analytics-import.js" defer></script>
   <script src="/analytics-templates.js" defer></script>
   <script src="/analytics-outputs.js" defer></script>
   <script src="/analytics-explorer.js" defer></script>
+  <script src="/analytics-exploration.js" defer></script>
+  <script src="/analytics-result-context.js" defer></script>
   <script src="/analytics-editor.js" defer></script>
   <script src="/analytics-controls.js" defer></script>
   <script src="/analytics-projects.js" defer></script>
+  <script src="/analytics-table-mappings.js" defer></script>
   <script src="/analytics-connection-settings.js" defer></script>
-  <script src="/analytics-connectors.js" defer></script>
+  <script src="/analytics-source-settings.js" defer></script>
+  <script src="/analytics-benchmark-datasets.js" defer></script>
+  <script src="/analytics-query-drafts.js" defer></script>
+  <script src="/analytics-data-layout.js" defer></script>
+  <script src="/analytics-graph-builder.js" defer></script>
+  <script src="/analytics-cypher-tools.js" defer></script>
+  <script src="/analytics-query-workspace.js" defer></script>
+  <script src="/analytics-database-jobs.js" defer></script>
+  <script src="/analytics-data-source.js" defer></script>
   <script src="/analytics-shell.js" defer></script>
   <script src="/analytics-commands.js" defer></script>
   <script src="/analytics-result-views.js" defer></script>
   <script src="/analytics-database.js" defer></script>
+  <script src="/analytics-sessions.js" defer></script>
+  <script src="/analytics-home.js" defer></script>
   <script src="/analytics-ui.js" defer></script>
 </head>
 <body class="workspace-app" data-page="domains">
@@ -55,16 +80,19 @@
       <div class="section-heading"><h2>Conversations</h2><button id="refresh-sessions" class="quiet" type="button" aria-label="Refresh conversations">↻</button></div>
       <div class="session-filters"><label class="history-search"><svg class="ui-icon" aria-hidden="true"><use href="#icon-search"/></svg><input id="session-search" type="search" placeholder="Search conversations" aria-label="Search conversations"></label><details class="history-options"><summary>History options</summary><label class="check"><input id="show-archived" type="checkbox"> Show archived</label></details></div>
       <div id="recent-sessions" class="recent-sessions"></div>
+      <p id="session-history-status" class="muted" role="status"></p>
+      <button id="load-more-sessions" class="quiet" type="button" hidden>Load more conversations</button>
     </section>
     <p class="sidebar-empty">A good question is a great start.<br>Your conversations will appear here.</p>
     <div class="sidebar-footer"><svg class="ui-icon" aria-hidden="true"><use href="#icon-graph"/></svg><div><strong>Your research workspace</strong><span>Explore. Ask. Discover.</span></div></div>
   </aside>
   <header class="app-header">
     <div class="header-leading"><button id="toggle-sidebar" class="icon-button" type="button" aria-label="Open sidebar" aria-expanded="true" aria-controls="app-sidebar"><svg class="ui-icon" aria-hidden="true"><use href="#icon-panel"/></svg></button><span class="header-label">Workspace</span></div>
-    <nav id="workspace-nav" class="workspace-nav" aria-label="Workspace pages" hidden><a id="chat-page-link" href="#">Chat</a><a id="results-page-link" href="#">Results <span id="result-count">0</span></a></nav>
+    <nav id="workspace-nav" class="workspace-nav" aria-label="Workspace pages" hidden><a id="chat-page-link" href="#">Chat</a><a id="data-page-link" href="#">Data</a><a id="results-page-link" href="#">Results <span id="result-count">0</span></a></nav>
     <div class="header-actions"><span id="connection-state" role="status">Connecting…</span><button id="connection-button" class="quiet" aria-label="Connection settings"><svg class="ui-icon" aria-hidden="true"><use href="#icon-settings"/></svg><span>Settings</span></button></div>
   </header>
   <div id="notice" class="notice" role="status" hidden></div>
+  <div id="workflow-sync" class="notice" hidden><span id="workflow-sync-message" role="status"></span><button id="workflow-sync-retry" type="button" class="quiet" hidden>Check now</button></div>
   <section id="domain-view" class="domain-view" aria-labelledby="domain-heading">
     <div class="hero"><span class="hero-mark"><svg aria-hidden="true"><use href="#icon-chinar"/></svg></span><p class="eyebrow">A fresh perspective on your data</p><h1 id="domain-heading" tabindex="-1">What will you discover?</h1><p>Every network has a story. Let’s find yours.<br>Choose a starting point and explore it together.</p></div>
     <div class="domain-grid-heading"><h2>Start with your world</h2><span>You can start a new conversation anytime</span></div>
@@ -73,12 +101,13 @@
     <details class="conversation-options"><summary>Name this conversation <span>Optional</span></summary><label class="session-title" for="session-name">Conversation name<input id="session-name" maxlength="200" placeholder="e.g. Team connections — October"></label></details>
     <p class="home-footnote">Bring your data. Ask in your own words. Explore the connections.</p>
   </section>
+  <section id="data-workspace-view" class="data-workspace-view" aria-label="Data workspace" tabindex="-1" hidden></section>
   <div id="workspace-view" class="chat-workspace" hidden>
-    <aside id="data-sidebar" class="data-sidebar workspace-drawer" aria-label="Conversation and data" tabindex="-1" hidden>
-      <div class="drawer-heading"><div><p class="eyebrow">Conversation workspace</p><h2>Data &amp; tools</h2></div><button class="icon-button" type="button" data-close-panel aria-label="Close data panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+    <aside id="data-sidebar" class="data-sidebar workspace-drawer" aria-label="Tools" tabindex="-1" hidden>
+      <div class="drawer-heading"><div><p class="eyebrow">Conversation workspace</p><h2>Tools</h2></div><button class="icon-button" type="button" data-close-panel aria-label="Close tools panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button></div>
       <div class="domain-context"><p class="eyebrow">Your domain</p><h2 id="active-domain"></h2><p id="active-domain-description" class="muted"></p><button id="new-session" class="quiet">Change domain / new chat</button></div>
       <details class="sidebar-disclosure"><summary>Manage conversations</summary><label>Saved conversations<select id="session-select"><option value="">New conversation</option></select></label><div id="session-actions" class="session-actions" hidden><button id="rename-session" class="quiet" type="button">Rename</button><button id="archive-session" class="quiet" type="button">Archive</button><button id="delete-session" class="quiet danger" type="button">Delete</button></div></details>
-      <div class="data-section">
+      <div class="data-section" id="data-file-controls" hidden>
         <p class="eyebrow">Your data</p>
         <label class="upload-zone"><span class="upload-symbol" aria-hidden="true">↑</span><strong>Drop or choose files</strong><input id="data-upload" type="file" accept=".json,.csv,.txt"><span>Graph JSON or relationship CSV</span></label>
         <details id="upload-settings"><summary>Upload settings</summary>
@@ -91,8 +120,8 @@
         <label id="active-kind-label" hidden>Input kind<select id="active-kind"><option value="graph">Graph</option><option value="graph_collection">Collection of graphs</option><option value="feature_vectors">Feature vectors</option><option value="hypergraph">Hypergraph</option></select></label>
         <p id="data-summary" class="muted">Your analysis uses the full uploaded input.</p>
         <button id="open-datasets" class="secondary full-width">Dataset library</button><button id="save-dataset-input" class="quiet full-width">Save this input for reuse</button>
-        <details class="advanced-data"><summary>Compute settings</summary><label>Compute on<select id="device"><option value="auto">Automatic (GPU first)</option><option value="cpu">CPU only</option><option value="gpu">GPU only</option></select></label><p id="device-note" class="muted"></p><div id="input-aliases" class="alias-list"></div><p id="verified-count" class="muted"></p></details>
       </div>
+      <details class="advanced-data data-section"><summary>Compute settings</summary><label>Compute on<select id="device"><option value="auto">Automatic (GPU first)</option><option value="cpu">CPU only</option><option value="gpu">GPU only</option></select></label><p id="device-note" class="muted"></p><div id="input-aliases" class="alias-list"></div><p id="verified-count" class="muted"></p></details>
       <details id="manual-tools" class="data-section"><summary>Advanced calculation</summary>
         <form id="operation-form"><label>Calculation<select id="operation-select"><option value="">Choose a calculation</option></select></label><p id="operation-description" class="muted"></p><p id="operation-quality" class="muted"></p><div id="operation-parameters" class="parameter-grid"></div><button id="use-operation" type="submit" class="secondary full-width">Build analysis</button></form>
       </details>
@@ -107,9 +136,14 @@
       <p class="sidebar-note">Your conversations, data and results are saved automatically.</p>
     </aside>
     <main id="chat-content" class="chat-column" tabindex="-1">
-      <div class="chat-heading"><div><p class="eyebrow" id="chat-domain-label">Your conversation</p><h1 id="workspace-title">New conversation</h1></div><div class="chat-heading-actions"><span id="chat-status" class="pill">Ready</span><button id="toggle-data" class="quiet" type="button" aria-label="Data and tools" aria-expanded="false" aria-controls="data-sidebar"><svg class="ui-icon" aria-hidden="true"><use href="#icon-data"/></svg><span>Data &amp; tools</span></button><button id="toggle-activity" class="quiet" type="button" aria-label="Activity and reasoning" aria-expanded="false" aria-controls="activity-sidebar"><svg class="ui-icon" aria-hidden="true"><use href="#icon-activity"/></svg><span>Activity</span></button></div></div>
+      <div class="chat-heading"><div><p class="eyebrow" id="chat-domain-label">Your conversation</p><h1 id="workspace-title">New conversation</h1></div><div class="chat-heading-actions"><span id="chat-status" class="pill">Ready</span><button id="toggle-data" class="quiet" type="button" aria-label="Data"><svg class="ui-icon" aria-hidden="true"><use href="#icon-data"/></svg><span>Data</span></button><button id="toggle-activity" class="quiet" type="button" aria-label="Activity and reasoning" aria-expanded="false" aria-controls="activity-sidebar"><svg class="ui-icon" aria-hidden="true"><use href="#icon-activity"/></svg><span>Activity</span></button></div></div>
       <div id="conversation-scroll" class="conversation-scroll">
         <section id="chat-welcome" class="chat-welcome" aria-labelledby="welcome-heading"><span class="hero-mark"><svg aria-hidden="true"><use href="#icon-chinar"/></svg></span><h2 id="welcome-heading">Follow your curiosity.</h2><p>Add your data, then ask a question.<br>We’ll work through the connections together.</p><div class="welcome-actions"><button id="welcome-data" class="secondary" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"/></svg><span id="welcome-data-label">Add your data</span></button><button id="welcome-sample" class="quiet" type="button">Try an example <span aria-hidden="true">↗</span></button></div><div class="prompt-suggestions" aria-label="Example questions"><button type="button" data-prompt="Give me an overview of this network and its connections."><span aria-hidden="true">◎</span>Understand my network</button><button type="button" data-prompt="Which nodes are the most connected in this network?"><span aria-hidden="true">↗</span>Find key connections</button><button type="button" data-prompt="Find communities in this network and explain what they have in common."><span aria-hidden="true">◇</span>Discover communities</button></div></section>
+        <div id="conversation-history" class="conversation-history" hidden>
+          <button id="load-older-messages" type="button" class="quiet">Load older messages</button>
+          <span id="conversation-history-status" role="status"></span>
+          <button id="show-latest-messages" type="button" class="quiet" hidden>Show new messages</button>
+        </div>
         <div id="messages" class="chat-messages" role="log" aria-label="Conversation" aria-live="polite"></div>
       <section id="expert-panel" class="panel" hidden aria-labelledby="expert-heading">
         <div class="section-heading"><div><p class="eyebrow">Explicit plan</p><h2 id="expert-heading">Workflow editor</h2></div><button id="load-editor" class="quiet">Load current plan</button></div>
@@ -125,21 +159,22 @@
         <button id="review-example" class="quiet" hidden>Review as a reusable example</button>
       </section>
       </div>
-      <div class="composer-area"><form id="question-form" class="chat-composer"><div id="command-menu" class="command-menu" hidden><p class="command-menu-heading">Commands <span>Saved locally · No model calls</span></p><ul id="command-options" role="listbox" aria-label="Local commands"></ul><p class="command-menu-hint">↑ ↓ to navigate · Enter or Tab to select · Esc to close</p></div><p id="selection-chip" class="selection-chip" hidden><span id="selection-label"></span><button id="clear-question-selection" type="button" class="quiet" aria-label="Stop asking about this selection">Clear</button></p><label class="visually-hidden" for="question">Message GraphMine</label><textarea id="question" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="command-options" aria-expanded="false" rows="2" maxlength="20000" placeholder="Ask about your network, or type / for commands…" required></textarea><div class="composer-actions"><div class="composer-tools"><button id="composer-data" class="icon-button" type="button" aria-label="Add data or open tools" aria-controls="data-sidebar" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"/></svg></button><section class="mode-panel" aria-label="Analysis mode"><div class="mode-switch" role="group" aria-label="Choose an analysis mode"><button data-mode="normal" aria-pressed="true" title="GraphMine checks the plan and runs it for you">Normal</button><button data-mode="interactive" aria-pressed="false" title="Review and approve the calculation before it runs">Interactive</button><button data-mode="expert" aria-pressed="false" title="Inspect and edit the workflow yourself">Expert</button></div></section></div><button id="plan-question" class="primary send-button" type="submit" aria-label="Send message" title="Send message"><svg class="ui-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div></form><div class="composer-caption"><p id="mode-description"></p><p id="planner-note">Type / for commands · Enter to send</p></div></div>
+      <div class="composer-area"><form id="question-form" class="chat-composer"><div id="command-menu" class="command-menu" hidden><p class="command-menu-heading">Commands <span>Saved locally · No model calls</span></p><ul id="command-options" role="listbox" aria-label="Local commands"></ul><p class="command-menu-hint">↑ ↓ to navigate · Enter or Tab to select · Esc to close</p></div><p id="selection-chip" class="selection-chip" hidden><span id="selection-label"></span><button id="clear-question-selection" type="button" class="quiet" aria-label="Stop asking about this selection">Clear</button></p><label class="visually-hidden" for="question">Message GraphMine</label><textarea id="question" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="command-options" aria-expanded="false" rows="2" maxlength="20000" placeholder="Ask about your network, or type / for commands…" required></textarea><div class="composer-actions"><div class="composer-tools"><button id="composer-data" class="icon-button" type="button" aria-label="Add data"><svg class="ui-icon" aria-hidden="true"><use href="#icon-plus"/></svg></button><section class="mode-panel" aria-label="Analysis mode"><div class="mode-switch" role="group" aria-label="Choose an analysis mode"><button type="button" data-mode="normal" aria-pressed="true" title="GraphMine checks the plan and runs it for you">Normal</button><button type="button" data-mode="interactive" aria-pressed="false" title="Review and approve the calculation before it runs">Interactive</button><button type="button" data-mode="expert" aria-pressed="false" title="Inspect and edit the workflow yourself">Expert</button></div></section></div><button id="plan-question" class="primary send-button" type="submit" aria-label="Send message" title="Send message"><svg class="ui-icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div></form><div class="composer-caption"><p id="mode-description"></p><p id="planner-note">Type / for commands · Enter to send</p></div></div>
     </main>
     <aside id="activity-sidebar" class="reasoning-sidebar workspace-drawer" aria-label="Model reasoning and activity" tabindex="-1" hidden>
       <div class="drawer-heading"><div><p class="eyebrow">Behind your answer</p><h2>Activity <span id="reasoning-count" class="reasoning-count" title="Reasoning records in this conversation">0</span></h2></div><button class="icon-button" type="button" data-close-panel aria-label="Close activity panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button></div><p class="muted">Follow the understanding, planning, and validation of your question.</p><div id="activity-status" role="status">Ready for your question</div><ol id="activity-list" class="activity-list"></ol>
     </aside>
   </div>
   <main id="results-view" class="analytics-results" hidden tabindex="-1"><div class="results-toolbar"><div><p class="eyebrow">Explore your findings</p><h1>Results & visualizations</h1><p id="results-session-title" class="muted"></p></div><button id="back-to-chat" class="secondary">← Back to chat</button></div><label class="result-picker">Saved analysis<select id="result-select"><option value="">No completed analyses yet</option></select></label>
+      <div id="metrics" class="metrics" role="region" aria-label="Result summary"></div>
       <section id="evidence-panel" class="panel" aria-labelledby="evidence-heading">
         <div class="section-heading"><div><p class="eyebrow">Explore the evidence</p><h2 id="evidence-heading">Connections & results</h2></div><button id="download-result" class="secondary" disabled>Download full result</button></div>
         <details id="result-actions-panel"><summary>Save, compare &amp; export</summary><div id="result-actions" class="form-actions"></div></details>
-        <p id="result-completeness" class="completeness">Upload a graph to preview its connections.</p>
+        <div id="result-completeness" class="completeness">Upload a graph to preview its connections.</div>
         <div id="result-controls" class="result-controls" hidden><label>Step<select id="result-step"></select></label><label>Output<select id="result-port"></select></label></div>
         <div class="evidence-grid">
           <div class="graph-card"><div class="graph-tools"><label>View layout<select id="graph-layout"><option value="cose">Spread connections</option><option value="groups" disabled>By group</option><option value="circle">Circle</option><option value="grid">Grid</option><option value="computed" disabled>Computed coordinates</option></select></label><label id="graph-group-label" hidden><span id="graph-group-caption">Show group</span><select id="graph-group" aria-describedby="graph-group-hint"><option value="">Full network</option></select></label><button id="fit-graph" class="quiet">Fit graph</button><button id="clear-selection" class="quiet">Clear selection</button></div><p id="graph-group-hint" class="muted" hidden></p><label id="overlap-control" class="check" hidden><input id="highlight-overlap" type="checkbox"> Highlight shared members</label><p id="group-summary" class="muted" hidden></p><label id="flow-control" class="check" hidden><input id="flow-direction" type="checkbox" checked> Show computed flow direction</label><div id="network" role="img" aria-label="Network preview; choose a result row to highlight its entities"></div><div id="group-legend" class="group-legend" aria-label="Group colors and filters" hidden></div><p id="preview-scope" class="muted"></p><div id="selection-detail" role="status" class="selection-detail">Select a node or a result row to inspect it.</div></div>
-          <div class="result-card"><div id="metrics" class="metrics"></div><div id="chart" class="fixed-chart"></div><div id="group-filters" class="group-filters" hidden><label>Minimum size<input id="group-min-size" type="number" min="0" step="1" placeholder="Any"></label><label>Maximum size<input id="group-max-size" type="number" min="0" step="1" placeholder="Any"></label><label>Contains member ID<input id="group-member" type="search" placeholder='42 or "Alice"'></label><button id="clear-group-filters" type="button" class="quiet">Clear filters</button><p id="group-filter-status" class="muted" role="status"></p></div><div class="table-toolbar"><label>Find in this output<input id="table-search" type="search" placeholder="Value or vertex:501"></label><span id="table-count" class="muted"></span></div><div class="table-scroll" tabindex="0" role="region" aria-label="Result rows"><table id="result-table"><caption class="visually-hidden">Computed output values</caption><thead></thead><tbody></tbody></table></div><div class="pagination"><button id="table-prev" class="secondary">Previous</button><span id="table-page"></span><button id="table-next" class="secondary">Next</button></div><p id="table-scope" class="muted">Computed values will appear after an analysis.</p></div>
+          <div class="result-card"><div id="chart" class="fixed-chart"></div><div id="group-filters" class="group-filters" hidden><label>Minimum size<input id="group-min-size" type="number" min="0" step="1" placeholder="Any"></label><label>Maximum size<input id="group-max-size" type="number" min="0" step="1" placeholder="Any"></label><label>Contains member ID<input id="group-member" type="search" placeholder='42 or "Alice"'></label><button id="clear-group-filters" type="button" class="quiet">Clear filters</button><p id="group-filter-status" class="muted" role="status"></p></div><div class="table-toolbar"><label>Find in this output<input id="table-search" type="search" placeholder="Value or vertex:501"></label><span id="table-count" class="muted"></span></div><div class="table-scroll" tabindex="0" role="region" aria-label="Result rows"><table id="result-table"><caption class="visually-hidden">Computed output values</caption><thead></thead><tbody></tbody></table></div><div class="pagination"><button id="table-prev" class="secondary">Previous</button><span id="table-page"></span><button id="table-next" class="secondary">Next</button></div><p id="table-scope" class="muted">Computed values will appear after an analysis.</p></div>
         </div>
         <details id="raw-details" hidden><summary>Recorded result and provenance</summary><pre id="raw-result"></pre></details>
       </section>
@@ -170,6 +205,7 @@
     <p class="muted">Check the computed result and describe the question it answers. Approved examples can help plan later questions in this workspace.</p>
     <label>Question this result answers<textarea id="example-question" required minlength="3" maxlength="2000" rows="3"></textarea></label>
     <label class="check"><input id="example-approved" type="checkbox" required> I reviewed the plan and result and approve this example.</label>
+    <label class="check"><input id="example-studio" type="checkbox"> Download this reviewed workflow for Dataset Studio</label>
     <p id="example-feedback" role="status" aria-live="polite"></p>
     <button type="submit" class="primary">Save approved example</button>
   </form></dialog>
@@ -180,6 +216,8 @@
     <p id="table-aliases" class="muted"></p>
     <label>Connection table<select id="projection-table"></select></label>
     <div class="parameter-grid"><label>From column<select id="projection-source"></select></label><label>To column<select id="projection-target"></select></label>
+      <label>From ID type<select id="projection-source-type"><option value="string">Text (keep leading zeros)</option><option value="integer">Integer (numeric IDs)</option></select></label>
+      <label>To ID type<select id="projection-target-type"><option value="string">Text (keep leading zeros)</option><option value="integer">Integer (numeric IDs)</option></select></label>
       <label>Intended calculation<select id="projection-task"><option value="topology">Connections and groups</option><option value="shortest_paths">Shortest paths</option><option value="spanning_tree">Connection costs</option><option value="max_flow">Flow capacity</option><option value="ranking">Importance ranking</option></select></label>
       <label>Weight column<select id="projection-weight"><option value="">No weight</option></select></label>
       <label>Repeated connections<select id="projection-duplicates"><option value="preserve">Keep every record</option><option value="reject">Reject duplicates</option><option value="sum">Add weights</option><option value="min">Minimum weight</option><option value="max">Maximum weight</option><option value="count">Count records as weight</option></select></label>

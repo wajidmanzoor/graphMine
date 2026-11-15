@@ -1,6 +1,6 @@
 /* Local commands, annotations and downloads for the conversation workspace. */
 "use strict";
-window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls}) => {
+window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls, mergeHistory}) => {
   const $ = id => document.getElementById(id);
   const input = $("question"), menu = $("command-menu"), list = $("command-options");
   const catalog = [
@@ -14,6 +14,21 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
   ];
   let matches = [], active = 0, feedbackTarget = null;
   const isCommand = message => /^[\/\\]/.test(message.trimStart());
+  function sizeMenu() {
+    if (menu.hidden) return;
+    if (matchMedia("(max-height: 560px)").matches) {
+      menu.style.maxHeight = "";
+      menu.classList.remove("command-menu-compact");
+      return;
+    }
+    const header = document.querySelector(".app-header").getBoundingClientRect();
+    const available = Math.max(0, $("question-form").getBoundingClientRect().top - Math.max(0, header.bottom) - 12);
+    menu.style.maxHeight = `${available}px`;
+    menu.classList.toggle("command-menu-compact", available < 240);
+  }
+  const composerObserver = new ResizeObserver(sizeMenu);
+  composerObserver.observe($("question-form"));
+  window.addEventListener("resize", sizeMenu);
   function close() {
     menu.hidden = true;
     input.setAttribute("aria-expanded", "false");
@@ -29,6 +44,7 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
     input.value = `${prefix}${matches[index].name} `;
     input.focus(); input.setSelectionRange(input.value.length, input.value.length);
     close(); updateControls(); window.GraphMineShell.resizeComposer();
+    input.scrollIntoView({block: "nearest"});
   }
   function suggest() {
     const match = /^\s*[\/\\]([^\s]*)$/.exec(input.value);
@@ -45,7 +61,7 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
       option.addEventListener("click", () => select(index));
       list.append(option);
     });
-    menu.hidden = false; input.setAttribute("aria-expanded", "true"); highlight();
+    menu.hidden = false; input.setAttribute("aria-expanded", "true"); sizeMenu(); highlight();
   }
   input.addEventListener("input", () => { suggest(); updateControls(); });
   input.addEventListener("focus", suggest);
@@ -76,9 +92,9 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
     const response = await api(`/api/sessions/${id}/chat`, {method: "POST", body: W.stringify({message})});
     if (input.value.trim() === message) input.value = "";
     // Use the saved transcript so command replies survive navigation and reload.
-    const workspace = await api(`/api/sessions/${id}/workspace`);
+    const workspace = await api(`/api/sessions/${id}/workspace?history_limit=30`);
     if (state.session?.id !== id) return;
-    state.legacyMessages = workspace.messages;
+    mergeHistory(workspace);
     state.feedbackCount = workspace.feedback_count || 0;
     state.lastChatKey = null;
     renderConversation(); update(); input.focus();

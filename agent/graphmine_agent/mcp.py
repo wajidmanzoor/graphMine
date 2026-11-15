@@ -21,9 +21,12 @@ from .analytics import WorkflowApproval, WorkflowRequest, WorkflowRevision
 from .analytics_planning import PlanningRequest
 from .analytics_projection import ProjectionRequest
 from .models import SessionCreate
+from .mcp_database import database_tools
+from .mcp_downloads import read_download
 
 PROTOCOL = "2025-11-25"
 MAX_MESSAGE_BYTES = 16 * 1024 * 1024
+MAX_EXPORT_INLINE_BYTES = 4 * 1024 * 1024
 
 
 def tools():
@@ -160,6 +163,8 @@ def tools():
                     },
                 }
             )
+        if name in {"workflow_result", "result_page"}:
+            schema["properties"]["expected_revision"] = {"type": "integer", "minimum": 1}
         rows[name] = {
             "definition": {
                 "name": name,
@@ -175,6 +180,7 @@ def tools():
             "path": path,
             "path_keys": path_keys,
         }
+    rows.update(database_tools())
     return rows
 
 
@@ -204,7 +210,7 @@ class Bridge:
         def error(code, message):
             return {
                 "jsonrpc": "2.0",
-                "id": identifier,
+                "id": identifier if type(identifier) in (str, int) and (not isinstance(identifier, str) or len(identifier.encode()) <= 1024) else None,
                 "error": {"code": code, "message": message},
             }
 
@@ -213,6 +219,7 @@ class Bridge:
             or request.get("jsonrpc") != "2.0"
             or not isinstance(request.get("method"), str)
             or ("id" in request and type(identifier) not in (str, int))
+            or (isinstance(identifier, str) and len(identifier.encode()) > 1024)
         ):
             return error(-32600, "Invalid JSON-RPC request")
         method, params = request["method"], request.get("params", {})
@@ -237,7 +244,7 @@ class Bridge:
                 "protocolVersion": PROTOCOL,
                 "capabilities": {"tools": {}},
                 "serverInfo": {"name": "graphmine-workflows", "version": "1.0.0"},
-                "instructions": "Use existing workspace file IDs. Interactive workflows require review and exact revision approval. Native evidence and input validation are enforced by the same HTTP API used by the browser.",
+                "instructions": "Discover authorized sources, submit a query with a stable request_key, and follow its durable database job. Save or open temporary snapshots to retain them. Page large tables/results; exports preserve complete artifacts and may return authenticated download links. Interactive workflows require review and exact revision approval. Ownership, evidence, quotas and input validation use the same HTTP API as the browser.",
             }
         elif method == "ping":
             payload = {}
@@ -274,27 +281,40 @@ class Bridge:
                     for key, value in arguments.items()
                     if key not in row["path_keys"]
                 }
-                options = {"params": body} if row["method"] == "GET" else {"json": body}
+                headers = dict(row.get("headers", {}))
+                for key, header in row.get("header_arguments", {}).items():
+                    if key in body:
+                        headers[header] = body.pop(key)
+                options = {"params": {key: value for key, value in body.items() if value is not None}} if row["method"] == "GET" else {"json": body}
+                if headers: options["headers"] = headers
                 try:
                     async with self.client.stream(
                         row["method"], path, **options
                     ) as response:
-                        raw = bytearray()
-                        async for chunk in response.aiter_bytes():
-                            raw.extend(chunk)
-                            if len(raw) > MAX_MESSAGE_BYTES:
-                                raise ValueError(
-                                    "Result exceeds the MCP message limit; use result_page"
-                                )
-                        value = json.loads(raw)
-                        payload = result(value, response.is_error)
-                except (httpx.HTTPError, ValueError) as exc:
+                        if response.is_success and row.get("export"):
+                            payload = await read_download(response, MAX_EXPORT_INLINE_BYTES, MAX_MESSAGE_BYTES)
+                        elif response.status_code == 204:
+                            payload = result({"ok": True})
+                        else:
+                            raw = bytearray()
+                            async for chunk in response.aiter_bytes(chunk_size=64 * 1024):
+                                if len(raw) + len(chunk) > MAX_MESSAGE_BYTES:
+                                    raise ValueError("Result exceeds the MCP message limit; use result_page, query_table_page or an export tool")
+                                raw.extend(chunk)
+                            value = json.loads(raw, parse_constant=lambda value: (_ for _ in ()).throw(ValueError("Invalid API JSON")))
+                            payload = result(value, not response.is_success)
+                except httpx.HTTPError:
+                    payload = result({"error": {"code": "api_failure", "message": "The GraphMine API request failed. Check the connection and inspect existing jobs before retrying a submission."}}, True)
+                except ValueError as exc:
                     payload = result(
                         {"error": {"code": "api_failure", "message": str(exc)}}, True
                     )
         else:
             return error(-32601, "Method not found")
-        return {"jsonrpc": "2.0", "id": identifier, "result": payload}
+        response = {"jsonrpc": "2.0", "id": identifier, "result": payload}
+        if len(json.dumps(response, ensure_ascii=False, allow_nan=False).encode()) > MAX_MESSAGE_BYTES:
+            response["result"] = result({"error": {"code": "message_limit", "message": "Result exceeds the MCP message limit; use result_page, query_table_page or an export tool."}}, True)
+        return response
 
 
 async def serve():

@@ -93,10 +93,12 @@ def loading_server():
         preview_calls=0,
         plan_handler=None,
         post_handler=None,
+        route_handler=None,
         event_times=[],
         requests=[],
         domains=[{"id": "general", "name": "General", "description": "Explore a network"}],
         sessions=[SESSION],
+        session_requests=[],
         group_graph=None,
         group_requests=[],
         port_requests=[],
@@ -119,6 +121,8 @@ def loading_server():
                 pass
 
         def do_GET(self):
+            if state.route_handler and state.route_handler(self, "GET"):
+                return
             path = self.path.split("?", 1)[0]
             if path == "/api/auth/config":
                 self.respond({"enabled": False})
@@ -137,9 +141,38 @@ def loading_server():
             elif path == "/api/domains":
                 self.respond(state.domains)
             elif path == "/api/sessions":
-                self.respond(state.sessions)
+                params = parse_qs(urlsplit(self.path).query)
+                state.session_requests.append(params)
+                query = params.get("q", [""])[0].strip().casefold()
+                archived = params.get("include_archived", ["true"])[0] == "true"
+                rows = [row for row in state.sessions if (archived or not row.get("archived")) and query in (row.get("title") or "").casefold()]
+                offset = int(params.get("offset", [0])[0])
+                limit = int(params.get("limit", [100])[0])
+                self.respond(rows[offset:offset + limit])
             elif path == "/api/datasets":
                 self.respond(state.datasets)
+            elif path == "/api/datasets/page":
+                state.requests.append(("GET", self.path, None))
+                params = parse_qs(urlsplit(self.path).query)
+                query = params.get("q", [""])[0].strip().casefold()
+                kind = params.get("kind", [None])[0]
+                rows = list(reversed(state.datasets))
+                if params.get("latest", ["false"])[0] == "true":
+                    seen = set(); latest = []
+                    for item in rows:
+                        if item.get("dataset_id", item["id"]) not in seen:
+                            latest.append(item); seen.add(item.get("dataset_id", item["id"]))
+                    rows = latest
+                rows = [item for item in rows if (kind is None or item["kind"] == kind) and query in (item["name"] + " " + item["kind"]).casefold()]
+                offset, limit = int(params.get("offset", [0])[0]), int(params.get("limit", [20])[0])
+                self.respond({"items": [{key: value for key, value in item.items() if key != "source"} for item in rows[offset:offset+limit]],
+                              "offset": offset, "limit": limit, "has_more": offset + limit < len(rows)})
+            elif path.startswith("/api/datasets/") and path.endswith("/provenance"):
+                state.requests.append(("GET", self.path, None))
+                item = next((item for item in state.datasets if item["id"] == path.split("/")[3]), None)
+                self.respond(item or {"error": {"message": "Dataset not found"}}, status=200 if item else 404)
+            elif path.startswith("/api/workspace/recent/"):
+                self.respond({"items": [], "has_more": False, "offset": 0, "limit": 4})
             elif path == "/api/workflow-templates":
                 self.respond(state.templates)
             elif path == "/api/workflow-history":
@@ -206,6 +239,8 @@ def loading_server():
                     self.respond({}, 404)
 
         def do_POST(self):
+            if state.route_handler and state.route_handler(self, "POST"):
+                return
             body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
             if self.path.endswith("/analytics/plan") and state.plan_handler:
                 self.respond(state.plan_handler(json.loads(body)))
@@ -237,7 +272,14 @@ def loading_server():
             state.requests.append(("PATCH", self.path, body))
             self.respond({**SESSION, **body})
 
+        def do_PUT(self):
+            if state.route_handler and state.route_handler(self, "PUT"):
+                return
+            self.respond({}, 404)
+
         def do_DELETE(self):
+            if state.route_handler and state.route_handler(self, "DELETE"):
+                return
             state.requests.append(("DELETE", self.path, None))
             self.send(b"", "application/json", 204)
 

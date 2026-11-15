@@ -84,11 +84,12 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
 
         options = Options()
         options.add_argument("-headless")
+        options.enable_bidi = True
         options.binary_location = firefox
         driver = webdriver.Firefox(
             options=options, service=Service(executable_path=gecko)
         )
-        driver.set_window_size(1400, 1000)
+        driver.browsing_context.set_viewport(context=driver.current_window_handle, viewport={"width": 1400, "height": 1000})
         base = f"http://127.0.0.1:{listener.getsockname()[1]}"
         driver.get(base)
         wait = WebDriverWait(driver, 20)
@@ -124,12 +125,12 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         assert meter.get_attribute("max") == "50000"
         assert "37,500" in driver.find_element(By.ID, "account-quota").text
         driver.save_screenshot(str(tmp_path / "usage.png"))
-        driver.set_window_size(390, 844)
+        driver.browsing_context.set_viewport(context=driver.current_window_handle, viewport={"width": 390, "height": 844})
         assert driver.execute_script(
             "return document.querySelector('.account-settings-dialog').scrollWidth <= document.querySelector('.account-settings-dialog').clientWidth"
         )
         driver.save_screenshot(str(tmp_path / "usage-mobile.png"))
-        driver.set_window_size(1400, 1000)
+        driver.browsing_context.set_viewport(context=driver.current_window_handle, viewport={"width": 1400, "height": 1000})
         driver.find_element(By.ID, "account-close-settings").click()
         wait.until(
             lambda d: (
@@ -195,12 +196,12 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         )
         assert runtime.accounts.usage(carol["id"])["tokens_remaining"] == 29100
         driver.save_screenshot(str(tmp_path / "administrator.png"))
-        driver.set_window_size(390, 844)
+        driver.browsing_context.set_viewport(context=driver.current_window_handle, viewport={"width": 390, "height": 844})
         assert driver.execute_script(
             "return document.querySelector('.account-settings-content').scrollWidth <= document.querySelector('.account-settings-content').clientWidth"
         )
         driver.save_screenshot(str(tmp_path / "administrator-mobile.png"))
-        driver.set_window_size(1400, 1000)
+        driver.browsing_context.set_viewport(context=driver.current_window_handle, viewport={"width": 1400, "height": 1000})
         driver.find_element(By.ID, "account-reset-tokens").click()
         wait.until(
             lambda d: (
@@ -233,7 +234,7 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
             By.ID, "session-select"
         ).get_attribute("textContent")
         driver.save_screenshot(str(tmp_path / "workspace.png"))
-        driver.set_window_size(390, 844)
+        driver.browsing_context.set_viewport(context=driver.current_window_handle, viewport={"width": 390, "height": 844})
         assert driver.execute_script(
             "return document.documentElement.scrollWidth <= window.innerWidth"
         )

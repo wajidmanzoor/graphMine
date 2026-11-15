@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": false
+  },
+  "include": [
+    "generated/api.d.ts", "types/*.d.ts", "tests/contracts.ts",
+    "../graphmine_agent/static/analytics-async.js",
+    "../graphmine_agent/static/analytics-transport.js",
+    "../graphmine_agent/static/analytics-client.js",
+    "../graphmine_agent/static/analytics-release.js",
+    "../graphmine_agent/static/analytics-rendering.js",
+    "../graphmine_agent/static/analytics-sessions.js"
+  ]
+}

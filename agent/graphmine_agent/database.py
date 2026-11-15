@@ -28,7 +28,14 @@ from .models import (
 # against storage. Older code must not bypass that accounting.
 # 3: explicitly shared project snapshots and their storage accounting.
 # 4: private saved connections and uploaded SQLite databases count toward storage.
-SCHEMA_VERSION = 4
+# 5: temporary query previews share private blobs and count toward storage.
+# 6: saved Cypher and bounded execution history are private and quota-accounted.
+# 7: dataset and preview content can contain typed, reusable table artifacts.
+# 8: durable owner-scoped database jobs reserve bounded metadata storage.
+# 9: bounded conversation exploration settings are private and quota-accounted.
+# 10: transactional dataset summaries and change tokens for indexed tables.
+# 11: indexed public conversation entries and stable question numbering.
+SCHEMA_VERSION = 11
 
 
 class RecordNotFound(KeyError):
@@ -55,6 +62,8 @@ class Database:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = RLock()
         self.history = history or HistoryStore(path.parent / "history")
+        # Set by the runtime; tools that open the store directly capture nothing.
+        self.capture = None
         self._initialize()
 
     @contextmanager
@@ -62,6 +71,7 @@ class Database:
         connection = sqlite3.connect(self.path, timeout=30)
         try:
             connection.row_factory = sqlite3.Row
+            connection.create_function("casefold", 1, lambda value: (value or "").casefold(), deterministic=True)
             connection.execute("PRAGMA foreign_keys = ON")
             connection.execute("PRAGMA journal_mode = WAL")
             with connection:
@@ -94,6 +104,11 @@ class Database:
                   created_at TEXT NOT NULL
                 );
                 CREATE INDEX IF NOT EXISTS files_session_idx ON files(session_id);
+                CREATE TABLE IF NOT EXISTS session_exploration (
+                  session_id TEXT PRIMARY KEY REFERENCES sessions(id) ON DELETE CASCADE,
+                  revision INTEGER NOT NULL, document TEXT NOT NULL,
+                  updated_at TEXT NOT NULL
+                );
                 CREATE TABLE IF NOT EXISTS jobs (
                   id TEXT PRIMARY KEY,
                   session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
@@ -149,6 +164,42 @@ class Database:
                   UNIQUE(dataset_id,version)
                 );
                 CREATE INDEX IF NOT EXISTS datasets_owner ON dataset_versions(owner_id);
+                CREATE TABLE IF NOT EXISTS query_preview_blobs (
+                  owner_id TEXT NOT NULL, sha256 TEXT NOT NULL,
+                  content BLOB NOT NULL, size_bytes INTEGER NOT NULL,
+                  PRIMARY KEY(owner_id,sha256)
+                );
+                CREATE TABLE IF NOT EXISTS query_previews (
+                  id TEXT PRIMARY KEY, owner_id TEXT NOT NULL,
+                  metadata TEXT NOT NULL, sha256 TEXT NOT NULL,
+                  expires_at REAL NOT NULL,
+                  FOREIGN KEY(owner_id,sha256) REFERENCES query_preview_blobs(owner_id,sha256)
+                );
+                CREATE INDEX IF NOT EXISTS query_previews_expiry ON query_previews(expires_at);
+                CREATE INDEX IF NOT EXISTS query_previews_blob ON query_previews(owner_id,sha256);
+                CREATE TABLE IF NOT EXISTS query_library (
+                  id TEXT PRIMARY KEY, owner_id TEXT NOT NULL,
+                  source_id TEXT NOT NULL, dataset_id TEXT NOT NULL,
+                  kind TEXT NOT NULL CHECK(kind IN ('saved','history')),
+                  document TEXT NOT NULL, updated_at TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS query_library_scope
+                  ON query_library(owner_id,source_id,dataset_id,kind,updated_at DESC,id DESC);
+                CREATE INDEX IF NOT EXISTS query_library_recent
+                  ON query_library(owner_id,kind,updated_at DESC,id DESC);
+                CREATE TABLE IF NOT EXISTS database_jobs (
+                  id TEXT PRIMARY KEY, owner_id TEXT NOT NULL,
+                  source_id TEXT NOT NULL, kind TEXT NOT NULL,
+                  status TEXT NOT NULL, document TEXT NOT NULL,
+                  request_key TEXT, request_hash TEXT NOT NULL,
+                  reserved_bytes INTEGER NOT NULL,
+                  created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+                  UNIQUE(owner_id,request_key)
+                );
+                CREATE INDEX IF NOT EXISTS database_jobs_queue
+                  ON database_jobs(status,created_at,id);
+                CREATE INDEX IF NOT EXISTS database_jobs_owner
+                  ON database_jobs(owner_id,source_id,updated_at DESC,id DESC);
                 CREATE TABLE IF NOT EXISTS workflow_templates (
                   id TEXT PRIMARY KEY,
                   owner_id TEXT,
@@ -202,6 +253,18 @@ class Database:
             connection.execute(
                 "CREATE INDEX IF NOT EXISTS sessions_owner ON sessions(owner_id)"
             )
+            connection.execute(
+                "CREATE INDEX IF NOT EXISTS sessions_owner_recent ON sessions(owner_id, updated_at DESC, id DESC)"
+            )
+            connection.execute(
+                "CREATE INDEX IF NOT EXISTS sessions_recent ON sessions(updated_at DESC, id DESC)"
+            )
+            from .dataset_index import initialize
+
+            initialize(connection)
+            from .conversation_timeline import initialize as initialize_timeline
+
+            initialize_timeline(connection, backfill=stored < 11)
             connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
 
     @staticmethod
@@ -241,14 +304,55 @@ class Database:
             raise RecordNotFound(f"unknown session: {session_id}")
         return SessionRecord.model_validate_json(row["payload"])
 
-    def list_sessions(self, limit: int = 100) -> list[SessionRecord]:
-        principal = current_principal.get()
+    def session_owner(self, session_id: str) -> dict[str, Any] | None:
+        """The owning account regardless of the caller, for training captures."""
         with self._connect() as connection:
+            try:
+                row = connection.execute(
+                    "SELECT s.owner_id AS id, a.username AS username FROM sessions s"
+                    " LEFT JOIN accounts a ON a.id = s.owner_id WHERE s.id=?",
+                    (session_id,),
+                ).fetchone()
+            except sqlite3.OperationalError:
+                # The accounts table exists only once the account service starts.
+                row = connection.execute(
+                    "SELECT owner_id AS id, NULL AS username FROM sessions WHERE id=?",
+                    (session_id,),
+                ).fetchone()
+        return dict(row) if row else None
+
+    def list_sessions(
+        self, limit: int = 100, *, offset: int = 0, q: str = "",
+        include_archived: bool = True, hide_empty: bool = False,
+    ) -> list[SessionRecord]:
+        principal = current_principal.get()
+        conditions, values = [], []
+        if principal:
+            conditions.append("owner_id=?")
+            values.append(principal.user_id)
+        if not include_archived:
+            conditions.append("COALESCE(json_extract(payload, '$.archived'), 0)=0")
+        if hide_empty:
+            # An untitled conversation nobody has used yet is not history.
+            conditions.append(
+                "(json_extract(payload, '$.title') IS NOT NULL"
+                " OR EXISTS (SELECT 1 FROM events e WHERE e.session_id=sessions.id)"
+                " OR EXISTS (SELECT 1 FROM files f WHERE f.session_id=sessions.id)"
+                " OR EXISTS (SELECT 1 FROM messages m WHERE m.session_id=sessions.id))"
+            )
+        query = q.strip().casefold()
+        if query:
+            # Literal, Unicode-aware title search; % and _ are not wildcards.
+            conditions.append("instr(graphmine_casefold(COALESCE(json_extract(payload, '$.title'), '')), ?) > 0")
+            values.append(query)
+        with self._connect() as connection:
+            if query:
+                connection.create_function("graphmine_casefold", 1, str.casefold, deterministic=True)
             rows = connection.execute(
                 "SELECT payload FROM sessions"
-                + (" WHERE owner_id=?" if principal else "")
-                + " ORDER BY updated_at DESC LIMIT ?",
-                (principal.user_id, limit) if principal else (limit,),
+                + (" WHERE " + " AND ".join(conditions) if conditions else "")
+                + " ORDER BY updated_at DESC, id DESC LIMIT ? OFFSET ?",
+                (*values, limit, offset),
             ).fetchall()
         return [SessionRecord.model_validate_json(row["payload"]) for row in rows]
 
@@ -465,7 +569,7 @@ class Database:
         return record
 
     def list_jobs(
-        self, session_id: str | None = None, statuses: set[JobStatus] | None = None
+        self, session_id: str | None = None, statuses: set[JobStatus] | None = None, *, limit: int | None = None
     ) -> list[JobRecord]:
         clauses: list[str] = []
         arguments: list[Any] = []
@@ -483,8 +587,11 @@ class Database:
         where = " WHERE " + " AND ".join(clauses) if clauses else ""
         with self._connect() as connection:
             rows = connection.execute(
-                f"SELECT payload FROM jobs{where} ORDER BY created_at", arguments
+                f"SELECT payload FROM jobs{where} ORDER BY created_at" + (" DESC,id DESC LIMIT ?" if limit is not None else ""),
+                [*arguments, limit] if limit is not None else arguments,
             ).fetchall()
+        if limit is not None:
+            rows.reverse()
         return [JobRecord.model_validate_json(row["payload"]) for row in rows]
 
     def save_result(self, result: ResultRecord) -> ResultRecord:
@@ -713,16 +820,26 @@ class Database:
             )
         return len(rows)
 
-    def events(self, session_id: str, after: int = 0) -> list[ConversationEvent]:
+    def events(
+        self, session_id: str, after: int = 0, *, limit: int | None = None,
+        types: tuple[str, ...] | None = None,
+    ) -> list[ConversationEvent]:
+        """Ordered events; ``types`` skips decoding unrelated rows such as reasoning."""
         self.get_session(session_id)
+        values: list[Any] = [session_id, after]
+        kinds = ""
+        if types is not None:
+            kinds = f" AND type IN ({','.join('?' for _ in types)})"
+            values.extend(types)
+        if limit is not None:
+            values.append(limit)
         with self._connect() as connection:
             rows = connection.execute(
                 """
                 SELECT sequence,session_id,job_id,type,payload,created_at
                 FROM events WHERE session_id=? AND sequence>?
-                ORDER BY sequence
-                """,
-                (session_id, after),
+                """ + kinds + " ORDER BY sequence" + (" LIMIT ?" if limit is not None else ""),
+                values,
             ).fetchall()
         return [
             ConversationEvent(
@@ -735,6 +852,24 @@ class Database:
             )
             for row in rows
         ]
+
+    def chat_turn_exists(
+        self, session_id: str, turn_id: str, *, role: str | None = None,
+        status: str | None = None,
+    ) -> bool:
+        """Whether a matching chat event exists, without reading the session's log."""
+        self.get_session(session_id)
+        sql = (
+            "SELECT 1 FROM events WHERE session_id=? AND type='workflow.chat'"
+            " AND json_extract(payload,'$.turn_id')=?"
+        )
+        values = [session_id, turn_id]
+        for field, value in (("role", role), ("status", status)):
+            if value is not None:
+                sql += f" AND json_extract(payload,'$.{field}')=?"
+                values.append(value)
+        with self._connect() as connection:
+            return connection.execute(sql + " LIMIT 1", values).fetchone() is not None
 
     def mark_interrupted_jobs_failed(self, *, include_queued: bool = False) -> int:
         statuses = {JobStatus.running, JobStatus.interpreting}
@@ -863,14 +998,28 @@ class Database:
             session = self._touch_session(connection, session_id)
         self.history.snapshot(session_id, f"feedback/{record.id}.json", record)
         self.history.record(session_id, "feedback.saved", record)
+        if self.capture:
+            self.capture.record(
+                session_id, "feedback.saved", record,
+                turn_id=record.turn_id, job_id=record.job_id,
+            )
         self.history.snapshot(session_id, "session.json", session)
         return record
 
+    def feedback_count(self, session_id: str) -> int:
+        self.get_session(session_id)
+        with self._connect() as db:
+            return db.execute("SELECT count(*) FROM feedback WHERE session_id=?", (session_id,)).fetchone()[0]
+
     def feedback(self, session_id: str) -> list[FeedbackRecord]:
+        return list(self.iter_feedback(session_id))
+
+    def iter_feedback(self, session_id: str) -> Iterator[FeedbackRecord]:
         self.get_session(session_id)
         with self._connect() as connection:
             rows = connection.execute(
                 "SELECT payload FROM feedback WHERE session_id=? ORDER BY created_at",
                 (session_id,),
-            ).fetchall()
-        return [FeedbackRecord.model_validate_json(row["payload"]) for row in rows]
+            )
+            for row in rows:
+                yield FeedbackRecord.model_validate_json(row["payload"])

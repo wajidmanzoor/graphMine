@@ -119,7 +119,7 @@ def capture_fixture(settings, catalog, tmp_path, monkeypatch, *, case_ids=None):
 
 
 def test_full_catalog_api_lifecycle(settings, catalog, tmp_path, monkeypatch):
-    report, _ = capture_fixture(settings, catalog, tmp_path, monkeypatch)
+    report, suite = capture_fixture(settings, catalog, tmp_path, monkeypatch)
     failures = [
         (row["case_id"], row["grade"]["issues"], row["outcome"].get("error"))
         for row in report["captures"]
@@ -127,7 +127,7 @@ def test_full_catalog_api_lifecycle(settings, catalog, tmp_path, monkeypatch):
     ]
     assert failures == []
     assert report["summary"]["complete"] is True
-    assert report["summary"]["workflow_contract_passes"] == 46
+    assert report["summary"]["workflow_contract_passes"] == len(suite["cases"])
     assert report["summary"]["dimensions"]["numerical_checks"] == {
         "passed": 26,
         "graded": 26,

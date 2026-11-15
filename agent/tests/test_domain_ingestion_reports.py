@@ -40,15 +40,28 @@ def test_csv_mapping_preserves_names_types_edge_and_vertex_attributes(
     assert record.metadata.semantic_context["entity_types"] == {"employee": 2}
 
 
-def test_csv_unknown_headers_require_mapping_instead_of_becoming_fake_entities(
+def test_csv_custom_headers_are_mapped_without_becoming_fake_entities(
     graph_store, session
 ):
-    with pytest.raises(UploadError, match="From and To"):
+    record = graph_store.ingest(
+        session_id=session.id,
+        role=FileRole.graph,
+        filename="people.csv",
+        content=b"employee,partner\nAva,Ben\n",
+    )
+    graph = graph_store.read_graph(record.id, session.id)
+    assert [vertex["id"] for vertex in graph["vertices"]] == ["Ava", "Ben"]
+    assert len(graph["edges"]) == 1
+    assert graph["graph"]["attributes"]["ingestion"]["source_column"] == "employee"
+    assert graph["graph"]["attributes"]["ingestion"]["target_column"] == "partner"
+    with pytest.raises(UploadError, match="two different existing columns"):
         graph_store.ingest(
             session_id=session.id,
             role=FileRole.graph,
             filename="people.csv",
             content=b"employee,partner\nAva,Ben\n",
+            source_column="missing",
+            target_column="partner",
         )
 
 

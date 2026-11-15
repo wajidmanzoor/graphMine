@@ -191,12 +191,18 @@ def test_static_ui_and_openapi_are_bundled(settings: Settings) -> None:
         page = client.get("/")
         assert page.status_code == 200
         assert 'id="domain-heading"' in page.text
+        import re
+        bundles = re.findall(r'(?:src|href)="(/assets/[^\"]+)"', page.text)
+        assert len(bundles) == 2
+        for path in bundles:
+            asset = client.get(path)
+            assert asset.status_code == 200
+            assert "immutable" in asset.headers["cache-control"]
         for path, content_type in (
             ("/analytics-shell.css", "text/css"),
             ("/analytics-shell.js", "javascript"),
             ("/analytics-commands.js", "javascript"),
         ):
-            assert f'"{path}"' in page.text
             asset = client.get(path)
             assert asset.status_code == 200
             assert content_type in asset.headers["content-type"]

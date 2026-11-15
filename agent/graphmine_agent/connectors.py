@@ -8,13 +8,14 @@ import sqlite3
 import tempfile
 import time
 from contextlib import closing
+from itertools import islice
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
 
 import httpx
 from fastapi import Request, UploadFile
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from starlette.concurrency import run_in_threadpool
 
 from . import managed_connectors as managed
@@ -86,11 +87,9 @@ def configured(settings):
 
 def available(runtime):
     user = current_principal.get()
-    if user is None:
-        return []
     return [
-        entry for entry in configured(runtime.settings) if user.username in entry.users
-    ] + managed.records(runtime)
+        entry for entry in configured(runtime.settings) if "*" in entry.users or user and user.username in entry.users
+    ] + (managed.records(runtime) if user else [])
 
 
 def get(runtime, connector_id):
@@ -399,6 +398,8 @@ def preview(runtime, connector_id):
         raise AnalyticsError(
             "The graph exceeds the input byte limit.", "resource_limit"
         )
+    vertices = graph["vertices"][:20]
+    shown = {_json(vertex["id"]) for vertex in vertices}
     return {
         "name": config.name,
         "sha256": hashlib.sha256(raw).hexdigest(),
@@ -414,8 +415,8 @@ def preview(runtime, connector_id):
         "metadata": runtime.graph_store._metadata("preview", graph).model_dump(
             mode="json"
         ),
-        "vertices": graph["vertices"][:20],
-        "edges": graph["edges"][:20],
+        "vertices": vertices,
+        "edges": list(islice((edge for edge in graph["edges"] if _json(edge["source"]) in shown and _json(edge["target"]) in shown), 20)),
     }
 
 
@@ -462,6 +463,14 @@ def import_source(runtime, connector_id, body):
 
 
 def register_connector_routes(router):
+    def validate_settings(body):
+        try:
+            return managed.ConnectionSettings.model_validate(body)
+        except ValidationError as error:
+            detail = error.errors(include_input=False, include_context=False)[0]
+            field = ".".join(map(str, detail["loc"]))
+            raise AnalyticsError((field + ": " if field else "") + detail["msg"], "connector_settings", 422) from None
+
     @router.get("/connectors")
     def list_connectors(request: Request):
         return [
@@ -482,8 +491,8 @@ def register_connector_routes(router):
             return await run_in_threadpool(function, runtime, *args)
 
     @router.post("/connectors", status_code=201)
-    async def create_connection(body: managed.ConnectionSettings, request: Request):
-        return await run(request, managed.save, body)
+    async def create_connection(body: dict, request: Request):
+        return await run(request, managed.save, validate_settings(body))
 
     @router.post("/connectors/sqlite", status_code=201)
     async def upload_database(file: UploadFile, request: Request):
@@ -520,9 +529,9 @@ def register_connector_routes(router):
 
     @router.put("/connectors/{connector_id}")
     async def update_connection(
-        connector_id: str, body: managed.ConnectionSettings, request: Request
+        connector_id: str, body: dict, request: Request
     ):
-        return await run(request, managed.save, body, connector_id)
+        return await run(request, managed.save, validate_settings(body), connector_id)
 
     @router.delete("/connectors/{connector_id}", status_code=204)
     def delete_connection(connector_id: str, request: Request):

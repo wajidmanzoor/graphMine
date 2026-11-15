@@ -24,8 +24,12 @@ _TRANSIENT = {
 
 
 def _inventory(root: Path) -> dict[str, dict]:
+    from .result_index import is_workflow_index
+
     files = {}
     for path in sorted(root.rglob("*")):
+        if is_workflow_index(path):
+            continue
         if path.is_symlink() or not (path.is_file() or path.is_dir()):
             raise ValueError(f"Backup requires regular files and directories: {path}")
         if path.is_file():
@@ -106,6 +110,17 @@ def _audit(database: Path, original: Path, data: Path) -> dict:
                     or hashlib.sha256(content).hexdigest() != saved["sha256"]
                 ):
                     raise ValueError(f"Saved dataset integrity mismatch: {identifier}")
+        if connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='query_previews'").fetchone():
+            for digest, content, size in connection.execute("SELECT sha256,content,size_bytes FROM query_preview_blobs"):
+                if len(content) != size or hashlib.sha256(content).hexdigest() != digest:
+                    raise ValueError("Query preview content integrity mismatch")
+            for identifier, metadata, digest, size in connection.execute("""
+                SELECT p.id,p.metadata,p.sha256,b.size_bytes FROM query_previews p
+                JOIN query_preview_blobs b ON p.owner_id=b.owner_id AND p.sha256=b.sha256
+            """):
+                saved = json.loads(metadata)
+                if saved["id"] != identifier or saved["sha256"] != digest or saved["size_bytes"] != size:
+                    raise ValueError(f"Query preview metadata integrity mismatch: {identifier}")
         count = 0
         for (payload,) in connection.execute("SELECT payload FROM files"):
             record = StoredFile.model_validate_json(payload)
@@ -177,7 +192,7 @@ def snapshot_store(
 
 # User data for snapshots taken while the API runs. Model and download caches,
 # exports and earlier backups are deliberately left out.
-ONLINE_DIRECTORIES = ("sessions", "analytics", "history", "jobs")
+ONLINE_DIRECTORIES = ("sessions", "analytics", "history", "jobs", "database-connections")
 ONLINE_DATABASES = ("agent.sqlite3", "analytics/workflows.sqlite3")
 
 
@@ -222,7 +237,7 @@ def online_snapshot(data_root: Path, destination: Path) -> dict:
             "database": _audit(
                 destination / "data/agent.sqlite3", source, destination / "data"
             ),
-            "scope": "Online snapshot of accounts, quotas, conversations, uploads, analyses and history. Model caches, exports, environment secrets and model weights are not included.",
+            "scope": "Online snapshot of accounts, quotas, conversations, uploads, analyses, history and private saved database connections (including credentials). Model caches, exports, environment secrets and model weights are not included.",
         }
         HistoryStore.write(destination / "manifest.json", manifest)
         return manifest
@@ -286,6 +301,7 @@ def restore_snapshot(snapshot: Path, destination: Path) -> dict:
         data = destination / "data"
         database = data / "agent.sqlite3"
         cancelled = []
+        cancelled_database = []
         with closing(sqlite3.connect(database)) as connection, connection:
             for identifier, payload in connection.execute(
                 "SELECT id,payload FROM files"
@@ -321,6 +337,20 @@ def restore_snapshot(snapshot: Path, destination: Path) -> dict:
                     ),
                 )
                 cancelled.append(identifier)
+            if connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='database_jobs'").fetchone():
+                for identifier, document in connection.execute(
+                    "SELECT id,document FROM database_jobs WHERE status IN ('queued','running','cancelling')"
+                ).fetchall():
+                    job = json.loads(document)
+                    now = utc_now().isoformat()
+                    message = "Pending database work was stopped during offline restore. Review the source before explicitly retrying."
+                    if job["kind"] == "sync":
+                        message += " The source graph may already include changes made after this backup."
+                    job.update(status="cancelled", cancellable=False, finished_at=now, updated_at=now,
+                               error={"code": "restored_not_resumed", "message": message})
+                    connection.execute("UPDATE database_jobs SET status='cancelled',document=?,reserved_bytes=0,updated_at=? WHERE id=?",
+                                       (json.dumps(job), now, identifier))
+                    cancelled_database.append(identifier)
         report = {
             "version": VERSION,
             "restored_at": utc_now().isoformat(),
@@ -328,6 +358,7 @@ def restore_snapshot(snapshot: Path, destination: Path) -> dict:
             "data_root": str(data),
             "history_root": str(history),
             "cancelled_pending_job_ids": cancelled,
+            "cancelled_database_job_ids": cancelled_database,
             "database": _audit(database, data, data),
             "services_started": False,
             "scope": "Staged restore. Operational file paths rebased; archived history/commands retain original provenance. No production directory or model configuration changed.",

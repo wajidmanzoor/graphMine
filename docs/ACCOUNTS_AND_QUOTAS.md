@@ -119,8 +119,17 @@ These are starting limits, not a 100-concurrent-user capacity measurement. Graph
 algorithms have very different costs. Monitor CPU, GPU memory, execution time
 and disk use before raising them. The storage allowance counts raw uploads, including
 projected files, plus each conversation's saved analysis inputs and results. It
+also includes private datasets, previews, saved queries, shared project records,
+connections, saved exploration settings, and durable database job metadata.
+Exploration settings retain up to 32 views and 512 KiB per conversation and are
+deleted with that conversation. Database query/synchronization
+jobs have a separate bounded queue: eight pending jobs per owner and
+`GRAPHMINE_MAX_PENDING_JOBS` across that queue. Each pending database job reserves
+768 KiB of metadata storage, released down to actual record bytes on completion;
+the latest 200 finished records are retained. These database operations use the
+source's read/write budgets, independently of the graph-calculation job quota. It
 does not cap history archives, model weights or all disk use. **Settings → Usage**
-shows both parts. Deleting a conversation or an uploaded file frees its space. The existing model server must
+shows the storage breakdown. Deleting a conversation or an uploaded file frees its space. The existing model server must
 also retain its configured context length, sequence and GPU memory limits.
 
 ## How the 24-hour token allowance works
@@ -255,7 +264,9 @@ runs at startup and every six hours, and skips conversations with running work.
 
 Snapshots can be taken while the API runs. Each copies both databases with
 SQLite's online backup (accounts, quotas, conversations and the analysis
-ledger), then uploads, saved analyses and history. Model caches, exports and
+ledger), then uploads, saved analyses, history and owner-scoped database
+connections. Saved connection credentials are included with private file
+permissions and verified hashes. Model caches, exports and
 earlier backups are excluded. Every uploaded file is checked against its stored
 hash.
 
@@ -269,5 +280,5 @@ Set `GRAPHMINE_BACKUP_DIR` (outside the data directory) to take a snapshot at
 startup and every `GRAPHMINE_BACKUP_HOURS`, verify it, and keep the newest
 `GRAPHMINE_BACKUP_KEEP`. A restore always goes into a new directory; point
 `GRAPHMINE_AGENT_DATA_ROOT` at it to use it. Pending work in a restored copy is
-marked cancelled, never replayed. Backups contain password hashes and private
-research data, so keep the backup directory private.
+marked cancelled, never replayed. Backups contain password hashes, saved database
+credentials and private research data, so keep the backup directory private.

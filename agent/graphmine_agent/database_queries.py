@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import json
 import math
-from typing import Any
+import re
+from time import perf_counter
+from typing import Any, Literal
 
 from fastapi import Request
 from pydantic import Field
@@ -23,7 +25,10 @@ from .database_sources import (
     validate_cypher,
 )
 from .datasets import DatasetLibrary
+from .benchmark_mappings import catalog_source, graph_identity, resolve_source
 from .models import SessionRecord, utc_now
+from .query_previews import QueryPreviews
+from .database_job_context import begin_commit, checkpoint
 
 
 class CypherRequest(Strict):
@@ -31,22 +36,28 @@ class CypherRequest(Strict):
     parameters: dict[str, Any] = Field(default_factory=dict)
     name: str | None = Field(default=None, max_length=160)
     directed: bool = True
+    dataset_id: str | None = Field(default=None, max_length=128)
+    projection: Literal["elements", "rows"] = "elements"
+    weight_property: str | None = Field(default=None, min_length=1, max_length=128)
 
 
 class OpenChat(Strict):
     title: str | None = Field(default=None, max_length=200)
+    domain_id: str = Field(default="general", min_length=1, max_length=128)
 
 
 class GraphCollector:
     """Extract actual driver graph values; scalar maps cannot impersonate nodes."""
 
-    def __init__(self, source, byte_limit):
+    def __init__(self, source, byte_limit, weight_property=None):
         self.source, self.byte_limit = source, byte_limit
+        self.weight_property = weight_property
         self.mapping_hash = source.fingerprint()
         self.vertices, self.edges = {}, {}
         self.lineage = {"vertices": {}, "edges": {}}
         self.node_refs, self.edge_refs = {}, {}
         self.node_ids, self.vertex_owners, self.edge_owners = {}, {}, {}
+        self.edge_ids = {}
         self.used = 0
 
     def _identity(self, value, kind):
@@ -54,7 +65,13 @@ class GraphCollector:
         identity = props.get("gm_id")
         if type(identity) not in (str, int) or identity == "":
             identity = f"neo4j:{value.element_id}"
-        if props.get("gm_source") == self.source.id and props.get("gm_mapping"):
+        catalog_identity = graph_identity(self.source, value, kind, self.node_refs)
+        if catalog_identity:
+            mapping, keys = catalog_identity
+            identity = stable_id(self.source, mapping, keys)
+            self.lineage[kind][_key(identity)] = {"mapping": mapping.id, "keys": keys}
+            return identity
+        if not self.source._catalog and props.get("gm_source") == self.source.id and props.get("gm_mapping"):
             mapping = self.source.mapping(props["gm_mapping"])
             try:
                 keys = json.loads(props["gm_key"])
@@ -129,15 +146,34 @@ class GraphCollector:
             "attributes": {**properties, "neo4j_labels": labels},
         }
         if labels:
-            document["type"] = labels[0]
+            document["type"] = next((label for label in labels if not label.startswith("GM_")), labels[0])
         if value.get("gm_display") is not None:
             document["label"] = str(value["gm_display"])
+        elif any(value.get(key) for key in ("name", "title", "firstName")):
+            document["label"] = str(next(value[key] for key in ("name", "title", "firstName") if value.get(key)))
+        else:
+            for key in ("userId", "user_id", "id"):
+                if value.get(key) is not None:
+                    document["label"] = f"{document.get('type', 'Node')} {value[key]}"
+                    break
         self._put(self.vertices, identity, document, value.element_id)
         return identity
 
     def relationship(self, value):
+        weight = value.get(self.weight_property) if self.weight_property else value.get("gm_weight", value.get("weight"))
+        if self.weight_property and (type(weight) not in (int, float) or not math.isfinite(weight)):
+            raise AnalyticsError(
+                f"Every returned relationship must have a finite numeric '{self.weight_property}' weight. Filter missing values or choose another property.",
+                "database_value",
+            )
         self.edge_refs[value.element_id] = value
         identity = self._identity(value, "edges")
+        old_id = self.edge_ids.get(value.element_id)
+        if old_id is not None and old_id != identity:
+            old = self.edges.pop(_key(old_id))
+            self.edge_owners.pop(_key(old_id))
+            self.used -= len(_json(old).encode())
+        self.edge_ids[value.element_id] = identity
         properties = {
             k: json_value(v) for k, v in dict(value).items() if not k.startswith("gm_")
         }
@@ -148,7 +184,6 @@ class GraphCollector:
             "type": value.type,
             "attributes": properties,
         }
-        weight = value.get("gm_weight", value.get("weight"))
         if weight is not None:
             if type(weight) not in (int, float) or not math.isfinite(weight):
                 raise AnalyticsError(
@@ -218,15 +253,79 @@ class GraphCollector:
             "edges": list(self.edges.values()),
         }
 
+    def record(self, value, row_number):
+        return {key: self.collect(value[key]) for key in value.keys()}
+
+
+class RowGraphCollector(GraphCollector):
+    """Create snapshot edges between real nodes returned as source and target."""
+
+    def record(self, value, row_number):
+        from neo4j.graph import Node
+
+        if not {"source", "target"}.issubset(value.keys()):
+            raise AnalyticsError(
+                "Return nodes as source and target, for example "
+                "RETURN a AS source, b AS target, count(*) AS weight.",
+                "query_projection",
+            )
+        if not all(isinstance(value[key], Node) for key in ("source", "target")):
+            raise AnalyticsError(
+                f"Row {row_number}: source and target must be nodes, not IDs, maps or null. "
+                "Return a AS source and b AS target.",
+                "query_projection",
+            )
+        edge_type = value["type"] if "type" in value.keys() else "DERIVED"
+        if not isinstance(edge_type, str) or not edge_type.strip():
+            raise AnalyticsError(
+                f"Row {row_number}: type must be a nonempty string.",
+                "query_projection",
+            )
+        if "weight" in value.keys() and (
+            type(value["weight"]) not in (int, float)
+            or not math.isfinite(value["weight"])
+        ):
+            raise AnalyticsError(
+                f"Row {row_number}: weight must be a finite number.",
+                "query_projection",
+            )
+        properties = {
+            key: json_value(value[key])
+            for key in value.keys() if key not in {"source", "target"}
+        }
+        source, target = (self.node(value[key]) for key in ("source", "target"))
+        identity = f"query-edge:{row_number}"
+        edge = {
+            "id": identity,
+            "source": source,
+            "target": target,
+            "type": edge_type,
+            "attributes": properties,
+        }
+        if "weight" in properties:
+            edge["weight"] = properties["weight"]
+        # Derived edges have snapshot identity, never a SQL row mapping.
+        self._put(self.edges, identity, edge, identity)
+        return {"source": {"node": source}, "target": {"node": target}, **properties}
+
 
 def execute_query(source, body, byte_limit):
+    checkpoint("validating")
     validate_cypher(body.statement)
-    if len(_json(body.parameters).encode()) > 256 * 1024:
+    if body.weight_property and body.projection == "rows":
+        raise AnalyticsError("For source/target rows, return the edge weight as the weight column.", "query_projection")
+    try:
+        parameter_bytes = len(_json(body.parameters).encode())
+    except (TypeError, ValueError, OverflowError) as error:
+        raise AnalyticsError("Query parameters must contain finite JSON values.", "cypher_parameters") from error
+    if parameter_bytes > 256 * 1024:
         raise AnalyticsError(
             "Query parameters exceed the byte limit.", "resource_limit"
         )
     byte_limit = min(byte_limit, source.max_bytes)
-    collector, sample_records, rows, used = GraphCollector(source, byte_limit), [], 0, 0
+    collector_class = RowGraphCollector if body.projection == "rows" else GraphCollector
+    collector, sample_records, rows, used = collector_class(source, byte_limit, body.weight_property), [], 0, 0
+    scalar_rows = []
     try:
         with (
             neo4j_session(source) as session,
@@ -240,29 +339,40 @@ def execute_query(source, body, byte_limit):
                     "This editor accepts read queries only.", "cypher_read_only"
                 )
             response = transaction.run(body.statement, body.parameters)
+            checkpoint("reading", 0)
+            columns = list(response.keys())
+            if body.projection == "rows" and not {"source", "target"}.issubset(columns):
+                raise AnalyticsError(
+                    "Source / target columns mode requires RETURN a AS source, b AS target. "
+                    "Return nodes for both columns; weight and type are optional.",
+                    "query_projection",
+                )
             for record in response:
                 rows += 1
+                checkpoint("reading", rows)
                 if rows > source.max_rows:
                     raise AnalyticsError(
                         "Query exceeds the row limit. Add a filter or an explicit LIMIT.",
                         "resource_limit",
                     )
-                item = {
-                    key: collector.collect(record[key])
-                    for key in record.keys()  # noqa: SIM118 - Neo4j records iterate over values.
-                }
+                item = collector.record(record, rows)
                 used += len(_json(item).encode())
                 if used > byte_limit:
                     raise AnalyticsError(
                         "Query exceeds the result byte limit.", "resource_limit"
                     )
                 if len(sample_records) < 50:
-                    sample_records.append(record)
+                    sample_records.append((rows, record))
+                if collector.vertices or collector.edges:
+                    scalar_rows = None
+                elif scalar_rows is not None:
+                    scalar_rows.append(item)
             response.consume()
+            checkpoint("hydrating", rows)
             collector.hydrate_endpoints(transaction)
             sample = [
-                {key: collector.collect(record[key]) for key in record.keys()}  # noqa: SIM118 - Neo4j records iterate over values.
-                for record in sample_records
+                collector.record(record, row_number)
+                for row_number, record in sample_records
             ]
             # A read editor has no writes to commit.
             transaction.rollback()
@@ -271,9 +381,18 @@ def execute_query(source, body, byte_limit):
     except Exception as exc:
         code = getattr(exc, "code", "") or ""
         if "SyntaxError" in code:
+            message = str(getattr(exc, "message", "Invalid Cypher syntax"))[:1500]
+            position = re.search(r"line (\d+), column (\d+) \(offset: (\d+)\)", message)
             raise AnalyticsError(
-                str(getattr(exc, "message", "Invalid Cypher syntax"))[:1500],
+                message,
                 "cypher_syntax",
+                details={key: int(value) for key, value in zip(("line", "column", "offset"), position.groups())} if position else None,
+            ) from exc
+        if "ParameterMissing" in code:
+            raise AnalyticsError(
+                "Missing query parameters. Expand Parameters and supply a JSON value "
+                "for each $parameter used in the query.",
+                "cypher_parameters",
             ) from exc
         raise AnalyticsError(
             "Neo4j could not complete the query. Check the connection, schema and query parameters.",
@@ -282,43 +401,81 @@ def execute_query(source, body, byte_limit):
         ) from exc
     graph = collector.graph()
     graph["graph"]["directed"] = body.directed
-    return graph, collector.lineage, sample, rows
+    table = None
+    if scalar_rows is not None and columns:
+        from .table_artifacts import make_table
+
+        table = make_table(columns, scalar_rows)
+        if len(_json(table).encode()) > byte_limit:
+            raise AnalyticsError("Query table exceeds the result byte limit.", "resource_limit")
+    return graph, collector.lineage, sample, rows, table
 
 
 def run_query(runtime, source_id, body):
+    from .query_library import QueryLibrary
+
+    # Do not retain attempts against connections the current owner cannot see.
+    get_source(runtime.settings, source_id)
+    library, started = QueryLibrary(runtime), perf_counter()
+    try:
+        result = _run_query(runtime, source_id, body)
+    except AnalyticsError as error:
+        library.record(source_id, body, error={"code": error.code, "message": str(error)}, elapsed_ms=round((perf_counter() - started) * 1000))
+        raise
+    identifier, warning = library.record(source_id, body, result=result, elapsed_ms=result["elapsed_ms"])
+    result.update(history_id=identifier, history_warning=warning)
+    return result
+
+
+def _run_query(runtime, source_id, body):
+    started = perf_counter()
     source = get_source(runtime.settings, source_id)
+    dataset = None
+    if body.dataset_id:
+        from .database_datasets import selected_dataset
+
+        dataset = selected_dataset(runtime.settings, source, body.dataset_id)
+        source = catalog_source(source, dataset)
     limit = min(
         runtime.settings.analytics_max_input_bytes,
         runtime.settings.account_upload_bytes,
     )
-    graph, lineage, sample, rows = execute_query(source, body, limit)
-    if source != get_source(runtime.settings, source_id):
+    graph, lineage, sample, rows, table = execute_query(source, body, limit)
+    checkpoint("validating", rows)
+    if source.fingerprint() != resolve_source(runtime.settings, get_source(runtime.settings, source_id), body.dataset_id).fingerprint():
         raise AnalyticsError(
             "Source settings changed. Run the query again.", "source_changed", 409
         )
-    metadata = None
+    if dataset and dataset["graph_label"] and any(
+        dataset["graph_label"] not in vertex["attributes"].get("neo4j_labels", [])
+        for vertex in graph["vertices"]
+    ):
+        raise AnalyticsError(
+            "The query returned nodes outside the selected dataset. Use its dataset label in the query.",
+            "dataset_scope",
+        )
+    metadata = table_metadata = None
+    provenance = {
+        "type": "database_query",
+        "database_dataset": {"id": dataset["id"], "name": dataset["name"]} if dataset else None,
+        "database_source": {"id": source.id, "name": source.name, "mapping_hash": source.fingerprint(), "revision": source.revision,
+                            "capabilities": source.capabilities()},
+        "query": body.statement, "parameters": body.parameters, "projection": body.projection,
+        "weight_property": body.weight_property, "fetched_at": utc_now().isoformat(), "lineage": lineage, "row_count": rows,
+        "scope": "exact returned table rows" if table is not None else "one derived edge per returned source/target row" if body.projection == "rows" else "exact returned graph elements and relationship endpoints",
+    }
+    name = body.name or (dataset["name"] if dataset else source.name)
+    begin_commit("saving")
     if graph["vertices"]:
-        metadata = DatasetLibrary(runtime).store(
+        metadata = QueryPreviews(runtime).store(
             graph,
-            name=body.name or source.name,
+            name=name,
             kind="graph",
             complete=True,
-            source={
-                "type": "database_query",
-                "database_source": {
-                    "id": source.id,
-                    "name": source.name,
-                    "mapping_hash": source.fingerprint(),
-                    "revision": source.revision,
-                },
-                "query": body.statement,
-                "parameters": body.parameters,
-                "fetched_at": utc_now().isoformat(),
-                "lineage": lineage,
-                "row_count": rows,
-                "scope": "exact returned graph elements and relationship endpoints",
-            },
+            source=provenance,
         )
+    elif table is not None:
+        table_metadata = QueryPreviews(runtime).store(table, name=name, kind="table", complete=True, source=provenance)
     shown = graph["vertices"][:100]
     keys = {_key(v["id"]) for v in shown}
     edges = [
@@ -328,27 +485,34 @@ def run_query(runtime, source_id, body):
     ][:300]
     return {
         "dataset": metadata,
+        "table": table_metadata,
         "row_count": rows,
         "rows": sample,
         "rows_truncated": rows > len(sample),
         "graph": {**graph, "vertices": shown, "edges": edges},
         "vertex_count": len(graph["vertices"]),
         "edge_count": len(graph["edges"]),
-        "message": "Graph saved. Open it in chat."
+        "elapsed_ms": round((perf_counter() - started) * 1000),
+        "message": "Graph preview ready. Save it or use it in chat within 24 hours."
         if metadata
-        else "This query returned no graph elements. Return nodes, relationships or paths to analyze a graph.",
+        else (
+            (f"{rows:,} rows saved in a temporary table. Browse, export, save, or map its columns for analysis." if rows else "No rows matched. The empty table retains the query's column names for inspection and export.")
+            if table_metadata else
+            "No rows matched. Check the selected connection, labels, filters and parameter values."
+        ),
     }
 
 
 def open_chat(runtime, version_id, body):
     library = DatasetLibrary(runtime)
-    metadata = library.get(version_id)
+    metadata = QueryPreviews(runtime).get(version_id)
     source_id = metadata.get("source", {}).get("database_source", {}).get("id")
     if not source_id:
         raise RecordNotFound("Database query snapshot not found")
     get_source(runtime.settings, source_id)
+    runtime.catalog.domain(body.domain_id)
     session = runtime.database.create_session(
-        SessionRecord(domain_id="general", title=body.title or metadata["name"])
+        SessionRecord(domain_id=body.domain_id, title=body.title or metadata["name"])
     )
     try:
         imported = library.import_into(version_id, session.id)
@@ -361,6 +525,19 @@ def open_chat(runtime, version_id, body):
 
 
 def register_database_query_routes(router):
+    from .database_connections import register_connection_routes
+    from .benchmark_datasets import register_benchmark_routes
+    from .database_datasets import register_dataset_routes
+    from .graph_builder import register_builder_routes
+    from .query_library import register_query_library_routes
+    from .table_artifacts import register_table_routes
+
+    register_connection_routes(router)
+    register_benchmark_routes(router)
+    register_dataset_routes(router)
+    register_builder_routes(router)
+    register_query_library_routes(router)
+    register_table_routes(router)
     @router.get("/database-sources")
     def sources(request: Request):
         return [
@@ -374,6 +551,11 @@ def register_database_query_routes(router):
     @router.post("/database-sources/{source_id}/queries", status_code=201)
     async def query(source_id: str, body: CypherRequest, request: Request):
         runtime = request.app.state.runtime
+        if "respond-async" in request.headers.get("Prefer", "").lower():
+            from .database_jobs import accepted
+
+            job = await run_in_threadpool(runtime.database_jobs.enqueue, "query", source_id, body, request_key=request.headers.get("Idempotency-Key"))
+            return accepted(job)
         if runtime.upload_slots.locked():
             raise AnalyticsError("Database reads are busy. Retry shortly.", "busy", 429)
         async with runtime.upload_slots:
@@ -386,3 +568,11 @@ def register_database_query_routes(router):
             raise AnalyticsError("Database reads are busy. Retry shortly.", "busy", 429)
         async with runtime.upload_slots:
             return await run_in_threadpool(open_chat, runtime, version_id, body)
+
+    @router.post("/database-query-snapshots/{version_id}/save")
+    async def save_preview(version_id: str, request: Request):
+        return await run_in_threadpool(QueryPreviews(request.app.state.runtime).promote, version_id)
+
+    @router.delete("/database-query-snapshots/{version_id}", status_code=204)
+    async def discard_preview(version_id: str, request: Request):
+        await run_in_threadpool(QueryPreviews(request.app.state.runtime).discard, version_id)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import os
 import tempfile
@@ -125,9 +126,23 @@ def source(runtime, session_id, file_id):
     if record.session_id != session_id:
         raise AnalyticsError("Projection input belongs to another workspace")
     path = Path(record.source_path)
-    if path.suffix.lower() != ".csv":
-        raise AnalyticsError("Table projections require uploaded CSV files")
+    if path.suffix.lower() != ".csv" and record.provenance.get("kind") != "table":
+        raise AnalyticsError("Table projections require CSV files or saved query tables")
     return path
+
+
+def read_source(runtime, session_id, file_id, *, native=False):
+    path = source(runtime, session_id, file_id)
+    record = runtime.database.get_file(file_id)
+    if record.provenance.get("kind") != "table":
+        return read_table(path)
+    from .table_artifacts import projection_table, validate_table
+
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != record.sha256:
+        raise AnalyticsError("The query table failed its integrity check.", "data_integrity", 409)
+    table = validate_table(json.loads(raw))
+    return projection_table(table) if native else table
 
 
 def register_projection_routes(router):
@@ -139,14 +154,18 @@ def register_projection_routes(router):
             raise AnalyticsError(
                 "Table exceeds the input byte budget", "resource_limit"
             )
-        table = await run_in_threadpool(read_table, path)
+        table = await run_in_threadpool(read_source, runtime, session_id, file_id)
+        typed = runtime.database.get_file(file_id).provenance.get("kind") == "table"
+        if typed:
+            from .table_artifacts import summary
+
+            columns = summary(table)["columns"]
+        else:
+            columns = [{"name": name, "type": "string", "nullable": False} for name in table["columns"]]
         return {
             "complete": True,
-            "provenance": {"reader": "python_csv", "device": "cpu"},
-            "columns": [
-                {"name": name, "type": "string", "nullable": False}
-                for name in table["columns"]
-            ],
+            "provenance": {"reader": "query_table_json" if typed else "python_csv", "device": "cpu"},
+            "columns": columns,
             "row_count": len(table["rows"]),
             "sample": table["rows"][:8],
             "sample_is_excerpt": True,
@@ -166,8 +185,10 @@ def register_projection_routes(router):
             )
         sources = {}
         for alias, path in tables.items():
+            if body.device != "cpu" and runtime.database.get_file(body.tables[alias]).provenance.get("kind") == "table":
+                raise AnalyticsError("Query tables use the CPU table reader. Choose CPU for this projection.", "table_device")
             sources[alias] = (
-                {"data": await run_in_threadpool(read_table, path)}
+                {"data": await run_in_threadpool(read_source, runtime, session_id, body.tables[alias], native=True)}
                 if body.device == "cpu"
                 else {"path": str(path)}
             )
@@ -196,7 +217,8 @@ def register_projection_routes(router):
                     alias: {
                         "file_id": file_id,
                         "sha256": runtime.database.get_file(file_id).sha256,
-                        "reader": "python_csv" if body.device == "cpu" else "libcudf",
+                        "reader": "query_table_json" if runtime.database.get_file(file_id).provenance.get("kind") == "table" else "python_csv" if body.device == "cpu" else "libcudf",
+                        "source": runtime.database.get_file(file_id).provenance,
                     }
                     for alias, file_id in body.tables.items()
                 },

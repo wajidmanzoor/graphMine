@@ -519,6 +519,14 @@ class ConversationEvent(StrictModel):
     created_at: datetime = Field(default_factory=utc_now)
 
 
+class ConversationEventPage(StrictModel):
+    events: list[ConversationEvent]
+    after: int
+    last_sequence: int
+    has_more: bool
+    turn_numbers: dict[str, int] = Field(default_factory=dict)
+
+
 class CapabilityReport(StrictModel):
     binary_available: bool
     binary_path: str

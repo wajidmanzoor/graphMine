@@ -1615,9 +1615,8 @@ async def test_planning_history_keeps_quota_explanation_but_hides_internal_error
 
     database = Database(account_settings.database_path)
     session = database.create_session(SessionRecord(domain_id="general"))
-    planner = AnalyticsPlanner(
-        account_settings, SimpleNamespace(database=database), EventBus(database)
-    )
+    analytics = SimpleNamespace(database=database, planning_tasks={}, planning_cancelled=set())
+    planner = AnalyticsPlanner(account_settings, analytics, EventBus(database))
     explanation = "This request needs 6,204 tokens, but only 1,000 remain."
     error = (
         AccountError(explanation, "daily_tokens_limit")

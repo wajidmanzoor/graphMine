@@ -21,6 +21,33 @@ REQUEST_SECONDS = 300
 PLANNING_REQUEST_SECONDS = PLANNING_DEADLINE_SECONDS + 60
 
 
+async def account_io(operation, *args, on_cancel=None, **kwargs):
+    """Keep SQLite waits off the loop and finish resource cleanup on cancellation.
+
+    Cancelling an await cannot stop a running SQLite transaction. Wait for its
+    outcome before relinquishing ownership of a lease acquired by that thread.
+    """
+    task = asyncio.create_task(run_in_threadpool(operation, *args, **kwargs))
+    cancelled = None
+    while not task.done():
+        try:
+            await asyncio.shield(task)
+        except asyncio.CancelledError as error:
+            cancelled = error
+        except Exception:
+            break  # Retrieve the exception below, including after cancellation.
+    if cancelled is not None:
+        try:
+            result = task.result()
+        except Exception:
+            pass
+        else:
+            if on_cancel is not None:
+                await account_io(on_cancel, result)
+        raise cancelled
+    return task.result()
+
+
 def account_response(error):
     return JSONResponse(
         status_code=error.status,
@@ -81,6 +108,7 @@ class AccountMiddleware:
         method, path = scope.get("method", "GET"), scope["path"]
         public = not websocket and (method, path) in {
             ("GET", "/api/auth/config"),
+            ("GET", "/api/build"),
             ("POST", "/api/auth/login"),
             ("POST", "/api/shared/read"),
         }
@@ -134,7 +162,7 @@ class AccountMiddleware:
                 cookie_auth = token is None
                 if cookie_auth and COOKIE in cookie:
                     token = cookie[COOKIE].value
-                principal = runtime.accounts.authenticate(token)
+                principal = await account_io(runtime.accounts.authenticate, token)
                 if principal is None:
                     raise AccountError(
                         "Please sign in to continue.", "unauthorized", 401
@@ -217,12 +245,14 @@ class AccountMiddleware:
                     kind, per_user = "request", 1
             costly = kind is not None
             if websocket:
-                lease = runtime.accounts.acquire(
-                    principal.user_id, "websocket", 200, 2, 3630
+                lease = await account_io(
+                    runtime.accounts.acquire, principal.user_id, "websocket", 200, 2, 3630,
+                    on_cancel=runtime.accounts.release,
                 )
             elif costly:
-                lease = runtime.accounts.acquire(
-                    principal.user_id, kind, 8, per_user, ttl=limit + 30
+                lease = await account_io(
+                    runtime.accounts.acquire, principal.user_id, kind, 8, per_user, ttl=limit + 30,
+                    on_cancel=runtime.accounts.release,
                 )
             with identity_scope(principal):
                 # Polls, cancellation and logout remain usable during expensive work.
@@ -267,7 +297,7 @@ class AccountMiddleware:
                 )(scope, receive, send)
         finally:
             if lease:
-                runtime.accounts.release(lease)
+                await account_io(runtime.accounts.release, lease)
 
 
 class LoginRequest(BaseModel):
@@ -352,7 +382,7 @@ def register_account_routes(app):
         response.headers["Cache-Control"] = "no-store"
         result = {
             "user": public_user(principal),
-            "quota": runtime.accounts.usage(principal.user_id),
+            "quota": await account_io(runtime.accounts.usage, principal.user_id),
         }
         if body.issue_token:
             result.update(
@@ -363,7 +393,7 @@ def register_account_routes(app):
         return result
 
     @router.get("/me")
-    async def me(response: Response):
+    def me(response: Response):
         principal = current_principal.get()
         if principal is None:
             raise AccountError("Please sign in.", "unauthorized", 401)
@@ -374,7 +404,7 @@ def register_account_routes(app):
         }
 
     @router.post("/logout", status_code=204)
-    async def logout(response: Response):
+    def logout(response: Response):
         principal = current_principal.get()
         if principal is None:
             raise AccountError("Please sign in.", "unauthorized", 401)
@@ -399,7 +429,7 @@ def register_account_routes(app):
             return await run_in_threadpool(operation, *args)
 
     @router.get("/admin/activity")
-    async def admin_activity(
+    def admin_activity(
         response: Response, before: int | None = None, limit: int = 100
     ):
         principal = administrator()
@@ -409,7 +439,7 @@ def register_account_routes(app):
         return principal.accounts.activity(before, limit)
 
     @router.get("/admin/users")
-    async def users(response: Response):
+    def users(response: Response):
         response.headers["Cache-Control"] = "no-store"
         return administrator().accounts.list_users()
 
@@ -445,13 +475,13 @@ def register_account_routes(app):
         )
 
     @router.post("/admin/users/{username}/token-limit")
-    async def token_limit(username: str, body: AccountTokenLimit, response: Response):
+    def token_limit(username: str, body: AccountTokenLimit, response: Response):
         principal = administrator()
         response.headers["Cache-Control"] = "no-store"
         return principal.accounts.set_token_limit(username, body.daily_token_limit)
 
     @router.post("/admin/users/{username}/reset-tokens")
-    async def reset_tokens(username: str, response: Response):
+    def reset_tokens(username: str, response: Response):
         principal = administrator()
         response.headers["Cache-Control"] = "no-store"
         return principal.accounts.reset_tokens(username)
@@ -465,7 +495,7 @@ def register_account_routes(app):
         response.headers["Cache-Control"] = "no-store"
 
     @router.post("/admin/users/{username}/disable", status_code=204)
-    async def disable_user(username: str, response: Response):
+    def disable_user(username: str, response: Response):
         principal = administrator()
         if principal.accounts.username(username) == principal.username:
             raise AccountError(
@@ -477,7 +507,7 @@ def register_account_routes(app):
         response.headers["Cache-Control"] = "no-store"
 
     @router.post("/admin/users/{username}/enable", status_code=204)
-    async def enable_user(username: str, response: Response):
+    def enable_user(username: str, response: Response):
         administrator().accounts.enable(username)
         response.headers["Cache-Control"] = "no-store"
 

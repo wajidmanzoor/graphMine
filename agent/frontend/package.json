@@ -1,6 +1,18 @@
 {
   "name": "graphmine-answer-views",
   "private": true,
-  "scripts": {"build": "node build.mjs"},
-  "dependencies": {"cytoscape": "3.34.3"}
+  "scripts": {
+    "build": "node build.mjs",
+    "contracts": "node generate-contracts.mjs",
+    "contracts:check": "node generate-contracts.mjs --check",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "dependencies": {
+    "cytoscape": "3.34.3"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3"
+  }
 }

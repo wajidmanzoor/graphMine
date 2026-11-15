@@ -84,9 +84,18 @@ def test_followups_reflect_output_and_completeness():
         }
     }
     assert suggested_questions(saved) == [
-        "How many groups were found?",
-        "Show the largest group.",
-        "Is this result complete?",
+        {"text": "Explain this result.", "action": None},
+        {"text": "Is this result complete?", "action": None},
+    ]
+    saved["steps"]["groups"]["result"]["ports"]["groups"]["value"] = [{"group": 0, "vertices": [1, 2]}]
+    # The answer already states how many groups were found; this view does not.
+    assert suggested_questions(saved) == [
+        {
+            "text": "Show the largest group.",
+            "action": {"intent": "view", "view": {"kind": "show_group", "group": "largest"}},
+        },
+        {"text": "Who connects the different groups?", "action": None},
+        {"text": "Is this result complete?", "action": None},
     ]
 
 

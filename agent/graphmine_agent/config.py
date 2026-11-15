@@ -18,6 +18,20 @@ def _integer(name: str, default: int) -> int:
     return default if value is None else int(value)
 
 
+def _budget(name: str, default: int | None) -> int | None:
+    """Unset uses the measured default; blank or "none" removes the bound."""
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return None if value.strip().lower() in {"", "none"} else int(value)
+
+
+# Planner reasoning budgets (vLLM thinking_token_budget). Choosing operations
+# from the catalog needs far less deliberation than writing a typed plan.
+ROUTE_THINKING_TOKEN_BUDGET = 384
+PLAN_THINKING_TOKEN_BUDGET = None
+
+
 @dataclass(frozen=True, slots=True)
 class Settings:
     """Validated process configuration loaded from environment variables."""
@@ -50,6 +64,9 @@ class Settings:
     llm_plan_max_tokens: int = 3072
     llm_analyst_max_tokens: int = 3072
     history_directory: Path | None = None
+    # Write-once training captures; they outlive conversation deletion.
+    capture_directory: Path | None = None
+    capture_enabled: bool = True
     llm_route_base_url: str | None = None
     llm_route_model: str = "graphmine-business-v1"
     llm_route_adapter_sha256: str | None = None
@@ -64,12 +81,18 @@ class Settings:
     # Writes the chat answer from computed facts; defaults to GRAPHMINE_LLM_MODEL.
     analytics_answer_model: str | None = None
     analytics_reasoning_effort: str = "medium"
-    analytics_thinking_token_budget: int | None = None
+    analytics_thinking_token_budget: int | None = PLAN_THINKING_TOKEN_BUDGET
+    analytics_route_thinking_token_budget: int | None = ROUTE_THINKING_TOKEN_BUDGET
     allow_shared_gpu: bool = False
     analytics_python: Path | None = None
     analytics_max_input_bytes: int = 64 * 1024 * 1024
+    analytics_result_cache_bytes: int = 64 * 1024 * 1024
+    analytics_max_exports: int = 2
     native_runtime_binary: Path | None = None
     native_runtime_library: Path | None = None
+    # A worktree may use a separately built, verified native checkout.
+    runtime_repository_root: Path | None = None
+    analytics_direct_plans: bool = True
     analytics_cpu_workers: int = 2
     analytics_gpu_uuids: tuple[str, ...] = ()
     analytics_gpu_headroom_bytes: int = 512 * 1024 * 1024
@@ -101,6 +124,11 @@ class Settings:
     connectors_file: Path | None = None
     connector_allowed_origins: tuple[str, ...] = ()
     database_sources_file: Path | None = None
+    database_pool_limit: int = 16
+    database_pool_size: int = 4
+    database_pool_wait_seconds: int = 10
+    database_pool_idle_seconds: int = 300
+    benchmark_datasets_root: Path | None = None
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -135,6 +163,10 @@ class Settings:
         return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
+        for name, maximum in (("database_pool_limit", 128), ("database_pool_size", 32),
+                              ("database_pool_wait_seconds", 120), ("database_pool_idle_seconds", 3600)):
+            if not 1 <= getattr(self, name) <= maximum:
+                raise ValueError(f"{name} must be between 1 and {maximum}")
         for name in (
             "account_session_seconds",
             "max_accounts",
@@ -197,16 +229,23 @@ class Settings:
             raise ValueError("GRAPHMINE_MAX_RESULT_BYTES must be positive")
         if self.analytics_max_input_bytes < 1:
             raise ValueError("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES must be positive")
+        if type(self.analytics_result_cache_bytes) is not int or self.analytics_result_cache_bytes < 0:
+            raise ValueError("GRAPHMINE_ANALYTICS_RESULT_CACHE_BYTES must be nonnegative")
+        if type(self.analytics_max_exports) is not int or not 1 <= self.analytics_max_exports <= 32:
+            raise ValueError("GRAPHMINE_ANALYTICS_MAX_EXPORTS must be between 1 and 32")
         if self.analytics_cpu_workers < 1:
             raise ValueError("GRAPHMINE_ANALYTICS_CPU_WORKERS must be positive")
-        if self.analytics_thinking_token_budget is not None and (
-            type(self.analytics_thinking_token_budget) is not int
-            or not 0 <= self.analytics_thinking_token_budget < self.llm_plan_max_tokens
+        for name, budget in (
+            ("GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET", self.analytics_thinking_token_budget),
+            ("GRAPHMINE_ANALYTICS_ROUTE_THINKING_TOKEN_BUDGET", self.analytics_route_thinking_token_budget),
         ):
-            raise ValueError(
-                "GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET must be a nonnegative "
-                "integer smaller than GRAPHMINE_LLM_PLAN_MAX_TOKENS"
-            )
+            if budget is not None and (
+                type(budget) is not int or not 0 <= budget < self.llm_plan_max_tokens
+            ):
+                raise ValueError(
+                    f"{name} must be a nonnegative integer smaller than "
+                    "GRAPHMINE_LLM_PLAN_MAX_TOKENS"
+                )
         if min(self.analytics_gpu_headroom_bytes, self.analytics_llm_reserve_bytes) < 0:
             raise ValueError("Analytics memory reservations must be nonnegative")
         if self.job_timeout_seconds < 1:
@@ -246,6 +285,7 @@ class Settings:
     @classmethod
     def from_env(cls, repository_root: Path | None = None) -> Settings:
         root = (repository_root or Path(__file__).resolve().parents[2]).resolve()
+        runtime_root = Path(os.getenv("GRAPHMINE_RUNTIME_REPOSITORY", str(root))).expanduser().resolve()
         data_root = Path(
             os.getenv("GRAPHMINE_AGENT_DATA_ROOT", str(root / ".graphmine-agent"))
         ).resolve()
@@ -259,6 +299,9 @@ class Settings:
         )
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
+            benchmark_datasets_root=Path(os.environ["GRAPHMINE_BENCHMARK_DATASETS_ROOT"])
+            .expanduser().resolve()
+            if os.getenv("GRAPHMINE_BENCHMARK_DATASETS_ROOT") else None,
             database_sources_file=Path(os.environ["GRAPHMINE_DATABASE_SOURCES_FILE"])
             .expanduser().resolve()
             if os.getenv("GRAPHMINE_DATABASE_SOURCES_FILE") else None,
@@ -312,16 +355,18 @@ class Settings:
             if os.getenv("GRAPHMINE_TLS_KEYFILE")
             else None,
             repository_root=root,
+            runtime_repository_root=runtime_root if os.getenv("GRAPHMINE_RUNTIME_REPOSITORY") else None,
+            analytics_direct_plans=_boolean("GRAPHMINE_ANALYTICS_DIRECT_PLANS", True),
             data_root=data_root,
             graphmine_binary=Path(
                 os.getenv(
-                    "GRAPHMINE_BINARY", str(root / "library" / "build" / "graphmine")
+                    "GRAPHMINE_BINARY", str(runtime_root / "library" / "build" / "graphmine")
                 )
             ).resolve(),
             native_runtime_binary=Path(
                 os.getenv(
                     "GRAPHMINE_NATIVE_BINARY",
-                    str(root / "library/build/runtime/graphmine-native"),
+                    str(runtime_root / "library/build/runtime/graphmine-native"),
                 )
             )
             .expanduser()
@@ -392,15 +437,23 @@ class Settings:
                 "GRAPHMINE_ANALYTICS_ANSWER_MODEL", ""
             ).strip()
             or None,
-            analytics_thinking_token_budget=_integer(
-                "GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET", 0
-            )
-            if os.getenv("GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET", "").strip()
-            else None,
+            analytics_thinking_token_budget=_budget(
+                "GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET", PLAN_THINKING_TOKEN_BUDGET
+            ),
+            analytics_route_thinking_token_budget=_budget(
+                "GRAPHMINE_ANALYTICS_ROUTE_THINKING_TOKEN_BUDGET",
+                ROUTE_THINKING_TOKEN_BUDGET,
+            ),
             max_upload_bytes=_integer("GRAPHMINE_MAX_UPLOAD_BYTES", 2_147_483_648),
             max_concurrent_uploads=_integer("GRAPHMINE_MAX_CONCURRENT_UPLOADS", 2),
+            database_pool_limit=_integer("GRAPHMINE_DATABASE_POOL_LIMIT", 16),
+            database_pool_size=_integer("GRAPHMINE_DATABASE_POOL_SIZE", 4),
+            database_pool_wait_seconds=_integer("GRAPHMINE_DATABASE_POOL_WAIT_SECONDS", 10),
+            database_pool_idle_seconds=_integer("GRAPHMINE_DATABASE_POOL_IDLE_SECONDS", 300),
             max_pending_jobs=_integer("GRAPHMINE_MAX_PENDING_JOBS", 64),
             max_result_bytes=_integer("GRAPHMINE_MAX_RESULT_BYTES", 64 * 1024 * 1024),
+            analytics_result_cache_bytes=_integer("GRAPHMINE_ANALYTICS_RESULT_CACHE_BYTES", 64 * 1024 * 1024),
+            analytics_max_exports=_integer("GRAPHMINE_ANALYTICS_MAX_EXPORTS", 2),
             job_timeout_seconds=_integer("GRAPHMINE_JOB_TIMEOUT_SECONDS", 86_400),
             result_summary_items=_integer("GRAPHMINE_RESULT_SUMMARY_ITEMS", 50),
             llm_route_reasoning_effort=os.getenv(
@@ -420,6 +473,12 @@ class Settings:
                 if os.getenv("GRAPHMINE_HISTORY_ROOT")
                 else None
             ),
+            capture_directory=(
+                Path(os.environ["GRAPHMINE_CAPTURE_ROOT"]).expanduser().resolve()
+                if os.getenv("GRAPHMINE_CAPTURE_ROOT")
+                else None
+            ),
+            capture_enabled=_boolean("GRAPHMINE_CAPTURE_ENABLED", True),
             llm_route_base_url=os.getenv("GRAPHMINE_ROUTER_BASE_URL", "").rstrip("/")
             or None,
             llm_route_model=os.getenv(
@@ -434,6 +493,10 @@ class Settings:
         )
 
     @property
+    def native_repository_root(self) -> Path:
+        return self.runtime_repository_root or self.repository_root
+
+    @property
     def database_path(self) -> Path:
         return self.data_root / "agent.sqlite3"
 
@@ -444,3 +507,7 @@ class Settings:
     @property
     def history_root(self) -> Path:
         return self.history_directory or self.data_root / "history"
+
+    @property
+    def capture_root(self) -> Path:
+        return self.capture_directory or self.data_root / "captures"

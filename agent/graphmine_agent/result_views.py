@@ -228,7 +228,7 @@ def input_graph(service, record, step_id, seen=None):
         source = data.get(ref["input"], {})
         return source.get("data") if source.get("kind") == "graph" else None
     if "step" in ref:
-        ports = service._saved(record["id"], step=ref["step"])["result"]["ports"]
+        ports = service._saved(record["id"], step=ref["step"], expected_revision=record.get("revision"))["result"]["ports"]
         port = ports.get(ref.get("port"), {})
         if port.get("type") == "graph":
             return port["value"]
@@ -582,7 +582,13 @@ def focus_graph(graph, result, port_name, index=None):
             )
             vertices = selected.get("vertices", [])
     elif index is not None:
-        vertices, edges = _members(chosen), []
+        field = port.get("vertex_field")
+        vertices = (
+            _members(chosen[field])
+            if isinstance(chosen, dict) and field and field in chosen
+            else _members(chosen)
+        )
+        edges = []
     elif kind in (
         "pairs",
         "mapping",
@@ -624,9 +630,12 @@ def result_view(
     context=False,
     vertex_limit=500,
     edge_limit=2000,
+    expected_revision=None,
 ):
     record = service.get(workflow_id)
-    saved = service._saved(workflow_id, step=step)["result"]
+    if expected_revision is not None and record["revision"] != expected_revision:
+        raise AnalyticsError("This analysis revision changed. Reopen its results.", "revision_conflict", 409)
+    saved = service._saved(workflow_id, step=step, expected_revision=record["revision"])["result"]
     if port not in saved.get("ports", {}):
         raise RecordNotFound("No such output port")
     index = default_index(saved["ports"][port], index)
@@ -642,6 +651,12 @@ def result_view(
         "port": port,
         "index": index,
         "context": context,
+        "limits": {"vertices": vertex_limit, "edges": edge_limit},
+        "input_graph": None if original is None else {
+            "vertex_count": len(original["vertices"]),
+            "edge_count": len(original["edges"]),
+            "directed": original["graph"].get("directed", False),
+        },
         "item_count": len(view_items(saved["ports"][port])),
         "complete": saved["ports"][port].get("complete", False),
         "selected_vertices": selected[:vertex_limit],
@@ -665,13 +680,30 @@ def result_view(
             "edge_count": 0,
             "graph_available": False,
         }
-    vertices = graph["vertices"][:vertex_limit]
+    # Keep the witness in view even when it occurs late in a large input graph.
+    selected_keys = {_key(v) for v in selected}
+    selected_edge_keys = {_key(e) for e in selected_edges}
+    vertices = (
+        sorted(graph["vertices"], key=lambda v: _key(v["id"]) not in selected_keys)
+        if context and selected_keys else graph["vertices"]
+    )[:vertex_limit]
     shown = {_key(v["id"]) for v in vertices}
-    edges = [
+    candidates = [
         e
         for e in graph["edges"]
         if _key(e["source"]) in shown and _key(e["target"]) in shown
-    ][:edge_limit]
+    ]
+    edges = (
+        sorted(candidates, key=lambda e: _key(e["id"]) not in selected_edge_keys)
+        if context and selected_edge_keys else candidates
+    )[:edge_limit]
+    metadata["selected_vertices"] = [v for v in selected if _key(v) in shown]
+    shown_edges = {_key(e["id"]) for e in edges}
+    metadata["selected_edges"] = [e for e in selected_edges if _key(e) in shown_edges]
+    metadata["selection_truncated"] = (
+        len(metadata["selected_vertices"]) < len(selected)
+        or len(metadata["selected_edges"]) < len(selected_edges)
+    )
     if metadata["profile"]["kind"] == "flow":
         by_id = {_key(e["id"]): e for e in (original or graph)["edges"]}
         flows = [
@@ -712,6 +744,7 @@ def register_result_view_routes(router):
         request: Request,
         index: int | None = Query(None, ge=0),
         context: bool = False,
+        expected_revision: int | None = Query(None, ge=1),
     ):
         return await run_in_threadpool(
             result_view,
@@ -721,4 +754,5 @@ def register_result_view_routes(router):
             port,
             index=index,
             context=context,
+            expected_revision=expected_revision,
         )

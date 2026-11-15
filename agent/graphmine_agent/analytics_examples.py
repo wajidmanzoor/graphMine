@@ -13,11 +13,12 @@ from datetime import datetime, timezone
 from typing import Literal
 from uuid import uuid4
 
-from fastapi import Request
+from fastapi import Query, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from .analytics import AnalyticsError
 from .database import RecordNotFound
+from .identity import current_principal
 
 
 def digest(value):
@@ -86,6 +87,7 @@ class ReviewedExamples:
                     409,
                 )
             record = self.analytics.get(workflow_id)
+            principal = current_principal.get()
             example = {
                 "id": str(uuid4()),
                 "session_id": record["session_id"],
@@ -93,6 +95,11 @@ class ReviewedExamples:
                 "question": review.question.strip(),
                 "approved_at": datetime.now(timezone.utc).isoformat(),
                 "approval": "explicit_authenticated_workspace_review",
+                "authorship": {
+                    "target_author": None,
+                    "target_origin": "executed_workflow",
+                    "reviewer": {"user_id": principal.user_id, "name": principal.username} if principal else {"name": "local administrator"},
+                },
                 "plan": candidate.pop("plan"),
                 "provenance": candidate,
                 "inputs": {
@@ -216,6 +223,11 @@ class ReviewedExamples:
 
 
 def register_example_routes(router):
+    @router.get("/workflows/{workflow_id}/studio-export")
+    async def studio_export(workflow_id: str, request: Request, example_id: str = Query(min_length=1), expected_revision: int = Query(ge=1)):
+        from .analytics_studio import export_reviewed
+        return await export_reviewed(request.app.state.runtime.analytics, workflow_id, example_id, expected_revision)
+
     @router.get("/workflows/{workflow_id}/example-review")
     async def candidate(workflow_id: str, request: Request):
         return request.app.state.runtime.analytics.examples.candidate(workflow_id)

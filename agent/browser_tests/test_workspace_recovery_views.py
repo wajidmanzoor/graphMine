@@ -1,6 +1,7 @@
 """Recovery, mobile navigation, and result exploration through browser controls."""
 
 from copy import deepcopy
+from urllib.parse import parse_qs, urlsplit
 
 import pytest
 import test_workspace_loading as loading_fixtures
@@ -109,17 +110,22 @@ def test_mobile_conversation_has_explicit_data_navigation(
     browser.set_window_size(390, 844)
     open_saved(browser, server)
     assert not browser.find_element(By.ID, "data-sidebar").is_displayed()
-    button = browser.find_element(By.ID, "toggle-data")
+    button = browser.find_element(By.ID, "toggle-tools")
     assert button.is_displayed() and button.get_attribute("aria-expanded") == "false"
     button.click()
     assert browser.find_element(By.ID, "data-sidebar").is_displayed()
     assert button.get_attribute("aria-expanded") == "true"
+    assert not browser.find_element(By.ID, "active-input").is_displayed()
+    browser.find_element(By.CSS_SELECTOR, "#data-sidebar [data-close-panel]").click()
+    browser.find_element(By.ID, "toggle-data").click()
+    wait_for(browser, "document.querySelector('#database-workspace')?.isConnected")
+    browser.find_element(By.ID, "source-files-tab").click()
     assert browser.find_element(By.ID, "active-input").is_displayed()
     assert browser.execute_script(
         "return document.documentElement.scrollWidth <= innerWidth"
     )
     browser.set_window_size(1440, 1000)
-    assert browser.find_element(By.ID, "data-sidebar").is_displayed()
+    assert browser.find_element(By.ID, "database-workspace").is_displayed()
 
 
 def test_home_keeps_saved_conversations_in_the_sidebar(loading_browser, loading_server):
@@ -200,7 +206,9 @@ def test_overlap_uses_unloaded_groups_and_reports_lookup_failure(
     }
 
     def memberships(path, body):
-        assert path.endswith("/core/ports/groups/memberships")
+        parsed = urlsplit(path)
+        assert parsed.path.endswith("/core/ports/groups/memberships")
+        assert parse_qs(parsed.query)["expected_revision"] == ["1"]
         if fails:
             return {}  # An unreadable response must not appear as zero overlap.
         return {

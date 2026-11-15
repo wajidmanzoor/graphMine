@@ -24,6 +24,7 @@ from .database_sync import mapped_records
 from .datasets import DatasetLibrary
 from .models import utc_now
 from .result_views import focus_graph, input_graph, source_files
+from .benchmark_mappings import resolve_source
 
 
 class ResultSelection(Strict):
@@ -56,6 +57,7 @@ def source_context(runtime, file_id):
             "This input has no database source mapping.", "source_unavailable", 409
         )
     source = get_source(runtime.settings, descriptor["id"])
+    source = resolve_source(runtime.settings, source, (provenance.get("database_dataset") or {}).get("id"))
     if descriptor.get("mapping_hash") != source.fingerprint():
         raise AnalyticsError(
             "The source mapping changed. Create a fresh query snapshot before enrichment.",
@@ -132,6 +134,8 @@ def selected_graph(runtime, file, body):
 
 def context(runtime, file_id, body):
     file, source, provenance = source_context(runtime, file_id)
+    if source.sql_type is None:
+        raise AnalyticsError("SQL enrichment is not configured for this connection. The saved graph remains available for analysis.", "sql_unavailable", 409)
     graph = selected_graph(runtime, file, body)
     known = {_key(item["id"]): item for item in graph[body.kind]}
     wanted = set(known) if body.ids is None else {_key(i) for i in body.ids}
@@ -197,7 +201,7 @@ def enrich(runtime, file_id, body):
         )
     values = {}
     with sql_connection(source) as db:
-        keys = [link["keys"] for _, link in selected]
+        keys = list({_json(link["keys"]): link["keys"] for _, link in selected}.values())
         for offset in range(0, len(keys), 100):
             for row in read_rows(
                 db,
@@ -206,8 +210,11 @@ def enrich(runtime, file_id, body):
                 keys=keys[offset : offset + 100],
                 fields=body.fields,
             ):
-                values[_json(json_value([row[k] for k in mapping.key]))] = row
-    if source != get_source(runtime.settings, source.id):
+                key = _json(json_value([row[k] for k in mapping.key]))
+                if key in values:
+                    raise AnalyticsError("This source key matches multiple rows. Use a unique table mapping.", "database_mapping", 409)
+                values[key] = row
+    if source.fingerprint() != source_context(runtime, file_id)[1].fingerprint():
         raise AnalyticsError(
             "Source settings changed during lookup.", "source_changed", 409
         )
@@ -235,6 +242,7 @@ def enrich(runtime, file_id, body):
                 "selection": body.selection.model_dump() if body.selection else None,
                 "fetched_at": at,
                 "missing": missing,
+                "updated_ids": [row["id"] for row in changed],
             }
         },
     )
@@ -345,7 +353,7 @@ def expand(runtime, file_id, body):
         raise AnalyticsError(
             "Expanded graph exceeds the input limit.", "resource_limit"
         )
-    if source != get_source(runtime.settings, source.id):
+    if source.fingerprint() != source_context(runtime, file_id)[1].fingerprint():
         raise AnalyticsError(
             "Source settings changed during expansion.", "source_changed", 409
         )

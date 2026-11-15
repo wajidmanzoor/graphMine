@@ -14,7 +14,7 @@ loading_browser = fixtures.loading_browser
 loading_server = fixtures.loading_server
 
 
-@pytest.mark.parametrize("width,height", [(320, 640), (390, 844), (1440, 1000)])
+@pytest.mark.parametrize("width,height", [(320, 568), (320, 640), (390, 844), (1440, 1000)])
 def test_slash_menu_keyboard_filter_and_pointer(
     loading_browser, loading_server, width, height
 ):
@@ -55,8 +55,10 @@ def test_slash_menu_keyboard_filter_and_pointer(
       const menu = document.getElementById('command-menu').getBoundingClientRect();
       const send = document.getElementById('plan-question').getBoundingClientRect();
       const tools = document.querySelector('.composer-tools').getBoundingClientRect();
-      return menu.left >= 0 && menu.right <= innerWidth && menu.top >= 0
-        && document.documentElement.scrollWidth <= innerWidth && tools.right <= send.left;
+      const header = document.querySelector('.app-header').getBoundingClientRect();
+      return menu.left >= 0 && menu.right <= innerWidth && menu.top >= header.bottom
+        && document.documentElement.scrollWidth <= innerWidth
+        && (tools.right <= send.left || tools.bottom <= send.top);
     """)
     output = Path("/tmp/graphmine-command-previews")
     output.mkdir(exist_ok=True)
@@ -180,7 +182,7 @@ def test_answer_feedback_dialog_and_restored_controls(loading_browser, loading_s
         and body["rating"] == 5
         and body["category"] == "rating"
     )
-    browser.find_element(By.ID, "toggle-data").click()
+    browser.find_element(By.ID, "toggle-tools").click()
     browser.find_element(
         By.CSS_SELECTOR, "details:has(#conversation-help) summary"
     ).click()

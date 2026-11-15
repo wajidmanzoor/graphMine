@@ -3,18 +3,69 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
 from graphmine_agent.api import build_runtime
-from graphmine_agent.backup import restore_snapshot, snapshot_store, verify_snapshot
+from graphmine_agent.backup import online_snapshot, restore_snapshot, snapshot_store, verify_snapshot
 from graphmine_agent.database import Database
+from graphmine_agent.database_connections import ConnectionPair, managed_sources, owner_directory, save_pair
 from graphmine_agent.datasets import DatasetLibrary, SaveDataset
 from graphmine_agent.history import HistoryStore
+from graphmine_agent.identity import Principal, identity_scope
 from graphmine_agent.models import JobRecord, JobStatus
 from test_queue_capacity import setup_runtime, wait_for_status
+
+
+@pytest.mark.parametrize("snapshot", [online_snapshot, snapshot_store])
+@pytest.mark.parametrize("with_sql", [True, False])
+def test_backup_restores_private_connections_for_each_owner(
+    settings, database, tmp_path, monkeypatch, snapshot, with_sql
+):
+    settings = replace(settings, database_sources_file=None)
+    settings.history_root.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr("graphmine_agent.database_connections.network_address", lambda *args: "203.0.113.1")
+    monkeypatch.setattr("graphmine_agent.database_connections.check_connection", lambda source: {
+        "connected": True, "sql": {"connected": True}, "neo4j": {"connected": True},
+    })
+    owners = [None, Principal("alice", "alice", None), Principal("bob", "bob", None)]
+    saved = []
+    for index, owner in enumerate(owners):
+        with identity_scope(owner):
+            pair = ConnectionPair(
+                name=f"Connection {index}",
+                **({"host": "database.example.com", "database": "research", "username": "reader", "password": f"sql-private-{index}"} if with_sql else {}),
+                neo4j_uri="neo4j+s://graph.example.com", neo4j_password=f"graph-private-{index}",
+            )
+            record = save_pair(settings, pair)
+            path = owner_directory(settings) / f"{record['id']}.json"
+            saved.append((record["id"], path.relative_to(settings.data_root), path.read_bytes()))
+
+    backup = tmp_path / "backup"
+    manifest = snapshot(settings.data_root, backup)
+    assert verify_snapshot(backup) == manifest
+    assert "private-" not in json.dumps(manifest)
+    restored = restore_snapshot(backup, tmp_path / "restored")
+    recovered = replace(settings, data_root=Path(restored["data_root"]))
+    for index, (owner, (identifier, relative, content)) in enumerate(zip(owners, saved)):
+        with identity_scope(owner):
+            sources = managed_sources(recovered)
+            assert [source.id for source in sources] == [identifier]
+            assert sources[0]._sql_credentials.get("password") == (f"sql-private-{index}" if with_sql else None)
+            assert sources[0]._neo4j_password == f"graph-private-{index}"
+            for path in (backup / "data" / relative, recovered.data_root / relative):
+                assert path.read_bytes() == content
+                assert path.stat().st_uid == os.getuid()
+                assert path.stat().st_mode & 0o777 == 0o600
+                assert path.parent.stat().st_mode & 0o777 == 0o700
+
+    # Credentials are covered by the same integrity inventory as uploaded data.
+    (backup / "data" / saved[0][1]).write_text("{}")
+    with pytest.raises(ValueError, match="inventory/hash mismatch"):
+        verify_snapshot(backup)
 
 
 @pytest.mark.parametrize("external_history", [False, True])

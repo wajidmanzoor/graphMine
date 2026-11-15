@@ -78,6 +78,9 @@
     return encode(value, 0);
   }
   const idKey = id => `${typeof id === "string" ? "s" : "i"}:${String(id)}`;
-  const idLabel = id => typeof id === "string" ? JSON.stringify(id) : String(id);
+  // A string ID is quoted only where it could be mistaken for a number, a JSON
+  // literal or blank text; "Dara" reads as Dara, but "7" stays distinct from 7.
+  const ambiguous = /^$|^\s|\s$|^(?:true|false|null)$|^[-+]?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?$/i;
+  const idLabel = id => typeof id === "string" && ambiguous.test(id) ? JSON.stringify(id) : String(id);
   window.AnalyticsWire = Object.freeze({parse, stringify, idKey, idLabel});
 })();

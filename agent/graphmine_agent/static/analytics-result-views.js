@@ -1,5 +1,5 @@
 "use strict";
-window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice}) => {
+window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice, savedSelection, onContext}) => {
   const $ = id => document.getElementById(id);
   const toolbar = node("div", {class: "result-focus", id: "result-focus", hidden: true});
   const mode = node("select", {id: "result-view-mode", "aria-label": "Result graph scope"});
@@ -11,7 +11,8 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
   toolbar.append(mode, item, choose, reset, description); $("network").before(toolbar);
   const block = node("div", {id: "result-building-block", class: "result-building-block", hidden: true}); $("chart").after(block);
   const destination = node("select", {id: "result-destination", "aria-label": "Path destination", hidden: true}); toolbar.prepend(destination);
-  let generation = 0, selectedIndex = null, useSelection = true;
+  // chosen: the person picked (or restored) an item, as opposed to a default view.
+  let generation = 0, selectedIndex = null, useSelection = true, chosen = false, restorePending = true, controller = null;
   const vertexLabels = new Map();
   const entityLabel = id => vertexLabels.get(W.idKey(id)) || W.idLabel(id);
   async function load() {
@@ -19,19 +20,29 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
     if (!record || port === "__result") { toolbar.hidden = true; return; }
     const operation = state.result?.steps[step]?.result?.operation;
     if (!state.caps?.operations.some(card => card.id === operation && card.visualization)) { toolbar.hidden = true; return; }
+    if (restorePending) {
+      const saved = savedSelection?.(record, step, port);
+      if (saved) { selectedIndex = saved.index; chosen = saved.index !== null && saved.index !== undefined; mode.value = saved.context ? "context" : "focus"; }
+      restorePending = false;
+    }
     const current = ++generation, epoch = state.epoch;
+    controller?.abort(); controller = new AbortController();
+    state.resultViewPending = true; state.resultViewError = null; onContext?.();
     for (const vertex of state.graph?.vertices || []) if (vertex.label) vertexLabels.set(W.idKey(vertex.id), String(vertex.label));
     toolbar.hidden = false;
     description.textContent = "Loading the recorded result view…";
-    const params = new URLSearchParams({context: String(mode.value === "context")});
+    const params = new URLSearchParams({context: String(mode.value === "context"), expected_revision: record.revision});
     if (selectedIndex !== null) params.set("index", selectedIndex);
     const path = [record.id, "steps", step, "ports", port, "view"].map(encodeURIComponent).join("/");
     try {
-      const response = await api(`/api/workflows/${path}?${params}`);
+      const response = await api(`/api/workflows/${path}?${params}`, {signal: controller.signal});
       if (current !== generation || epoch !== state.epoch || state.record?.id !== record.id) return;
+      if (response.revision !== undefined && response.revision !== record.revision) throw new Error("This analysis revision changed. Reopen its results.");
       state.resultView = response;
+      state.resultViewPending = false;
       for (const vertex of response.vertices) if (vertex.label) vertexLabels.set(W.idKey(vertex.id), String(vertex.label));
-      useSelection = true;
+      // Only an item the person chose narrows a follow-up question.
+      useSelection = chosen;
       selectedIndex = response.index;
       item.hidden = choose.hidden = !response.item_count;
       item.max = String(response.item_count); item.value = response.index === null ? "" : String(response.index + 1);
@@ -54,30 +65,33 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
       applySelection(); renderSelectionChip();
       renderBlocks();
     } catch (error) {
-      if (current !== generation || epoch !== state.epoch) return;
-      state.resultView = null; renderGraph(null);
+      if (current !== generation || epoch !== state.epoch || error.name === "AbortError") return;
+      state.resultView = null; state.resultViewPending = false; state.resultViewError = error.message; renderGraph(null);
       description.textContent = `Could not load this result view: ${error.message}`;
       notice(error.message, true);
     }
   }
   async function select(index) {
     if (!Number.isInteger(index) || index < 0) return;
-    selectedIndex = index; await load(); renderBlocks();
+    selectedIndex = index; chosen = true; await load(); renderBlocks();
   }
   mode.onchange = () => { void load(); };
   destination.onchange = () => { if (destination.value !== "") void select(Number(destination.value)); };
   choose.onclick = () => { if (item.value && item.validity.valid) void select(Number(item.value) - 1); };
-  reset.onclick = () => { selectedIndex = null; mode.value = "focus"; void load(); renderBlocks(); };
-  function clear() { generation++; vertexLabels.clear(); selectedIndex = null; state.resultView = null; state.selectedEdges = null; mode.value = "focus"; toolbar.hidden = true; block.hidden = true; }
+  reset.onclick = () => { selectedIndex = null; chosen = false; mode.value = "focus"; void load(); renderBlocks(); };
+  function clear() { generation++; controller?.abort(); vertexLabels.clear(); selectedIndex = null; chosen = false; state.resultView = null; state.resultViewPending = false; state.resultViewError = null; state.selectedEdges = null; mode.value = "focus"; toolbar.hidden = true; block.hidden = true; restorePending = true; onContext?.(); }
   function selection() {
     const v = state.resultView;
-    if (!v || !state.record || !useSelection) return null;
+    // The whole output is already the previous result; only an item narrows it.
+    if (!v || !state.record || !useSelection || v.index === null || v.index === undefined) return null;
+    if (state.port?.type === "scalar" || Array.isArray(state.port?.value) && !state.port.value.length) return null;
     return {workflow_id: state.record.id, step: v.step, port: v.port, index: v.index,
       label: `${v.profile.title}${v.index !== null ? ` ${v.index + 1}` : ""}`};
   }
   const svgNode = (tag, attributes) => { const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const [k, v] of Object.entries(attributes || {})) e.setAttribute(k, v); return e; };
   const numeric = value => typeof value === "number" && Number.isFinite(value) ? value : null;
   function renderBlocks() {
+    const focusedLocation = block.querySelector("[data-location-index]:focus")?.dataset.locationIndex;
     block.replaceChildren(); block.hidden = true;
     const result = state.result?.steps[$("result-step").value]?.result, port = state.port;
     if (!result || !port) return;
@@ -111,7 +125,7 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
       for (const a of left) { const tr = node("tr"); tr.append(node("th", {}, W.idLabel(a))); for (const b of right) { const row = lookup.get(W.idKey(a) + "/" + W.idKey(b)); const td = node("td", {}, row ? String(value(row) ?? (Object.hasOwn(row, "distance") ? "unreachable" : "returned")) : "—"); td.title = row ? W.stringify(row) : "Not returned"; tr.append(td); } table.append(tr); } block.append(table);
     } else if (["samples", "spectrum", "intervals", "locations"].includes(spec.kind)) {
       begin(spec.title);
-      const svg = svgNode("svg", {viewBox: "0 0 540 260", role: "img", "aria-label": spec.title});
+      const svg = svgNode("svg", {viewBox: "0 0 540 260", role: spec.kind === "locations" ? "group" : "img", "aria-label": spec.title});
       svg.append(svgNode("line", {x1: 35, y1: 225, x2: 520, y2: 225, stroke: "#687e70"}));
       if (spec.kind === "intervals") {
         const intervals = rows.filter(r => numeric(r.birth) !== null).slice(0, 60);
@@ -122,7 +136,15 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
       } else if (spec.kind === "locations") {
         const points = rows.map((r, i) => ({r, i, x: r.location?.longitude ?? r.longitude ?? r.coordinates?.[0], y: r.location?.latitude ?? r.latitude ?? r.coordinates?.[1]})).filter(p => numeric(p.x) !== null && numeric(p.y) !== null);
         const xs = points.map(p => p.x), ys = points.map(p => p.y), minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
-        for (const p of points.slice(0, 500)) { const dot = svgNode("circle", {cx: 40 + (p.x - minX) / (maxX - minX || 1) * 460, cy: 215 - (p.y - minY) / (maxY - minY || 1) * 190, r: 4, fill: "#478663", tabindex: 0}); const title = svgNode("title"); title.textContent = W.stringify(p.r); dot.append(title); dot.onclick = () => { void select(p.i); }; svg.append(dot); }
+        for (const p of points.slice(0, 500)) {
+          const description = W.stringify(p.r);
+          const dot = svgNode("circle", {cx: 40 + (p.x - minX) / (maxX - minX || 1) * 460, cy: 215 - (p.y - minY) / (maxY - minY || 1) * 190,
+            r: 4, fill: "#478663", tabindex: 0, role: "button", "aria-label": description, "data-location-index": p.i});
+          const title = svgNode("title"); title.textContent = description; dot.append(title);
+          dot.onclick = () => { void select(p.i); };
+          dot.onkeydown = event => { if (["Enter", " "].includes(event.key)) { event.preventDefault(); void select(p.i); } };
+          svg.append(dot);
+        }
         block.append(node("p", {}, "Coordinate plot: horizontal longitude/X, vertical latitude/Y. Inspect exact values and confidence in the table."));
       } else {
         let values = rows.map(r => numeric(typeof r === "object" ? r.eigenvalue ?? r.value ?? r.statistic : r)).filter(v => v !== null);
@@ -162,6 +184,7 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
       begin(spec.title);
       block.append(node("p", {}, spec.kind === "mapping" ? "Correspondences refer to their respective input graphs. Select source-backed entities through their original input." : spec.kind === "scalar" ? "This calculation returns a count. No individual graph instances were retained." : "Predicted values and model metrics are shown in the table; they are not source-table attributes."));
     }
+    if (focusedLocation !== undefined) block.querySelector(`[data-location-index="${focusedLocation}"]`)?.focus({preventScroll: true});
   }
   function decorate() {
     const view = state.resultView, cy = state.cy; if (!view || !cy) return;

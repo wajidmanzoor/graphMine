@@ -123,7 +123,7 @@ class HistoryStore:
             raise ValueError("history path escaped session")
         self.write(path, value)
 
-    def text_snapshot(self, session_id: str, relative: str, value: str) -> Path:
+    def text_snapshot(self, session_id: str, relative: str, value: str | Iterator[str]) -> Path:
         path = self.session_path(session_id) / relative
         if not path.resolve().is_relative_to(self.session_path(session_id)):
             raise ValueError("history path escaped session")
@@ -132,7 +132,10 @@ class HistoryStore:
         try:
             with temporary.open("x", encoding="utf-8") as stream:
                 os.chmod(temporary, 0o600)
-                stream.write(value)
+                if isinstance(value, str):
+                    stream.write(value)
+                else:
+                    stream.writelines(value)
             temporary.replace(path)
         finally:
             temporary.unlink(missing_ok=True)

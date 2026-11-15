@@ -1,10 +1,12 @@
-"""Load mapped SQL records into the local Neo4j graph in one transaction."""
+"""Reconcile a complete SQL snapshot with its managed Neo4j records atomically."""
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
+import sqlite3
 from datetime import UTC, datetime
 
 from fastapi import Request
@@ -12,9 +14,9 @@ from starlette.concurrency import run_in_threadpool
 
 from .analytics import AnalyticsError, _json
 from .config import Settings
+from .database_job_context import begin_commit, checkpoint
 from .database_sources import (
     configured,
-    get_source,
     json_value,
     neo4j_session,
     read_rows,
@@ -47,6 +49,8 @@ def properties(source, mapping, row, build, mapping_hash):
     )
     if mapping.display:
         values["gm_display"] = str(row.get(mapping.display, ""))
+    values["gm_label"] = mapping.label
+    values["gm_fields"] = sorted([*values, "gm_fields"])
     return values
 
 
@@ -61,7 +65,8 @@ def mapped_records(source, db, build, *, relationship=None, selected=None):
             (source.relationships, edge_rows),
         ):
             for m in mappings:
-                rows = read_rows(db, source, m, fields=m.graph_attributes)
+                checkpoint("reading_tables", count)
+                rows = read_rows(db, source, m, fields=m.graph_attributes, validate_schema=True)
                 count += len(rows)
                 used += len(_json(json_value(rows)).encode())
                 if count > source.max_rows or used > source.max_bytes:
@@ -69,6 +74,7 @@ def mapped_records(source, db, build, *, relationship=None, selected=None):
                         "Mapped graph exceeds the source read budget.", "resource_limit"
                     )
                 output[m.id] = rows
+                checkpoint("reading_tables", count)
     else:
         m = relationship
         groups = []
@@ -188,50 +194,56 @@ def mapped_records(source, db, build, *, relationship=None, selected=None):
     return nodes, edges
 
 
-def write_records(source, nodes, edges, *, replace=False):
+def reconcile_records(source, nodes, edges, byte_limit):
+    from .database_reconciliation import apply_changes, change_summary, plan_changes, prepare_constraints, read_state
+
     with neo4j_session(source, write=True) as session:
-        session.run(
-            "CREATE CONSTRAINT graphmine_entity_id IF NOT EXISTS FOR (n:GraphMineEntity) REQUIRE n.gm_id IS UNIQUE"
-        ).consume()
+        prepare_constraints(session, source)
         with session.begin_transaction(timeout=source.timeout_seconds) as tx:
-            if replace:
-                # Only this connector's imported graph is managed by refresh.
-                tx.run(
-                    "MATCH (n:GraphMineEntity {gm_source: $source}) DETACH DELETE n",
-                    source=source.id,
-                ).consume()
-            for mapping in source.entities:
-                rows = [r["properties"] for r in nodes if r["mapping"] == mapping.id]
-                for offset in range(0, len(rows), 500):
-                    tx.run(
-                        f"UNWIND $rows AS row MERGE (n:GraphMineEntity:{mapping.label} {{gm_id: row.gm_id}}) SET n += row",
-                        rows=rows[offset : offset + 500],
-                    ).consume()
-            for mapping in source.relationships:
-                rows = [r for r in edges if r["mapping"] == mapping.id]
-                for offset in range(0, len(rows), 500):
-                    tx.run(
-                        f"UNWIND $rows AS row MATCH (a:GraphMineEntity {{gm_id: row.source}}), (b:GraphMineEntity {{gm_id: row.target}}) MERGE (a)-[r:{mapping.label} {{gm_id: row.properties.gm_id}}]->(b) SET r += row.properties",
-                        rows=rows[offset : offset + 500],
-                    ).consume()
+            checkpoint("comparing", 0)
+            old_nodes, old_edges = read_state(tx, source, byte_limit)
+            changes = plan_changes(source, nodes, edges, old_nodes, old_edges)
+            summary = change_summary(source, changes, old_nodes, old_edges)
+            apply_changes(tx, source, changes)
+            begin_commit()
             tx.commit()
+            return summary
 
 
 def sync_source(source, byte_limit=64 * 1024 * 1024):
+    if source.sql_type is None:
+        raise AnalyticsError("This connection has no SQL source to synchronize.", "sql_unavailable", 409)
+    if not source.entities:
+        raise AnalyticsError("Add entity table mappings before synchronizing this connection.", "database_mapping", 409)
+    checkpoint("reading_tables", 0)
     build = datetime.now(UTC).isoformat()
-    with sql_connection(source) as db:
-        nodes, edges = mapped_records(source, db, build)
-    if len(_json({"nodes": nodes, "edges": edges}).encode()) > min(
-        byte_limit, source.max_bytes
-    ):
+    try:
+        with sql_connection(source) as db:
+            nodes, edges = mapped_records(source, db, build)
+    except Exception as error:
+        if (isinstance(error, sqlite3.OperationalError) and str(error).startswith(("no such table:", "no such column:"))) or getattr(error, "sqlstate", None) in {"42703", "42P01"}:
+            raise AnalyticsError("A mapped SQL table or column is missing. Update the mapping before retrying; the graph was not changed.", "database_schema", 409) from error
+        raise
+    byte_limit = min(byte_limit, source.max_bytes)
+    if len(_json({"nodes": nodes, "edges": edges}).encode()) > byte_limit:
         raise AnalyticsError("Import exceeds the byte budget.", "resource_limit")
-    write_records(source, nodes, edges, replace=True)
+    checksum = hashlib.sha256()
+    for kind, rows in (("node", nodes), ("relationship", edges)):
+        for row in sorted(rows, key=lambda item: item["properties"]["gm_id"]):
+            checksum.update(_json({"kind": kind, **row, "properties": {key: value for key, value in row["properties"].items() if key != "gm_build"}}).encode() + b"\n")
+    summary = reconcile_records(source, nodes, edges, byte_limit)
     return {
         "source_id": source.id,
         "build": build,
         "nodes": len(nodes),
         "relationships": len(edges),
         "mapping_hash": source.fingerprint(),
+        "revision": source.revision,
+        "sync_mode": "incremental",
+        "source_read_mode": "complete_snapshot",
+        "mapped_content_sha256": checksum.hexdigest(),
+        "finished_at": datetime.now(UTC).isoformat(),
+        **summary,
     }
 
 
@@ -239,22 +251,12 @@ def register_database_sync_routes(router):
     @router.post("/database-sources/{source_id}/sync")
     async def sync(source_id: str, request: Request):
         runtime = request.app.state.runtime
-        source = get_source(runtime.settings, source_id)
-        if runtime.upload_slots.locked():
-            raise AnalyticsError("Database jobs are busy.", "busy", 429)
-        async with runtime.upload_slots:
-            try:
-                return await run_in_threadpool(
-                    sync_source, source, runtime.settings.analytics_max_input_bytes
-                )
-            except AnalyticsError:
-                raise
-            except Exception as exc:
-                raise AnalyticsError(
-                    "Could not refresh the mapped graph. Check the source mapping and database connections.",
-                    "database_sync",
-                    502,
-                ) from exc
+        from .database_jobs import accepted, private_response
+
+        job = await run_in_threadpool(runtime.database_jobs.enqueue, "sync", source_id, request_key=request.headers.get("Idempotency-Key"))
+        if "respond-async" in request.headers.get("Prefer", "").lower():
+            return accepted(job)
+        return private_response(await runtime.database_jobs.wait(job["id"]))
 
 
 def main():

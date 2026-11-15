@@ -111,7 +111,7 @@ def workspace(settings, source, tmp_path, monkeypatch):
 
     def execute(src, body, limit):
         calls.append(body.statement)
-        return g, lineage, [], 1
+        return g, lineage, [], 1, None
 
     monkeypatch.setattr("graphmine_agent.database_queries.execute_query", execute)
     with TestClient(app) as client:
@@ -208,6 +208,9 @@ def test_driver_values_preserve_real_graph_identity_and_lineage(source):
 
 def test_query_checks_server_query_type_limits_and_rolls_back(source, monkeypatch):
     class Result(list):
+        def keys(self):
+            return ["p"]
+
         def consume(self):
             return SimpleNamespace(query_type="r")
 
@@ -237,7 +240,7 @@ def test_query_checks_server_query_type_limits_and_rolls_back(source, monkeypatc
         yield SimpleNamespace(begin_transaction=lambda **_: tx)
 
     monkeypatch.setattr("graphmine_agent.database_queries.neo4j_session", session)
-    g, lineage, _rows, count = execute_query(
+    g, lineage, _rows, count, _table = execute_query(
         source,
         CypherRequest(statement="MATCH p=()-[]->() RETURN p", directed=False),
         100_000,

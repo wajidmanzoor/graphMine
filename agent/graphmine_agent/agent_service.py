@@ -62,7 +62,7 @@ from .profiles import (
     ProfileInputError,
     prepare_operation_graph,
 )
-from .reporting import render_report
+from .reporting import iter_report
 from .visualization import (
     answer_visualizations,
     sanitize_visualizations,
@@ -1136,7 +1136,7 @@ class AgentService:
             report = self.database.history.text_snapshot(
                 result.session_id,
                 f"results/{result.id}/answer.html",
-                render_report(updated),
+                iter_report(updated),
             )
             self.database.history.current(
                 "answer.report",

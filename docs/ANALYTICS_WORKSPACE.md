@@ -5,7 +5,7 @@ PostgreSQL → Neo4j → chat analysis, result-specific graph views, and SQL att
 and relationship lookups from those results.
 
 The browser at `/` keeps searchable conversation history in a collapsible left
-sidebar and a domain picker in the main area. **Explore all domains** reveals
+sidebar and saved work above the domain picker. **Explore all domains** reveals
 the remaining starting points. The selected domain is saved with the conversation and supplies
 vocabulary to the planner. Questions, clarification replies, planning decisions
 and model-returned reasoning are saved as authenticated workspace events.
@@ -13,9 +13,57 @@ Follow-ups receive bounded conversation context; evaluation requests exclude it.
 The task-family picker is removed from the UI; the planner's routing call sees
 operations grouped by family.
 
+Returning users see **Recent analyses**, **Recent datasets**, and **Saved queries**
+on home. Each section loads four private summaries independently, with **Show
+more**, refresh, and retry controls. Queued, running and awaiting-review analyses
+appear first; archived conversations stay in searchable history. Analysis links
+open the exact saved workflow for review, progress or results. Opening a plan
+does not approve or rerun it. New users retain the data and domain starting points.
+
+Dataset cards show the latest retained version of each collection, its input
+kind, and any incomplete-source flag. Choose a domain and **Start conversation**
+to copy that exact version into a new conversation. The copy retains its lineage
+and works after the original dataset is removed. Saved tables open column
+selection for building a graph. A failed import removes the newly created empty
+conversation; a failed first read after successful creation leaves a recoverable
+conversation URL. No analysis runs automatically.
+
+Home reads only summary fields, without loading dataset contents, full workflow
+documents or query parameters into the browser, and does not wait for native
+capability verification. Leaving home cancels its reads and ignores late responses.
+Returning home, refreshing saved work, or returning to the browser tab refreshes
+the lists. The new routes are `GET /api/workspace/recent/{datasets|queries|analyses}`
+(default `limit=4`, maximum 12, bounded `offset`) and
+`POST /api/datasets/{version_id}/conversation` with `{"domain_id":"general"}`.
+Both use the existing authentication and owner checks; dataset copying also uses
+the existing integrity checks, upload admission and storage accounting.
+
 The workspace keeps Kashmiri flag green and yellow as its brand colors: green
 for primary actions and focus indicators, with yellow highlights for navigation,
 the selected mode and conversation accents.
+
+Workspace text uses a relative type scale: at the default browser size, body
+text is 16 pixels and supporting labels are at least 14 pixels. Common controls
+have a minimum height of 40 pixels on desktop and 44 pixels on small screens or
+touch devices. Inputs on small screens use 16-pixel text. Secondary labels and
+input outlines have stronger contrast; keyboard focus has a visible outline.
+Mobile drawers isolate the background until they close, then return focus to
+their trigger. Location-chart points support Enter and Space and retain focus
+when selection updates the result.
+Account settings use the same type scale; on small screens, the header keeps
+the username and settings icon with a complete accessible button label.
+
+Page zoom uses the responsive layouts. When the viewport is 560 CSS pixels tall
+or less, chat and Data use document scrolling so their editors, previews and
+actions remain reachable. Reduced-motion preferences disable smooth scrolling
+and transitions; forced colors retain borders for controls and selected states.
+The command menu fits below the toolbar and becomes part of the document flow
+on short viewports; selecting a command brings the composer back into view.
+The browser checks cover desktop and 320-pixel views, real 200% and 400% Firefox
+zoom, keyboard navigation, and rendered text contrast. Contrast checks use the
+[WCAG text contrast thresholds](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html);
+the short 320-pixel viewport checks follow the
+[reflow guidance](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
 
 The message composer provides three modes over the same validated workflow API.
 Normal runs a validated plan immediately. Interactive saves it for inspection
@@ -57,22 +105,82 @@ Understanding, operation selection, plan attempts, and validation outcomes appea
 below it, including failed validation and repairs. New planning events retain the
 proposed plan; older saved workflows supply their validated plan. A follow-up is
 shown immediately and stays visible until its matching request ID is acknowledged.
-The chat scroll follows new messages above any older plan panel.
+The chat scroll follows new messages while you are near the latest answer, and
+keeps your reading position while you inspect earlier messages. **Show new
+messages** returns to the latest answer. Conversations initially load the most
+recent 30 message/analysis entries and their complete associated turns. **Load
+older messages** retrieves earlier pages without renumbering questions or
+resetting expanded details. Completed reasoning replaces its redundant display
+chunks; the original events remain in the source ledger. Unchanged message and
+Activity nodes retain focus. A graph refresh reuses its existing instance when
+the displayed connections and source/result scope match, preserving dragged
+positions, pan and zoom; changed attributes and colors still update.
+
+`GET /api/sessions/{id}/workspace?history_limit=30` and
+`GET /api/sessions/{id}/conversation-page?limit=30&before={cursor}` return indexed
+history with an opaque older-page cursor and stable question numbers. Each page
+may include the other half of a boundary turn. The workspace's `event_cursor`
+starts forward polling; loading an older page does not advance it. The browser
+polls `events?after={sequence}&limit=500&paged=true` and drains a backlog in bounded
+batches. Legacy unpaged endpoints remain available. Saved-analysis discovery
+uses `workflows?summary=true`; full fingerprints and input provenance load when
+an analysis is opened. The lightweight analysis selector still lists the full
+catalog; old manual analysis cards follow conversation paging. Classic archive
+files are indexed on first access and incrementally when the archive directory
+changes. These indexes are private and included in backups. Schema 11 backfills
+public entries and question numbers from retained evidence without changing it.
+
+Exploration settings save per conversation: the active input, selected result
+step/port/item and context mode, layout, viewport and visible node positions,
+selection, table/group/time filters, fetched source overlays, labels and colors.
+Reopening an older analysis can retain a newer active chat input; the analysis
+keeps its original input and computed values. Resizing the graph does not refit
+the viewport; **Fit graph** remains an explicit action.
+
+Settings retain at most 32 recent views within 512 KiB, including positions for
+up to 500 visible nodes and selections for 2,000 visible edges. They are private,
+quota-accounted, included in backups and deleted with the conversation.
+Unavailable files and changed workflow revisions are omitted during recovery.
+Saved attributes are read from integrity-checked graph versions without a live
+SQL lookup. Older enrichments without fetched IDs use recorded mapping lineage.
+
+Failed saves keep a recovery journal scoped to the server, account and
+conversation in this browser, when browser storage is available. The status
+offers retry; simultaneous edits in another tab require **Reload saved view**
+or **Keep this view**. A storage failure leaves server saving available; if both
+are unavailable, keep the tab open until saving succeeds. The browser does not
+silently replace a newer server version with an older local journal.
 
 ## Answers, follow-ups and results
 
 When a calculation finishes, the chat answers with facts computed from the
 result: what was found, the main entities, and whether the method is exact or a
-heuristic and whether the output is complete. A model may choose and order these
-facts and add one lead sentence, but it cannot write numbers; if it is
-unavailable, the facts are shown on their own.
+heuristic and whether the output is complete. Each fact is labelled with its
+calculation's title. One grouping returned both as a partition and as group
+lists is stated once, and vertices that score zero are summarised rather than
+listed among the highest scores. The facts appear as soon as the result is
+saved. A model may then choose and order them and add one lead sentence, shown
+as **Writing a summary…** until it arrives. The lead cannot state numbers in
+digits or words; if it does, or the model is unavailable, the facts stand alone.
+Each step's exact or heuristic quality is shown beside the answer, so the
+default fact list leads with findings.
+
+While a question is being planned, the chat shows its stages (understanding
+the question, building a plan, checking it against the data), the elapsed
+time and **Stop**. Stopping cancels the model request; nothing was calculated,
+and the question offers **Try again**
+(`POST /api/sessions/{id}/analytics/plan/{request_id}/cancel`). The first
+question of an unnamed conversation becomes its title; conversation history
+(`GET /api/sessions?hide_empty=true`) omits unnamed conversations that have no
+messages, files or events yet.
 
 Follow-up questions see a short summary of the previous result. On the results
 page, choosing a group or clique and returning to chat attaches it to the next
 question ("Asking about Clique 2"); the server reads its members from the saved
-result. When the planner needs more information it offers short replies to
-click. Interrupted or failed planning shows **Try again**, which resends the
-question with its original inputs.
+result. Viewing a whole output attaches nothing, because the follow-up already
+refers to that analysis. When the planner needs more information it offers
+short replies to click. Interrupted or failed planning shows **Try again**,
+which resends the question with its original inputs.
 
 Failed, interrupted, cancelled and incomplete analyses offer **Adjust parameters**
 and **Narrow input** in the plan panel. Parameter changes retain bound inputs;
@@ -82,11 +190,18 @@ mode, so the user reviews the changed plan before execution. When no smaller
 graph is available, the narrowing dialog offers an upload. Known vertex and
 edge counts exclude replacements that are larger in either dimension.
 
-**Data & tools** in the conversation header, or **+** in the composer, opens
-uploads, the dataset library, compute settings, conversation management and
-saved analyses. New conversations offer sample data and editable question
-suggestions. The data and activity drawers close with Escape or their close
-button and return keyboard focus to the control that opened them.
+**Data** in the conversation header, or **+** in the composer, opens the dedicated
+data workspace. Wide screens show connection/schema, query and preview panes;
+smaller screens have Connection → Query → Preview steps. **Upload file** also
+contains the dataset library and existing input controls. Routes such as
+`#data/query` and `#workspace/{session}/data/files` reopen the correct workspace;
+the Back control returns to the originating conversation or result. Changing
+steps preserves the draft and preview without running another query.
+
+**Tools** opens compute settings, conversation management and saved analyses.
+New conversations offer sample data and editable question suggestions. The Tools
+and Activity drawers close with Escape or their close button and return keyboard
+focus to the control that opened them.
 On phones, the sidebar button opens conversation history while the composer
 stays at the bottom of the chat viewport. Desktop sidebar visibility is saved
 in the browser; Ctrl/Cmd+K focuses conversation search.
@@ -316,6 +431,48 @@ conversation retention does not remove them.
 Backup verification also checks each saved dataset's content against its size
 and hash before accepting a snapshot for restore.
 
+The library displays 20 lightweight versions per page and searches all retained
+versions on the server. **Source and provenance** fetches lineage only when
+expanded and offers its own retry. The **Save as** picker searches and pages the
+latest retained version of each compatible collection; older collections remain
+available even when they are outside the library's current page. The home page
+uses the same summary index. Search, pagination and provenance reads discard
+responses superseded by a newer search or a closed dialog.
+
+`GET /api/datasets/page` accepts `offset`, `limit` (1–100, default 20), `q`,
+`kind` and `latest`. It returns `items`, `offset`, `limit` and `has_more`, without
+the source document or content. `GET /api/datasets/{version}/provenance` returns
+the owned version's hash, source and completeness. The original `GET /api/datasets`
+list remains available for older clients; the current UI uses the paged route.
+Schema 10 backfills the summary index and keeps it synchronized transactionally
+when versions are saved, promoted or deleted.
+
+Workflow summaries, output pages, group selection and membership counts use
+rebuildable SQLite indexes beside their saved JSON artifacts. The first indexed
+read parses the bounded source once. Later reads decode only selected rows;
+exact field filters, typed group membership and stable sort ranks have indexes.
+Integer and text IDs stay distinct, integers beyond 64 bits remain exact, and
+missing values sort last in either direction. Case-insensitive substring search
+scans normalized text in SQLite. Deep offsets still traverse earlier index
+entries; graph rendering may still read its full source artifact.
+
+Every indexed read checks ownership and revision before accessing the cache,
+and rejects a source changed during the read. Missing or stale indexes rebuild
+atomically from the original artifact. Workflow index files and temporary index
+files are excluded from account storage accounting and backups. Source JSON
+remains authoritative and is retained for downloads and recovery. Indexes add
+disk use and a first-read construction cost; they do not populate the in-memory
+full-result cache.
+
+Parsed full results use a least-recently-used cache bounded by estimated Python
+allocations and eight entries. `GRAPHMINE_ANALYTICS_RESULT_CACHE_BYTES` defaults
+to 64 MiB; `0` disables retention. An entry larger than the cache budget is used
+for its current read without evicting other cached files. Cold cache reads are
+serialized, and file identity, size and timestamps invalidate replaced artifacts.
+The source byte limit still applies before parsing. This bounds retained cache
+memory, not total process memory: active graph operations, a cold index build,
+report inputs and individual large rows or strings need working allocations.
+
 **Save as template** captures the validated steps and settings without approval
 or execution state. **Workflow templates** lets the user bind inputs from the
 current conversation and change literal parameters. Parameters bound to earlier
@@ -331,11 +488,42 @@ runs as equivalent experiments.
 
 ## Exploration and exports
 
+**About this result** brings four kinds of evidence together: saved inputs,
+source scope, recorded calculation and display limits. It names the workflow
+revision, step and output. New or revised workflows capture each input's name,
+kind, hash and graph counts alongside its existing dataset/query provenance.
+These descriptors survive deletion of the original upload. The primary step's
+graph counts come from its actual saved input, including intermediate workflow
+outputs; ancestor input counts remain in the provenance disclosure.
+
+Source details follow the selected step's declared inputs and bindings through
+table projections, reused outputs and resaved datasets. Query text, exact typed
+parameters, source/mapping revision and fetch time are disclosed when recorded.
+Expanded inputs identify the query as the initial selection. Missing legacy
+metadata is labelled as unrecorded, without substituting the active input or
+current operation catalog. A complete source selection does not establish
+coverage of the entire database, and complete output does not make a heuristic
+exact. Retained completed steps of failed/interrupted workflows remain clearly
+identified.
+
+Display counts distinguish preview bounds from group/positive-flow selections,
+time filtering, table pages and loaded chart rows. Saved attribute overlays show
+their own version and fetch time; they do not replace calculation provenance.
+**Hide context** collapses the cards. Desktop uses two columns; narrow screens
+stack the cards with keyboard-accessible disclosures.
+
 Advanced calculation controls show the verified operation's input description,
 quality, available devices, GPU restrictions and parameter bounds. Server byte
 and runtime limits are shown alongside the plan's memory estimate and step
 budgets. Completed answers offer follow-up prompts based on their actual output
 types and completeness, without another model call to generate suggestions.
+Prompts that the saved result can satisfy (show the largest group, highlight
+the top-ranked entities, state the guarantees) carry their display or fact
+action. The server rebuilds the offer from the same result and accepts only an
+identical action, so these run without a routing model call. Other prompts are
+planned like typed questions. A score output from a workflow that also grouped
+the same vertices without overlap is coloured by that grouping, with a legend;
+filters and selections still apply to the output being shown.
 
 Expert mode includes a visual workflow editor with dependency arrows, typed
 input choices, step parameters and add/remove controls. Existing selectors and
@@ -355,6 +543,42 @@ tables, exact JSON inputs/results, the plan, a replay request and SHA-256 hashes
 CSV text that could be interpreted as a spreadsheet formula is escaped; JSON
 retains original types and values. Replaying requires a compatible installation
 with matching native evidence and environment. Randomized calculations can vary.
+Result, step, graph-view, group, membership, table-page, CSV and report requests
+accept optional `expected_revision`. The workspace supplies its displayed
+revision; a mismatch returns `409 revision_conflict` after checking ownership.
+This prevents another tab's revision from silently replacing the data behind the
+displayed provenance. Downloads keep the requested analysis/revision in their
+filename even if workspace state changes while the request finishes. A failed
+graph or table read is labelled unavailable instead of claiming loaded coverage.
+
+Workflow JSON/CSV, query-table JSON/CSV, report ZIPs, classic HTML reports,
+feedback JSONL and conversation archives are prepared in private temporary
+files, then transferred in 64 KiB chunks. Preparation runs off the event loop.
+`GRAPHMINE_ANALYTICS_MAX_EXPORTS` defaults to `2` (allowed range 1–32) and limits
+simultaneous preparation plus transfer across these routes. Additional requests
+receive `429 busy`. Files close on completion, disconnect, cancellation or an
+error; a cancelled preparation retains its slot until the worker finishes and
+its file is removed. Downloads use `Cache-Control: private, no-store`.
+
+Warm workflow and query-table CSV exports iterate indexed rows without building
+a full row list. JSON copies the saved artifact in chunks; table JSON verifies
+its content hash while reading a SQLite BLOB. Original map-shaped native outputs
+retain their CSV shape and may need a full parsed result. Reports write entries
+and their hashes directly into the ZIP, checking the byte budget before each
+write. Workflow CSV is limited to four times the result byte limit, table CSV
+to four times the input limit, and reports/partial workflows to four times their
+sum. JSON retains its source byte limit. Conversation archives and feedback
+retain the complete history; their size is not capped by the per-result limit.
+Archive source snapshots still construct existing transcript/event views, and
+large report inputs still need parsing. Temporary disk space must accommodate
+the admitted downloads. These changes avoid whole encoded export buffers and
+do not promise constant memory for every source operation.
+
+The browser saves workflow JSON directly as a Blob, preserving source bytes and
+large integers without parsing and re-encoding the download. Interrupted or
+failed workflows use `GET /api/workflows/{id}/result?partial=true` with the
+displayed revision to include all completed step artifacts. History archives
+retain original evidence and omit rebuildable workflow row indexes.
 
 Administrators can page through successful account and allowance changes in
 **Settings → Manage users → Administrator activity**. Audit entries commit in
@@ -393,7 +617,7 @@ through response completion and use no-store/no-referrer behavior.
 
 ## Database and REST connections
 
-**Data connections** lists sources available to the signed-in account.
+**Data workspace → Database** lists query and import sources available to the account.
 **Add connection** offers three types:
 
 - **SQLite database:** upload a consistent `.sqlite3`, `.sqlite` or `.db` backup,
@@ -402,18 +626,24 @@ through response completion and use no-store/no-referrer behavior.
 - **Node.js / REST API:** provide an HTTP(S) export URL, optional bearer token,
   response format (graph JSON, scalar JSON records or CSV), and column mapping.
   Object-wrapped JSON arrays can name their top-level field.
-- **Neo4j:** provide the HTTP(S) server address, database, username/password and
-  optional source-label/relationship-type filters. The fixed parameterized read
-  uses the [Neo4j Query API](https://neo4j.com/docs/query-api/current/query/).
-  It imports matching relationships and their endpoints, excluding isolated
-  nodes. Arbitrary Cypher and Bolt connections are not exposed by this driver.
+- **Neo4j:** provide a Bolt/Neo4j URI, database and username/password. Query the
+  graph directly using Cypher or the guided builder. PostgreSQL is optional;
+  enable it for mapped table enrichment and synchronization. An unavailable SQL
+  service does not block the default Neo4j graph. See
+  [Database queries and result views](DATABASE_CYPHER_WORKSPACE.md).
+
+Existing Neo4j HTTP export connections remain listed and editable. That legacy
+driver uses a fixed parameterized relationship read through the
+[Neo4j Query API](https://neo4j.com/docs/query-api/current/query/); it excludes
+isolated nodes. New Neo4j connections use the native Cypher workflow above.
 
 Connections belong to their creating account. **Edit connection** changes the
 mapping or credentials; blank credential fields retain existing credentials for
 the same server. **Remove connection** preserves previously imported versions.
 Credentials are omitted from API responses and dataset provenance. Private
-backups contain saved connection credentials and SQLite uploads. Up to 50 saved
-connections are allowed per account; their bytes count against storage.
+backups contain saved connection credentials and SQLite uploads. Each account
+can retain up to 50 import connections and 100 native Neo4j connections; their
+bytes count against storage.
 
 Public HTTPS endpoints are supported directly. Private-network servers and HTTP
 origins require the operator's `GRAPHMINE_CONNECTOR_ALLOWED_ORIGINS` setting.
@@ -424,8 +654,11 @@ integer/string types; CSV follows the existing canonical-integer policy.
 
 Preview validates the source and shows counts and samples. Saving reads again,
 checks the preview fingerprint, rechecks authorization, and creates an immutable
-dataset version. Changed sources require another preview. Use the saved version
-in the current conversation or import it later through the Dataset library.
+dataset version. Changed sources require another preview. The SQLite/REST
+**Import** step displays source completeness and preview counts separately.
+Use the saved version in the current or a new conversation, or import it later
+through the Dataset library. Removing a connection does not prevent opening
+its saved dataset versions.
 These actions do not run calculations or consume question/job allowances.
 
 CPU row/cell/byte limits apply. SQLite imports include the whole table or fail.
@@ -444,12 +677,24 @@ Run the local release gate from the repository with:
 PYTHONPATH=agent .venv/bin/python tools/check_local_release.py --output /tmp/graphmine-release-check
 ```
 
-It requires a new output directory, uv, Firefox/geckodriver, Node for syntax
-checking, and already verified native artifacts. It runs backend and browser
+It requires a new output directory, `agent[test,databases]`, uv,
+Firefox/geckodriver, Node for syntax checking, and already verified native
+artifacts. Missing prerequisites produce a failed `summary.json` before tests
+start. It runs backend and browser
 checks, builds both wheels, installs them in a clean Python environment and
 checks CPU workflows and bounded concurrent HTTP traffic using a temporary
 account/store. Reports state their scope; native compilation and live-model
 accuracy remain separate checks.
+
+`--list` prints the selected suites without running them. Database, mapping,
+query, result-view and workspace regressions are discovered automatically.
+Database fixtures are required local checks. To run the disposable seeded
+PostgreSQL/Neo4j round trip and source-picker integration, load its demo
+configuration and add `--with-databases`. This synchronizes that demo's mapped
+graph. `--with-benchmarks` additionally checks its completed benchmark import.
+`--with-gpus` explicitly enables checks on both UUIDs supplied through
+`GRAPHMINE_ANALYTICS_TEST_GPUS`. The default gate clears inherited integration
+flags; reports identify unrequested phases and individual skipped tests.
 
 `catalog/native_execution_evidence.json` must match the binary, implementation,
 source files, linked dependencies, operation profile and, for GPU execution,
@@ -476,6 +721,16 @@ response allowance for the structured decision. This optional server extension
 is omitted when the setting is blank; leave it blank on servers that do not
 support `thinking_token_budget`. Its value must be smaller than
 `GRAPHMINE_LLM_PLAN_MAX_TOKENS`. Reasoning remains enabled.
+
+Routing has its own budget, `GRAPHMINE_ANALYTICS_ROUTE_THINKING_TOKEN_BUDGET`,
+which defaults to 384 tokens; blank or `none` removes it. Reasoning tokens
+dominate planning time (about 30 tokens per second on the local server). On
+`review-query-workflows-v1` the routing budget kept the same 17 of 20 cases
+passing, with a median routing time of 15 seconds; one unbudgeted routing call
+on a live question took 35 seconds. A 1024-token plan budget lost
+three of the ten dependent-workflow cases, so plan reasoning is unbounded by
+default. Answer composition only chooses computed facts and runs without
+reasoning.
 
 Routing decisions choose an intent first. A calculation requires at least one
 operation from the catalog; clarification and unsupported decisions cannot also
@@ -605,6 +860,91 @@ as reviewed examples, and evaluation planning retrieves no reviewed examples.
 The API supports listing and revoking approvals. Development probes, held-out
 model scores and independent native oracle reports have separate labels.
 
+## Dataset Studio handoff
+
+After explicitly reviewing a completed, non-evaluation workflow, select
+**Download this reviewed workflow for Dataset Studio** in the review dialog.
+The authenticated `GET /api/workflows/{id}/studio-export` endpoint requires
+`example_id` and `expected_revision`. It rechecks the approved example, saved
+result hash and verified implementation, including changes during capability
+loading. Oversized exchanges fail rather than silently dropping evidence.
+
+Dataset Studio defaults to this checkout. Its **Import analytics** action checks
+the exchange's hashes, production schema and evidence binding, retains source
+attribution and requires a local content-bound review before training export.
+Content edits invalidate approval; changes to a question or plan require newly
+executed and reviewed evidence. Concurrent saves and exports use revision checks.
+
+The bounded 4 MiB exchange contains a normalized workflow, derived prompt,
+operation/input contracts, explicit source review and complete saved result.
+Its adapter is `workflow` and schema is `AnalyticsPlanNormalized`; it is distinct
+from the original planner's positional `AnalyticsPlan` model response. Studio
+also validates `AnalyticsRoute`, `AnalyticsPlan` and `AnalyticsAnswer` against
+production schema builders when the required context is supplied. The legacy
+Studio replay engine does not execute analytics plans. Portable hashes establish
+integrity, not signed authorship, fresh execution or continuing upstream approval.
+See the sibling `dataset-studio/README.md` for the review/export workflow.
+
+## Client contracts and module boundaries
+
+The workspace keeps its browser scripts independent of a runtime bundler. Shared
+modules now separate HTTP transport (`analytics-transport.js`), cancellation and
+retry timing (`analytics-async.js`), typed route construction (`analytics-client.js`),
+page routing (`analytics-navigation.js`), conversation/workflow observation
+(`analytics-polling.js`) and DOM primitives/domain rendering
+(`analytics-rendering.js`). `analytics-ui.js` coordinates conversation state and
+the specialized graph, result and input views. Database-job reads, results,
+cancellation and history use the shared route client. Account authentication
+continues to wrap fetch for cookie/CSRF handling.
+
+Reads retain both an AbortSignal and a scope check, so a completed or
+non-cancellable transport cannot replace a newer conversation. Concurrency retry
+waits are abortable; only explicit read retries repeat a request. Mutations do
+not retry implicitly. The transport preserves lossless JSON identifiers and
+structured status, error code, details and bounded retry hints, including a proxy
+response that is not valid JSON. Workflow and database polling share the retry
+timing policy while retaining their own progress and lifecycle rules.
+
+Server workflow routes live in `workflow_api.py` and delegate to the existing
+analytics/planning services. `api_errors.py` registers the common HTTP error
+policy; `errors.py` owns the service exception, re-exported by `analytics.py` for
+compatibility. `api.py` composes routes, authentication and application lifecycle.
+This extraction does not change workflow review, execution or storage policy.
+
+Generate TypeScript declarations directly from FastAPI's route/model definitions:
+
+```bash
+cd agent/frontend
+npm ci --ignore-scripts
+npm run contracts
+npm run typecheck
+npm test
+npm run contracts:check
+```
+
+`GRAPHMINE_CONTRACT_PYTHON` can select an interpreter with the agent dependencies;
+otherwise generation uses the checkout's `.venv/bin/python`, then `python3`.
+Schema generation does not start the runtime, source connections, workers or
+native execution. `generated/api.d.ts` records the OpenAPI fingerprint and is
+checked for drift in the local release gate. The pinned development dependencies
+are only needed for generation/checks, not by the served application.
+
+The generated types preserve optional API defaults. Unbounded integer fields
+include `bigint`, matching `AnalyticsWire`; constrained safe integers remain
+numbers. The route client checks path/query/body shapes against the generated
+types, and compile-time examples reject missing approval revisions, invalid
+methods, wrong query bodies and boolean graph IDs. Type checking currently
+covers the shared client/transport/cancellation modules and their contract tests;
+the existing view scripts remain JavaScript. Responses without an explicit API
+schema remain unknown instead of being assigned invented types. Runtime input
+validation and authorization remain on the server.
+
+The release gate requires the installed frontend development dependencies and
+runs contract drift, type checking and transport behavior tests through
+`test_api_contracts.py`, alongside the existing Firefox navigation and recovery
+checks. New module files must be loaded before `analytics-ui.js` in
+`analytics.html`; syntax-check every changed script before browser verification.
+
 ## MCP
 
 Run the stdio bridge in the agent environment:
@@ -617,12 +957,54 @@ python -m graphmine_agent.mcp
 
 The bridge uses [MCP 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25)
 JSON-RPC initialization, tool discovery and newline-delimited stdio messages.
-Its 14 tools inspect capabilities, create workspaces, list files, inspect tables,
-construct graphs, plan questions, create/list/get/revise/approve/cancel workflows,
-and retrieve full results or result pages. Upload files through the HTTP API or
-browser first. The bridge calls the same authenticated HTTP endpoints and
-approval checks; it contains no alternative algorithm or arbitrary-code path.
-Messages are bounded at 16 MiB; larger outputs use `result_page`.
+The original 14 workflow tools remain available. The catalog now also discovers
+data sources, builds and submits read-only database queries, follows durable
+jobs, retains query snapshots, reuses datasets, enriches/expands graph inputs,
+imports authorized SQLite/REST sources and exports saved data. All tools call
+the same authenticated HTTP endpoints, ownership, quota, revision and approval
+checks as the browser. The bridge has no alternative execution path and does not
+accept arbitrary URLs, filesystem destinations or connection credentials in tool
+arguments. Upload files and configure connections through the HTTP API or browser.
+
+| Workflow | MCP tools |
+| --- | --- |
+| Discover and shape a query | `discover_sources`, `database_source`, `database_datasets`, `database_schema`, `build_graph_query` |
+| Run and follow a database query | `query_database`, `list_database_jobs`, `database_job`, `database_job_result`, `cancel_database_job` |
+| Retain and reuse query results | `save_query_snapshot`, `discard_query_snapshot`, `open_query_snapshot`, `query_table_page` |
+| Reuse immutable datasets | `list_datasets`, `dataset_provenance`, `save_dataset`, `import_dataset`, `open_dataset`, `delete_dataset` |
+| Fetch current SQL data into a new graph version | `file_source_schema`, `enrich_file`, `expand_file` |
+| Import configured SQLite/REST data | `preview_connector`, `import_connector` |
+| Export saved content | `export_query_table`, `export_workflow_result`, `export_result_csv`, `export_workflow_report` |
+
+`query_database` requires a unique `request_key` and returns the API's durable job
+immediately. Reuse that key with identical arguments after a lost acknowledgement;
+different work with the same retained key returns a conflict. Poll `database_job`
+until terminal, then fetch `database_job_result`. Jobs survive bridge disconnects.
+Save or open temporary graph/table snapshots before expiry. List/search saved
+datasets through bounded pages, then inspect provenance or copy the exact version
+into a conversation. Query, import, enrichment and expansion tools do not start
+an analysis. Interactive analysis still requires separate approval of the exact
+reviewed workflow hash and revision. Database history can also show existing sync
+summaries; this catalog does not submit graph synchronization.
+
+Exports preserve complete stored content without rerunning a query or algorithm.
+Workflow exports require `expected_revision`. Up to 4 MiB can be embedded as an
+MCP text resource (CSV/JSON) or base64 blob (report ZIP), with byte count and SHA-256.
+Larger exports return an MCP resource link to the existing authenticated download
+endpoint; they never embed a truncated artifact. Fetch the link using the same
+GraphMine account/API authentication. Links contain no bearer token or URL
+userinfo and do not grant access; normal ownership, expiry and revision checks
+still apply on every download. An expired preview or changed workflow may make a
+previous link unavailable. Use `query_table_page` or `result_page` to inspect large
+content without downloading it. Typed JSON preserves exact integers; CSV retains
+the existing spreadsheet-formula escaping.
+
+Requests and complete serialized responses are bounded at 16 MiB; the response
+check includes both text and structured content. Request IDs are limited to 1024
+UTF-8 bytes. Empty HTTP 204 responses become `{ok: true}`. Network failures return
+a tool error without exposing configured credentials or replaying a submission.
+The local database MCP regression suite uses the real authenticated API with
+isolated SQLite and saved-result fixtures; it does not require native execution.
 
 ## Reproduce the scale checks
 

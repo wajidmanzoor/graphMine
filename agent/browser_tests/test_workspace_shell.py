@@ -16,6 +16,17 @@ def open_chat(browser, server):
     wait_for(browser, "GraphMineWorkspace.state.session && GraphMineWorkspace.state.caps && !GraphMineWorkspace.state.busy")
 
 
+def test_changing_mode_preserves_a_draft_without_submitting(loading_browser, loading_server):
+    browser, server = loading_browser, loading_server
+    open_chat(browser, server)
+    browser.find_element(By.ID, "question").send_keys("Count triangles")
+    browser.execute_script("window.modeSubmissions = 0; document.getElementById('question-form').addEventListener('submit', event => { window.modeSubmissions++; event.preventDefault(); event.stopImmediatePropagation(); }, true)")
+    for mode in ("interactive", "expert", "normal"):
+        browser.find_element(By.CSS_SELECTOR, f'[data-mode="{mode}"]').click()
+        assert browser.execute_script("return window.modeSubmissions") == 0
+        assert browser.find_element(By.ID, "question").get_attribute("value") == "Count triangles"
+
+
 @pytest.mark.parametrize("width,height", [(320, 640), (390, 844), (820, 1180), (1440, 1000)])
 def test_conversation_and_composer_fit_the_viewport(loading_browser, loading_server, width, height):
     browser, server = loading_browser, loading_server
@@ -32,18 +43,21 @@ def test_conversation_and_composer_fit_the_viewport(loading_browser, loading_ser
           && composer.top >= 0 && composer.bottom <= innerHeight
           && composer.left >= 0 && composer.right <= innerWidth;
     """)
-    browser.find_element(By.ID, "toggle-data").click()
-    assert browser.find_element(By.CSS_SELECTOR, ".upload-zone").is_displayed()
-    assert browser.find_element(By.ID, "data-sidebar").get_attribute("aria-modal") == "true"
+    browser.find_element(By.ID, "toggle-tools").click()
+    assert browser.find_element(By.ID, "manual-tools").is_displayed()
+    assert browser.find_element(By.ID, "open-templates").is_displayed()
+    assert not browser.find_element(By.ID, "data-file-controls").is_displayed()
+    assert browser.find_element(By.ID, "data-sidebar").get_attribute("aria-modal") == ("true" if width <= 900 else None)
     browser.switch_to.active_element.send_keys(Keys.ESCAPE)
-    assert browser.switch_to.active_element.get_attribute("id") == "toggle-data"
+    assert browser.switch_to.active_element.get_attribute("id") == "toggle-tools"
     assert not browser.find_element(By.ID, "data-sidebar").is_displayed()
 
 
 def test_drawers_trap_focus_and_restore_the_trigger(loading_browser, loading_server):
     browser, server = loading_browser, loading_server
+    browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": 390, "height": 844})
     open_chat(browser, server)
-    browser.find_element(By.ID, "composer-data").click()
+    browser.find_element(By.ID, "toggle-tools").click()
     close = browser.find_element(By.CSS_SELECTOR, "#data-sidebar [data-close-panel]")
     assert browser.switch_to.active_element == close
     close.send_keys(Keys.SHIFT, Keys.TAB)
@@ -51,12 +65,43 @@ def test_drawers_trap_focus_and_restore_the_trigger(loading_browser, loading_ser
     browser.switch_to.active_element.send_keys(Keys.TAB)
     assert browser.switch_to.active_element == close
     close.click()
-    assert browser.switch_to.active_element.get_attribute("id") == "composer-data"
+    assert browser.switch_to.active_element.get_attribute("id") == "toggle-tools"
     browser.find_element(By.ID, "toggle-activity").click()
     assert browser.find_element(By.ID, "activity-status").is_displayed()
     browser.switch_to.active_element.send_keys(Keys.ESCAPE)
     assert browser.switch_to.active_element.get_attribute("id") == "toggle-activity"
     assert not browser.find_element(By.ID, "panel-backdrop").is_displayed()
+
+
+@pytest.mark.parametrize("width", [1024, 1440, 1920])
+def test_desktop_panels_resize_chat_and_leave_composer_usable(loading_browser, loading_server, width):
+    browser, server = loading_browser, loading_server
+    browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": width, "height": 1000})
+    open_chat(browser, server)
+    measure = """
+        const rect = id => document.getElementById(id).getBoundingClientRect();
+        const composer = rect('question-form'), sidebar = rect('app-sidebar');
+        return {left: composer.left, right: composer.right, width: composer.width,
+          sidebarRight: sidebar.right, overflow: document.documentElement.scrollWidth > innerWidth,
+          bottom: composer.bottom};
+    """
+    full = browser.execute_script(measure)
+    assert 0 <= full["left"] - full["sidebarRight"] <= 32
+    assert width - full["right"] <= 32
+    for trigger, panel in [("toggle-tools", "data-sidebar"), ("toggle-activity", "activity-sidebar")]:
+        browser.find_element(By.ID, trigger).click()
+        narrowed = browser.execute_script(measure)
+        panel_left = browser.execute_script("return arguments[0].getBoundingClientRect().left", browser.find_element(By.ID, panel))
+        assert full["width"] - narrowed["width"] >= 275
+        assert narrowed["right"] <= panel_left
+        assert narrowed["bottom"] <= 1000 and not narrowed["overflow"]
+        assert not browser.find_element(By.ID, "panel-backdrop").is_displayed()
+        question = browser.find_element(By.ID, "question")
+        question.click()
+        question.send_keys("Still able to type")
+        assert browser.switch_to.active_element == question
+        browser.find_element(By.ID, trigger).click()
+        assert abs(browser.execute_script(measure)["width"] - full["width"]) < 1
 
 
 def test_mobile_history_search_and_navigation(loading_browser, loading_server):
@@ -69,9 +114,11 @@ def test_mobile_history_search_and_navigation(loading_browser, loading_server):
     browser.find_element(By.ID, "toggle-sidebar").click()
     search = browser.find_element(By.ID, "session-search")
     search.send_keys("does not exist")
+    wait_for(browser, "document.getElementById('recent-sessions').getAttribute('aria-busy') === 'false'")
     assert "No conversations match" in browser.find_element(By.ID, "recent-sessions").text
     search.clear()
     search.send_keys("Saved")
+    wait_for(browser, "document.querySelectorAll('.recent-session').length === 1")
     browser.find_element(By.CSS_SELECTOR, ".recent-session").click()
     wait_for(browser, "GraphMineWorkspace.state.session && !GraphMineWorkspace.state.busy")
     assert not browser.find_element(By.ID, "app-sidebar").is_displayed()

@@ -8,8 +8,6 @@ import json
 import logging
 import shutil
 import sqlite3
-import tempfile
-import zipfile
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
@@ -34,44 +32,47 @@ from fastapi import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
-from fastapi.staticfiles import StaticFiles
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.concurrency import run_in_threadpool
 
 from . import __version__
-from .account_api import AccountMiddleware, account_response, register_account_routes
+from .account_api import AccountMiddleware, register_account_routes
 from .accounts import Accounts
 from .agent_service import AgentService
 from .analytics import (
     AnalyticsError,
     AnalyticsService,
-    GroupMembershipRequest,
-    WorkflowApproval,
-    WorkflowRequest,
-    WorkflowRevision,
 )
 from .analytics_examples import register_example_routes
 from .analytics_exports import register_export_routes
-from .analytics_planning import AnalyticsPlanner, PlanningRequest
+from .database_pools import DatabasePoolMiddleware, DatabasePools
 from .analytics_projection import register_projection_routes
-from .catalog import Catalog, CatalogError
+from .catalog import Catalog
+from .capture import TrainingCapture, deployment_snapshot
 from .config import Settings
 from .connectors import register_connector_routes
-from .database import Database, QueueCapacityError, RecordNotFound
+from .database import Database, RecordNotFound
 from .database_enrichment import register_database_enrichment_routes
 from .database_queries import register_database_query_routes
+from .data_sources import register_source_routes
 from .database_sync import register_database_sync_routes
+from .database_jobs import DatabaseJobs, register_database_job_routes
+from .exploration import register_exploration_routes
+from .export_streams import prepare_download
+from .legacy_exports import answer_report, feedback_export, history_archive as prepare_history_archive
 from .datasets import register_dataset_routes
-from .execution import ExecutionError, GraphMineRunner
+from .workspace_recent import register_recent_routes
+from .execution import GraphMineRunner
 from .graph_store import GraphStore, UploadError
 from .history import HistoryStore
 from .identity import AccountError, current_principal
 from .import_preview import register_import_routes
 from .jobs import EventBus, JobManager
-from .llm import LLMError
 from .models import (
     ChatRequest,
     ChatResponse,
     ConversationEvent,
+    ConversationEventPage,
     DomainProfile,
     ExecutionPlan,
     FeedbackCreate,
@@ -88,12 +89,14 @@ from .models import (
     SessionRecord,
     SessionUpdate,
 )
-from .planning import PlanValidationError, PlanValidator
+from .planning import PlanValidator
 from .projects import register_project_routes
-from .reporting import render_report
 from .result_views import register_result_view_routes
 from .results import query_path
 from .workflow_templates import register_template_routes
+from .workflow_api import register_workflow_routes
+from .api_errors import register_error_handlers
+from .web_assets import WebAssets, WebHeaders
 
 
 @dataclass(slots=True)
@@ -110,6 +113,8 @@ class Runtime:
     upload_slots: asyncio.Semaphore
     analytics: AnalyticsService
     accounts: Accounts
+    database_pools: DatabasePools
+    database_jobs: DatabaseJobs | None = None
 
 
 _logger = logging.getLogger(__name__)
@@ -124,7 +129,7 @@ def _active_jobs(runtime, session_id):
 
 def remove_session(runtime, session_id):
     """Delete a conversation's records, uploads, results and history."""
-    runtime.database.get_session(session_id)
+    session = runtime.database.get_session(session_id)
     if _active_jobs(runtime, session_id):
         raise AnalyticsError(
             "Cancel the running analysis before deleting this conversation.",
@@ -132,6 +137,9 @@ def remove_session(runtime, session_id):
             409,
         )
     runtime.analytics.delete_session(session_id)
+    if runtime.database.capture:
+        # The capture outlives the conversation; this marks where it ended.
+        runtime.database.capture.record(session_id, "session.deleted", session)
     jobs = runtime.database.delete_session(session_id)
     settings = runtime.settings
     for path in (
@@ -177,12 +185,35 @@ async def scheduled_backups(runtime):
         await asyncio.sleep(settings.backup_hours * 3600)
 
 
+async def expire_query_previews(runtime, *, interval=3600):
+    from .query_previews import expire_previews
+
+    while True:
+        try:
+            await run_in_threadpool(expire_previews, runtime.database)
+        except Exception:
+            _logger.exception("query preview cleanup failed")
+        await asyncio.sleep(interval)
+
+
+async def expire_database_pools(runtime):
+    while True:
+        await asyncio.sleep(min(60, runtime.settings.database_pool_idle_seconds))
+        await run_in_threadpool(runtime.database_pools.reap)
+
+
 def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
     settings.data_root.mkdir(parents=True, exist_ok=True)
     settings.workspaces_root.mkdir(parents=True, exist_ok=True)
     catalog = Catalog(settings)
     database = Database(settings.database_path, HistoryStore(settings.history_root))
     accounts = Accounts(settings, database)
+    if settings.capture_enabled:
+        database.capture = TrainingCapture(
+            settings.capture_root,
+            owner_of=database.session_owner,
+            deployment=deployment_snapshot(settings),
+        )
     graph_store = GraphStore(settings, database)
     validator = PlanValidator(catalog)
     runner = GraphMineRunner(settings, catalog, graph_store, validator)
@@ -197,7 +228,7 @@ def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
     )
     agent = AgentService(settings, catalog, database, graph_store, validator, jobs)
     jobs.result_handler = agent.handle_completed_result
-    return Runtime(
+    runtime = Runtime(
         settings=settings,
         catalog=catalog,
         database=database,
@@ -210,7 +241,10 @@ def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
         upload_slots=asyncio.Semaphore(settings.max_concurrent_uploads),
         analytics=AnalyticsService(settings, database, graph_store, events),
         accounts=accounts,
+        database_pools=DatabasePools(settings),
     )
+    runtime.database_jobs = DatabaseJobs(runtime)
+    return runtime
 
 
 def _runtime(request: Request) -> Runtime:
@@ -298,12 +332,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         runtime = build_runtime(configured, serving=True)
         app.state.runtime = runtime
-        retention = backups = None
+        retention = backups = previews = pools = None
         try:
             runtime.runner.probe()
             await runtime.jobs.start()
             runtime.analytics.open()
             runtime.database.close_unanswered_planning()
+            previews = asyncio.create_task(expire_query_previews(runtime))
+            pools = asyncio.create_task(expire_database_pools(runtime))
             retention = (
                 asyncio.create_task(enforce_retention(runtime))
                 if configured.retention_days
@@ -318,18 +354,26 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 # Both store locks are held and interrupted jobs are now terminal.
                 with runtime.database._connect() as db:
                     db.execute("DELETE FROM account_leases WHERE kind != 'model'")
+            await runtime.database_jobs.start()
             yield
         finally:
-            for task in (retention, backups):
+            for task in (retention, backups, previews, pools):
                 if task:
                     task.cancel()
+            await asyncio.gather(*(task for task in (retention, backups, previews, pools) if task), return_exceptions=True)
             try:
-                await runtime.analytics.close()
+                await runtime.database_jobs.stop()
             finally:
                 try:
-                    await runtime.jobs.stop()
+                    await runtime.analytics.close()
                 finally:
-                    await runtime.agent.close()
+                    try:
+                        await runtime.jobs.stop()
+                    finally:
+                        try:
+                            await runtime.agent.close()
+                        finally:
+                            await run_in_threadpool(runtime.database_pools.close)
 
     app = FastAPI(
         title="GraphMine Agent API",
@@ -341,141 +385,29 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     app.add_middleware(AccountMiddleware)
+    app.add_middleware(DatabasePoolMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(configured.allowed_origins),
         allow_credentials=False,
-        allow_methods=["GET", "POST", "DELETE"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
         allow_headers=[
             "Authorization",
             "Content-Type",
             "X-GraphMine-Token",
             "X-GraphMine-Request",
+            "Prefer",
+            "Idempotency-Key",
         ],
+        expose_headers=["Location", "Retry-After"],
     )
     register_account_routes(app)
+    app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
+    app.add_middleware(WebHeaders, allowed_origins=configured.allowed_origins)
 
-    @app.exception_handler(AccountError)
-    async def account_error_handler(_request, error):
-        return account_response(error)
-
-    @app.exception_handler(AnalyticsError)
-    async def analytics_error_handler(
-        _request: Request, error: AnalyticsError
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=error.status,
-            content={"error": {"code": error.code, "message": str(error)}},
-        )
-
-    @app.exception_handler(RecordNotFound)
-    async def not_found_handler(
-        _request: Request, error: RecordNotFound
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=404,
-            content={
-                "error": {"code": "not_found", "message": str(error).strip("'")},
-                "turn_id": getattr(error, "history_turn_id", None),
-            },
-        )
-
-    @app.exception_handler(PlanValidationError)
-    async def plan_error_handler(
-        _request: Request, error: PlanValidationError
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=422,
-            content={
-                "turn_id": getattr(error, "history_turn_id", None),
-                "error": {
-                    "code": "invalid_execution_plan",
-                    "message": str(error),
-                    "details": error.errors,
-                },
-            },
-        )
-
-    @app.exception_handler(QueueCapacityError)
-    async def queue_capacity_handler(
-        _request: Request, error: QueueCapacityError
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=429,
-            headers={"Retry-After": "5"},
-            content={
-                "turn_id": getattr(error, "history_turn_id", None),
-                "error": {
-                    "code": "job_queue_full",
-                    "message": str(error),
-                    "details": {
-                        "limit": error.limit,
-                        "pending": error.pending,
-                        "requested": error.requested,
-                    },
-                },
-            },
-        )
-
-    @app.exception_handler(ValueError)
-    async def value_error_handler(_request: Request, error: Exception) -> JSONResponse:
-        return JSONResponse(
-            status_code=422,
-            content={
-                "error": {"code": "invalid_request", "message": str(error)},
-                "turn_id": getattr(error, "history_turn_id", None),
-            },
-        )
-
-    @app.exception_handler(CatalogError)
-    async def catalog_error_handler(
-        _request: Request, error: CatalogError
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=422,
-            content={
-                "error": {"code": "catalog_error", "message": str(error)},
-                "turn_id": getattr(error, "history_turn_id", None),
-            },
-        )
-
-    @app.exception_handler(LLMError)
-    async def llm_error_handler(_request: Request, error: LLMError) -> JSONResponse:
-        return JSONResponse(
-            status_code=503,
-            content={
-                "error": {"code": "llm_unavailable", "message": str(error)},
-                "turn_id": getattr(error, "history_turn_id", None),
-            },
-        )
-
-    @app.exception_handler(ExecutionError)
-    async def execution_error_handler(
-        _request: Request, error: ExecutionError
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=503,
-            content={
-                "error": {"code": error.code, "message": str(error)},
-                "turn_id": getattr(error, "history_turn_id", None),
-            },
-        )
+    register_error_handlers(app)
 
     router = APIRouter(prefix="/api", dependencies=[Depends(_authorization)])
-
-    @app.exception_handler(sqlite3.Error)
-    async def storage_error_handler(
-        _request: Request, _error: sqlite3.Error
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=503,
-            content={
-                "error": {
-                    "code": "storage_unavailable",
-                    "message": "The metadata store is unavailable. Check storage and job status before retrying.",
-                }
-            },
-        )
 
     @router.get("/health")
     async def health(request: Request) -> dict[str, Any]:
@@ -496,6 +428,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
         return {
             "version": __version__,
+            "build_id": request.app.state.build_id,
             "deployment": runtime.agent.deployment_info(),
             "status": "ready" if ready else "degraded",
             "llm": {
@@ -524,6 +457,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "database": runtime.database.statistics(),
             "worker": runtime.jobs.statistics(),
             "history": runtime.database.history.statistics(),
+            "capture": (
+                runtime.database.capture.statistics()
+                if runtime.database.capture
+                else {"status": "disabled"}
+            ),
             "analytics": runtime.analytics.metrics(
                 runtime.database.recent_payloads(
                     "workflow.diagnostics", datetime.now(UTC) - timedelta(days=1)
@@ -574,10 +512,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
 
     @router.get("/sessions", response_model=list[SessionRecord])
-    async def list_sessions(
-        request: Request, limit: int = Query(100, ge=1, le=500)
+    def list_sessions(
+        request: Request, limit: int = Query(100, ge=1, le=500),
+        offset: int = Query(0, ge=0), q: str = Query("", max_length=200),
+        include_archived: bool = True, hide_empty: bool = False,
     ) -> list[SessionRecord]:
-        return _runtime(request).database.list_sessions(limit)
+        return _runtime(request).database.list_sessions(
+            limit, offset=offset, q=q, include_archived=include_archived,
+            hide_empty=hide_empty,
+        )
 
     @router.patch("/sessions/{session_id}", response_model=SessionRecord)
     async def update_session(
@@ -621,43 +564,43 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return _runtime(request).database.get_session(session_id)
 
     @router.get("/sessions/{session_id}/workspace")
-    async def session_workspace(session_id: str, request: Request):
+    def session_workspace(session_id: str, request: Request, history_limit: int | None = Query(None, ge=1, le=100)):
         runtime = _runtime(request)
         database = runtime.database
         session = database.get_session(session_id)
-        jobs = database.list_jobs(session_id)
+        jobs = database.list_jobs(session_id, limit=history_limit + 1 if history_limit is not None else None)
+        timeline = None
+        if history_limit is not None:
+            from .conversation_timeline import conversation_page
+
+            timeline = conversation_page(database, session_id, limit=history_limit, analytics=runtime.analytics)
         return {
             "session": session,
-            "messages": database.conversation_transcript(session_id),
+            "messages": timeline["messages"] if timeline else database.conversation_transcript(session_id),
             "files": [
                 FileInfo.from_stored(item) for item in database.list_files(session_id)
             ],
-            "jobs": jobs,
-            "events": database.events(session_id),
-            "feedback_count": len(database.feedback(session_id)),
+            "jobs": jobs[-history_limit:] if history_limit else jobs,
+            "jobs_truncated": bool(history_limit and len(jobs) > history_limit),
+            "events": timeline["events"] if timeline else database.events(session_id),
+            "timeline": {key: value for key, value in timeline.items() if key not in {"messages", "events"}} if timeline else None,
+            "feedback_count": database.feedback_count(session_id),
             "deployment": runtime.agent.deployment_info(),
         }
 
+    @router.get("/sessions/{session_id}/conversation-page")
+    def conversation_page_route(session_id: str, request: Request, before: str | None = Query(None, max_length=2048),
+                                limit: int = Query(30, ge=1, le=100)):
+        from .conversation_timeline import conversation_page
+
+        runtime = _runtime(request)
+        return conversation_page(runtime.database, session_id, before=before, limit=limit, analytics=runtime.analytics)
+
     @router.get("/sessions/{session_id}/feedback/export")
     async def export_feedback(session_id: str, request: Request):
-        database = _runtime(request).database
-        records = database.feedback(session_id)
-        rows = [
-            {
-                "schema_version": "graphmine-feedback-v1",
-                "review_status": "unreviewed",
-                "automatically_used_for_training": False,
-                "annotation": item.model_dump(mode="json"),
-            }
-            for item in records
-        ]
-        return Response(
-            "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
-            media_type="application/x-ndjson",
-            headers={
-                "Content-Disposition": f'attachment; filename="{session_id}-feedback.jsonl"'
-            },
-        )
+        runtime = _runtime(request)
+        return await prepare_download(runtime.analytics, feedback_export, runtime, session_id,
+                                      filename=f"{session_id}-feedback.jsonl", media_type="application/x-ndjson")
 
     @router.get("/sessions/{session_id}/reasoning")
     async def model_reasoning(session_id: str, request: Request):
@@ -688,55 +631,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @router.get("/sessions/{session_id}/history/archive")
     async def history_archive(session_id: str, request: Request) -> StreamingResponse:
         runtime = _runtime(request)
-        database = runtime.database
-        database.get_session(session_id)
-        history = database.history
-        history.snapshot(
-            session_id,
-            "conversation.json",
-            database.conversation_transcript(session_id),
-        )
-        history.snapshot(session_id, "session.json", database.get_session(session_id))
-        history.snapshot(
-            session_id, "analytics/events.json", database.events(session_id)
-        )
-        workflows = runtime.analytics.list(session_id)
-        history.snapshot(session_id, "analytics/workflows.json", workflows)
-        # The workspace stores native analysis evidence outside classic history.
-        # Authorize each workflow through the session before streaming its files.
-        directories = [runtime.analytics.root / row["id"] for row in workflows]
-
-        def chunks():
-            with tempfile.TemporaryFile() as archive:
-                with zipfile.ZipFile(
-                    archive, "w", compression=zipfile.ZIP_DEFLATED
-                ) as bundle:
-                    for item in history.manifest(session_id)["files"]:
-                        relative = item["path"]
-                        bundle.write(
-                            history.session_path(session_id) / relative,
-                            f"{session_id}/{relative}",
-                        )
-                    for directory in directories:
-                        for path in sorted(directory.rglob("*")):
-                            if path.is_file() and path.resolve().is_relative_to(
-                                directory.resolve()
-                            ):
-                                bundle.write(
-                                    path,
-                                    f"{session_id}/analytics/{directory.name}/{path.relative_to(directory)}",
-                                )
-                archive.seek(0)
-                while chunk := archive.read(1024 * 1024):
-                    yield chunk
-
-        return StreamingResponse(
-            chunks(),
-            media_type="application/zip",
-            headers={
-                "Content-Disposition": f'attachment; filename="{session_id}.zip"',
-            },
-        )
+        async with runtime.analytics.edit_lock:
+            return await prepare_download(runtime.analytics, prepare_history_archive, runtime, session_id,
+                                          filename=f"{session_id}.zip", media_type="application/zip")
 
     @router.post(
         "/sessions/{session_id}/files", response_model=FileInfo, status_code=201
@@ -863,15 +760,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
 
     @router.get("/results/{result_id}/report", response_class=HTMLResponse)
-    async def download_answer(result_id: str, request: Request) -> HTMLResponse:
-        result = _runtime(request).database.get_result(result_id)
-        return HTMLResponse(
-            render_report(result),
-            headers={
-                "Content-Disposition": f'attachment; filename="{result.id}.html"',
-                "X-Content-Type-Options": "nosniff",
-            },
-        )
+    async def download_answer(result_id: str, request: Request) -> StreamingResponse:
+        runtime = _runtime(request)
+        return await prepare_download(runtime.analytics, answer_report, runtime, result_id,
+                                      filename=f"{result_id}.html", media_type="text/html")
 
     @router.post("/results/{result_id}/interpret", response_model=ResultRecord)
     async def interpret_result(
@@ -887,128 +779,37 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     ) -> ChatResponse:
         return await _runtime(request).agent.chat(session_id, body)
 
-    @router.get("/sessions/{session_id}/events", response_model=list[ConversationEvent])
-    async def events(
-        session_id: str, request: Request, after: int = Query(0, ge=0)
-    ) -> list[ConversationEvent]:
+    @router.get("/sessions/{session_id}/events", response_model=list[ConversationEvent] | ConversationEventPage)
+    def events(
+        session_id: str, request: Request, after: int = Query(0, ge=0, le=9223372036854775807), limit: int | None = Query(None, ge=1, le=1000), paged: bool = False
+    ) -> list[ConversationEvent] | ConversationEventPage:
         runtime = _runtime(request)
         runtime.database.get_session(session_id)
-        return runtime.database.events(session_id, after)
+        if not paged:
+            return runtime.database.events(session_id, after, limit=limit)
+        size = limit or 500
+        rows = runtime.database.events(session_id, after, limit=size + 1)
+        chosen = rows[:size]
+        turns = list({row.payload["turn_id"] for row in chosen if row.payload.get("turn_id")})
+        numbers = {}
+        if turns:
+            with runtime.database._connect() as db:
+                for offset in range(0, len(turns), 400):
+                    chunk = turns[offset:offset + 400]
+                    numbers.update(db.execute(f"SELECT turn_id,number FROM conversation_turns WHERE session_id=? AND turn_id IN ({','.join('?' for _ in chunk)})", [session_id, *chunk]).fetchall())
+        return ConversationEventPage(events=chosen, after=after, last_sequence=chosen[-1].sequence if chosen else after,
+                                     has_more=len(rows) > size, turn_numbers=numbers)
 
-    @router.get("/analytics/capabilities")
-    async def analytics_capabilities(request: Request, refresh: bool = False):
-        return await _runtime(request).analytics.capabilities(refresh)
-
-    @router.post("/sessions/{session_id}/workflows", status_code=201)
-    async def create_workflow(session_id: str, body: WorkflowRequest, request: Request):
-        return await _runtime(request).analytics.create(session_id, body)
-
-    @router.post("/sessions/{session_id}/analytics/plan")
-    async def plan_analytics(session_id: str, body: PlanningRequest, request: Request):
-        runtime = _runtime(request)
-        return await AnalyticsPlanner(
-            runtime.settings, runtime.analytics, runtime.events
-        ).plan(session_id, body)
-
-    @router.get("/sessions/{session_id}/workflows")
-    async def list_workflows(session_id: str, request: Request):
-        return _runtime(request).analytics.list(session_id)
-
-    @router.get("/workflows/{workflow_id}")
-    async def get_workflow(workflow_id: str, request: Request):
-        analytics = _runtime(request).analytics
-        record = analytics.get(workflow_id)
-        return {**record, "queue_position": analytics.queue_position(record)}
-
-    @router.post("/workflows/{workflow_id}/revise")
-    async def revise_workflow(
-        workflow_id: str, body: WorkflowRevision, request: Request
-    ):
-        return await _runtime(request).analytics.revise(workflow_id, body)
-
-    @router.post("/workflows/{workflow_id}/run", status_code=202)
-    async def run_workflow(workflow_id: str, body: WorkflowApproval, request: Request):
-        return await _runtime(request).analytics.start(
-            workflow_id, body.workflow_hash, body.expected_revision
-        )
-
-    @router.delete("/workflows/{workflow_id}")
-    async def cancel_workflow(workflow_id: str, request: Request):
-        return await _runtime(request).analytics.cancel(workflow_id)
-
-    @router.get("/workflows/{workflow_id}/result")
-    async def workflow_result(
-        workflow_id: str, request: Request, summary: bool = False
-    ):
-        analytics = _runtime(request).analytics
-        return await run_in_threadpool(
-            analytics.result_summary if summary else analytics.result, workflow_id
-        )
-
-    @router.get("/workflows/{workflow_id}/steps/{step}/result")
-    async def workflow_step_result(workflow_id: str, step: str, request: Request):
-        return _runtime(request).analytics.result(workflow_id, step=step)
-
-    @router.get(
-        "/workflows/{workflow_id}/steps/{step}/ports/{port}/groups/{index}/graph"
-    )
-    async def group_graph(
-        workflow_id: str, step: str, port: str, index: int, request: Request
-    ):
-        return await run_in_threadpool(
-            _runtime(request).analytics.group_graph, workflow_id, step, port, index
-        )
-
-    @router.post("/workflows/{workflow_id}/steps/{step}/ports/{port}/memberships")
-    async def workflow_memberships(
-        workflow_id: str,
-        step: str,
-        port: str,
-        body: GroupMembershipRequest,
-        request: Request,
-    ):
-        return await run_in_threadpool(
-            _runtime(request).analytics.group_memberships,
-            workflow_id,
-            step,
-            port,
-            body.vertices,
-        )
-
-    @router.get("/workflows/{workflow_id}/steps/{step}/ports/{port}")
-    async def workflow_port(
-        workflow_id: str,
-        step: str,
-        port: str,
-        request: Request,
-        offset: int = Query(0, ge=0),
-        limit: int = Query(100, ge=1, le=1000),
-        search: str | None = Query(None, max_length=500),
-        sort: str | None = Query(None, max_length=200),
-        descending: bool = False,
-        min_size: int | None = Query(None, ge=0),
-        max_size: int | None = Query(None, ge=0),
-        member: str | None = Query(None, min_length=1, max_length=500),
-    ):
-        return await run_in_threadpool(
-            _runtime(request).analytics.port_page,
-            workflow_id,
-            step,
-            port,
-            offset,
-            limit,
-            search,
-            sort,
-            descending,
-            min_size,
-            max_size,
-            member,
-        )
+    register_workflow_routes(router)
 
     register_example_routes(router)
     register_dataset_routes(router)
+    register_recent_routes(router)
     register_database_query_routes(router)
+    register_source_routes(router)
     register_database_sync_routes(router)
+    register_database_job_routes(router)
+    register_exploration_routes(router)
     register_database_enrichment_routes(router)
     register_result_view_routes(router)
     register_import_routes(router)
@@ -1069,16 +870,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     static = Path(__file__).with_name("static")
     if static.is_dir():
+        assets = WebAssets(static)
+        app.state.build_id = assets.build_id
+
+        @app.get("/api/build")
+        async def build_info() -> dict[str, str]:
+            return {"build_id": assets.build_id, "version": __version__}
 
         @app.get("/", response_class=HTMLResponse, include_in_schema=False)
         async def analytics_workspace():
-            return HTMLResponse((static / "analytics.html").read_text(encoding="utf-8"))
+            return HTMLResponse(assets.pages["analytics.html"], headers={"Cache-Control": "no-cache"})
 
         @app.get("/classic", response_class=HTMLResponse, include_in_schema=False)
         async def classic_workspace():
-            return HTMLResponse((static / "index.html").read_text(encoding="utf-8"))
+            return HTMLResponse(assets.pages["index.html"], headers={"Cache-Control": "no-cache"})
 
-        app.mount("/", StaticFiles(directory=static, html=True), name="ui")
+        app.mount("/", assets, name="ui")
     return app
 
 

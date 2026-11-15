@@ -4,66 +4,122 @@
   const read = key => { try { return localStorage.getItem(key) || ""; } catch { return ""; } };
   const save = (key, value) => { try { localStorage.setItem(key, value); } catch { /* private browsing */ } };
   const state = {base: read("graphmine.apiBase"), token: read("graphmine.apiToken"), caps: null, session: null, files: [], kinds: {}, active: "", mode: "normal", operation: "", record: null, result: null, cy: null, graph: null, selected: new Set(), port: null, rows: [], filtered: [], page: 0, previews: new Map(), poll: null, epoch: 0, busy: false, domains: [], workflows: [], events: [], eventCursor: 0, eventPoll: null, legacyMessages: [], view: "domains", planning: false, pendingQuestion: null, summaries: new Map()};
+  const api = window.GraphMineTransport({state, W});
   const PAGE = 30;
+  const eventIndex = window.GraphMineEventIndex(), messageNodes = window.GraphMineKeyedNodes(), activityNodes = window.GraphMineKeyedNodes();
+  const graphView = window.GraphMineGraphView(W);
+  let capabilityVersion = 0;
+  let historyPage = null, historyLoading = false, historyError = "", historyRead = null, historyGeneration = 0, unreadMessages = false;
+  let turnNumbers = new Map();
+  let manualWorkflows = null, savedLoaded = false;
+  const legacyKey = row => row.kind === "result.saved" && row.result_id ? `result:${row.result_id}` : row.id || [row.turn_id || row.created_at || row.message, row.role, row.kind].join(":");
+  function mergeHistory(value) {
+    state.legacyMessages = [...new Map([...state.legacyMessages, ...(value.messages || [])].map(row => [legacyKey(row), row])).values()]
+      .sort((a, b) => (a.created_at || "").localeCompare(b.created_at || ""));
+    eventIndex.add(value.events || []); state.events = eventIndex.all();
+    const metadata = value.timeline || value;
+    for (const [turn, number] of Object.entries(metadata.turn_numbers || {})) turnNumbers.set(turn, number);
+    if (metadata.manual_workflow_ids) for (const id of metadata.manual_workflow_ids) manualWorkflows?.add(id);
+  }
+  function historyControls() {
+    $("conversation-history").hidden = !historyPage?.has_more && !historyLoading && !historyError && !unreadMessages;
+    $("load-older-messages").hidden = !historyPage?.has_more && !historyError;
+    $("load-older-messages").disabled = historyLoading;
+    $("load-older-messages").textContent = historyError ? "Retry older messages" : "Load older messages";
+    $("conversation-history-status").textContent = historyLoading ? "Loading earlier conversation…" : historyError;
+    $("show-latest-messages").hidden = !unreadMessages;
+  }
+  function scrollToLatest() {
+    const last = $("messages").lastElementChild, scroll = $("conversation-scroll");
+    const requested = document.activeElement === $("show-latest-messages");
+    if (last && state.view === "chat") scroll.scrollTo({top: scroll.scrollTop + last.getBoundingClientRect().bottom - scroll.getBoundingClientRect().bottom + 16, behavior: "instant"});
+    unreadMessages = false; historyControls();
+    if (requested && last) { last.tabIndex = -1; last.focus({preventScroll: true}); }
+  }
+  async function loadOlderMessages() {
+    if (!state.session || historyLoading || !historyPage?.next_cursor) return;
+    historyRead?.abort(); historyRead = new AbortController();
+    const generation = ++historyGeneration, controller = historyRead, session = state.session.id;
+    const current = () => !controller.signal.aborted && generation === historyGeneration && state.session?.id === session;
+    const scroll = $("conversation-scroll"), top = scroll.getBoundingClientRect().top;
+    const anchor = [...$("messages").children].find(item => item.getBoundingClientRect().bottom >= top);
+    const anchorTop = anchor?.getBoundingClientRect().top;
+    const focused = document.activeElement === $("load-older-messages");
+    historyLoading = true; historyError = ""; historyControls();
+    try {
+      const page = await api(`/api/sessions/${encodeURIComponent(session)}/conversation-page?${new URLSearchParams({limit: 30, before: historyPage.next_cursor})}`, {signal: controller.signal});
+      if (!current()) return;
+      mergeHistory(page); historyPage = page;
+      $("messages").setAttribute("aria-live", "off");
+      renderConversation({preserveScroll: true}); renderActivity();
+      historyLoading = false; historyControls();
+      if (anchor?.isConnected) scroll.scrollTop += anchor.getBoundingClientRect().top - anchorTop;
+      if (focused && [document.body, $("load-older-messages")].includes(document.activeElement)) {
+        if (historyPage.has_more) $("load-older-messages").focus({preventScroll: true});
+        else if (anchor?.isConnected) { anchor.tabIndex = -1; anchor.focus({preventScroll: true}); }
+      }
+      requestAnimationFrame(() => $("messages").setAttribute("aria-live", "polite"));
+    } catch (error) {
+      if (!current() || error.name === "AbortError") return;
+      historyError = `Earlier messages could not be loaded. ${error.message}`;
+    } finally { if (current()) { historyLoading = false; historyControls(); } }
+  }
+  $("load-older-messages").addEventListener("click", loadOlderMessages);
+  $("show-latest-messages").addEventListener("click", scrollToLatest);
+  function workflowIndex() {
+    const byTurn = new Map();
+    for (const record of state.workflows) if (record.planning_turn_id) byTurn.set(record.planning_turn_id, record);
+    if (state.record?.planning_turn_id) byTurn.set(state.record.planning_turn_id, state.record);
+    return byTurn;
+  }
+  function outcomeKey(record) {
+    return record ? [record.id, record.revision, record.status, record.steps, record.error, progressText(record),
+      eventIndex.answer(record), state.summaries.get(record.id), record.id === state.workflows.at(-1)?.id, capabilityVersion].map(value => value ?? null) : null;
+  }
   let commands;
-  let resultViews, databaseWorkspace;
+  let resultViews, databaseWorkspace, exploration, workspaceHome, resultContext;
+  function viewScope() {
+    const step = $("result-step").value, port = $("result-port").value;
+    if (state.record && state.result && step && port) return {file_id: null, result: {workflow_id: state.record.id, revision: state.record.revision, step, port, index: state.resultView?.index ?? null, context: Boolean(state.resultView?.context)}};
+    return state.active ? {file_id: state.active, result: null} : null;
+  }
   let connectionGeneration = 0;
   let capabilitiesLoading = false;
   let capabilitiesController = null;
+  let sessionLoading = false, workflowTarget = null;
+  let sessionController = new AbortController(), workflowController = null;
+  let projectionSchemaGeneration = 0;
+  const navigation = window.GraphMineNavigation({state, $, openSession, openWorkflow, renderGraph,
+    getHome: () => workspaceHome, getDatabase: () => databaseWorkspace,
+    isSessionLoading: () => sessionLoading, getWorkflowTarget: () => workflowTarget});
+  const {route, showPage, go, applyRoute} = navigation;
+  const polling = window.GraphMinePolling({state, readScope, getSignal: () => workflowController?.signal || sessionController.signal,
+    syncConversation, renderWorkflow, renderConversation, loadSaved, loadResults, showWorkflowSync, go, notice: (...args) => notice(...args)});
+  const {pollConversation, pollWorkflow} = polling;
   const descriptions = {normal: "Ask in your own words. GraphMine checks the plan and runs it for you.", interactive: "Discuss your question, review the plan, then approve the calculation.", expert: "Inspect and edit the workflow yourself before running it."};
   const friendly = {requested_k: "Minimum connections inside the core", k: "Group size (k)", source: "Starting point", source_vertex: "Starting point", sink: "Destination", target: "Destination", target_vertex: "Comparison point", sources: "Starting points", seeds: "Required starting points", seed_vertices: "Starting points", vertices_or_seeds: "Selected vertices or starting points", connectivity_mode: "Meaning of connected", weight_mode: "How to use connection weights", result_limit: "Maximum results to list", mode: "Result to return", radius: "Maximum connection steps", depth_limit: "Maximum connection steps", quality: "Solution quality", objective: "Objective to optimize"};
   const choiceNames = {enumerate: "List each result", count: "Count only", edge_weight: "Use edge weights", unweighted: "Treat each connection equally", weakly_connected: "Connected when direction is ignored", strongly_connected: "Every member can reach every other member", induced: "Connections within the selected vertices", ego: "Neighborhood around the selected vertices", exact: "Exact", heuristic: "Heuristic"};
   const title = value => friendly[value] || String(value).replaceAll("_", " ").replace(/^./, c => c.toUpperCase());
   const display = value => value === null ? "—" : typeof value === "object" ? W.stringify(value) : typeof value === "string" ? value : String(value);
+  const {node, notice, renderDomains} = window.GraphMineRendering({state, $, onDomain: domain => runAction(async () => {
+    // Without a chosen name, the first question titles the conversation.
+    const session = await api("/api/sessions", {method: "POST", body: W.stringify({domain_id: domain.id, title: $("session-name").value.trim() || null})});
+    await openSession(session.id); history.pushState(null, "", route("chat")); await loadSessions();
+  })});
   const {parameterControl, parametersFrom, bindingsFrom} = window.GraphMineControls({state, W, node, refs, title, choiceNames});
-  function node(tag, attributes = {}, text) {
-    const element = document.createElement(tag);
-    for (const [key, value] of Object.entries(attributes)) {
-      if (key === "class") element.className = value;
-      else if (key === "hidden") element.hidden = value;
-      else element.setAttribute(key, value);
-    }
-    if (text !== undefined) element.textContent = text;
-    return element;
-  }
-  function notice(message, error = false) {
-    clearTimeout(state.noticeTimer);
-    const dialog = document.querySelector("dialog[open]");
-    if (dialog && error && message) {
-      let feedback = dialog.querySelector(".dialog-notice");
-      if (!feedback) { feedback = node("p", {class: "dialog-notice", role: "alert"}); dialog.prepend(feedback); }
-      feedback.textContent = message; feedback.scrollIntoView({block: "nearest"});
-    }
-    $("notice").textContent = message; $("notice").className = `notice${error ? " error" : ""}`; $("notice").hidden = !message;
-    if (message && !error) state.noticeTimer = setTimeout(() => { $("notice").hidden = true; }, 5500);
-  }
-  async function api(path, options = {}, busyRetries = 0) {
-    const {asBlob, ...requestOptions} = options;
-    const headers = state.token ? {Authorization: `Bearer ${state.token}`} : {};
-    if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
-    const response = await fetch(state.base + path, {...requestOptions, headers: {...headers, ...options.headers}});
-    if (response.status === 204) return null;
-    if (response.ok && asBlob) return response.blob();
-    const text = await response.text();
-    let result; try { result = W.parse(text); } catch { throw new Error("The server did not return a readable response."); }
-    if (busyRetries > 0 && response.status === 429 && result.error?.code === "concurrency_limit") {
-      const delay = Math.max(1, Number(response.headers.get("Retry-After")) || 1);
-      await new Promise(resolve => setTimeout(resolve, delay * 1000));
-      return api(path, options, busyRetries - 1);
-    }
-    if (!response.ok) {
-      const error = new Error(result.error?.message || result.detail?.message || (typeof result.detail === "string" ? result.detail : `Request failed (${response.status}).`));
-      error.status = response.status; error.code = result.error?.code;
-      throw error;
-    }
-    return result;
+  const sessionHistory = window.GraphMineSessionHistory({state, api, node, notice});
+  function readScope(signal = sessionController.signal) {
+    const epoch = state.epoch;
+    return window.GraphMineAsync.readScope({api, signal, current: () => epoch === state.epoch});
   }
   function activeFile() { return state.files.find(f => f.id === state.active); }
   function clearResults(message = "Waiting for a completed calculation.") {
     resultViews?.clear();
+    resultContext?.clear();
     if (state.record) state.summaries.delete(state.record.id);
     state.result = null; state.port = null; state.rows = []; state.selected.clear();
     state.flowRows = null; state.remote = null; state.pageRows = []; state.pagePositions = []; state.page = 0; clearTimeout(state.remoteTimer);
+    state.remoteLoading = false; state.remoteError = null;
     state.groups = []; state.groupMembership = new Map(); state.groupFilter = ""; state.groupsOverlap = false; state.groupNoun = "group";
     state.groupMemberships = new Map(); state.groupSummary = null; state.groupsTruncated = false;
     state.fullMemberships = new Map(); state.membershipRequest = null; state.groupPort = null;
@@ -74,13 +130,14 @@
   function refs() {
     const value = {};
     for (const [index, file] of state.files.entries()) {
+      if (isTable(file)) continue;
       if (file.id !== state.active && !state.kinds[file.id]) continue;
       value[file.id === state.active ? "main" : `data_${index + 1}`] = {file_id: file.id, kind: state.kinds[file.id] || "graph"};
     }
     return value;
   }
   function card(id) { return state.caps?.operations.find(c => c.id === id); }
-  const isTable = file => file.role === "attachment" && file.original_name.toLowerCase().endsWith(".csv");
+  function isTable(file) { return file.role === "attachment" && (file.provenance?.kind === "table" || file.original_name.toLowerCase().endsWith(".csv")); }
   function methodName(id) { return card(id)?.title || title(String(id).replaceAll("-", " ")); }
   const portNames = {vertex_groups: "groups of vertices", vertex_partition: "partition", vertex_scores: "score per vertex", edge_scores: "score per connection", vertex_set: "vertices", edge_set: "connections", scalar: "value", graph: "graph", table: "table", path_set: "paths", cross_graph_mapping: "matching between graphs", pattern_collection: "patterns"};
   // Charts show four significant figures; the exact value stays in tables and downloads.
@@ -135,82 +192,12 @@
     if (state.busy) return;
     state.busy = true;
     updateControls();
-    try { await fn(); } catch (error) { notice(error.message, true); }
+    try { await fn(); } catch (error) { if (error.name !== "AbortError") notice(error.message, true); }
     finally { state.busy = false; updateControls(); }
   }
   const stageNames = {route: "Understanding your question", family: "Understanding your question", operation: "Choosing the calculation", plan: "Building a valid plan", validation: "Validating the plan", retrieval: "Checking reviewed examples"};
-  function route(page = "chat", workflow = "") {
-    return state.session ? `#workspace/${encodeURIComponent(state.session.id)}/${page}${workflow ? `/${encodeURIComponent(workflow)}` : ""}` : "#";
-  }
-  function showPage(page) {
-    state.view = page;
-    window.GraphMineShell.setView(page);
-    $("domain-view").hidden = page !== "domains";
-    $("workspace-view").hidden = page !== "chat";
-    $("results-view").hidden = page !== "results";
-    $("workspace-nav").hidden = page === "domains";
-    $("chat-page-link").href = route("chat");
-    $("results-page-link").href = route("results", state.record?.id || "");
-    $("chat-page-link").setAttribute("aria-current", page === "chat" ? "page" : "false");
-    $("results-page-link").setAttribute("aria-current", page === "results" ? "page" : "false");
-    if (page === "results") requestAnimationFrame(() => { renderGraph(state.graph); state.cy?.resize(); state.cy?.fit(undefined, 35); });
-  }
-  function go(page, workflow = "") {
-    const next = route(page, workflow);
-    if (location.hash === next) showPage(page); else location.hash = next;
-  }
-  async function applyRoute() {
-    const match = /^#workspace\/([^/]+)(?:\/(chat|results)(?:\/([^/]+))?)?$/.exec(location.hash);
-    const id = match ? decodeURIComponent(match[1]) : "";
-    if (state.busy && id !== state.session?.id) { history.replaceState(null, "", route(state.view)); return; }
-    if (!match) { if (state.session) await openSession(""); else showPage("domains"); return; }
-    if (id !== state.session?.id) await openSession(id);
-    if (match[3] && decodeURIComponent(match[3]) !== state.record?.id) {
-      const workflow = state.workflows.find(row => row.id === decodeURIComponent(match[3]));
-      if (!workflow) throw new Error("This analysis is not part of the selected conversation.");
-      await openWorkflow(workflow.id);
-    }
-    showPage(match[2] || "chat");
-  }
-  function renderDomains() {
-    const glyphs = ["◇", "↗", "◎", "⌘", "◈", "⟷", "◉", "✧"];
-    $("domain-grid").replaceChildren();
-    state.domains.forEach((domain, index) => {
-      const button = node("button", {class: "domain-card", "data-domain": domain.id, hidden: index >= 6});
-      button.append(node("span", {class: "domain-icon", "aria-hidden": "true"}, glyphs[index % glyphs.length]), node("strong", {}, domain.name), node("span", {}, domain.description));
-      button.addEventListener("click", () => runAction(async () => {
-        const session = await api("/api/sessions", {method: "POST", body: W.stringify({domain_id: domain.id, title: $("session-name").value.trim() || `${domain.name} conversation`})});
-        await openSession(session.id); history.pushState(null, "", route("chat")); await loadSessions();
-      }));
-      $("domain-grid").append(button);
-    });
-    $("show-all-domains").hidden = state.domains.length <= 6;
-    $("show-all-domains").textContent = "Explore all domains ↓";
-    $("show-all-domains").setAttribute("aria-expanded", "false");
-  }
-  async function loadSessions() {
-    state.sessions = await api("/api/sessions?limit=100");
-    renderSessions();
-  }
-  function renderSessions() {
-    const query = $("session-search").value.trim().toLowerCase(), archived = $("show-archived").checked;
-    $("recent-section").hidden = !state.sessions?.length;
-    $("session-select").replaceChildren(node("option", {value: ""}, "New conversation"));
-    $("recent-sessions").replaceChildren();
-    for (const session of state.sessions || []) {
-      const name = session.title || "Untitled conversation";
-      if (!session.archived || session.id === state.session?.id) $("session-select").append(node("option", {value: session.id}, name));
-      if (session.archived && !archived || query && !name.toLowerCase().includes(query)) continue;
-      const link = node("a", {class: "recent-session", href: `#workspace/${encodeURIComponent(session.id)}/chat`, "aria-current": session.id === state.session?.id ? "page" : "false", title: name});
-      const domain = state.domains.find(row => row.id === session.domain_id);
-      link.append(node("strong", {}, name + (session.archived ? " (archived)" : "")), node("span", {}, domain?.name || session.domain_id), node("span", {"aria-hidden": "true"}, "→"));
-      $("recent-sessions").append(link);
-    }
-    if (state.sessions?.length && !$("recent-sessions").children.length) $("recent-sessions").append(node("p", {class: "muted"}, "No conversations match these filters."));
-    $("session-select").value = state.session?.id || "";
-    $("session-actions").hidden = !state.session;
-    $("archive-session").textContent = state.session?.archived ? "Unarchive" : "Archive";
-  }
+  function loadSessions() { return sessionHistory.load(); }
+  function renderSessions() { sessionHistory.render(); }
   async function updateSession(changes) {
     state.session = await api(`/api/sessions/${encodeURIComponent(state.session.id)}`, {method: "PATCH", body: W.stringify(changes)});
     await loadSessions();
@@ -220,39 +207,67 @@
     if (!state.session) throw new Error("Choose a domain to start your conversation.");
     return state.session;
   }
-  async function openSession(id) {
+  async function openSession(id, workflowId = null) {
+    exploration?.leave(); databaseWorkspace?.clearExploration();
     clearTimeout(state.poll); clearTimeout(state.eventPoll); state.epoch++;
+    polling.resetWorkflow();
+    sessionController.abort(); workflowController?.abort();
+    sessionController = new AbortController(); workflowController = null; workflowTarget = null;
+    const reads = readScope(); sessionLoading = Boolean(id);
     state.session = null; state.files = []; state.kinds = {}; state.active = ""; state.record = null; state.previews.clear();
-    state.events = []; state.workflows = []; state.eventCursor = 0; state.legacyMessages = []; state.pendingQuestion = null; state.lastChatKey = null; state.summaries.clear();
+    historyRead?.abort(); historyGeneration++; historyPage = null; historyLoading = false; historyError = ""; unreadMessages = false; turnNumbers = new Map(); historyControls();
+    manualWorkflows = null; savedLoaded = false; state.eventBacklog = false;
+    eventIndex.reset(); messageNodes.clear(); activityNodes.clear();
+    state.events = eventIndex.all(); state.workflows = []; state.eventCursor = 0; state.legacyMessages = []; state.pendingQuestion = null; state.lastChatKey = null; state.summaries.clear();
     $("workflow-panel").hidden = true; $("plan-editor").value = "";
     setDataOpen(false);
     notice(""); clearResults("Upload a graph in Chat to preview its connections here.");
-    if (!id) { showPage("domains"); renderConversation(); renderSessions(); return; }
-    const workspace = await api(`/api/sessions/${encodeURIComponent(id)}/workspace`);
-    state.session = workspace.session;
-    renderSessions();
-    state.files = workspace.files.filter(f => ["graph", "query_graph", "motif", "attachment"].includes(f.role));
-    state.legacyMessages = workspace.messages;
-    state.feedbackCount = workspace.feedback_count || 0;
-    state.events = workspace.events;
-    state.eventCursor = Math.max(0, ...state.events.map(event => Number(event.sequence)));
-    const domain = state.domains.find(row => row.id === state.session.domain_id);
-    $("active-domain").textContent = domain?.name || state.session.domain_id;
-    $("active-domain-description").textContent = domain?.description || "";
-    $("chat-domain-label").textContent = domain?.name || "Your conversation";
-    $("workspace-title").textContent = state.session.title || "New conversation";
-    $("results-session-title").textContent = state.session.title || "Your conversation";
-    try { state.kinds = W.parse(read(`graphmine.inputKinds.${id}`) || "{}"); } catch { state.kinds = {}; }
-    for (const file of state.files) {
-      if (file.provenance?.kind) state.kinds[file.id] = file.provenance.kind;
-      else if (file.role !== "attachment") state.kinds[file.id] = "graph";
-    }
-    state.active = state.files.find(file => !isTable(file))?.id || "";
-    setMode(read(`graphmine.mode.${id}`) || "normal");
-    showPage("chat"); renderFiles(); await loadSaved();
-    if (state.workflows.length) await openWorkflow(state.workflows.at(-1).id);
-    else if (state.active) await previewActive();
-    renderConversation(); renderActivity(); pollConversation();
+    if (!id) { showPage("domains"); renderConversation(); renderSessions(); return true; }
+    try {
+      const workspace = await reads.get(`/api/sessions/${encodeURIComponent(id)}/workspace?history_limit=30`);
+      state.session = workspace.session;
+      renderSessions();
+      state.files = workspace.files.filter(f => ["graph", "query_graph", "motif", "attachment"].includes(f.role));
+      state.legacyMessages = workspace.messages;
+      historyPage = workspace.timeline || null;
+      manualWorkflows = historyPage?.manual_workflow_ids ? new Set(historyPage.manual_workflow_ids) : null;
+      turnNumbers = new Map(Object.entries(historyPage?.turn_numbers || {})); historyControls();
+      state.feedbackCount = workspace.feedback_count || 0;
+      eventIndex.reset(workspace.events); state.events = eventIndex.all();
+      state.eventCursor = historyPage?.event_cursor ?? state.events.reduce((latest, event) => event.sequence > latest ? event.sequence : latest, 0);
+      const domain = state.domains.find(row => row.id === state.session.domain_id);
+      $("active-domain").textContent = domain?.name || state.session.domain_id;
+      $("active-domain-description").textContent = domain?.description || "";
+      $("chat-domain-label").textContent = domain?.name || "Your conversation";
+      $("workspace-title").textContent = state.session.title || "New conversation";
+      $("results-session-title").textContent = state.session.title || "Your conversation";
+      try { state.kinds = W.parse(read(`graphmine.inputKinds.${id}`) || "{}"); } catch { state.kinds = {}; }
+      for (const file of state.files) {
+        if (file.provenance?.kind) state.kinds[file.id] = file.provenance.kind;
+        else if (file.role !== "attachment") state.kinds[file.id] = "graph";
+      }
+      state.active = state.files.find(file => !isTable(file))?.id || "";
+      const remembered = await exploration?.open(id, sessionController.signal);
+      if (!reads.current()) return false;
+      const rememberedInput = state.files.find(file => file.id === remembered?.active_file_id && !isTable(file));
+      if (rememberedInput) state.active = rememberedInput.id;
+      setMode(read(`graphmine.mode.${id}`) || "normal");
+      showPage("chat"); renderFiles(); await loadSaved();
+      if (!reads.current()) return false;
+      if (workflowId && !state.workflows.some(record => record.id === workflowId)) throw new Error("This analysis is not part of the selected conversation.");
+      const rememberedWorkflow = remembered?.view?.result?.workflow_id;
+      const initialWorkflow = workflowId || (remembered ? rememberedWorkflow : state.workflows.at(-1)?.id);
+      if (initialWorkflow && state.workflows.some(record => record.id === initialWorkflow)) await openWorkflow(initialWorkflow);
+      else if (state.active) await previewActive();
+      if (!reads.current()) return false;
+      if (rememberedInput && (!workflowId || workflowId === rememberedWorkflow)) { state.active = rememberedInput.id; renderFiles(); }
+      exploration?.ready();
+      renderConversation(); renderActivity(); pollConversation();
+      return true;
+    } catch (error) {
+      if (!reads.current() || error.name === "AbortError") return false;
+      throw error;
+    } finally { if (reads.current()) sessionLoading = false; }
   }
   function messageElement(role, message, label = "") {
     const article = node("article", {class: `chat-message ${role}`}), bubble = node("div", {class: "chat-bubble"});
@@ -261,22 +276,80 @@
     bubble.append(node("p", {}, message)); article.append(bubble);
     return {article, bubble};
   }
+  // Planning takes tens of seconds, so its stages show in the chat itself.
+  const planningStages = [["route", "Understanding your question"], ["plan", "Building a plan"], ["validation", "Checking it against your data"]];
+  const elapsedText = started => {
+    const seconds = Math.max(0, Math.round((Date.now() - started) / 1000));
+    return seconds < 60 ? `${seconds} s` : `${Math.floor(seconds / 60)} min ${seconds % 60} s`;
+  };
+  let elapsedTimer = null;
+  function tickElapsed() {
+    const clocks = document.querySelectorAll(".planning-elapsed[data-started]");
+    for (const clock of clocks) clock.textContent = elapsedText(Number(clock.dataset.started));
+    if (!clocks.length) { clearInterval(elapsedTimer); elapsedTimer = null; }
+    else if (!elapsedTimer) elapsedTimer = setInterval(tickElapsed, 1000);
+  }
+  function planningNode(chats) {
+    const asked = chats.at(-1)?.payload.role === "user" ? chats.at(-1) : null;
+    const turn = state.pendingQuestion?.id || asked?.payload.turn_id || null;
+    const started = state.pendingQuestion?.startedAt || Date.parse(asked?.created_at || "") || Date.now();
+    const status = new Map((turn ? eventIndex.turn(turn) : []).filter(e => e.type === "workflow.planning").map(e => [e.payload.stage, e.payload.status]));
+    // A failed check followed by a new plan attempt is a repair, not a failure.
+    const repairing = status.get("validation") === "failed" && status.get("plan") === "running";
+    return messageNodes.item("planning", W.stringify([turn, started, [...status]]), () => {
+      const item = messageElement("assistant", "Working on your question…", "GraphMine");
+      item.article.classList.add("planning-progress");
+      const list = node("ol", {class: "planning-stages"});
+      for (const [stage, label] of planningStages) {
+        const value = stage === "validation" && repairing ? undefined : status.get(stage);
+        const phase = value === undefined ? "waiting" : value === "running" ? "active" : value === "failed" ? "failed" : "done";
+        const text = stage === "plan" && repairing ? "Revising the plan" : label;
+        const row = node("li", {class: `planning-stage ${phase}`, ...(phase === "active" ? {"aria-current": "step"} : {})});
+        // The marker's colour also has a spoken form.
+        row.append(node("span", {class: "visually-hidden"}, {waiting: "Waiting: ", active: "In progress: ", done: "Done: ", failed: "Failed: "}[phase]), text);
+        list.append(row);
+      }
+      const footer = node("p", {class: "planning-footer"});
+      footer.append(node("small", {class: "planning-elapsed", "data-started": String(started)}, elapsedText(started)));
+      if (turn) {
+        const stop = node("button", {class: "quiet", type: "button", "data-stop-planning": turn}, "Stop");
+        stop.addEventListener("click", () => stopPlanning(turn, stop));
+        footer.append(stop);
+      }
+      item.bubble.append(list, footer);
+      return item.article;
+    });
+  }
+  async function stopPlanning(turn, button) {
+    button.disabled = true; button.textContent = "Stopping…";
+    try {
+      await api(`/api/sessions/${encodeURIComponent(state.session.id)}/analytics/plan/${encodeURIComponent(turn)}/cancel`, {method: "POST"});
+    } catch (error) {
+      button.disabled = false; button.textContent = "Stop";
+      notice(error.message, true);
+    }
+  }
   function appendOutcome(bubble, record) {
     const status = {completed: "Analysis complete", awaiting_review: "Ready for your review", ready: "Ready for your review", queued: "Your calculation is queued", running: "Your calculation is running", failed: "The calculation failed", interrupted: "The calculation was interrupted", cancelled: "The calculation was cancelled"}[record.status] || title(record.status);
     const timing = progressText(record);
-    const answer = state.events.findLast(e => e.type === "workflow.answer" && e.payload.workflow_id === record.id && e.payload.revision === record.revision)?.payload;
+    const answer = eventIndex.answer(record);
     if (answer) {
       // Every statement was computed from the result; the model only chose them.
       if (answer.lead) bubble.append(node("p", {class: "answer-lead"}, answer.lead));
       const facts = new Map(answer.facts.map(fact => [fact.id, fact.statement])), list = node("ul", {class: "answer-facts"});
       for (const id of answer.fact_ids) if (facts.has(id)) list.append(node("li", {}, facts.get(id)));
       bubble.append(list);
+      // The findings are final; only their introduction is still being written.
+      if (answer.pending) bubble.append(node("p", {class: "answer-pending", role: "status"}, "Writing a summary…"));
       // Follow-up questions about this result, offered while it is the latest one.
       if (answer.suggestions?.length && record.id === state.workflows.at(-1)?.id) {
         const choices = node("div", {class: "reply-choices", "aria-label": "Suggested next questions"});
-        for (const text of answer.suggestions) {
+        for (const suggestion of answer.suggestions) {
+          // Older answers saved plain text; newer ones may carry a checked action.
+          const text = typeof suggestion === "string" ? suggestion : suggestion.text;
+          const action = typeof suggestion === "string" ? null : suggestion.action || null;
           const button = node("button", {class: "quiet", type: "button", "data-suggestion": text}, text);
-          button.addEventListener("click", () => askAbout(record, text));
+          button.addEventListener("click", () => askAbout(record, text, action));
           choices.append(button);
         }
         bubble.append(choices);
@@ -295,33 +368,41 @@
       bubble.append(button);
     }
   }
-  function renderConversation() {
+  function renderConversation({preserveScroll = false} = {}) {
     renderSelectionChip();
     const scroll = $("conversation-scroll"), lastMessage = $("messages").lastElementChild;
     const messageBottom = lastMessage?.getBoundingClientRect().bottom, viewport = scroll.getBoundingClientRect();
     const atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90 || messageBottom >= viewport.top && messageBottom <= viewport.bottom + 90;
     const openDetails = new Set([...$("messages").querySelectorAll("details[open]")].map(el => el.dataset.turn));
-    const container = $("messages"); container.replaceChildren();
+    const container = $("messages"), records = workflowIndex();
     const ordered = [];
-    for (const row of state.legacyMessages) if (row.message && row.kind !== "workflow.chat") {
+    for (const [index, row] of state.legacyMessages.entries()) if (row.message && row.kind !== "workflow.chat") {
+      const article = messageNodes.item(`legacy:${legacyKey(row)}`, W.stringify(row), () => {
       const item = messageElement(row.role === "user" ? "user" : "assistant", row.message, row.kind?.startsWith("feedback_command") ? "Local command" : undefined);
       item.article.dataset.turn = row.turn_id || "";
       commands?.decorate(item, row);
-      ordered.push({article: item.article, time: row.created_at || ""});
+      return item.article;
+      });
+      ordered.push({article, time: row.created_at || ""});
     }
-    const chats = state.events.filter(event => event.type === "workflow.chat" && !event.payload.evaluation_id);
+    const chats = eventIndex.chats();
     for (const event of chats) {
-      const row = event.payload, item = messageElement(row.role, row.message, row.role === "user" ? `${title(row.mode || "normal")} mode` : "GraphMine");
+      const row = event.payload, record = records.get(row.turn_id);
+      const signature = W.stringify([event.sequence, row.role === "assistant" ? eventIndex.version(row.turn_id) : 0,
+        row.role === "assistant" ? outcomeKey(record) : null, row.role === "assistant" && event === chats.at(-1),
+        row.role === "assistant" && state.startingTurn === row.turn_id]);
+      const article = messageNodes.item(`event:${event.sequence}`, signature, () => {
+      const item = messageElement(row.role, row.message, row.role === "user" ? `${title(row.mode || "normal")} mode` : "GraphMine");
       item.article.dataset.turn = row.turn_id;
       if (row.role === "assistant") {
-        const decisions = state.events.filter(e => e.type === "workflow.planning" && e.payload.turn_id === row.turn_id && e.payload.message);
+        const decisions = eventIndex.turn(row.turn_id).filter(e => e.type === "workflow.planning" && e.payload.message);
         if (decisions.length) {
           const details = node("details", {class: "chat-decision", "data-turn": row.turn_id}); details.open = openDetails.has(row.turn_id);
           details.append(node("summary", {}, "How this was planned"));
           decisions.forEach(e => details.append(node("p", {}, e.payload.message)));
           item.bubble.append(details);
         }
-        const reasoning = state.events.filter(e => e.type === "workflow.reasoning" && e.payload.turn_id === row.turn_id);
+        const reasoning = eventIndex.turn(row.turn_id).filter(e => e.type === "workflow.reasoning");
         if (reasoning.length) {
           const details = node("details", {class: "chat-decision", "data-turn": `${row.turn_id}-reasoning`}); details.open = openDetails.has(`${row.turn_id}-reasoning`);
           details.append(node("summary", {}, "Model reasoning"));
@@ -339,9 +420,11 @@
           button.addEventListener("click", () => runAction(() => applyView(row.view)));
           item.bubble.append(button);
         }
-        const record = state.workflows.findLast(record => record.planning_turn_id === row.turn_id);
         if (record) appendOutcome(item.bubble, record);
-        else if (row.plan && row.status === "ready") {
+        else if (row.plan && row.status === "ready" && state.startingTurn === row.turn_id) {
+          // The plan is being saved (and in Normal mode started); its outcome follows.
+          item.bubble.append(node("p", {class: "workflow-outcome"}, row.mode === "normal" ? "Starting the calculation…" : "Saving the plan for your review…"));
+        } else if (row.plan && row.status === "ready") {
           const button = node("button", {class: "quiet"}, "Continue with this plan");
           button.addEventListener("click", () => runAction(() => submitPlan(row.plan, false, row.turn_id, row.inputs, row.mode)));
           item.bubble.append(button);
@@ -360,51 +443,63 @@
         }
       }
       commands?.decorate(item, row);
-      ordered.push({article: item.article, time: event.created_at || ""});
+      return item.article;
+      });
+      ordered.push({article, time: event.created_at || ""});
     }
-    ordered.sort((a, b) => a.time.localeCompare(b.time)).forEach(item => container.append(item.article));
-    for (const record of state.workflows.filter(record => !record.planning_turn_id)) {
-      const item = messageElement("assistant", record.validation.plan.steps.map(step => methodName(step.operation)).join(" → "), "Saved analysis");
-      appendOutcome(item.bubble, record); container.append(item.article);
+    for (const record of state.workflows.filter(record => !record.planning_turn_id && (!manualWorkflows || manualWorkflows.has(record.id)))) {
+      const article = messageNodes.item(`workflow:${record.id}`, W.stringify(outcomeKey(record)), () => {
+        const item = messageElement("assistant", record.validation.plan.steps.map(step => methodName(step.operation)).join(" → "), "Saved analysis");
+        appendOutcome(item.bubble, record); return item.article;
+      });
+      ordered.push({article, time: record.created_at || ordered.at(-1)?.time || ""});
     }
+    const rendered = ordered.sort((a, b) => a.time.localeCompare(b.time)).map(item => item.article);
     if (state.pendingQuestion) {
+      rendered.push(messageNodes.item(`pending:${state.pendingQuestion.id}`, W.stringify(state.pendingQuestion), () => {
       const item = messageElement("user", state.pendingQuestion.message, `${title(state.pendingQuestion.mode)} mode`);
       item.article.dataset.turn = state.pendingQuestion.id;
       if (state.pendingQuestion.unconfirmed) item.bubble.append(node("small", {}, "Waiting to confirm this message with the server."));
-      container.append(item.article);
+      return item.article;
+      }));
     }
-    if (state.planning || chats.at(-1)?.payload.role === "user") container.append(messageElement("assistant", "Working through your question… Open Activity to follow the progress.", "GraphMine").article);
+    // Progress belongs to a question still waiting for its reply.
+    const awaiting = state.pendingQuestion && !chats.some(e => e.payload.turn_id === state.pendingQuestion.id && e.payload.role === "assistant");
+    if (chats.at(-1)?.payload.role === "user" || state.planning && awaiting) rendered.push(planningNode(chats));
+    messageNodes.reconcile(container, rendered);
+    tickElapsed();
     $("chat-welcome").hidden = Boolean(container.children.length);
     $("chat-content").classList.toggle("is-empty", !container.children.length);
     window.GraphMineShell.resizeComposer();
     const chatKey = state.pendingQuestion?.id || ordered.at(-1)?.time || chats.at(-1)?.sequence;
     const newMessage = chatKey !== state.lastChatKey;
+    const follow = !preserveScroll && (atBottom || state.lastChatKey === null || newMessage && Boolean(state.pendingQuestion));
     state.lastChatKey = chatKey;
-    if (atBottom || newMessage) requestAnimationFrame(() => {
-      // The plan editor follows the messages in this scroll container. Scrolling
-      // to its bottom can put the newly sent question above the visible area.
-      const last = container.lastElementChild;
-      if (last && state.view === "chat") scroll.scrollTo({top: scroll.scrollTop + last.getBoundingClientRect().bottom - scroll.getBoundingClientRect().bottom + 16, behavior: "instant"});
-    });
+    if (follow) requestAnimationFrame(scrollToLatest);
+    else if (!preserveScroll && newMessage) { unreadMessages = true; historyControls(); }
   }
+
   function renderActivity() {
     const open = new Set([...document.querySelectorAll('.reasoning-sidebar details[data-history][open]')].map(el => el.dataset.history));
-    const questions = state.events.filter(e => e.type === "workflow.chat" && e.payload.role === "user" && !e.payload.evaluation_id).map(e => e.payload);
+    const questions = eventIndex.chats().filter(e => e.payload.role === "user").map(e => e.payload);
     if (state.pendingQuestion) questions.push({turn_id: state.pendingQuestion.id, message: state.pendingQuestion.message});
     const latest = questions.at(-1)?.turn_id;
-    $("activity-list").replaceChildren();
+    const rendered = [], records = workflowIndex();
     let count = 0, thinking = state.planning, outcome, workflow;
     const workflowStatus = record => ({completed: "Analysis complete", awaiting_review: "Waiting for your approval", ready: "Waiting for your approval", queued: "Calculation queued", running: "Running the calculation"}[record.status] || title(record.status));
     for (const [index, question] of questions.entries()) {
-      const events = state.events.filter(e => e.payload.turn_id === question.turn_id);
+      const events = eventIndex.turn(question.turn_id);
       const answer = events.findLast(e => e.type === "workflow.chat" && e.payload.role === "assistant")?.payload;
-      const record = state.workflows.findLast(row => row.planning_turn_id === question.turn_id);
-      const heading = `Question ${index + 1}`;
+      const record = records.get(question.turn_id);
+      const decisionsForStatus = new Map(events.filter(event => event.type === "workflow.planning").map(event => [event.payload.stage, event.payload.status]));
+      count += events.filter(event => event.type === "workflow.reasoning").length;
+      if (question.turn_id === latest) { outcome = answer; workflow = record; thinking ||= !answer && [...decisionsForStatus.values()].includes("running"); }
+      const heading = turnNumbers.has(question.turn_id) ? `Question ${turnNumbers.get(question.turn_id)}` : question.turn_id === state.pendingQuestion?.id && turnNumbers.size ? "New question" : `Question ${index + 1}`;
+      rendered.push(activityNodes.item(`turn:${question.turn_id}`, W.stringify([eventIndex.version(question.turn_id), heading, question.message, outcomeKey(record)]), () => {
       // One timeline per question: its stages, then its model reasoning.
       const reasoning = node("section", {class: "reasoning-turn", "data-turn": question.turn_id});
       const attempts = new Map();
       for (const event of events.filter(e => e.type === "workflow.reasoning")) {
-        count++;
         const stage = event.payload.stage, attempt = (attempts.get(stage) || 0) + 1; attempts.set(stage, attempt);
         const key = `reasoning-${event.sequence}`, details = node("details", {class: "reasoning-record", "data-history": key}); details.open = open.has(key);
         details.append(node("summary", {}, `${stageNames[stage] || title(stage)}${attempt > 1 ? ` · attempt ${attempt}` : ""}`), node("small", {}, event.payload.model || ""), node("pre", {}, event.payload.text));
@@ -452,40 +547,30 @@
         wrap.append(node("summary", {}, `Model reasoning (${attempts.size ? [...attempts.values()].reduce((a, b) => a + b, 0) : 0}${live.size ? ", thinking…" : ""})`), reasoning);
         history.append(wrap);
       }
-      $("activity-list").append(history);
-      if (question.turn_id === latest) { outcome = answer; workflow = record; thinking ||= !answer && decisions.some(row => row.status === "running"); }
+      return history;
+      }));
     }
     const status = thinking ? "Thinking through your question…" : workflow ? workflowStatus(workflow) : outcome?.status === "needs_information" ? "Waiting for your reply" : outcome?.status === "failed" ? "Planning failed" : "Ready for your question";
     $("activity-status").textContent = status; $("chat-status").textContent = thinking ? "Thinking…" : status;
     $("reasoning-count").textContent = String(count);
-    if (!questions.length) $("activity-list").append(node("li", {class: "muted"}, "Each question's stages and the model's reasoning will appear here."));
+    if (!questions.length) rendered.push(activityNodes.item("empty", "empty", () => node("li", {class: "muted"}, "Each question's stages and the model's reasoning will appear here.")));
+    activityNodes.reconcile($("activity-list"), rendered);
   }
   async function syncConversation() {
     if (!state.session) return;
     const id = state.session.id, epoch = state.epoch;
-    const events = await api(`/api/sessions/${id}/events?after=${state.eventCursor}`);
+    const page = await api(`/api/sessions/${id}/events?after=${state.eventCursor}&limit=500&paged=true`, {signal: sessionController.signal});
     if (epoch !== state.epoch) return false;
-    const fresh = events.filter(event => Number(event.sequence) > state.eventCursor);
+    const events = Array.isArray(page) ? page : page.events;
+    for (const [turn, number] of Object.entries(page.turn_numbers || {})) turnNumbers.set(turn, number);
+    state.eventBacklog = Boolean(page.has_more);
+    const fresh = events.filter(event => event.sequence > state.eventCursor);
     if (!fresh.length) return false;
-    state.events.push(...fresh); state.eventCursor = Number(fresh.at(-1).sequence);
+    eventIndex.add(fresh); state.events = eventIndex.all(); state.eventCursor = fresh.at(-1).sequence;
     if (state.pendingQuestion && fresh.some(e => e.type === "workflow.chat" && e.payload.role === "user" && e.payload.turn_id === state.pendingQuestion.id)) state.pendingQuestion = null;
     renderConversation(); renderActivity();
     return true;
   }
-  const POLL_FAST = 1400, POLL_IDLE = 10000;
-  function pollConversation(delay = POLL_FAST) {
-    clearTimeout(state.eventPoll); const epoch = state.epoch;
-    state.eventPoll = setTimeout(async () => {
-      // Slow down while nothing changes; hidden tabs wait until they are shown again.
-      let next = Math.min(Math.max(delay, POLL_FAST) * 1.5, POLL_IDLE);
-      if (!document.hidden) {
-        try { if (await syncConversation() || state.planning) next = POLL_FAST; }
-        catch (error) { if (error.status === 401) return; /* Signed out: the login dialog takes over and reloads. */ }
-      }
-      if (epoch === state.epoch && state.session) pollConversation(next);
-    }, delay);
-  }
-  document.addEventListener("visibilitychange", () => { if (!document.hidden && state.session) pollConversation(0); });
   function requestId() {
     const bytes = crypto.getRandomValues(new Uint8Array(16));
     bytes[6] = (bytes[6] & 15) | 64; bytes[8] = (bytes[8] & 63) | 128;
@@ -496,7 +581,7 @@
     const started = Date.now(), epoch = state.epoch;
     while (Date.now() - started < 360000 && epoch === state.epoch) {
       try { await syncConversation(); } catch { /* A temporary disconnect can also affect the event request. */ }
-      const events = state.events.filter(event => event.type === "workflow.chat" && event.payload.turn_id === id);
+      const events = eventIndex.turn(id).filter(event => event.type === "workflow.chat");
       const response = events.find(event => event.payload.role === "assistant");
       if (response) { notice(""); return response.payload; }
       if (!events.length && Date.now() - started > 15000) throw originalError;
@@ -506,6 +591,7 @@
     throw new Error("Your planning request is saved. Reopen this conversation to check its progress.");
   }
   function renderFiles() {
+    exploration?.changed();
     databaseWorkspace?.updateContext();
     $("active-input").replaceChildren(node("option", {value: ""}, "Choose an input"));
     state.files.filter(f => !isTable(f)).forEach(f => $("active-input").append(node("option", {value: f.id}, f.original_name)));
@@ -514,9 +600,11 @@
     $("input-aliases").replaceChildren();
     for (const [alias, value] of Object.entries(refs())) $("input-aliases").append(node("span", {}, `${alias}: ${value.kind}`));
     const f = activeFile();
-    $("welcome-heading").textContent = f ? "Your data. New perspectives." : "Follow your curiosity.";
-    $("chat-welcome").querySelector(":scope > p").textContent = f ? `${f.original_name} is ready. What would you like to explore?` : "Add your data, then ask a question. We’ll work through the connections together.";
-    $("welcome-data-label").textContent = f ? "Manage your data" : "Add your data";
+    const tablesReady = !f && state.files.some(isTable);
+    $("welcome-heading").textContent = f ? "Your data. New perspectives." : tablesReady ? "Your table is ready." : "Follow your curiosity.";
+    $("chat-welcome").querySelector(":scope > p").textContent = f ? `${f.original_name} is ready. What would you like to explore?` : tablesReady ? "Choose which columns form connections, then explore the resulting graph." : "Add your data, then ask a question. We’ll work through the connections together.";
+    $("welcome-data-label").textContent = f ? "Manage your data" : tablesReady ? "Build a graph from tables" : "Add your data";
+    $("welcome-data").dataset.action = tablesReady ? "projection" : "source";
     $("active-kind-label").hidden = f?.role !== "attachment";
     $("active-kind").value = state.kinds[state.active] || "graph";
     $("data-summary").textContent = f ? (state.kinds[f.id] === "graph" ? `${f.original_name} · ${f.metadata?.vertex_count ?? "?"} vertices · ${f.metadata?.edge_count ?? "?"} connections. The calculation uses the full input.` : `${f.original_name} · ${title(state.kinds[f.id] || "input")}. The calculation uses the full input.`) : "Your analysis uses the full uploaded input.";
@@ -525,30 +613,34 @@
   }
   async function upload(file, kind = $("upload-kind").value) {
     await ensureSession();
-    const sessionId = state.session.id;
+    const sessionId = state.session.id, epoch = state.epoch;
     let options = {directed: $("csv-directed").checked, source_column: $("csv-source").value.trim(), target_column: $("csv-target").value.trim()};
     if (kind === "graph" && /\.(csv|txt)$/i.test(file.name)) {
       options = await window.GraphMineImport({file, options, sessionId, api, W, node});
       if (!options) return;
-      if (state.session?.id !== sessionId) throw new Error("The conversation changed. Choose the file again.");
+      if (state.session?.id !== sessionId || state.epoch !== epoch) throw new Error("The conversation changed. Choose the file again.");
     }
     const form = new FormData(); form.append("file", file); form.append("role", kind === "graph" ? "graph" : "attachment");
     form.append("directed", String(options.directed));
     if (options.source_column) form.append("source_column", options.source_column);
     if (options.target_column) form.append("target_column", options.target_column);
-    const result = await api(`/api/sessions/${state.session.id}/files`, {method: "POST", body: form});
+    const result = await api(`/api/sessions/${sessionId}/files`, {method: "POST", body: form});
+    if (state.session?.id !== sessionId || state.epoch !== epoch) throw new Error("The file was saved to the original conversation. Reopen that conversation to use it.");
     state.files.push(result); state.kinds[result.id] = kind; state.active = result.id;
     renderFiles(); await previewActive(); notice("Your data is ready. Ask a question to begin.");
+    return result;
   }
   async function preview(fileId) {
     // Startup verification can briefly occupy this account's read slot.
-    if (!state.previews.has(fileId)) state.previews.set(fileId, await api(`/api/files/${fileId}/graph-preview?vertex_limit=500&edge_limit=2000`, {}, 2));
+    const reads = readScope();
+    if (!state.previews.has(fileId)) state.previews.set(fileId, await reads.get(`/api/files/${fileId}/graph-preview?vertex_limit=500&edge_limit=2000`, 2));
     return state.previews.get(fileId);
   }
   async function previewActive() {
     if (state.kinds[state.active] !== "graph") { renderGraph(null); $("preview-scope").textContent = state.kinds[state.active] === "graph_collection" ? "Each collection member has its own vertices. Computed patterns can be viewed after mining." : "A generated graph can be viewed after computation."; renderParameters(); return; }
-    const id = state.active, value = await preview(id);
-    if (id === state.active && !state.result) renderGraph(value);
+    const reads = readScope(), id = state.active, value = await preview(id);
+    if (!reads.current() || id !== state.active) return;
+    if (!state.result) renderGraph(value);
     renderParameters();
   }
   function renderOperations() {
@@ -625,8 +717,9 @@
       await sendQuestion({message: text, inputs: refs(), mode: state.mode, previous: state.record?.id || null, device: $("device").value, selection: currentSelection()});
     });
   }
-  // A suggested follow-up is asked about the analysis it was suggested for.
-  function askAbout(record, text) {
+  // A suggested follow-up is asked about the analysis it was suggested for. One
+  // the result already answers carries its action, which the server re-checks.
+  function askAbout(record, text, action = null) {
     runAction(async () => {
       requireCapabilities();
       await ensureSession();
@@ -634,12 +727,12 @@
       const kept = saved.length && saved.every(([, ref]) => state.files.some(file => file.id === ref.file_id));
       if (!kept && !state.active) throw new Error("Add your data first, then send your question.");
       const inputs = kept ? Object.fromEntries(saved.map(([alias, ref]) => [alias, {file_id: ref.file_id, kind: ref.kind}])) : refs();
-      await sendQuestion({message: text, inputs, mode: state.mode, previous: record.id, device: $("device").value});
+      await sendQuestion({message: text, inputs, mode: state.mode, previous: record.id, device: $("device").value, action});
     });
   }
   // Resend a failed question as it was asked, while its saved inputs still exist.
   function retryQuestion(turnId) {
-    const asked = state.events.find(e => e.type === "workflow.chat" && e.payload.role === "user" && e.payload.turn_id === turnId)?.payload;
+    const asked = eventIndex.turn(turnId).find(e => e.type === "workflow.chat" && e.payload.role === "user")?.payload;
     if (!asked) return;
     runAction(async () => {
       requireCapabilities();
@@ -662,17 +755,25 @@
     $("selection-chip").hidden = !selection;
     if (selection) $("selection-label").textContent = `Asking about ${selection.label || "the selected group"}`;
   }
-  async function sendQuestion({message, inputs, mode, previous, device, selection = null}) {
+  async function sendQuestion({message, inputs, mode, previous, device, selection = null, action = null}) {
     const id = requestId();
-    state.pendingQuestion = {id, message, mode}; state.planning = true;
+    state.pendingQuestion = {id, message, mode, startedAt: Date.now()}; state.planning = true;
     notice(""); renderConversation(); renderActivity(); pollConversation();
     try {
       let response;
       try {
-        response = await api(`/api/sessions/${state.session.id}/analytics/plan`, {method: "POST", body: W.stringify({message, mode, inputs, device, previous_workflow_id: previous, request_id: id, ...(selection ? {selection} : {})})});
+        response = await api(`/api/sessions/${state.session.id}/analytics/plan`, {method: "POST", body: W.stringify({message, mode, inputs, device, previous_workflow_id: previous, request_id: id, ...(selection ? {selection} : {}), ...(action ? {action} : {})})});
       } catch (error) {
         if (!["TypeError", "NetworkError"].includes(error?.name)) throw error;
         response = await savedPlanningResponse(id, error);
+      }
+      // Set before the reply renders, so its plan never offers a manual Continue.
+      if (response.status === "ready" && response.plan) state.startingTurn = response.turn_id;
+      if (response.session_title && state.session) {
+        // The first question names the conversation in history.
+        state.session = {...state.session, title: response.session_title};
+        $("workspace-title").textContent = $("results-session-title").textContent = response.session_title;
+        loadSessions().catch(() => { /* History refreshes on its next load. */ });
       }
       try { await syncConversation(); } catch { /* Polling will recover saved messages. */ }
       if (response.status === "ready" && response.plan) {
@@ -680,7 +781,7 @@
         await submitPlan(response.plan, false, response.turn_id, inputs, mode);
       } else if (response.status === "view") await applyView(response.view);
     } finally {
-      state.planning = false;
+      state.planning = false; state.startingTurn = null;
       try { await syncConversation(); } catch { /* Keep the sent question visible until its own saved event arrives. */ }
       if (state.pendingQuestion?.id === id) state.pendingQuestion.unconfirmed = true;
       renderConversation(); renderActivity();
@@ -708,7 +809,11 @@
   async function loadSaved() {
     $("saved-workflows").replaceChildren();
     if (!state.session) return;
-    state.workflows = await api(`/api/sessions/${state.session.id}/workflows`);
+    const reads = readScope();
+    const previous = new Set(state.workflows.map(record => record.id));
+    state.workflows = await reads.get(`/api/sessions/${state.session.id}/workflows?summary=true`);
+    if (savedLoaded && manualWorkflows) for (const record of state.workflows) if (!record.planning_turn_id && !previous.has(record.id)) manualWorkflows.add(record.id);
+    savedLoaded = true;
     $("result-select").replaceChildren(node("option", {value: ""}, "Choose a saved analysis"));
     $("result-count").textContent = String(state.workflows.filter(record => record.status === "completed").length);
     for (const record of state.workflows.slice().reverse()) {
@@ -828,36 +933,55 @@
     $("save-narrow-input").disabled = $("narrow-file").options.length === 1;
   }
   async function openWorkflow(id) {
-    clearTimeout(state.poll); state.record = await api(`/api/workflows/${id}`); setMode(state.record.mode);
-    const input = state.record.input_files.main;
-    if (input) { state.active = input.file_id; state.kinds[input.file_id] = input.kind; renderFiles(); }
-    clearResults();
-    renderWorkflow(); await loadSaved();
-    if (["queued", "running"].includes(state.record.status)) pollWorkflow();
-    else if (["completed", "failed", "cancelled", "interrupted"].includes(state.record.status)) await loadResults();
+    clearTimeout(state.poll); workflowController?.abort();
+    polling.resetWorkflow();
+    workflowController = new AbortController(); workflowTarget = id;
+    const reads = readScope(workflowController.signal);
+    try {
+      state.record = await reads.get(`/api/workflows/${id}`); setMode(state.record.mode);
+      const input = state.record.input_files.main;
+      if (input) { state.active = input.file_id; state.kinds[input.file_id] = input.kind; renderFiles(); }
+      clearResults();
+      renderWorkflow(); await loadSaved();
+      if (!reads.current()) return false;
+      if (["queued", "running"].includes(state.record.status)) pollWorkflow();
+      else if (["completed", "failed", "cancelled", "interrupted"].includes(state.record.status)) await loadResults();
+      return reads.current();
+    } catch (error) {
+      if (!reads.current() || error.name === "AbortError") return false;
+      throw error;
+    } finally { if (reads.current()) workflowTarget = null; }
   }
-  function pollWorkflow() {
-    clearTimeout(state.poll);
-    const id = state.record?.id, epoch = state.epoch;
-    state.poll = setTimeout(async () => {
-      try {
-        const record = await api(`/api/workflows/${id}`);
-        if (epoch !== state.epoch || state.record?.id !== id) return;
-        state.record = record; renderWorkflow(); renderConversation();
-        if (["queued", "running"].includes(record.status)) pollWorkflow();
-        else { await loadSaved(); await loadResults(); if (record.status === "completed" && state.files.find(f => f.id === state.active)?.provenance?.source?.database_source) go("results", record.id); notice(record.status === "completed" ? "The computed results are ready." : record.error?.message || `Execution ${record.status}. Inspect the step status for details.`, record.status === "failed"); }
-      } catch (error) { notice(error.message, true); }
-    }, 600);
+  function showWorkflowSync(message, retry = false) {
+    $("workflow-sync").hidden = !message;
+    $("workflow-sync-message").textContent = message;
+    $("workflow-sync-retry").hidden = !retry;
+    sizeWorkflowSync();
+  }
+  function sizeWorkflowSync() {
+    document.documentElement.style.setProperty("--workflow-sync-height", `${$("workflow-sync").getBoundingClientRect().height}px`);
   }
   async function loadResults() {
-    const id = state.record.id;
-    try { state.result = await api(`/api/workflows/${id}/result?summary=true`); }
+    const record = state.record, id = record.id, reads = readScope(workflowController?.signal || sessionController.signal);
+    const current = () => reads.current() && state.record === record;
+    let result;
+    try { result = await reads.get(`/api/workflows/${id}/result?summary=true&expected_revision=${record.revision}`); }
     catch (error) {
+      if (!current() || error.name === "AbortError") return;
+      if (error.code === "revision_conflict") throw error;
       const steps = {};
-      for (const [step, record] of Object.entries(state.record.steps)) if (record.status === "completed") steps[step] = await api(`/api/workflows/${id}/steps/${step}/result`);
-      state.result = {partial_workflow: true, complete: false, workflow: state.record, steps};
-      if (!Object.keys(steps).length) { $("result-completeness").textContent = state.record.error?.message || "No step produced a completed result."; return; }
+      for (const [step, saved] of Object.entries(record.steps)) if (saved.status === "completed") {
+        steps[step] = await reads.get(`/api/workflows/${id}/steps/${step}/result?expected_revision=${record.revision}`);
+        if (!current()) return;
+      }
+      result = {partial_workflow: true, complete: false, workflow: record, steps};
+      if (!Object.keys(steps).length) {
+        if (current()) { state.result = result; $("result-completeness").textContent = record.error?.message || "No step produced a completed result."; }
+        return;
+      }
     }
+    if (!current()) return;
+    state.result = result;
     $("result-controls").hidden = false; $("download-result").disabled = false; $("raw-details").hidden = false;
     const raw = W.stringify(state.result, true);
     $("raw-result").textContent = raw.slice(0, 40000) + (raw.length > 40000 ? "\n… Preview only. Download the full result for all values." : "");
@@ -868,8 +992,10 @@
       // The step ID is only shown when two steps use the same method.
       if (operation) $("result-step").append(node("option", {value: step}, methods.filter(m => m === operation).length > 1 ? `${methodName(operation)} (${step})` : methodName(operation)));
     }
-    $("result-step").value = $("result-step").lastElementChild?.value || "";
+    const rememberedStep = exploration?.selectionFor(record)?.step;
+    $("result-step").value = [...$("result-step").options].some(option => option.value === rememberedStep) ? rememberedStep : $("result-step").lastElementChild?.value || "";
     await selectStep();
+    if (!current()) return;
     const scalar = Object.values(state.result.steps || {}).flatMap(step => Object.entries(step.result?.ports || {})).filter(([,port]) => port.complete && ["number", "bigint"].includes(typeof port.value));
     if (state.record.status === "completed" && state.result.complete && scalar.length) state.summaries.set(id, scalar.map(([name, port]) => `${title(name)}: ${display(port.value)}`).join(" · "));
     renderConversation();
@@ -878,7 +1004,7 @@
     const step = state.record.validation.plan.steps.find(s => s.id === stepId);
     if (step.input.input) {
       const input = state.record.input_files[step.input.input];
-      return input?.kind === "graph" ? preview(input.file_id) : null;
+      return input?.kind === "graph" && state.files.some(file => file.id === input.file_id) ? preview(input.file_id) : null;
     }
     const port = state.result.steps[step.input.step]?.result?.ports[step.input.port];
     if (port?.type === "pattern_collection" && step.input.select?.kind === "pattern_graph") return port.value[Number(step.input.select.index)]?.pattern || null;
@@ -894,7 +1020,10 @@
     const materialized = Object.entries(step.ports).filter(([,p]) => p.complete || !Array.isArray(p.value) || p.value.length);
     const choices = materialized.length ? materialized : Object.entries(step.ports);
     const preferred = card(step.operation)?.visualization?.preferred_ports || [];
-    $("result-port").value = preferred.find(name => choices.some(([key]) => key === name)) || preference.map(type => choices.find(([,p]) => p.type === type)?.[0]).find(Boolean) || choices[0]?.[0] || "__result";
+    const exactCost = choices.find(([, port]) => port.type === "rational_scalar")?.[0];
+    $("result-port").value = exactCost || preferred.find(name => choices.some(([key]) => key === name)) || preference.map(type => choices.find(([,p]) => p.type === type)?.[0]).find(Boolean) || choices[0]?.[0] || "__result";
+    const rememberedPort = exploration?.selectionFor(state.record, $("result-step").value)?.port;
+    if ([...$("result-port").options].some(option => option.value === rememberedPort)) $("result-port").value = rememberedPort;
     await selectPort();
   }
   async function selectPort() {
@@ -907,25 +1036,53 @@
     $("group-filter-status").textContent = "";
     $("highlight-overlap").checked = false;
     state.port = name === "__result" ? {type: "result", complete: result.complete, value: result.result} : result.ports[name];
-    const port = state.port; state.rows = Array.isArray(port.value) ? port.value : [port.value]; state.page = 0; state.selected.clear(); $("table-search").value = "";
+    const port = state.port, reads = readScope(workflowController?.signal || sessionController.signal);
+    const current = () => reads.current() && state.port === port;
+    state.rows = Array.isArray(port.value) ? port.value : [port.value]; state.page = 0; state.selected.clear(); $("table-search").value = "";
     // Long outputs arrive cut down; the table then searches and pages on the server.
     state.remote = port.value_truncated ? {step: stepId, port: name, total: port.total_items, matched: port.total_items} : null; state.pageRows = [];
-    $("result-completeness").classList.toggle("incomplete", !port.complete || !result.complete);
-    $("result-completeness").textContent = `${port.complete ? "This output collection is complete." : "This output is incomplete or count-only; it cannot supply a full downstream collection."} ${qualityDescriptions[result.quality] || title(result.quality)}. Computed on ${result.backend.device.toUpperCase()}.`;
-    if (result.backend.selection_reason) $("result-completeness").textContent += ` Device selection: ${result.backend.selection_reason}.`;
-    if (result.diagnostics?.solver) {
-      const solver = {native_positive_gain_vertex_moves: "Local vertex moves (native CPU heuristic)", gleiden: "GPU Leiden"}[result.diagnostics.solver] || title(result.diagnostics.solver);
-      $("result-completeness").textContent += ` Method: ${solver}.`;
-    }
-    if (!port.complete && result.diagnostics?.narrowing_hint) $("result-completeness").textContent += ` ${result.diagnostics.narrowing_hint}`;
+    state.remoteLoading = false; state.remoteError = null;
+    resultContext?.refresh();
     state.patternId = port.type === "pattern_collection" ? port.value[0]?.pattern_id || null : null;
-    const graph = port.type === "graph" ? port.value : port.type === "pattern_collection" ? port.value[0]?.pattern || null : await graphForStep(stepId);
+    // Saved views resolve immutable execution inputs even if an upload was removed.
+    const savedView = name !== "__result" && card(result.operation)?.visualization;
+    const graph = savedView ? null : port.type === "graph" ? port.value : port.type === "pattern_collection" ? port.value[0]?.pattern || null : await graphForStep(stepId);
+    if (!current()) return;
     configureGroups(result);
     if (port.type === "vertex_positions") $("graph-layout").value = "computed";
     else if (state.groups.length && !state.groupsOverlap) $("graph-layout").value = "groups";
     renderGraph(graph); renderOutput();
     if (name !== "__result") await resultViews?.load();
+    if (!current()) return;
     resultViews?.renderBlocks();
+  }
+  const groupColors = ["#4179b5", "#dd8050", "#499678", "#a765ab", "#c05a6e", "#8b8739", "#4998aa", "#8664bb", "#c69b35", "#73604d", "#cd75a0", "#5d7c4b", "#697dc9", "#ae5736", "#548d90", "#9d854b"];
+  // A score view from a workflow that also grouped the same vertices is coloured
+  // by that grouping, so groups and their connecting members read in one picture.
+  // Colours only: filters and selections still belong to the step being shown.
+  function siblingGrouping(current) {
+    for (const step of Object.values(state.result?.steps || {})) {
+      const other = step?.result;
+      if (!other || other === current) continue;
+      const ports = Object.values(other.ports || {});
+      const partition = ports.find(p => p.type === "vertex_partition" && Array.isArray(p.value) && !p.value_truncated);
+      const groups = ports.find(p => p.type === "vertex_groups" && Array.isArray(p.value) && !p.value_truncated);
+      const rows = partition ? partition.value.map(row => [row.part, row.vertex])
+        : groups ? groups.value.flatMap((row, index) => (row.vertices || []).map(vertex => [row.group ?? index, vertex])) : [];
+      const owners = new Map(), ids = new Map();
+      let shared = false;
+      for (const [group, vertex] of rows) {
+        const key = W.idKey(vertex), id = W.idKey(group);
+        shared ||= owners.has(key) && owners.get(key) !== id;
+        owners.set(key, id); ids.set(id, group);
+      }
+      if (!rows.length || shared) continue; // A vertex in two groups has no single colour.
+      const order = [...ids.keys()], clique = ["maximal-cliques", "maximum-clique", "k-cliques"].includes(other.operation);
+      const color = id => groupColors[order.indexOf(id) % groupColors.length];
+      return {method: methodName(other.operation), colors: new Map([...owners].map(([key, id]) => [key, color(id)])),
+        legend: order.map((id, index) => ({label: clique ? `Clique ${index + 1}` : `Group ${display(ids.get(id))}`, color: color(id), size: [...owners.values()].filter(owner => owner === id).length}))};
+    }
+    return null;
   }
   function configureGroups(result) {
     state.groups = []; state.groupMembership = new Map(); state.groupMemberships = new Map(); state.groupFilter = ""; state.groupsOverlap = false; state.groupGraph = null;
@@ -952,8 +1109,8 @@
     // Keep every collection filter, but do not assign shared vertices to one
     // arbitrary group for overview colors or a partition layout.
     if (state.groupsOverlap) state.groupMembership.clear();
-    const colors = ["#4179b5", "#dd8050", "#499678", "#a765ab", "#c05a6e", "#8b8739", "#4998aa", "#8664bb", "#c69b35", "#73604d", "#cd75a0", "#5d7c4b", "#697dc9", "#ae5736", "#548d90", "#9d854b"];
-    state.groups = [...members.values()].map((group, index) => ({...group, color: colors[index % colors.length]}));
+    state.groups = [...members.values()].map((group, index) => ({...group, color: groupColors[index % groupColors.length]}));
+    state.colorGroups = !state.groups.length && state.port?.type === "vertex_scores" ? siblingGrouping(result) : null;
   }
   function groupLabel(id, index) {
     return state.groupNoun === "clique" ? `Clique ${index + 1}` : `Group ${display(id)}`;
@@ -977,7 +1134,7 @@
     if (!Number.isInteger(index)) return;
     const epoch = state.epoch, port = state.port, path = [state.record.id, "steps", $("result-step").value, "ports", $("result-port").value].map(encodeURIComponent).join("/");
     try {
-      const data = await api(`/api/workflows/${path}/groups/${index}/graph`, {}, 2);
+      const data = await api(`/api/workflows/${path}/groups/${index}/graph?expected_revision=${state.record.revision}`, {}, 2);
       // Without a usable graph the preview stays, labelled as truncated.
       if (epoch !== state.epoch || state.port !== port || state.groupFilter !== key || !Array.isArray(data?.vertices)) return;
       state.groupGraph = {key, data}; renderGraph(state.graph); applySelection();
@@ -1001,13 +1158,27 @@
     return positions;
   }
   function renderGraph(data) {
+    resultContext?.refresh();
+    exploration?.beforeGraph();
+    if (data && data === state.graph) data = state.graphBase;
+    state.graphBase = data;
+    exploration?.prepareGraph();
     data = databaseWorkspace?.overlayGraph(data) || data;
+    state.graph = data;
+    if (!data) { state.cy?.destroy(); state.cy = null; $("network").replaceChildren(); }
     if (state.view !== "results") {
-      state.cy?.destroy(); state.cy = null; state.graph = data;
-      $("network").replaceChildren(); $("preview-scope").textContent = "";
+      $("preview-scope").textContent = "";
+      exploration?.afterGraph({hidden: true});
       return;
     }
-    state.cy?.destroy(); state.cy = null; state.graph = data;
+    if (data && !window.cytoscape) {
+      const epoch = state.epoch, expected = state.graph;
+      $("network").textContent = "Loading graph…";
+      window.GraphMineGraphLibrary().then(() => {
+        if (epoch === state.epoch && state.graph === expected && state.view === "results") renderGraph(expected);
+      }).catch(error => { if (epoch === state.epoch && state.graph === expected) notice(error.message, true); });
+      return;
+    }
     const groups = state.groups || [], filter = groups.find(group => group.key === state.groupFilter), noun = state.groupNoun || "group";
     $("flow-control").hidden = !state.flowRows;
     const flowMode = Boolean(state.flowRows && $("flow-direction").checked);
@@ -1035,15 +1206,24 @@
         }
       }
     }
-    $("group-legend").setAttribute("aria-label", `${title(noun)} colors and filters`);
+    if (!groups.length && state.colorGroups) {
+      $("group-legend").hidden = false;
+      $("group-legend").append(node("span", {class: "legend-caption"}, `Colours: ${state.colorGroups.method}`));
+      for (const entry of state.colorGroups.legend) {
+        const item = node("span", {class: "legend-entry"}), swatch = node("span", {class: "group-swatch", "aria-hidden": "true"}); swatch.style.backgroundColor = entry.color;
+        item.append(swatch, node("span", {}, `${entry.label} (${entry.size})`)); $("group-legend").append(item);
+      }
+    }
+    $("group-legend").setAttribute("aria-label", groups.length ? `${title(noun)} colors and filters` : "Graph colours");
     $("graph-group").value = filter?.key || "";
     $("graph-layout").querySelector('[value="groups"]').textContent = noun === "clique" ? "By clique" : "By group";
     $("graph-layout").querySelector('[value="groups"]').disabled = !groups.length || state.groupsOverlap;
     if ((!groups.length || state.groupsOverlap) && $("graph-layout").value === "groups") $("graph-layout").value = "cose";
     $("graph-layout").querySelector('[value="computed"]').disabled = state.port?.type !== "vertex_positions";
     if (state.port?.type !== "vertex_positions" && $("graph-layout").value === "computed") $("graph-layout").value = "cose";
-    $("network").replaceChildren(); $("preview-scope").textContent = ""; $("selection-detail").textContent = filter ? `Showing ${filter.label.toLowerCase()}. Select a node to inspect it.` : "Select a node or a result row to inspect it.";
-    const source = filter && state.groupGraph?.key === filter.key ? state.groupGraph.data : data;
+    $("preview-scope").textContent = "";
+    if (!state.selected.size) $("selection-detail").textContent = filter ? `Showing ${filter.label.toLowerCase()}. Select a node to inspect it.` : "Select a node or a result row to inspect it.";
+    const source = filter && state.groupGraph?.key === filter.key ? databaseWorkspace?.overlayGraph(state.groupGraph.data) || state.groupGraph.data : data;
     window.GraphMineExplorer?.clearTime?.();
     if (!source?.vertices || !window.cytoscape) return;
     const vertices = source.vertices.filter(v => !filter || filter.vertices.has(W.idKey(v.id))).slice(0, 500), keys = new Set(vertices.map(v => W.idKey(v.id)));
@@ -1054,10 +1234,11 @@
     if (field) for (const row of state.port.value) if (typeof row?.[field] === "number") scores.set(W.idKey(row.vertex), row[field]);
     const low = [...scores.values()].reduce((a, b) => Math.min(a, b), Infinity), high = [...scores.values()].reduce((a, b) => Math.max(a, b), -Infinity);
     const size = key => scores.has(key) && high > low ? 16 + 30 * (scores.get(key) - low) / (high - low) : 25;
-    const elements = vertices.map(v => ({position: positions.get(W.idKey(v.id)), data: {id: W.idKey(v.id), size: size(W.idKey(v.id)), label: String(v.label || v.name || v.id), original: v, entity: v.id, color: filter?.color || colors.get(state.groupMembership?.get(W.idKey(v.id))) || "#73a991"}}));
+    const elements = vertices.map(v => ({position: positions.get(W.idKey(v.id)), data: {id: W.idKey(v.id), size: size(W.idKey(v.id)), label: String(v.label || v.name || v.id), original: v, entity: v.id, color: filter?.color || colors.get(state.groupMembership?.get(W.idKey(v.id))) || state.colorGroups?.colors.get(W.idKey(v.id)) || "#73a991"}}));
     edges.forEach((e, index) => elements.push({data: {id: `edge:${index}`, source: W.idKey(e.source), target: W.idKey(e.target), original: e}}));
     const direction = flowMode || source.graph?.directed ? "triangle" : "none";
-    state.cy = window.cytoscape({container: $("network"), elements, minZoom: .08, maxZoom: 5, wheelSensitivity: .2, style: [
+    const layout = $("graph-layout").value;
+    const rendered = graphView.render(state.cy, {container: $("network"), elements, minZoom: .08, maxZoom: 5, wheelSensitivity: .2, style: [
       {selector: "node", style: {"background-color": "data(color)", "border-color": "#fff", "border-width": 2, width: "data(size)", height: "data(size)", label: "data(label)", "font-size": 10, color: "#284a42", "text-valign": "bottom", "text-margin-y": 5, "text-background-color": "#fdfefb", "text-background-opacity": .8, "text-background-padding": 2}},
       {selector: "edge", style: {width: flowMode ? 3 : 1.4, "line-color": flowMode ? "#4179b5" : "#adc5b9", "target-arrow-color": flowMode ? "#4179b5" : "#91afa0", "target-arrow-shape": direction, "curve-style": "bezier", opacity: .8}},
       {selector: "node.chosen", style: {"border-color": "#223e34", "border-width": 4}},
@@ -1065,7 +1246,10 @@
       {selector: "edge.chosen", style: {width: 4, "line-color": "#223e34", "target-arrow-color": "#223e34", opacity: 1}},
       {selector: "node.faded", style: {opacity: .45}},
       {selector: "edge.faded", style: {opacity: .1}},
-    ], layout: layoutOptions(positions)});
+    ], layout: layoutOptions(positions)}, W.stringify([state.session?.id ?? null, viewScope()]), layout,
+    layout === "computed" ? state.port.value : layout === "groups" ? [...positions] : null);
+    state.cy = rendered.cy;
+    if (!rendered.reused) {
     state.cy.on("tap", "node", event => {
       state.selected = new Set([event.target.id()]);
       state.selectedEdges = new Set();
@@ -1073,6 +1257,7 @@
       applySelection();
     });
     state.cy.on("tap", "edge", event => { const edge = event.target.data("original"); state.selectedEdges = new Set([W.idKey(edge.id)]); state.selected = new Set([W.idKey(edge.source), W.idKey(edge.target)]); $("selection-detail").textContent = W.stringify(edge, true); applySelection(); });
+    }
     const n = data.vertex_count ?? data.vertices.length, m = flows ? flows.length : data.edge_count ?? data.edges.length;
     const truncated = data.vertices_truncated || data.edges_truncated || (filter ? vertices.length < filter.vertices.size || edges.length === 2000 && data.edges.length > 2000 : vertices.length < n || edges.length < m);
     state.previewScope = filter ? `${filter.label}: ${vertices.length} of ${filter.vertices.size} vertices; ${edges.length} connections within this ${noun}. Full input: ${n} vertices; ${m} connections. ` : `Preview: ${vertices.length} of ${n} vertices; ${edges.length} of ${m} connections. `;
@@ -1081,9 +1266,10 @@
     if (flowMode) state.previewScope += state.resultView ? "Highlighted connections carry positive computed flow; the flow and cut details remain in the saved result. " : "Arrows show positive computed flow, including directions on undirected inputs. Click a connection for its recorded flow and capacity. ";
     renderPreviewScope();
     applySelection();
-    window.GraphMineExplorer?.timeView?.();
+    window.GraphMineExplorer?.timeView?.(exploration?.settings()?.filters);
     resultViews?.decorate();
     databaseWorkspace?.decorate();
+    exploration?.afterGraph();
   }
   function renderPreviewScope() {
     if (!state.graph) return;
@@ -1123,7 +1309,21 @@
     return [];
   }
   function selectRow(row, position) {
-    if (resultViews && state.resultView) { void resultViews.select(position ?? state.rows.indexOf(row)); return; }
+    if (resultViews && state.resultView) {
+      // Give immediate local feedback while the saved graph view is fetched.
+      // The response reconciles highlights against the immutable result.
+      if (state.port?.type === "pattern_collection") {
+        state.patternId = row.pattern_id; state.selected.clear(); renderGraph(row.pattern);
+      } else {
+        const ids = rowVertices(row);
+        state.selected = new Set(ids.map(W.idKey));
+        state.selectedEdges = state.port?.type === "path_set" && Array.isArray(row.edges) ? new Set(row.edges.map(W.idKey)) : null;
+        const visible = ids.filter(id => state.cy?.getElementById(W.idKey(id)).length);
+        $("selection-detail").textContent = `${ids.length} selected: ${ids.map(W.idLabel).join(", ")}${visible.length < ids.length ? `\n${ids.length - visible.length} selected entities are outside this graph preview.` : ""}`;
+      }
+      applySelection();
+      void resultViews.select(position ?? state.rows.indexOf(row)); return;
+    }
     if (state.port?.type === "pattern_collection") {
       state.patternId = row.pattern_id; state.selected.clear(); renderGraph(row.pattern); applySelection(); return;
     }
@@ -1158,7 +1358,7 @@
     state.membershipRequest = pending;
     const path = [state.record.id, "steps", $("result-step").value, "ports", state.groupPort, "memberships"].map(encodeURIComponent).join("/");
     try {
-      const response = await api(`/api/workflows/${path}`, {method: "POST", body: W.stringify({vertices})}, 2);
+      const response = await api(`/api/workflows/${path}?expected_revision=${state.record.revision}`, {method: "POST", body: W.stringify({vertices})}, 2);
       if (epoch !== state.epoch || counts !== state.fullMemberships) return;
       if (!Array.isArray(response?.memberships)) throw new Error("Membership counts were not returned.");
       const returned = new Map(response.memberships.map(row => [W.idKey(row.vertex), row.groups]));
@@ -1178,6 +1378,7 @@
     }
   }
   function applySelection() {
+    exploration?.changed();
     if (state.cy) {
       state.cy.nodes().forEach(n => { n.toggleClass("chosen", state.selected.has(n.id())); n.toggleClass("faded", state.selected.size > 0 && !state.selected.has(n.id())); n.toggleClass("shared-member", $("highlight-overlap").checked && (state.groupsTruncated ? state.fullMemberships?.get(n.id()) || 0 : state.groupMemberships?.get(n.id())?.size || 0) > 1); });
       void loadFullMemberships();
@@ -1244,12 +1445,20 @@
     const request = state.remoteRequest = (state.remoteRequest || 0) + 1;
     const filters = groupFilters();
     if (!filters) return;
-    const query = new URLSearchParams({offset: state.page * PAGE, limit: PAGE});
+    const query = new URLSearchParams({offset: state.page * PAGE, limit: PAGE, expected_revision: state.record.revision});
     if (search) query.set("search", search);
     for (const [key, value] of Object.entries(filters)) if (value !== null) query.set(key, value);
     const path = [state.record.id, "steps", remote.step, "ports", remote.port].map(encodeURIComponent).join("/");
-    const page = await api(`/api/workflows/${path}?${query}`);
+    let page;
+    state.remoteLoading = true; state.remoteError = null; resultContext?.refresh();
+    try { page = await api(`/api/workflows/${path}?${query}`); }
+    catch (error) {
+      if (epoch !== state.epoch || remote !== state.remote || request !== state.remoteRequest) return;
+      state.remoteLoading = false; state.remoteError = error.message;
+      $("table-count").textContent = "Table page unavailable"; resultContext?.refresh(); throw error;
+    }
     if (epoch !== state.epoch || remote !== state.remote || request !== state.remoteRequest) return;
+    state.remoteLoading = false;
     state.pageRows = page.items; state.pagePositions = page.positions || page.items.map((_, i) => page.offset + i); remote.matched = page.matched_items;
     state.filtered = page.items.map((_, index) => index); renderTable();
   }
@@ -1271,9 +1480,14 @@
   function filterRows() {
     state.remoteRequest = (state.remoteRequest || 0) + 1;
     const filters = groupFilters();
-    if (!filters) { clearTimeout(state.remoteTimer); state.filtered = []; if (state.remote) state.remote.matched = 0; renderTable(); return; }
+    if (!filters) {
+      clearTimeout(state.remoteTimer); state.filtered = []; state.remoteLoading = false;
+      if (state.remote) { state.remote.matched = 0; state.remoteError = $("group-filter-status").textContent; }
+      renderTable(); return;
+    }
     if (state.remote) {
       state.page = 0; clearTimeout(state.remoteTimer);
+      state.remoteLoading = true; state.remoteError = null;
       state.pageRows = []; state.pagePositions = []; state.filtered = []; renderTable();
       $("table-count").textContent = "Loading rows…";
       $("table-prev").disabled = true; $("table-next").disabled = true;
@@ -1309,7 +1523,8 @@
       keys.forEach((key, position) => {
         const value = record[key] ?? null, isEntity = ["vertex", "source", "target", state.port?.vertex_field].includes(key) || key === "value" && state.port?.type === "vertex_set";
         const label = isEntity && state.graph?.vertices?.find(v => W.idKey(v.id) === W.idKey(value))?.label;
-        const text = cliques && key === "group" ? groupLabel(value, state.remote ? state.pagePositions?.[index] ?? index : index) : state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : label ? String(label) : isEntity && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value ? "≈ " : ""}${display(value)}`, td = node("td", {title: label ? `${label} · ${W.idLabel(value)}` : text});
+        // Numbers read as in the chart (≈ when rounded); the full value is the tooltip.
+        const text = cliques && key === "group" ? groupLabel(value, state.remote ? state.pagePositions?.[index] ?? index : index) : state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : label ? String(label) : isEntity && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value || compact(value) !== display(value) ? "≈ " : ""}${compact(value)}`, td = node("td", {title: label ? `${label} · ${W.idLabel(value)}` : compact(value) !== display(value) ? display(value) : text});
         if (position === 0 && (rowVertices(row).length || state.port?.type === "pattern_collection")) { const button = node("button", {}, state.port?.type === "pattern_collection" ? `View pattern ${index + 1}` : text); button.addEventListener("click", () => selectRow(row, state.remote ? state.pagePositions?.[index] ?? index : index)); td.append(button); } else td.textContent = text;
         tr.append(td);
       }); body.append(tr);
@@ -1322,6 +1537,7 @@
     $("table-scope").textContent = state.port ? `This table pages over the retained output. ${state.port.complete ? "The output collection is complete." : "The output collection is incomplete or count-only."} Search filters this table, not the computation.` : "Computed values will appear after an analysis.";
     if (state.rows.some(row => row?.rounded && row?.exact_value)) $("table-scope").textContent += " Approximate displays use ≈. Exact numerators and denominators are preserved in the table and download.";
     if (state.remote) $("table-scope").textContent += ` This table searches all ${state.remote.total.toLocaleString()} retained rows. Charts use ${state.rows.length.toLocaleString()} loaded rows.${state.resultView ? " The focused graph resolves the full saved output before preview limits." : ""}`;
+    resultContext?.refresh();
     applySelection();
   }
   async function loadCapabilities(generation, signal, refresh = false) {
@@ -1329,7 +1545,7 @@
       // An explicit reconnect re-verifies instead of reading the shared cache.
       const caps = await api(`/api/analytics/capabilities${refresh ? "?refresh=true" : ""}`, {signal});
       if (generation !== connectionGeneration) return;
-      state.caps = caps;
+      state.caps = caps; capabilityVersion++;
       const verified = caps.operations.filter(c => c.execution.cpu || c.execution.gpu).length;
       $("verified-count").textContent = `${verified} verified calculations`;
       $("connection-state").textContent = verified ? "" : "Calculations unavailable";
@@ -1356,6 +1572,7 @@
     }
   }
   async function connect(refresh = false) {
+    workspaceHome?.reset();
     const generation = ++connectionGeneration;
     capabilitiesController?.abort();
     capabilitiesController = new AbortController();
@@ -1378,7 +1595,7 @@
     await loadSessions();
     // The initial connection runs inside runAction; allow restoring a saved route.
     const match = /^#workspace\/([^/]+)/.exec(location.hash);
-    if (match) await openSession(decodeURIComponent(match[1]));
+    if (match && !await openSession(decodeURIComponent(match[1]))) return;
     await applyRoute();
   }
   document.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => { try { setMode(button.dataset.mode); } catch (error) { notice(error.message, true); } }));
@@ -1394,8 +1611,7 @@
     $("domain-grid").querySelectorAll(".domain-card").forEach((button, index) => { button.hidden = !expanded && index >= 6; });
   });
   $("toggle-data").addEventListener("click", () => {
-    const open = $("toggle-data").getAttribute("aria-expanded") !== "true";
-    setDataOpen(open);
+    databaseWorkspace.show();
   });
   $("adjust-parameters").addEventListener("click", () => {
     const editors = [...$("workflow-steps").querySelectorAll("[data-parameter-editor]")];
@@ -1432,8 +1648,6 @@
     });
   });
   $("refresh-sessions").addEventListener("click", () => runAction(loadSessions));
-  $("session-search").addEventListener("input", renderSessions);
-  $("show-archived").addEventListener("change", renderSessions);
   $("rename-session").addEventListener("click", () => {
     const title = prompt("Rename this conversation", state.session?.title || "");
     if (title !== null) runAction(() => updateSession({title: title.trim() || null}));
@@ -1464,37 +1678,47 @@
     const table = $("projection-table").value, source = $("projection-source").value, target = $("projection-target").value;
     if (!table || !source || !target || source === target) throw new Error("Choose a table and two different endpoint columns.");
     const task = $("projection-task").value, weight = $("projection-weight").value;
-    const spec = {version: 1, id: "projected-network", task, edge_table: table, joins: [], source: {field: `${table}.${source}`, type: "string"}, target: {field: `${table}.${target}`, type: "string"}, directed: $("projection-directed").checked, duplicates: $("projection-duplicates").value};
+    const spec = {version: 1, id: "projected-network", task, edge_table: table, joins: [], source: {field: `${table}.${source}`, type: $("projection-source-type").value}, target: {field: `${table}.${target}`, type: $("projection-target-type").value}, directed: $("projection-directed").checked, duplicates: $("projection-duplicates").value};
     if (weight) spec.weight = {field: `${table}.${weight}`, type: "number", meaning: {shortest_paths: "cost", spanning_tree: "cost", max_flow: "capacity", ranking: "strength", topology: "strength"}[task]};
     return spec;
   }
   function weightNote() {
-    $("projection-weight-note").textContent = {topology: "IDs remain text, including leading zeros. If supplied, weights represent connection strength.", shortest_paths: "Weights represent travel cost or length: smaller values mean shorter paths.", spanning_tree: "Weights represent the cost of keeping a connection.", max_flow: "Weights represent nonnegative flow capacity.", ranking: "Weights represent nonnegative connection strength. Counting repeated records can provide this weight."}[$("projection-task").value];
+    $("projection-weight-note").textContent = {topology: "Text IDs keep leading zeros; integer IDs stay numeric. If supplied, weights represent connection strength.", shortest_paths: "Weights represent travel cost or length: smaller values mean shorter paths.", spanning_tree: "Weights represent the cost of keeping a connection.", max_flow: "Weights represent nonnegative flow capacity.", ranking: "Weights represent nonnegative connection strength. Counting repeated records can provide this weight."}[$("projection-task").value];
   }
   async function loadTableSchema() {
-    const id = state.tableSources?.[$("projection-table").value];
+    const id = state.tableSources?.[$("projection-table").value], current = ++projectionSchemaGeneration;
     for (const key of ["projection-source", "projection-target", "projection-weight"]) $(key).replaceChildren(node("option", {value: ""}, key === "projection-weight" ? "No weight" : "Choose a column"));
-    if (!id) return;
-    const schema = await api(`/api/sessions/${state.session.id}/tables/${id}/schema`);
+    for (const key of ["projection-source", "projection-target"]) { $(key + "-type").value = "string"; $(key).onchange = null; }
+    if (!id || !state.session) return;
+    const reads = readScope(); let schema;
+    try { schema = await reads.get(`/api/sessions/${state.session.id}/tables/${id}/schema`); }
+    catch (error) { if (current !== projectionSchemaGeneration || error.name === "AbortError") return; throw error; }
+    if (current !== projectionSchemaGeneration || id !== state.tableSources?.[$("projection-table").value]) return;
     for (const column of schema.columns) for (const key of ["projection-source", "projection-target", "projection-weight"]) $(key).append(node("option", {value: column.name}, column.name));
+    for (const key of ["projection-source", "projection-target"]) $(key).onchange = () => { $(key + "-type").value = schema.columns.find(column => column.name === $(key).value)?.type === "integer" ? "integer" : "string"; };
     $("projection-feedback").textContent = `${schema.row_count} records. Empty join keys do not match. Numeric conversions and duplicate handling are explicit.`;
     weightNote();
   }
-  async function refreshTables() {
+  async function refreshTables(selectedFileId = null) {
     state.tableSources = {};
     $("projection-table").replaceChildren();
     state.files.filter(isTable).forEach((file, i) => { const alias = `table_${i + 1}`; state.tableSources[alias] = file.id; $("projection-table").append(node("option", {value: alias}, `${alias} · ${file.original_name}`)); });
-    $("table-aliases").textContent = state.files.filter(isTable).map((file, i) => `table_${i + 1}: ${file.original_name}`).join(" · ") || "Add one or more CSV tables to begin.";
+    const selected = Object.keys(state.tableSources).find(alias => state.tableSources[alias] === selectedFileId);
+    if (selected) $("projection-table").value = selected;
+    $("table-aliases").textContent = state.files.filter(isTable).map((file, i) => `table_${i + 1}: ${file.original_name}`).join(" · ") || "Add a query table or upload CSV tables to begin.";
     await loadTableSchema();
   }
   function projectionAction(action) { return runAction(async () => { try { await action(); } catch (error) { $("projection-feedback").textContent = error.message; } }); }
   document.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", () => $(button.dataset.close).close()));
+  $("workflow-sync-retry").addEventListener("click", () => { if (state.record) pollWorkflow(0); });
+  new ResizeObserver(sizeWorkflowSync).observe($("workflow-sync"));
   $("open-projection").addEventListener("click", () => projectionAction(async () => { await ensureSession(); $("projection-dialog").showModal(); await refreshTables(); }));
+  document.addEventListener("graphmine:project-table", event => projectionAction(async () => { await ensureSession(); $("projection-dialog").showModal(); await refreshTables(event.detail?.fileId); }));
   $("table-upload").addEventListener("change", () => projectionAction(async () => {
     for (const file of $("table-upload").files) { const body = new FormData(); body.append("file", file); body.append("role", "attachment"); state.files.push(await api(`/api/sessions/${state.session.id}/files`, {method: "POST", body})); }
     $("table-upload").value = ""; renderFiles(); await refreshTables();
   }));
-  $("projection-table").addEventListener("change", () => projectionAction(loadTableSchema));
+  $("projection-table").addEventListener("change", () => loadTableSchema().catch(error => { if (error.name !== "AbortError") $("projection-feedback").textContent = error.message; }));
   $("projection-task").addEventListener("change", weightNote);
   $("projection-template").addEventListener("click", () => projectionAction(async () => { $("projection-editor").value = W.stringify(projectionSettings(), true); $("projection-advanced").checked = true; }));
   $("projection-form").addEventListener("submit", event => { event.preventDefault(); projectionAction(async () => {
@@ -1502,16 +1726,26 @@
     $("projection-feedback").textContent = "Building your graph…";
     const result = await api(`/api/sessions/${state.session.id}/projections`, {method: "POST", body: W.stringify({tables: state.tableSources, projection})});
     state.files.push(result.file); state.kinds[result.file.id] = "graph"; state.active = result.file.id; clearResults(); renderFiles(); await previewActive();
-    $("projection-dialog").close(); setDataOpen(false); notice(`Graph ready: ${result.provenance.retained_rows} source records produced ${result.provenance.edge_count} connections. Construction settings are saved with the graph.`);
+    $("projection-dialog").close(); databaseWorkspace?.close(); setDataOpen(false); notice(`Graph ready: ${result.provenance.retained_rows} source records produced ${result.provenance.edge_count} connections. Construction settings are saved with the graph.`);
   }); });
   $("review-example").addEventListener("click", () => runAction(async () => {
+    state.exampleSaved = null;
     state.exampleReview = await api(`/api/workflows/${state.record.id}/example-review`);
     $("example-question").value = [...state.events].reverse().find(event => event.type === "workflow.chat" && event.payload.turn_id === state.record.planning_turn_id && event.payload.role === "user")?.payload.message || ""; $("example-approved").checked = false; $("example-feedback").textContent = ""; $("example-dialog").showModal();
   }));
   $("example-form").addEventListener("submit", event => { event.preventDefault(); runAction(async () => {
     try {
       const review = state.exampleReview;
-      await api(`/api/workflows/${review.workflow_id}/example-review`, {method: "POST", body: W.stringify({question: $("example-question").value, approved: $("example-approved").checked, expected_revision: review.expected_revision, workflow_hash: review.workflow_hash, result_sha256: review.result_sha256})});
+      const body = W.stringify({question: $("example-question").value, approved: $("example-approved").checked, expected_revision: review.expected_revision, workflow_hash: review.workflow_hash, result_sha256: review.result_sha256});
+      const example = state.exampleSaved?.body === body ? state.exampleSaved.example : await api(`/api/workflows/${review.workflow_id}/example-review`, {method: "POST", body});
+      state.exampleSaved = {body, example};
+      if ($("example-studio").checked) {
+        try {
+          const blob = await api(`/api/workflows/${encodeURIComponent(review.workflow_id)}/studio-export?example_id=${encodeURIComponent(example.id)}&expected_revision=${review.expected_revision}`, {asBlob: true});
+          const url = URL.createObjectURL(blob), link = node("a", {href: url, download: `graphmine-studio-${example.id}.json`});
+          link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (error) { $("example-feedback").textContent = `Example saved. Studio download failed: ${error.message}`; return; }
+      }
       $("example-dialog").close(); notice("Approved example saved for this workspace. Evaluation cases never use reviewed examples.");
     } catch (error) { $("example-feedback").textContent = error.message; }
   }); });
@@ -1527,7 +1761,7 @@
   $("device").addEventListener("change", () => { if (state.operation && !capable(card(state.operation))) state.operation = ""; renderOperations(); });
   $("operation-select").addEventListener("change", () => { state.operation = $("operation-select").value; renderParameters(); });
   $("operation-form").addEventListener("submit", event => { event.preventDefault(); runAction(() => submitPlan(planFromOperation())); });
-  commands = window.GraphMineCommands({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls});
+  commands = window.GraphMineCommands({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls, mergeHistory});
   $("question-form").addEventListener("submit", askQuestion);
   $("question").addEventListener("keydown", event => { if (!event.defaultPrevented && event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); if (!state.busy) $("question-form").requestSubmit(); } });
   $("load-editor").addEventListener("click", () => { try { loadEditor(); } catch (error) { notice(error.message, true); } });
@@ -1550,17 +1784,48 @@
   $("flow-direction").addEventListener("change", () => renderGraph(state.graph));
   const turnPage = step => { state.page += step; if (state.remote) loadRemotePage().catch(error => notice(error.message, true)); else renderTable(); };
   $("table-prev").addEventListener("click", () => turnPage(-1)); $("table-next").addEventListener("click", () => turnPage(1));
-  $("download-result").addEventListener("click", () => runAction(async () => { if (!state.result) return; const full = state.result.partial_workflow ? state.result : await api(`/api/workflows/${encodeURIComponent(state.record.id)}/result`); const url = URL.createObjectURL(new Blob([W.stringify(full, true)], {type: "application/json"})), a = node("a", {href: url, download: `graphmine-${state.record.id}-revision-${state.record.revision}.json`}); a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }));
-  new ResizeObserver(() => { if (state.view === "results") { state.cy?.resize(); state.cy?.fit(undefined, 35); } }).observe($("network"));
+  $("download-result").addEventListener("click", () => runAction(async () => { if (!state.result) return; const record = state.record; const blob = await api(`/api/workflows/${encodeURIComponent(record.id)}/result?expected_revision=${record.revision}${state.result.partial_workflow ? "&partial=true" : ""}`, {asBlob: true}); const url = URL.createObjectURL(blob), a = node("a", {href: url, download: `graphmine-${record.id}-revision-${record.revision}.json`}); a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }));
+  let graphViewport = {width: 0, height: 0};
+  new ResizeObserver(([entry]) => {
+    const next = entry.contentRect, cy = state.cy;
+    if (state.view === "results" && cy) {
+      const box = cy.elements().renderedBoundingBox();
+      const previouslyFit = graphViewport.width > 0 && box.x1 >= -1 && box.y1 >= -1 && box.x2 <= graphViewport.width + 1 && box.y2 <= graphViewport.height + 1;
+      cy.resize();
+      // Keep a previously fitted overview visible on smaller screens, while
+      // preserving a viewport the user deliberately zoomed or panned.
+      if (previouslyFit && (next.width < graphViewport.width || next.height < graphViewport.height)) cy.fit(undefined, 35);
+    }
+    graphViewport = {width: next.width, height: next.height};
+  }).observe($("network"));
   window.GraphMineWorkspace = {state, wire: W};
-  resultViews = window.GraphMineResultViews({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice});
-  databaseWorkspace = window.GraphMineDatabaseWorkspace({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, renderGraph, previewActive});
+  resultContext = window.GraphMineResultContext({state, W, node, qualityDescriptions, title, pageSize: PAGE, overlay: () => databaseWorkspace?.settings().overlay_file_id});
+  resultViews = window.GraphMineResultViews({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice, onContext: () => resultContext.refresh(), savedSelection: (...args) => exploration?.selectionFor(...args)});
+  databaseWorkspace = window.GraphMineDatabaseWorkspace({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, renderGraph, previewActive, upload, clearResults, viewScope,
+    openData: part => go("data", part === "files" ? "files" : ""),
+    dataPartChanged: part => { if (state.view === "data") history.replaceState(null, "", navigation.queryTarget ? `#data/${part}/${encodeURIComponent(navigation.queryTarget)}` : route("data", part === "connection" ? "" : part)); },
+    savedQueryLoaded: (part = "query") => {
+      if (!navigation.queryTarget) return;
+      navigation.queryTarget = null;
+      if (state.view === "data") history.replaceState(null, "", route("data", part));
+    },
+    dataReturnLabel: () => /\/results(?:\/|$)/.test(navigation.returnRoute) ? "Back to results" : state.session ? "Back to conversation" : "Back to home",
+    leaveData: () => { location.hash = navigation.returnRoute; }});
+  exploration = window.GraphMineExploration({state, api, W, node, scope: viewScope, database: () => databaseWorkspace, applySelection, filterRows, reload: async () => { const id = state.session?.id, page = state.view; if (id) { await openSession(id); showPage(page); } }});
   window.GraphMineOutputs.install({state, api, W, node, runAction});
   window.GraphMineExplorer.install({state, W, node, selectRow});
   window.GraphMineEditor({state, W, node, card, refs, runAction, notice, parameterControl, parametersFrom, loadEditor, submitPlan});
   window.GraphMineLibrary({state, api, W, node, notice, runAction, ensureSession, renderFiles, previewActive, questionSelection: currentSelection});
+  workspaceHome = window.GraphMineHome({state, api, W, node, runAction, onDataset: async response => {
+    // Keep the created conversation address recoverable if its first read fails.
+    history.pushState(null, "", `#workspace/${encodeURIComponent(response.session.id)}/chat`);
+    if (!await openSession(response.session.id)) return false;
+    await loadSessions();
+    const current = state.session?.id === response.session.id;
+    if (current) $("question").focus();
+    return current;
+  }});
   window.GraphMineProjects({state, api, W, node, runAction, notice, renderFiles, previewActive});
-  window.GraphMineConnectors({state, api, W, node, runAction, notice, renderFiles, previewActive});
   window.GraphMineTemplates({state, api, W, node, runAction, notice, card, parameterControl, parametersFrom, onCreated: async record => { state.record = record; setMode("interactive"); clearResults(); renderWorkflow(); await loadSaved(); go("chat"); }});
   setMode("normal"); renderOutput();
   (window.GraphMineAccount?.ready || Promise.resolve(false)).then(enabled => {

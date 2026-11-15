@@ -7,14 +7,14 @@ import hashlib
 import json
 from typing import Literal
 
-from fastapi import Request
+from fastapi import Query, Request
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from starlette.concurrency import run_in_threadpool
 
 from .analytics import AnalyticsError, _json, _key
 from .database import RecordNotFound
 from .identity import AccountError, current_principal
-from .models import FileInfo, FileRole, new_id, utc_now
+from .models import FileInfo, FileRole, SessionCreate, SessionRecord, new_id, utc_now
 
 
 class SaveDataset(BaseModel):
@@ -22,7 +22,7 @@ class SaveDataset(BaseModel):
     name: str = Field(min_length=1, max_length=160)
     dataset_id: str | None = None
     file_id: str | None = None
-    kind: Literal["graph", "graph_collection", "feature_vectors", "hypergraph"] = (
+    kind: Literal["graph", "graph_collection", "feature_vectors", "hypergraph", "table"] = (
         "graph"
     )
     workflow_id: str | None = None
@@ -65,6 +65,20 @@ class DatasetLibrary:
                 (_owner(),),
             )
             return [json.loads(row[0]) for row in rows]
+
+    def page(self, *, offset=0, limit=20, search="", kind=None, latest=False):
+        where, args = ["v.owner_id IS ?"], [_owner()]
+        if search.strip():
+            where.append("instr(casefold(v.name || ' ' || v.kind),?)>0")
+            args.append(search.strip().casefold())
+        if kind:
+            where.append("v.kind=?"); args.append(kind)
+        if latest:
+            where.append("NOT EXISTS (SELECT 1 FROM dataset_summaries newer WHERE newer.owner_id IS v.owner_id AND newer.dataset_id=v.dataset_id AND newer.version>v.version)")
+        with self.database._connect() as db:
+            rows = db.execute("SELECT v.metadata FROM dataset_summaries v WHERE " + " AND ".join(where)
+                              + " ORDER BY v.sequence DESC LIMIT ? OFFSET ?", [*args, limit + 1, offset]).fetchall()
+        return {"items": [json.loads(row[0]) for row in rows[:limit]], "offset": offset, "limit": limit, "has_more": len(rows) > limit}
 
     def get(self, version_id, *, content=False):
         with self.database._connect() as db:
@@ -115,7 +129,14 @@ class DatasetLibrary:
                     "Dataset exceeds the input byte budget", "resource_limit"
                 )
             try:
-                value = json.loads(path.read_bytes())
+                if body.kind == "table" and path.suffix.lower() == ".csv":
+                    from .csv_ingestion import read_table
+                    from .table_artifacts import make_table
+
+                    table = read_table(path)
+                    value = make_table(table["columns"], table["rows"])
+                else:
+                    value = json.loads(path.read_bytes())
             except (ValueError, UnicodeError) as exc:
                 raise AnalyticsError(
                     "Save a canonical JSON input, or import the CSV as a graph first"
@@ -199,6 +220,10 @@ class DatasetLibrary:
         """Persist a server-validated snapshot from an upload, result or connector."""
         if kind == "graph":
             self.runtime.graph_store._validate_graph(value)
+        elif kind == "table":
+            from .table_artifacts import validate_table
+
+            validate_table(value)
         elif not isinstance(value, (list, dict)):
             raise AnalyticsError("Reusable inputs must be structured JSON")
         raw = _json(value).encode()
@@ -218,55 +243,61 @@ class DatasetLibrary:
             "source": source,
             "source_complete": complete,
         }
+        if kind == "table":
+            from .table_artifacts import summary
+
+            metadata["table"] = summary(value)
         # Version numbers and storage admission are serialized with metadata writes.
         with self.database._lock, self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            if dataset_id:
-                previous = db.execute(
-                    "SELECT kind,last_version FROM dataset_catalog WHERE id=? AND owner_id IS ?",
-                    (dataset_id, _owner()),
-                ).fetchone()
-                if previous is None:
-                    raise RecordNotFound("Dataset not found")
-                if previous[0] != kind:
-                    raise AnalyticsError(
-                        "A new version must keep the dataset's input kind"
-                    )
-                metadata["version"] = previous[1] + 1
-            principal = current_principal.get()
-            serialized = _json(metadata)
-            if principal and len(raw) + len(
-                serialized.encode()
-            ) > principal.accounts.upload_remaining(principal.user_id):
-                raise AccountError(
-                    "Your storage allowance is full. Remove unused dataset versions or files.",
-                    "storage_limit",
-                )
-            db.execute(
-                "INSERT INTO dataset_versions VALUES (?,?,?,?,?,?,?)",
-                (
-                    metadata["id"],
-                    metadata["dataset_id"],
-                    metadata["version"],
-                    _owner(),
-                    serialized,
-                    raw,
-                    len(raw),
-                ),
-            )
-            db.execute(
-                "INSERT INTO dataset_catalog VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET last_version=excluded.last_version",
-                (metadata["dataset_id"], _owner(), kind, metadata["version"]),
-            )
+            self._persist(db, metadata, raw, dataset_id=dataset_id)
         return metadata
+
+    def _persist(self, db, metadata, raw, *, dataset_id=None, storage_credit=0):
+        """Called inside the metadata write transaction with validated content."""
+        if dataset_id:
+            previous = db.execute(
+                "SELECT kind,last_version FROM dataset_catalog WHERE id=? AND owner_id IS ?",
+                (dataset_id, _owner()),
+            ).fetchone()
+            if previous is None:
+                raise RecordNotFound("Dataset not found")
+            if previous[0] != metadata["kind"]:
+                raise AnalyticsError("A new version must keep the dataset's input kind")
+            metadata["version"] = previous[1] + 1
+        principal = current_principal.get()
+        serialized = _json(metadata)
+        if principal and len(raw) + len(serialized.encode()) > principal.accounts.upload_remaining(principal.user_id) + storage_credit:
+            raise AccountError(
+                "Your storage allowance is full. Remove unused dataset versions or files.",
+                "storage_limit",
+            )
+        db.execute(
+            "INSERT INTO dataset_versions VALUES (?,?,?,?,?,?,?)",
+            (metadata["id"], metadata["dataset_id"], metadata["version"], _owner(), serialized, raw, len(raw)),
+        )
+        db.execute(
+            "INSERT INTO dataset_catalog VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET last_version=excluded.last_version",
+            (metadata["dataset_id"], _owner(), metadata["kind"], metadata["version"]),
+        )
 
     def import_into(self, version_id, session_id):
         self.database.get_session(session_id)
-        metadata, raw = self.get(version_id, content=True)
+        try:
+            metadata, raw = self.get(version_id, content=True)
+        except RecordNotFound:
+            from .query_previews import QueryPreviews
+
+            QueryPreviews(self.runtime).promote(version_id)
+            metadata, raw = self.get(version_id, content=True)
         if hashlib.sha256(raw).hexdigest() != metadata["sha256"]:
             raise AnalyticsError(
                 "The saved dataset failed its integrity check", "data_integrity", 409
             )
+        if metadata["kind"] == "table":
+            from .table_artifacts import validate_table
+
+            validate_table(json.loads(raw))
         record = self.runtime.graph_store.ingest(
             session_id=session_id,
             role=FileRole.graph if metadata["kind"] == "graph" else FileRole.attachment,
@@ -292,12 +323,26 @@ class DatasetLibrary:
                 "DELETE FROM dataset_versions WHERE id=? AND owner_id IS ?",
                 (version_id, _owner()),
             )
+        from .result_index import table_index_path
+
+        table_index_path(self.database, version_id).unlink(missing_ok=True)
 
 
 def register_dataset_routes(router):
     @router.get("/datasets")
     def datasets(request: Request):
         return DatasetLibrary(request.app.state.runtime).list()
+
+    @router.get("/datasets/page")
+    def dataset_page(request: Request, offset: int = Query(0, ge=0, le=1000000), limit: int = Query(20, ge=1, le=100),
+                     q: str = Query("", max_length=200), kind: Literal["graph", "graph_collection", "feature_vectors", "hypergraph", "table"] | None = None,
+                     latest: bool = False):
+        return DatasetLibrary(request.app.state.runtime).page(offset=offset, limit=limit, search=q, kind=kind, latest=latest)
+
+    @router.get("/datasets/{version_id}/provenance")
+    def provenance(version_id: str, request: Request):
+        metadata = DatasetLibrary(request.app.state.runtime).get(version_id)
+        return {"id": metadata["id"], "sha256": metadata["sha256"], "source": metadata["source"], "source_complete": metadata["source_complete"]}
 
     @router.post("/datasets", status_code=201)
     async def save_dataset(body: SaveDataset, request: Request):
@@ -310,6 +355,22 @@ def register_dataset_routes(router):
         return DatasetLibrary(request.app.state.runtime).import_into(
             version_id, session_id
         )
+
+    @router.post("/datasets/{version_id}/chat", status_code=201)
+    def start_conversation(version_id: str, body: SessionCreate, request: Request):
+        runtime = request.app.state.runtime
+        library = DatasetLibrary(runtime)
+        metadata = library.get(version_id)  # Authorize before creating a session.
+        runtime.catalog.domain(body.domain_id)
+        session = runtime.database.create_session(SessionRecord(**{**body.model_dump(), "title": body.title or metadata["name"]}))
+        try:
+            imported = library.import_into(version_id, session.id)
+        except Exception:
+            from .api import remove_session
+
+            remove_session(runtime, session.id)
+            raise
+        return {"session": session.model_dump(mode="json"), **imported}
 
     @router.delete("/datasets/{version_id}", status_code=204)
     def delete_dataset(version_id: str, request: Request):

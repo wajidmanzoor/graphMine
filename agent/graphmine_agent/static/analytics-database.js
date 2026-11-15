@@ -1,93 +1,13 @@
 "use strict";
-window.GraphMineDatabaseWorkspace = ({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, renderGraph, previewActive}) => {
+window.GraphMineDatabaseWorkspace = argumentsForSource => {
+  const {state, api, W, node, runAction, notice, go, renderFiles, renderGraph, previewActive, clearResults, viewScope} = argumentsForSource;
   const $ = id => document.getElementById(id);
-  const launch = node("button", {id: "open-database-workspace", class: "primary", type: "button"}, "Select database & write Cypher");
-  const start = node("div", {class: "database-start"});
-  start.append(node("strong", {}, "Start from your database"), node("p", {}, "Choose your data, query a graph, then explore it in conversation."), launch);
-  $("domain-grid").before(start);
-  const nav = node("button", {id: "nav-database", class: "nav-item", type: "button"}, "Database queries");
-  document.querySelector(".sidebar-navigation").append(nav);
+  const {show, close, mount} = window.GraphMineDataSource({...argumentsForSource});
   const context = node("details", {id: "database-context", class: "database-context", hidden: true});
   $("messages").before(context);
-  let previewCy = null;
   const overlays = new Map();
-  const viewKey = () => state.resultView ? [state.record?.id, state.record?.revision, state.resultView.step, state.resultView.port, state.resultView.index].join("/") : state.active;
-  const show = () => runAction(async () => {
-    const sources = await api("/api/database-sources");
-    const dialog = node("dialog", {id: "database-workspace", class: "database-dialog", "aria-label": "Database query workspace"});
-    const heading = node("div", {class: "section-heading"}), close = node("button", {type: "button", class: "quiet"}, "Close");
-    heading.append(node("h2", {}, "Choose data. Write Cypher. Open a conversation."), close);
-    const source = node("select", {id: "database-source", "aria-label": "Database"});
-    for (const item of sources) source.append(node("option", {value: item.id}, item.name));
-    const status = node("p", {id: "database-query-status", role: "status"});
-    const schema = node("div", {class: "database-schema", id: "database-schema"});
-    const editor = node("textarea", {id: "cypher-editor", class: "code-editor", rows: "12", spellcheck: "false", "aria-label": "Cypher query"});
-    editor.value = "MATCH p = (a)-[r]->(b)\nRETURN p\nLIMIT 1000";
-    const parameters = node("textarea", {id: "cypher-parameters", class: "code-editor", rows: "3", "aria-label": "Query parameters (JSON)"}); parameters.value = "{}";
-    const parameterBox = node("details"); parameterBox.append(node("summary", {}, "Query parameters"), parameters);
-    const direction = node("select", {id: "query-graph-direction", "aria-label": "Graph direction for analysis"});
-    direction.append(node("option", {value: "directed"}, "Directed · preserve relationship direction"), node("option", {value: "undirected"}, "Undirected · for density, cliques and shared connections"));
-    const preview = node("button", {id: "preview-cypher", type: "button", class: "secondary"}, "Preview query");
-    const open = node("button", {id: "run-cypher-chat", type: "button", class: "primary"}, "Run & open chat");
-    const sync = node("button", {id: "sync-database", type: "button", class: "quiet"}, "Refresh graph from tables");
-    const actions = node("div", {class: "form-actions"}); actions.append(preview, open, sync);
-    const form = node("div", {class: "database-editor"}); form.append(node("label", {}, "Cypher"), editor, parameterBox, direction, actions, status);
-    const canvas = node("div", {id: "database-query-graph", class: "database-query-graph", role: "img", "aria-label": "Query graph preview"});
-    const rows = node("pre", {id: "database-query-rows", class: "database-row-preview"});
-    const grid = node("div", {class: "database-grid"}); grid.append(schema, form, canvas);
-    const rowDetails = node("details"); rowDetails.append(node("summary", {}, "Inspect returned query rows"), rows);
-    dialog.append(heading, source, grid, rowDetails); document.body.append(dialog);
-    let saved = null, generation = 0;
-    const invalidate = () => { generation++; saved = null; };
-    editor.oninput = parameters.oninput = invalidate;
-    direction.onchange = invalidate;
-    const describe = () => {
-      invalidate(); schema.replaceChildren();
-      const selected = sources.find(s => s.id === source.value);
-      if (!selected) { status.textContent = "No databases are configured yet. Add a source mapping in the server's database setup."; preview.disabled = open.disabled = sync.disabled = true; return; }
-      schema.append(node("h3", {}, "Graph schema"));
-      for (const item of selected.entities) {
-        const block = node("details", {open: ""}); block.append(node("summary", {}, item.label), node("p", {}, (item.graph_attributes || item.attributes).join(" · ") || "No imported attributes"), node("p", {class: "muted"}, `Available from tables: ${item.attributes.join(" · ")}`)); schema.append(block);
-      }
-      schema.append(node("h3", {}, "Relationships"));
-      for (const item of selected.relationships) schema.append(node("p", {}, `${item.source_entity} → ${item.label} → ${item.target_entity}`));
-      status.textContent = "Return nodes, relationships or paths. Your query defines the graph used for analysis.";
-    };
-    source.onchange = describe; describe();
-    const finish = () => { generation++; previewCy?.destroy(); previewCy = null; dialog.close(); dialog.remove(); };
-    close.onclick = finish; dialog.oncancel = event => { event.preventDefault(); finish(); };
-    const query = async () => {
-      const body = {statement: editor.value, parameters: W.parse(parameters.value || "{}"), directed: direction.value === "directed"};
-      const signature = source.value + W.stringify(body);
-      if (saved?.signature === signature) return saved.response;
-      const current = generation;
-      status.textContent = "Executing query and saving its graph…";
-      const response = await api(`/api/database-sources/${encodeURIComponent(source.value)}/queries`, {method: "POST", body: W.stringify(body)});
-      if (current !== generation || !dialog.isConnected) return null;
-      saved = {signature, response};
-      status.textContent = `${response.vertex_count} vertices · ${response.edge_count} relationships · ${response.row_count} result rows. ${response.message}`;
-      rows.textContent = W.stringify(response.rows, true);
-      previewCy?.destroy();
-      const graph = response.graph;
-      if (window.cytoscape) previewCy = window.cytoscape({container: canvas, elements: [
-        ...graph.vertices.map(v => ({data: {id: W.idKey(v.id), label: v.label || v.type || String(v.id)}})),
-        ...graph.edges.map((e, i) => ({data: {id: `edge:${i}`, source: W.idKey(e.source), target: W.idKey(e.target)}}))
-      ], style: [{selector: "node", style: {label: "data(label)", "font-size": 10, "background-color": "#478663"}}, {selector: "edge", style: {"target-arrow-shape": graph.graph.directed ? "triangle" : "none", "curve-style": "bezier", width: 1.5, "line-color": "#adc5b9", "target-arrow-color": "#adc5b9"}}], layout: {name: "cose", animate: false}});
-      if (graph.vertices.length < response.vertex_count || graph.edges.length < response.edge_count) status.textContent += " Preview is bounded; chat uses the full saved query graph.";
-      return response;
-    };
-    const action = fn => runAction(async () => { preview.disabled = open.disabled = sync.disabled = true; try { await fn(); } catch (error) { status.textContent = error.message; throw error; } finally { preview.disabled = open.disabled = sync.disabled = !sources.length; } });
-    preview.onclick = () => action(query);
-    open.onclick = () => action(async () => {
-      const response = await query(); if (!response?.dataset) return;
-      const result = await api(`/api/database-query-snapshots/${response.dataset.id}/chat`, {method: "POST", body: "{}"});
-      finish(); await openSession(result.session.id); await loadSessions(); go("chat");
-      $("question").focus(); notice("Your query graph is attached. Ask what you want to discover.");
-    });
-    sync.onclick = () => action(async () => { invalidate(); status.textContent = "Reading mapped tables and refreshing the imported graph…"; const result = await api(`/api/database-sources/${source.value}/sync`, {method: "POST"}); status.textContent = `Graph refreshed: ${result.nodes} vertices · ${result.relationships} relationships. Run your query to create a new snapshot.`; });
-    dialog.showModal();
-  });
-  launch.onclick = nav.onclick = show;
+  const viewKey = (scope = viewScope()) => scope?.result ? [scope.result.workflow_id, scope.result.revision, scope.result.step, scope.result.port, scope.result.index].join("/") : scope?.file_id || "";
+  const restoring = new Map();
   const sourceFile = () => {
     const enriched = overlays.get(viewKey())?.file_id;
     if (enriched) return state.files.find(f => f.id === enriched);
@@ -103,12 +23,15 @@ window.GraphMineDatabaseWorkspace = ({state, api, W, node, runAction, notice, op
   const attributes = node("button", {id: "enrich-attributes", type: "button", class: "secondary"}, "Add table attributes");
   const relationships = node("button", {id: "enrich-relationships", type: "button", class: "secondary"}, "Add relationships");
   const enrichedNote = node("p", {id: "enrichment-note", class: "muted", role: "status"});
+  const retryOverlay = node("button", {id: "retry-enrichment-restore", type: "button", class: "quiet", hidden: true}, "Retry saved attributes");
   const enrichment = node("div", {class: "source-enrichment"}); enrichment.append(attributes, relationships, enrichedNote); $("selection-detail").after(enrichment);
+  enrichment.append(retryOverlay); retryOverlay.onclick = () => renderGraph(state.graph);
   async function enrichDialog(expand) {
-    const file = sourceFile(); if (!file) throw new Error("This view has no source-table mapping. Start with a database query graph.");
+    let file = sourceFile(); if (!file) throw new Error("This view has no source-table mapping. Start with a database query graph.");
     const originalKey = viewKey(), epoch = state.epoch;
     const schema = await api(`/api/files/${file.id}/source-schema`);
     if (epoch !== state.epoch || originalKey !== viewKey()) return;
+    if (schema.capabilities?.[expand ? "expansion" : "enrichment"] === false) throw new Error("This connection has no SQL table mappings for this action. Its saved graph is ready for analysis.");
     const dialog = node("dialog", {id: "enrichment-dialog", class: "wide-dialog", "aria-label": expand ? "Add relationships" : "Add table attributes"});
     const title = node("h2", {}, expand ? "Expand this graph from source records" : "Add source attributes to this view");
     const kind = node("select", {id: "enrichment-kind", "aria-label": "Entity kind"}); kind.append(node("option", {value: "vertices"}, "Vertices")); if (!expand) kind.append(node("option", {value: "edges"}, "Relationships"));
@@ -117,13 +40,17 @@ window.GraphMineDatabaseWorkspace = ({state, api, W, node, runAction, notice, op
     scope.append(node("option", {value: "result"}, "Current result view (all retained members)"), node("option", {value: "selected"}, "Selected visible entities"));
     const status = node("p", {id: "enrichment-status", role: "status"}), apply = node("button", {id: "apply-enrichment", type: "button", class: "primary"}, expand ? "Add relationships to a new graph version" : "Fetch & add attributes"), close = node("button", {type: "button", class: "quiet"}, "Close");
     const options = () => { mapping.replaceChildren(); for (const m of expand || kind.value === "edges" ? schema.relationships : schema.entities) mapping.append(node("option", {value: m.id}, m.label)); renderFields(); };
-    const renderFields = () => { fields.replaceChildren(node("legend", {}, "Attributes")); const m = [...schema.entities, ...schema.relationships].find(m => m.id === mapping.value); for (const name of m?.attributes || []) { const label = node("label", {class: "check"}), checkbox = node("input", {type: "checkbox", value: name, checked: ""}); label.append(checkbox, document.createTextNode(name)); fields.append(label); } fields.hidden = expand; apply.disabled = !m; };
+    const renderFields = () => { fields.replaceChildren(node("legend", {}, "Attributes · choose up to 64")); const m = [...schema.entities, ...schema.relationships].find(m => m.id === mapping.value); for (const [index, name] of (m?.attributes || []).entries()) { const label = node("label", {class: "check"}), checkbox = node("input", {type: "checkbox", value: name}); checkbox.checked = index < 64; label.append(checkbox, document.createTextNode(name)); fields.append(label); } fields.hidden = expand; apply.disabled = !m; };
     mapping.onchange = renderFields; kind.onchange = options; options();
     dialog.append(title, kind, mapping, scope, fields, node("p", {class: "muted"}, "Values are fetched from the current source records. Earlier calculations keep their original graph version."), status, apply, close);
     document.body.append(dialog); close.onclick = () => { dialog.close(); dialog.remove(); }; dialog.oncancel = event => { event.preventDefault(); close.click(); };
+    const use = node("button", {id: "use-enriched-graph", type: "button", class: "secondary", hidden: true}, "Use new graph version in chat");
+    use.onclick = () => runAction(async () => { state.active = file.id; state.record = null; clearResults(); renderFiles(); await previewActive(); go("chat"); close.click(); $("question").focus(); });
+    dialog.append(use);
     apply.onclick = () => runAction(async () => {
       if (epoch !== state.epoch || originalKey !== viewKey()) throw new Error("The displayed result changed. Reopen source details for the current view.");
       const body = {mapping: mapping.value, kind: kind.value, fields: [...fields.querySelectorAll("input:checked")].map(input => input.value)};
+      if (!expand && (!body.fields.length || body.fields.length > 64)) throw new Error("Choose between 1 and 64 attributes per fetch.");
       const view = state.resultView;
       if (view && state.record) body.selection = {workflow_id: state.record.id, revision: state.record.revision, step: view.step, port: view.port, index: view.index};
       if (scope.value === "selected") {
@@ -134,6 +61,7 @@ window.GraphMineDatabaseWorkspace = ({state, api, W, node, runAction, notice, op
       try {
         const response = await api(`/api/files/${file.id}/${expand ? "expansions" : "enrichments"}`, {method: "POST", body: W.stringify(body)});
         if (epoch !== state.epoch || originalKey !== viewKey()) return;
+        file = response.file;
         if (!state.files.some(f => f.id === response.file.id)) state.files.push(response.file);
         state.kinds[response.file.id] = "graph";
         if (!expand && state.graph) {
@@ -146,9 +74,7 @@ window.GraphMineDatabaseWorkspace = ({state, api, W, node, runAction, notice, op
           enrichedNote.textContent = `${response.updates.length} entities enriched at ${response.fetched_at}. ${response.missing.length} source records missing; ${response.unmapped_count} outside this table mapping. Metrics retain their original graph version.`;
         } else enrichedNote.textContent = `${response.added.vertices} vertices and ${response.added.edges} relationships added to graph version ${response.dataset.version}.`;
         status.textContent = response.note;
-        const use = node("button", {id: "use-enriched-graph", type: "button", class: "secondary"}, "Use new graph version in chat");
-        use.onclick = () => runAction(async () => { state.active = response.file.id; state.record = null; state.result = null; state.resultView = null; renderFiles(); await previewActive(); go("chat"); close.click(); $("question").focus(); });
-        dialog.append(use); renderFiles();
+        use.hidden = false; renderFiles();
       } finally { apply.disabled = false; }
     });
     dialog.showModal();
@@ -162,7 +88,8 @@ window.GraphMineDatabaseWorkspace = ({state, api, W, node, runAction, notice, op
   tableBox.append(node("summary", {}, "Fetched source attributes"), search, attributeTable); enrichment.append(tableBox);
   function refreshStyles(names) {
     styles.hidden = false;
-    for (const select of [labels, colors]) { const selected = select.value; select.replaceChildren(node("option", {value: ""}, "Default")); for (const name of names) select.append(node("option", {value: name}, name)); select.value = names.includes(selected) ? selected : ""; }
+    for (const select of [labels, colors]) { const selected = wantedStyles ? select === labels ? wantedStyles.label : wantedStyles.color : select.value; select.replaceChildren(node("option", {value: ""}, "Default")); for (const name of names) select.append(node("option", {value: name}, name)); select.value = names.includes(selected) ? selected : ""; }
+    wantedStyles = null;
   }
   labels.onchange = () => { for (const n of state.cy?.nodes() || []) { const original = n.data("original"); n.data("label", labels.value ? String(original.attributes?.[labels.value] ?? original.label ?? original.id) : String(original.label ?? original.id)); } };
   colors.onchange = () => {
@@ -187,7 +114,13 @@ window.GraphMineDatabaseWorkspace = ({state, api, W, node, runAction, notice, op
   }
   function decorate() {
     const overlay = overlays.get(viewKey()); tableBox.hidden = styles.hidden = !overlay;
-    attributes.disabled = relationships.disabled = !sourceFile() || Boolean(state.resultView && !state.resultView.enrichable);
+    const file = sourceFile(), capabilities = file?.provenance?.source?.database_source?.capabilities;
+    const unavailable = !file || Boolean(state.resultView && !state.resultView.enrichable);
+    attributes.disabled = unavailable || capabilities?.enrichment === false;
+    relationships.disabled = unavailable || capabilities?.expansion === false;
+    const optionalSqlNote = "This graph comes directly from Neo4j. SQL enrichment is optional and is not configured.";
+    if (!overlay && capabilities?.sql === false) enrichedNote.textContent = optionalSqlNote;
+    else if (enrichedNote.textContent === optionalSqlNote) enrichedNote.textContent = "";
     attributeTable.replaceChildren(); if (!overlay) { legend.replaceChildren(); return; }
     refreshStyles([...overlay.fields]);
     labels.onchange(); if (colors.value) colors.onchange();
@@ -202,5 +135,28 @@ window.GraphMineDatabaseWorkspace = ({state, api, W, node, runAction, notice, op
     if (count > 200) { const tr = node("tr"); tr.append(node("td", {colspan: fields.length + 2}, `Showing 200 of ${count} matching entities. Filter to narrow the table.`)); attributeTable.append(tr); }
   }
   search.oninput = decorate;
-  return {updateContext, overlayGraph, decorate};
+  function settings() { return {overlay_file_id: overlays.get(viewKey())?.file_id || null, label_attribute: wantedStyles?.label ?? labels.value, color_attribute: wantedStyles?.color ?? colors.value}; }
+  let wantedStyles = null;
+  function restoreSettings(saved) { wantedStyles = {label: saved.label_attribute, color: saved.color_attribute}; search.value = saved.filters?.attribute_search || ""; }
+  async function restoreOverlay(saved, current) {
+    const key = viewKey(saved.scope), id = saved.overlay_file_id;
+    if (!id || overlays.get(key)?.file_id === id) return;
+    const requestKey = W.stringify([key, id, Boolean(saved.scope.result?.context)]);
+    if (restoring.has(requestKey)) return restoring.get(requestKey);
+    const original = overlays.get(key), originalId = original?.file_id;
+    const pending = (async () => {
+      const response = await api(`/api/sessions/${encodeURIComponent(state.session.id)}/exploration/overlay`, {method: "POST", body: W.stringify({scope: saved.scope, file_id: id})});
+      if (!current() || overlays.get(key) !== original || overlays.get(key)?.file_id !== originalId) return;
+      overlays.set(key, {file_id: id, vertices: new Map(response.vertices.map(row => [W.idKey(row.id), row.attributes])), edges: new Map(response.edges.map(row => [W.idKey(row.id), row.attributes])), fields: new Set([...response.fields.vertices, ...response.fields.edges])});
+      retryOverlay.hidden = true;
+      enrichedNote.textContent = `Source attributes restored from the saved graph version fetched at ${response.fetched_at}. No fresh source lookup was performed.`;
+      renderGraph(state.graph);
+    })();
+    restoring.set(requestKey, pending);
+    try { await pending; }
+    catch (error) { if (current()) { enrichedNote.textContent = `Saved source attributes could not be restored. ${error.message}`; retryOverlay.hidden = false; } throw error; }
+    finally { if (restoring.get(requestKey) === pending) restoring.delete(requestKey); }
+  }
+  function clearExploration() { overlays.clear(); restoring.clear(); labels.value = colors.value = search.value = ""; wantedStyles = null; enrichedNote.textContent = ""; retryOverlay.hidden = true; }
+  return {show, close, mount, updateContext, overlayGraph, decorate, settings, restoreSettings, restoreOverlay, clearExploration};
 };

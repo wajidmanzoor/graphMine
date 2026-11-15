@@ -417,6 +417,7 @@ def test_community_overview_filter_and_reset_preserve_typed_ids(
     colors = dict(snapshot["colors"])
     assert len(set(colors.values())) == 2
     assert len({(p["x"], p["y"]) for p in snapshot["positions"]}) == 6
+    browser.find_element(By.ID, "toggle-result-context").click()
     assert (
         "Local vertex moves" in browser.find_element(By.ID, "result-completeness").text
     )
@@ -576,6 +577,8 @@ def test_partial_clique_collection_and_graph_preview_remain_explicit(
     scope = browser.find_element(By.ID, "preview-scope").text
     assert "Clique 4: 1 of 2 vertices" in scope
     assert "preview is truncated" in scope
+    assert "Incomplete" in browser.find_element(By.ID, "result-context-summary").text
+    browser.find_element(By.ID, "toggle-result-context").click()
     assert (
         "output is incomplete"
         in browser.find_element(By.ID, "result-completeness").text
@@ -590,7 +593,7 @@ def test_count_only_cliques_do_not_invent_filters(loading_browser, loading_serve
     wait_for(browser, "GraphMineWorkspace.state.cy?.nodes().length === 6")
     assert not browser.find_element(By.ID, "graph-group-label").is_displayed()
     assert not browser.find_element(By.ID, "graph-group-hint").is_displayed()
-    assert "count-only" in browser.find_element(By.ID, "result-completeness").text
+    assert "count-only" in browser.find_element(By.ID, "result-context-summary").text
 
 
 def test_saved_cliques_open_when_latest_analysis_returns_a_graph(
@@ -809,7 +812,7 @@ def test_conversation_can_be_renamed_and_deleted(loading_browser, loading_server
     browser.execute_script(
         "window.prompt = () => 'Renamed study'; window.confirm = () => true;"
     )
-    browser.find_element(By.ID, "toggle-data").click()
+    browser.find_element(By.ID, "toggle-tools").click()
     browser.find_element(By.CSS_SELECTOR, ".sidebar-disclosure > summary").click()
     browser.find_element(By.ID, "rename-session").click()
     wait_for(browser, "!GraphMineWorkspace.state.busy")

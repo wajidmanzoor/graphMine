@@ -8,8 +8,10 @@ window.GraphMineExplorer = {
     const untimed = node("input", {type: "checkbox", id: "include-untimed"}); untimed.checked = true;
     const label = node("label", {class: "check"}, "Include connections without timestamps"); label.prepend(untimed);
     const scope = node("p", {id: "time-scope", class: "muted", role: "status"}); time.append(controls, label, scope); $("network").before(time);
-    this.clearTime = () => { time.hidden = true; };
-    this.timeView = () => {
+    let currentTimes = [];
+    this.clearTime = () => { time.hidden = true; currentTimes = []; };
+    this.timeState = () => ({time_start: currentTimes[Number(low.value)] ? String(currentTimes[Number(low.value)].value) : null, time_end: currentTimes[Number(high.value)] ? String(currentTimes[Number(high.value)].value) : null, include_untimed: untimed.checked});
+    this.timeView = (saved = {}) => {
       const cy = state.cy; if (!cy) return;
       const stamp = edge => {
         const value = edge.data("original")?.timestamp;
@@ -19,8 +21,13 @@ window.GraphMineExplorer = {
       };
       const values = new Map(); for (const edge of cy.edges()) { const value = stamp(edge); if (value !== null) values.set(String(value), {value, label: String(edge.data("original").timestamp)}); }
       const timestamps = [...values.values()].sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
+      currentTimes = timestamps;
       time.hidden = !timestamps.length; if (!timestamps.length) return;
       low.max = high.max = String(timestamps.length - 1); low.value = "0"; high.value = high.max;
+      const firstIndex = timestamps.findIndex(item => String(item.value) === saved?.time_start), lastIndex = timestamps.findIndex(item => String(item.value) === saved?.time_end);
+      if (firstIndex >= 0) low.value = String(firstIndex);
+      if (lastIndex >= 0) high.value = String(lastIndex);
+      untimed.checked = saved?.include_untimed !== false;
       const apply = changed => {
         if (Number(low.value) > Number(high.value)) { if (changed === low) high.value = low.value; else low.value = high.value; }
         const first = timestamps[Number(low.value)], last = timestamps[Number(high.value)]; let shown = 0;

@@ -110,6 +110,7 @@ def collaboration_browser(tmp_path, monkeypatch):
             ).json()
             options = Options()
             options.add_argument("-headless")
+            options.enable_bidi = True
             options.binary_location = "/snap/firefox/current/usr/lib/firefox/firefox"
             driver = webdriver.Firefox(
                 options=options,
@@ -158,6 +159,8 @@ def test_project_publish_annotations_views_and_link_revocation(collaboration_bro
         )
     )
     driver.find_element(By.ID, "toggle-data").click()
+    wait.until(lambda d: d.find_element(By.ID, "source-files-tab").is_displayed())
+    driver.find_element(By.ID, "source-files-tab").click()
     driver.find_element(By.ID, "share-project-input").click()
     wait.until(lambda d: d.find_element(By.ID, "publish-project").is_displayed())
     driver.find_element(By.CSS_SELECTOR, "#publish-project .primary").click()
@@ -220,6 +223,12 @@ def test_project_publish_annotations_views_and_link_revocation(collaboration_bro
 
 def test_connector_preview_save_and_use_flow(collaboration_browser):
     driver, base, sid, _, client, headers, artifacts = collaboration_browser
+    # Previously imported connections remain usable through the dataset library.
+    preview = client.post("/api/connectors/example/preview", headers=headers).json()
+    saved = client.post("/api/connectors/example/import", headers=headers, json={
+        "name": "Company connections", "expected_sha256": preview["sha256"],
+    })
+    assert saved.status_code == 201, saved.text
     wait = login(driver, base, f"/#workspace/{sid}/chat")
     wait.until(
         lambda d: d.execute_script(
@@ -227,17 +236,12 @@ def test_connector_preview_save_and_use_flow(collaboration_browser):
         )
     )
     driver.find_element(By.ID, "toggle-data").click()
-    driver.find_element(By.ID, "open-connectors").click()
-    wait.until(lambda d: d.find_element(By.ID, "connector-dialog").is_displayed())
-    driver.find_element(By.ID, "preview-connector").click()
-    wait.until(lambda d: d.find_element(By.ID, "save-connector").is_enabled())
-    assert "2 vertices" in driver.find_element(By.ID, "connector-scope").text
-    assert client.get("/api/datasets", headers=headers).json() == []
-    driver.save_screenshot(str(artifacts / "connector-preview.png"))
-    driver.find_element(By.ID, "save-connector").click()
-    wait.until(lambda d: d.find_element(By.ID, "use-connector").is_displayed())
-    driver.find_element(By.ID, "use-connector").click()
-    wait.until(lambda d: not d.find_elements(By.ID, "connector-dialog"))
-    assert "Company connections" in driver.find_element(By.ID, "data-summary").text
+    wait.until(lambda d: d.find_element(By.ID, "source-files-tab").is_displayed())
+    driver.find_element(By.ID, "source-files-tab").click()
+    driver.find_element(By.ID, "open-datasets").click()
+    wait.until(lambda d: d.find_elements(By.CSS_SELECTOR, "[data-import-dataset]"))
+    driver.find_element(By.CSS_SELECTOR, "[data-import-dataset]").click()
+    wait.until(lambda d: "Company connections" in d.find_element(By.ID, "data-summary").get_attribute("textContent"))
+    assert not driver.find_elements(By.ID, "open-connectors")
     assert len(client.get("/api/datasets", headers=headers).json()) == 1
     assert client.get("/api/auth/me", headers=headers).json()["quota"]["jobs_used"] == 0

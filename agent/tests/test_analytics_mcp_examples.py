@@ -105,7 +105,7 @@ def test_stdio_lifecycle_and_tool_discovery():
     assert len(responses) == 2
     assert responses[0]["result"]["protocolVersion"] == PROTOCOL
     definitions = {row["name"]: row for row in responses[1]["result"]["tools"]}
-    assert len(definitions) == 14
+    assert {"capabilities", "create_workspace", "list_files", "table_schema", "project_graph", "plan_question", "create_workflow", "list_workflows", "get_workflow", "revise_workflow", "approve_workflow", "cancel_workflow", "workflow_result", "result_page"} <= definitions.keys()
     assert definitions["approve_workflow"]["inputSchema"]["required"] == [
         "workflow_hash",
         "expected_revision",
@@ -129,7 +129,9 @@ async def test_mcp_uses_the_same_native_review_and_authentication_boundary(
                 headers=dict(request.headers),
             )
             return httpx.Response(
-                response.status_code, content=response.content, headers=response.headers
+                response.status_code, content=response.content,
+                # TestClient has already decompressed the response body.
+                headers={key: value for key, value in response.headers.items() if key not in {"content-encoding", "content-length"}},
             )
 
         async with httpx.AsyncClient(

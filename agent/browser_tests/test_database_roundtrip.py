@@ -151,7 +151,7 @@ def test_database_cypher_chat_dense_result_and_enrichment(
         "window.browserErrors=[]; window.addEventListener('error', e => browserErrors.push(e.message))"
     )
     click(browser, "open-database-workspace")
-    wait(browser, "document.getElementById('database-workspace')?.open")
+    wait(browser, "document.getElementById('database-workspace')?.isConnected")
     Select(browser.find_element(By.ID, "database-source")).select_by_value(
         "local-transfers"
     )
@@ -161,10 +161,10 @@ def test_database_cypher_chat_dense_result_and_enrichment(
     click(browser, "preview-cypher")
     wait(
         browser,
-        "document.getElementById('database-query-status').textContent.includes('8 vertices') && !GraphMineWorkspace.state.busy",
+        "document.getElementById('database-preview-count').textContent.includes('8 nodes') && !GraphMineWorkspace.state.busy",
     )
     assert (
-        "10 relationships" in browser.find_element(By.ID, "database-query-status").text
+        "10 relationships" in browser.find_element(By.ID, "database-preview-count").text
     )
     screenshot(browser, "database-query.png")
     click(browser, "run-cypher-chat")
@@ -389,7 +389,7 @@ def test_database_query_dialog_fits_viewport(
     browser.refresh()
     wait(browser, "GraphMineWorkspace.state.caps && !GraphMineWorkspace.state.busy")
     click(browser, "open-database-workspace")
-    wait(browser, "document.getElementById('database-workspace')?.open")
+    wait(browser, "document.getElementById('database-workspace')?.isConnected")
     assert browser.execute_script(
         "const d=document.getElementById('database-workspace'); const r=d.getBoundingClientRect(); return r.left>=0 && r.right<=innerWidth && d.scrollWidth<=d.clientWidth+1"
     )

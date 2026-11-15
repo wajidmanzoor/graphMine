@@ -9,7 +9,7 @@ from graphmine_agent.api import create_app
 
 
 @pytest.fixture
-def groups_service(monkeypatch):
+def groups_service(monkeypatch, tmp_path):
     rows = [{"group": i, "vertices": [i + 10]} for i in range(500)]
     rows += [
         {"group": 900, "vertices": [1, 2, 3]},
@@ -26,12 +26,18 @@ def groups_service(monkeypatch):
     service = object.__new__(AnalyticsService)
     monkeypatch.setattr(
         service,
-        "_saved",
-        lambda _id, step=None: (
-            {"result": result} if step else {"steps": {"mine": {"result": result}}}
-        ),
+        "_indexed",
+        lambda _id, step=None, **_options: indexed_fixture(result, tmp_path, step),
     )
     return service, result
+
+
+def indexed_fixture(result, directory, step):
+    from graphmine_agent.analytics import _json
+    from graphmine_agent.result_index import build_workflow, open_index
+
+    return open_index(directory / ("step.sqlite3" if step else "summary.sqlite3"), lambda: _json(result),
+                      lambda db: build_workflow(db, {"result": result} if step else {"steps": {"mine": {"result": result}}}))
 
 
 def test_summary_counts_full_groups_without_mutating_cached_result(groups_service):

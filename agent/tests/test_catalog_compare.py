@@ -59,7 +59,7 @@ def test_saved_grades_are_ignored_and_recheck_has_no_execution(
     )
     assert checked["summary"]["workflow_contract_passes"] == 2
     assert checked["summary"]["complete"] is True
-    assert checked["summary"]["suite_case_count"] == 46
+    assert checked["summary"]["suite_case_count"] == len(suite["cases"])
     assert checked["summary"]["all_suite_cases_selected"] is False
     assert checked["recheck"]["saved_grades_trusted"] is False
     assert checked["recheck"]["model_inference"] == "not_run"

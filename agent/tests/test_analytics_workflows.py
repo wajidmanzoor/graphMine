@@ -649,9 +649,9 @@ def test_group_graph_reads_members_from_the_full_input(
         },
     )
     groups = {"type": "vertex_groups", "value": [{"vertices": [2900, 2901]}]}
-    monkeypatch.setattr(
-        service, "_saved", lambda *_a, **_k: {"result": {"ports": {"cliques": groups}}}
-    )
+    record["steps"] = {"core": {"status": "completed"}}
+    service._save(record)
+    service._write(service._directory(record) / "step-core.json", {"result": {"ports": {"cliques": groups}}})
     graph = service.group_graph("groups", "core", "cliques", 0)
     # Both members lie beyond a 500-vertex preview; only their own edge is kept.
     assert [v["id"] for v in graph["vertices"]] == [2900, 2901]
@@ -716,6 +716,7 @@ async def test_health_and_metrics_describe_the_engine_people_use(
 
     async def capabilities(refresh=False):
         return {
+            "implementation_sha256": "a" * 64,
             "operations": [
                 {"id": "a", "execution": {"cpu": True, "gpu": False}},
                 {"id": "b", "execution": {"cpu": False, "gpu": False}},
@@ -752,6 +753,7 @@ async def test_health_and_metrics_describe_the_engine_people_use(
         "status": "ok",
         "admitted_operations": 1,
         "operations": 2,
+        "implementation_sha256": "a" * 64,
     }
     assert health["workflows"]["queued"] == 1
     assert health["workflows"]["oldest_queued_seconds"] >= 119
@@ -889,7 +891,8 @@ def test_live_evidence_is_rechecked_at_execution(settings, triangle_graph, tmp_p
         app.state.runtime.analytics.settings = replace(
             settings,
             repository_root=tmp_path,
-            analytics_python=settings.repository_root / ".venv-analytics/bin/python",
+            runtime_repository_root=tmp_path,
+            analytics_python=settings.native_repository_root / ".venv-analytics/bin/python",
         )
         approve(client, record)
         final = wait(client, record["id"])

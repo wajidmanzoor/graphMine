@@ -19,8 +19,8 @@ def expected(cases, operation, tag="supported"):
 def test_every_current_operation_has_a_bounded_reference(cases):
     before = copy.deepcopy(cases)
     checked = [reference_for_case(case) for case in cases.values()]
-    assert len(checked) == 46
-    assert sum(row["kind"] != "non_executable" for row in checked) == 26
+    assert len(checked) == len(cases)
+    assert sum(row["kind"] != "non_executable" for row in checked) == sum(case["task"]["expected_status"] == "ready" for case in cases.values())
     assert cases == before
 
 

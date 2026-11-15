@@ -1,4 +1,4 @@
-"""Operator-configured local SQL/Neo4j pairs and bounded source reads.
+"""Neo4j connections with optional SQL mappings and bounded source reads.
 
 SQL identifiers and joins come from the saved mapping, never browser text.
 User Cypher is a single read statement. Stored credentials are environment
@@ -19,7 +19,8 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator
+from urllib.parse import urlsplit
 
 from .analytics import AnalyticsError, _json
 from .database import RecordNotFound
@@ -39,8 +40,8 @@ class EntityMapping(Strict):
     schema_name: str = Field(default="public", pattern=IDENTIFIER)
     key: list[str] = Field(min_length=1, max_length=8)
     label: str = Field(pattern=IDENTIFIER)
-    attributes: list[str] = Field(default_factory=list, max_length=64)
-    graph_attributes: list[str] | None = Field(default=None, max_length=64)
+    attributes: list[str] = Field(default_factory=list, max_length=256)
+    graph_attributes: list[str] | None = Field(default=None, max_length=256)
     display: str | None = None
 
 
@@ -54,11 +55,19 @@ class RelationshipMapping(EntityMapping):
 
 
 class DatabaseSource(Strict):
+    # Browser-managed credentials are loaded from the private store and never
+    # serialized with mappings, provenance, validation errors, or public metadata.
+    _sql_credentials: dict = PrivateAttr(default_factory=dict)
+    _neo4j_password: str | None = PrivateAttr(default=None)
+    _network_settings: object = PrivateAttr(default=None)
+    _catalog: dict = PrivateAttr(default_factory=dict)
+    _config_stamp: tuple | None = PrivateAttr(default=None)
+    _managed: bool = PrivateAttr(default=False)
     id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,64}$")
     name: str = Field(min_length=1, max_length=160)
     users: list[str] = Field(min_length=1)
     revision: int = Field(default=1, ge=1)
-    sql_type: Literal["postgres", "sqlite"] = "postgres"
+    sql_type: Literal["postgres", "sqlite"] | None = None
     sql_dsn_env: str | None = None
     sqlite_path: str | None = None
     neo4j_uri: str
@@ -67,7 +76,7 @@ class DatabaseSource(Strict):
     neo4j_password_env: str
     neo4j_writer_username: str | None = None
     neo4j_writer_password_env: str | None = None
-    entities: list[EntityMapping] = Field(min_length=1, max_length=64)
+    entities: list[EntityMapping] = Field(default_factory=list, max_length=64)
     relationships: list[RelationshipMapping] = Field(
         default_factory=list, max_length=64
     )
@@ -77,6 +86,9 @@ class DatabaseSource(Strict):
 
     @model_validator(mode="after")
     def mappings(self):
+        # Older configurations inferred PostgreSQL from the DSN reference.
+        if self.sql_type is None:
+            self.sql_type = "sqlite" if self.sqlite_path else "postgres" if self.sql_dsn_env else None
         mappings = self.entities + self.relationships
         if len({m.id for m in mappings}) != len(mappings):
             raise ValueError("Mapping IDs must be unique")
@@ -114,7 +126,19 @@ class DatabaseSource(Strict):
             raise ValueError("A SQLite source needs a path")
         if self.sql_type == "postgres" and not self.sql_dsn_env:
             raise ValueError("A PostgreSQL source needs a DSN environment reference")
+        if self.sql_type is None and mappings:
+            raise ValueError("Table mappings require an SQL source")
         return self
+
+    @property
+    def managed(self):
+        return self._managed or bool(self._sql_credentials)
+
+    def capabilities(self):
+        return {"cypher": True, "sql": self.sql_type is not None,
+                "enrichment": self.sql_type is not None and bool(self.entities),
+                "expansion": self.sql_type is not None and bool(self.relationships),
+                "sync": self.sql_type is not None and bool(self.entities)}
 
     def mapping(self, identifier):
         for item in self.entities + self.relationships:
@@ -136,9 +160,16 @@ class DatabaseSource(Strict):
             "entities": [m.model_dump() for m in self.entities],
             "relationships": [m.model_dump() for m in self.relationships],
         }
+        if self._sql_credentials:
+            value["origin"]["sql_connection"] = {
+                k: v for k, v in self._sql_credentials.items() if k != "password"
+            }
+        if self._catalog:
+            value["catalog"] = self._catalog
         return hashlib.sha256(_json(value).encode()).hexdigest()
 
     def public(self):
+        sql = self.connection_details()
         return {
             "id": self.id,
             "name": self.name,
@@ -153,6 +184,42 @@ class DatabaseSource(Strict):
                 for m in self.relationships
             ],
             "max_rows": self.max_rows,
+            "catalog_dataset": self._catalog.get("id"),
+            "managed": self.managed,
+            "capabilities": self.capabilities(),
+            "connection": sql,
+        }
+
+    def connection_details(self):
+        sql = {k: v for k, v in self._sql_credentials.items() if k != "password"}
+        if not sql and self.sql_type == "postgres":
+            try:
+                from psycopg.conninfo import conninfo_to_dict
+
+                fields = conninfo_to_dict(os.environ.get(self.sql_dsn_env or "", ""))
+                sql = {
+                    "host": fields.get("host", ""),
+                    "port": int(fields.get("port") or 5432),
+                    "database": fields.get("dbname", ""),
+                    "username": fields.get("user", ""),
+                    "sslmode": fields.get("sslmode", "prefer"),
+                }
+            except (ImportError, ValueError):
+                sql = {}
+        if self.sql_type == "sqlite":
+            sql = {"database": Path(self.sqlite_path).name}
+        parsed = urlsplit(self.neo4j_uri)
+        host = parsed.hostname or ""
+        if ":" in host:
+            host = f"[{host}]"
+        return {
+            "sql": {"type": self.sql_type, **sql} if self.sql_type else None,
+            "neo4j": {
+                "uri": f"{parsed.scheme}://{host}"
+                + (f":{parsed.port}" if parsed.port else ""),
+                "database": self.neo4j_database,
+                "username": self.neo4j_username,
+            },
         }
 
 
@@ -174,6 +241,8 @@ def configured(settings):
         ]
         if len(sources) > 100 or len({s.id for s in sources}) != len(sources):
             raise ValueError("Invalid source inventory")
+        for source in sources:
+            source._config_stamp = (path, info.st_ino, info.st_mtime_ns, info.st_size)
         return sources
     except (OSError, ValueError, TypeError) as exc:
         raise AnalyticsError(
@@ -184,12 +253,14 @@ def configured(settings):
 
 
 def available(settings):
+    from .database_connections import managed_sources
+
     principal = current_principal.get()
     return [
         s
         for s in configured(settings)
         if "*" in s.users or principal and principal.username in s.users
-    ]
+    ] + managed_sources(settings)
 
 
 def get_source(settings, identifier):
@@ -226,7 +297,27 @@ def json_value(value):
     raise AnalyticsError("A source value has an unsupported type.", "database_value")
 
 
+def source_keys(source, mapping, values, columns=None):
+    """Match catalog key types across original graph properties and SQL joins."""
+    types = source._catalog.get("types", {}).get(mapping.id, {})
+    try:
+        result = []
+        for column, value in zip(columns or mapping.key, values):
+            if value is not None and types.get(column) == "bigint":
+                integer = int(value)
+                if isinstance(value, bool) or isinstance(value, float) and value != integer:
+                    raise ValueError("Non-integral source key")
+                value = integer
+            elif value is not None and types.get(column) == "text":
+                value = str(value)
+            result.append(value)
+        return result
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise AnalyticsError("A graph source key does not match its SQL type.", "database_mapping") from exc
+
+
 def stable_id(source, mapping, keys):
+    keys = source_keys(source, mapping, keys)
     if any(value is None for value in keys):
         raise AnalyticsError("Mapped keys cannot be null.", "database_mapping")
     return (
@@ -237,39 +328,27 @@ def stable_id(source, mapping, keys):
 
 @contextmanager
 def sql_connection(source):
+    if source.sql_type is None:
+        raise AnalyticsError("This connection has no SQL source. Add SQL and table mappings to use enrichment or synchronization.", "sql_unavailable", 409)
+    if source.sql_type == "postgres":
+        with _postgres_connection(source) as db:
+            yield db
+        return
     db = None
     try:
-        if source.sql_type == "sqlite":
-            db = sqlite3.connect(
-                Path(source.sqlite_path).resolve().as_uri() + "?mode=ro", uri=True
-            )
-            db.row_factory = sqlite3.Row
-            db.execute("PRAGMA query_only=ON")
-            db.execute("PRAGMA trusted_schema=OFF")
-            import time
+        from .database_pools import check_source_stamp
+        check_source_stamp(source)
+        db = sqlite3.connect(
+            Path(source.sqlite_path).resolve().as_uri() + "?mode=ro", uri=True
+        )
+        db.row_factory = sqlite3.Row
+        db.execute("PRAGMA query_only=ON")
+        db.execute("PRAGMA trusted_schema=OFF")
+        import time
 
-            deadline = time.monotonic() + source.timeout_seconds
-            db.set_progress_handler(lambda: int(time.monotonic() > deadline), 1000)
-            db.execute("BEGIN")
-        else:
-            try:
-                import psycopg
-                from psycopg.rows import dict_row
-            except ImportError as exc:
-                raise AnalyticsError(
-                    "Install the agent databases extra to connect PostgreSQL.",
-                    "database_driver",
-                    503,
-                ) from exc
-            db = psycopg.connect(
-                secret(source.sql_dsn_env), row_factory=dict_row, connect_timeout=5
-            )
-            db.isolation_level = psycopg.IsolationLevel.REPEATABLE_READ
-            db.read_only = True
-            db.execute(
-                "SELECT set_config('statement_timeout', %s, true)",
-                (str(source.timeout_seconds * 1000),),
-            )
+        deadline = time.monotonic() + source.timeout_seconds
+        db.set_progress_handler(lambda: int(time.monotonic() > deadline), 1000)
+        db.execute("BEGIN")
         yield db
     finally:
         if db is not None:
@@ -279,7 +358,77 @@ def sql_connection(source):
                 db.close()
 
 
-def read_rows(db, source, mapping, *, keys=None, where_keys=None, fields=None):
+@contextmanager
+def _postgres_connection(source):
+    try:
+        import psycopg
+        from psycopg.conninfo import conninfo_to_dict
+        from psycopg.rows import dict_row
+        from psycopg_pool import ConnectionPool, PoolTimeout, TooManyRequests
+    except ImportError as exc:
+        raise AnalyticsError("Install the agent databases extra to connect PostgreSQL.", "database_driver", 503) from exc
+    from .database_job_context import checkpoint
+    from .database_pools import check_source_stamp, current_database_pools, resource
+
+    if source._sql_credentials:
+        from .database_connections import network_address
+        values = source._sql_credentials
+        address = network_address(source._network_settings, values["host"], values["port"])
+        kwargs = dict(host=values["host"], hostaddr=address, port=values["port"],
+                      dbname=values["database"], user=values["username"],
+                      password=values["password"], sslmode=values["sslmode"])
+    else:
+        kwargs = conninfo_to_dict(secret(source.sql_dsn_env))
+    # The connection default also bounds pool checks/reset after a rollback.
+    kwargs.update(connect_timeout=5, options=kwargs.get("options", "") + f" -c statement_timeout={source.timeout_seconds * 1000}")
+    signature = [kwargs, {key: value for key, value in os.environ.items() if key.startswith("PG")}]
+    pools = current_database_pools.get()
+    size, timeout, idle = (pools.size, pools.wait_seconds, pools.idle_seconds) if pools else (1, 10, 1)
+
+    def configure(db):
+        db.isolation_level = psycopg.IsolationLevel.REPEATABLE_READ
+        db.read_only = True
+        db.row_factory = dict_row
+
+    def reset(db):
+        db.autocommit = True
+        db.execute("DISCARD ALL")
+        db.autocommit = False
+        configure(db)
+
+    def create():
+        return ConnectionPool(kwargs={**kwargs, "row_factory": dict_row, "prepare_threshold": None},
+                              min_size=0, max_size=size, max_waiting=size, timeout=timeout,
+                              max_idle=idle, max_lifetime=1800, num_workers=1, open=True,
+                              configure=configure, check=ConnectionPool.check_connection,
+                              name="graphmine-postgres")
+
+    with resource(source, "postgres", signature, create) as pool:
+        try:
+            db = pool.getconn(timeout=timeout)
+        except (PoolTimeout, TooManyRequests):
+            if pools is not None:
+                pools.retire(pool)
+            raise AnalyticsError("Could not acquire a database connection. Check its status and retry.", "database_busy", 429) from None
+        try:
+            checkpoint()
+            check_source_stamp(source)
+            configure(db)
+            db.execute("SELECT set_config('statement_timeout', %s, true)", (str(source.timeout_seconds * 1000),))
+            yield db
+        finally:
+            try:
+                db.rollback()
+                # Finish reset before return/retirement. No queued reset may
+                # retain a socket after the registry closes its owning pool.
+                reset(db)
+            except Exception:
+                db.close()
+            finally:
+                pool.putconn(db)
+
+
+def read_rows(db, source, mapping, *, keys=None, where_keys=None, fields=None, validate_schema=False):
     fields = mapping.attributes if fields is None else fields
     if not set(fields).issubset(mapping.attributes):
         raise AnalyticsError("Unknown mapped source fields", "database_mapping")
@@ -298,12 +447,23 @@ def read_rows(db, source, mapping, *, keys=None, where_keys=None, fields=None):
             )
         )
     quote = lambda name: '"' + name + '"'
+    # SQLite may treat an unknown unqualified double-quoted column as a string
+    # literal. Qualifying every column makes missing mappings fail on both SQL
+    # engines, including predicates and ordering keys.
+    column = lambda name: '"gm_rows".' + quote(name)
     table = (
         quote(mapping.table)
         if source.sql_type == "sqlite"
         else quote(mapping.schema_name) + "." + quote(mapping.table)
     )
     marker = "?" if source.sql_type == "sqlite" else "%s"
+    if validate_schema and not set(mapping.attributes).issubset(columns):
+        cursor = db.cursor()
+        try:
+            # Check SQL-only enrichment fields too, without reading their values.
+            cursor.execute("SELECT " + ",".join(column(name) for name in dict.fromkeys(columns + mapping.attributes)) + " FROM " + table + ' AS "gm_rows" WHERE 1=0')
+        finally:
+            cursor.close()
     clauses, parameters = [], []
     groups = [(mapping.key, keys)] if keys is not None else where_keys
     if groups is not None:
@@ -312,19 +472,19 @@ def read_rows(db, source, mapping, *, keys=None, where_keys=None, fields=None):
                 if len(fields) != len(values_row):
                     raise AnalyticsError("Invalid source key", "database_mapping")
                 clauses.append(
-                    "(" + " AND ".join(quote(f) + "=" + marker for f in fields) + ")"
+                    "(" + " AND ".join(column(f) + "=" + marker for f in fields) + ")"
                 )
-                parameters.extend(values_row)
+                parameters.extend(source_keys(source, mapping, values_row, fields))
         if not clauses:
             return []
-    statement = "SELECT " + ",".join(quote(c) for c in columns) + " FROM " + table
+    statement = "SELECT " + ",".join(column(c) for c in columns) + " FROM " + table + ' AS "gm_rows"'
     if groups is not None:
         statement += " WHERE " + " OR ".join(clauses)
     statement += (
-        " ORDER BY " + ",".join(quote(c) for c in mapping.key) + " LIMIT " + marker
+        " ORDER BY " + ",".join(column(c) for c in mapping.key) + " LIMIT " + marker
     )
     parameters.append(source.max_rows + 1)
-    rows, used = [], 0
+    rows, used, seen = [], 0, set()
     import uuid
 
     # PostgreSQL server cursors avoid buffering the full SQL result in libpq.
@@ -335,8 +495,15 @@ def read_rows(db, source, mapping, *, keys=None, where_keys=None, fields=None):
     )
     try:
         cursor.execute(statement, parameters)
+        from .database_job_context import checkpoint
+
         for row in cursor:
+            checkpoint()
             item = dict(row)
+            identity = _json(json_value([item[key] for key in mapping.key]))
+            if identity in seen:
+                raise AnalyticsError("This source key matches multiple rows. Use a unique table mapping.", "database_mapping", 409)
+            seen.add(identity)
             used += len(_json(json_value(item)).encode())
             if len(rows) >= source.max_rows or used > source.max_bytes:
                 raise AnalyticsError(
@@ -424,13 +591,39 @@ def neo4j_session(source, *, write=False):
         if write and source.neo4j_writer_password_env
         else source.neo4j_password_env
     )
-    with (
-        GraphDatabase.driver(
+    from .database_pools import current_database_pools, resource
+    from .identity import identity_scope
+
+    credential = source._neo4j_password or secret(password)
+    options, address_key = {}, None
+    if source._network_settings is not None:
+        from .database_connections import network_address
+        settings, principal = source._network_settings, current_principal.get()
+        target = urlsplit(source.neo4j_uri)
+        address_key = network_address(settings, target.hostname, target.port or 7687)
+        # Check and pin every routing address, including discovered cluster hosts.
+        def resolver(address):
+            with identity_scope(principal):
+                return [(network_address(settings, address.host, address.port), address.port)]
+
+        options["resolver"] = resolver
+    pools = current_database_pools.get()
+    signature = [source.neo4j_uri, source.neo4j_database, user, credential, address_key]
+
+    def create():
+        return GraphDatabase.driver(
             source.neo4j_uri,
-            auth=(user, secret(password)),
+            auth=(user, credential),
             connection_timeout=5,
-            max_connection_pool_size=4,
-        ) as driver,
+            connection_acquisition_timeout=pools.wait_seconds if pools else 10,
+            max_connection_pool_size=pools.size if pools else 4,
+            max_connection_lifetime=1800,
+            liveness_check_timeout=60,
+            **options,
+        )
+
+    with (
+        resource(source, "neo4j-write" if write else "neo4j-read", signature, create) as driver,
         driver.session(
             database=source.neo4j_database,
             default_access_mode=WRITE_ACCESS if write else READ_ACCESS,

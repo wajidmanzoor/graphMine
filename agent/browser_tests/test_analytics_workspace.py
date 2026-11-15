@@ -175,7 +175,9 @@ def server(tmp_path_factory, authored_model_transport):
         "PYTHONPATH": str(root)
         + os.pathsep
         + os.environ.get("GRAPHMINE_BROWSER_APP_PATH", str(ROOT / "agent")),
-        "GRAPHMINE_TEST_REPOSITORY_ROOT": str(ROOT),
+        "GRAPHMINE_TEST_REPOSITORY_ROOT": os.environ.get(
+            "GRAPHMINE_TEST_RUNTIME_ROOT", str(ROOT)
+        ),
     }
     (root / "browser_server_entry.py").write_text(
         "import os\nfrom pathlib import Path\nfrom graphmine_agent.api import create_app\nfrom graphmine_agent.config import Settings\napp=create_app(Settings.from_env(Path(os.environ['GRAPHMINE_TEST_REPOSITORY_ROOT'])))\n"
@@ -282,6 +284,9 @@ def typed_graph():
 
 
 def chat(browser):
+    for dialog in browser.find_elements(By.ID, "database-workspace"):
+        if dialog.is_displayed():
+            browser.find_element(By.ID, "close-data-source").click()
     for selector in ["#data-sidebar", "#activity-sidebar"]:
         if browser.find_element(By.CSS_SELECTOR, selector).is_displayed():
             browser.find_element(By.CSS_SELECTOR, selector + " [data-close-panel]").click()
@@ -294,7 +299,7 @@ def chat(browser):
 
 def manual(browser):
     chat(browser)
-    browser.find_element(By.ID, "toggle-data").click()
+    browser.find_element(By.ID, "toggle-tools").click()
     tools = browser.find_element(By.ID, "manual-tools")
     if not tools.get_attribute("open"):
         tools.find_element(By.TAG_NAME, "summary").click()
@@ -303,7 +308,7 @@ def manual(browser):
 
 def choose_device(browser, value):
     chat(browser)
-    browser.find_element(By.ID, "toggle-data").click()
+    browser.find_element(By.ID, "toggle-tools").click()
     if not browser.find_element(By.ID, "device").is_displayed():
         browser.find_element(By.CSS_SELECTOR, ".advanced-data summary").click()
     Select(browser.find_element(By.ID, "device")).select_by_value(value)
@@ -312,16 +317,14 @@ def choose_device(browser, value):
 
 def upload(browser, tmp_path, graph=None, kind="graph"):
     chat(browser)
-    browser.find_element(By.ID, "toggle-data").click()
+    data_files(browser)
     before = browser.execute_script(
         "return window.GraphMineWorkspace.state.files.length"
     )
     path = tmp_path / "typed-graph.json"
     path.write_text(json.dumps(graph or typed_graph()))
-    if not browser.find_element(By.ID, "upload-kind").is_displayed():
-        browser.find_element(By.CSS_SELECTOR, ".data-section details summary").click()
-    Select(browser.find_element(By.ID, "upload-kind")).select_by_value(kind)
-    browser.find_element(By.ID, "data-upload").send_keys(str(path))
+    Select(browser.find_element(By.ID, "source-file-kind")).select_by_value(kind)
+    browser.find_element(By.ID, "source-file-upload").send_keys(str(path))
     WebDriverWait(browser, 30).until(
         lambda d: (
             d.execute_script("return window.GraphMineWorkspace.state.files.length")
@@ -335,6 +338,14 @@ def upload(browser, tmp_path, graph=None, kind="graph"):
                 "return window.GraphMineWorkspace.state.previews.has(window.GraphMineWorkspace.state.active)"
             )
         )
+
+
+def data_files(browser):
+    browser.find_element(By.ID, "toggle-data").click()
+    WebDriverWait(browser, 15).until(
+        lambda d: d.find_element(By.ID, "source-files-tab").is_displayed()
+    )
+    browser.find_element(By.ID, "source-files-tab").click()
 
 
 def status(browser, expected):
@@ -396,12 +407,19 @@ def test_lookup_family_filters_and_links_original_ids(browser, tmp_path):
     field.send_keys('[{"field":"id","op":"eq","value":"0"}]')
     browser.find_element(By.ID, "use-operation").click()
     done(browser)
+    Select(browser.find_element(By.ID, "result-port")).select_by_value("rows")
+    WebDriverWait(browser, 15).until(lambda d: d.execute_script(
+        "return GraphMineWorkspace.state.resultView?.port === 'rows' && !GraphMineWorkspace.state.busy"
+    ))
     assert browser.execute_script(
         "return window.GraphMineWorkspace.state.rows.map(r=>[typeof r.id,String(r.id)])"
     ) == [["string", "0"]]
     browser.find_element(
         By.CSS_SELECTOR, '#result-table tr[data-result-row="0"] button'
     ).click()
+    WebDriverWait(browser, 15).until(lambda d: d.execute_script(
+        "return GraphMineWorkspace.state.resultView?.index === 0 && GraphMineWorkspace.state.cy?.nodes('.chosen').length === 1"
+    ))
     assert browser.execute_script(
         "return window.GraphMineWorkspace.state.cy.nodes('.chosen').map(n=>n.id())"
     ) == ["s:0"]
@@ -709,6 +727,7 @@ def test_pattern_input_can_bind_another_uploaded_graph(browser, tmp_path):
         "edges": [{"id": "uv", "source": "u", "target": "v"}],
     }
     upload(browser, tmp_path, query)
+    data_files(browser)
     Select(browser.find_element(By.ID, "active-input")).select_by_value(data_id)
     manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
@@ -897,6 +916,7 @@ def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
     first_input = browser.execute_script(
         "return window.GraphMineWorkspace.state.files[0].id"
     )
+    data_files(browser)
     Select(browser.find_element(By.ID, "active-input")).select_by_value(first_input)
     WebDriverWait(browser, 10).until(
         lambda d: (
@@ -1238,7 +1258,7 @@ def test_explicit_example_review_does_not_approve_a_successful_run_automatically
 def test_native_csv_projection_preserves_ids_and_computes_in_browser(browser, tmp_path):
     table = tmp_path / "transfers.csv"
     table.write_text("sender,recipient,capacity\n001,002,4\n001,002,5\n002,003,2\n")
-    browser.find_element(By.ID, "toggle-data").click()
+    data_files(browser)
     browser.find_element(By.ID, "open-projection").click()
     browser.find_element(By.ID, "table-upload").send_keys(str(table))
     WebDriverWait(browser, 30).until(

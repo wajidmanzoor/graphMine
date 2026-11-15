@@ -215,7 +215,7 @@ def test_context_uses_full_immediate_input_and_default_group_is_explicit():
     service = SimpleNamespace(
         get=lambda _: record,
         _directory=lambda _: Path("/unused"),
-        _saved=lambda _, step: {
+        _saved=lambda _, step, **_options: {
             "result": output
             if step == "mine"
             else {"ports": {"graph": {"type": "graph", "value": g}}}
@@ -228,6 +228,18 @@ def test_context_uses_full_immediate_input_and_default_group_is_explicit():
     context = result_view(service, "w", "mine", "out", context=True)
     assert context["vertex_count"] == 700 and context["vertices_truncated"]
     assert context["selected_vertices"] == [650, 699]
+    assert {650, 699}.issubset({v["id"] for v in context["vertices"]})
+    assert [e["id"] for e in context["edges"]] == ["far"]
+
+
+def test_lookup_table_uses_declared_vertex_field_and_preserves_id_type():
+    graph = {"graph": {"directed": False}, "vertices": [{"id": "0"}, {"id": 0}], "edges": []}
+    saved = {"operation": "node-lookup", "ports": {
+        "rows": {"type": "table", "vertex_field": "id", "value": [{"id": "0", "name": "Ada"}]}
+    }}
+    focused, _, selected, _ = focus_graph(graph, saved, "rows", 0)
+    assert selected == ["0"]
+    assert focused["vertices"] == [{"id": "0"}]
 
 
 @pytest.mark.parametrize(
@@ -256,21 +268,21 @@ def test_invalid_selection_and_predecessor_cycle_fail_closed():
 
 
 def test_named_occurrence_pages_and_views_share_positions_without_mutating_results(
-    monkeypatch,
+    monkeypatch, tmp_path,
 ):
     output = result(
         "graphlet-counting",
         "graphlet_instances",
         {"2": [[1, 2]], "10": [[0, 1]], "1": [["1", 3]]},
     )
+    from test_analytics_group_views import indexed_fixture
+
     before = deepcopy(output)
     service = object.__new__(AnalyticsService)
     monkeypatch.setattr(
         service,
-        "_saved",
-        lambda _, step=None: (
-            {"result": output} if step else {"steps": {"mine": {"result": output}}}
-        ),
+        "_indexed",
+        lambda _, step=None, **_options: indexed_fixture(output, tmp_path, step),
     )
     summary = service.result_summary("w", limit=1)["steps"]["mine"]["result"]["ports"][
         "out"

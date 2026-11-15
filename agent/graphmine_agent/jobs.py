@@ -56,6 +56,10 @@ class EventBus:
             type=event_type,
             payload=payload or {},
         )
+        if self.database.capture:
+            self.database.capture.event(
+                session_id, event_type, event.payload, job_id=job_id
+            )
         try:
             event = self.database.add_event(event)
         except (sqlite3.Error, OSError) as error:

@@ -73,6 +73,87 @@ async def test_cancelled_planning_answers_the_question_for_retry(setup):
     assert analytics.database.close_unanswered_planning() == 0
 
 
+async def test_a_person_can_stop_planning_and_still_get_a_reply(setup):
+    settings, analytics, events, session, body = setup
+    body.request_id = uuid4()
+    planner = StalledPlanner(settings, analytics, events)
+    task = asyncio.create_task(planner.plan(session, body))
+    await asyncio.wait_for(planner.started.wait(), 120)
+    assert planner.cancel(session, str(body.request_id)) is True
+    result = await task  # The request itself completes normally.
+    assert result["status"] == "cancelled" and result["plan"] is None
+    answer = [
+        event.payload
+        for event in analytics.database.events(session)
+        if event.type == "workflow.chat"
+    ][-1]
+    assert answer["code"] == "cancelled" and answer["retryable"]
+    assert planner.cancel(session, str(body.request_id)) is False
+    assert analytics.planning_tasks == {} and analytics.planning_cancelled == set()
+    assert analytics.list(session) == []
+
+
+async def test_suggested_follow_ups_need_no_model_call(setup, monkeypatch):
+    settings, analytics, events, session, body = setup
+    planner = ReplayPlanner(settings, analytics, events, responses=[])
+    _saved_earlier(analytics, planner, session, monkeypatch)
+    body.previous_workflow_id = "earlier"
+    body.message = "Show the largest clique."
+    body.action = {"intent": "view", "view": {"kind": "show_group", "group": "largest"}}
+    shown = await planner.plan(session, body)
+    assert shown["status"] == "view" and shown["view"]["size"] == 3
+    body.message = "What guarantees does this calculation provide?"
+    body.action = {"intent": "explain", "fact_ids": ["f2"]}
+    answered = await planner.plan(session, body)
+    assert answered["status"] == "answered"
+    assert [fact["id"] for fact in answered["answer"]["facts"]] == ["f2"]
+    assert planner.calls == []
+    # Only actions the saved result offers are accepted; this one has no scores.
+    body.action = {"intent": "view", "view": {"kind": "highlight", "vertices": [0]}}
+    with pytest.raises(AnalyticsError, match="no longer matches"):
+        await planner.plan(session, body)
+
+
+async def test_first_question_titles_an_untitled_conversation(setup):
+    settings, analytics, events, session, body = setup
+    unsupported = {"intent": "unsupported", "message": "Not available."}
+    planner = ReplayPlanner(settings, analytics, events, responses=[unsupported] * 2)
+    body.message = "  which   people connect the separate teams in our office network, and how?"
+    result = await planner.plan(session, body)
+    title = "Which people connect the separate teams in our office…"
+    assert analytics.database.get_session(session).title == title
+    assert result["session_title"] == title
+    analytics.database.update_session(session, {"title": "Office study"})
+    later = await planner.plan(session, body)
+    assert analytics.database.get_session(session).title == "Office study"
+    assert "session_title" not in later
+
+
+async def test_identical_validation_is_reused_between_planning_and_saving(
+    setup, monkeypatch
+):
+    settings, analytics, events, session, body = setup
+    commands = []
+
+    async def worker(request, **_kwargs):
+        commands.append(request["command"])
+        # The worker returns a normalized plan, as the native validator does.
+        return {"plan": {**request["plan"], "normalized": True}, "workflow_hash": "checked"}
+
+    monkeypatch.setattr(analytics, "_call", worker)
+    plan = proposal()["plan"]
+    inputs = await analytics.load_inputs(session, body.inputs)
+    first = await analytics.validate(session, body.inputs, plan, inputs)
+    again = await analytics.validate(session, body.inputs, plan, inputs)
+    # Saving submits the normalized plan; it reuses the same validation.
+    saved = await analytics.validate(session, body.inputs, first["plan"], inputs)
+    assert commands == ["validate"] and first == again == saved and first is not again
+    changed = deepcopy(plan)
+    changed["steps"][0]["parameters"] = {"mode": "list"}
+    await analytics.validate(session, body.inputs, changed, inputs)
+    assert commands == ["validate", "validate"]
+
+
 async def test_follow_up_sees_earlier_results_selection_and_named_entities(
     setup, monkeypatch
 ):
@@ -250,7 +331,9 @@ async def test_questions_about_a_saved_result_are_answered_from_its_facts(
     assert result["message"] == shown
     facts = result["answer"]["facts"]
     assert [fact["id"] for fact in facts] == ["f2", "f1"]
-    assert facts[0]["statement"] == "Sizes of the largest cliques: 3, 2."
+    assert facts[1]["statement"].endswith(
+        ": found 2 cliques, with 3 and 2 members; the largest: 0, 1, 2."
+    )
     assert result["answer"]["workflow_id"] == "earlier"
     assert len(planner.calls) == 1
     assert _reply(analytics, session)["answer"] == result["answer"]
@@ -330,6 +413,7 @@ async def test_lookup_family_routes_nested_filters_through_real_preflight(setup)
 
 @pytest.fixture
 def setup(settings, database, graph_store, session, triangle_graph):
+    settings = replace(settings, analytics_direct_plans=False)
     file = graph_store.ingest(
         session_id=session.id,
         role=FileRole.graph,
@@ -372,6 +456,24 @@ def proposal(op="triangle-counting", parameters=None):
             ],
         },
     }
+
+
+@pytest.mark.asyncio
+async def test_explicit_count_uses_native_validation_without_a_model(setup, monkeypatch):
+    settings, analytics, events, session, body = setup
+    settings = replace(settings, analytics_direct_plans=True)
+    planner = AnalyticsPlanner(settings, analytics, events)
+    body.message = "How many triangles are in this graph?"
+
+    async def unexpected_model(*args, **kwargs):
+        raise AssertionError("An explicit count should not need a model call")
+
+    monkeypatch.setattr(planner, "_generate", unexpected_model)
+    result = await planner.plan(session, body)
+    assert result["status"] == "ready"
+    assert result["validation"]["plan"] == result["plan"]
+    assert result["trace"][0]["source"] == "direct"
+    assert result["plan"]["steps"][0]["operation"] == "triangle-counting"
 
 
 @pytest.mark.asyncio
@@ -758,9 +860,17 @@ async def test_untrusted_decisions_cannot_escape_allowlists(setup, attack):
         second["plan"]["steps"][0]["parameters"] = {"unsupported": True}
     else:
         first["operations"] = ["triangle-counting", "graphlet-counting"]
-    planner = ReplayPlanner(settings, analytics, events, responses=[first, second])
-    with pytest.raises(AnalyticsError):
-        await planner.plan(session, body)
+    if attack == "omitted_objective":
+        # A plan that drops a selected operation gets the bounded repair, then
+        # ends without a plan; it never runs with the objective missing.
+        planner = ReplayPlanner(settings, analytics, events, responses=[first, second, second])
+        result = await planner.plan(session, body)
+        assert result["status"] == "needs_information" and result["plan"] is None
+        assert "graphlet-counting" in planner.calls[-1][1]["validation_error"]["message"]
+    else:
+        planner = ReplayPlanner(settings, analytics, events, responses=[first, second])
+        with pytest.raises(AnalyticsError):
+            await planner.plan(session, body)
     assert analytics.list(session) == []
 
 
@@ -886,7 +996,9 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
             llm_enabled=True,
             llm_base_url="http://planner.test/v1",
             analytics_planner_model=native_model,
-            analytics_thinking_token_budget=thinking_budget,
+            # Routing has its own reasoning budget; the plan budget never applies.
+            analytics_route_thinking_token_budget=thinking_budget,
+            analytics_thinking_token_budget=2000,
         ),
         analytics,
         events,

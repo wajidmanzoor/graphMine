@@ -1,0 +1,102 @@
+/* Shared interaction sizing, focus, and reflow for the analytics workspace. */
+.workspace-app :is(button, select, input:not([type="checkbox"]):not([type="radio"]), summary, .workspace-nav a) {
+  min-height: var(--control-size);
+}
+.workspace-app :is(button, summary, .workspace-nav a) { min-width: var(--control-size); }
+.workspace-app :is(button, select, input, textarea) { line-height: 1.5; }
+.workspace-app :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]) { border-color: var(--control-border); }
+.workspace-app :is(input, textarea)::placeholder { color: var(--muted); opacity: 1; }
+.workspace-app :is(input[type="checkbox"], input[type="radio"]) { width: 1.25rem; height: 1.25rem; min-height: 0; accent-color: var(--accent); flex-shrink: 0; }
+.workspace-app .check { min-height: var(--control-size); align-items: center; }
+.workspace-app :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 3px;
+}
+.workspace-app :is(.upload-zone, .source-upload-zone):focus-within { outline: 3px solid var(--accent); outline-offset: 3px; }
+.workspace-app :is(.chat-composer, .data-pane, .table-scroll, .query-table-scroll) { scroll-padding: 8px; }
+.workspace-app .chat-composer textarea:focus-visible { outline-offset: -3px; border-radius: 8px; }
+.workspace-app :is(.chat-bubble, .chat-welcome > p, .domain-view .hero > p:last-child) { font-size: var(--text-body); }
+.workspace-app .recent-session span { font-size: var(--text-small); }
+.workspace-app .mode-switch button { color: var(--muted); }
+.workspace-app .mode-switch button[aria-pressed="true"] { color: var(--accent-dark); }
+.workspace-app #cypher-editor { border-color: var(--control-border); }
+.workspace-app #result-building-block circle:focus-visible { stroke: var(--accent-dark); stroke-width: 3px; }
+.workspace-app :is(.readable-table .data-table, .table-controls label, .table-status, .table-pagination,
+  .answer-question span, .answer-feedback, .saved-list small, .result-card small,
+  .results-toolbar p, .result-picker) { font-size: var(--text-small); }
+.workspace-app .source-badge, .workspace-app .domain-card::after { color: var(--muted); }
+.workspace-app summary { padding-block: .5rem; }
+.workspace-app :is(.source-tab, .source-preview-actions button, .data-step-actions button) { white-space: normal; }
+.workspace-app .workspace-nav a { display: inline-flex; align-items: center; }
+.workspace-app .workspace-nav { flex-wrap: wrap; }
+.workspace-app .icon-button { width: var(--control-size); height: var(--control-size); flex-shrink: 0; }
+.workspace-app :is(.composer-tools > .icon-button, .send-button) { width: var(--control-size); height: var(--control-size); min-width: var(--control-size); }
+.workspace-app .history-search > svg { top: calc((var(--control-size) - 15px) / 2); }
+.workspace-app .sidebar-brand { margin-left: 0; margin-right: 0; }
+.workspace-app #refresh-sessions { min-width: var(--control-size); min-height: var(--control-size); }
+.workspace-app #connection-button { min-width: var(--control-size); min-height: var(--control-size); }
+.workspace-app .chat-heading-actions .quiet { min-width: var(--control-size); min-height: var(--control-size); }
+.workspace-app .app-sidebar { overflow-y: auto; }
+.workspace-app :is(.sidebar-brand, .sidebar-navigation, .session-filters, .recent-section > .section-heading) { flex-shrink: 0; }
+.workspace-app .recent-sessions { min-height: 3rem; }
+.workspace-app .composer-actions { flex-wrap: wrap; }
+.workspace-app .composer-tools { flex-wrap: wrap; }
+.workspace-app .mode-switch { flex-wrap: wrap; }
+.workspace-app .source-section-heading { flex-wrap: wrap; }
+.workspace-app :is(.result-controls, .table-pagination, .pagination) { flex-wrap: wrap; }
+.workspace-app .results-toolbar { flex-wrap: wrap; }
+.workspace-app #evidence-panel > .section-heading { flex-wrap: wrap; }
+.workspace-app .command-menu { display: flex; flex-direction: column; }
+.workspace-app #command-options { flex: 1 1 auto; min-height: 0; }
+.workspace-app :is(.command-menu-heading, .command-menu-hint) { flex-shrink: 0; }
+.workspace-app .command-menu-compact :is(.command-menu-heading, .command-menu-hint) { display: none; }
+
+/* The footer remains reachable when zoom or a software keyboard reduces height. */
+@media (max-height: 560px) {
+  .workspace-app .app-header { position: static; }
+  .workspace-app :is(.chat-workspace, .data-workspace-view) { height: auto; min-height: calc(100dvh - 58px); overflow: visible; }
+  .workspace-app :is(.chat-column, .database-dialog.data-workspace) { height: auto; overflow: visible; }
+  .workspace-app .conversation-scroll { min-height: 10rem; max-height: none; overflow: visible; }
+  .workspace-app .data-workspace .source-database-panel { flex: auto; }
+  .workspace-app .data-workspace .database-grid { flex: auto; }
+  .workspace-app .data-workspace .data-pane { max-height: none; overflow: visible; }
+  .workspace-app .data-workspace .source-heading { position: static; }
+  .workspace-app .workspace-drawer { overflow-y: auto; }
+  .workspace-app .command-menu { position: static; margin-bottom: 8px; }
+}
+@media (max-width: 900px), (pointer: coarse) {
+  .workspace-app { --control-size: 2.75rem; }
+  .workspace-app :is(input, select, textarea),
+  .workspace-app :is(.database-dialog, .workspace-drawer, .app-sidebar, .chat-composer) :is(input, select, textarea) { font-size: var(--text-body); }
+}
+@media (max-width: 600px) {
+  .workspace-app .app-header { gap: 4px; padding-inline: 8px; }
+  .workspace-app .header-actions { gap: 4px; }
+  .workspace-app .workspace-nav { padding-inline: 0; }
+  .workspace-app .workspace-nav a { padding-inline: 7px; }
+  .workspace-app #result-count { margin-left: 2px; padding-inline: 3px; }
+  .workspace-app .chat-heading { flex-wrap: wrap; }
+  .workspace-app .chat-heading h1 { white-space: normal; }
+  .workspace-app .chat-heading > div:first-child { flex-basis: 8rem; }
+  .workspace-app .chat-heading-actions .quiet { width: var(--control-size); height: var(--control-size); }
+  .workspace-app .composer-tools { flex: 1 1 100%; gap: 6px; }
+  .workspace-app .composer-actions .send-button { margin-left: auto; }
+  .workspace-app .composer-tools .mode-panel { min-width: 0; flex: 1; }
+  .workspace-app .mode-switch { width: 100%; }
+  .workspace-app .mode-switch button { padding-inline: 6px; flex: 1; }
+  .workspace-app .source-heading { flex-wrap: wrap; }
+  .workspace-app .data-workspace .source-heading button { max-width: none; }
+  .workspace-app .source-tabs { gap: 16px; }
+  .workspace-app .data-steps { padding-block: 4px; }
+  .workspace-app .data-steps button { flex-direction: row; justify-content: center; gap: 4px; }
+  .workspace-app .data-steps button > span:first-child { display: none; }
+  .workspace-app .mapping-fields { grid-template-columns: minmax(0, 1fr); }
+  .workspace-app #account-settings-button { padding-inline: 6px; }
+  .workspace-app #account-settings-button .account-name { max-width: 3rem; padding-right: 0; border-right: 0; }
+  .workspace-app #account-settings-button > span:last-child { display: none; }
+}
+
+@media (forced-colors: active) {
+  .workspace-app :is(button, input, textarea, select, .workspace-nav a) { border: 1px solid ButtonText; }
+  body.workspace-app :is([aria-selected="true"], [aria-pressed="true"], [aria-current="page"]) { border: 2px solid Highlight; }
+  .workspace-app :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible { outline-color: Highlight; }
+}

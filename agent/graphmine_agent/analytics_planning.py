@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import asyncio
+import functools
 import json
 import logging
 import re
 import time
 from contextvars import ContextVar
 from copy import deepcopy
-from typing import Literal
+from pathlib import Path
+from typing import Any, Literal
 from uuid import UUID, uuid4
 
 import httpx
@@ -17,7 +19,7 @@ import jsonschema
 from pydantic import BaseModel, ConfigDict, Field
 
 from .analytics import AnalyticsError, InputReference
-from .analytics_answers import build_facts
+from .analytics_answers import build_facts, numberless_lead, suggested_questions
 from .analytics_context import matched_entities, resolve_selection, summarize_result
 from .database import RecordNotFound
 from .identity import AccountError
@@ -28,12 +30,28 @@ _logger = logging.getLogger(__name__)
 PLANNING_DEADLINE_SECONDS = 360
 # Failures that asking again can fix; quota and validation failures cannot.
 RETRYABLE_PLANNING = {
+    "cancelled",
     "interrupted",
     "planner_timeout",
     "planner_unavailable",
     "planning_failed",
     "concurrency_limit",
 }
+TITLE_CHARACTERS = 60
+
+
+@functools.lru_cache(maxsize=4)
+def _domain_profiles(path):
+    """Shipped domain vocabulary; read once instead of for every question."""
+    return json.loads(Path(path).read_text())["domains"]
+
+
+def conversation_title(message):
+    """A history title from the first question, cut at a word boundary."""
+    text = " ".join(message.split())
+    if len(text) > TITLE_CHARACTERS:
+        text = text[:TITLE_CHARACTERS].rsplit(" ", 1)[0].rstrip(",;:") + "…"
+    return text[:1].upper() + text[1:]
 
 # Presentation/routing groups over the library's mathematical modules. Every
 # executable operation must belong to exactly one group; nothing is guessed.
@@ -182,6 +200,9 @@ class PlanningRequest(BaseModel):
     mode: Literal["normal", "interactive", "expert"] = "normal"
     request_id: UUID | None = None
     selection: PlanningSelection | None = None
+    # The checked action of a suggested follow-up for previous_workflow_id. It
+    # is accepted only if that result still offers exactly this action.
+    action: dict[str, Any] | None = None
 
 
 def _object(properties, required=None):
@@ -786,6 +807,31 @@ class AnalyticsPlanner:
         self.settings, self.analytics, self.events = settings, analytics, events
         self.conversation = ContextVar("analytics_conversation", default=None)
 
+    def direct_plan(self, body, inputs, cards):
+        """Recognize only complete standalone requests with no implicit filters."""
+        if (not self.settings.analytics_direct_plans or body.previous_workflow_id
+                or body.selection or body.evaluation_id or body.family_id
+                or len(inputs) != 1):
+            return None
+        alias, descriptor = next(iter(inputs.items()))
+        if descriptor["kind"] != "graph":
+            return None
+        question = " ".join(body.message.casefold().split()).rstrip(".?!")
+        requests = {
+            "count triangles": ("triangle-counting", {"mode": "count"}),
+            "count the triangles": ("triangle-counting", {"mode": "count"}),
+            "how many triangles are in this graph": ("triangle-counting", {"mode": "count"}),
+            "find the largest clique and list its members": ("maximum-clique", {}),
+            "find the maximum clique": ("maximum-clique", {}),
+        }
+        choice = requests.get(question)
+        if choice is None or choice[0] not in {card["id"] for card in cards}:
+            return None
+        return {"version": 1, "device": body.device, "steps": [{
+            "id": "answer", "operation": choice[0], "input": {"input": alias},
+            "parameters": choice[1], "bindings": {},
+        }]}
+
     async def _generate(self, stage, payload, schema, catalog=None):
         if not self.settings.llm_enabled:
             raise AnalyticsError(
@@ -813,7 +859,7 @@ class AnalyticsPlanner:
         )
         stage_instructions = {
             "route": "CURRENT STAGE: decide what the person is asking for and return exactly one intent. calculate: a new computation on the data; choose every operation the request needs from the catalog, including each stated dependency, such as extracting a subgraph and then analyzing it, and explain the choice in one sentence. Basic lookup, filtering and aggregation are query operations. Parameters are filled later. view: only a change to how the saved result is displayed, such as showing a group or clique, changing the layout, highlighting named entities, opening another output, searching the result rows or opening the results page. A view never computes anything; if the request needs a value that the saved result does not contain, calculate instead. explain: the listed result_facts already answer a question about the saved result; choose those facts, most relevant first, and write one lead sentence that contains no digits or numbers. needs_information: the mathematical objective is ambiguous, such as maximum versus maximal or different meanings of importance; ask one short question and give up to four short choices, each a complete reply in the person's own words. Do not ask about output formatting or parameters that have documented defaults. unsupported: no listed operation can compute the request. A preferred_family is the person's hint; choose operations from other families when the request needs them.",
-            "plan": "CURRENT STAGE: construct the requested workflow using the supplied cards and actual input metadata/samples. Steps are ordered and have no generated IDs. Refer to an earlier step by its zero-based step_index: 0 is the first step, 1 the second. The first step must use an input alias. A reference must point to an existing earlier step and a port declared by that step's operation. Each step uses an arguments array: exactly one entry per supplied parameter, with either value.literal or value.binding. Omit optional defaults. Historical plans may use named step IDs and parameters/bindings; translate their references by position into this format. For record predicates, nested attributes use field paths such as attributes.amount, never the bare attribute name. Use explicit values from the question; IDs matching sampled IDs are already identified. A named attribute and a supplied value define a filter even when the value has no matches. Return complete records when records are requested without a field list. Follow the graph's declared direction unless the question changes it. Within k hops means at most k. An induced graph keeps exactly the selected vertices and their connecting edges. Optional output choices may use documented defaults; ask only for genuinely missing required inputs or unresolved mathematical choices. Do not ask the user to repeat information already supplied. When you ask, also give up to four short choices, each a complete reply in the person's own words.",
+            "plan": "CURRENT STAGE: construct the requested workflow using the supplied cards and actual input metadata/samples. Steps are ordered and have no generated IDs. Refer to an earlier step by its zero-based step_index: 0 is the first step, 1 the second. The first step must use an input alias. A reference must point to an existing earlier step and a port declared by that step's operation. Each step uses an arguments array: exactly one entry per supplied parameter, with either value.literal or value.binding. Omit optional defaults. Historical plans may use named step IDs and parameters/bindings; translate their references by position into this format. For record predicates, nested attributes use field paths such as attributes.amount, never the bare attribute name. Use explicit values from the question; IDs matching sampled IDs are already identified. A named attribute and a supplied value define a filter even when the value has no matches. Return complete records when records are requested without a field list. Follow the graph's declared direction unless the question changes it. Within k hops means at most k. An induced graph keeps exactly the selected vertices and their connecting edges. Optional output choices may use documented defaults; ask only for genuinely missing required inputs or unresolved mathematical choices. Do not ask the user to repeat information already supplied. When you ask, also give up to four short choices, each a complete reply in the person's own words. The message is shown to the person: in one short sentence of their own vocabulary, say what will be found, not how. Do not name algorithms or graph-theory terms such as centrality, betweenness, modularity, degree or clique unless the person used them; describe a heuristic or approximate choice in plain words, for example 'a fast method that may not find the best possible split'.",
         }
         request = {
             "model": self.settings.analytics_planner_model or self.settings.llm_model,
@@ -851,12 +897,16 @@ class AnalyticsPlanner:
                 },
             },
         }
-        if self.settings.analytics_thinking_token_budget is not None:
+        budget = (
+            self.settings.analytics_route_thinking_token_budget
+            if stage == "route"
+            else self.settings.analytics_thinking_token_budget
+        )
+        if budget is not None:
             # Optional vLLM extension: reserve output tokens for the structured
             # decision without disabling the reasoning needed for selection.
-            request["thinking_token_budget"] = (
-                self.settings.analytics_thinking_token_budget
-            )
+            # Reasoning tokens dominate planning latency, so routing gets its own.
+            request["thinking_token_budget"] = budget
         context = self.conversation.get()
         if context:
             await self.events.publish(
@@ -865,6 +915,7 @@ class AnalyticsPlanner:
                 {"turn_id": context["turn_id"], "stage": stage, "status": "running"},
             )
         started, report = time.monotonic(), {"stage": stage, "model": request["model"]}
+        body = data = None
         try:
             async with httpx.AsyncClient(
                 base_url=self.settings.llm_base_url,
@@ -950,6 +1001,15 @@ class AnalyticsPlanner:
             report.setdefault("outcome", "interrupted")
             report["seconds"] = round(time.monotonic() - started, 2)
             _logger.info("planner stage %s", json.dumps(report, default=str))
+            capture = self.analytics.database.capture
+            if context and capture:
+                capture.model_call(
+                    context["session_id"], stage=stage, request=request, response=body,
+                    output=data if report["outcome"] == "ok" else None,
+                    outcome=report["outcome"], seconds=time.monotonic() - started,
+                    error=report.get("error"), turn_id=context["turn_id"],
+                    target_schema=generation_schema, output_schema=schema,
+                )
             if context:
                 await self.events.publish(
                     context["session_id"],
@@ -957,12 +1017,36 @@ class AnalyticsPlanner:
                     {"turn_id": context["turn_id"], **report},
                 )
 
-    async def plan(self, session_id, body):
+    def cancel(self, session_id, turn_id):
+        """Stop planning a question in this workspace; True when one was running."""
         self.analytics.database.get_session(session_id)
+        key = (session_id, turn_id)
+        work = self.analytics.planning_tasks.get(key)
+        if work is None or work.done():
+            return False
+        self.analytics.planning_cancelled.add(key)
+        work.cancel()  # Closing the model stream also stops its generation.
+        return True
+
+    def _untitled(self, session):
+        """No title, or the domain default the earlier interface assigned."""
+        if session.title is None:
+            return True
+        domain = next(
+            (row for row in self._domains() if row["id"] == session.domain_id), None
+        )
+        return bool(domain) and session.title == f"{domain['name']} conversation"
+
+    def _domains(self):
+        return _domain_profiles(
+            str(self.settings.repository_root / "agent/domain_profiles.json")
+        )
+
+    async def plan(self, session_id, body):
+        session = self.analytics.database.get_session(session_id)
         turn_id = str(body.request_id or uuid4())
-        if body.request_id and any(
-            event.type == "workflow.chat" and event.payload.get("turn_id") == turn_id
-            for event in self.analytics.database.events(session_id)
+        if body.request_id and self.analytics.database.chat_turn_exists(
+            session_id, turn_id
         ):
             raise AnalyticsError(
                 "This planning request is already saved in the conversation",
@@ -971,6 +1055,7 @@ class AnalyticsPlanner:
             )
         context = {"session_id": session_id, "turn_id": turn_id}
         token = self.conversation.set(context)
+        key = (session_id, turn_id)
         try:
             await self.events.publish(
                 session_id,
@@ -1000,7 +1085,26 @@ class AnalyticsPlanner:
                 },
             )
             self.analytics.database.touch_session(session_id)
-            response = await self._plan(session_id, body)
+            title = None
+            if not body.evaluation_id and self._untitled(session):
+                title = conversation_title(body.message)
+                self.analytics.database.update_session(session_id, {"title": title})
+            # A separate task, so a person can stop planning without their
+            # request itself being cancelled.
+            work = asyncio.create_task(self._plan(session_id, body))
+            self.analytics.planning_tasks[key] = work
+            try:
+                response = await work
+            except asyncio.CancelledError:
+                current = asyncio.current_task()
+                if key not in self.analytics.planning_cancelled or (
+                    current is not None and current.cancelling()
+                ):
+                    raise
+                message = "Stopped before a plan was made. Nothing was calculated."
+                await self._publish_failure(session_id, turn_id, body, "cancelled", message)
+                return {"status": "cancelled", "message": message, "plan": None,
+                        "turn_id": turn_id, **({"session_title": title} if title else {})}
             await self.events.publish(
                 session_id,
                 "workflow.chat",
@@ -1025,7 +1129,8 @@ class AnalyticsPlanner:
                     },
                 },
             )
-            return {**response, "turn_id": turn_id}
+            return {**response, "turn_id": turn_id,
+                    **({"session_title": title} if title else {})}
         except asyncio.CancelledError:
             # A request time limit, disconnect or shutdown cancels planning;
             # the question must not stay "running" in the conversation.
@@ -1048,6 +1153,8 @@ class AnalyticsPlanner:
             )
             raise
         finally:
+            self.analytics.planning_tasks.pop(key, None)
+            self.analytics.planning_cancelled.discard(key)
             self.conversation.reset(token)
 
     async def _publish_failure(self, session_id, turn_id, body, code, message):
@@ -1064,6 +1171,25 @@ class AnalyticsPlanner:
                 "evaluation_id": body.evaluation_id,
             },
         )
+
+    def _suggested(self, body, saved, facts, targets):
+        """The routing decision for a suggestion the saved result offered.
+
+        Rebuilding the offer from the same result checks the action, so it needs
+        neither a model call nor trust in what the browser sent.
+        """
+        offered = [
+            row["action"] for row in suggested_questions(saved or {}, facts) if row["action"]
+        ]
+        if not saved or body.action not in offered:
+            raise AnalyticsError(
+                "This suggestion no longer matches the saved result. Ask it in your own words."
+            )
+        if body.action["intent"] == "view":
+            if targets is None:
+                raise AnalyticsError("This result has no view to change.")
+            return {"intent": "view", "view": body.action["view"], "message": body.message}
+        return {"intent": "explain", "fact_ids": body.action["fact_ids"], "message": ""}
 
     def _saved_result(self, workflow_id):
         try:
@@ -1095,7 +1221,7 @@ class AnalyticsPlanner:
             f["id"] for f in families
         }:
             raise AnalyticsError("Unknown task family")
-        inputs = self.analytics._inputs(session_id, body.inputs)
+        inputs = await self.analytics.load_inputs(session_id, body.inputs)
         context = {}
         for alias, descriptor in inputs.items():
             data = descriptor["data"]
@@ -1148,10 +1274,9 @@ class AnalyticsPlanner:
             "device_policy": body.device,
             "inputs": context,
         }
-        profiles = json.loads(
-            (self.settings.repository_root / "agent/domain_profiles.json").read_text()
-        )["domains"]
-        domain = next((row for row in profiles if row["id"] == session.domain_id), None)
+        domain = next(
+            (row for row in self._domains() if row["id"] == session.domain_id), None
+        )
         if domain:
             payload["domain"] = {
                 key: domain[key]
@@ -1161,14 +1286,18 @@ class AnalyticsPlanner:
         # executable instructions. Evaluation requests remain isolated.
         if not body.evaluation_id:
             current = self.conversation.get()
+            # Failure notices ("the planner did not answer in time") are not
+            # conversation, and would only mislead the next plan.
             conversation = [
                 {
                     "role": event.payload["role"],
                     "message": event.payload["message"][:2000],
                 }
-                for event in self.analytics.database.events(session_id)
-                if event.type == "workflow.chat"
-                and not event.payload.get("evaluation_id")
+                for event in self.analytics.database.events(
+                    session_id, types=("workflow.chat",)
+                )
+                if not event.payload.get("evaluation_id")
+                and event.payload.get("status") != "failed"
                 and event.payload.get("turn_id") != current["turn_id"]
             ]
             if conversation:
@@ -1195,7 +1324,7 @@ class AnalyticsPlanner:
             selected = results and resolve_selection(results, body.selection)
             if selected:
                 payload["current_selection"] = selected
-        entities = matched_entities(body.message, inputs)
+        entities = await asyncio.to_thread(matched_entities, body.message, inputs)
         if entities:
             payload["matched_entities"] = entities
         # Routing needs to know what earlier results and the selection are;
@@ -1224,12 +1353,11 @@ class AnalyticsPlanner:
 
         # A saved result can be shown differently or explained from its facts
         # without planning a new calculation.
-        facts, targets = [], None
+        facts, targets, result_labels = [], None, {}
         if results_for_routing:
             titles = {card["id"]: card["title"] for card in caps["operations"]}
-            facts = build_facts(
-                results_for_routing, titles, self.analytics._labels(previous)
-            )
+            result_labels = await asyncio.to_thread(self.analytics._labels, previous)
+            facts = build_facts(results_for_routing, titles, result_labels)
             selection = (
                 body.selection
                 if body.selection and body.selection.workflow_id == previous["id"]
@@ -1252,15 +1380,31 @@ class AnalyticsPlanner:
 
         try:
             async with asyncio.timeout(PLANNING_DEADLINE_SECONDS):
+                # The shortcut still uses verified cards and native validation.
+                direct = None if payload.get("conversation") else self.direct_plan(body, inputs, cards)
+                if direct is not None:
+                    try:
+                        checked = await self.analytics.validate(session_id, body.inputs, direct, inputs)
+                    except AnalyticsError:
+                        pass  # The full planner can resolve unsupported inputs.
+                    else:
+                        await remember("route", {"status": "calculate", "message": "Recognized an explicit graph calculation.", "operations": [direct["steps"][0]["operation"]], "source": "direct"})
+                        await remember("validation", {"status": "passed", "message": "The plan and its input bindings passed validation."})
+                        return {"status": "ready", "message": "The calculation is ready.", "plan": checked["plan"], "validation": checked, "trace": trace}
                 # One routing call sees every operation, the saved result's
                 # display options and its facts, and returns a single intent.
-                routes = route_schema(cards, facts=facts, targets=targets)
-                decision = await self._generate(
-                    "route", routing, routes, catalog=route_catalog(cards, families)
-                )
-                jsonschema.Draft202012Validator(routes).validate(decision)
+                if body.action is not None:
+                    decision = self._suggested(body, results_for_routing, facts, targets)
+                else:
+                    routes = route_schema(cards, facts=facts, targets=targets)
+                    decision = await self._generate(
+                        "route", routing, routes, catalog=route_catalog(cards, families)
+                    )
+                    jsonschema.Draft202012Validator(routes).validate(decision)
                 intent = decision["intent"]
                 step = {"status": intent, "message": decision["message"]}
+                if body.action is not None:
+                    step["source"] = "suggestion"
                 if intent == "calculate":
                     step["operations"] = decision["operations"]
                     if body.family_id:
@@ -1276,8 +1420,11 @@ class AnalyticsPlanner:
                 if intent == "view":
                     view = resolve_view(decision["view"], targets, previous["id"])
                     labels = {
-                        json.dumps(row["id"]): row.get("label", row["matched"])
-                        for row in payload.get("matched_entities", [])
+                        **result_labels,
+                        **{
+                            json.dumps(row["id"]): row.get("label", row["matched"])
+                            for row in payload.get("matched_entities", [])
+                        },
                     }
                     step["view"] = view
                     await remember("route", step)
@@ -1292,15 +1439,13 @@ class AnalyticsPlanner:
                 if intent == "explain":
                     by_id = {fact["id"]: fact for fact in facts}
                     chosen = [by_id[key] for key in decision["fact_ids"]]
-                    lead = decision["message"].strip()
+                    lead = numberless_lead(decision["message"])
                     step["fact_ids"] = decision["fact_ids"]
                     await remember("route", step)
                     return {
                         "status": "answered",
                         # Figures come from the facts, never from the model's lead.
-                        "message": lead
-                        if lead and not re.search(r"\d", lead)
-                        else "Here is what the saved result shows.",
+                        "message": lead or "Here is what the saved result shows.",
                         "answer": {"workflow_id": previous["id"], "facts": chosen},
                         "trace": trace,
                         "plan": None,
@@ -1377,15 +1522,17 @@ class AnalyticsPlanner:
                             "message": "Checking the plan against the uploaded inputs.",
                         },
                     )
-                    if set(decision["operations"]) != {
-                        step["operation"] for step in proposal["plan"]["steps"]
-                    }:
-                        message = "The plan omitted a selected objective or added another operation"
-                        await remember(
-                            "validation", {"status": "failed", "message": message}
-                        )
-                        raise AnalyticsError(message)
                     try:
+                        planned = {step["operation"] for step in proposal["plan"]["steps"]}
+                        if set(decision["operations"]) != planned:
+                            # A repairable representation error, like the checks below.
+                            missing = sorted(set(decision["operations"]) - planned)
+                            extra = sorted(planned - set(decision["operations"]))
+                            raise AnalyticsError(
+                                "The plan must use exactly the selected operations."
+                                + (f" Missing: {', '.join(missing)}." if missing else "")
+                                + (f" Not selected: {', '.join(extra)}." if extra else "")
+                            )
                         # Positional transport removes invented names, but the
                         # model must still choose a real, earlier dependency.
                         # Reject and expose that error to the same bounded repair
@@ -1401,12 +1548,8 @@ class AnalyticsPlanner:
                                         "Generate references using their zero-based step_index."
                                     )
                             earlier.add(step["id"])
-                        checked = await self.analytics._call(
-                            {
-                                "command": "validate",
-                                "plan": proposal["plan"],
-                                "inputs": inputs,
-                            }
+                        checked = await self.analytics.validate(
+                            session_id, body.inputs, proposal["plan"], inputs
                         )
                         await remember(
                             "validation",
@@ -1427,9 +1570,13 @@ class AnalyticsPlanner:
                             {"status": "failed", "message": str(exc)},
                         )
                         if attempt:
+                            # The technical reason stays in Activity's validation step.
                             return {
                                 "status": "needs_information",
-                                "message": f"The plan could not be validated: {exc}",
+                                "message": "I couldn't build a plan that passes the checks "
+                                "for this data. Try rephrasing the question or naming the "
+                                "values to use, or review the steps in Interactive mode. "
+                                "Activity shows what failed.",
                                 "plan": None,
                                 "trace": trace,
                             }

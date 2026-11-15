@@ -115,7 +115,7 @@ async def test_native_workers_reuse_hashes_but_reject_changed_sources(
 ):
     # Copy the source/report inventory to an isolated repository. Editing it
     # cannot change real builds, production sources or their evidence.
-    source, repository = settings.repository_root, tmp_path / "repository"
+    source, repository = settings.native_repository_root, tmp_path / "repository"
     manifest = source / "catalog/native_execution_evidence.json"
     inventory = json.loads(manifest.read_text())
     paths = {"catalog/native_execution_evidence.json"}
@@ -135,6 +135,7 @@ async def test_native_workers_reuse_hashes_but_reject_changed_sources(
         replace(
             settings,
             repository_root=repository,
+            runtime_repository_root=repository,
             analytics_python=source / ".venv-analytics/bin/python",
         ),
         database,

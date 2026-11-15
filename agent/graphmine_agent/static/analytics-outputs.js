@@ -8,12 +8,14 @@ window.GraphMineOutputs = {
     for (const [id, title, action] of [
       ["export-csv", "Export full table", async () => {
         if (!state.record || !state.port || $("result-port").value === "__result") throw new Error("Choose a saved output table first.");
-        const path = `/api/workflows/${state.record.id}/steps/${encodeURIComponent($("result-step").value)}/ports/${encodeURIComponent($("result-port").value)}/csv`;
-        download(await api(path, {asBlob: true}), `graphmine-${state.record.id}-table.csv`);
+        const record = state.record;
+        const path = `/api/workflows/${record.id}/steps/${encodeURIComponent($("result-step").value)}/ports/${encodeURIComponent($("result-port").value)}/csv?expected_revision=${record.revision}`;
+        download(await api(path, {asBlob: true}), `graphmine-${record.id}-revision-${record.revision}-table.csv`);
       }],
       ["export-report", "Download reproducible report", async () => {
         if (!state.record || !state.result) throw new Error("Open a saved result first.");
-        download(await api(`/api/workflows/${state.record.id}/report`, {asBlob: true}), `graphmine-${state.record.id}-revision-${state.record.revision}.zip`);
+        const record = state.record;
+        download(await api(`/api/workflows/${record.id}/report?expected_revision=${record.revision}`, {asBlob: true}), `graphmine-${record.id}-revision-${record.revision}.zip`);
       }],
       ["export-image", "Export visible graph image", async () => {
         if (!state.cy?.nodes().length) throw new Error("Display a graph first.");

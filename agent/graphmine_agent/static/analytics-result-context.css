@@ -1,0 +1,24 @@
+#result-context { margin: 10px 0; min-width: 0; }
+#result-controls, #results-view :is(button, input, select, summary) { scroll-margin-block: 84px 20px; }
+#results-view > .metrics { margin: 0 0 16px; }
+#results-view > .metrics:empty { display: none; }
+.analytics-results .results-toolbar { margin-bottom: 16px; }
+.analytics-results .result-picker { margin-bottom: 12px; padding-bottom: 12px; }
+.analytics-results .graph-card { display: flex; flex-direction: column; }
+.analytics-results .graph-card > #network { order: -1; margin-bottom: 12px; }
+#result-context h2 { font-size: 1rem; margin: 0; }
+#result-context .section-heading { margin-bottom: 0; }
+#result-context-summary { margin: 2px 0 8px; font-size: var(--text-small); overflow-wrap: anywhere; }
+#result-context-summary.incomplete { color: var(--ink); border-left: 3px solid #ad6a11; padding-left: 8px; }
+.result-context-grid[hidden] { display: none; }
+#result-context-revision { font-size: var(--text-small); overflow-wrap: anywhere; }
+.result-context-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.result-context-card { min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+.result-context-card h3 { font-size: 1rem; margin: 0 0 12px; }
+.result-context-card p { font-size: var(--text-small); line-height: 1.55; margin: 8px 0; overflow-wrap: anywhere; }
+.result-context-card details { margin-top: 12px; }
+.result-context-card summary { font-size: var(--text-small); min-height: 40px; padding: 8px 0; }
+.result-context-card pre { font-size: var(--text-small); max-height: 260px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.result-source-scope + .result-source-scope { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+#result-context .completeness { margin: 0; padding: 0; border: 0; background: transparent; color: var(--ink); }
+@media (max-width: 800px) { .result-context-grid { grid-template-columns: minmax(0, 1fr); } .result-context-card summary { min-height: 44px; } }

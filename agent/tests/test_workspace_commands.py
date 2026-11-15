@@ -146,6 +146,7 @@ def test_session_archive_includes_native_artifacts_and_respects_ownership(recipe
     private = runtime.settings.data_root / "private-test.txt"
     private.write_text("not part of this session")
     (directory / "outside.txt").symlink_to(private)
+    (directory / "result.rows.sqlite3").write_bytes(b"derived index, not evidence")
     path = f"/api/sessions/{session}/history/archive"
     response = client.get(path, headers=alice)
     assert response.status_code == 200
@@ -156,6 +157,7 @@ def test_session_archive_includes_native_artifacts_and_respects_ownership(recipe
             "main": {"sample": True}
         }
         assert prefix + "outside.txt" not in bundle.namelist()
+        assert prefix + "result.rows.sqlite3" not in bundle.namelist()
         assert (
             json.loads(bundle.read(f"{session}/analytics/workflows.json"))[0]["id"]
             == record["id"]

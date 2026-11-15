@@ -4,6 +4,7 @@ window.GraphMineEditor = ({state, W, node, card, refs, runAction, notice, parame
   $("save-editor").after(button);
   button.onclick = () => runAction(async () => {
     if (!state.caps) throw new Error("Load calculation capabilities first.");
+    await window.GraphMineGraphLibrary();
     if (!$("plan-editor").value.trim()) loadEditor();
     const plan = W.parse($("plan-editor").value), sessionId = state.session?.id, originalId = state.record?.id, originalRevision = state.record?.revision;
     const dialog = node("dialog", {id: "visual-editor", class: "wide-dialog", "aria-label": "Visual workflow editor"}), form = node("form"), list = node("div"), diagram = node("div", {id: "workflow-diagram", style: "height:220px", "aria-label": "Workflow dependencies"});
