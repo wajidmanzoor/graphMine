@@ -15,7 +15,7 @@ from graphmine_agent.capture import TrainingCapture
 from studio_auth import Auth, AuthError
 from studio_captures import GraphMineAccounts, dataset_key
 
-REPO = Path(__file__).resolve().parents[2] / "graphMine-database-cypher"
+REPO = Path(__file__).resolve().parents[2]
 PASSWORD = "graphmine-password"
 CARDS = [{"id": "k-core", "parameters": {"requested_k": {"kind": "integer"}}, "output_ports": {"count": {"type": "scalar"}}}]
 FACTS = [{"id": "f1", "statement": "The core has four members."}]

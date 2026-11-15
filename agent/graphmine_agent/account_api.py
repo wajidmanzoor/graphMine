@@ -4,6 +4,7 @@ import asyncio
 import base64
 import binascii
 from http.cookies import CookieError, SimpleCookie
+import os
 
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
@@ -14,7 +15,7 @@ from starlette.datastructures import Headers
 from .analytics_planning import PLANNING_DEADLINE_SECONDS
 from .identity import AccountError, current_principal, identity_scope
 
-COOKIE = "graphmine_session"
+COOKIE = os.getenv("GRAPHMINE_ACCOUNT_COOKIE_NAME", "graphmine_session")
 # Request limits only backstop the work: the planner reports its own timeout
 # to the conversation, so its limit must outlast the planner deadline.
 REQUEST_SECONDS = 300

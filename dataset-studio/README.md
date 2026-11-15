@@ -21,6 +21,10 @@ builders with the example's operation, input and fact context.
 There is no build step and no CDN: a standard-library Python server and three
 static files.
 
+For the installed shared server, use the [environment workflow](../docs/ENVIRONMENTS.md).
+It supplies separate storage and ports for production, development, and testing.
+The commands below are for a standalone local instance.
+
 ## Run
 
 ```bash
@@ -31,8 +35,8 @@ cd dataset-studio
 ./run.sh --host 0.0.0.0           # reachable from other machines
 ```
 
-`run.sh` uses `../graphMine-database-cypher/.venv/bin/python` when it exists. With that
-interpreter the studio imports the agent, which it needs for two things:
+`run.sh` uses the containing GraphMine repository and its `.venv/bin/python`
+when available. `GRAPHMINE_REPO` can select another checkout. With that interpreter the studio imports the agent, which it needs for two things:
 
 - **Strict validation.** Edited outputs are checked against the agent's
   Pydantic models and re-serialized exactly as training targets are. Without
@@ -42,7 +46,7 @@ interpreter the studio imports the agent, which it needs for two things:
   GraphMine binary (`library/build/graphmine`). The server prints whether
   replay is on, and the studio says so where it matters.
 
-Options: `--repo` (default `../graphMine-database-cypher`), `--data-root` (default
+Options: `--repo` (default the containing GraphMine repository), `--data-root` (default
 `<repo>/.graphmine-learning`), `--workspace` (default `./workspace`), `--host`
 (default `127.0.0.1`), `--port` (default `8877`).
 The default data root is created on first startup. An explicitly supplied
@@ -88,7 +92,7 @@ Run the isolated integration checks (requires the current checkout's test tools
 and local Firefox/geckodriver for browser cases):
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 ../graphMine-database-cypher/.venv/bin/python -m pytest -q tests
+PYTHONDONTWRITEBYTECODE=1 ../.venv/bin/python -m pytest -q tests
 ```
 
 These checks use temporary datasets and controlled saved evidence. They do not

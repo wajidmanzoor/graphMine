@@ -22,6 +22,10 @@ Login is enabled by default; the server operator creates accounts. Both web
 workspaces enforce private user data, persistent 24-hour AI token budgets and
 shared calculation limits.
 
+[Dataset Studio](dataset-studio/README.md) is included in this repository.
+See the [development, testing, and production workflow](docs/ENVIRONMENTS.md)
+for the shared branches, isolated app environments, and deployment commands.
+
 The [repaired algorithm guide](library/docs/repaired_algorithms.md) documents the nine repaired integrations, their exact profiles, installation, and agent JSON contracts.
 
 The [2026-10-04 expansion](docs/ALGORITHM_EXPANSION.md) explains the five new

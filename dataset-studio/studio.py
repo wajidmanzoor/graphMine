@@ -39,7 +39,8 @@ NAMES_FILE = APP_DIR / "dataset-names.json"
 # New empty datasets live under <data root>/studio-datasets/<folder>/, marked by this file.
 STUDIO_DIR = "studio-datasets"
 STUDIO_MARKER = "studio-dataset.json"
-DEFAULT_REPO = APP_DIR.parent / "graphMine-database-cypher"
+DEFAULT_REPO = (APP_DIR.parent if (APP_DIR.parent / "agent" / "graphmine_agent").is_dir()
+                else APP_DIR.parent / "graphMine-database-cypher")
 SKIP_DIRS = {"training-model-cache", "bin", "sft", "__pycache__", "cache"}
 REVIEW_STATES = ("unreviewed", "approved", "needs_fix", "rejected")
 LEGACY_SCHEMAS = ("RouteDecision", "PlanDraft", "TurnDecision", "GroundedNarrative")
@@ -2074,7 +2075,7 @@ class NotSignedIn(PermissionError):
     pass
 
 
-COOKIE = "studio_session"
+COOKIE = os.getenv("GRAPHMINE_STUDIO_COOKIE_NAME", "studio_session")
 LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 
 

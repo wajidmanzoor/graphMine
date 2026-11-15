@@ -9,7 +9,7 @@ import studio
 from graphmine_agent.analytics_examples import digest
 from graphmine_agent.analytics_studio import FORMAT
 
-REPO = Path(__file__).resolve().parents[2] / "graphMine-database-cypher"
+REPO = Path(__file__).resolve().parents[2]
 
 
 @pytest.fixture
