@@ -265,4 +265,16 @@ inline std::vector<ExactEdge> steiner_edges(const Graph& graph, Work& work) {
   });
   return result;
 }
+// Frozen per-original-edge inputs to graph coarsening's quotient computation.
+// Cluster aggregation is the algorithm itself; these records are not merged.
+inline std::vector<ExactEdge> exact_records(const Graph& graph, Work& work) {
+  std::vector<ExactEdge> result;
+  for (std::size_t i=0; i<graph.edge_count(); ++i) {
+    work.tick();
+    const auto& edge = graph.canonical().edges[i];
+    result.push_back({graph.dense_index(edge.source),graph.dense_index(edge.target),
+                       Exact(edge.weight.value_or(1)),i});
+  }
+  return result;
+}
 }  // namespace graphmine::legacy_test

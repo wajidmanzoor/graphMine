@@ -2,6 +2,14 @@
 #include "structured_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile coarsening_matching{"graph-coarsening:cpp:matching", {"graph-coarsening"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum",
+       "weights":"rational_exact","edge_ids":true,"nonnegative_weights":true})"};
+const ViewProfile coarsening_records{"graph-coarsening:cpp:records", {"graph-coarsening"},
+  R"({"kind":"coo","coo_layout":"records","direction":"keep","self_loops":"keep","parallel_edges":"keep",
+       "weights":"rational_exact","edge_ids":true,"sorted_neighbors":false})"};
+}
 json::object graph_coarsening(const Graph& graph, const json::object& args, const std::string&, int,
                               Work& work) {
   using namespace family_util;
@@ -28,7 +36,7 @@ json::object graph_coarsening(const Graph& graph, const json::object& args, cons
   } else {
     std::vector<bool> used(n, false);
     std::vector<Vertices> groups;
-    for (const auto& edge : edges(graph, true, work))
+    for (const auto& edge : edges(graph, coarsening_matching, work))
       if (!used[edge.u] && !used[edge.v]) {
         groups.push_back({edge.u, edge.v});
         used[edge.u] = used[edge.v] = true;
@@ -42,13 +50,11 @@ json::object graph_coarsening(const Graph& graph, const json::object& args, cons
   std::map<std::int64_t, Vertices> groups;
   for (VertexIndex v = 0; v < n; ++v) groups[assignment[v]].push_back(v);
   std::map<std::pair<std::int64_t, std::int64_t>, Exact> weights;
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    auto a = assignment[graph.dense_index(edge.source)],
-         b = assignment[graph.dense_index(edge.target)];
+  for (const auto& edge : edges(graph, coarsening_records, work)) {
+    auto a = assignment[edge.u], b = assignment[edge.v];
     if (a == b && loop_policy == "drop") continue;
     if (a > b) std::swap(a, b);
-    weights[{a, b}] += Exact(edge.weight.value_or(1));
+    weights[{a, b}] += edge.weight;
   }
   std::vector<json::value> features(n);
   bool any = false;

@@ -349,3 +349,16 @@ admissions. All 6,571 corpus cases match edge endpoints, exact weights, selected
 original IDs, visit order, costs and rejections. Tests cover equal/lower parallel
 weights, negative/missing loop weights, budgets and both accepted quality
 settings, with fresh/cache-hit and real-operation declaration checks.
+
+## Graph coarsening
+
+Automatic matching now reads a collapsed exact COO view; the quotient algorithm
+reads an exact record COO view, once per original edge in its original order and
+orientation. Existing input rejection, supplied cluster assignments, quotient
+aggregation and feature reductions remain unchanged.
+
+Checkpoint `23-coarsening` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both profiles pass 13,142 corpus cases, comparing endpoints, original
+IDs, exact weight fractions, costs and applicable rejections on fresh and cached
+views. Request checks cover automatic/supplied partitions, quotient-loop keep
+and drop policies, sum/mean feature reduction and both consumed declarations.
