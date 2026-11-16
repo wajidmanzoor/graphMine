@@ -66,9 +66,11 @@ def wait_running(seconds=180):
 def import_snapshot(proof, state):
     root = common.INSTANCE_ROOT / "ldbc-snb"
     registry = json.loads((common.SOURCE_ROOT / "registry.json").read_text())
-    required = {"yelp", "movielens-32m", "movielens-genome", "ontime"}
+    # The user approved overlapping LDBC with the running OnTime import.
+    # Publication still requires each dataset's own complete verification.
+    required = {"yelp", "movielens-32m", "movielens-genome"}
     if not required.issubset({item["id"] for item in registry["datasets"]}):
-        raise ValueError("LDBC must be loaded last, after the four other active datasets pass verification")
+        raise ValueError("LDBC requires Yelp and both MovieLens datasets to pass verification first")
     for slug in required:
         if json.loads((common.INSTANCE_ROOT / slug / "status.json").read_text()).get("status") != "ready":
             raise ValueError(f"Earlier dataset is not ready: {slug}")

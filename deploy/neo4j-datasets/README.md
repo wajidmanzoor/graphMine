@@ -22,7 +22,8 @@ the same 36 filenames, with each path substitution commented. No mapping is
 changed. LDBC publishes an administrative bulk importer. Its original shell
 script is reference material only; it includes commands unsuitable for this
 shared host. The user approved adapting that published importer for its own
-Neo4j 5.26 Community instance, loaded last.
+Neo4j 5.26 Community instance. The user subsequently approved starting its
+import while OnTime continues loading in the background.
 
 ## Import preparation
 
@@ -94,8 +95,10 @@ The original expected counts and graph mapping are never adjusted to conceal
 a mismatch. Only a passed report can set `status=ready` and add the dataset to
 `registry.json`. Memory and disk measurements are included in the final report.
 
-For LDBC, `load_dataset.py` uses `ldbc_bulk.py` after the other four active
-datasets are verified. The adapter preserves the published eight node and 23
+For LDBC, `load_dataset.py` uses `ldbc_bulk.py` after Yelp and both MovieLens
+datasets are verified. OnTime and LDBC may load concurrently, as approved by the
+user on 2026-11-15 (America/New_York); each is published only after its own
+loading and verification gates pass. The adapter preserves the published eight node and 23
 relationship groups and rejects every bad entry. It stops only the dedicated
 LDBC service, preserves its verified-empty initial store, uses a 40 GiB process
 memory limit, imports into its default `neo4j` database, restarts that instance,

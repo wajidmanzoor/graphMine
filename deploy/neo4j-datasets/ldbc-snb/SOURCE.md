@@ -98,3 +98,14 @@ original system database. Both imported nodes were queryable after restart.
 The empty bootstrap was retained throughout the test. The receipt is
 `neo4j-instances/ldbc-snb/compatibility/import-restart-smoke.json`; the temporary
 test store was removed after success. No deployed store was modified.
+
+## Concurrent loading approved by the user
+
+On 2026-11-15 (America/New_York), the user asked to keep OnTime loading in the
+background and start LDBC immediately. LDBC therefore requires the already
+verified Yelp and both MovieLens datasets, but does not wait for OnTime to
+finish. The two loaders use separate instances and controllers. The LDBC bulk
+import retains its 40 GiB memory cap; its Neo4j service is stopped during that
+offline stage. Each dataset must independently finish loading and pass its
+count, index and representative-query checks before it enters the registry.
+The published mappings and source records are unchanged.

@@ -51,10 +51,13 @@ def test_failed_bulk_import_preserves_attempt_and_restores_only_empty_target(tmp
     code = tmp_path / "code"
     code.mkdir()
     monkeypatch.setattr(common, "SOURCE_ROOT", code)
-    previous = ["yelp", "movielens-32m", "movielens-genome", "ontime"]
+    previous = ["yelp", "movielens-32m", "movielens-genome"]
     (code / "registry.json").write_text(json.dumps({"datasets": [{"id": slug} for slug in previous]}))
     for slug in previous:
         common.write_json(instances / slug / "status.json", {"status": "ready"})
+    ontime = instances / "ontime/status.json"
+    common.write_json(ontime, {"status": "loading", "phase": "loading"})
+    ontime_before = ontime.read_bytes()
     root = instances / "ldbc-snb"
     (root / "conf").mkdir(parents=True)
     (root / "conf/neo4j.conf").write_text(
@@ -90,5 +93,17 @@ def test_failed_bulk_import_preserves_attempt_and_restores_only_empty_target(tmp
         assert (path / "empty-bootstrap-marker").read_text() == "preserve"
         assert (root / "failed-bulk-store" / name / "partial-import").exists()
     assert (system / "system-marker").read_text() == "untouched"
+    assert ontime.read_bytes() == ontime_before
     service_calls = [args for args in calls if args[0] == "systemctl"]
     assert service_calls == [["systemctl", "--user", action, "graphmine-neo4j-ldbc-snb.service"] for action in ["stop", "start"]]
+
+
+@pytest.mark.parametrize("missing", ["yelp", "movielens-32m", "movielens-genome"])
+def test_parallel_import_still_requires_the_completed_datasets(tmp_path, monkeypatch, missing):
+    monkeypatch.setattr(common, "SOURCE_ROOT", tmp_path)
+    monkeypatch.setattr(common, "INSTANCE_ROOT", tmp_path / "instances")
+    previous = {"yelp", "movielens-32m", "movielens-genome"} - {missing}
+    (tmp_path / "registry.json").write_text(json.dumps({"datasets": [{"id": slug} for slug in previous]}))
+    monkeypatch.setattr(common, "driver", lambda _: pytest.fail("No database may be opened before the prerequisite gate"))
+    with pytest.raises(ValueError, match="Yelp and both MovieLens"):
+        ldbc_bulk.import_snapshot({}, {"status": "loading"})

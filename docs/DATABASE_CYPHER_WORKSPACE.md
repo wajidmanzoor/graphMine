@@ -360,8 +360,10 @@ actual memory and disk measurements are saved in each `verify_report.json`.
 | LDBC SNB SF100 | 17706 / 17406 | 4 / 56 GiB | 62 GiB |
 
 The five active service caps total 138 GiB on this 251 GiB host. The old shared
-Neo4j and PostgreSQL services remain intact. LDBC is loaded last, after the other
-four active datasets pass verification. OnTime started with a 4 GiB heap; its
+Neo4j and PostgreSQL services remain intact. The user approved starting LDBC
+while OnTime continues loading, after Yelp and both MovieLens datasets passed
+verification. Each dataset still needs its own complete loading, count, index
+and representative-query checks before publication. OnTime started with a 4 GiB heap; its
 first flight import exhausted that heap. The failed new store was preserved
 and the loader retried against a fresh empty store with the larger budget above,
 without changing the published Cypher.
