@@ -13,6 +13,15 @@ rt::Work unlimited() {
   work.timeout_seconds = std::numeric_limits<double>::infinity();
   return work;
 }
+void clear_views() {
+  const auto response = rt::strict_json(rt::request(R"({"command":"representation_cache","action":"clear"})")).as_object();
+  if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
+}
+void cache_pass(const rt::Work& work, int repeat) {
+  const auto& used = work.representations.at(0).as_object();
+  if (!used.at("retained").as_bool() || used.at("hit").as_bool() != (repeat != 0))
+    throw std::runtime_error("Golden did not exercise a fresh build followed by a cache hit");
+}
 template<class T> void equal(const std::vector<T>& a, const std::vector<T>& b) {
   if (a.size() != b.size() || (!a.empty() && std::memcmp(a.data(), b.data(), a.size()*sizeof(T))))
     throw std::runtime_error("CPU view array bytes differ");
@@ -24,6 +33,7 @@ void traversal(const gm::Graph& graph, const char* id = "breadth-first-search:cp
   const auto expected = simrank_direction
     ? gm::legacy_test::simrank(graph,std::string(simrank_direction)=="undirected_projection",old_work)
     : gm::legacy_test::adjacency(graph, old_work);
+  clear_views();
   std::vector<std::uint64_t> offsets{0}; std::vector<gm::VertexIndex> indices;
   for (const auto& row : expected) {
     indices.insert(indices.end(), row.begin(), row.end()); offsets.push_back(indices.size());
@@ -31,6 +41,7 @@ void traversal(const gm::Graph& graph, const char* id = "breadth-first-search:cp
   for (int repeat = 0; repeat < 2; ++repeat) {
     auto work = unlimited();
     const auto input = rt::consume_view(graph, profile, work, rt::ViewBudget::original_edges);
+    cache_pass(work,repeat);
     const auto& view = std::get<gm::CsrView>(input->view);
     equal(offsets, view.offsets); equal(indices, view.indices);
     const auto repacked = rt::adjacency_layout(view);
@@ -81,12 +92,14 @@ const ExactCase alignment_exact_cases[] = {
   {"network-alignment:cpp:edge_weight",true}, {"network-alignment:cpp:unweighted",false}
 };
 const ExactCase local_community_case{"seeded-local-community:cpp:default",true};
+const ExactCase geolocation_case{"graph-geolocation:cpp:default",true};
 bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<std::vector<gm::legacy_test::ExactEdge>> expected;
   std::string expected_failure;
   try { expected = gm::legacy_test::exact_edges(graph,test.weighted,old_work,test.nonnegative,test.loops); }
   catch (const std::exception& e) { expected_failure = e.what(); }
+  clear_views();
   for (int repeat=0; repeat<2; ++repeat) {
     auto work = unlimited(); work.max_candidates = budget;
     std::optional<std::vector<rt::family_util::Edge>> actual;
@@ -95,6 +108,7 @@ bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t bu
     catch (const std::exception& e) { actual_failure = e.what(); }
     if (expected_failure != actual_failure) throw std::runtime_error(std::string(test.profile)+": exact edge rejection differs");
     if (!expected) continue;
+    cache_pass(work,repeat);
     if (expected->size() != actual->size() || work.candidates != old_work.candidates)
       throw std::runtime_error(std::string(test.profile)+": exact edge count/cost differs");
     std::vector<gm::VertexIndex> old_endpoints, new_endpoints;
@@ -174,6 +188,7 @@ bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
   // Frozen many-source unweighted conversion from 201b2367; validates stored
   // lengths before using unit distances, including discarded self-loops.
   if (expected && test.unit) for (auto& row : expected->rows) for (auto& arc : row) arc.weight = 1;
+  clear_views();
   for (int repeat=0; repeat<2; ++repeat) {
     auto work = unlimited(); std::shared_ptr<const gm::ViewResult> input; std::string actual_failure;
     try {
@@ -183,6 +198,7 @@ bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
     catch (const std::exception& e) { actual_failure = e.what(); }
     if (failure != actual_failure) throw std::runtime_error(std::string(test.profile)+": rejection differs");
     if (!expected) continue;
+    cache_pass(work,repeat);
     const auto& view = std::get<gm::CsrView>(input->view);
     std::vector<std::uint64_t> offsets{0}; std::vector<gm::VertexIndex> indices; std::vector<double> weights;
     for (const auto& row : expected->rows) {
@@ -315,6 +331,14 @@ void contracts() {
   exact_edges(rt::parse_graph(spectral_input),local_community_case);
   declared_request(local_community_case.profile,spectral_input,{{"seeds",{0}}});
   declared_request(local_community_case.profile,spectral_input,{{"seeds",{0,2}},{"maximum_volume",18}});
+  exact_edges(graph,geolocation_case);
+  exact_edges(rt::parse_graph(spectral_input),geolocation_case);
+  const rt::json::array locations{rt::json::object{{"vertex",0},{"latitude",10},{"longitude",179}},
+    rt::json::object{{"vertex",2},{"latitude",10},{"longitude",-179}}};
+  for (bool fixed : {false,true})
+    declared_request(geolocation_case.profile,spectral_input,{{"method_family","spatial_propagation"},
+      {"seed_locations",{{"rows",locations}}},{"hold_seeds_fixed",fixed},
+      {"method_definition",{{"objective","seed_location_medoid_energy"}}}});
   for (const auto& test : spectral_exact_cases) {
     exact_edges(graph,test);
     exact_edges(rt::parse_graph(spectral_input),test);
@@ -405,6 +429,11 @@ void contracts() {
 }
 int main(int argc, char** argv) {
   try {
+    // Test-only capacity lets the largest corpus view exercise a real warm hit.
+    // Production's cache default is unchanged.
+    const auto configured = rt::strict_json(rt::request(
+      R"({"command":"representation_cache","action":"configure","max_bytes":1073741824})")).as_object();
+    if (configured.contains("error")) throw std::runtime_error(rt::json::serialize(configured));
     if (argc > 1 && std::string(argv[1]) == "--self-test") { contracts(); return 0; }
     const bool weighted = argc > 1 && std::string(argv[1]) == "--weighted-paths";
     const bool connectivity = argc > 1 && std::string(argv[1]) == "--connectivity";
@@ -418,6 +447,7 @@ int main(int argc, char** argv) {
     const bool spectral = argc > 1 && std::string(argv[1]) == "--spectral";
     const bool alignment = argc > 1 && std::string(argv[1]) == "--alignment";
     const bool local_community = argc > 1 && std::string(argv[1]) == "--local-community";
+    const bool geolocation = argc > 1 && std::string(argv[1]) == "--geolocation";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -436,6 +466,7 @@ int main(int argc, char** argv) {
     if (spectral) selected_exact.assign(std::begin(spectral_exact_cases),std::end(spectral_exact_cases));
     if (alignment) selected_exact.assign(std::begin(alignment_exact_cases),std::end(alignment_exact_cases));
     if (local_community) selected_exact.push_back(local_community_case);
+    if (geolocation) selected_exact.push_back(geolocation_case);
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
@@ -474,7 +505,7 @@ int main(int argc, char** argv) {
       if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1]+2 : "traversal")
+    std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")
               << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }

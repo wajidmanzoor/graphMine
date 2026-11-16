@@ -232,3 +232,18 @@ Checkpoint `14-local-community` passes 53 CTests, 238 Python tests and all 82 CP
 admissions. The exact edge profile passes all 6,571 corpus cases. Request checks
 cover single/multiple seeds and an explicit volume bound, including the local
 profile alongside its nested PageRank view.
+
+## Geolocation and explicit cache-state regression
+
+Geodesic propagation now consumes an exact COO edge profile. Seed handling,
+medoid candidates, numerical energy calculations and convergence checks are
+unchanged. Checkpoint `15-geolocation` passes 53 CTests, 238 Python tests, all 82
+CPU admissions and all 6,571 input corpus cases. Real requests verify the
+declared profile with fixed and movable seeds.
+
+The golden runner now explicitly clears the cache before each input comparison
+and verifies a miss followed by a retained hit. Its test-only 1 GiB capacity
+accommodates the largest corpus view; the production/default capacity is not
+changed. All 14 previous family suites were replayed with these stronger
+assertions: 361,405 profile cases passed, with no input differences. Their
+reports and binary hash are retained in `15-geolocation/cache-regression/`.

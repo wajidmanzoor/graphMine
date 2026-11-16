@@ -2,6 +2,9 @@
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile geolocation_profile{"graph-geolocation:cpp:default", {"graph-geolocation"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum",
+       "weights":"rational_exact","nonnegative_weights":true,"edge_ids":true})"};
 struct Location {
   double latitude, longitude;
 };
@@ -68,7 +71,7 @@ json::object graph_geolocation(const Graph& graph, const json::object& args, con
   }
   for (const auto& edge : graph.canonical().edges)
     require(edge.source != edge.target, "Geolocation rejects loops");
-  const auto normalized = edges(graph, true, work);
+  const auto normalized = edges(graph, geolocation_profile, work);
   std::vector<std::vector<std::pair<VertexIndex, double>>> neighbors(n);
   for (const auto& edge : normalized)
     if (edge.weight > 0) {

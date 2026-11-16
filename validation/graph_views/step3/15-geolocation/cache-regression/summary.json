@@ -1,0 +1,90 @@
+{
+  "binary_sha256": "f03d945da689901707bb3cbb14360fe36bed492a5d0d33b8812538847feb8339",
+  "test_cache_bytes": 1073741824,
+  "families": {
+    "traversal": {
+      "profiles": 1,
+      "cases": 6571,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "weighted-paths": {
+      "profiles": 5,
+      "cases": 32855,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "connectivity": {
+      "profiles": 3,
+      "cases": 19713,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "cliques": {
+      "profiles": 6,
+      "cases": 39426,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "reachability": {
+      "profiles": 2,
+      "cases": 13142,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "density": {
+      "profiles": 6,
+      "cases": 39426,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "centrality": {
+      "profiles": 14,
+      "cases": 91994,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "coloring": {
+      "profiles": 2,
+      "cases": 13142,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "similarity": {
+      "profiles": 3,
+      "cases": 19713,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "patterns": {
+      "profiles": 4,
+      "cases": 26284,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "partitioning": {
+      "profiles": 4,
+      "cases": 26284,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "spectral": {
+      "profiles": 2,
+      "cases": 13142,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "alignment": {
+      "profiles": 2,
+      "cases": 13142,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    },
+    "local-community": {
+      "profiles": 1,
+      "cases": 6571,
+      "failures": 0,
+      "verified_cache_miss_then_hit_for_accepted_inputs": true
+    }
+  }
+}

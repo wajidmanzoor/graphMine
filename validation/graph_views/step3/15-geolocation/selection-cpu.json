@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e"
+  }
+]
