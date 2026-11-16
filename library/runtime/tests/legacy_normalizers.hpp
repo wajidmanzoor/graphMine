@@ -11,6 +11,38 @@
 #include "../native_time.hpp"
 namespace graphmine::legacy_test {
 using namespace graphmine::runtime;
+// Frozen temporal-motif query identity and event indexing before view migration.
+struct TemporalQueryInput {
+  std::set<VertexIndex> incident;
+  std::map<ExternalId,std::size_t> indices;
+  std::vector<VertexIndex> sources,targets;
+  std::vector<std::size_t> originals;
+  TemporalQueryInput(const Graph& graph, Work&) {
+    for (std::size_t i=0; i<graph.edge_count(); ++i) {
+      const auto& edge=graph.canonical().edges[i];
+      const auto u=graph.dense_index(edge.source), v=graph.dense_index(edge.target);
+      indices.emplace(edge.id,i); incident.insert(u); incident.insert(v);
+      sources.push_back(u); targets.push_back(v); originals.push_back(i);
+    }
+  }
+};
+struct TemporalEventInput {
+  std::vector<Exact> times;
+  std::vector<json::object> records;
+  std::vector<std::pair<VertexIndex,VertexIndex>> endpoints;
+  std::map<std::pair<VertexIndex,VertexIndex>,std::vector<std::size_t>> by_pair;
+  TemporalEventInput(const Graph& graph, Work& work) {
+    for (std::size_t i=0; i<graph.edge_count(); ++i) {
+      work.tick();
+      const auto& edge=graph.canonical().edges[i];
+      times.push_back(timestamp_seconds(edge.timestamp,work));
+      auto u=graph.dense_index(edge.source), v=graph.dense_index(edge.target);
+      if (!graph.directed() && u>v) std::swap(u,v);
+      endpoints.emplace_back(u,v); by_pair[endpoints.back()].push_back(i);
+      records.push_back(edge_record_json(edge,work));
+    }
+  }
+};
 // Frozen feature common front; independent of the dense view and its repacker.
 struct FeatureInput {
   std::vector<ExternalId> ids;

@@ -662,3 +662,18 @@ endpoints, exact departure/arrival times, original identities, costs and
 rejections on builds/hits. Requests cover both objectives, fractional RFC3339
 timestamps, exact wide integer durations, literal dotted attribute names and
 invalid records outside the selected time window.
+
+## Temporal motifs
+
+Temporal motifs now declare original-record COO for query identities and arc
+COO for event endpoints and pattern bundles. Exact timestamp/property decoding
+retains original event order and costs; temporal order, induced-event checks,
+attribute matching and occurrence enumeration remain unchanged.
+
+Checkpoint `44-temporal-motifs` passes 53 CTests, 238 Python tests and all 82
+CPU admissions. Query records, original events, explicitly timestamped events
+and pattern bundles pass 26,284 corpus cases on builds/hits, including exact
+times, canonical endpoint arrays, typed identity maps, full JSON record bytes,
+costs and matching rejections. Requests verify all three declarations for both
+directions, fractional RFC3339 timestamps, predicates, induced/equal-time modes
+and listing limits. Existing event-permutation oracles remain passing.

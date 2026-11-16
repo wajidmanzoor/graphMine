@@ -24,6 +24,7 @@
 #include "../flow_input.hpp"
 #include "../anomaly_input.hpp"
 #include "../sampling_input.hpp"
+#include "../temporal_motif_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -136,6 +137,70 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
+}
+template<class Input> std::string temporal_query_bytes(const Input& input, const gm::Graph& graph, rt::Work& work) {
+  rt::json::array incident,indices,records;
+  for (const auto v : input.incident) incident.push_back(v);
+  for (const auto& [id,i] : input.indices) indices.push_back(rt::json::array{rt::id_json(id),i});
+  for (const auto i : input.originals) records.push_back(rt::edge_record_json(graph.canonical().edges[i],work));
+  return rt::json::serialize(rt::json::array{incident,indices,records});
+}
+bool temporal_query_input(const gm::Graph& graph, std::uint64_t budget=UINT64_MAX) {
+  auto old_work=unlimited(); old_work.max_candidates=budget;
+  gm::legacy_test::TemporalQueryInput expected(graph,old_work);
+  std::string expected_bytes,old_failure;
+  try { expected_bytes=temporal_query_bytes(expected,graph,old_work); } catch (const std::exception& e) { old_failure=e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work=unlimited(); work.max_candidates=budget;
+    std::string actual_bytes,new_failure;
+    std::optional<rt::TemporalQueryInput> actual;
+    try { actual=rt::temporal_motif_query_input(graph,work); actual_bytes=temporal_query_bytes(*actual,graph,work); }
+    catch (const std::exception& e) { new_failure=e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Temporal motif query rejection differs");
+    if (!old_failure.empty()) continue;
+    cache_pass(work,repeat);
+    equal(expected.sources,actual->sources); equal(expected.targets,actual->targets); equal(expected.originals,actual->originals);
+    if (expected_bytes != actual_bytes || old_work.candidates != work.candidates)
+      throw std::runtime_error("Temporal motif query records/cost differ");
+  }
+  return !old_failure.empty();
+}
+template<class Input> std::string temporal_event_bytes(const Input& input) {
+  rt::json::array times,records,endpoints,bundles;
+  for (const auto& time : input.times) times.push_back(rt::fraction_json(time));
+  for (const auto& record : input.records) records.push_back(record);
+  for (const auto& [u,v] : input.endpoints) endpoints.push_back(rt::json::array{u,v});
+  for (const auto& [pair,ids] : input.by_pair) {
+    rt::json::array row{pair.first,pair.second};
+    for (const auto i : ids) row.push_back(i);
+    bundles.push_back(row);
+  }
+  return rt::json::serialize(rt::json::array{times,records,endpoints,bundles});
+}
+bool temporal_event_input(const gm::Graph& graph, std::uint64_t budget=UINT64_MAX) {
+  auto old_work=unlimited(); old_work.max_candidates=budget;
+  std::optional<gm::legacy_test::TemporalEventInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,old_work); } catch (const std::exception& e) { old_failure=e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work=unlimited(); work.max_candidates=budget;
+    std::optional<rt::TemporalEventInput> actual;
+    std::string new_failure;
+    try { actual=rt::temporal_motif_event_input(graph,work); } catch (const std::exception& e) { new_failure=e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Temporal motif event rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (temporal_event_bytes(*expected) != temporal_event_bytes(*actual) || old_work.candidates != work.candidates)
+      throw std::runtime_error("Temporal motif exact event records/cost differ");
+  }
+  return !expected;
+}
+gm::Graph corpus_temporal_motifs(const gm::Graph& graph) {
+  auto data=graph.canonical();
+  for (std::size_t i=0; i<data.edges.size(); ++i) data.edges[i].timestamp=static_cast<std::int64_t>(i%4);
+  return gm::Graph(std::move(data));
 }
 template<class Events> std::string temporal_path_bytes(const Events& events) {
   rt::json::array rows;
@@ -1178,6 +1243,28 @@ void contracts() {
     edge["attributes"] = rt::json::object{{"duration",0.25*(i%2)},{"travel.time",0.5}};
   }
   temporal_path_input(graph,0,std::nullopt,"duration");
+  for (bool directed : {false,true}) {
+    auto events=temporal_graph;
+    events.as_object().at("graph").as_object()["directed"]=directed;
+    events.as_object().at("edges").as_array()[0].as_object()["timestamp"]="1970-01-01T01:00:00.001+01:00";
+    const auto parsed=rt::parse_graph(events);
+    for (std::uint64_t budget : {0,1,2,3,4,5,20}) {
+      temporal_query_input(parsed,budget); temporal_event_input(parsed,budget);
+      pattern_records(parsed,"temporal-motifs:cpp:bundles",budget);
+    }
+    auto query=events;
+    query.as_object().at("edges").as_array().resize(1);
+    query.as_object().at("vertices").as_array().resize(2);
+    for (bool induced : {false,true}) for (bool equal_times : {false,true}) {
+      rt::json::object motif{{"graph",query}};
+      if (equal_times) motif["order"]=rt::json::array{};
+      motif["edge_predicates"]=rt::json::array{rt::json::object{{"field","attributes.duration"},{"operator","ge"},{"value",0}}};
+      for (const auto* profile : {"temporal-motifs:cpp:query_records","temporal-motifs:cpp:events","temporal-motifs:cpp:bundles"})
+        declared_request(profile,events,{{"temporal_motif",motif},{"maximum_duration_seconds",3},
+          {"allow_equal_timestamps",equal_times},{"temporal_induced",induced},{"list_instances",true},{"result_limit",1}});
+    }
+  }
+  temporal_event_input(graph);
   for (const auto* attribute : {"duration","travel.time"}) {
     temporal_path_input(rt::parse_graph(temporal_graph),0,std::nullopt,attribute);
     temporal_path_input(rt::parse_graph(temporal_graph),1,rt::Exact(2),attribute);
@@ -1911,6 +1998,7 @@ int main(int argc, char** argv) {
     const bool anomalies = argc > 1 && std::string(argv[1]) == "--anomalies";
     const bool sampling = argc > 1 && std::string(argv[1]) == "--sampling";
     const bool temporal_paths = argc > 1 && std::string(argv[1]) == "--temporal-paths";
+    const bool temporal_motifs = argc > 1 && std::string(argv[1]) == "--temporal-motifs";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1936,7 +2024,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths || temporal_motifs;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1944,6 +2032,15 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (temporal_motifs) {
+          for (int mode=0; mode<4; ++mode) {
+            const bool rejected=mode==0 ? temporal_query_input(graph) : mode==1 ? temporal_event_input(graph) :
+              mode==2 ? temporal_event_input(corpus_temporal_motifs(graph)) : pattern_records(graph,"temporal-motifs:cpp:bundles");
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile",mode==0 ? "temporal-motifs:cpp:query_records" : mode==3 ? "temporal-motifs:cpp:bundles" : "temporal-motifs:cpp:events"},
+              {"event_fixture",mode},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+        }
         if (temporal_paths) {
           const auto fixture=corpus_temporal_paths(graph);
           for (int mode=0; mode<4; ++mode) {

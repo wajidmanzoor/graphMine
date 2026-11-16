@@ -2,8 +2,50 @@
 
 #include "native_time.hpp"
 #include "pattern_match.hpp"
+#include "temporal_motif_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile query_profile{"temporal-motifs:cpp:query_records", {"temporal-motifs"},
+  R"({"kind":"coo","coo_layout":"records","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile event_profile{"temporal-motifs:cpp:events", {"temporal-motifs"},
+  R"({"kind":"coo","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile bundle_profile{"temporal-motifs:cpp:bundles", {"temporal-motifs"},
+  R"({"kind":"coo","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+}
+TemporalQueryInput temporal_motif_query_input(const Graph& graph, Work& work) {
+  const auto built=consume_view(graph,query_profile,work,ViewBudget::algorithm_owned);
+  const auto& view=std::get<CooView>(built->view);
+  TemporalQueryInput result;
+  for (std::size_t i=0; i<view.src.size(); ++i) {
+    const auto original=view.edge_ids->at(i);
+    const auto u=view.vertices.to_original[view.src[i]], v=view.vertices.to_original[view.dst[i]];
+    result.indices.emplace(graph.canonical().edges[original].id,original);
+    result.incident.insert(u); result.incident.insert(v);
+    result.sources.push_back(u); result.targets.push_back(v); result.originals.push_back(original);
+  }
+  return result;
+}
+TemporalEventInput temporal_motif_event_input(const Graph& graph, Work& work) {
+  const auto built=consume_view(graph,event_profile,work,ViewBudget::algorithm_owned);
+  const auto& view=std::get<CooView>(built->view);
+  TemporalEventInput result;
+  result.endpoints.resize(graph.edge_count());
+  for (std::size_t i=0; i<view.src.size(); ++i) {
+    if (view.symmetric && view.src[i]>view.dst[i]) continue;
+    result.endpoints[view.edge_ids->at(i)] = {view.vertices.to_original[view.src[i]],view.vertices.to_original[view.dst[i]]};
+  }
+  // The view supplies canonical endpoints. Exact temporal/property decoding
+  // remains in the common front, in original event order.
+  for (std::size_t i=0; i<result.endpoints.size(); ++i) {
+    work.tick();
+    const auto& edge=graph.canonical().edges[i];
+    result.times.push_back(timestamp_seconds(edge.timestamp,work));
+    result.by_pair[result.endpoints[i]].push_back(i);
+    result.records.push_back(edge_record_json(edge,work));
+  }
+  return result;
+}
 json::object temporal_motifs(const Graph& graph, const json::object& args, const std::string&, int,
                              Work& work) {
   using namespace family_util;
@@ -18,14 +60,9 @@ json::object temporal_motifs(const Graph& graph, const json::object& args, const
   const auto& qe = query.canonical().edges;
   const auto& events = graph.canonical().edges;
   require(!qe.empty(), "Temporal motif needs an edge event");
-  std::set<VertexIndex> incident;
-  std::map<ExternalId, std::size_t> indices;
-  for (std::size_t i = 0; i < qe.size(); ++i) {
-    indices.emplace(qe[i].id, i);
-    incident.insert(query.dense_index(qe[i].source));
-    incident.insert(query.dense_index(qe[i].target));
-  }
-  require(incident.size() == query.vertex_count(),
+  const auto query_input=temporal_motif_query_input(query,work);
+  const auto& indices=query_input.indices;
+  require(query_input.incident.size() == query.vertex_count(),
           "Temporal motifs cannot contain isolated vertices");
   const auto maximum =
       exact_number(args.at("maximum_duration_seconds"), "maximum_duration_seconds");
@@ -72,24 +109,18 @@ json::object temporal_motifs(const Graph& graph, const json::object& args, const
       if (!--indegree[b]) ready.push(b);
   }
   require(visited == qe.size(), "Temporal order must be acyclic");
-  std::vector<Exact> times;
-  std::vector<json::object> data_records, query_records;
+  const auto data_input=temporal_motif_event_input(graph,work);
+  const auto& times=data_input.times;
+  const auto& data_records=data_input.records;
+  const auto& endpoints=data_input.endpoints;
+  auto by_pair=data_input.by_pair;
+  std::vector<json::object> query_records;
   using Pair = std::pair<VertexIndex, VertexIndex>;
-  std::vector<Pair> endpoints;
-  std::map<Pair, std::vector<std::size_t>> by_pair;
   auto pair_key = [&](VertexIndex a, VertexIndex b) {
     if (!graph.directed() && a > b) std::swap(a, b);
     return Pair{a, b};
   };
-  for (std::size_t i = 0; i < events.size(); ++i) {
-    work.tick();
-    times.push_back(timestamp_seconds(events[i].timestamp, work));
-    endpoints.push_back(
-        pair_key(graph.dense_index(events[i].source), graph.dense_index(events[i].target)));
-    by_pair[endpoints.back()].push_back(i);
-    data_records.push_back(edge_record_json(events[i], work));
-  }
-  for (const auto& edge : qe) query_records.push_back(edge_record_json(edge, work));
+  for (const auto i : query_input.originals) query_records.push_back(edge_record_json(qe[i], work));
   std::set<std::vector<std::size_t>> seen;
   std::vector<Integer> participation(graph.vertex_count(), 0);
   json::array instances;
@@ -98,8 +129,7 @@ json::object temporal_motifs(const Graph& graph, const json::object& args, const
       [&](const Vertices& mapping) {
         std::vector<std::vector<std::size_t>> candidates(qe.size());
         for (std::size_t e = 0; e < qe.size(); ++e) {
-          const auto key = pair_key(mapping[query.dense_index(qe[e].source)],
-                                    mapping[query.dense_index(qe[e].target)]);
+          const auto key = pair_key(mapping[query_input.sources[e]],mapping[query_input.targets[e]]);
           for (const auto i : by_pair[key]) {
             work.tick();
             if (edge_match.match(data_records[i], query_records[e], work))
@@ -179,7 +209,7 @@ json::object temporal_motifs(const Graph& graph, const json::object& args, const
         }
         return true;
       },
-      work);
+      work,&bundle_profile);
   json::array rows;
   for (VertexIndex v = 0; v < graph.vertex_count(); ++v)
     rows.push_back(json::object{{"vertex", id_json(graph.external_id(v))},
