@@ -387,3 +387,15 @@ admissions. All 6,571 corpus cases match endpoint bytes and candidate costs on
 fresh builds and cache hits. Budget checks and real requests cover both null
 models, all three tail choices, directed/undirected inputs, randomized-edge
 output and multiple statistics while verifying the consumed declaration.
+
+## Persistent homology
+
+Minimum filtration weights now come from an exact COO view. The existing
+loop/required-weight checks keep their order and messages; filtration cutoffs,
+simplex enumeration, finite-field reduction and output intervals are unchanged.
+
+Checkpoint `26-topology` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. All 6,571 corpus cases match canonical endpoints, exact minimum
+weights, candidate costs and input rejections. Fresh/cache-hit comparisons,
+parallel-weight and budget boundaries, and real requests across three field
+primes and homology dimensions pass with the declared profile.

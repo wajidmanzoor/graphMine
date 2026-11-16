@@ -1,0 +1,7 @@
+Validated 500 requests with cpp
+Validated 1000 requests with cpp
+Validated 1500 requests with cpp
+Validated 2000 requests with cpp
+Validated 2500 requests with cpp
+Validated 3000 requests with cpp
+{"suite":"optimization","backend":"cpp","gpu_device":0,"passed_requests":3078,"failed":0,"implementation_sha256":"ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"}

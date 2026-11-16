@@ -308,4 +308,19 @@ inline std::set<std::pair<VertexIndex,VertexIndex>> edge_set_input(const Graph& 
   }
   return result;
 }
+// Frozen persistent-homology validation and minimum filtration edge map.
+inline std::map<std::pair<VertexIndex,VertexIndex>,Exact> filtration_input(const Graph& graph, Work& work) {
+  std::map<std::pair<VertexIndex,VertexIndex>,Exact> weights;
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(edge.source != edge.target,"Persistence rejects self-loops");
+    require(edge.weight && *edge.weight >= 0,"Every edge needs nonnegative filtration weight");
+    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u > v) std::swap(u,v);
+    const Exact value(*edge.weight);
+    auto [it,inserted] = weights.emplace(std::make_pair(u,v),value);
+    if (!inserted && value < it->second) it->second = value;
+  }
+  return weights;
+}
 }  // namespace graphmine::legacy_test

@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858"
+  }
+]

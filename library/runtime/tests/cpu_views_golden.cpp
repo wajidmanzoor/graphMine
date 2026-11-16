@@ -8,6 +8,7 @@
 #include "../steiner_input.hpp"
 #include "../walk_input.hpp"
 #include "../edge_set_input.hpp"
+#include "../filtration_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -118,6 +119,34 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool filtration_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<rt::FiltrationWeights> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::filtration_input(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::FiltrationWeights> actual;
+    std::string new_failure;
+    try { actual = rt::filtration_input(graph,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Filtration input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->size() != actual->size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Filtration input size/cost differs");
+    auto a = expected->begin(); auto b = actual->begin();
+    for (; a != expected->end(); ++a,++b) {
+      equal(std::vector<gm::VertexIndex>{a->first.first,a->first.second},
+            std::vector<gm::VertexIndex>{b->first.first,b->first.second});
+      if (rt::json::serialize(rt::fraction_json(a->second)) != rt::json::serialize(rt::fraction_json(b->second)))
+        throw std::runtime_error("Filtration exact weight bytes differ");
+    }
   }
   return !expected;
 }
@@ -705,6 +734,19 @@ void contracts() {
   density_input.as_object().at("graph").as_object()["directed"] = false;
   auto spectral_input = density_input;
   spectral_input.as_object().at("edges").as_array().pop_back();
+  filtration_input(graph);
+  filtration_input(rt::parse_graph(spectral_input));
+  for (std::uint64_t budget=0; budget<7; ++budget) filtration_input(graph,budget);
+  for (int prime : {2,3,5}) for (int dimension : {0,1,2})
+    declared_request("persistent-homology:cpp:default",spectral_input,
+      {{"field_prime",prime},{"max_homology_dimension",dimension},{"max_filtration",2}});
+  auto filtration_graph = spectral_input;
+  auto& filtration_edges = filtration_graph.as_object().at("edges").as_array();
+  filtration_edges[0].as_object()["weight"] = 0.25;
+  filtration_edges[1].as_object()["weight"] = 0.125;
+  filtration_input(rt::parse_graph(filtration_graph));
+  filtration_edges[0].as_object().erase("weight");
+  filtration_input(rt::parse_graph(filtration_graph));
   for (const auto& test : coarsening_cases) {
     exact_edges(graph,test);
     exact_edges(rt::parse_graph(spectral_input),test);
@@ -874,6 +916,7 @@ int main(int argc, char** argv) {
     const bool influence = argc > 1 && std::string(argv[1]) == "--influence";
     const bool walks = argc > 1 && std::string(argv[1]) == "--walks";
     const bool null_models = argc > 1 && std::string(argv[1]) == "--null-models";
+    const bool topology = argc > 1 && std::string(argv[1]) == "--topology";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -898,13 +941,19 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks && !null_models)
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology;
+    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (topology) {
+          const bool rejected = filtration_input(graph);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","persistent-homology:cpp:default"},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (null_models) {
           const auto* profile = "null-model-significance:cpp:default";
           const bool rejected = edge_set_input(graph,profile);
@@ -973,10 +1022,10 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks && !null_models) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty() && !custom_inputs) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks && !null_models) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
     std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")

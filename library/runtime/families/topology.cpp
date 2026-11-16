@@ -1,6 +1,29 @@
 #include "family_util.hpp"
+#include "filtration_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile persistence_profile{"persistent-homology:cpp:default", {"persistent-homology"},
+  R"({"kind":"coo","direction":"symmetrize","self_loops":"keep","parallel_edges":"collapse:min",
+       "weights":"rational_exact","require_edge_weights":true,"nonnegative_weights":true})"};
+}
+FiltrationWeights filtration_input(const Graph& graph, Work& work) {
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(edge.source != edge.target,"Persistence rejects self-loops");
+    require(edge.weight && *edge.weight >= 0,"Every edge needs nonnegative filtration weight");
+  }
+  const auto input = consume_view(graph,persistence_profile,work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CooView>(input->view);
+  const auto& weights = std::get<std::vector<RationalWeight>>(view.weights);
+  FiltrationWeights result;
+  for (std::size_t i=0; i<view.src.size(); ++i) {
+    if (view.src[i] > view.dst[i]) continue;
+    result.emplace(std::make_pair(view.src[i],view.dst[i]),
+      Exact(Integer(weights[i].numerator))/Integer(weights[i].denominator));
+  }
+  return result;
+}
 json::object persistent_homology(const Graph& graph, const json::object& args, const std::string&,
                                  int, Work& work) {
   using namespace family_util;
@@ -17,17 +40,7 @@ json::object persistent_homology(const Graph& graph, const json::object& args, c
     require(*cutoff >= 0, "max_filtration must be nonnegative");
   }
   const auto n = graph.vertex_count();
-  std::map<std::pair<VertexIndex, VertexIndex>, Exact> weights;
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    require(edge.source != edge.target, "Persistence rejects self-loops");
-    require(edge.weight && *edge.weight >= 0, "Every edge needs nonnegative filtration weight");
-    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u > v) std::swap(u, v);
-    const Exact value(*edge.weight);
-    auto [it, inserted] = weights.emplace(std::make_pair(u, v), value);
-    if (!inserted && value < it->second) it->second = value;
-  }
+  const auto weights = filtration_input(graph,work);
   MiningGraph adj(n);
   for (const auto& [ends, weight] : weights)
     if (!cutoff || weight <= *cutoff) {
