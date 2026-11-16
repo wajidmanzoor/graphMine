@@ -899,4 +899,85 @@ inline FrequentInput frequent_input(const Graph& graph, const std::string& vf, c
   return out;
 }
 
+
+// Frozen bipartite common front and backend arrays before V3 migration.
+std::vector<bool> bipartite_partition(const Graph& graph, const json::object& args, bool explicit_sides) {
+  require(!graph.directed(), "Bipartite operations require undirected input");
+  std::vector<bool> left(graph.vertex_count(), false), seen(graph.vertex_count(), false);
+  if (explicit_sides) {
+    for (const auto key : {"left_partition", "right_partition"}) {
+      for (const auto v : family_util::vertices(graph, args.at(key), key)) {
+        require(!seen[v], "Partitions overlap");
+        seen[v] = true;
+        left[v] = std::string_view(key) == "left_partition";
+      }
+    }
+    require(std::all_of(seen.begin(), seen.end(), [](bool v) { return v; }),
+            "Partitions must cover every vertex, including isolates");
+  } else
+    for (VertexIndex v = 0; v < graph.vertex_count(); ++v) {
+      const auto& attrs = graph.canonical().vertices[v].attributes;
+      const auto it = attrs.find("side");
+      require(it != attrs.end() && std::holds_alternative<std::string>(it->second.value()),
+              "Every vertex requires attributes.side=left|right");
+      const auto& side = std::get<std::string>(it->second.value());
+      require(side == "left" || side == "right", "Invalid bipartite side");
+      left[v] = side == "left";
+    }
+  return left;
+}
+MiningGraph bipartite_adjacency(const Graph& graph, const std::vector<bool>& left, bool drop_loops,
+                            Work& work) {
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u == v && drop_loops) continue;
+    require(left[u] != left[v], "Edge joins vertices on the same bipartite side");
+  }
+  return graphmine::legacy_test::adjacency(graph, work);
+}
+std::vector<bool> matching_sides(const Graph& graph, Work& work) {
+  std::vector<bool> left;
+  for (const auto& vertex : graph.canonical().vertices) {
+    work.tick();
+    const auto found = vertex.attributes.find("side");
+    require(found != vertex.attributes.end() &&
+                std::holds_alternative<std::string>(found->second.value()),
+            "Every vertex requires attributes.side = left or right");
+    const auto& label = std::get<std::string>(found->second.value());
+    require(label == "left" || label == "right", "Invalid bipartite side label");
+    left.push_back(label == "left");
+  }
+  return left;
+}
+std::vector<MatchingEdge> bipartite_matching_edges(const Graph& graph, const std::vector<bool>* left, const std::string& objective,
+                 Work& work) {
+  require(!graph.directed(), "Matching requires an undirected graph");
+  std::map<std::pair<VertexIndex, VertexIndex>, MatchingEdge> unique;
+  for (std::size_t i = 0; i < graph.edge_count(); ++i) {
+    work.tick();
+    const auto& edge = graph.canonical().edges[i];
+    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (left) {
+      require((*left)[u] != (*left)[v], "An edge joins vertices on the same bipartite side");
+      if (!(*left)[u]) std::swap(u, v);
+    } else if (v < u)
+      std::swap(u, v);
+    const bool weighted = objective != "maximum_cardinality";
+    require(!weighted || edge.weight.has_value(), "Weighted matching requires every edge weight");
+    const Exact value = weighted ? Exact(*edge.weight) : Exact(1);
+    require(left || value >= 0, "General weighted matching requires nonnegative weights");
+    if (u == v) continue;
+    const auto pair = std::make_pair(u, v);
+    auto found = unique.find(pair);
+    const bool better =
+        found != unique.end() &&
+        (objective == "minimum_cost" ? value < found->second.value : value > found->second.value);
+    if (found == unique.end() || better) unique[pair] = {u, v, i, value};
+  }
+  std::vector<MatchingEdge> output;
+  for (auto& [key, edge] : unique) output.push_back(std::move(edge));
+  return output;
+}
+
 }  // namespace graphmine::legacy_test

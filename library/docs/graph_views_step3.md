@@ -709,3 +709,28 @@ identities, endpoint ordering, typed label/record bytes, costs and rejections.
 Requests cover induced/non-induced mining, support IDs, images and empty/multiple
 members. A missed pointer-to-reference call site in the required-profile cleanup
 was corrected before final validation; its build diagnostic is retained.
+
+## Bipartite operations
+
+Maximal bicliques, butterflies, maximal biclique counting and the three matching
+objectives now consume V3. Layout decoders reverse the factory's side grouping
+into the old solver order and preserve matching edge identities, exact weights
+and first-tie choices. Explicit partition IDs are bound into an immutable
+profile template before `make_view`; resolved parameters participate in the
+cache key and provenance. The declaration exposes that binding for Step 8.
+
+The current API is unchanged: maximal bicliques still requires both partition
+arguments; attribute fallback remains Step 7. Counting keeps its earlier
+attribute-validation order. Original GPU matching/file preparation remains for
+the later GPU/exporter stages.
+
+Checkpoint `47-bipartite` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Six profiles on original graphs and explicit bipartite double-cover
+fixtures pass 78,852 corpus cases on builds/hits, comparing restored partitions,
+adjacency bytes, exact matching weights, selected identities, costs and matching
+rejections. Fixtures interleave sides and retain each source edge's identity;
+missing fixture weights are explicitly set to one. Requests cover all objectives,
+perfect matching, butterfly outputs, typed IDs, isolates, swapped partitions,
+conflicting sides, loops and invalid partitions. One fixture's weight-mode name
+was corrected to the existing `unweighted` option before final validation; the
+initial failure log is retained.

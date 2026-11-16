@@ -9,12 +9,22 @@
 #include "exact_number.hpp"
 #include "internal.hpp"
 #include "matching_input.hpp"
+#include "bipartite_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
 const ViewProfile general_matching{"weighted-matching:cpp:default", {"weighted-matching"},
   R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:max",
        "weights":"rational_exact","edge_ids":true,"require_edge_weights":true,"nonnegative_weights":true})"};
+const ViewProfile bip_maximum_cardinality{"bipartite-matching:cpp:maximum_cardinality", {"bipartite-matching"},
+  R"({"kind":"bipartite","bipartite_sides":"attribute:side","parallel_edges":"collapse:first",
+       "weights":"rational_exact","edge_ids":true,"weight_source":"unit"})"};
+const ViewProfile bip_maximum_weight{"bipartite-matching:cpp:maximum_weight", {"bipartite-matching"},
+  R"({"kind":"bipartite","bipartite_sides":"attribute:side","parallel_edges":"collapse:max",
+       "weights":"rational_exact","edge_ids":true,"require_edge_weights":true})"};
+const ViewProfile bip_minimum_cost{"bipartite-matching:cpp:minimum_cost", {"bipartite-matching"},
+  R"({"kind":"bipartite","bipartite_sides":"attribute:side","parallel_edges":"collapse:min",
+       "weights":"rational_exact","edge_ids":true,"require_edge_weights":true})"};
 using Edge = MatchingEdge;
 using Edges = std::vector<Edge>;
 std::string quality(const json::object& args) {
@@ -300,6 +310,29 @@ json::object weighted_matching(const Graph& graph, const json::object& args, con
   return selected_output(graph, edges, blossom(graph.vertex_count(), edges, work),
                          {{"solution_quality", requested}}, nullptr, work);
 }
+BipartiteMatchingInput bipartite_matching_input(const Graph& graph, const std::string& objective, Work& work) {
+  const auto validated=sides(graph,work);
+  require(!graph.directed(),"Matching requires an undirected graph");
+  const bool weighted=objective!="maximum_cardinality";
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    const auto u=graph.dense_index(edge.source),v=graph.dense_index(edge.target);
+    require(validated[u]!=validated[v],"An edge joins vertices on the same bipartite side");
+    require(!weighted || edge.weight.has_value(),"Weighted matching requires every edge weight");
+  }
+  const auto& profile=!weighted ? bip_maximum_cardinality : objective=="maximum_weight" ? bip_maximum_weight : bip_minimum_cost;
+  const auto built=consume_view(graph,profile,work,ViewBudget::algorithm_owned);
+  const auto& view=std::get<BipartiteView>(built->view);
+  const auto& weights=std::get<std::vector<RationalWeight>>(view.csr.weights);
+  BipartiteMatchingInput input{std::vector<bool>(graph.vertex_count()),{}};
+  for (VertexIndex u=0; u<graph.vertex_count(); ++u) input.left[view.csr.vertices.to_original[u]]=u<view.L;
+  for (VertexIndex u=0; u<view.L; ++u)
+    for (auto i=view.csr.offsets[u]; i<view.csr.offsets[u+1]; ++i)
+      input.edges.push_back({view.csr.vertices.to_original[u],view.csr.vertices.to_original[view.csr.indices[i]],
+        view.csr.edge_ids->at(i),Exact(Integer(weights[i].numerator))/Integer(weights[i].denominator)});
+  std::sort(input.edges.begin(),input.edges.end(),[](const auto& a,const auto& b) { return std::pair{a.u,a.v}<std::pair{b.u,b.v}; });
+  return input;
+}
 json::object bipartite_matching(const Graph& graph, const json::object& args,
                                 const std::string& backend, int device, Work& work) {
   fields(args, {"objective", "weight_mode", "perfect_matching_required", "solution_quality"},
@@ -319,8 +352,14 @@ json::object bipartite_matching(const Graph& graph, const json::object& args,
                                 {"weight_mode", mode},
                                 {"perfect_matching_required", perfect},
                                 {"solution_quality", requested}};
-  const auto left = sides(graph, work);
-  const auto edges = normalized(graph, &left, objective, work);
+  std::vector<bool> left;
+  Edges edges;
+  if (backend=="cpp") {
+    auto input=bipartite_matching_input(graph,objective,work);
+    left=std::move(input.left); edges=std::move(input.edges);
+  } else {
+    left=sides(graph,work); edges=normalized(graph,&left,objective,work);
+  }
   const auto result = assign(graph.vertex_count(), left, edges, objective, perfect, work);
   if (!result.feasible)
     return {{"parameters", parameters},

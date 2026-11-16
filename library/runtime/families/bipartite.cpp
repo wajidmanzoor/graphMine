@@ -1,10 +1,18 @@
 #include <array>
 
 #include "family_util.hpp"
+#include "bipartite_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
 using namespace family_util;
+const ViewProfile biclique_profile{"maximal-bicliques:cpp:sides", {"maximal-bicliques"},
+  R"({"kind":"bipartite","bipartite_sides":"parameters","parameters":{"left_partition":[],"right_partition":[]},
+       "self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})",true};
+const ViewProfile butterfly_profile{"butterfly-counting:cpp:sides", {"butterfly-counting"},
+  R"({"kind":"bipartite","bipartite_sides":"attribute:side","self_loops":"keep","parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile count_profile{"maximal-biclique-counting:cpp:sides", {"maximal-biclique-counting"},
+  R"({"kind":"bipartite","bipartite_sides":"attribute:side","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
 std::vector<bool> partition(const Graph& graph, const json::object& args, bool explicit_sides) {
   require(!graph.directed(), "Bipartite operations require undirected input");
   std::vector<bool> left(graph.vertex_count(), false), seen(graph.vertex_count(), false);
@@ -30,26 +38,40 @@ std::vector<bool> partition(const Graph& graph, const json::object& args, bool e
     }
   return left;
 }
-MiningGraph bipartite_graph(const Graph& graph, const std::vector<bool>& left, bool drop_loops,
-                            Work& work) {
+}  // namespace
+BipartiteInput bipartite_input(const Graph& graph, const json::object& args, BipartiteTopology kind, Work& work) {
+  const bool butterfly=kind==BipartiteTopology::butterflies;
+  const auto validated=partition(graph,args,!butterfly);
   for (const auto& edge : graph.canonical().edges) {
     work.tick();
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v && drop_loops) continue;
-    require(left[u] != left[v], "Edge joins vertices on the same bipartite side");
+    const auto u=graph.dense_index(edge.source), v=graph.dense_index(edge.target);
+    if (u==v && !butterfly) continue;
+    require(validated[u]!=validated[v],"Edge joins vertices on the same bipartite side");
   }
-  return adjacency(graph, work);
+  const auto& profile=butterfly ? butterfly_profile : kind==BipartiteTopology::count ? count_profile : biclique_profile;
+  const auto built=consume_view(graph,profile,work,ViewBudget::original_edges,args);
+  const auto& view=std::get<BipartiteView>(built->view);
+  BipartiteInput input{std::vector<bool>(graph.vertex_count()),MiningGraph(graph.vertex_count())};
+  // Restore the solver's original dense order using the reversible V3 map.
+  for (VertexIndex u=0; u<graph.vertex_count(); ++u) {
+    const auto original=view.csr.vertices.to_original[u];
+    input.left[original]=u<view.L;
+    for (auto i=view.csr.offsets[u]; i<view.csr.offsets[u+1]; ++i)
+      input.adjacency[original].push_back(view.csr.vertices.to_original[view.csr.indices[i]]);
+    std::sort(input.adjacency[original].begin(),input.adjacency[original].end());
+  }
+  return input;
 }
-}  // namespace
-json::object maximal_bicliques(const Graph& graph, const json::object& args, const std::string&,
-                               int, Work& work) {
+namespace {
+json::object maximal_bicliques_impl(const Graph& graph, const json::object& args, bool counting, Work& work) {
   using namespace family_util;
   fields(args,
          {"left_partition", "right_partition", "minimum_left_size", "minimum_right_size",
           "result_limit"},
          {"left_partition", "right_partition"});
-  const auto left = partition(graph, args, true);
-  auto adj = bipartite_graph(graph, left, true, work);
+  auto input=bipartite_input(graph,args,counting ? BipartiteTopology::count : BipartiteTopology::bicliques,work);
+  const auto& left=input.left;
+  auto adj=std::move(input.adjacency);
   const auto minimum_left = natural(args, "minimum_left_size", 1, 1),
              minimum_right = natural(args, "minimum_right_size", 1, 1);
   const auto cap = limit(args);
@@ -86,6 +108,13 @@ json::object maximal_bicliques(const Graph& graph, const json::object& args, con
                  {"result_limit", cap ? json::value(*cap) : json::value(nullptr)}},
                 data, {{"bicliques", result_port("bipartite_groups", rows, complete)}}, complete);
 }
+}  // namespace
+json::object maximal_bicliques(const Graph& graph, const json::object& args, const std::string&, int, Work& work) {
+  return maximal_bicliques_impl(graph,args,false,work);
+}
+json::object maximal_bicliques_for_count(const Graph& graph, const json::object& args, Work& work) {
+  return maximal_bicliques_impl(graph,args,true,work);
+}
 json::object butterflies(const Graph& graph, const json::object& args, const std::string&, int,
                          Work& work) {
   using namespace family_util;
@@ -98,8 +127,8 @@ json::object butterflies(const Graph& graph, const json::object& args, const std
   const auto alpha = limit(args, "alpha"), beta = limit(args, "beta");
   require(mode == "alpha_beta_core" || (!alpha && !beta && measure == "butterfly_participation"),
           "alpha, beta and core_measure apply only to alpha_beta_core");
-  const auto left = partition(graph, args, false);
-  const auto adj = bipartite_graph(graph, left, false, work);
+  const auto input=bipartite_input(graph,args,BipartiteTopology::butterflies,work);
+  const auto& left=input.left; const auto& adj=input.adjacency;
   const auto n = graph.vertex_count();
   std::vector<std::uint64_t> per_vertex(n, 0);
   std::map<std::pair<VertexIndex, VertexIndex>, std::uint64_t> per_edge;

@@ -4,6 +4,7 @@
 
 #include "family_util.hpp"
 #include "dynamic_input.hpp"
+#include "bipartite_input.hpp"
 
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_EXTENSIONS
 #include "graphmine/problems/community_detection.hpp"
@@ -515,7 +516,7 @@ json::object maximal_biclique_count(const Graph& graph, const json::object& args
     require(side == "left" || side == "right", "Invalid bipartite side");
     (side == "left" ? left : right).push_back(id_json(vertex.id));
   }
-  const auto cpu = maximal_bicliques(graph, {{"left_partition", left}, {"right_partition", right}}, "cpp", device, work);
+  const auto cpu = maximal_bicliques_for_count(graph, {{"left_partition", left}, {"right_partition", right}}, work);
   const auto count = cpu.at("result").as_object().at("total_count");
   if (backend != "cpp") {
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_EXTENSIONS

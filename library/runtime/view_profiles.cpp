@@ -22,9 +22,24 @@ void observe(const ViewProfile& profile, Work& work, const ViewResult& view, boo
 }
 }
 ViewProfile::ViewProfile(const char* name, std::initializer_list<const char*> operations,
-                         const char* spec_json)
-    : id(name), operations(names(operations)), spec(ViewSpec::from_json(spec_json)) {
+                         const char* spec_json, bool bind_partitions)
+    : id(name), operations(names(operations)), spec(ViewSpec::from_json(spec_json)), partition_parameters(bind_partitions) {
+  if (partition_parameters && (spec.bipartite_sides != "parameters" || !spec.parameters ||
+      !spec.parameters->left_partition.empty() || !spec.parameters->right_partition.empty()))
+    throw std::logic_error("Partition binding needs an empty parameter template");
   if (!profiles().emplace(id, *this).second) throw std::logic_error("Duplicate CPU view profile: " + id);
+}
+ViewSpec ViewProfile::resolved_spec(const json::object& parameters) const {
+  auto result=spec;
+  if (partition_parameters) {
+    for (auto [key,target] : {std::pair{"left_partition",&result.parameters->left_partition},
+                              {"right_partition",&result.parameters->right_partition}}) {
+      require(parameters.contains(key) && parameters.at(key).is_array(),std::string(key)+" must be an ID array");
+      for (const auto& id : parameters.at(key).as_array()) target->push_back(external_id(id));
+    }
+  }
+  result.validate();
+  return result;
 }
 const ViewProfile& cpu_view_profile(const std::string& id) {
   const auto found = profiles().find(id);
@@ -36,8 +51,12 @@ json::array cpu_view_declarations() {
   for (const auto& [id, profile] : profiles()) {
     json::array operations;
     for (const auto& operation : profile.operations) operations.push_back(json::value(operation));
-    result.push_back(json::object{{"id", id}, {"backend", "cpp"}, {"operations", operations},
-                                  {"view", json::parse(profile.spec.canonical_json())}});
+    json::object declaration{{"id", id}, {"backend", "cpp"}, {"operations", operations},
+                             {"view", json::parse(profile.spec.canonical_json())}};
+    if (profile.partition_parameters)
+      declaration["view_bindings"]=json::object{{"parameters.left_partition","left_partition"},
+                                               {"parameters.right_partition","right_partition"}};
+    result.push_back(std::move(declaration));
   }
   return result;
 }
@@ -56,7 +75,7 @@ WeightedGraph weighted_layout(const CsrView& view) {
   return output;
 }
 std::shared_ptr<const ViewResult> consume_view(const Graph& graph, const ViewProfile& profile,
-                                              Work& work, ViewBudget budget) {
+                                              Work& work, ViewBudget budget, const json::object& parameters) {
   // Preserve each old adapter's candidate cost, including on cache hits.
   if (budget == ViewBudget::original_edges) work.tick(graph.edge_count());
   ViewBuildOptions options;
@@ -68,7 +87,7 @@ std::shared_ptr<const ViewResult> consume_view(const Graph& graph, const ViewPro
   options.observe = [&](const ViewResult& view, bool hit, bool retained) {
     observe(profile,work,view,hit,retained);
   };
-  try { return make_view(graph, profile.spec, options); }
+  try { return make_view(graph, profile.resolved_spec(parameters), options); }
   catch (const std::invalid_argument& error) {
     const std::string message = error.what();
     if (message == "Graph view: f64 sum overflows")
@@ -84,6 +103,6 @@ std::shared_ptr<const ViewResult> consume_view(const json::value& input, const V
   options.observe = [&](const ViewResult& view, bool hit, bool retained) {
     observe(profile,work,view,hit,retained);
   };
-  return make_view(ParsedViewInput{input},profile.spec,options);
+  return make_view(ParsedViewInput{input},profile.resolved_spec(),options);
 }
 }  // namespace graphmine::runtime

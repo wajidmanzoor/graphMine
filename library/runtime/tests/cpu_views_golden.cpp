@@ -27,6 +27,7 @@
 #include "../temporal_motif_input.hpp"
 #include "../comparison_input.hpp"
 #include "../frequent_input.hpp"
+#include "../bipartite_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -139,6 +140,96 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
+}
+// Common-front arguments used by the unchanged count wrapper. Explicit corpus
+// partitions deliberately interleave sides to exercise reversible V3 relabeling.
+rt::json::object bipartite_parameters(const gm::Graph& graph, bool attributes) {
+  rt::json::array left,right;
+  for (gm::VertexIndex v=0; v<graph.vertex_count(); ++v) {
+    bool is_left=v%2!=0;
+    if (attributes) {
+      const auto& attrs=graph.canonical().vertices[v].attributes;
+      const auto found=attrs.find("side");
+      rt::require(found!=attrs.end() && std::holds_alternative<std::string>(found->second.value()),"Every vertex requires attributes.side=left|right");
+      const auto& side=std::get<std::string>(found->second.value());
+      rt::require(side=="left" || side=="right","Invalid bipartite side");
+      is_left=side=="left";
+    }
+    (is_left ? left : right).push_back(rt::id_json(graph.external_id(v)));
+  }
+  return {{"left_partition",left},{"right_partition",right}};
+}
+bool bipartite_topology_input(const gm::Graph& graph, rt::BipartiteTopology kind,
+    const std::optional<rt::json::object>& parameters=std::nullopt, std::uint64_t budget=UINT64_MAX) {
+  auto old_work=unlimited(); old_work.max_candidates=budget;
+  const bool butterfly=kind==rt::BipartiteTopology::butterflies, count=kind==rt::BipartiteTopology::count;
+  std::optional<rt::BipartiteInput> expected;
+  std::string old_failure;
+  auto args=[&] { return parameters ? *parameters : count ? bipartite_parameters(graph,true) : bipartite_parameters(graph,false); };
+  try {
+    const auto params=args();
+    const auto left=gm::legacy_test::bipartite_partition(graph,params,!butterfly);
+    expected=rt::BipartiteInput{left,gm::legacy_test::bipartite_adjacency(graph,left,!butterfly,old_work)};
+  } catch (const std::exception& e) { old_failure=e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work=unlimited(); work.max_candidates=budget;
+    std::optional<rt::BipartiteInput> actual;
+    std::string new_failure;
+    try { actual=rt::bipartite_input(graph,args(),kind,work); } catch (const std::exception& e) { new_failure=e.what(); }
+    if (old_failure!=new_failure) throw std::runtime_error("Bipartite topology rejection differs: "+old_failure+" / "+new_failure);
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->left!=actual->left || expected->adjacency.size()!=actual->adjacency.size() || old_work.candidates!=work.candidates)
+      throw std::runtime_error("Bipartite partition/shape/cost differs");
+    for (std::size_t v=0; v<expected->adjacency.size(); ++v) equal(expected->adjacency[v],actual->adjacency[v]);
+  }
+  return !expected;
+}
+template<class Edges> std::string matching_bytes(const Edges& edges) {
+  rt::json::array rows;
+  for (const auto& e : edges) rows.push_back(rt::json::array{e.u,e.v,e.original,rt::fraction_json(e.value)});
+  return rt::json::serialize(rows);
+}
+bool bipartite_matching_input(const gm::Graph& graph, const std::string& objective, std::uint64_t budget=UINT64_MAX) {
+  auto old_work=unlimited(); old_work.max_candidates=budget;
+  std::vector<bool> left;
+  std::optional<std::vector<gm::legacy_test::MatchingEdge>> expected;
+  std::string old_failure;
+  try {
+    left=gm::legacy_test::matching_sides(graph,old_work);
+    expected=gm::legacy_test::bipartite_matching_edges(graph,&left,objective,old_work);
+  } catch (const std::exception& e) { old_failure=e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work=unlimited(); work.max_candidates=budget;
+    std::optional<rt::BipartiteMatchingInput> actual;
+    std::string new_failure;
+    try { actual=rt::bipartite_matching_input(graph,objective,work); } catch (const std::exception& e) { new_failure=e.what(); }
+    if (old_failure!=new_failure) throw std::runtime_error("Bipartite matching rejection differs: "+old_failure+" / "+new_failure);
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (left!=actual->left || matching_bytes(*expected)!=matching_bytes(actual->edges) || old_work.candidates!=work.candidates)
+      throw std::runtime_error("Bipartite matching identities/exact weights/order/cost differ");
+  }
+  return !expected;
+}
+gm::Graph corpus_bipartite(const gm::Graph& graph) {
+  auto data=graph.canonical(); data.graph.directed=false; data.graph.id+="-double-cover";
+  data.vertices.clear();
+  for (gm::VertexIndex v=0; v<graph.vertex_count(); ++v) {
+    for (const auto* side : {"right","left"}) {
+      auto vertex=graph.canonical().vertices[v];
+      vertex.id=std::string(side)+":"+std::to_string(v); vertex.attributes["side"]=gm::PropertyValue(std::string(side));
+      data.vertices.push_back(std::move(vertex));
+    }
+  }
+  for (auto& edge : data.edges) {
+    edge.source=std::string("left:")+std::to_string(graph.dense_index(edge.source));
+    edge.target=std::string("right:")+std::to_string(graph.dense_index(edge.target));
+    if (!edge.weight) { edge.weight=1; edge.original_weight=1.0; }
+  }
+  return gm::Graph(std::move(data));
 }
 template<class Input> std::string frequent_bytes(const Input& input) {
   rt::json::array labels,edges;
@@ -1223,7 +1314,7 @@ void declared_request(const char* id, const rt::json::value& graph, const rt::js
   for (const auto& item : response.at("representations").as_array()) {
     const auto& used = item.as_object();
     if (!used.contains("view_profile") || rt::string(used.at("view_profile"),"view_profile") != profile.id) continue;
-    if (used.at("view") != rt::json::parse(profile.spec.canonical_json()))
+    if (used.at("view") != rt::json::parse(profile.resolved_spec(parameters).canonical_json()))
       throw std::runtime_error(profile.id + ": consumed a different declared spec");
     consumed = true;
   }
@@ -1331,6 +1422,57 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  const auto bipartite=rt::strict_json(R"({"graph":{"id":"bipartite","directed":false,"allows_self_loops":true,"allows_parallel_edges":true},
+    "vertices":[{"id":"r","attributes":{"side":"right"}},{"id":1,"attributes":{"side":"left"}},
+      {"id":"1","attributes":{"side":"right"}},{"id":2,"attributes":{"side":"left"}},{"id":"isolate","attributes":{"side":"right"}}],
+    "edges":[{"id":"a","source":"r","target":1,"weight":-0.5},{"id":1,"source":1,"target":"r","weight":2},
+      {"id":"tie","source":"r","target":1,"weight":2},{"id":"c","source":2,"target":"r","weight":0},
+      {"id":"d","source":"1","target":1,"weight":0.25},{"id":"e","source":2,"target":"1","weight":3}]})");
+  const auto bip_graph=rt::parse_graph(bipartite);
+  auto bip_args=bipartite_parameters(bip_graph,true);
+  for (const auto kind : {rt::BipartiteTopology::bicliques,rt::BipartiteTopology::butterflies,rt::BipartiteTopology::count})
+    for (std::uint64_t budget : {0,1,5,6,7,12,20}) bipartite_topology_input(bip_graph,kind,std::nullopt,budget);
+  for (const auto* objective : {"maximum_cardinality","maximum_weight","minimum_cost"}) {
+    for (std::uint64_t budget : {0,1,5,6,7,11,20}) bipartite_matching_input(bip_graph,objective,budget);
+    const auto profile=std::string("bipartite-matching:cpp:")+objective;
+    for (bool perfect : {false,true}) declared_request(profile.c_str(),bipartite,{{"objective",objective},
+      {"weight_mode",std::string(objective)=="maximum_cardinality" ? "unweighted" : "edge_weight"},{"perfect_matching_required",perfect}});
+  }
+  declared_request("maximal-bicliques:cpp:sides",bipartite,bip_args);
+  declared_request("maximal-biclique-counting:cpp:sides",bipartite,{});
+  for (const auto* mode : {"count","per_vertex","per_edge","alpha_beta_core"})
+    declared_request("butterfly-counting:cpp:sides",bipartite,{{"mode",mode}});
+  auto swapped=bip_args;
+  std::swap(swapped.at("left_partition"),swapped.at("right_partition"));
+  bipartite_topology_input(bip_graph,rt::BipartiteTopology::bicliques,swapped);
+  declared_request("maximal-bicliques:cpp:sides",bipartite,swapped);
+  const auto& bound=rt::cpu_view_profile("maximal-bicliques:cpp:sides");
+  if (bound.resolved_spec(bip_args).canonical_json()==bound.resolved_spec(swapped).canonical_json())
+    throw std::runtime_error("Partition binding omitted request IDs from the cache spec");
+  for (int change=0; change<8; ++change) {
+    auto changed=bipartite;
+    auto& vertices=changed.as_object().at("vertices").as_array();
+    auto& edge=changed.as_object().at("edges").as_array()[0].as_object();
+    if (change==0) edge["target"]="r";
+    if (change==1) edge["target"]="1";
+    if (change==2) edge.erase("weight");
+    if (change==3) changed.as_object().at("graph").as_object()["directed"]=true;
+    if (change==4) vertices[0].as_object().erase("attributes");
+    if (change==5) vertices[0].as_object()["attributes"]=rt::json::object{{"side","invalid"}};
+    if (change==6) vertices[0].as_object()["attributes"]=rt::json::object{{"side",0}};
+    if (change==7) edge["weight"]=0x1p-100;
+    const auto parsed=rt::parse_graph(changed);
+    for (const auto kind : {rt::BipartiteTopology::bicliques,rt::BipartiteTopology::butterflies,rt::BipartiteTopology::count}) bipartite_topology_input(parsed,kind);
+    for (const auto* objective : {"maximum_cardinality","maximum_weight","minimum_cost"}) bipartite_matching_input(parsed,objective);
+  }
+  for (int change=0; change<4; ++change) {
+    auto bad=bip_args;
+    if (change==0) bad.at("left_partition").as_array().push_back("r");
+    if (change==1) bad.at("left_partition").as_array().push_back(1);
+    if (change==2) bad.at("right_partition").as_array().pop_back();
+    if (change==3) bad.at("right_partition").as_array().push_back("absent");
+    bipartite_topology_input(bip_graph,rt::BipartiteTopology::bicliques,bad);
+  }
   auto frequent_graph=raw;
   frequent_graph.as_object().at("graph").as_object()["directed"]=false;
   frequent_graph.as_object().at("edges").as_array().resize(3);
@@ -2087,7 +2229,7 @@ void contracts() {
     if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
     const auto& used = response.at("representations").as_array().back().as_object();
     if (rt::string(used.at("view_profile"),"view_profile") != profile.id ||
-        used.at("view") != rt::json::parse(profile.spec.canonical_json()))
+        used.at("view") != rt::json::parse(profile.resolved_spec(parameters).canonical_json()))
       throw std::runtime_error("Weighted path consumed a different declared spec");
   }
   for (unsigned budget = 0; budget < 10; ++budget) {
@@ -2150,6 +2292,7 @@ int main(int argc, char** argv) {
     const bool temporal_motifs = argc > 1 && std::string(argv[1]) == "--temporal-motifs";
     const bool comparison = argc > 1 && std::string(argv[1]) == "--comparison";
     const bool frequent = argc > 1 && std::string(argv[1]) == "--frequent";
+    const bool bipartite = argc > 1 && std::string(argv[1]) == "--bipartite";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -2175,7 +2318,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths || temporal_motifs || comparison || frequent;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths || temporal_motifs || comparison || frequent || bipartite;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -2183,6 +2326,24 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (bipartite) {
+          const auto fixture=corpus_bipartite(graph);
+          for (bool lifted : {false,true}) {
+            const auto& selected=lifted ? fixture : graph;
+            for (const auto kind : {rt::BipartiteTopology::bicliques,rt::BipartiteTopology::butterflies,rt::BipartiteTopology::count}) {
+              const bool rejected=bipartite_topology_input(selected,kind);
+              const auto profile=kind==rt::BipartiteTopology::bicliques ? "maximal-bicliques:cpp:sides" :
+                kind==rt::BipartiteTopology::butterflies ? "butterfly-counting:cpp:sides" : "maximal-biclique-counting:cpp:sides";
+              std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile",profile},
+                {"bipartite_double_cover",lifted},{"equal",true},{"rejected",rejected}}) << '\n';
+            }
+            for (const auto* objective : {"maximum_cardinality","maximum_weight","minimum_cost"}) {
+              const bool rejected=bipartite_matching_input(selected,objective);
+              std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+                {"profile",std::string("bipartite-matching:cpp:")+objective},{"bipartite_double_cover",lifted},{"equal",true},{"rejected",rejected}}) << '\n';
+            }
+          }
+        }
         if (frequent) {
           for (const auto* vf : {"","type"}) for (const auto* ef : {"","type"}) {
             const rt::json::object collection{{"dataset_id","corpus"},{"graphs",rt::json::array{input.at("graph")}}};
