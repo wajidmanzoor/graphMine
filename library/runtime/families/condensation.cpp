@@ -1,6 +1,11 @@
 #include "learning.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile condensation_profile{"graph-condensation:cpp:default", {"graph-condensation"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum",
+       "weights":"rational_exact","nonnegative_weights":true,"edge_ids":true})"};
+}
 json::object graph_condensation(const Graph& graph, const json::object& args, const std::string&,
                                 int, Work& work) {
   using namespace family_util;
@@ -74,7 +79,7 @@ json::object graph_condensation(const Graph& graph, const json::object& args, co
   const auto d = original.features.cols, n = original.features.rows;
   // Weighted transductive SGC representation. Parallel weights sum; one unit
   // self message is added after rejecting original loops.
-  const auto normalized = edges(graph, true, work);
+  const auto normalized = edges(graph, condensation_profile, work);
   std::vector<std::vector<std::pair<VertexIndex, double>>> neighbors(n);
   std::vector<long double> degrees(n, 1);
   for (const auto& edge : normalized)

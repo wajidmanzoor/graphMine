@@ -93,6 +93,7 @@ const ExactCase alignment_exact_cases[] = {
 };
 const ExactCase local_community_case{"seeded-local-community:cpp:default",true};
 const ExactCase geolocation_case{"graph-geolocation:cpp:default",true};
+const ExactCase condensation_case{"graph-condensation:cpp:default",true};
 bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<std::vector<gm::legacy_test::ExactEdge>> expected;
@@ -339,6 +340,15 @@ void contracts() {
     declared_request(geolocation_case.profile,spectral_input,{{"method_family","spatial_propagation"},
       {"seed_locations",{{"rows",locations}}},{"hold_seeds_fixed",fixed},
       {"method_definition",{{"objective","seed_location_medoid_energy"}}}});
+  exact_edges(graph,condensation_case);
+  exact_edges(rt::parse_graph(spectral_input),condensation_case);
+  auto condensation_input = spectral_input;
+  for (std::size_t v=0; v<3; ++v)
+    condensation_input.as_object().at("vertices").as_array()[v].as_object()["attributes"] = rt::json::object{
+      {"features",rt::json::array{static_cast<double>(v)}},{"label",v%2},{"split",v<2 ? "train" : "test"}};
+  declared_request(condensation_case.profile,condensation_input,
+    {{"synthetic_vertex_budget",2},{"method","gradient_matching_linear_sgc_v1"},{"seed",41},
+     {"method_parameters",{{"epochs",5},{"downstream_epochs",5}}}});
   for (const auto& test : spectral_exact_cases) {
     exact_edges(graph,test);
     exact_edges(rt::parse_graph(spectral_input),test);
@@ -448,6 +458,7 @@ int main(int argc, char** argv) {
     const bool alignment = argc > 1 && std::string(argv[1]) == "--alignment";
     const bool local_community = argc > 1 && std::string(argv[1]) == "--local-community";
     const bool geolocation = argc > 1 && std::string(argv[1]) == "--geolocation";
+    const bool condensation = argc > 1 && std::string(argv[1]) == "--condensation";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -467,6 +478,7 @@ int main(int argc, char** argv) {
     if (alignment) selected_exact.assign(std::begin(alignment_exact_cases),std::end(alignment_exact_cases));
     if (local_community) selected_exact.push_back(local_community_case);
     if (geolocation) selected_exact.push_back(geolocation_case);
+    if (condensation) selected_exact.push_back(condensation_case);
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();

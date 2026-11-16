@@ -247,3 +247,15 @@ accommodates the largest corpus view; the production/default capacity is not
 changed. All 14 previous family suites were replayed with these stronger
 assertions: 361,405 profile cases passed, with no input differences. Their
 reports and binary hash are retained in `15-geolocation/cache-regression/`.
+
+## Graph condensation
+
+Condensation's transductive graph operator now consumes an exact COO edge view.
+Feature/label/split handling, gradient matching, optimization seeds and the
+downstream utility evaluation remain unchanged.
+
+Checkpoint `16-condensation` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Its input profile passes all 6,571 corpus cases with explicit fresh
+build/cache-hit assertions. A real training/evaluation request verifies the
+consumed declaration; existing learning tests continue to check the gradient
+objective, propagated features and downstream utility.
