@@ -4,6 +4,15 @@ namespace graphmine::runtime {
 namespace {
 using namespace family_util;
 namespace query = record_query;
+constexpr const char* record_spec = R"({"kind":"coo","coo_layout":"records","direction":"keep",
+  "self_loops":"keep","parallel_edges":"keep","weights":"none","edge_ids":true,"sorted_neighbors":false})";
+const ViewProfile node_lookup_profile{"node-lookup:cpp:records", {"node-lookup"}, record_spec};
+const ViewProfile edge_filter_profile{"edge-filter:cpp:records", {"edge-filter"}, record_spec};
+const ViewProfile query_neighbors_profile{"neighbors:cpp:records", {"neighbors"}, record_spec};
+const ViewProfile query_common_neighbors_profile{"common-neighbors:cpp:records", {"common-neighbors"}, record_spec};
+const ViewProfile query_paths_profile{"query-paths:cpp:records", {"query-paths"}, record_spec};
+const ViewProfile graph_aggregate_profile{"graph-aggregate:cpp:records", {"graph-aggregate"}, record_spec};
+const ViewProfile query_subgraph_profile{"query-subgraph:cpp:records", {"query-subgraph"}, record_spec};
 struct Collection {
   Work& work;
   std::optional<std::uint64_t> cap;
@@ -42,7 +51,7 @@ json::array edge_ids(const query::Index& index, const std::set<std::size_t>& val
 json::object node_lookup(const Graph& graph, const json::object& args, const std::string&, int,
                          Work& work) {
   fields(args, {"vertices", "vertex_filters", "result_limit"});
-  const query::Index index(graph, work);
+  const query::Index index(graph, node_lookup_profile, work);
   const auto selected = index.selected(args, "vertices", false);
   const auto filters = index.filters(args, "vertex_filters", false);
   Collection output(work, args);
@@ -64,7 +73,7 @@ json::object node_lookup(const Graph& graph, const json::object& args, const std
 json::object edge_filter(const Graph& graph, const json::object& args, const std::string&, int,
                          Work& work) {
   fields(args, {"edge_ids", "edge_filters", "source_filters", "target_filters", "result_limit"});
-  const query::Index index(graph, work);
+  const query::Index index(graph, edge_filter_profile, work);
   const auto selected = index.selected(args, "edge_ids", true);
   const auto edge_filters = index.filters(args, "edge_filters", true),
              source_filters = index.filters(args, "source_filters", false),
@@ -93,7 +102,7 @@ json::object query_neighbors(const Graph& graph, const json::object& args, const
                              Work& work) {
   fields(args, {"entity", "hops", "direction", "edge_filters", "include_seed", "result_limit"},
          {"entity"});
-  const query::Index index(graph, work);
+  const query::Index index(graph, query_neighbors_profile, work);
   const auto adj = query::adjacency(index, args, work);
   const auto entity = graph.dense_index(external_id(args.at("entity")));
   const auto hops = natural(args, "hops", 1);
@@ -116,7 +125,7 @@ json::object query_common_neighbors(const Graph& graph, const json::object& args
                                     const std::string&, int, Work& work) {
   fields(args, {"source", "target", "direction", "edge_filters", "result_limit"},
          {"source", "target"});
-  const query::Index index(graph, work);
+  const query::Index index(graph, query_common_neighbors_profile, work);
   const auto adj = query::adjacency(index, args, work);
   const auto source = graph.dense_index(external_id(args.at("source"))),
              target = graph.dense_index(external_id(args.at("target")));
@@ -138,7 +147,7 @@ json::object query_paths(const Graph& graph, const json::object& args, const std
   fields(args,
          {"source", "target", "mode", "max_hops", "direction", "edge_filters", "result_limit"},
          {"source", "target"});
-  const query::Index index(graph, work);
+  const query::Index index(graph, query_paths_profile, work);
   const auto adj = query::adjacency(index, args, work);
   const auto source = graph.dense_index(external_id(args.at("source"))),
              target = graph.dense_index(external_id(args.at("target")));
@@ -209,7 +218,7 @@ json::object graph_aggregate(const Graph& graph, const json::object& args, const
                              Work& work) {
   fields(args,
          {"scope", "filters", "metric", "field", "group_by", "direction", "order", "result_limit"});
-  const query::Index index(graph, work);
+  const query::Index index(graph, graph_aggregate_profile, work);
   const auto scope = choice(args, "scope", "edges", {"vertices", "edges"}),
              metric = choice(args, "metric", "count", {"count", "sum", "avg", "min", "max"}),
              direction = choice(args, "direction", "out", {"out", "in", "both"}),
@@ -345,7 +354,7 @@ json::object query_subgraph(const Graph& graph, const json::object& args, const 
                             Work& work) {
   fields(args, {"mode", "vertices", "edge_ids", "entity", "hops", "direction", "vertex_filters",
                 "edge_filters"});
-  const query::Index index(graph, work);
+  const query::Index index(graph, query_subgraph_profile, work);
   const auto mode = choice(args, "mode", "vertices", {"vertices", "edges", "neighborhood"}),
              direction = choice(args, "direction", "out", {"out", "in", "both"});
   const auto hops = natural(args, "hops", 1);

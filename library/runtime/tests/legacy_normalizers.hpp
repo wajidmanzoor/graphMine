@@ -6,6 +6,7 @@
 #include <set>
 #include "../internal.hpp"
 #include "../exact_number.hpp"
+#include "../pattern_match.hpp"
 namespace graphmine::legacy_test {
 using namespace graphmine::runtime;
 inline UndirectedGraphView simple(const Graph& graph, UndirectedProjectionOptions options = {}) {
@@ -139,4 +140,28 @@ inline MiningGraph simrank(const Graph& graph, bool project, Work& work) {
   }
   return neighbors;
 }
+// Frozen record-query Index constructor from b80b1071. Record JSON conversion
+// is part of the unchanged common front, not view normalization.
+struct RecordIndex {
+  const Graph& graph;
+  std::vector<json::object> vertices, edges;
+  std::vector<std::vector<std::size_t>> outgoing, incoming;
+  std::vector<std::pair<VertexIndex, VertexIndex>> endpoints;
+  std::map<ExternalId, std::size_t> edge_indices;
+  RecordIndex(const Graph& input, Work& work)
+      : graph(input), outgoing(input.vertex_count()), incoming(input.vertex_count()) {
+    for (const auto& row : graph.canonical().vertices)
+      vertices.push_back(vertex_record_json(row, work));
+    for (const auto& row : graph.canonical().edges) {
+      work.tick();
+      const auto i = edges.size();
+      const auto u = graph.dense_index(row.source), v = graph.dense_index(row.target);
+      edges.push_back(edge_record_json(row, work));
+      outgoing[u].push_back(i);
+      incoming[v].push_back(i);
+      endpoints.emplace_back(u, v);
+      edge_indices[row.id] = i;
+    }
+  }
+};
 }  // namespace graphmine::legacy_test

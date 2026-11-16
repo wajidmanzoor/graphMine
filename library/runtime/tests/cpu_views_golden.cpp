@@ -1,6 +1,7 @@
 #include "legacy_normalizers.hpp"
 #include "../view_profiles.hpp"
 #include "../family_util.hpp"
+#include "../record_query.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -76,6 +77,44 @@ const char* density_profiles[] = {"densest-subgraph:cpp:clique_terms", "quasi-cl
 const char* coloring_profiles[] = {"maximal-independent-set:cpp:default", "vertex-coloring:cpp:default"};
 const char* pattern_profiles[] = {"triangle-counting:cpp:default", "graphlet-counting:cpp:default",
                                  "motif-counting:cpp:input", "motif-counting:cpp:motif"};
+const char* record_profiles[] = {"node-lookup:cpp:records", "edge-filter:cpp:records", "neighbors:cpp:records",
+  "common-neighbors:cpp:records", "query-paths:cpp:records", "graph-aggregate:cpp:records", "query-subgraph:cpp:records"};
+bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::RecordIndex> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::record_query::Index> actual;
+    std::string new_failure;
+    try { actual.emplace(graph,rt::cpu_view_profile(profile),work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error(std::string(profile)+": record index rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->vertices.size() != actual->vertices.size() || expected->edges.size() != actual->edges.size() ||
+        expected->outgoing.size() != actual->outgoing.size() || expected->incoming.size() != actual->incoming.size() ||
+        expected->endpoints.size() != actual->endpoints.size() || expected->edge_indices != actual->edge_indices ||
+        old_work.candidates != work.candidates) throw std::runtime_error("Record index size, ID map or cost differs");
+    for (std::size_t v=0; v<expected->vertices.size(); ++v) {
+      if (rt::json::serialize(expected->vertices[v]) != rt::json::serialize(actual->vertices[v]))
+        throw std::runtime_error("Vertex record bytes differ");
+      equal(expected->outgoing[v],actual->outgoing[v]); equal(expected->incoming[v],actual->incoming[v]);
+    }
+    std::vector<gm::VertexIndex> old_endpoints, new_endpoints;
+    for (std::size_t e=0; e<expected->edges.size(); ++e) {
+      if (rt::json::serialize(expected->edges[e]) != rt::json::serialize(actual->edges[e]))
+        throw std::runtime_error("Edge record bytes differ");
+      old_endpoints.insert(old_endpoints.end(),{expected->endpoints[e].first,expected->endpoints[e].second});
+      new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
+    }
+    equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
 struct ExactCase { const char* profile; bool weighted, nonnegative = true, loops = false; };
 const ExactCase density_exact_cases[] = {
   {"densest-subgraph:cpp:edge_weight",true}, {"densest-subgraph:cpp:unweighted",false},
@@ -246,6 +285,24 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  for (const auto* profile : record_profiles) {
+    record_index(graph,profile);
+    record_index(rt::parse_graph(undirected),profile);
+    const auto& operation = rt::cpu_view_profile(profile).operations.front();
+    rt::json::object parameters;
+    if (operation == "neighbors") parameters["entity"] = 0;
+    if (operation == "common-neighbors" || operation == "query-paths") {
+      parameters["source"] = 0; parameters["target"] = 2;
+    }
+    if (operation == "query-subgraph") parameters["vertices"] = rt::json::array{0,1};
+    declared_request(profile,raw,parameters);
+    declared_request(profile,undirected,parameters);
+  }
+  for (std::uint64_t budget=0; budget<40; ++budget) record_index(graph,record_profiles[0],budget);
+  declared_request("query-paths:cpp:records",raw,{{"source",0},{"target",2},{"mode","all_simple"}});
+  declared_request("neighbors:cpp:records",raw,{{"entity",1},{"direction","both"},{"hops",2}});
+  declared_request("graph-aggregate:cpp:records",raw,{{"metric","sum"},{"field","weight"},{"group_by","vertex"},{"direction","both"}});
+  declared_request("query-subgraph:cpp:records",undirected,{{"mode","neighborhood"},{"entity",1},{"hops",1}});
   for (const auto* profile : clique_profiles) {
     traversal(graph,profile);
     rt::json::object parameters;
@@ -459,6 +516,7 @@ int main(int argc, char** argv) {
     const bool local_community = argc > 1 && std::string(argv[1]) == "--local-community";
     const bool geolocation = argc > 1 && std::string(argv[1]) == "--geolocation";
     const bool condensation = argc > 1 && std::string(argv[1]) == "--condensation";
+    const bool records = argc > 1 && std::string(argv[1]) == "--records";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -479,11 +537,18 @@ int main(int argc, char** argv) {
     if (local_community) selected_exact.push_back(local_community_case);
     if (geolocation) selected_exact.push_back(geolocation_case);
     if (condensation) selected_exact.push_back(condensation_case);
+    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records)
+      throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (records) for (const auto* profile : record_profiles) {
+          const bool rejected = record_index(graph,profile);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",profile},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         for (const auto& test : selected_exact) {
           const bool rejected = exact_edges(graph,test);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
@@ -511,10 +576,10 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty() && selected_exact.empty()) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty() && !records) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
     std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")

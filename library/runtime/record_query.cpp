@@ -178,6 +178,23 @@ Index::Index(const Graph& input, Work& work)
     edge_indices[row.id] = i;
   }
 }
+Index::Index(const Graph& input, const ViewProfile& profile, Work& work)
+    : graph(input), outgoing(input.vertex_count()), incoming(input.vertex_count()) {
+  for (const auto& row : graph.canonical().vertices)
+    vertices.push_back(vertex_record_json(row, work));
+  const auto result = consume_view(graph, profile, work, ViewBudget::algorithm_owned);
+  const auto& view = std::get<CooView>(result->view);
+  for (std::size_t i = 0; i < view.src.size(); ++i) {
+    work.tick();
+    const auto& row = graph.canonical().edges[view.edge_ids->at(i)];
+    const auto u = view.src[i], v = view.dst[i];
+    edges.push_back(edge_record_json(row, work));
+    outgoing[u].push_back(i);
+    incoming[v].push_back(i);
+    endpoints.emplace_back(u, v);
+    edge_indices[row.id] = i;
+  }
+}
 std::optional<std::set<std::size_t>> Index::selected(const json::object& args, const char* key,
                                                      bool is_edge) const {
   if (!args.contains(key) || args.at(key).is_null()) return {};

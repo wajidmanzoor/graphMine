@@ -18,7 +18,10 @@ struct Index {
   std::vector<std::vector<std::size_t>> outgoing, incoming;
   std::vector<std::pair<VertexIndex, VertexIndex>> endpoints;
   std::map<ExternalId, std::size_t> edge_indices;
+  // The unchanged common-front parameter validator uses the original index.
   explicit Index(const Graph&, Work&);
+  // CPU query adapters obtain structural columns from their declared view.
+  Index(const Graph&, const ViewProfile&, Work&);
   std::optional<std::set<std::size_t>> selected(const json::object&, const char*, bool) const;
   Filters filters(const json::object&, const char*, bool) const;
 };

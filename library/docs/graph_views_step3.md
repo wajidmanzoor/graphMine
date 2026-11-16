@@ -259,3 +259,18 @@ admissions. Its input profile passes all 6,571 corpus cases with explicit fresh
 build/cache-hit assertions. A real training/evaluation request verifies the
 consumed declaration; existing learning tests continue to check the gradient
 objective, propagated features and downstream utility.
+
+## Record queries
+
+Node lookup, edge filtering, neighbors, common neighbors, query paths, graph
+aggregation and query subgraphs now declare record COO inputs. Their backend
+index copies original edge orientation, ordering and identities from the view;
+arbitrary typed properties still come from the unchanged common-front records.
+The existing common-front parameter validator retains its original index path.
+
+Checkpoint `17-record-queries` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Seven profiles pass 45,997 corpus cases, comparing endpoint arrays,
+incoming/outgoing original-edge lists, ID maps, complete record JSON bytes and
+candidate costs. Fresh/cache-hit assertions and small budget rejection checks
+pass. Real requests verify all seven declarations, directed/undirected inputs,
+both-direction discovery, path enumeration, grouped aggregation and extraction.
