@@ -84,21 +84,22 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const sharedMovies = button("query-shared-movies", "Example: users who rated the same movies", "quiet");
     sharedMovies.hidden = true;
     const editor = node("textarea", {id: "cypher-editor", class: "code-editor", rows: "8", spellcheck: "false", "aria-label": "Cypher query", "aria-describedby": "cypher-hint"});
-    const hint = node("p", {id: "cypher-hint", class: "source-hint"}, "Return nodes, relationships or paths to choose the graph for your analysis.");
+    const hint = node("span", {id: "cypher-hint", class: "source-hint", "aria-live": "polite"}, "Use the Neo4j nodes and relationships returned by your query, including those in returned paths.");
     const queryScope = node("p", {id: "database-query-scope", class: "source-hint", role: "status"});
     const parameters = node("textarea", {id: "cypher-parameters", class: "code-editor", rows: "3", "aria-label": "Query parameters (JSON)", spellcheck: "false"});
     const parameterBox = node("details", {class: "query-parameters"});
     parameterBox.append(node("summary", {}, "Parameters"), parameters);
     const direction = node("select", {id: "query-graph-direction", "aria-label": "Graph direction for analysis"});
     direction.append(node("option", {value: "directed"}, "Directed graph"), node("option", {value: "undirected"}, "Undirected graph"));
-    const projection = node("select", {id: "query-graph-projection", "aria-label": "Graph from"});
-    projection.append(node("option", {value: "elements"}, "Returned graph elements"), node("option", {value: "rows"}, "Source / target columns"));
+    const projection = node("select", {id: "query-graph-projection", "aria-label": "Graph mode", "aria-describedby": "cypher-hint"});
+    projection.append(node("option", {value: "elements"}, "Existing Neo4j graph"), node("option", {value: "rows"}, "Connections from query rows"));
+    const projectionField = label("Graph mode", projection); projectionField.append(hint);
     const weightProperty = node("input", {id: "query-weight-property", type: "text", maxlength: "128", placeholder: "Use stored weights", "aria-label": "Edge weight property"});
     const describeProjection = () => {
       weightProperty.disabled = projection.value === "rows";
       hint.textContent = projection.value === "rows"
-        ? "Return nodes as source and target. Each row becomes an edge; optional weight and type columns describe it. Other columns become edge attributes."
-        : "Return nodes, relationships or paths to choose the graph for your analysis. To connect two returned nodes, choose Source / target columns.";
+        ? "Connect each row’s source and target nodes in the analysis graph, using its optional weight column."
+        : "Use the Neo4j nodes and relationships returned by your query, including those in returned paths.";
     };
     const preview = button("preview-cypher", "Preview query");
     const saveSnapshot = button("save-query-snapshot", "Save graph to datasets");
@@ -106,7 +107,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const open = button("run-cypher-chat", state.session ? "Use graph in chat" : "Start conversation", "primary");
     const actions = node("div", {class: "source-query-actions"});
     const options = node("div", {class: "source-query-options"});
-    options.append(parameterBox, label("Graph from", projection), label("Direction", direction), label("Edge weight property", weightProperty));
+    options.append(parameterBox, projectionField, label("Direction", direction), label("Edge weight property", weightProperty));
     actions.append(node("span", {class: "source-hint"}, "⌘ / Ctrl + Enter to preview"), preview);
     const previewHeader = node("div", {class: "source-section-heading"});
     const count = node("span", {id: "database-preview-count", class: "source-hint"}, "No query run yet");
@@ -135,7 +136,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const sync = button("sync-database", "Refresh graph from tables", "quiet");
     const jobsBox = node("div");
     const importDescription = node("p", {id: "source-import-description", class: "source-hint", hidden: true});
-    work.append(queryHeading, queryScope, sharedMovies, hint, editor, draftStatus, options, jobsBox);
+    work.append(queryHeading, queryScope, sharedMovies, editor, draftStatus, options, jobsBox);
     work.append(importDescription);
     sidebar.append(sync, schemaBox);
     const previewPane = node("section", {class: "source-preview data-pane", id: "data-preview-pane", "data-heading": "data-preview-heading", tabindex: "0"});

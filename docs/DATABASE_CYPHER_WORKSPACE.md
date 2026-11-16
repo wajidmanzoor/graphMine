@@ -31,10 +31,11 @@ flowchart LR
    upload, or a REST export. SQLite and REST use **Preview source** and an
    **Import** step instead of the Cypher editor. The **Upload file** tab accepts
    graph JSON or relationship CSV.
-2. Write Cypher and optional JSON parameters. **Graph from** selects returned
-   graph elements or **Source / target columns** for new relationships derived
-   from query rows. Choose directed analysis, or an
-   undirected projection for algorithms such as density and clique mining.
+2. Write Cypher and optional JSON parameters. **Graph mode** offers **Existing
+   Neo4j graph** for returned nodes, relationships and paths, or **Connections
+   from query rows** for edges derived from `source` and `target` nodes.
+   A sentence below the selector explains the selected mode. Choose directed
+   analysis, or an undirected projection for algorithms such as density and clique mining.
    **Preview query** retains the exact returned graph temporarily for 24 hours.
    Identical preview content is stored once per owner; each query keeps its own
    timestamp and provenance. **Save graph to datasets** keeps it in the library;
@@ -248,7 +249,7 @@ snapshots continue to use `dataset`.
 
 ### Derived graphs from query rows
 
-Choose **Graph from → Source / target columns** to build a graph directly from
+Choose **Graph mode → Connections from query rows** to build a graph directly from
 a read query. Return actual Neo4j nodes under the aliases `source` and `target`;
 each row becomes one edge in the saved GraphMine graph. An optional numeric
 `weight` column sets its analysis weight, and an optional nonempty string `type`

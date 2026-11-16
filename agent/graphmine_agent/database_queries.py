@@ -340,7 +340,7 @@ def execute_query(source, body, byte_limit):
             columns = list(response.keys())
             if body.projection == "rows" and not {"source", "target"}.issubset(columns):
                 raise AnalyticsError(
-                    "Source / target columns mode requires RETURN a AS source, b AS target. "
+                    "This graph mode requires RETURN a AS source, b AS target. "
                     "Return nodes for both columns; weight and type are optional.",
                     "query_projection",
                 )
