@@ -778,4 +778,84 @@ struct EnumerationInput {
     }
   }
 };
+
+// Frozen comparison graph normalization before declared COO migration.
+using ComparisonPair = std::pair<VertexIndex,VertexIndex>;
+struct ComparisonGraph {
+  bool directed;
+  json::object graph;
+  std::vector<std::string> labels;
+  struct Edge {
+    VertexIndex u, v;
+    json::object record;
+    std::string label;
+  };
+  std::vector<Edge> edges;
+  std::map<ComparisonPair, std::size_t> indices;
+  ComparisonPair key(VertexIndex u, VertexIndex v) const {
+    if (!directed && u > v) std::swap(u, v);
+    return {u, v};
+  }
+  std::optional<std::size_t> edge(VertexIndex u, VertexIndex v) const {
+    const auto it = indices.find(key(u, v));
+    if (it == indices.end()) return {};
+    return it->second;
+  }
+};
+std::string comparison_label_key(const json::object& record, const std::vector<std::string>& fields,
+                      bool ignore) {
+  json::array key;
+  if (!ignore)
+    for (const auto& field : fields)
+      key.push_back(json::array{record.contains(field),
+                                record.contains(field) ? record.at(field) : json::value(nullptr)});
+  return json::serialize(key);
+}
+inline ComparisonGraph comparison_graph(const Graph& input, const std::vector<std::string>& vf,
+                                 const std::vector<std::string>& ef, bool ignore,
+                                 const std::string& loops, const std::string& parallel,
+                                 Work& work) {
+  ComparisonGraph result{input.directed(), {}, {}, {}, {}};
+  json::array vertices, edges;
+  for (const auto& vertex : input.canonical().vertices) {
+    const auto record = vertex_record_json(vertex, work);
+    json::object selected{{"id", record.at("id")}};
+    for (const auto& field : vf)
+      if (record.contains(field)) selected[field] = record.at(field);
+    result.labels.push_back(comparison_label_key(record, vf, ignore));
+    vertices.push_back(selected);
+  }
+  for (const auto& edge : input.canonical().edges) {
+    work.tick();
+    const auto u = input.dense_index(edge.source), v = input.dense_index(edge.target);
+    if (u == v) {
+      require(loops == "drop", "Selected comparison rejects self-loops");
+      continue;
+    }
+    const auto record = edge_record_json(edge, work);
+    const auto label = comparison_label_key(record, ef, ignore);
+    const auto old = result.edge(u, v);
+    if (old) {
+      require(parallel == "collapse", "Parallel edges require explicit collapse");
+      require(result.edges[*old].label == label, "Cannot collapse different selected edge types");
+      continue;
+    }
+    json::object selected{
+        {"id", record.at("id")}, {"source", record.at("source")}, {"target", record.at("target")}};
+    for (const auto& field : ef)
+      if (record.contains(field)) selected[field] = record.at(field);
+    result.indices[result.key(u, v)] = result.edges.size();
+    result.edges.push_back({u, v, selected, label});
+    edges.push_back(selected);
+  }
+  result.graph = {{"graph",
+                   {{"id", input.canonical().graph.id},
+                    {"directed", input.directed()},
+                    {"allows_self_loops", false},
+                    {"allows_parallel_edges", false}}},
+                  {"vertices", vertices},
+                  {"edges", edges}};
+  return result;
+}
+
 }  // namespace graphmine::legacy_test

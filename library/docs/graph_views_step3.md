@@ -677,3 +677,18 @@ times, canonical endpoint arrays, typed identity maps, full JSON record bytes,
 costs and matching rejections. Requests verify all three declarations for both
 directions, fractional RFC3339 timestamps, predicates, induced/equal-time modes
 and listing limits. Existing event-permutation oracles remain passing.
+
+## Graph comparison
+
+Graph edit distance and maximum common subgraph now declare original-record
+and collapsed COO views. Factory-selected edge identities supply the simple
+topology, while record endpoints preserve original orientation and order.
+Selected-label decoding and conflicting-parallel/loop validation retain their
+previous order and costs. Correspondence search and edit scripts are unchanged.
+
+Checkpoint `45-comparison` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both operations, exact/ignored labels and reject/collapse policies
+pass 52,568 corpus cases on builds/hits. Checks compare normalized graph JSON,
+label keys, oriented endpoints, identity indices, costs and rejections. Requests
+verify all four declarations and every supported label-field subset; boundary
+cases include conflicting edge types, loops, missing labels and budgets.

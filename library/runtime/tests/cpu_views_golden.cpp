@@ -25,6 +25,7 @@
 #include "../anomaly_input.hpp"
 #include "../sampling_input.hpp"
 #include "../temporal_motif_input.hpp"
+#include "../comparison_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -135,6 +136,36 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+template<class Input> std::string comparison_bytes(const Input& input) {
+  rt::json::array labels,edges,indices;
+  for (const auto& label : input.labels) labels.push_back(rt::json::value(label));
+  for (const auto& edge : input.edges) edges.push_back(rt::json::array{edge.u,edge.v,edge.record,edge.label});
+  for (const auto& [key,i] : input.indices) indices.push_back(rt::json::array{key.first,key.second,i});
+  return rt::json::serialize(rt::json::array{input.directed,input.graph,labels,edges,indices});
+}
+bool comparison_input(const gm::Graph& graph, bool edit, bool ignore, const std::string& loops,
+    const std::string& parallel, const std::vector<std::string>& vf={"label","type"},
+    const std::vector<std::string>& ef={"type"}, std::uint64_t budget=UINT64_MAX) {
+  auto old_work=unlimited(); old_work.max_candidates=budget;
+  std::optional<gm::legacy_test::ComparisonGraph> expected;
+  std::string old_failure;
+  try { expected=gm::legacy_test::comparison_graph(graph,vf,ef,ignore,loops,parallel,old_work); }
+  catch (const std::exception& e) { old_failure=e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work=unlimited(); work.max_candidates=budget;
+    std::optional<rt::ComparisonGraph> actual;
+    std::string new_failure;
+    try { actual=rt::comparison_input(graph,vf,ef,ignore,loops,parallel,edit,work); }
+    catch (const std::exception& e) { new_failure=e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Comparison graph rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat,0); cache_pass(work,repeat,1);
+    if (comparison_bytes(*expected) != comparison_bytes(*actual) || old_work.candidates != work.candidates)
+      throw std::runtime_error("Comparison graph labels/identities/arrays/cost differ");
   }
   return !expected;
 }
@@ -1236,6 +1267,29 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  for (bool directed : {false,true}) for (bool edit : {false,true}) {
+    auto labeled=raw;
+    labeled.as_object().at("graph").as_object()["directed"]=directed;
+    labeled.as_object().at("vertices").as_array()[0].as_object()["label"]="a";
+    labeled.as_object().at("vertices").as_array()[1].as_object()["type"]="t";
+    labeled.as_object().at("edges").as_array()[0].as_object()["type"]="r";
+    for (bool ignore : {false,true}) for (const auto* loops : {"drop","reject"}) for (const auto* parallel : {"collapse","reject"})
+      comparison_input(rt::parse_graph(labeled),edit,ignore,loops,parallel);
+    labeled.as_object().at("edges").as_array()[1].as_object()["type"]="r";
+    for (const auto& vf : std::vector<std::vector<std::string>>{{},{"label"},{"type"},{"label","type"}})
+      for (const auto& ef : std::vector<std::vector<std::string>>{{},{"type"}}) {
+        for (std::uint64_t budget : {0,1,2,3,4,20})
+          comparison_input(rt::parse_graph(labeled),edit,false,"drop","collapse",vf,ef,budget);
+        rt::json::array vfields,efields;
+        for (const auto& field : vf) vfields.push_back(rt::json::value(field));
+        for (const auto& field : ef) efields.push_back(rt::json::value(field));
+        for (const auto* suffix : {":cpp:records",":cpp:simple"}) {
+          const auto profile=std::string(edit ? "graph-edit-distance" : "maximum-common-subgraph")+suffix;
+          declared_request(profile.c_str(),labeled,{{"other_graph",labeled},{"self_loops","drop"},{"parallel_edges","collapse"},
+            {"vertex_label_fields",vfields},{"edge_label_fields",efields}});
+        }
+      }
+  }
   auto temporal_graph = raw;
   for (std::size_t i=0; i<4; ++i) {
     auto& edge=temporal_graph.as_object().at("edges").as_array()[i].as_object();
@@ -1999,6 +2053,7 @@ int main(int argc, char** argv) {
     const bool sampling = argc > 1 && std::string(argv[1]) == "--sampling";
     const bool temporal_paths = argc > 1 && std::string(argv[1]) == "--temporal-paths";
     const bool temporal_motifs = argc > 1 && std::string(argv[1]) == "--temporal-motifs";
+    const bool comparison = argc > 1 && std::string(argv[1]) == "--comparison";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -2024,7 +2079,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths || temporal_motifs;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths || temporal_motifs || comparison;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -2032,6 +2087,14 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (comparison) {
+          for (bool edit : {false,true}) for (bool ignore : {false,true}) for (const auto* parallel : {"reject","collapse"}) {
+            const bool rejected=comparison_input(graph,edit,ignore,"drop",parallel);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"operation",edit ? "graph-edit-distance" : "maximum-common-subgraph"},
+              {"ignore_labels",ignore},{"parallel_edges",parallel},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+        }
         if (temporal_motifs) {
           for (int mode=0; mode<4; ++mode) {
             const bool rejected=mode==0 ? temporal_query_input(graph) : mode==1 ? temporal_event_input(graph) :

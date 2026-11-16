@@ -1,30 +1,17 @@
 #include "pattern_match.hpp"
+#include "comparison_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
 using namespace family_util;
-using Pair = std::pair<VertexIndex, VertexIndex>;
-struct ComparisonGraph {
-  bool directed;
-  json::object graph;
-  std::vector<std::string> labels;
-  struct Edge {
-    VertexIndex u, v;
-    json::object record;
-    std::string label;
-  };
-  std::vector<Edge> edges;
-  std::map<Pair, std::size_t> indices;
-  Pair key(VertexIndex u, VertexIndex v) const {
-    if (!directed && u > v) std::swap(u, v);
-    return {u, v};
-  }
-  std::optional<std::size_t> edge(VertexIndex u, VertexIndex v) const {
-    const auto it = indices.find(key(u, v));
-    if (it == indices.end()) return {};
-    return it->second;
-  }
-};
+const ViewProfile edit_records{"graph-edit-distance:cpp:records", {"graph-edit-distance"},
+  R"({"kind":"coo","coo_layout":"records","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile edit_simple{"graph-edit-distance:cpp:simple", {"graph-edit-distance"},
+  R"({"kind":"coo","self_loops":"drop","parallel_edges":"collapse:first","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile common_records{"maximum-common-subgraph:cpp:records", {"maximum-common-subgraph"},
+  R"({"kind":"coo","coo_layout":"records","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile common_simple{"maximum-common-subgraph:cpp:simple", {"maximum-common-subgraph"},
+  R"({"kind":"coo","self_loops":"drop","parallel_edges":"collapse:first","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
 std::vector<std::string> label_fields(const json::object& args, const char* name,
                                       json::array defaults, bool vertices) {
   const auto input = args.contains(name) ? args.at(name) : json::value(defaults);
@@ -47,13 +34,27 @@ std::string label_key(const json::object& record, const std::vector<std::string>
                                 record.contains(field) ? record.at(field) : json::value(nullptr)});
   return json::serialize(key);
 }
-ComparisonGraph comparison_graph(const Graph& input, const std::vector<std::string>& vf,
+}  // namespace
+ComparisonGraph comparison_input(const Graph& input, const std::vector<std::string>& vf,
                                  const std::vector<std::string>& ef, bool ignore,
                                  const std::string& loops, const std::string& parallel,
-                                 Work& work) {
+                                 bool edit, Work& work) {
+  const auto record_input=consume_view(input,edit ? edit_records : common_records,work,ViewBudget::algorithm_owned);
+  const auto retained_input=consume_view(input,edit ? edit_simple : common_simple,work,ViewBudget::algorithm_owned);
+  const auto& records=std::get<CooView>(record_input->view);
+  const auto& retained=std::get<CooView>(retained_input->view);
+  std::vector<bool> keep(input.edge_count(),false);
+  std::vector<ComparisonPair> keys(input.edge_count());
+  for (std::size_t i=0; i<retained.src.size(); ++i) {
+    if (retained.symmetric && retained.src[i]>retained.dst[i]) continue;
+    const auto original=retained.edge_ids->at(i);
+    keep[original]=true;
+    keys[original]={retained.vertices.to_original[retained.src[i]],retained.vertices.to_original[retained.dst[i]]};
+  }
   ComparisonGraph result{input.directed(), {}, {}, {}, {}};
   json::array vertices, edges;
-  for (const auto& vertex : input.canonical().vertices) {
+  for (const auto v : records.vertices.to_original) {
+    const auto& vertex=input.canonical().vertices[v];
     const auto record = vertex_record_json(vertex, work);
     json::object selected{{"id", record.at("id")}};
     for (const auto& field : vf)
@@ -61,17 +62,20 @@ ComparisonGraph comparison_graph(const Graph& input, const std::vector<std::stri
     result.labels.push_back(label_key(record, vf, ignore));
     vertices.push_back(selected);
   }
-  for (const auto& edge : input.canonical().edges) {
+  for (std::size_t i=0; i<records.src.size(); ++i) {
     work.tick();
-    const auto u = input.dense_index(edge.source), v = input.dense_index(edge.target);
+    const auto original=records.edge_ids->at(i);
+    const auto& edge=input.canonical().edges[original];
+    const auto u=records.vertices.to_original[records.src[i]], v=records.vertices.to_original[records.dst[i]];
     if (u == v) {
       require(loops == "drop", "Selected comparison rejects self-loops");
       continue;
     }
     const auto record = edge_record_json(edge, work);
     const auto label = label_key(record, ef, ignore);
-    const auto old = result.edge(u, v);
-    if (old) {
+    if (!keep[original]) {
+      // Validation only: the factory chose which parallel identity survives.
+      const auto old=result.edge(u,v);
       require(parallel == "collapse", "Parallel edges require explicit collapse");
       require(result.edges[*old].label == label, "Cannot collapse different selected edge types");
       continue;
@@ -80,7 +84,7 @@ ComparisonGraph comparison_graph(const Graph& input, const std::vector<std::stri
         {"id", record.at("id")}, {"source", record.at("source")}, {"target", record.at("target")}};
     for (const auto& field : ef)
       if (record.contains(field)) selected[field] = record.at(field);
-    result.indices[result.key(u, v)] = result.edges.size();
+    result.indices[keys[original]] = result.edges.size();
     result.edges.push_back({u, v, selected, label});
     edges.push_back(selected);
   }
@@ -93,6 +97,7 @@ ComparisonGraph comparison_graph(const Graph& input, const std::vector<std::stri
                   {"edges", edges}};
   return result;
 }
+namespace {
 json::object compare_graphs(const Graph& graph, const json::object& args, bool edit, Work& work) {
   fields(args,
          edit
@@ -110,8 +115,8 @@ json::object compare_graphs(const Graph& graph, const json::object& args, bool e
              parallel = choice(args, "parallel_edges", "reject", {"reject", "collapse"});
   const auto vf = label_fields(args, "vertex_label_fields", {"label", "type"}, true),
              ef = label_fields(args, "edge_label_fields", {"type"}, false);
-  const auto a = comparison_graph(graph, vf, ef, policy == "ignore_labels", loops, parallel, work),
-             b = comparison_graph(other, vf, ef, policy == "ignore_labels", loops, parallel, work);
+  const auto a = comparison_input(graph, vf, ef, policy == "ignore_labels", loops, parallel, edit, work),
+             b = comparison_input(other, vf, ef, policy == "ignore_labels", loops, parallel, edit, work);
   const auto n = a.labels.size(), m = b.labels.size();
   std::map<VertexIndex, VertexIndex> best_mapping;
   std::set<VertexIndex> matched;
